@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
@@ -25,37 +26,14 @@ class CalendarController extends Controller
 
         // Get attendance for logged-in user
         $attendances = Attendance::where('user_id', Auth::id())
-                        ->whereBetween('date', [$startOfMonth, $endOfMonth])
-                        ->get()
-                        ->keyBy(function($item) { return $item->date->format('Y-m-d'); });
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->date->format('Y-m-d');
+            });
 
         return view('calendar.admin', compact('dates', 'attendances', 'month', 'year'));
     }
-
-    public function seniorUser($month = null, $year = null)
-    {
-        $month = $month ?? date('m');
-        $year = $year ?? date('Y');
-
-        $startOfMonth = Carbon::createFromDate($year, $month, 1);
-        $endOfMonth = $startOfMonth->copy()->endOfMonth();
-
-        // Get all days in month
-        $dates = [];
-        for ($day = $startOfMonth->day; $day <= $endOfMonth->day; $day++) {
-            $dates[] = $startOfMonth->copy()->day($day);
-        }
-
-        // Get attendance for logged-in user
-        $attendances = Attendance::where('user_id', Auth::id())
-                        ->whereBetween('date', [$startOfMonth, $endOfMonth])
-                        ->get()
-                        ->keyBy(function($item) { return $item->date->format('Y-m-d'); });
-
-        return view('calendar.senior', compact('dates', 'attendances', 'month', 'year'));
-    }
-
-    
 
     public function juniorUser(Request $request)
     {
@@ -78,14 +56,14 @@ class CalendarController extends Controller
         }
 
         // Fetch events within the date range
-        $events = UserTimerPause::whereBetween('event_time', [$start, $end])
-                    ->orderBy('event_time', 'asc')
-                    ->get();
+        $events = UserTimerPause::where('user_id', Auth::id()) // <-- filter by logged-in user
+            ->whereBetween('event_time', [$start, $end])
+            ->orderBy('event_time', 'asc')
+            ->get();
 
         return view('calendar.junior', compact('events', 'view', 'date'));
     }
 
-    // CalendarController.php
     public function getEvents(Request $request)
     {
         $start = $request->input('start'); // ISO string from FullCalendar
@@ -93,22 +71,24 @@ class CalendarController extends Controller
 
         // Convert to Carbon
         $startDate = Carbon::parse($start);
-        $endDate = Carbon::parse($end);
+        $endDate   = Carbon::parse($end);
 
-        $events = UserTimerPause::whereBetween('start_date', [$startDate, $endDate])
-                    ->get()
-                    ->map(function($event) {
-                        return [
-                            'user_id' => $event->id,
-                            'pause_type' => $event->title,
-                            'event_time' => $event->start_date,
-                            'event_time' => $event->end_date,
-                            'remaining_seconds' => $event->description,
-                            'elapsed_seconds' => $event->elapsed_seconds,
-                            'status' => $event->label,
-                            'label_color' => $event->label_color ?? '#00FF00',
-                        ];
-                    });
+        // Fetch events only for logged-in user
+        $events = UserTimerPause::where('user_id', Auth::id())
+            ->whereBetween('event_time', [$startDate, $endDate])
+            ->get()
+            ->map(function ($event) {
+                return [
+                    'id' => $event->id,
+                    'title' => $event->pause_type,
+                    'start' => $event->event_time, // or $event->start_date if using start/end columns
+                    'end' => $event->end_date ?? $event->event_time,
+                    'description' => $event->remaining_seconds,
+                    'elapsed_seconds' => $event->elapsed_seconds,
+                    'status' => $event->status,
+                    'color' => $event->label_color ?? '#378006', // FullCalendar color
+                ];
+            });
 
         return response()->json($events);
     }
@@ -127,5 +107,30 @@ class CalendarController extends Controller
         );
 
         return response()->json(['success' => true, 'status' => $attendance->status]);
+    }
+
+    public function seniorUser($month = null, $year = null)
+    {
+        $month = $month ?? date('m');
+        $year = $year ?? date('Y');
+
+        $startOfMonth = Carbon::createFromDate($year, $month, 1);
+        $endOfMonth = $startOfMonth->copy()->endOfMonth();
+
+        // Get all days in month
+        $dates = [];
+        for ($day = $startOfMonth->day; $day <= $endOfMonth->day; $day++) {
+            $dates[] = $startOfMonth->copy()->day($day);
+        }
+
+        // Get attendance for logged-in user
+        $attendances = Attendance::where('user_id', Auth::id())
+            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->get()
+            ->keyBy(function ($item) {
+                return $item->date->format('Y-m-d');
+            });
+
+        return view('calendar.senior', compact('dates', 'attendances', 'month', 'year'));
     }
 }
