@@ -1,28 +1,28 @@
-@extends('layout.layout')
 
-@php
+
+<?php
 $title = 'Senior Dashboard';
 $subTitle = 'All Junior Timers';
-@endphp
+?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 <div class="row gy-4">
-    @foreach($timers as $timer)
+    <?php $__currentLoopData = $timers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $timer): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
     <div class="col-xxl-3 col-md-6 user-grid-card">
         <div class="position-relative border radius-16 overflow-hidden">
-            <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
+            <img src="<?php echo e(asset('assets/images/user-grid/user-grid-bg1.png')); ?>" class="w-100 object-fit-cover" alt="">
 
             <div class="ps-16 pb-16 pe-16 text-center mt--50">
-                <img src="{{ asset('assets/images/user-grid/user-grid-img1.png') }}" class="border br-white border-width-2-px w-100-px h-100-px rounded-circle object-fit-cover" alt="">
-                <h6 class="text-lg mb-0 mt-4">{{ $timer['name'] }}</h6>
-                <span class="text-secondary-light mb-16">{{ $timer['email'] }}</span>
+                <img src="<?php echo e(asset('assets/images/user-grid/user-grid-img1.png')); ?>" class="border br-white border-width-2-px w-100-px h-100-px rounded-circle object-fit-cover" alt="">
+                <h6 class="text-lg mb-0 mt-4"><?php echo e($timer['name']); ?></h6>
+                <span class="text-secondary-light mb-16"><?php echo e($timer['email']); ?></span>
 
                 <!-- Timer Widget -->
                 <div class="timer-widget"
-                    data-user="{{ $timer['user_id'] }}"
-                    data-remaining="{{ $timer['remaining_seconds'] }}"
-                    data-elapsed="{{ $timer['elapsed_seconds'] }}"
-                    data-status="{{ $timer['status'] }}"
+                    data-user="<?php echo e($timer['user_id']); ?>"
+                    data-remaining="<?php echo e($timer['remaining_seconds']); ?>"
+                    data-elapsed="<?php echo e($timer['elapsed_seconds']); ?>"
+                    data-status="<?php echo e($timer['status']); ?>"
                     style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
 
                     <!-- Countdown -->
@@ -32,7 +32,8 @@ $subTitle = 'All Junior Timers';
                             <small style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Countdown</small>
                         </div>
                         <span class="countdown" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                            {{ gmdate('H:i:s', $timer['remaining_seconds']) }}
+                            <?php echo e(gmdate('H:i:s', $timer['remaining_seconds'])); ?>
+
                         </span>
                     </div>
 
@@ -46,7 +47,8 @@ $subTitle = 'All Junior Timers';
                             <small style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Elapsed</small>
                         </div>
                         <span class="elapsed" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
-                            {{ gmdate('H:i:s', $timer['elapsed_seconds']) }}
+                            <?php echo e(gmdate('H:i:s', $timer['elapsed_seconds'])); ?>
+
                         </span>
                     </div>
 
@@ -70,14 +72,14 @@ $subTitle = 'All Junior Timers';
             </div>
         </div>
     </div>
-    @endforeach
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
 
 
 <div id="statusOverlay"></div>
-@section('scripts')
+<?php $__env->startSection('scripts'); ?>
 <script>
     function formatTime(sec) {
         sec = Math.max(0, Math.floor(sec));
@@ -112,7 +114,7 @@ $subTitle = 'All Junior Timers';
 
     // Bulk refresh from server (every 10s)
     function updateAllTimers() {
-        fetch("{{ route('timer.alljuniors') }}")
+        fetch("<?php echo e(route('timer.alljuniors')); ?>")
             .then(res => res.json())
             .then(timers => {
                 timers.forEach(data => {
@@ -138,10 +140,10 @@ $subTitle = 'All Junior Timers';
                 btn.addEventListener('click', () => {
                     const action = btn.dataset.type;
 
-                    fetch("{{ route('timer.updatejunior') }}", {
+                    fetch("<?php echo e(route('timer.updatejunior')); ?>", {
                             method: "POST",
                             headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "X-CSRF-TOKEN": "<?php echo e(csrf_token()); ?>",
                                 "Content-Type": "application/json"
                             },
                             body: JSON.stringify({ user_id: userId, action })
@@ -165,4 +167,6 @@ $subTitle = 'All Junior Timers';
     setInterval(localTick, 1000);       // smooth countdown every second
     setInterval(updateAllTimers, 10000); // sync with DB every 10s
 </script>
-@endsection
+<?php $__env->stopSection(); ?>
+
+<?php echo $__env->make('layout.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\wowdash\resources\views/timers/senior.blade.php ENDPATH**/ ?>

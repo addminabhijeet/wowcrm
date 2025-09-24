@@ -28,10 +28,6 @@ $script ='<script>
                 <option>Inactive</option>
             </select>
         </div>
-        <a href="" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
-            <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-            Add New User
-        </a>
     </div>
     <div class="card-body p-24">
         <div class="table-responsive scroll-sm">
@@ -226,15 +222,12 @@ $script ='<script>
         </div>
         
         <?php if($data->hasPages()): ?>
-            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
-                <span>
-                    Showing <?php echo e($data->firstItem()); ?> to <?php echo e($data->lastItem()); ?> of <?php echo e($data->total()); ?> entries
-                </span>
-                <div>
-                    <?php echo e($data->links('pagination::bootstrap-5')); ?>
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
+            <div>
+                <?php echo e($data->links('pagination::bootstrap-5')); ?>
 
-                </div>
             </div>
+        </div>
         <?php endif; ?>
     </div>
 </div>

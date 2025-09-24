@@ -80,7 +80,6 @@ $subTitle = 'All Junior Timers';
 
 <div id="statusOverlay"></div>
 
-
 <?php $__env->startSection('scripts'); ?>
 <script>
 function formatTime(sec){
@@ -91,64 +90,37 @@ function formatTime(sec){
     return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
 }
 
-function startJuniorTimers(){
+function updateAllTimers() {
+    fetch("<?php echo e(route('timer.alljuniors')); ?>")
+    .then(res => res.json())
+    .then(timers => {
+        timers.forEach(data => {
+            const widget = document.querySelector(`.timer-widget[data-user='${data.user_id}']`);
+            if (!widget) return;
+
+            widget.dataset.remaining = data.remaining_seconds;
+            widget.dataset.elapsed   = data.elapsed_seconds;
+            widget.dataset.status    = data.status;
+
+            widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
+            widget.querySelector('.elapsed').innerText   = formatTime(data.elapsed_seconds);
+
+            if (data.logout) {
+                alert("User " + data.user_id + " has finished their 9-hour session.");
+            }
+        });
+    })
+    .catch(err => console.error("Timer bulk fetch error", err));
+}
+
+function setupControlButtons() {
     document.querySelectorAll('.timer-widget').forEach(widget => {
-        let remaining = parseInt(widget.dataset.remaining);
-        let elapsed = parseInt(widget.dataset.elapsed);
-        let status = widget.dataset.status;
         const userId = widget.dataset.user;
 
-        // Tick every second locally
-        setInterval(() => {
-            if(status === 'running' && remaining > 0){
-                remaining--;
-                elapsed++;
-                widget.dataset.remaining = remaining;
-                widget.dataset.elapsed = elapsed;
-
-                widget.querySelector('.countdown').innerText = formatTime(remaining);
-                widget.querySelector('.elapsed').innerText = formatTime(elapsed);
-
-                if(remaining <= 0){
-                    status = 'paused';
-                    alert(userId + " has finished their 9-hour session.");
-                }
-            }
-        }, 1000);
-
-        // Sync with backend every 5 seconds
-        setInterval(() => {
-            fetch("<?php echo e(route('timer.updatejunior')); ?>", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "<?php echo e(csrf_token()); ?>",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ user_id: userId, action: 'tick' })
-            })
-            .then(res => res.json())
-            .then(data => {
-                remaining = data.remaining_seconds;
-                elapsed = data.elapsed_seconds;
-                status = data.status;
-
-                widget.dataset.remaining = remaining;
-                widget.dataset.elapsed = elapsed;
-                widget.dataset.status = status;
-
-                widget.querySelector('.countdown').innerText = formatTime(remaining);
-                widget.querySelector('.elapsed').innerText = formatTime(elapsed);
-
-                if(data.logout){
-                    alert(userId + " has finished their 9-hour session.");
-                }
-            });
-        }, 5000);
-
-        // Control buttons
         widget.querySelectorAll('button').forEach(btn => {
             btn.addEventListener('click', () => {
                 const action = btn.dataset.type;
+
                 fetch("<?php echo e(route('timer.updatejunior')); ?>", {
                     method: "POST",
                     headers: {
@@ -159,19 +131,15 @@ function startJuniorTimers(){
                 })
                 .then(res => res.json())
                 .then(data => {
-                    remaining = data.remaining_seconds;
-                    elapsed = data.elapsed_seconds;
-                    status = data.status;
+                    widget.dataset.remaining = data.remaining_seconds;
+                    widget.dataset.elapsed   = data.elapsed_seconds;
+                    widget.dataset.status    = data.status;
 
-                    widget.dataset.remaining = remaining;
-                    widget.dataset.elapsed = elapsed;
-                    widget.dataset.status = status;
+                    widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
+                    widget.querySelector('.elapsed').innerText   = formatTime(data.elapsed_seconds);
 
-                    widget.querySelector('.countdown').innerText = formatTime(remaining);
-                    widget.querySelector('.elapsed').innerText = formatTime(elapsed);
-
-                    if(data.logout){
-                        alert(userId + " has finished their 9-hour session.");
+                    if (data.logout) {
+                        alert("User " + userId + " has finished their 9-hour session.");
                     }
                 });
             });
@@ -179,9 +147,9 @@ function startJuniorTimers(){
     });
 }
 
-// Start timers
-startJuniorTimers();
-
+// 🚀 Initialize
+setupControlButtons();
+setInterval(updateAllTimers, 1000); // bulk update every second
 </script>
 <?php $__env->stopSection(); ?>
 

@@ -71,7 +71,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::UZBnf3jMXotuCfjC',
+            '_route' => 'generated::jgvLe0JN2KoHMgIX',
           ),
           1 => NULL,
           2 => 
@@ -592,6 +592,26 @@ app('router')->setCompiledRoutes(
             'GET' => 0,
             'POST' => 1,
             'HEAD' => 2,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
+      '/timer/all-juniors' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'timer.alljuniors',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
           ),
           3 => NULL,
           4 => false,
@@ -1155,7 +1175,7 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'generated::UZBnf3jMXotuCfjC' => 
+    'generated::jgvLe0JN2KoHMgIX' => 
     array (
       'methods' => 
       array (
@@ -1184,7 +1204,7 @@ app('router')->setCompiledRoutes(
                         \'exception\' => $exception,
                     ]), status: $exception ? 500 : 200);
                 }";s:5:"scope";s:54:"Illuminate\\Foundation\\Configuration\\ApplicationBuilder";s:4:"this";N;s:4:"self";s:32:"00000000000003440000000000000000";}}',
-        'as' => 'generated::UZBnf3jMXotuCfjC',
+        'as' => 'generated::jgvLe0JN2KoHMgIX',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2383,14 +2403,52 @@ app('router')->setCompiledRoutes(
           0 => 'web',
           1 => 'auth',
         ),
-        'uses' => 'App\\Http\\Controllers\\DashboardController@updateTimer',
-        'controller' => 'App\\Http\\Controllers\\DashboardController@updateTimer',
+        'uses' => 'App\\Http\\Controllers\\TimerController@updateTimer',
+        'controller' => 'App\\Http\\Controllers\\TimerController@updateTimer',
         'namespace' => NULL,
         'prefix' => '',
         'where' => 
         array (
         ),
         'as' => 'timer.updatejunior',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'timer.alljuniors' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'timer/all-juniors',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\TimerController@allJuniorTimers',
+        'controller' => 'App\\Http\\Controllers\\TimerController@allJuniorTimers',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'timer.alljuniors',
       ),
       'fallback' => false,
       'defaults' => 
