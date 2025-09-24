@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\GoogleSheetData;
@@ -16,7 +17,7 @@ class GoogleSheetController extends Controller
         return view('database.admin', compact('data'));
     }
 
-        public function adminfetch(Request $request)
+    public function adminfetch(Request $request)
     {
         $request->validate([
             'sheet_link' => 'required|url'
@@ -65,7 +66,7 @@ class GoogleSheetController extends Controller
 
     public function adminupdate(Request $request, $id)
     {
-        $rowData = $request->input('data'); 
+        $rowData = $request->input('data');
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
@@ -81,7 +82,7 @@ class GoogleSheetController extends Controller
 
         $row->update([
             'data'       => json_encode($rowData, JSON_UNESCAPED_UNICODE),
-            'created_by' => "{$user->id}|{$user->role}", 
+            'created_by' => "{$user->id}|{$user->role}",
         ]);
 
         return response()->json([
@@ -97,7 +98,7 @@ class GoogleSheetController extends Controller
 
     public function adminstore(Request $request)
     {
-        $rowData = $request->input('rows.0'); 
+        $rowData = $request->input('rows.0');
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
@@ -215,7 +216,7 @@ class GoogleSheetController extends Controller
 
     public function seniorupdate(Request $request, $id)
     {
-        $rowData = $request->input('data'); 
+        $rowData = $request->input('data');
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
@@ -231,7 +232,7 @@ class GoogleSheetController extends Controller
 
         $row->update([
             'data'       => json_encode($rowData, JSON_UNESCAPED_UNICODE),
-            'created_by' => "{$user->id}|{$user->role}", 
+            'created_by' => "{$user->id}|{$user->role}",
         ]);
 
         return response()->json([
@@ -247,7 +248,7 @@ class GoogleSheetController extends Controller
 
     public function seniorstore(Request $request)
     {
-        $rowData = $request->input('rows.0'); 
+        $rowData = $request->input('rows.0');
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
@@ -277,47 +278,105 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-public function junior()
-{
-    $data = GoogleSheetData::all();
-    return view('database.junior', compact('data'));
-}
+    public function junior()
+    {
+        // Fetch 10 entries per page
+        $data = GoogleSheetData::paginate(10);
 
-public function juniorfetch(Request $request)
-{
-    $request->validate([
-        'sheet_link' => 'required|url'
-    ]);
-
-    preg_match('/\/d\/([a-zA-Z0-9-_]+)/', $request->sheet_link, $matches);
-    $spreadsheetId = $matches[1] ?? null;
-
-    if (!$spreadsheetId) {
-        return back()->with('error', 'Invalid Google Sheet link');
+        return view('database.junior', compact('data'));
     }
 
-    $csvUrl = "https://docs.google.com/spreadsheets/d/{$spreadsheetId}/export?format=csv";
-    $csvData = @file_get_contents($csvUrl);
 
-    if ($csvData === false) {
-        return back()->with('error', 'Unable to fetch Google Sheet (maybe private?)');
+    public function juniorfetch(Request $request)
+    {
+        $request->validate([
+            'sheet_link' => 'required|url'
+        ]);
+
+        preg_match('/\/d\/([a-zA-Z0-9-_]+)/', $request->sheet_link, $matches);
+        $spreadsheetId = $matches[1] ?? null;
+
+        if (!$spreadsheetId) {
+            return back()->with('error', 'Invalid Google Sheet link');
+        }
+
+        $csvUrl = "https://docs.google.com/spreadsheets/d/{$spreadsheetId}/export?format=csv";
+        $csvData = @file_get_contents($csvUrl);
+
+        if ($csvData === false) {
+            return back()->with('error', 'Unable to fetch Google Sheet (maybe private?)');
+        }
+
+        $rows = array_map('str_getcsv', explode("\n", trim($csvData)));
+        $header = array_shift($rows);
+
+        $rowIndex = 2;
+        $user = Auth::user();
+
+        foreach ($rows as $row) {
+            if (empty(array_filter($row))) continue;
+            if (count($row) !== count($header)) continue;
+
+            $rowData = array_combine($header, $row);
+
+            // Map CSV headers to database columns
+            $mappedData = [
+                'sheet_row_number' => $rowIndex,
+                'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
+                'Name' => $rowData['Name'] ?? null,
+                'Email_Address' => $rowData['Email Address'] ?? null,
+                'Phone_Number' => $rowData['Phone Number'] ?? null,
+                'Location' => $rowData['Location'] ?? null,
+                'Relocation' => $rowData['Relocation'] ?? null,
+                'Graduation_Date' => isset($rowData['Graduation Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Graduation Date'])->format('Y-m-d') : null,
+                'Immigration' => $rowData['Immigration'] ?? null,
+                'Course' => $rowData['Course'] ?? null,
+                'Amount' => isset($rowData['Amount']) ? (float) str_replace(['$', ','], '', $rowData['Amount']) : null,
+                'Qualification' => $rowData['Qualification'] ?? null,
+                'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
+                'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
+                'Time_Zone' => $rowData['Time Zone'] ?? null,
+                'View' => $rowData['View'] ?? null,
+                'created_by' => "{$user->id}|{$user->role}",
+            ];
+
+            GoogleSheetData::updateOrCreate(
+                ['sheet_row_number' => $rowIndex],
+                $mappedData
+            );
+
+            $rowIndex++;
+        }
+
+        return redirect()->route('google.sheet.junior')->with('success', 'Data fetched successfully!');
     }
 
-    $rows = array_map('str_getcsv', explode("\n", trim($csvData)));
-    $header = array_shift($rows);
+    public function juniorupdate(Request $request, $id)
+    {
+        $row = GoogleSheetData::find($id);
+        if (!$row) {
+            return response()->json(['success' => false, 'message' => 'Row not found']);
+        }
 
-    $rowIndex = 2;
-    $user = Auth::user();
+        $rowData = json_decode($request->input('data'), true);
+        if (empty($rowData)) {
+            return response()->json(['success' => false, 'message' => 'No data provided']);
+        }
 
-    foreach ($rows as $row) {
-        if (empty(array_filter($row))) continue;
-        if (count($row) !== count($header)) continue;
+        // Handle resume upload
+        $resumePath = $row->resume ? "resumes/" . $row->resume : null;
+        if ($request->hasFile('resume')) {
+            $file = $request->file('resume');
+            $timestamp = now()->format('Ymd_His');
+            $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName   = Str::slug($filename) . "_{$timestamp}." . $extension;
+            $resumePath = $file->storeAs('resumes', $newName, 'public');
+            $row->resume = basename($resumePath);
+        }
 
-        $rowData = array_combine($header, $row);
-
-        // Map CSV headers to database columns
-        $mappedData = [
-            'sheet_row_number' => $rowIndex,
+        // Map the data to individual columns
+        $updateData = [
             'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
             'Name' => $rowData['Name'] ?? null,
             'Email_Address' => $rowData['Email Address'] ?? null,
@@ -333,66 +392,11 @@ public function juniorfetch(Request $request)
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
             'Time_Zone' => $rowData['Time Zone'] ?? null,
             'View' => $rowData['View'] ?? null,
-            'created_by' => "{$user->id}|{$user->role}",
+            'resume' => $row->resume,
+            'created_by' => Auth::id() . "|" . Auth::user()->role,
         ];
 
-        GoogleSheetData::updateOrCreate(
-            ['sheet_row_number' => $rowIndex],
-            $mappedData
-        );
-
-        $rowIndex++;
-    }
-
-    return redirect()->route('google.sheet.junior')->with('success', 'Data fetched successfully!');
-}
-
-public function juniorupdate(Request $request, $id)
-{
-    $row = GoogleSheetData::find($id);
-    if (!$row) {
-        return response()->json(['success' => false, 'message' => 'Row not found']);
-    }
-
-    $rowData = json_decode($request->input('data'), true);
-    if (empty($rowData)) {
-        return response()->json(['success' => false, 'message' => 'No data provided']);
-    }
-
-    // Handle resume upload
-    $resumePath = $row->resume ? "resumes/" . $row->resume : null;
-    if ($request->hasFile('resume')) {
-        $file = $request->file('resume');
-        $timestamp = now()->format('Ymd_His');
-        $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
-        $extension = $file->getClientOriginalExtension();
-        $newName   = Str::slug($filename) . "_{$timestamp}." . $extension;
-        $resumePath = $file->storeAs('resumes', $newName, 'public');
-        $row->resume = basename($resumePath);
-    }
-
-    // Map the data to individual columns
-    $updateData = [
-        'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
-        'Name' => $rowData['Name'] ?? null,
-        'Email_Address' => $rowData['Email Address'] ?? null,
-        'Phone_Number' => $rowData['Phone Number'] ?? null,
-        'Location' => $rowData['Location'] ?? null,
-        'Relocation' => $rowData['Relocation'] ?? null,
-        'Graduation_Date' => isset($rowData['Graduation Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Graduation Date'])->format('Y-m-d') : null,
-        'Immigration' => $rowData['Immigration'] ?? null,
-        'Course' => $rowData['Course'] ?? null,
-        'Amount' => isset($rowData['Amount']) ? (float) str_replace(['$', ','], '', $rowData['Amount']) : null,
-        'Qualification' => $rowData['Qualification'] ?? null,
-        'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
-        'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
-        'Time_Zone' => $rowData['Time Zone'] ?? null,
-        'View' => $rowData['View'] ?? null,
-        'resume' => $row->resume,
-        'created_by' => Auth::id() . "|" . Auth::user()->role,
-    ];
-
-    $row->update($updateData);
+        $row->update($updateData);
 
         return response()->json([
             'success' => true,
@@ -406,7 +410,7 @@ public function juniorupdate(Request $request, $id)
 
     public function juniorstore(Request $request)
     {
-        $rowData = $request->input('rows.0'); 
+        $rowData = $request->input('rows.0');
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
@@ -455,8 +459,8 @@ public function juniorupdate(Request $request, $id)
     public function juniorpdfstore(Request $request)
     {
         // This method can remain similar since it handles file uploads
-        $rowData = $request->has('rows') 
-            ? json_decode($request->input('rows')[0], true) 
+        $rowData = $request->has('rows')
+            ? json_decode($request->input('rows')[0], true)
             : [];
 
         $resumePath = null;
@@ -494,7 +498,7 @@ public function juniorupdate(Request $request, $id)
 
         if ($request->has('data')) {
             $data = json_decode($request->input('data'), true);
-            
+
             // Update individual columns
             $record->update([
                 'Date' => isset($data['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $data['Date'])->format('Y-m-d') : null,
@@ -520,5 +524,4 @@ public function juniorupdate(Request $request, $id)
             'resume_url' => $record->resume ? asset('storage/resumes/' . $record->resume) : null,
         ]);
     }
-
 }

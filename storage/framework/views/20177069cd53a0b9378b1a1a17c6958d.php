@@ -113,24 +113,6 @@
                 </div>
             </div>
 
-<!-- Modal -->
-<div class="modal fade" id="eventModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
-        <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="eventModalTitle"></h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-            </div>
-            <div class="modal-body p-24">
-                <div class="mb-12"><strong>Start:</strong> <span id="eventModalStart"></span></div>
-                <div class="mb-12"><strong>End:</strong> <span id="eventModalEnd"></span></div>
-                <div class="mb-12"><strong>Description:</strong> <span id="eventModalDescription"></span></div>
-                <div class="mb-12"><strong>Label:</strong> <span id="eventModalLabel"></span></div>
-            </div>
-        </div>
-    </div>
-</div>
-
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -143,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        events: "<?php echo e(route('events.get')); ?>", // AJAX source
+        events: "<?php echo e(route('calendar.juniorEvents')); ?>", // AJAX source
         eventColor: '#378006', // default color if label_color missing
         eventClick: function(info) {
             // Populate modal with event info
@@ -162,5 +144,6 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
 });
 </script>
+
 <?php $__env->stopSection(); ?>
 <?php echo $__env->make('layout.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\wowdash\resources\views\calendar\junior.blade.php ENDPATH**/ ?>
