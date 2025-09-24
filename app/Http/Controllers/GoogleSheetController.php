@@ -23,6 +23,7 @@ class GoogleSheetController extends Controller
             'sheet_link' => 'required|url'
         ]);
 
+        // Extract spreadsheet ID
         preg_match('/\/d\/([a-zA-Z0-9-_]+)/', $request->sheet_link, $matches);
         $spreadsheetId = $matches[1] ?? null;
 
@@ -30,6 +31,7 @@ class GoogleSheetController extends Controller
             return back()->with('error', 'Invalid Google Sheet link');
         }
 
+        // Fetch CSV
         $csvUrl = "https://docs.google.com/spreadsheets/d/{$spreadsheetId}/export?format=csv";
         $csvData = @file_get_contents($csvUrl);
 
@@ -38,7 +40,7 @@ class GoogleSheetController extends Controller
         }
 
         $rows = array_map('str_getcsv', explode("\n", trim($csvData)));
-        $header = array_shift($rows);
+        $header = array_shift($rows); // first row as column headers
 
         $rowIndex = 2;
         $user = Auth::user();
@@ -49,18 +51,36 @@ class GoogleSheetController extends Controller
 
             $rowData = array_combine($header, $row);
 
+            // Map CSV headers to database columns
+            $mappedData = [
+                'sheet_row_number' => $rowIndex,
+                'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
+                'Name' => $rowData['Name'] ?? null,
+                'Email_Address' => $rowData['Email Address'] ?? null,
+                'Phone_Number' => $rowData['Phone Number'] ?? null,
+                'Location' => $rowData['Location'] ?? null,
+                'Relocation' => $rowData['Relocation'] ?? null,
+                'Graduation_Date' => isset($rowData['Graduation Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Graduation Date'])->format('Y-m-d') : null,
+                'Immigration' => $rowData['Immigration'] ?? null,
+                'Course' => $rowData['Course'] ?? null,
+                'Amount' => isset($rowData['Amount']) ? (float) str_replace(['$', ','], '', $rowData['Amount']) : null,
+                'Qualification' => $rowData['Qualification'] ?? null,
+                'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
+                'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
+                'Time_Zone' => $rowData['Time Zone'] ?? null,
+                'View' => $rowData['View'] ?? null,
+                'created_by' => "{$user->id}|{$user->role}",
+            ];
+
             GoogleSheetData::updateOrCreate(
                 ['sheet_row_number' => $rowIndex],
-                [
-                    'data'       => json_encode($rowData, JSON_UNESCAPED_UNICODE),
-                    'created_by' => "{$user->id}|{$user->role}",
-                ]
+                $mappedData
             );
 
             $rowIndex++;
         }
 
-        return redirect()->route('google.sheet.junior')->with('success', 'Data fetched successfully!');
+        return redirect()->route('google.sheet.admin')->with('success', 'Data fetched successfully!');
     }
 
 
@@ -129,15 +149,15 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-
     public function senior()
     {
         $authUser = Auth::user();
 
         $data = GoogleSheetData::all()->filter(function ($item) use ($authUser) {
-            $rowData = json_decode($item->data, true);
+            // Previously: $rowData = json_decode($item->data, true);
+            // Now: access columns directly
 
-            if (($rowData['Exe Remarks'] ?? '') === 'Called & Mailed') {
+            if (($item->{'Exe Remarks'} ?? '') === 'Called & Mailed') {
                 return true;
             }
 
@@ -164,15 +184,13 @@ class GoogleSheetController extends Controller
         return view('database.senior', compact('data'));
     }
 
-
-
-
     public function seniorfetch(Request $request)
     {
         $request->validate([
             'sheet_link' => 'required|url'
         ]);
 
+        // Extract spreadsheet ID
         preg_match('/\/d\/([a-zA-Z0-9-_]+)/', $request->sheet_link, $matches);
         $spreadsheetId = $matches[1] ?? null;
 
@@ -180,6 +198,7 @@ class GoogleSheetController extends Controller
             return back()->with('error', 'Invalid Google Sheet link');
         }
 
+        // Fetch CSV
         $csvUrl = "https://docs.google.com/spreadsheets/d/{$spreadsheetId}/export?format=csv";
         $csvData = @file_get_contents($csvUrl);
 
@@ -188,7 +207,7 @@ class GoogleSheetController extends Controller
         }
 
         $rows = array_map('str_getcsv', explode("\n", trim($csvData)));
-        $header = array_shift($rows);
+        $header = array_shift($rows); // first row as column headers
 
         $rowIndex = 2;
         $user = Auth::user();
@@ -199,24 +218,41 @@ class GoogleSheetController extends Controller
 
             $rowData = array_combine($header, $row);
 
+            // Map CSV headers to database columns
+            $mappedData = [
+                'sheet_row_number' => $rowIndex,
+                'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
+                'Name' => $rowData['Name'] ?? null,
+                'Email_Address' => $rowData['Email Address'] ?? null,
+                'Phone_Number' => $rowData['Phone Number'] ?? null,
+                'Location' => $rowData['Location'] ?? null,
+                'Relocation' => $rowData['Relocation'] ?? null,
+                'Graduation_Date' => isset($rowData['Graduation Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Graduation Date'])->format('Y-m-d') : null,
+                'Immigration' => $rowData['Immigration'] ?? null,
+                'Course' => $rowData['Course'] ?? null,
+                'Amount' => isset($rowData['Amount']) ? (float) str_replace(['$', ','], '', $rowData['Amount']) : null,
+                'Qualification' => $rowData['Qualification'] ?? null,
+                'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
+                'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
+                'Time_Zone' => $rowData['Time Zone'] ?? null,
+                'View' => $rowData['View'] ?? null,
+                'created_by' => "{$user->id}|{$user->role}",
+            ];
+
             GoogleSheetData::updateOrCreate(
                 ['sheet_row_number' => $rowIndex],
-                [
-                    'data'       => json_encode($rowData, JSON_UNESCAPED_UNICODE),
-                    'created_by' => "{$user->id}|{$user->role}",
-                ]
+                $mappedData
             );
 
             $rowIndex++;
         }
 
-        return redirect()->route('google.sheet.junior')->with('success', 'Data fetched successfully!');
+        return redirect()->route('google.sheet.senior')->with('success', 'Data fetched successfully!');
     }
-
 
     public function seniorupdate(Request $request, $id)
     {
-        $rowData = $request->input('data');
+        $rowData = $request->all(); // get all input
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
@@ -230,49 +266,50 @@ class GoogleSheetController extends Controller
 
         $user = Auth::user();
 
-        $row->update([
-            'data'       => json_encode($rowData, JSON_UNESCAPED_UNICODE),
-            'created_by' => "{$user->id}|{$user->role}",
-        ]);
+        // Remove id, sheet_row_number from update to avoid accidental overwrite
+        unset($rowData['id'], $rowData['sheet_row_number']);
+
+        // Add created_by
+        $rowData['created_by'] = "{$user->id}|{$user->role}";
+
+        // Update row
+        $row->update($rowData);
 
         return response()->json([
             'success' => true,
             'row' => [
                 'id'               => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'data'             => $rowData,
-                'created_by'       => $row->created_by
+                'created_by'       => $row->created_by,
             ]
         ]);
     }
 
     public function seniorstore(Request $request)
     {
-        $rowData = $request->input('rows.0');
+        $rowData = $request->all(); // get all input
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        $maxRow = GoogleSheetData::max('sheet_row_number') ?? 1;
+        $maxRow = GoogleSheetData::max('sheet_row_number') ?? 0;
         $nextRow = $maxRow + 1;
 
         $user = Auth::user();
 
-        $newRow = GoogleSheetData::updateOrCreate(
-            ['sheet_row_number' => $nextRow],
-            [
-                'data'       => json_encode($rowData, JSON_UNESCAPED_UNICODE),
-                'created_by' => "{$user->id}|{$user->role}",
-            ]
-        );
+        // Prepare insert data
+        $insertData = $rowData;
+        $insertData['sheet_row_number'] = $nextRow;
+        $insertData['created_by'] = "{$user->id}|{$user->role}";
+
+        $newRow = GoogleSheetData::create($insertData);
 
         return response()->json([
             'success' => true,
             'rows' => [[
                 'id'               => $newRow->id,
                 'sheet_row_number' => $newRow->sheet_row_number,
-                'data'             => $rowData,
                 'created_by'       => $newRow->created_by
             ]]
         ]);
@@ -285,7 +322,6 @@ class GoogleSheetController extends Controller
 
         return view('database.junior', compact('data'));
     }
-
 
     public function juniorfetch(Request $request)
     {

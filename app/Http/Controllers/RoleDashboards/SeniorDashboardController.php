@@ -9,19 +9,36 @@ use Illuminate\Support\Facades\Auth;
 
 class SeniorDashboardController extends Controller
 {
+    const WORK_DAY_SECONDS = 9 * 60 * 60;
+
     public function index()
     {
         $user = Auth::user();
 
-        $timer = UserTimerLog::where('user_id', $user->id)
-            ->latest()
-            ->first();
+        $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
 
-        $remaining_seconds = $timer ? $timer->remaining_seconds : 9*60*60;
-        $elapsed_seconds = 9*60*60 - $remaining_seconds;
+        if ($timer) {
+            if ($timer->status === 'running') {
+                $seconds_passed = now()->diffInSeconds($timer->updated_at);
+                $remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
+            } else {
+                $remaining_seconds = $timer->remaining_seconds;
+            }
+            $elapsed_seconds = self::WORK_DAY_SECONDS - $remaining_seconds;
+            $status = $timer->status;
+        } else {
+            $remaining_seconds = self::WORK_DAY_SECONDS;
+            $elapsed_seconds = 0;
+            $status = 'running';
+        }
 
         $resumes = Resume::where('status', 'forwarded_to_senior')->get();
 
-        return view('dashboard.senior', compact('resumes', 'remaining_seconds', 'elapsed_seconds'));
+        return view('dashboard.senior', compact(
+            'resumes',
+            'remaining_seconds',
+            'elapsed_seconds',
+            'status'
+        ));
     }
 }
