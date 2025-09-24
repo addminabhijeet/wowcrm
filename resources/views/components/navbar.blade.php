@@ -3,18 +3,18 @@
         <div class="col-auto">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
                 <!-- Sidebar toggles -->
-                <button type="button" 
-                        style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#000;">
+                <button type="button"
+                    style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#000;">
                     <iconify-icon icon="heroicons:bars-3-solid" style="font-size:16px;"></iconify-icon>
                 </button>
-                <button type="button" class="d-lg-none" 
-                        style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#000;">
+                <button type="button" class="d-lg-none"
+                    style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#000;">
                     <iconify-icon icon="heroicons:bars-3-solid" style="font-size:16px;"></iconify-icon>
                 </button>
 
                 <!-- Timer Widget -->
                 <div style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
-                    
+
                     <!-- Countdown -->
                     <div style="margin-right:10px;text-align:center;min-width:60px;">
                         <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
@@ -200,8 +200,8 @@
                             </li>
                             <li>
                                 <a class="dropdown-item text-black px-0 py-8 hover-bg-transparent hover-text-danger d-flex align-items-center gap-3"
-                                href="{{ route('logout') }}"
-                                onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                                    href="{{ route('logout') }}"
+                                    onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
                                     <iconify-icon icon="lucide:power" class="icon text-xl"></iconify-icon> Log Out
                                 </a>
 
@@ -219,187 +219,212 @@
 </div>
 
 <style>
-/* Full screen overlay for Active/Inactive notice */
-#statusOverlay {
-    position: fixed;
-    top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.8);
-    color: #fff;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 32px;
-    font-weight: bold;
-    z-index: 9999;
-    opacity: 0;
-    pointer-events: none;
-    flex-direction: column;
-    transition: opacity 0.3s ease;
-}
-#statusOverlay.show {
-    opacity: 1;
-    pointer-events: auto;
-}
+    /* Full screen overlay for Active/Inactive notice */
+    #statusOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.8);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: bold;
+        z-index: 9999;
+        opacity: 0;
+        pointer-events: none;
+        flex-direction: column;
+        transition: opacity 0.3s ease;
+    }
+
+    #statusOverlay.show {
+        opacity: 1;
+        pointer-events: auto;
+    }
 </style>
 
 <div id="statusOverlay"></div>
 
 <script>
-let timerInterval, backendSyncInterval;
-let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
-let elapsedSeconds   = Number("{{ $elapsed_seconds ?? 0 }}");
-let status           = "{{ $status ?? 'running' }}";
+    let timerInterval, backendSyncInterval;
+    let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
+    let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
+    let status = "{{ $status ?? 'running' }}";
 
-let inactiveTimeout;
-const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes
+    let inactiveTimeout;
+    const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes
 
-function formatTime(sec){
-    sec = Math.floor(sec);
-    const h = Math.floor(sec / 3600);
-    const m = Math.floor((sec % 3600) / 60);
-    const s = sec % 60;
-    return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-}
+    function formatTime(sec) {
+        sec = Math.floor(sec);
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
 
-function updateUI(){
-    document.getElementById('countdown').innerText = formatTime(remainingSeconds);
-    document.getElementById('elapsed').innerText   = formatTime(elapsedSeconds);
-}
+    function updateUI() {
+        document.getElementById('countdown').innerText = formatTime(remainingSeconds);
+        document.getElementById('elapsed').innerText = formatTime(elapsedSeconds);
+    }
 
-function forceLogout(){
-    fetch("{{ route('logout') }}", {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-            "Content-Type": "application/json"
-        }
-    }).then(()=> window.location.href = "/login");
-}
-
-// Overlay function
-let overlayTimeout;
-function showOverlay(message){
-    const overlay = document.getElementById('statusOverlay');
-    overlay.innerText = message;
-    overlay.classList.add('show');
-
-    clearTimeout(overlayTimeout);
-    overlayTimeout = setTimeout(() => {
-        overlay.classList.remove('show');
-    }, 3000);
-}
-
-function startTimer(){
-    clearInterval(timerInterval);
-    clearInterval(backendSyncInterval);
-
-    timerInterval = setInterval(() => {
-        if(status === 'running' && remainingSeconds > 0){
-            remainingSeconds--;
-            elapsedSeconds++;
-            updateUI();
-        }
-    }, 1000);
-
-    backendSyncInterval = setInterval(syncWithBackend, 1000);
-}
-
-function stopTimer(){
-    clearInterval(timerInterval);
-    clearInterval(backendSyncInterval);
-}
-
-function syncWithBackend(){
-    fetch("{{ route('timer.update') }}", {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ action: 'tick' })
-    })
-    .then(res => res.json())
-    .then(data => {
-        remainingSeconds = data.remaining_seconds;
-        elapsedSeconds   = data.elapsed_seconds;
-        status           = data.status;
-        updateUI();
-
-        if(data.logout){
-            stopTimer();
-            alert("Your 9-hour work session has ended.");
-            forceLogout();
-        }
-    });
-}
-
-// Handle control buttons
-document.querySelectorAll('#controlButtons button').forEach(btn => {
-    btn.addEventListener('click', () => {
-        const type = btn.getAttribute('data-type');
-
-        fetch("{{ route('timer.update') }}", {
+    function forceLogout() {
+        fetch("{{ route('logout') }}", {
             method: "POST",
             headers: {
                 "X-CSRF-TOKEN": "{{ csrf_token() }}",
                 "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ action: type })
-        })
-        .then(res => res.json())
-        .then(data => {
-            remainingSeconds = data.remaining_seconds;
-            elapsedSeconds   = data.elapsed_seconds;
-            status           = data.status;
-            updateUI();
+            }
+        }).then(() => window.location.href = "/login");
+    }
+
+    // Overlay function
+    let overlayTimeout;
+
+    function showOverlay(message) {
+        const overlay = document.getElementById('statusOverlay');
+        overlay.innerText = message;
+        overlay.classList.add('show');
+
+        clearTimeout(overlayTimeout);
+        overlayTimeout = setTimeout(() => {
+            overlay.classList.remove('show');
+        }, 3000);
+    }
+
+    function startTimer() {
+        clearInterval(timerInterval);
+        clearInterval(backendSyncInterval);
+
+        timerInterval = setInterval(() => {
+            if (status === 'running' && remainingSeconds > 0) {
+                remainingSeconds--;
+                elapsedSeconds++;
+                updateUI();
+            }
+        }, 1000);
+
+        backendSyncInterval = setInterval(syncWithBackend, 1000);
+    }
+
+    function stopTimer() {
+        clearInterval(timerInterval);
+        clearInterval(backendSyncInterval);
+    }
+
+    function syncWithBackend() {
+        fetch("{{ route('timer.update') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: 'tick'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                //  Show overlay if notice triggered
+                if (data.notice_status === 1 && data.message) {
+                    showOverlay(data.message);
+                }
+
+                remainingSeconds = data.remaining_seconds;
+                elapsedSeconds = data.elapsed_seconds;
+                status = data.status;
+                updateUI();
+
+                if (data.logout) {
+                    stopTimer();
+                    alert("Your 9-hour work session has ended.");
+                    forceLogout();
+                }
+            });
+    }
+
+
+    // Handle control buttons
+    document.querySelectorAll('#controlButtons button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const type = btn.getAttribute('data-type');
+
+            fetch("{{ route('timer.update') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        action: type
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    //  If button not enabled
+                    if (data.success === false && data.notice_status === 1) {
+                        showOverlay(data.message || "Please wait for senior to enable.");
+                        return; // stop further UI updates
+                    }
+
+                    // Normal update
+                    remainingSeconds = data.remaining_seconds;
+                    elapsedSeconds = data.elapsed_seconds;
+                    status = data.status;
+                    updateUI();
+                });
         });
     });
-});
 
-// Inactivity detection
-function resetInactiveTimer(){
-    clearTimeout(inactiveTimeout);
-    inactiveTimeout = setTimeout(() => {
-        showOverlay("You were inactive! Timer stopped.");
-        stopTimer();
-    }, INACTIVE_LIMIT);
-}
 
-// Active state (resume silently)
-function handleActiveState(){
-    fetch("{{ route('timer.update') }}", {
-        method: "POST",
-        headers: {
-            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ action: "resume" })
-    })
-    .then(res => res.json())
-    .then(data => {
-        remainingSeconds = data.remaining_seconds;
-        elapsedSeconds   = data.elapsed_seconds;
-        status           = data.status;
-        updateUI();
+    // Inactivity detection
+    function resetInactiveTimer() {
+        clearTimeout(inactiveTimeout);
+        inactiveTimeout = setTimeout(() => {
+            showOverlay("You were inactive! Timer stopped.");
+            stopTimer();
+        }, INACTIVE_LIMIT);
+    }
+
+    // Active state (resume silently)
+    function handleActiveState() {
+        fetch("{{ route('timer.update') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: "resume"
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                remainingSeconds = data.remaining_seconds;
+                elapsedSeconds = data.elapsed_seconds;
+                status = data.status;
+                updateUI();
+            });
+
+        resetInactiveTimer();
+    }
+
+    // Listen for activity
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt => {
+        window.addEventListener(evt, resetInactiveTimer);
     });
 
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            handleActiveState();
+        }
+    });
+
+    // Initialize
+    updateUI();
     resetInactiveTimer();
-}
-
-// Listen for activity
-['mousemove','keydown','scroll','click'].forEach(evt=>{
-    window.addEventListener(evt, resetInactiveTimer);
-});
-
-document.addEventListener('visibilitychange', () => {
-    if(document.visibilityState === 'visible'){
-        handleActiveState();
-    }
-});
-
-// Initialize
-updateUI();
-resetInactiveTimer();
-handleActiveState();
-startTimer();
+    handleActiveState();
+    startTimer();
 </script>

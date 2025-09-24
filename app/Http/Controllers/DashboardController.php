@@ -35,17 +35,38 @@ class DashboardController extends Controller
 
     public function updateTimer(Request $request)
     {
-        $user = Auth::user();
+        $user   = Auth::user();
         $action = $request->input('action');
 
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
-        if (!$timer) return response()->json(['error' => 'Timer not found'], 404);
+        if (!$timer) {
+            return response()->json(['error' => 'Timer not found'], 404);
+        }
 
         $now = now();
 
         if ($timer->status === 'running') {
             $seconds_passed = $now->diffInSeconds($timer->updated_at);
             $timer->remaining_seconds = max(0, $timer->remaining_seconds + $seconds_passed);
+        }
+
+        // ✅ New logic: Check button_status before pausing
+        if ($action !== 'tick' && $action !== 'resume') {
+            if ($timer->button_status == 0) {
+                // Not enabled → notify frontend
+                $timer->notice_status = 1; // mark notice as enabled
+                $timer->save();
+
+                return response()->json([
+                    'success'          => false,
+                    'message'          => 'Please wait for senior to enable.',
+                    'notice_status'    => $timer->notice_status,
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'elapsed_seconds'  => self::WORK_DAY_SECONDS - $timer->remaining_seconds,
+                    'status'           => $timer->status,
+                    'pause_type'       => $timer->pause_type,
+                ]);
+            }
         }
 
         if ($action === 'resume') {
@@ -61,7 +82,7 @@ class DashboardController extends Controller
 
         $elapsed_seconds = self::WORK_DAY_SECONDS - $timer->remaining_seconds;
 
-        //  Log the pause/resume event
+        // Log pause/resume event (keep old logic)
         if ($action !== 'tick') {
             UserTimerPause::create([
                 'user_timer_log_id' => $timer->id,
@@ -75,14 +96,13 @@ class DashboardController extends Controller
         }
 
         return response()->json([
+            'success'           => true,
             'remaining_seconds' => $timer->remaining_seconds,
             'elapsed_seconds'   => $elapsed_seconds,
             'status'            => $timer->status,
             'pause_type'        => $timer->pause_type,
+            'notice_status'     => $timer->notice_status,
             'logout'            => $timer->remaining_seconds <= 0
         ]);
     }
-
-
-
 }
