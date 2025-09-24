@@ -9,7 +9,7 @@ class LoginsController extends Controller
 {
     public function index()
     {
-        $logins = Logins::with('user')->latest()->get(); // eager load user for user_id
+        $logins = Logins::with('user')->latest()->get(); 
         return view('admin.logins', compact('logins'));
     }
 }

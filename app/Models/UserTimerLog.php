@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class UserTimerLog extends Model
 {
@@ -15,8 +16,8 @@ class UserTimerLog extends Model
         'pause_type'
     ];
 
-    public function pauses()
+    public function user()
     {
-        return $this->hasMany(UserTimerPause::class, 'timer_log_id');
+        return $this->belongsTo(User::class, 'user_id');
     }
 }

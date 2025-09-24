@@ -17,8 +17,8 @@ class SeniorDashboardController extends Controller
             ->latest()
             ->first();
 
-        $remaining_seconds = $timer ? $timer->remaining_seconds : 8*60*60;
-        $elapsed_seconds = 8*60*60 - $remaining_seconds;
+        $remaining_seconds = $timer ? $timer->remaining_seconds : 9*60*60;
+        $elapsed_seconds = 9*60*60 - $remaining_seconds;
 
         $resumes = Resume::where('status', 'forwarded_to_senior')->get();
 

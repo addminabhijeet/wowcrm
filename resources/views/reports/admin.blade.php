@@ -1,10 +1,10 @@
 @extends('layout.layout')
 @php
-        $title='Widgets';
-        $subTitle = 'Widgets';
+        $title='Call Report';
+        $subTitle = 'Called and Mailed Report';
         $script = '<script>
 
-            // ================================ Earning Statistics bar chart Start ================================ 
+            
             var options = {
                 series: [{
                     name: "Sales",
@@ -66,22 +66,22 @@
                 },
                 fill: {
                     type: "gradient",
-                    colors: ["#487FFF"], // Set the starting color (top color) here
+                    colors: ["#487FFF"], 
                     gradient: {
-                        shade: "light", // Gradient shading type
-                        type: "vertical", // Gradient direction (vertical)
-                        shadeIntensity: 0.5, // Intensity of the gradient shading
-                        gradientToColors: ["#487FFF"], // Bottom gradient color (with transparency)
-                        inverseColors: false, // Do not invert colors
-                        opacityFrom: 1, // Starting opacity
-                        opacityTo: 1, // Ending opacity
+                        shade: "light", 
+                        type: "vertical", 
+                        shadeIntensity: 0.5, 
+                        gradientToColors: ["#487FFF"], 
+                        inverseColors: false, 
+                        opacityFrom: 1, 
+                        opacityTo: 1, 
                         stops: [0, 100],
                     },
                 },
                 grid: {
                     show: true,
                     borderColor: "#D1D5DB",
-                    strokeDashArray: 4, // Use a number for dashed style
+                    strokeDashArray: 4, 
                     position: "back",
                 },
                 xaxis: {
@@ -106,9 +106,9 @@
 
             var chart = new ApexCharts(document.querySelector("#barChart"), options);
             chart.render();
-            // ================================ Earning Statistics bar chart End ================================  
+              
 
-            // ================================ Semi Circle Gauge (Daily Conversion) chart Start ================================ 
+            
             var options = {
                 series: [75],
                 chart: {
@@ -116,7 +116,7 @@
                     width: 120,
                     type: "radialBar",
                     sparkline: {
-                        enabled: false // Remove whitespace
+                        enabled: false 
                     },
                     toolbar: {
                         show: false
@@ -142,7 +142,7 @@
                         endAngle: 90,
                         track: {
                             background: "#E3E6E9",
-                            // strokeWidth: 32,
+                            
                             dropShadow: {
                                 enabled: false,
                                 top: 2,
@@ -186,9 +186,9 @@
 
             var chart = new ApexCharts(document.querySelector("#semiCircleGauge"), options);
             chart.render();
-            // ================================ Semi Circle Gauge (Daily Conversion) chart End ================================ 
+            
 
-            // ================================ Area chart Start ================================ 
+             
             function createChart(chartId, chartColor) {
 
                 let currentYear = new Date().getFullYear();
@@ -204,7 +204,7 @@
                         height: 72,
 
                         sparkline: {
-                            enabled: true // Remove whitespace
+                            enabled: true 
                         },
 
                         toolbar: {
@@ -258,19 +258,19 @@
                     },
                     fill: {
                         type: "gradient",
-                        colors: [chartColor], // Set the starting color (top color) here
+                        colors: [chartColor], 
                         gradient: {
-                            shade: "light", // Gradient shading type
-                            type: "vertical", // Gradient direction (vertical)
-                            shadeIntensity: 0.5, // Intensity of the gradient shading
-                            gradientToColors: [`${chartColor}00`], // Bottom gradient color (with transparency)
-                            inverseColors: false, // Do not invert colors
-                            opacityFrom: .8, // Starting opacity
-                            opacityTo: 0.3, // Ending opacity
+                            shade: "light", 
+                            type: "vertical", 
+                            shadeIntensity: 0.5, 
+                            gradientToColors: [`${chartColor}00`], 
+                            inverseColors: false, 
+                            opacityFrom: .8, 
+                            opacityTo: 0.3, 
                             stops: [0, 100],
                         },
                     },
-                    // Customize the circle marker color on hover
+                    
                     markers: {
                         colors: [chartColor],
                         strokeWidth: 2,
@@ -304,11 +304,11 @@
                 chart.render();
             }
 
-            // Call the function for each chart with the desired ID and color
+            
             createChart("areaChart", "#FF9F29");
-            // ================================ Area chart End ================================ 
+            
 
-            // ================================ Bar chart (Today Income0 Start ================================ 
+            
             var options = {
                 series: [{
                     name: "Sales",
@@ -337,7 +337,7 @@
                     width: 164,
                     height: 80,
                     sparkline: {
-                        enabled: true // Remove whitespace
+                        enabled: true 
                     },
                     toolbar: {
                         show: false
@@ -362,27 +362,27 @@
                 },
                 fill: {
                     type: "gradient",
-                    colors: ["#E3E6E9"], // Set the starting color (top color) here
+                    colors: ["#E3E6E9"], 
                     gradient: {
-                        shade: "light", // Gradient shading type
-                        type: "vertical", // Gradient direction (vertical)
-                        shadeIntensity: 0.5, // Intensity of the gradient shading
-                        gradientToColors: ["#E3E6E9"], // Bottom gradient color (with transparency)
-                        inverseColors: false, // Do not invert colors
-                        opacityFrom: 1, // Starting opacity
-                        opacityTo: 1, // Ending opacity
+                        shade: "light", 
+                        type: "vertical", 
+                        shadeIntensity: 0.5, 
+                        gradientToColors: ["#E3E6E9"], 
+                        inverseColors: false, 
+                        opacityFrom: 1, 
+                        opacityTo: 1,
                         stops: [0, 100],
                     },
                 },
                 grid: {
                     show: false,
                     borderColor: "#D1D5DB",
-                    strokeDashArray: 1, // Use a number for dashed style
+                    strokeDashArray: 1, 
                     position: "back",
                 },
                 xaxis: {
                     labels: {
-                        show: false // Hide y-axis labels
+                        show: false 
                     },
                     type: "category",
                     categories: ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat"]
@@ -406,14 +406,14 @@
 
             var chart = new ApexCharts(document.querySelector("#dailyIconBarChart"), options);
             chart.render();
-            // ================================ Bar chart (Today Income0 End ================================ 
+            
             </script>';
 @endphp
 
 @section('content')
 
             <div class="row gy-4 mt-1">
-                <!-- Earning Static start -->
+                
                 <div class="col-xxl-8 col-lg-6">
                     <div class="card h-100 border shadow-none radius-8 border-0">
                         <div class="card-body p-24">
@@ -471,7 +471,7 @@
                 </div>
 
                 
-                <!-- Statistics Start -->
+                
                 <div class="col-xxl-4 col-lg-6">
                     <div class="card h-100 radius-8 border-0">
                         <div class="card-body p-24">
@@ -512,7 +512,7 @@
                         </div>
                     </div>
                 </div>
-                <!-- Statistics End -->
+               
 
             </div>
             

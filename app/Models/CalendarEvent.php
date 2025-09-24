@@ -5,15 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Attendance extends Model
+class CalendarEvent extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['user_id', 'date', 'status'];
-
-    
-    protected $casts = [
-        'date' => 'date',
+    protected $fillable = [
+        'user_id', 'start_time', 'end_time', 'title', 'status', 'pause_type', 'description'
     ];
 
     public function user()

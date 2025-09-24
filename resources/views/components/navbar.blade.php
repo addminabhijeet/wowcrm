@@ -21,7 +21,7 @@
                             <iconify-icon icon="mdi:timer-outline" style="color:#dc3545;font-size:14px;"></iconify-icon>
                             <small style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Countdown</small>
                         </div>
-                        <span id="countdown" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">08:00:00</span>
+                        <span id="countdown" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">09:00:00</span>
                     </div>
 
                     <!-- Divider -->
@@ -218,107 +218,188 @@
     </div>
 </div>
 
+<style>
+/* Full screen overlay for Active/Inactive notice */
+#statusOverlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    font-weight: bold;
+    z-index: 9999;
+    opacity: 0;
+    pointer-events: none;
+    flex-direction: column;
+    transition: opacity 0.3s ease;
+}
+#statusOverlay.show {
+    opacity: 1;
+    pointer-events: auto;
+}
+</style>
+
+<div id="statusOverlay"></div>
+
 <script>
-    let timerInterval, backendSyncInterval;
-    let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
-    let elapsedSeconds   = Number("{{ $elapsed_seconds ?? 0 }}");
-    setActive('resume');
+let timerInterval, backendSyncInterval;
+let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
+let elapsedSeconds   = Number("{{ $elapsed_seconds ?? 0 }}");
+let status           = "{{ $status ?? 'running' }}";
 
-    function formatTime(sec){
-        let h = Math.floor(sec/3600);
-        let m = Math.floor((sec%3600)/60);
-        let s = sec%60;
-        return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
+let inactiveTimeout;
+const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes
 
-    function updateUI(){
-        document.getElementById('countdown').innerText = formatTime(remainingSeconds);
-        document.getElementById('elapsed').innerText   = formatTime(elapsedSeconds);
-    }
+function formatTime(sec){
+    sec = Math.floor(sec);
+    const h = Math.floor(sec / 3600);
+    const m = Math.floor((sec % 3600) / 60);
+    const s = sec % 60;
+    return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+}
 
-    function forceLogout(){
-        fetch("{{ route('logout') }}", {
+function updateUI(){
+    document.getElementById('countdown').innerText = formatTime(remainingSeconds);
+    document.getElementById('elapsed').innerText   = formatTime(elapsedSeconds);
+}
+
+function forceLogout(){
+    fetch("{{ route('logout') }}", {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+            "Content-Type": "application/json"
+        }
+    }).then(()=> window.location.href = "/login");
+}
+
+// Overlay function
+let overlayTimeout;
+function showOverlay(message){
+    const overlay = document.getElementById('statusOverlay');
+    overlay.innerText = message;
+    overlay.classList.add('show');
+
+    clearTimeout(overlayTimeout);
+    overlayTimeout = setTimeout(() => {
+        overlay.classList.remove('show');
+    }, 3000);
+}
+
+function startTimer(){
+    clearInterval(timerInterval);
+    clearInterval(backendSyncInterval);
+
+    timerInterval = setInterval(() => {
+        if(status === 'running' && remainingSeconds > 0){
+            remainingSeconds--;
+            elapsedSeconds++;
+            updateUI();
+        }
+    }, 1000);
+
+    backendSyncInterval = setInterval(syncWithBackend, 1000);
+}
+
+function stopTimer(){
+    clearInterval(timerInterval);
+    clearInterval(backendSyncInterval);
+}
+
+function syncWithBackend(){
+    fetch("{{ route('timer.update') }}", {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ action: 'tick' })
+    })
+    .then(res => res.json())
+    .then(data => {
+        remainingSeconds = data.remaining_seconds;
+        elapsedSeconds   = data.elapsed_seconds;
+        status           = data.status;
+        updateUI();
+
+        if(data.logout){
+            stopTimer();
+            alert("Your 9-hour work session has ended.");
+            forceLogout();
+        }
+    });
+}
+
+// Handle control buttons
+document.querySelectorAll('#controlButtons button').forEach(btn => {
+    btn.addEventListener('click', () => {
+        const type = btn.getAttribute('data-type');
+
+        fetch("{{ route('timer.update') }}", {
             method: "POST",
             headers: {
                 "X-CSRF-TOKEN": "{{ csrf_token() }}",
                 "Content-Type": "application/json"
-            }
-        }).then(()=>{
-            window.location.href = "/login"; 
+            },
+            body: JSON.stringify({ action: type })
+        })
+        .then(res => res.json())
+        .then(data => {
+            remainingSeconds = data.remaining_seconds;
+            elapsedSeconds   = data.elapsed_seconds;
+            status           = data.status;
+            updateUI();
         });
-    }
+    });
+});
 
-    function startTimer(){
-        clearInterval(timerInterval);
-        clearInterval(backendSyncInterval);
+// Inactivity detection
+function resetInactiveTimer(){
+    clearTimeout(inactiveTimeout);
+    inactiveTimeout = setTimeout(() => {
+        showOverlay("You were inactive! Timer stopped.");
+        stopTimer();
+    }, INACTIVE_LIMIT);
+}
 
-        // UI update every second (client-side only for display)
-        timerInterval = setInterval(()=>{
-            if(remainingSeconds > 0){
-                remainingSeconds--;
-                elapsedSeconds++;
-                updateUI();
-            }
-        }, 1000);
-
-        // Backend sync every minute
-        backendSyncInterval = setInterval(()=>{
-            fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ action: 'tick' })
-            })
-            .then(res => res.json())
-            .then(data=>{
-                remainingSeconds = data.remaining_seconds;
-                elapsedSeconds   = (9*60*60) - remainingSeconds;
-                updateUI();
-
-                if (data.status === 'completed') {
-                    clearInterval(timerInterval);
-                    clearInterval(backendSyncInterval);
-                    alert("Your 8-hour work session has ended.");
-                    forceLogout(); // logout only when backend says so
-                }
-            })
-        }, 60000); // 1 min
-    }
-
-    // Pause / Resume handler
-    document.getElementById('pauseSelect').addEventListener('change', function(){
-        let type = this.value;
-
-        if(type === "resume"){
-            fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ action: 'resume' })
-            })
-            .then(res=>res.json())
-            .then(()=> startTimer());
-        } 
-        else if(type){ // Pause
-            fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ action: 'pause', pause_type: type })
-            })
-            .then(res=>res.json())
-            .then(()=>{
-                clearInterval(timerInterval);
-                clearInterval(backendSyncInterval);
-            })
-        }
+// Active state (resume silently)
+function handleActiveState(){
+    fetch("{{ route('timer.update') }}", {
+        method: "POST",
+        headers: {
+            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ action: "resume" })
+    })
+    .then(res => res.json())
+    .then(data => {
+        remainingSeconds = data.remaining_seconds;
+        elapsedSeconds   = data.elapsed_seconds;
+        status           = data.status;
+        updateUI();
     });
 
-    startTimer();
+    resetInactiveTimer();
+}
+
+// Listen for activity
+['mousemove','keydown','scroll','click'].forEach(evt=>{
+    window.addEventListener(evt, resetInactiveTimer);
+});
+
+document.addEventListener('visibilitychange', () => {
+    if(document.visibilityState === 'visible'){
+        handleActiveState();
+    }
+});
+
+// Initialize
+updateUI();
+resetInactiveTimer();
+handleActiveState();
+startTimer();
 </script>

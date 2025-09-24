@@ -1,49 +1,43 @@
 @extends('layout.layout')
 @php
-        $title='Widgets';
-        $subTitle = 'Widgets';
+        $title='Call Report';
+        $subTitle = 'Called and Mailed Report';
         $script = '<script>
 
-            // ================================ Earning Statistics bar chart Start ================================ 
+            
             var options = {
                 series: [{
-                    name: "Sales",
+                    name: "TC",
                     data: [{
-                        x: "Jan",
+                        x: "8 pm",
                         y: 85000,
                     }, {
-                        x: "Feb",
+                        x: "9 pm",
                         y: 70000,
                     }, {
-                        x: "Mar",
+                        x: "10 pm",
                         y: 40000,
                     }, {
-                        x: "Apr",
+                        x: "11 pm",
                         y: 50000,
                     }, {
-                        x: "May",
+                        x: "12 pm",
                         y: 60000,
                     }, {
-                        x: "Jun",
+                        x: "1 am",
                         y: 50000,
                     }, {
-                        x: "Jul",
+                        x: "2 am",
                         y: 40000,
                     }, {
-                        x: "Aug",
+                        x: "3 am",
                         y: 50000,
                     }, {
-                        x: "Sep",
+                        x: "4 am",
                         y: 40000,
                     }, {
-                        x: "Oct",
+                        x: "5 am",
                         y: 60000,
-                    }, {
-                        x: "Nov",
-                        y: 30000,
-                    }, {
-                        x: "Dec",
-                        y: 50000,
                     }]
                 }],
                 chart: {
@@ -66,39 +60,39 @@
                 },
                 fill: {
                     type: "gradient",
-                    colors: ["#487FFF"], // Set the starting color (top color) here
+                    colors: ["#487FFF"], 
                     gradient: {
-                        shade: "light", // Gradient shading type
-                        type: "vertical", // Gradient direction (vertical)
-                        shadeIntensity: 0.5, // Intensity of the gradient shading
-                        gradientToColors: ["#487FFF"], // Bottom gradient color (with transparency)
-                        inverseColors: false, // Do not invert colors
-                        opacityFrom: 1, // Starting opacity
-                        opacityTo: 1, // Ending opacity
+                        shade: "light", 
+                        type: "vertical", 
+                        shadeIntensity: 0.5, 
+                        gradientToColors: ["#487FFF"], 
+                        inverseColors: false, 
+                        opacityFrom: 1, 
+                        opacityTo: 1, 
                         stops: [0, 100],
                     },
                 },
                 grid: {
                     show: true,
                     borderColor: "#D1D5DB",
-                    strokeDashArray: 4, // Use a number for dashed style
+                    strokeDashArray: 4, 
                     position: "back",
                 },
                 xaxis: {
                     type: "category",
-                    categories: ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
+                    categories: ["8 pm", "9 pm", "10 pm", "11 pm", "12 pm", "1 am", "2 am", "3 am", "4 am", "5 am"]
                 },
                 yaxis: {
                     labels: {
                         formatter: function(value) {
-                            return (value / 1000).toFixed(0) + "k";
+                            return (value / 1).toFixed(0) + "CM";
                         }
                     }
                 },
                 tooltip: {
                     y: {
                         formatter: function(value) {
-                            return value / 1000 + "k";
+                            return value / 1 + "CM";
                         }
                     }
                 }
@@ -106,9 +100,9 @@
 
             var chart = new ApexCharts(document.querySelector("#barChart"), options);
             chart.render();
-            // ================================ Earning Statistics bar chart End ================================  
+              
 
-            // ================================ Semi Circle Gauge (Daily Conversion) chart Start ================================ 
+            
             var options = {
                 series: [75],
                 chart: {
@@ -116,7 +110,7 @@
                     width: 120,
                     type: "radialBar",
                     sparkline: {
-                        enabled: false // Remove whitespace
+                        enabled: false 
                     },
                     toolbar: {
                         show: false
@@ -142,7 +136,7 @@
                         endAngle: 90,
                         track: {
                             background: "#E3E6E9",
-                            // strokeWidth: 32,
+                            
                             dropShadow: {
                                 enabled: false,
                                 top: 2,
@@ -186,9 +180,9 @@
 
             var chart = new ApexCharts(document.querySelector("#semiCircleGauge"), options);
             chart.render();
-            // ================================ Semi Circle Gauge (Daily Conversion) chart End ================================ 
+            
 
-            // ================================ Area chart Start ================================ 
+             
             function createChart(chartId, chartColor) {
 
                 let currentYear = new Date().getFullYear();
@@ -204,7 +198,7 @@
                         height: 72,
 
                         sparkline: {
-                            enabled: true // Remove whitespace
+                            enabled: true 
                         },
 
                         toolbar: {
@@ -258,19 +252,19 @@
                     },
                     fill: {
                         type: "gradient",
-                        colors: [chartColor], // Set the starting color (top color) here
+                        colors: [chartColor], 
                         gradient: {
-                            shade: "light", // Gradient shading type
-                            type: "vertical", // Gradient direction (vertical)
-                            shadeIntensity: 0.5, // Intensity of the gradient shading
-                            gradientToColors: [`${chartColor}00`], // Bottom gradient color (with transparency)
-                            inverseColors: false, // Do not invert colors
-                            opacityFrom: .8, // Starting opacity
-                            opacityTo: 0.3, // Ending opacity
+                            shade: "light", 
+                            type: "vertical", 
+                            shadeIntensity: 0.5, 
+                            gradientToColors: [`${chartColor}00`], 
+                            inverseColors: false, 
+                            opacityFrom: .8, 
+                            opacityTo: 0.3, 
                             stops: [0, 100],
                         },
                     },
-                    // Customize the circle marker color on hover
+                    
                     markers: {
                         colors: [chartColor],
                         strokeWidth: 2,
@@ -304,11 +298,11 @@
                 chart.render();
             }
 
-            // Call the function for each chart with the desired ID and color
+            
             createChart("areaChart", "#FF9F29");
-            // ================================ Area chart End ================================ 
+            
 
-            // ================================ Bar chart (Today Income0 Start ================================ 
+            
             var options = {
                 series: [{
                     name: "Sales",
@@ -337,7 +331,7 @@
                     width: 164,
                     height: 80,
                     sparkline: {
-                        enabled: true // Remove whitespace
+                        enabled: true 
                     },
                     toolbar: {
                         show: false
@@ -362,27 +356,27 @@
                 },
                 fill: {
                     type: "gradient",
-                    colors: ["#E3E6E9"], // Set the starting color (top color) here
+                    colors: ["#E3E6E9"], 
                     gradient: {
-                        shade: "light", // Gradient shading type
-                        type: "vertical", // Gradient direction (vertical)
-                        shadeIntensity: 0.5, // Intensity of the gradient shading
-                        gradientToColors: ["#E3E6E9"], // Bottom gradient color (with transparency)
-                        inverseColors: false, // Do not invert colors
-                        opacityFrom: 1, // Starting opacity
-                        opacityTo: 1, // Ending opacity
+                        shade: "light", 
+                        type: "vertical", 
+                        shadeIntensity: 0.5, 
+                        gradientToColors: ["#E3E6E9"], 
+                        inverseColors: false, 
+                        opacityFrom: 1, 
+                        opacityTo: 1,
                         stops: [0, 100],
                     },
                 },
                 grid: {
                     show: false,
                     borderColor: "#D1D5DB",
-                    strokeDashArray: 1, // Use a number for dashed style
+                    strokeDashArray: 1, 
                     position: "back",
                 },
                 xaxis: {
                     labels: {
-                        show: false // Hide y-axis labels
+                        show: false 
                     },
                     type: "category",
                     categories: ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat"]
@@ -406,27 +400,29 @@
 
             var chart = new ApexCharts(document.querySelector("#dailyIconBarChart"), options);
             chart.render();
-            // ================================ Bar chart (Today Income0 End ================================ 
+            
             </script>';
 @endphp
 
 @section('content')
 
             <div class="row gy-4 mt-1">
-                <!-- Earning Static start -->
+                
                 <div class="col-xxl-8 col-lg-6">
                     <div class="card h-100 border shadow-none radius-8 border-0">
                         <div class="card-body p-24">
                             <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
                                 <div>
-                                    <h6 class="mb-2 fw-bold text-lg">Earning Statistic</h6>
-                                    <span class="text-sm fw-medium text-secondary-light">Yearly earning overview</span>
+                                    <h6 class="mb-2 fw-bold text-lg">Calls Statistic</h6>
+                                    <span class="text-sm fw-medium text-secondary-light">Yearly Calls Overview</span>
                                 </div>
                                 <div class="">
                                     <select class="form-select form-select-sm w-auto bg-base border text-secondary-light">
-                                        <option>Yearly</option>
-                                        <option>Monthly</option>
-                                        <option>Weekly</option>
+                                        <option>This Yearly</option>
+                                        <option>Last Months</option>
+                                        <option>This Monthly</option>
+                                        <option>Last Weeks</option>
+                                        <option>Last Days</option>
                                         <option>Today</option>
                                     </select>
                                 </div>
@@ -439,8 +435,8 @@
                                         <iconify-icon icon="fluent:cart-16-filled" class="icon"></iconify-icon>
                                     </span>
                                     <div>
-                                        <span class="text-secondary-light text-sm fw-medium">Sales</span>
-                                        <h6 class="text-md fw-semibold mb-0">$200k</h6>
+                                        <span class="text-secondary-light text-sm fw-medium">TC</span>
+                                        <h6 class="text-md fw-semibold mb-0">{{ $totalCalls }}</h6>
                                     </div>
                                 </div>
 
@@ -449,8 +445,8 @@
                                         <iconify-icon icon="uis:chart" class="icon"></iconify-icon>
                                     </span>
                                     <div>
-                                        <span class="text-secondary-light text-sm fw-medium">Income</span>
-                                        <h6 class="text-md fw-semibold mb-0">$200k</h6>
+                                        <span class="text-secondary-light text-sm fw-medium">OC</span>
+                                        <h6 class="text-md fw-semibold mb-0">{{ $otherCalls }}</h6>
                                     </div>
                                 </div>
 
@@ -459,8 +455,8 @@
                                         <iconify-icon icon="ph:arrow-fat-up-fill" class="icon"></iconify-icon>
                                     </span>
                                     <div>
-                                        <span class="text-secondary-light text-sm fw-medium">Profit</span>
-                                        <h6 class="text-md fw-semibold mb-0">$200k</h6>
+                                        <span class="text-secondary-light text-sm fw-medium">C&MC</span>
+                                        <h6 class="text-md fw-semibold mb-0">{{ $calledAndMailedCalls }}</h6>
                                     </div>
                                 </div>
                             </div>
@@ -471,7 +467,7 @@
                 </div>
 
                 
-                <!-- Statistics Start -->
+                
                 <div class="col-xxl-4 col-lg-6">
                     <div class="card h-100 radius-8 border-0">
                         <div class="card-body p-24">
@@ -480,12 +476,11 @@
                             <div class="mt-24">
                                 <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                                     <div>
-                                        <span class="text-secondary-light fw-normal mb-12 text-xl">Daily Conversions</span>
-                                        <h5 class="fw-semibold mb-0">%60</h5>
+                                        <span class="text-secondary-light fw-normal mb-12 text-xl">Total Calls (TC)</span>
+                                        <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
                                     </div>
                                     <div class="position-relative">
                                         <div id="semiCircleGauge"></div>
-
                                         <span class="w-36-px h-36-px rounded-circle bg-neutral-100 d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0">
                                             <iconify-icon icon="mdi:emoji" class="text-primary-600 text-md mb-0"></iconify-icon>
                                         </span>
@@ -494,26 +489,23 @@
 
                                 <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                                     <div>
-                                        <span class="text-secondary-light fw-normal mb-12 text-xl">Visits By Day</span>
-                                        <h5 class="fw-semibold mb-0">20k</h5>
+                                        <span class="text-secondary-light fw-normal mb-12 text-xl">Other Calls (OC)</span>
+                                        <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
                                     </div>
                                     <div id="areaChart"></div>
                                 </div>
 
                                 <div class="d-flex align-items-center gap-1 justify-content-between">
                                     <div>
-                                        <span class="text-secondary-light fw-normal mb-12 text-xl">Today Income</span>
-                                        <h5 class="fw-semibold mb-0">$5.5k</h5>
+                                        <span class="text-secondary-light fw-normal mb-12 text-xl">Called & Mailed Calls (C&MC)</span>
+                                        <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
                                     </div>
                                     <div id="dailyIconBarChart"></div>
                                 </div>
                             </div>
-
                         </div>
                     </div>
                 </div>
-                <!-- Statistics End -->
-
             </div>
             
 @endsection

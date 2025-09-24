@@ -59,6 +59,16 @@
                         <li><a href="{{ route('call.reports.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Call Report</a></li>
                     </ul>
                 </li>
+
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                        <span>Timer</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('timer.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Call Report</a></li>
+                    </ul>
+                </li>
             @endif
 
             {{-- ================= Senior ================= --}}
@@ -100,6 +110,16 @@
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('call.reports.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Call Report</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                        <span>Timer</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('timer.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Report</a></li>
                     </ul>
                 </li>
             @endif
@@ -186,6 +206,16 @@
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('call.reports.index') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Call Report</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                        <span>Timer</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('timer.admin') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Report</a></li>
                     </ul>
                 </li>
             @endif

@@ -1,19 +1,30 @@
 <?php
-
+// app/Models/UserTimerPause.php
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\UserTimerLog;
+use App\Models\User;
 
 class UserTimerPause extends Model
 {
     protected $fillable = [
-        'timer_log_id','pause_type','started_at','ended_at','duration_seconds'
+        'user_timer_log_id',
+        'user_id',
+        'status',
+        'pause_type',
+        'remaining_seconds',
+        'elapsed_seconds',
+        'event_time'
     ];
 
-    public function timerLog()
+    public function userTimerLog()
     {
-        return $this->belongsTo(UserTimerLog::class, 'timer_log_id');
+        return $this->belongsTo(UserTimerLog::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }
-
-

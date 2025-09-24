@@ -1,25 +1,26 @@
 <?php
 
 namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
 use App\Models\Login;
 use App\Models\UserTimerLog;
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    // Show login form
+    const WORK_DAY_SECONDS = 9 * 60 * 60; // 9 hours
+
     public function showLoginForm()
     {
         return view('auth.signin');
     }
 
-    // Handle login
     public function login(Request $request)
     {
         $credentials = $request->validate([
-            'email' => ['required','email'],
+            'email' => ['required', 'email'],
             'password' => ['required']
         ]);
 
@@ -33,14 +34,28 @@ class LoginController extends Controller
                 'logged_in_at' => now()
             ]);
 
-            // Start 8-hour timer
-            UserTimerLog::create([
-                'user_id' => Auth::id(),
-                'login_id' => $login->id,
-                'start_time' => now(),
-                'remaining_seconds' => 8*60*60,
-                'status' => 'running'
-            ]);
+            $lastTimer = UserTimerLog::where('user_id', Auth::id())
+                ->latest()
+                ->first();
+
+            if (!$lastTimer || $lastTimer->status === 'completed') {
+                UserTimerLog::create([
+                    'user_id' => Auth::id(),
+                    'login_id' => $login->id,
+                    'start_time' => now(),
+                    'remaining_seconds' => self::WORK_DAY_SECONDS,
+                    'status' => 'running'
+                ]);
+            } else {
+                // Deduct time since last update if it was running
+                if ($lastTimer->status === 'running') {
+                    $seconds_passed = now()->diffInSeconds($lastTimer->updated_at);
+                    $lastTimer->remaining_seconds = max(0, $lastTimer->remaining_seconds - $seconds_passed);
+                }
+                $lastTimer->updated_at = now();
+                $lastTimer->save();
+            }
+
 
             return redirect()->route('dashboard.index');
         }
@@ -50,18 +65,33 @@ class LoginController extends Controller
         ])->onlyInput('email');
     }
 
-
-    // Logout
     public function logout(Request $request)
     {
-        Auth::logout();
+        $user = Auth::user();
 
+        if ($user) {
+            $timer = UserTimerLog::where('user_id', $user->id)
+                ->latest()
+                ->first();
+
+            if ($timer && $timer->status === 'running') {
+                $seconds_passed = now()->diffInSeconds($timer->updated_at);
+                $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
+            }
+
+            if ($timer) {
+                $timer->status = 'paused';
+                $timer->pause_type = 'logout';
+                $timer->updated_at = now();
+                $timer->save();
+            }
+        }
+
+        Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
         return redirect('login');
     }
-
-
 
 }

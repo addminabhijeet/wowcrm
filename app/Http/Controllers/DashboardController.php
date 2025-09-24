@@ -3,16 +3,14 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Resume;
-use App\Models\Payment;
-use App\Models\Training;
-use App\Models\User;
 use App\Models\UserTimerLog;
 use Illuminate\Support\Facades\Auth;
-
+use App\Models\UserTimerPause;
 
 class DashboardController extends Controller
 {
+    const WORK_DAY_SECONDS = 9 * 60 * 60;
+
     public function index()
     {
         $role = Auth::user()->role;
@@ -35,80 +33,56 @@ class DashboardController extends Controller
         }
     }
 
-
     public function updateTimer(Request $request)
     {
-        $timer = UserTimerLog::where('user_id', Auth::id())
-                    ->latest()
-                    ->first();
-
-        if (!$timer) {
-            return response()->json(['error' => 'No timer found'], 404);
-        }
-
+        $user = Auth::user();
         $action = $request->input('action');
 
-        if ($action === 'pause') {
-            // Mark timer as paused
-            $timer->status = 'paused';
-            $timer->pause_type = $request->input('pause_type');
-            $timer->save();
+        $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+        if (!$timer) return response()->json(['error' => 'Timer not found'], 404);
 
-            // Create a pause entry
-            $timer->pauses()->create([
-                'pause_type' => $request->input('pause_type'),
-                'started_at' => now()
-            ]);
+        $now = now();
 
-        } elseif ($action === 'resume') {
-            // Close the last pause entry
-            $lastPause = $timer->pauses()
-                ->whereNull('ended_at')
-                ->latest()
-                ->first();
+        if ($timer->status === 'running') {
+            $seconds_passed = $now->diffInSeconds($timer->updated_at);
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds + $seconds_passed);
+        }
 
-            if ($lastPause) {
-                $lastPause->ended_at = now();
-                $lastPause->duration_seconds = $lastPause->ended_at->diffInSeconds($lastPause->started_at);
-                $lastPause->save();
-            }
-
-            // Resume timer
+        if ($action === 'resume') {
             $timer->status = 'running';
-            $timer->pause_type = null;
-            $timer->save();
+            $timer->pause_type = 'resume';
+        } elseif ($action !== 'tick') {
+            $timer->status = 'paused';
+            $timer->pause_type = $action; // lunch, tea, break
+        }
 
-        } elseif ($action === 'tick') {
-            if ($timer->status === 'running') {
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds - 60);
+        $timer->updated_at = $now;
+        $timer->save();
 
-                if ($timer->remaining_seconds <= 0) {
-                    // Auto-stop timer
-                    $timer->status = 'completed';
-                    $timer->save();
+        $elapsed_seconds = self::WORK_DAY_SECONDS - $timer->remaining_seconds;
 
-                    // Optional: Auto-logout user when timer ends
-                    Auth::logout();
-                    session()->invalidate();
-                    session()->regenerateToken();
-
-                    return response()->json([
-                        'remaining_seconds' => 0,
-                        'status' => 'completed',
-                        'pause_type' => null,
-                        'logout' => true
-                    ]);
-                }
-
-                $timer->save();
-            }
+        //  Log the pause/resume event
+        if ($action !== 'tick') {
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
+                'user_id'           => $user->id,
+                'status'            => $timer->status,
+                'pause_type'        => $timer->pause_type,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'elapsed_seconds'   => $elapsed_seconds,
+                'event_time'        => $now,
+            ]);
         }
 
         return response()->json([
             'remaining_seconds' => $timer->remaining_seconds,
-            'status' => $timer->status,
-            'pause_type' => $timer->pause_type
+            'elapsed_seconds'   => $elapsed_seconds,
+            'status'            => $timer->status,
+            'pause_type'        => $timer->pause_type,
+            'logout'            => $timer->remaining_seconds <= 0
         ]);
     }
+
+
 
 }

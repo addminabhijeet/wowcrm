@@ -12,6 +12,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\GoogleSheetController;
 use App\Http\Controllers\CallReportController;
 
+
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleDashboards\JuniorDashboardController;
 use App\Http\Controllers\RoleDashboards\SeniorDashboardController;
@@ -19,6 +20,7 @@ use App\Http\Controllers\RoleDashboards\CustomerDashboardController;
 use App\Http\Controllers\RoleDashboards\AccountantDashboardController;
 use App\Http\Controllers\RoleDashboards\TrainerDashboardController;
 use App\Http\Controllers\RoleDashboards\AdminDashboardController;
+use App\Http\Controllers\TimerController;
 
 Route::middleware(['auth'])->group(function () {
     // Default dashboard route
@@ -34,7 +36,8 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/admin/calendar/{month?}/{year?}', [CalendarController::class, 'index'])->name('calendar.index');
     Route::get('/dashboard/senior/calendar/{month?}/{year?}', [CalendarController::class, 'seniorUser'])->name('calendar.seniorUser');
-    Route::get('/dashboard/junior/calendar/{month?}/{year?}', [CalendarController::class, 'juniorUser'])->name('calendar.juniorUser');
+    Route::get('/dashboard/junior/calendar/', [CalendarController::class, 'juniorUser'])->name('calendar.juniorUser');
+    Route::get('/dashboard/junior/calendar/events', [CalendarController::class, 'getEvents'])->name('calendar.juniorEvents');
     Route::post('/dashboard/calendar/update-status', [CalendarController::class, 'updateStatus'])->name('calendar.updateStatus');
 
     Route::get('/dashboard/admin/google-sheet', [GoogleSheetController::class, 'index'])->name('google.sheet.index');
@@ -59,14 +62,19 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/call-reports', [CallReportController::class, 'senior'])->name('call.reports.senior');
 
     Route::match(['get','post'], '/timer/update', [DashboardController::class, 'updateTimer'])->name('timer.update');
+    Route::get('/dashboard/senior/seniortimer', [TimerController::class, 'seniorTimers'])->name('timer.senior');
+    Route::match(['get','post'], '/timer/updatejunior', [DashboardController::class, 'updateTimer'])->name('timer.updatejunior');
+    Route::get('/dashboard/admin/admintimer', [TimerController::class, 'adminTimers'])->name('timer.admin');
+    Route::get('/dashboard/junior/juniortimer', [TimerController::class, 'juniorTimers'])->name('timer.junior');
+    
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
 Route::get('/', [Controller::class, 'index'])->name('home');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
+Route::post('/registersubmit', [RegisterController::class, 'register'])->name('register.submit');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login'])->name('login.submit');
+Route::post('/loginsubmit', [LoginController::class, 'login'])->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::post('/resumes/upload/{id}', [ResumeController::class, 'upload'])->name('resumes.upload')->middleware('auth');

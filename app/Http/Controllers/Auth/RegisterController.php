@@ -23,7 +23,7 @@ class RegisterController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|unique:users,email',
-            'password' => 'required|string|min:6|confirmed',
+            'password' => 'required|string|min:6',
             'role' => ['required', Rule::in(['junior','senior','customer','accountant','trainer','admin'])]
         ]);
 
@@ -36,6 +36,7 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        return redirect('/signin')->with('success','Registration successful');
+        return redirect('login')->with('success','Registration successful');
     }
+
 }
