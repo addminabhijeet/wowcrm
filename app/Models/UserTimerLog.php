@@ -8,12 +8,15 @@ use App\Models\User;
 class UserTimerLog extends Model
 {
     protected $fillable = [
+        'id',
         'user_id',
         'login_id',
         'start_time',
         'remaining_seconds',
         'status',
-        'pause_type'
+        'pause_type',
+        'button_status',
+        'notice_status',
     ];
 
     public function user()
