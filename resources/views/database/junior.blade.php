@@ -37,7 +37,7 @@ $script ='<script>
             <table class="table bordered-table sm-table mb-0">
                 <thead>
                     <tr>
-                        <th scope="col">ID</th>
+                     
                         <th scope="col">Row #</th>
                         <th scope="col">Date</th>
                         <th scope="col">Name</th>
@@ -60,7 +60,7 @@ $script ='<script>
                 <tbody id="sheet-table-body">
                     @foreach($data as $row)
                     <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
-                        <td>{{ $row->id }}</td>
+                       
                         <td>{{ $row->sheet_row_number }}</td>
 
                         {{-- Date --}}
@@ -562,7 +562,7 @@ $script ='<script>
             }
             let newRow = document.createElement("tr");
             newRow.setAttribute("data-id", "new");
-            let cells = `<td>New</td><td>—</td>`;
+            let cells = `<td>—</td>`;
             colKeys.forEach(k => {
                 if (k === 'Exe Remarks') {
                     const opts = ['Called & Mailed', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];

@@ -36,7 +36,7 @@ $script ='<script>
             <table class="table bordered-table sm-table mb-0">
                 <thead>
                     <tr>
-                        <th scope="col">ID</th>
+                     
                         <th scope="col">Row #</th>
                         <th scope="col">Date</th>
                         <th scope="col">Name</th>
@@ -59,7 +59,7 @@ $script ='<script>
                 <tbody id="sheet-table-body">
                     <?php $__currentLoopData = $data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                     <tr id="row-<?php echo e($row->id); ?>" data-id="<?php echo e($row->id); ?>">
-                        <td><?php echo e($row->id); ?></td>
+                       
                         <td><?php echo e($row->sheet_row_number); ?></td>
 
                         
@@ -568,7 +568,7 @@ $script ='<script>
             }
             let newRow = document.createElement("tr");
             newRow.setAttribute("data-id", "new");
-            let cells = `<td>New</td><td>—</td>`;
+            let cells = `<td>—</td>`;
             colKeys.forEach(k => {
                 if (k === 'Exe Remarks') {
                     const opts = ['Called & Mailed', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];

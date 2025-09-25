@@ -153,17 +153,20 @@ class GoogleSheetController extends Controller
     {
         $authUser = Auth::user();
 
-        $data = GoogleSheetData::all()->filter(function ($item) use ($authUser) {
-            // Previously: $rowData = json_decode($item->data, true);
-            // Now: access columns directly
+        // Base query
+        $query = GoogleSheetData::query();
 
-            if (($item->{'Exe Remarks'} ?? '') === 'Called & Mailed') {
-                return true;
-            }
+        // Filter rows where 'Exe_Remarks' = 'Called & Mailed' OR created_by = "<user_id>|senior"
+        $query->where(function ($q) use ($authUser) {
+            $q->where('Exe_Remarks', 'Called & Mailed')
+                ->orWhere('created_by', "{$authUser->id}|senior");
+        });
 
-            return $item->created_by === "{$authUser->id}|senior";
-        })->map(function ($item) use ($authUser) {
-            // Safely split created_by
+        // Paginate 10 per page
+        $data = $query->paginate(10);
+
+        // Map forwarded_by dynamically
+        $data->getCollection()->transform(function ($item) use ($authUser) {
             $parts = explode('|', $item->created_by ?? '');
             $userId = $parts[0] ?? null;
             $role   = $parts[1] ?? 'unknown';
@@ -176,13 +179,13 @@ class GoogleSheetController extends Controller
                 $forwardedBy = "{$name} ({$userId}) ({$role})";
             }
 
-            // attach forwarded_by dynamically
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
 
         return view('database.senior', compact('data'));
     }
+
 
     public function seniorfetch(Request $request)
     {
@@ -252,35 +255,57 @@ class GoogleSheetController extends Controller
 
     public function seniorupdate(Request $request, $id)
     {
-        $rowData = $request->all(); // get all input
-
-        if (empty($rowData)) {
-            return response()->json(['success' => false, 'message' => 'No data provided']);
-        }
-
         $row = GoogleSheetData::find($id);
-
         if (!$row) {
             return response()->json(['success' => false, 'message' => 'Row not found']);
         }
 
-        $user = Auth::user();
+        $rowData = json_decode($request->input('data'), true);
+        if (empty($rowData)) {
+            return response()->json(['success' => false, 'message' => 'No data provided']);
+        }
 
-        // Remove id, sheet_row_number from update to avoid accidental overwrite
-        unset($rowData['id'], $rowData['sheet_row_number']);
+        // Handle resume upload
+        $resumePath = $row->resume ? "resumes/" . $row->resume : null;
+        if ($request->hasFile('resume')) {
+            $file = $request->file('resume');
+            $timestamp = now()->format('Ymd_His');
+            $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName   = Str::slug($filename) . "_{$timestamp}." . $extension;
+            $resumePath = $file->storeAs('resumes', $newName, 'public');
+            $row->resume = basename($resumePath);
+        }
 
-        // Add created_by
-        $rowData['created_by'] = "{$user->id}|{$user->role}";
+        // Map the data to individual columns
+        $updateData = [
+            'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
+            'Name' => $rowData['Name'] ?? null,
+            'Email_Address' => $rowData['Email Address'] ?? null,
+            'Phone_Number' => $rowData['Phone Number'] ?? null,
+            'Location' => $rowData['Location'] ?? null,
+            'Relocation' => $rowData['Relocation'] ?? null,
+            'Graduation_Date' => isset($rowData['Graduation Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Graduation Date'])->format('Y-m-d') : null,
+            'Immigration' => $rowData['Immigration'] ?? null,
+            'Course' => $rowData['Course'] ?? null,
+            'Amount' => isset($rowData['Amount']) ? (float) str_replace(['$', ','], '', $rowData['Amount']) : null,
+            'Qualification' => $rowData['Qualification'] ?? null,
+            'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
+            'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
+            'Time_Zone' => $rowData['Time Zone'] ?? null,
+            'View' => $rowData['View'] ?? null,
+            'resume' => $row->resume,
+            'created_by' => Auth::id() . "|" . Auth::user()->role,
+        ];
 
-        // Update row
-        $row->update($rowData);
+        $row->update($updateData);
 
         return response()->json([
             'success' => true,
             'row' => [
-                'id'               => $row->id,
-                'sheet_row_number' => $row->sheet_row_number,
-                'created_by'       => $row->created_by,
+                'id'          => $row->id,
+                'data'        => $rowData,
+                'resume_url'  => $row->resume ? asset('storage/resumes/' . $row->resume) : null,
             ]
         ]);
     }
@@ -312,6 +337,76 @@ class GoogleSheetController extends Controller
                 'sheet_row_number' => $newRow->sheet_row_number,
                 'created_by'       => $newRow->created_by
             ]]
+        ]);
+    }
+
+    // The PDF methods remain the same as they handle file uploads separately
+    public function seniorpdfstore(Request $request)
+    {
+        // This method can remain similar since it handles file uploads
+        $rowData = $request->has('rows')
+            ? json_decode($request->input('rows')[0], true)
+            : [];
+
+        $resumePath = null;
+        if ($request->hasFile('resume')) {
+            $file = $request->file('resume');
+            $timestamp = now()->format('Ymd_His');
+            $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName   = Str::slug($filename) . "_{$timestamp}." . $extension;
+            $resumePath = $file->storeAs('resumes', $newName, 'public');
+        }
+
+        // Map data to individual columns for PDF store as well
+        $mappedData = [
+            'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
+            'Name' => $rowData['Name'] ?? null,
+            'Email_Address' => $rowData['Email Address'] ?? null,
+            // ... map other fields as needed
+        ];
+
+        $record = GoogleSheetData::create(array_merge($mappedData, [
+            'resume' => $resumePath ? basename($resumePath) : null,
+        ]));
+
+        return response()->json([
+            'success'    => true,
+            'id'         => $record->id,
+            'resume_url' => $record->resume ? asset('storage/resumes/' . $record->resume) : null,
+        ]);
+    }
+
+    public function seniorpdfupdate(Request $request, $id)
+    {
+        $record = GoogleSheetData::findOrFail($id);
+
+        if ($request->has('data')) {
+            $data = json_decode($request->input('data'), true);
+
+            // Update individual columns
+            $record->update([
+                'Date' => isset($data['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $data['Date'])->format('Y-m-d') : null,
+                'Name' => $data['Name'] ?? null,
+                // ... update other fields
+            ]);
+        }
+
+        if ($request->hasFile('resume')) {
+            $file = $request->file('resume');
+            $timestamp = now()->format('Ymd_His');
+            $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName   = Str::slug($filename) . "_{$timestamp}." . $extension;
+            $resumePath = $file->storeAs('resumes', $newName, 'public');
+            $record->resume = basename($resumePath);
+        }
+
+        $record->save();
+
+        return response()->json([
+            'success'    => true,
+            'resume_url' => $record->resume ? asset('storage/resumes/' . $record->resume) : null,
         ]);
     }
 

@@ -71,7 +71,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::vt67Xy6haaENPFfm',
+            '_route' => 'generated::ZsG0b1pqa9vYQNcf',
           ),
           1 => NULL,
           2 => 
@@ -388,6 +388,25 @@ app('router')->setCompiledRoutes(
           0 => 
           array (
             '_route' => 'google.sheet.seniorstore',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
+      '/dashboard/senior/google-sheet/pdfstore' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'google.sheet.seniorpdfstore',
           ),
           1 => NULL,
           2 => 
@@ -857,7 +876,7 @@ app('router')->setCompiledRoutes(
     ),
     2 => 
     array (
-      0 => '{^(?|/dashboard/(?|admin/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:66)|google\\-sheet/update/([^/]++)(*:102))|senior/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:157)|google\\-sheet/update/([^/]++)(*:194))|junior/google\\-sheet/(?|update/([^/]++)(*:242)|pdfupdate/([^/]++)(*:268)))|/resumes/(?|upload/([^/]++)(*:305)|([^/]++)/status(*:328))|/payment/([^/]++)/status(*:361)|/training/([^/]++)/trastatus(*:397))/?$}sDu',
+      0 => '{^(?|/dashboard/(?|admin/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:66)|google\\-sheet/update/([^/]++)(*:102))|senior/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:157)|google\\-sheet/(?|update/([^/]++)(*:197)|pdfupdate/([^/]++)(*:223)))|junior/google\\-sheet/(?|update/([^/]++)(*:272)|pdfupdate/([^/]++)(*:298)))|/resumes/(?|upload/([^/]++)(*:335)|([^/]++)/status(*:358))|/payment/([^/]++)/status(*:391)|/training/([^/]++)/trastatus(*:427))/?$}sDu',
     ),
     3 => 
     array (
@@ -935,7 +954,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      194 => 
+      197 => 
       array (
         0 => 
         array (
@@ -957,7 +976,29 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      242 => 
+      223 => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'google.sheet.seniorpdfupdate',
+          ),
+          1 => 
+          array (
+            0 => 'id',
+          ),
+          2 => 
+          array (
+            'PATCH' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => true,
+          6 => NULL,
+        ),
+      ),
+      272 => 
       array (
         0 => 
         array (
@@ -979,7 +1020,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      268 => 
+      298 => 
       array (
         0 => 
         array (
@@ -1001,7 +1042,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      305 => 
+      335 => 
       array (
         0 => 
         array (
@@ -1023,7 +1064,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      328 => 
+      358 => 
       array (
         0 => 
         array (
@@ -1045,7 +1086,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      361 => 
+      391 => 
       array (
         0 => 
         array (
@@ -1067,7 +1108,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      397 => 
+      427 => 
       array (
         0 => 
         array (
@@ -1213,7 +1254,7 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'generated::vt67Xy6haaENPFfm' => 
+    'generated::ZsG0b1pqa9vYQNcf' => 
     array (
       'methods' => 
       array (
@@ -1242,7 +1283,7 @@ app('router')->setCompiledRoutes(
                         \'exception\' => $exception,
                     ]), status: $exception ? 500 : 200);
                 }";s:5:"scope";s:54:"Illuminate\\Foundation\\Configuration\\ApplicationBuilder";s:4:"this";N;s:4:"self";s:32:"00000000000003440000000000000000";}}',
-        'as' => 'generated::vt67Xy6haaENPFfm',
+        'as' => 'generated::ZsG0b1pqa9vYQNcf',
       ),
       'fallback' => false,
       'defaults' => 
@@ -1996,6 +2037,80 @@ app('router')->setCompiledRoutes(
         array (
         ),
         'as' => 'google.sheet.seniorstore',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'google.sheet.seniorpdfupdate' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'PATCH',
+      ),
+      'uri' => 'dashboard/senior/google-sheet/pdfupdate/{id}',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@seniorpdfupdate',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@seniorpdfupdate',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'google.sheet.seniorpdfupdate',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'google.sheet.seniorpdfstore' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'dashboard/senior/google-sheet/pdfstore',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@seniorpdfstore',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@seniorpdfstore',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'google.sheet.seniorpdfstore',
       ),
       'fallback' => false,
       'defaults' => 
