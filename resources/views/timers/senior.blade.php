@@ -32,6 +32,10 @@ $script = '<script>
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
             </form>
         </div>
+        <a href="{{ route('viewProfile') }}" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+            <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+            Add New User
+        </a>
     </div>
     <div class="card-body p-24">
         <div class="row gy-4">
@@ -93,6 +97,7 @@ $script = '<script>
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
                             </div>
+
                         </div>
                     </div>
                 </div>
