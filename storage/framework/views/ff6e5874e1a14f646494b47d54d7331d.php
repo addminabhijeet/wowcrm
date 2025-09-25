@@ -1,4 +1,3 @@
-
 <?php
 $title='Users Grid';
 $subTitle = 'Database';

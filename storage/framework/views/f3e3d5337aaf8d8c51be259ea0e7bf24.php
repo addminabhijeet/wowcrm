@@ -172,12 +172,12 @@ $script = '<script>
         </div>
     </div>
 </div>
-<?php $__env->stopSection(); ?>
+
 
 
 
 <div id="statusOverlay"></div>
-<?php $__env->startSection('scripts'); ?>
+
 <script>
     function formatTime(sec) {
         sec = Math.max(0, Math.floor(sec));
