@@ -504,7 +504,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    document.querySelectorAll(".save-btn").forEach(btn => attachSaveHandler(btn));
+  
     applyInitialState(document);
 
     document.addEventListener('click', function(e) { if (!$(e.target).closest('#loc-suggestions, .location-autocomplete').length) $('#loc-suggestions').remove(); });
