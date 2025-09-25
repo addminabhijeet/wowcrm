@@ -312,31 +312,92 @@ class GoogleSheetController extends Controller
 
     public function seniorstore(Request $request)
     {
-        $rowData = $request->all(); // get all input
+        // Decode incoming row data
+        $rowData = json_decode($request->input('rows.0'), true);
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
+        $user = Auth::user();
         $maxRow = GoogleSheetData::max('sheet_row_number') ?? 0;
         $nextRow = $maxRow + 1;
 
-        $user = Auth::user();
+        $record = new GoogleSheetData();
+        $record->sheet_row_number = $nextRow;
+        $record->created_by = $user->id;
 
-        // Prepare insert data
-        $insertData = $rowData;
-        $insertData['sheet_row_number'] = $nextRow;
-        $insertData['created_by'] = "{$user->id}|{$user->role}";
+        // Map frontend keys to DB columns
+        $columnMap = [
+            'Date' => 'Date',
+            'Name' => 'Name',
+            'Email Address' => 'Email_Address',
+            'Phone Number' => 'Phone_Number',
+            'Location' => 'Location',
+            'Relocation' => 'Relocation',
+            'Graduation Date' => 'Graduation_Date',
+            'Immigration' => 'Immigration',
+            'Course' => 'Course',
+            'Amount' => 'Amount',
+            'Qualification' => 'Qualification',
+            'Exe Remarks' => 'Exe_Remarks',
+            '1st Follow Up Remarks' => 'First_Follow_Up_Remarks',
+            'Time Zone' => 'Time_Zone',
+            'View' => 'View'
+        ];
 
-        $newRow = GoogleSheetData::create($insertData);
+        // Assign values safely
+        foreach ($rowData as $key => $val) {
+            if (!isset($columnMap[$key])) continue;
+            $column = $columnMap[$key];
+
+            // Convert dates to Y-m-d format
+            if (in_array($column, ['Date', 'Graduation_Date']) && !empty($val)) {
+                try {
+                    $val = \Carbon\Carbon::createFromFormat('m/d/Y', $val)->format('Y-m-d');
+                } catch (\Exception $e) {
+                    $val = null; // fallback if date parsing fails
+                }
+            }
+
+            // Convert Amount to float
+            if ($column === 'Amount' && !empty($val)) {
+                $val = (float) str_replace(['$', ','], '', $val);
+            }
+
+            $record->$column = $val;
+        }
+
+        // Handle resume upload
+        if ($request->hasFile('resume')) {
+            $file = $request->file('resume');
+            $timestamp = now()->format('Ymd_His');
+            $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName   = Str::slug($filename) . "_{$timestamp}." . $extension;
+
+            try {
+                $file->storeAs('resumes', $newName, 'public');
+                $record->resume = $newName;
+            } catch (\Exception $e) {
+                $record->resume = null; // fallback if upload fails
+            }
+        }
+
+        // Save record safely
+        try {
+            $record->save();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Database error: ' . $e->getMessage()
+            ]);
+        }
 
         return response()->json([
             'success' => true,
-            'rows' => [[
-                'id'               => $newRow->id,
-                'sheet_row_number' => $newRow->sheet_row_number,
-                'created_by'       => $newRow->created_by
-            ]]
+            'id' => $record->id,
+            'sheet_row_number' => $record->sheet_row_number
         ]);
     }
 
@@ -376,6 +437,8 @@ class GoogleSheetController extends Controller
             'resume_url' => $record->resume ? asset('storage/resumes/' . $record->resume) : null,
         ]);
     }
+
+
 
     public function seniorpdfupdate(Request $request, $id)
     {
@@ -495,36 +558,45 @@ class GoogleSheetController extends Controller
         }
 
         // Handle resume upload
-        $resumePath = $row->resume ? "resumes/" . $row->resume : null;
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
             $timestamp = now()->format('Ymd_His');
             $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
             $newName   = Str::slug($filename) . "_{$timestamp}." . $extension;
-            $resumePath = $file->storeAs('resumes', $newName, 'public');
-            $row->resume = basename($resumePath);
+            $stored    = $file->storeAs('resumes', $newName, 'public');
+            $row->resume = basename($stored);
         }
 
-        // Map the data to individual columns
+        // Safely parse dates
+        $date = !empty($rowData['Date'])
+            ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d')
+            : null;
+
+        $graduationDate = !empty($rowData['Graduation Date'])
+            ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Graduation Date'])->format('Y-m-d')
+            : null;
+
+        // Map flattened columns
         $updateData = [
-            'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
-            'Name' => $rowData['Name'] ?? null,
-            'Email_Address' => $rowData['Email Address'] ?? null,
-            'Phone_Number' => $rowData['Phone Number'] ?? null,
-            'Location' => $rowData['Location'] ?? null,
-            'Relocation' => $rowData['Relocation'] ?? null,
-            'Graduation_Date' => isset($rowData['Graduation Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Graduation Date'])->format('Y-m-d') : null,
-            'Immigration' => $rowData['Immigration'] ?? null,
-            'Course' => $rowData['Course'] ?? null,
-            'Amount' => isset($rowData['Amount']) ? (float) str_replace(['$', ','], '', $rowData['Amount']) : null,
-            'Qualification' => $rowData['Qualification'] ?? null,
-            'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
-            'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
-            'Time_Zone' => $rowData['Time Zone'] ?? null,
-            'View' => $rowData['View'] ?? null,
-            'resume' => $row->resume,
-            'created_by' => Auth::id() . "|" . Auth::user()->role,
+            'Date'                     => $date,
+            'Name'                     => $rowData['Name'] ?? null,
+            'Email_Address'            => $rowData['Email Address'] ?? null,
+            'Phone_Number'             => $rowData['Phone Number'] ?? null,
+            'Location'                 => $rowData['Location'] ?? null,
+            'Relocation'               => $rowData['Relocation'] ?? null,
+            'Graduation_Date'          => $graduationDate,
+            'Immigration'              => $rowData['Immigration'] ?? null,
+            'Course'                   => $rowData['Course'] ?? null,
+            'Amount'                   => isset($rowData['Amount']) ? (float) str_replace(['$', ','], '', $rowData['Amount']) : null,
+            'Qualification'            => $rowData['Qualification'] ?? null,
+            'Exe_Remarks'              => $rowData['Exe Remarks'] ?? null,
+            'First_Follow_Up_Remarks'  => $rowData['1st Follow Up Remarks'] ?? null,
+            'Time_Zone'                => $rowData['Time Zone'] ?? null,
+            'View'                     => $rowData['View'] ?? null,
+            'resume'                   => $row->resume,
+            'data'                     => $rowData, // store JSON too
+            'created_by'               => $row->created_by, // keep original creator
         ];
 
         $row->update($updateData);
@@ -532,59 +604,106 @@ class GoogleSheetController extends Controller
         return response()->json([
             'success' => true,
             'row' => [
-                'id'          => $row->id,
-                'data'        => $rowData,
-                'resume_url'  => $row->resume ? asset('storage/resumes/' . $row->resume) : null,
+                'id'         => $row->id,
+                'data'       => $row->data,
+                'resume_url' => $row->resume ? asset('storage/resumes/' . $row->resume) : null,
             ]
         ]);
     }
 
+
     public function juniorstore(Request $request)
     {
-        $rowData = $request->input('rows.0');
+        // Decode incoming row data
+        $rowData = json_decode($request->input('rows.0'), true);
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        $maxRow = GoogleSheetData::max('sheet_row_number') ?? 1;
-        $nextRow = $maxRow + 1;
         $user = Auth::user();
+        $maxRow = GoogleSheetData::max('sheet_row_number') ?? 0;
+        $nextRow = $maxRow + 1;
 
-        // Map the data to individual columns
-        $mappedData = [
-            'sheet_row_number' => $nextRow,
-            'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
-            'Name' => $rowData['Name'] ?? null,
-            'Email_Address' => $rowData['Email Address'] ?? null,
-            'Phone_Number' => $rowData['Phone Number'] ?? null,
-            'Location' => $rowData['Location'] ?? null,
-            'Relocation' => $rowData['Relocation'] ?? null,
-            'Graduation_Date' => isset($rowData['Graduation Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Graduation Date'])->format('Y-m-d') : null,
-            'Immigration' => $rowData['Immigration'] ?? null,
-            'Course' => $rowData['Course'] ?? null,
-            'Amount' => isset($rowData['Amount']) ? (float) str_replace(['$', ','], '', $rowData['Amount']) : null,
-            'Qualification' => $rowData['Qualification'] ?? null,
-            'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
-            'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
-            'Time_Zone' => $rowData['Time Zone'] ?? null,
-            'View' => $rowData['View'] ?? null,
-            'created_by' => "{$user->id}|{$user->role}",
+        $record = new GoogleSheetData();
+        $record->sheet_row_number = $nextRow;
+        $record->created_by = $user->id;
+
+        // Map frontend keys to DB columns
+        $columnMap = [
+            'Date' => 'Date',
+            'Name' => 'Name',
+            'Email Address' => 'Email_Address',
+            'Phone Number' => 'Phone_Number',
+            'Location' => 'Location',
+            'Relocation' => 'Relocation',
+            'Graduation Date' => 'Graduation_Date',
+            'Immigration' => 'Immigration',
+            'Course' => 'Course',
+            'Amount' => 'Amount',
+            'Qualification' => 'Qualification',
+            'Exe Remarks' => 'Exe_Remarks',
+            '1st Follow Up Remarks' => 'First_Follow_Up_Remarks',
+            'Time Zone' => 'Time_Zone',
+            'View' => 'View'
         ];
 
-        $newRow = GoogleSheetData::create($mappedData);
+        // Assign values safely
+        foreach ($rowData as $key => $val) {
+            if (!isset($columnMap[$key])) continue;
+            $column = $columnMap[$key];
+
+            // Convert dates to Y-m-d format
+            if (in_array($column, ['Date', 'Graduation_Date']) && !empty($val)) {
+                try {
+                    $val = \Carbon\Carbon::createFromFormat('m/d/Y', $val)->format('Y-m-d');
+                } catch (\Exception $e) {
+                    $val = null; // fallback if date parsing fails
+                }
+            }
+
+            // Convert Amount to float
+            if ($column === 'Amount' && !empty($val)) {
+                $val = (float) str_replace(['$', ','], '', $val);
+            }
+
+            $record->$column = $val;
+        }
+
+        // Handle resume upload
+        if ($request->hasFile('resume')) {
+            $file = $request->file('resume');
+            $timestamp = now()->format('Ymd_His');
+            $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName   = Str::slug($filename) . "_{$timestamp}." . $extension;
+
+            try {
+                $file->storeAs('resumes', $newName, 'public');
+                $record->resume = $newName;
+            } catch (\Exception $e) {
+                $record->resume = null; // fallback if upload fails
+            }
+        }
+
+        // Save record safely
+        try {
+            $record->save();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Database error: ' . $e->getMessage()
+            ]);
+        }
 
         return response()->json([
             'success' => true,
-            'rows' => [[
-                'id'               => $newRow->id,
-                'sheet_row_number' => $newRow->sheet_row_number,
-                'data'             => $rowData,
-                'created_by'       => $newRow->created_by,
-                'resume_url'       => $newRow->resume ? asset('storage/resumes/' . $newRow->resume) : null,
-            ]]
+            'id' => $record->id,
+            'sheet_row_number' => $record->sheet_row_number
         ]);
     }
+
+
 
     // The PDF methods remain the same as they handle file uploads separately
     public function juniorpdfstore(Request $request)

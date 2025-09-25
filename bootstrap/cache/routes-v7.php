@@ -71,7 +71,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::ZsG0b1pqa9vYQNcf',
+            '_route' => 'generated::pmXpF1PejufgDmAX',
           ),
           1 => NULL,
           2 => 
@@ -458,25 +458,6 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      '/dashboard/junior/google-sheet/store' => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'google.sheet.juniorstore',
-          ),
-          1 => NULL,
-          2 => 
-          array (
-            'POST' => 0,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => false,
-          6 => NULL,
-        ),
-      ),
       '/dashboard/junior/google-sheet/pdfstore' => 
       array (
         0 => 
@@ -716,6 +697,44 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
+      '/dashboard/junior/google-sheet/juniorstore' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'juniorstore',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
+      '/dashboard/junior/google-sheet/juniorupdate' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'juniorupdate',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
       '/admin/logins' => 
       array (
         0 => 
@@ -876,7 +895,7 @@ app('router')->setCompiledRoutes(
     ),
     2 => 
     array (
-      0 => '{^(?|/dashboard/(?|admin/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:66)|google\\-sheet/update/([^/]++)(*:102))|senior/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:157)|google\\-sheet/(?|update/([^/]++)(*:197)|pdfupdate/([^/]++)(*:223)))|junior/google\\-sheet/(?|update/([^/]++)(*:272)|pdfupdate/([^/]++)(*:298)))|/resumes/(?|upload/([^/]++)(*:335)|([^/]++)/status(*:358))|/payment/([^/]++)/status(*:391)|/training/([^/]++)/trastatus(*:427))/?$}sDu',
+      0 => '{^(?|/dashboard/(?|admin/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:66)|google\\-sheet/update/([^/]++)(*:102))|senior/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:157)|google\\-sheet/(?|update/([^/]++)(*:197)|pdfupdate/([^/]++)(*:223)))|junior/google\\-sheet/pdfupdate/([^/]++)(*:272))|/resumes/(?|upload/([^/]++)(*:308)|([^/]++)/status(*:331))|/payment/([^/]++)/status(*:364)|/training/([^/]++)/trastatus(*:400))/?$}sDu',
     ),
     3 => 
     array (
@@ -1004,28 +1023,6 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'google.sheet.juniorupdate',
-          ),
-          1 => 
-          array (
-            0 => 'id',
-          ),
-          2 => 
-          array (
-            'PATCH' => 0,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => true,
-          6 => NULL,
-        ),
-      ),
-      298 => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
             '_route' => 'google.sheet.juniorpdfupdate',
           ),
           1 => 
@@ -1042,7 +1039,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      335 => 
+      308 => 
       array (
         0 => 
         array (
@@ -1064,7 +1061,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      358 => 
+      331 => 
       array (
         0 => 
         array (
@@ -1086,7 +1083,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      391 => 
+      364 => 
       array (
         0 => 
         array (
@@ -1108,7 +1105,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      427 => 
+      400 => 
       array (
         0 => 
         array (
@@ -1254,7 +1251,7 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'generated::ZsG0b1pqa9vYQNcf' => 
+    'generated::pmXpF1PejufgDmAX' => 
     array (
       'methods' => 
       array (
@@ -1283,7 +1280,7 @@ app('router')->setCompiledRoutes(
                         \'exception\' => $exception,
                     ]), status: $exception ? 500 : 200);
                 }";s:5:"scope";s:54:"Illuminate\\Foundation\\Configuration\\ApplicationBuilder";s:4:"this";N;s:4:"self";s:32:"00000000000003440000000000000000";}}',
-        'as' => 'generated::ZsG0b1pqa9vYQNcf',
+        'as' => 'generated::pmXpF1PejufgDmAX',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2201,80 +2198,6 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'google.sheet.juniorupdate' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'PATCH',
-      ),
-      'uri' => 'dashboard/junior/google-sheet/update/{id}',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-        ),
-        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@juniorupdate',
-        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@juniorupdate',
-        'namespace' => NULL,
-        'prefix' => '',
-        'where' => 
-        array (
-        ),
-        'as' => 'google.sheet.juniorupdate',
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'google.sheet.juniorstore' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'POST',
-      ),
-      'uri' => 'dashboard/junior/google-sheet/store',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-        ),
-        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@juniorstore',
-        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@juniorstore',
-        'namespace' => NULL,
-        'prefix' => '',
-        'where' => 
-        array (
-        ),
-        'as' => 'google.sheet.juniorstore',
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
     'google.sheet.juniorpdfupdate' => 
     array (
       'methods' => 
@@ -2752,6 +2675,80 @@ app('router')->setCompiledRoutes(
         array (
         ),
         'as' => 'timer.toggleAllStatus',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'juniorstore' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'dashboard/junior/google-sheet/juniorstore',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@juniorstore',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@juniorstore',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'juniorstore',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'juniorupdate' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'dashboard/junior/google-sheet/juniorupdate',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@juniorupdate',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@juniorupdate',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'juniorupdate',
       ),
       'fallback' => false,
       'defaults' => 

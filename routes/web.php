@@ -47,15 +47,15 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/senior/google-sheet', [GoogleSheetController::class, 'senior'])->name('google.sheet.senior');
     Route::post('/dashboard/senior/google-sheet/fetch', [GoogleSheetController::class, 'seniorfetch'])->name('google.sheet.seniorfetch');
-    Route::patch('/dashboard/senior/google-sheet/update/{id}', [GoogleSheetController::class, 'seniorupdate'])->name('google.sheet.seniorupdate');
-    Route::post('/dashboard/senior/google-sheet/store', [GoogleSheetController::class, 'seniorstore'])->name('google.sheet.seniorstore');
+    // Route::patch('/dashboard/senior/google-sheet/update/{id}', [GoogleSheetController::class, 'seniorupdate'])->name('google.sheet.seniorupdate');
+    // Route::post('/dashboard/senior/google-sheet/store', [GoogleSheetController::class, 'seniorstore'])->name('google.sheet.seniorstore');
     Route::patch('/dashboard/senior/google-sheet/pdfupdate/{id}', [GoogleSheetController::class, 'seniorpdfupdate'])->name('google.sheet.seniorpdfupdate');
     Route::post('/dashboard/senior/google-sheet/pdfstore', [GoogleSheetController::class, 'seniorpdfstore'])->name('google.sheet.seniorpdfstore');
 
     Route::get('/dashboard/junior/google-sheet', [GoogleSheetController::class, 'junior'])->name('google.sheet.junior');
     Route::post('/dashboard/junior/google-sheet/fetch', [GoogleSheetController::class, 'juniorfetch'])->name('google.sheet.juniorfetch');
-    Route::patch('/dashboard/junior/google-sheet/update/{id}', [GoogleSheetController::class, 'juniorupdate'])->name('google.sheet.juniorupdate');
-    Route::post('/dashboard/junior/google-sheet/store', [GoogleSheetController::class, 'juniorstore'])->name('google.sheet.juniorstore');
+    // Route::patch('/dashboard/junior/google-sheet/update/{id}', [GoogleSheetController::class, 'juniorupdate'])->name('google.sheet.juniorupdate');
+    // Route::post('/dashboard/junior/google-sheet/store', [GoogleSheetController::class, 'juniorstore'])->name('google.sheet.juniorstore');
     Route::patch('/dashboard/junior/google-sheet/pdfupdate/{id}', [GoogleSheetController::class, 'juniorpdfupdate'])->name('google.sheet.juniorpdfupdate');
     Route::post('/dashboard/junior/google-sheet/pdfstore', [GoogleSheetController::class, 'juniorpdfstore'])->name('google.sheet.juniorpdfstore');
 
@@ -71,6 +71,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/junior/juniortimer', [TimerController::class, 'juniorTimers'])->name('timer.junior');
     Route::post('/timer/toggle-button-status', [TimerController::class, 'toggleButtonStatus'])->name('timer.toggleButtonStatus');
     Route::post('/timer/toggle-all-status', [TimerController::class, 'toggleAllStatus'])->name('timer.toggleAllStatus');
+    Route::post('/dashboard/junior/google-sheet/juniorstore', [GoogleSheetController::class, 'juniorstore'])->name('juniorstore');
+    Route::post('/dashboard/junior/google-sheet/juniorupdate', [GoogleSheetController::class, 'juniorupdate'])->name('juniorupdate');
+    Route::post('/dashboard/senior/google-sheet/seniorstore', [GoogleSheetController::class, 'seniorstore'])->name('seniorstore');
+    Route::post('/dashboard/senior/google-sheet/seniorupdate', [GoogleSheetController::class, 'seniorupdate'])->name('seniorupdate');
+
     
 });
 
