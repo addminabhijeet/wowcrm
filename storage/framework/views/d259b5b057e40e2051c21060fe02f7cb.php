@@ -197,7 +197,7 @@ $script ='<script>
 
                         
                         <td>
-                            <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
+                            <input type="file" accept="application/pdf" class="d-none resume-input" data-id="<?php echo e($row->id); ?>" data-key="View">
                             <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
 
                             <?php if(!empty($row->resume)): ?>
@@ -208,6 +208,7 @@ $script ='<script>
                             <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                             <?php endif; ?>
                         </td>
+
 
                         <td class="text-center">
                             <button class="btn btn-sm btn-success save-btn" data-id="<?php echo e($row->id); ?>">
@@ -786,36 +787,48 @@ $script ='<script>
     document.addEventListener("DOMContentLoaded", function() {
         const tableBody = document.getElementById("sheet-table-body");
         if (!tableBody) return console.error("❌ Table body not found");
+
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
         if (!csrfToken) console.warn("⚠️ CSRF token not found in meta tag");
+
         tableBody.addEventListener("click", function(e) {
             const button = e.target.closest(".upload-btn");
             if (!button) return;
+
             const td = button.closest("td");
             if (!td) return console.error("❌ Could not find <td> for Upload button");
+
             const fileInput = td.querySelector(".resume-input");
             if (!fileInput) return console.error("❌ No file input found in this cell");
+
             fileInput.onchange = null;
             fileInput.click();
+
             fileInput.onchange = function() {
                 const file = fileInput.files[0];
                 if (!file) return console.warn("⚠️ No file selected.");
+
                 if (file.type !== "application/pdf") {
                     alert("Only PDF files are allowed!");
                     fileInput.value = "";
                     return;
                 }
+
                 uploadResume(td, file, button);
             };
         });
+
         async function uploadResume(td, file, button) {
             const row = td.closest("tr");
             if (!row) return console.error("❌ <tr> not found for this cell");
+
             const recordId = row.getAttribute("data-id") || "new";
             const formData = new FormData();
             formData.append("resume", file);
+
             let url = `/dashboard/junior/google-sheet/pdfstore`;
             let method = "POST";
+
             if (recordId !== "new") {
                 url = `/dashboard/junior/google-sheet/pdfupdate/${recordId}`;
                 formData.append("_method", "PATCH");
@@ -824,9 +837,13 @@ $script ='<script>
             } else {
                 console.log("➕ Creating new resume entry");
             }
+
             button.innerHTML = "Uploading...";
             button.disabled = true;
+
             try {
+                console.log("📡 Sending request:", { url, method, formData });
+
                 const response = await fetch(url, {
                     method: method,
                     headers: {
@@ -835,17 +852,39 @@ $script ='<script>
                     body: formData,
                     credentials: "same-origin"
                 });
-                if (response.status === 419) throw new Error("Session expired or CSRF token mismatch");
-                const resp = await response.json();
+
+                console.log("📥 Raw response status:", response.status);
+
+                // Log the response text before parsing
+                const rawText = await response.text();
+                console.log("📜 Raw server response:", rawText);
+
+                let resp;
+                try {
+                    resp = JSON.parse(rawText);
+                } catch (jsonErr) {
+                    console.error("❌ JSON parse error:", jsonErr);
+                    alert("Server did not return valid JSON. Check console for details.");
+                    button.innerHTML = "Upload";
+                    button.disabled = false;
+                    return;
+                }
+
                 button.innerHTML = "Upload";
                 button.disabled = false;
+
+                console.log("✅ Parsed JSON:", resp);
+
                 if (resp.success && resp.resume_url) {
                     if (resp.id) row.setAttribute("data-id", resp.id);
+
                     const viewBtn = td.querySelector(".view-btn");
                     const downloadBtn = td.querySelector(".download-btn");
+
                     const resumePath = resp.resume_url;
                     const fullUrl = resumePath.startsWith('http') ? resumePath : window.location.origin + '/' + resumePath;
                     const filename = resumePath.split('/').pop();
+
                     if (viewBtn) {
                         viewBtn.classList.remove("d-none");
                         viewBtn.href = fullUrl;
@@ -868,4 +907,5 @@ $script ='<script>
         }
     });
 </script>
+
 <?php echo $__env->make('layout.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\wowdash\resources\views/database/junior.blade.php ENDPATH**/ ?>
