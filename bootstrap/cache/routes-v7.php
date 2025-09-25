@@ -71,7 +71,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::pmXpF1PejufgDmAX',
+            '_route' => 'generated::o81TdXgtvUag1zGW',
           ),
           1 => NULL,
           2 => 
@@ -369,25 +369,6 @@ app('router')->setCompiledRoutes(
           0 => 
           array (
             '_route' => 'google.sheet.seniorfetch',
-          ),
-          1 => NULL,
-          2 => 
-          array (
-            'POST' => 0,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => false,
-          6 => NULL,
-        ),
-      ),
-      '/dashboard/senior/google-sheet/store' => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'google.sheet.seniorstore',
           ),
           1 => NULL,
           2 => 
@@ -735,6 +716,44 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
+      '/dashboard/senior/google-sheet/seniorstore' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'seniorstore',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
+      '/dashboard/senior/google-sheet/seniorupdate' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'seniorupdate',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
       '/admin/logins' => 
       array (
         0 => 
@@ -895,7 +914,7 @@ app('router')->setCompiledRoutes(
     ),
     2 => 
     array (
-      0 => '{^(?|/dashboard/(?|admin/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:66)|google\\-sheet/update/([^/]++)(*:102))|senior/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:157)|google\\-sheet/(?|update/([^/]++)(*:197)|pdfupdate/([^/]++)(*:223)))|junior/google\\-sheet/pdfupdate/([^/]++)(*:272))|/resumes/(?|upload/([^/]++)(*:308)|([^/]++)/status(*:331))|/payment/([^/]++)/status(*:364)|/training/([^/]++)/trastatus(*:400))/?$}sDu',
+      0 => '{^(?|/dashboard/(?|admin/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:66)|google\\-sheet/update/([^/]++)(*:102))|senior/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:157)|google\\-sheet/pdfupdate/([^/]++)(*:197))|junior/google\\-sheet/pdfupdate/([^/]++)(*:245))|/resumes/(?|upload/([^/]++)(*:281)|([^/]++)/status(*:304))|/payment/([^/]++)/status(*:337)|/training/([^/]++)/trastatus(*:373))/?$}sDu',
     ),
     3 => 
     array (
@@ -979,28 +998,6 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'google.sheet.seniorupdate',
-          ),
-          1 => 
-          array (
-            0 => 'id',
-          ),
-          2 => 
-          array (
-            'PATCH' => 0,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => true,
-          6 => NULL,
-        ),
-      ),
-      223 => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
             '_route' => 'google.sheet.seniorpdfupdate',
           ),
           1 => 
@@ -1017,7 +1014,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      272 => 
+      245 => 
       array (
         0 => 
         array (
@@ -1039,7 +1036,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      308 => 
+      281 => 
       array (
         0 => 
         array (
@@ -1061,7 +1058,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      331 => 
+      304 => 
       array (
         0 => 
         array (
@@ -1083,7 +1080,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      364 => 
+      337 => 
       array (
         0 => 
         array (
@@ -1105,7 +1102,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      400 => 
+      373 => 
       array (
         0 => 
         array (
@@ -1251,7 +1248,7 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'generated::pmXpF1PejufgDmAX' => 
+    'generated::o81TdXgtvUag1zGW' => 
     array (
       'methods' => 
       array (
@@ -1280,7 +1277,7 @@ app('router')->setCompiledRoutes(
                         \'exception\' => $exception,
                     ]), status: $exception ? 500 : 200);
                 }";s:5:"scope";s:54:"Illuminate\\Foundation\\Configuration\\ApplicationBuilder";s:4:"this";N;s:4:"self";s:32:"00000000000003440000000000000000";}}',
-        'as' => 'generated::pmXpF1PejufgDmAX',
+        'as' => 'generated::o81TdXgtvUag1zGW',
       ),
       'fallback' => false,
       'defaults' => 
@@ -1960,80 +1957,6 @@ app('router')->setCompiledRoutes(
         array (
         ),
         'as' => 'google.sheet.seniorfetch',
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'google.sheet.seniorupdate' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'PATCH',
-      ),
-      'uri' => 'dashboard/senior/google-sheet/update/{id}',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-        ),
-        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@seniorupdate',
-        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@seniorupdate',
-        'namespace' => NULL,
-        'prefix' => '',
-        'where' => 
-        array (
-        ),
-        'as' => 'google.sheet.seniorupdate',
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'google.sheet.seniorstore' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'POST',
-      ),
-      'uri' => 'dashboard/senior/google-sheet/store',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-        ),
-        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@seniorstore',
-        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@seniorstore',
-        'namespace' => NULL,
-        'prefix' => '',
-        'where' => 
-        array (
-        ),
-        'as' => 'google.sheet.seniorstore',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2749,6 +2672,80 @@ app('router')->setCompiledRoutes(
         array (
         ),
         'as' => 'juniorupdate',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'seniorstore' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'dashboard/senior/google-sheet/seniorstore',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@seniorstore',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@seniorstore',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'seniorstore',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'seniorupdate' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'dashboard/senior/google-sheet/seniorupdate',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@seniorupdate',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@seniorupdate',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'seniorupdate',
       ),
       'fallback' => false,
       'defaults' => 

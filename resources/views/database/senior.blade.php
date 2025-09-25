@@ -454,6 +454,8 @@ document.addEventListener("DOMContentLoaded", function() {
         attachSaveHandler(newRow.querySelector(".save-btn"));
     }
 
+    if (!tableBody.querySelector('tr[data-id="new"]')) addBlankRow();
+
     tableBody.addEventListener('change', function(e) { if (e.target.matches('select.dynamic-dropdown')) updateSelectColor(e.target); });
 
     function attachSaveHandler(btn) {

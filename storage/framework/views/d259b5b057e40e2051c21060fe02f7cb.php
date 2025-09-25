@@ -1,5 +1,4 @@
-@extends('layout.layout')
-@php
+<?php
 $title='Users Grid';
 $subTitle = 'Database';
 $script ='<script>
@@ -7,9 +6,9 @@ $script ='<script>
         $(this).closest("tr").addClass("d-none")
     });
 </script>';
-@endphp
+?>
 
-@section('content')
+<?php $__env->startSection('content'); ?>
 
 <div class="card h-100 p-0 radius-12">
     <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
@@ -31,9 +30,9 @@ $script ='<script>
     </div>
     <div class="card-body p-24">
         <div class="table-responsive scroll-sm">
-            @if($data->isEmpty())
+            <?php if($data->isEmpty()): ?>
             <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
-            @else
+            <?php else: ?>
             <table class="table bordered-table sm-table mb-0">
                 <thead>
                     <tr>
@@ -58,173 +57,180 @@ $script ='<script>
                     </tr>
                 </thead>
                 <tbody id="sheet-table-body">
-                    @foreach($data as $row)
-                    <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
+                    <?php $__currentLoopData = $data; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $row): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                    <tr id="row-<?php echo e($row->id); ?>" data-id="<?php echo e($row->id); ?>">
 
-                        <td>{{ $row->sheet_row_number }}</td>
+                        <td><?php echo e($row->sheet_row_number); ?></td>
 
-                        {{-- Date --}}
+                        
                         <td>
                             <input type="text" class="form-control date-picker" data-key="Date"
-                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
+                                value="<?php echo e($row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : ''); ?>">
                         </td>
 
-                        {{-- Name --}}
+                        
                         <td>
                             <input type="text" class="form-control name-input" data-key="Name"
-                                value="{{ $row->Name ?? '' }}" placeholder="Name">
+                                value="<?php echo e($row->Name ?? ''); ?>" placeholder="Name">
                         </td>
 
-                        {{-- Email Address --}}
+                        
                         <td>
                             <input type="email" class="form-control email-input" data-key="Email Address"
-                                value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail">
+                                value="<?php echo e($row->Email_Address ?? ''); ?>" placeholder="E-mail">
                         </td>
 
-                        {{-- Phone Number --}}
+                        
                         <td>
                             <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                maxlength="12" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
+                                maxlength="12" value="<?php echo e($row->Phone_Number ?? ''); ?>" placeholder="US number">
                         </td>
 
-                        {{-- Location --}}
+                        
                         <td>
                             <input type="text" class="form-control location-autocomplete" data-key="Location"
-                                value="{{ $row->Location ?? '' }}" placeholder="Type location">
+                                value="<?php echo e($row->Location ?? ''); ?>" placeholder="Type location">
                         </td>
 
-                        {{-- Relocation --}}
+                        
                         <td>
-                            @php $relOptions = ['YES','NO']; @endphp
+                            <?php $relOptions = ['YES','NO']; ?>
                             <select class="form-select dynamic-dropdown" data-key="Relocation">
                                 <option value="">-- Select --</option>
-                                @foreach($relOptions as $option)
-                                <option value="{{ $option }}" {{ $row->Relocation === $option ? 'selected' : '' }}>
-                                    {{ $option }}
+                                <?php $__currentLoopData = $relOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($option); ?>" <?php echo e($row->Relocation === $option ? 'selected' : ''); ?>>
+                                    <?php echo e($option); ?>
+
                                 </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </td>
 
-                        {{-- Graduation Date --}}
+                        
                         <td>
                             <input type="text" class="form-control date-picker" data-key="Graduation Date"
-                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
+                                value="<?php echo e($row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : ''); ?>">
                         </td>
 
-                        {{-- Immigration --}}
+                        
                         <td>
-                            @php $immOptions = ['Dependent Visa','Global Visa','Graduate Visa','Student Visa','Citizen','Permanent Residence(ILR)']; @endphp
+                            <?php $immOptions = ['Dependent Visa','Global Visa','Graduate Visa','Student Visa','Citizen','Permanent Residence(ILR)']; ?>
                             <select class="form-select dynamic-dropdown" data-key="Immigration">
                                 <option value="">-- Select --</option>
-                                @foreach($immOptions as $option)
-                                <option value="{{ $option }}" {{ $row->Immigration === $option ? 'selected' : '' }}>
-                                    {{ $option }}
+                                <?php $__currentLoopData = $immOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($option); ?>" <?php echo e($row->Immigration === $option ? 'selected' : ''); ?>>
+                                    <?php echo e($option); ?>
+
                                 </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </td>
 
-                        {{-- Course --}}
+                        
                         <td>
-                            @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
+                            <?php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; ?>
                             <select class="form-select dynamic-dropdown" data-key="Course">
                                 <option value="">-- Select --</option>
-                                @foreach($courseOptions as $option)
-                                <option value="{{ $option }}" {{ $row->Course === $option ? 'selected' : '' }}>
-                                    {{ $option }}
+                                <?php $__currentLoopData = $courseOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($option); ?>" <?php echo e($row->Course === $option ? 'selected' : ''); ?>>
+                                    <?php echo e($option); ?>
+
                                 </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </td>
 
-                        {{-- Amount --}}
+                        
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="$100">
+                                value="<?php echo e($row->Amount ? '$' . number_format($row->Amount, 2) : ''); ?>" placeholder="$100">
                         </td>
 
-                        {{-- Qualification --}}
+                        
                         <td>
                             <input type="text" class="form-control qualification-input" data-key="Qualification"
-                                value="{{ $row->Qualification ?? '' }}" placeholder="Qualification">
+                                value="<?php echo e($row->Qualification ?? ''); ?>" placeholder="Qualification">
                         </td>
 
-                        {{-- Exe Remarks --}}
+                        
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Not Interested','Others','N/A','VM','Busy']; @endphp
+                            <?php $exeOptions = ['Called & Mailed','Not Interested','Others','N/A','VM','Busy']; ?>
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                 <option value="">-- Select --</option>
-                                @foreach($exeOptions as $option)
-                                <option value="{{ $option }}" {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
-                                    {{ $option }}
+                                <?php $__currentLoopData = $exeOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($option); ?>" <?php echo e($row->Exe_Remarks === $option ? 'selected' : ''); ?>>
+                                    <?php echo e($option); ?>
+
                                 </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </td>
 
-                        {{-- 1st Follow Up Remarks --}}
+                        
                         <td>
-                            @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call']; @endphp
+                            <?php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call']; ?>
                             <select class="form-select dynamic-dropdown" data-key="1st Follow Up Remarks">
                                 <option value="">-- Select --</option>
-                                @foreach($followOptions as $option)
-                                <option value="{{ $option }}" {{ $row->First_Follow_Up_Remarks === $option ? 'selected' : '' }}>
-                                    {{ $option }}
+                                <?php $__currentLoopData = $followOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($option); ?>" <?php echo e($row->First_Follow_Up_Remarks === $option ? 'selected' : ''); ?>>
+                                    <?php echo e($option); ?>
+
                                 </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </td>
 
-                        {{-- Time Zone --}}
+                        
                         <td>
-                            @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
+                            <?php $timezoneOptions = ['EST','CST','MST','PST']; ?>
                             <select class="form-select dynamic-dropdown" data-key="Time Zone">
                                 <option value="">-- Select --</option>
-                                @foreach($timezoneOptions as $option)
-                                <option value="{{ $option }}" {{ $row->Time_Zone === $option ? 'selected' : '' }}>
-                                    {{ $option }}
+                                <?php $__currentLoopData = $timezoneOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                                <option value="<?php echo e($option); ?>" <?php echo e($row->Time_Zone === $option ? 'selected' : ''); ?>>
+                                    <?php echo e($option); ?>
+
                                 </option>
-                                @endforeach
+                                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                             </select>
                         </td>
 
-                        {{-- View (Resume) --}}
+                        
                         <td>
                             <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
                             <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
 
-                            @if(!empty($row->resume))
-                            <a href="{{ asset('storage/resumes/' . $row->resume) }}" target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
-                            <a href="{{ asset('storage/resumes/' . $row->resume) }}" download class="btn btn-sm btn-secondary download-btn">Download</a>
-                            @else
+                            <?php if(!empty($row->resume)): ?>
+                            <a href="<?php echo e(asset('storage/resumes/' . $row->resume)); ?>" target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
+                            <a href="<?php echo e(asset('storage/resumes/' . $row->resume)); ?>" download class="btn btn-sm btn-secondary download-btn">Download</a>
+                            <?php else: ?>
                             <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
                             <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-                            @endif
+                            <?php endif; ?>
                         </td>
 
                         <td class="text-center">
-                            <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
+                            <button class="btn btn-sm btn-success save-btn" data-id="<?php echo e($row->id); ?>">
                                 <i class="fas fa-save"></i> Save
                             </button>
                         </td>
                     </tr>
-                    @endforeach
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 </tbody>
             </table>
-            @endif
+            <?php endif; ?>
         </div>
-        {{-- Pagination --}}
-        @if($data->hasPages())
+        
+        <?php if($data->hasPages()): ?>
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
             <div>
-                {{ $data->links('pagination::bootstrap-5') }}
+                <?php echo e($data->links('pagination::bootstrap-5')); ?>
+
             </div>
         </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
     .input-hint {
@@ -455,8 +461,6 @@ document.addEventListener("DOMContentLoaded", function() {
         attachSaveHandler(newRow.querySelector(".save-btn"));
     }
 
-    if (!tableBody.querySelector('tr[data-id="new"]')) addBlankRow();
-
     tableBody.addEventListener('change', function(e) { if (e.target.matches('select.dynamic-dropdown')) updateSelectColor(e.target); });
 
     function attachSaveHandler(btn) {
@@ -476,12 +480,12 @@ document.addEventListener("DOMContentLoaded", function() {
 
             let formData = new FormData();
             formData.append("rows[0]", JSON.stringify(rowData));
-            formData.append("_token", "{{ csrf_token() }}");
+            formData.append("_token", "<?php echo e(csrf_token()); ?>");
 
             let resumeInput = row.querySelector("input.resume-input");
             if (resumeInput && resumeInput.files.length > 0) { formData.append("resume", resumeInput.files[0]); }
 
-            let url = (id === "new") ? "{{ route('juniorstore') }}" : "{{ route('juniorupdate') }}";
+            let url = (id === "new") ? "<?php echo e(route('juniorstore')); ?>" : "<?php echo e(route('juniorupdate')); ?>";
             if (id !== "new") formData.append("id", id);
 
             fetch(url, { method: "POST", body: formData })
@@ -603,3 +607,4 @@ document.addEventListener("DOMContentLoaded", function() {
         }
     });
 </script>
+<?php echo $__env->make('layout.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\wowdash\resources\views/database/junior.blade.php ENDPATH**/ ?>
