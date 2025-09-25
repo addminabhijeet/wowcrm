@@ -325,7 +325,7 @@ class GoogleSheetController extends Controller
 
         $record = new GoogleSheetData();
         $record->sheet_row_number = $nextRow;
-        $record->created_by = $user->id;
+        $record->created_by = $user->id . '|senior';
 
         // Map frontend keys to DB columns
         $columnMap = [
@@ -627,7 +627,7 @@ class GoogleSheetController extends Controller
 
         $record = new GoogleSheetData();
         $record->sheet_row_number = $nextRow;
-        $record->created_by = $user->id;
+        $record->created_by = $user->id . '|junior';
 
         // Map frontend keys to DB columns
         $columnMap = [

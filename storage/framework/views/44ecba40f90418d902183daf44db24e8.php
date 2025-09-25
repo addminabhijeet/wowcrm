@@ -461,6 +461,8 @@ document.addEventListener("DOMContentLoaded", function() {
         attachSaveHandler(newRow.querySelector(".save-btn"));
     }
 
+    if (!tableBody.querySelector('tr[data-id="new"]')) addBlankRow();
+
     tableBody.addEventListener('change', function(e) { if (e.target.matches('select.dynamic-dropdown')) updateSelectColor(e.target); });
 
     function attachSaveHandler(btn) {
@@ -508,7 +510,7 @@ document.addEventListener("DOMContentLoaded", function() {
         });
     }
 
-    document.querySelectorAll(".save-btn").forEach(btn => attachSaveHandler(btn));
+    
     applyInitialState(document);
 
     document.addEventListener('click', function(e) { if (!$(e.target).closest('#loc-suggestions, .location-autocomplete').length) $('#loc-suggestions').remove(); });
