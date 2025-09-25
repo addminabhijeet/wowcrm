@@ -32,9 +32,16 @@ $script = '<script>
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
             </form>
         </div>
-        <a href="{{ route('viewProfile') }}" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+        <a href="javascript:void(0)" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
+            id="enableAll">
             <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-            Add New User
+            Enable All Junior
+        </a>
+
+        <a href="javascript:void(0)" class="btn btn-danger text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
+            id="disableAll">
+            <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
+            Disable All Junior
         </a>
     </div>
     <div class="card-body p-24">
@@ -43,6 +50,19 @@ $script = '<script>
             <div class="col-xxl-3 col-md-6 user-grid-card">
                 <div class="position-relative border radius-16 overflow-hidden">
                     <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
+
+                    <!-- Dropdown -->
+                    <div class="dropdown position-absolute top-0 end-0 me-16 mt-16">
+                        @if($timer['button_status'] == 0)
+                        <button type="button" class="bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white" disabled>
+                            <iconify-icon icon="entypo:dots-three-vertical" class="icon"></iconify-icon>
+                        </button>
+                        @else
+                        <button type="button" class="bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white" disabled>
+                            <iconify-icon icon="entypo:dots-three-vertical" class="icon"></iconify-icon>
+                        </button>
+                        @endif
+                    </div>
 
                     <div class="ps-16 pb-16 pe-16 text-center mt--50">
                         <img src="{{ asset('assets/images/user-grid/user-grid-img1.png') }}" class="border br-white border-width-2-px w-100-px h-100-px rounded-circle object-fit-cover" alt="">
@@ -97,8 +117,24 @@ $script = '<script>
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
                             </div>
-
                         </div>
+                        <!-- Action Buttons -->
+                        @if($timer['button_status'] == 0)
+                        <a href="javascript:void(0)"
+                            class="bg-primary-50 text-primary-600 hover-bg-primary-600 hover-text-white p-10 text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center justify-content-center mt-16 fw-medium gap-2 w-100 enable-junior"
+                            data-user="{{ $timer['user_id'] }}">
+                            Enable Junior
+                            <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                        </a>
+                        @else
+                        <a href="javascript:void(0)"
+                            class="bg-danger-50 text-danger-600 hover-bg-danger-600 hover-text-white p-10 text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center justify-content-center mt-16 fw-medium gap-2 w-100 disable-junior"
+                            data-user="{{ $timer['user_id'] }}">
+                            Disable Junior
+                            <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
+                        </a>
+                        @endif
+
                     </div>
                 </div>
             </div>
@@ -136,12 +172,12 @@ $script = '<script>
         </div>
     </div>
 </div>
-@endsection
+
 
 
 
 <div id="statusOverlay"></div>
-@section('scripts')
+
 <script>
     function formatTime(sec) {
         sec = Math.max(0, Math.floor(sec));
@@ -232,4 +268,160 @@ $script = '<script>
     setInterval(localTick, 1000); // smooth countdown every second
     setInterval(updateAllTimers, 10000); // sync with DB every 10s
 </script>
+
+<script>
+    // Toggle single junior enable/disable
+    function toggleButtonStatus(userId, action) {
+        console.log(`Toggling user ${userId} to ${action}...`);
+
+        fetch("{{ route('timer.toggleButtonStatus') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                user_id: userId,
+                action: action
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            console.log(`Response for user ${userId}:`, data);
+
+            if (!data.success) {
+                console.error(`Failed to toggle user ${userId}:`, data.message);
+                return;
+            }
+
+            const card = document.querySelector(`.user-grid-card[data-user-id='${userId}']`);
+            if (!card) {
+                console.warn(`Card not found for user_id ${userId}`);
+                return;
+            }
+
+            const dropdown = card.querySelector('.dropdown button');
+            const btnContainer = card.querySelector('.ps-16');
+
+            // Update dropdown style
+            if (dropdown) {
+                dropdown.className = data.button_status == 0
+                    ? 'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white'
+                    : 'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
+            } else {
+                console.warn(`Dropdown not found for user ${userId}`);
+            }
+
+            // Update action button
+            if (btnContainer) {
+                btnContainer.innerHTML = data.button_status == 0
+                    ? `
+                    <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
+                        <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                        Enable Junior
+                    </a>`
+                    : `
+                    <a href="javascript:void(0)" class="btn btn-danger disable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
+                        <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
+                        Disable Junior
+                    </a>`;
+            } else {
+                console.warn(`Button container not found for user ${userId}`);
+            }
+
+            // Re-bind events after DOM change
+            setupStatusButtons();
+        })
+        .catch(err => console.error(`Fetch error for user ${userId}:`, err));
+    }
+
+    // Bind all existing buttons
+    function setupStatusButtons() {
+        document.querySelectorAll('.enable-junior').forEach(btn => {
+            btn.onclick = () => toggleButtonStatus(btn.dataset.user, 'enable');
+        });
+        document.querySelectorAll('.disable-junior').forEach(btn => {
+            btn.onclick = () => toggleButtonStatus(btn.dataset.user, 'disable');
+        });
+    }
+
+    // Initial binding on page load
+    setupStatusButtons();
+</script>
+
+
+<script>
+    // Bulk enable/disable all juniors
+    function toggleAllStatus(action) {
+        console.log(`Attempting to ${action} all juniors...`);
+        fetch("{{ route('timer.toggleAllStatus') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ action: action })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (!data.success) {
+                console.error('Bulk toggle failed:', data);
+                return;
+            }
+
+            console.log('Bulk toggle response:', data);
+
+            data.updated.forEach(user => {
+                const card = document.querySelector(`.user-grid-card[data-user-id='${user.user_id}']`);
+                if (!card) {
+                    console.warn(`User card not found for user_id ${user.user_id}`);
+                    return;
+                }
+
+                const btnContainer = card.querySelector('.ps-16');
+                const dropdown = card.querySelector('.dropdown button');
+
+                // Update dropdown style
+                if (!dropdown) {
+                    console.warn(`Dropdown button not found for user_id ${user.user_id}`);
+                } else {
+                    dropdown.className = user.button_status
+                        ? 'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white'
+                        : 'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
+                }
+
+                // Update action button
+                if (!btnContainer) {
+                    console.warn(`Button container not found for user_id ${user.user_id}`);
+                } else {
+                    btnContainer.innerHTML = user.button_status
+                        ? `
+                        <a href="javascript:void(0)" class="btn btn-danger disable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${user.user_id}">
+                            <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
+                            Disable Junior
+                        </a>`
+                        : `
+                        <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${user.user_id}">
+                            <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                            Enable Junior
+                        </a>`;
+                }
+            });
+
+            // Re-bind events
+            setupStatusButtons();
+        })
+        .catch(err => console.error('Bulk toggle fetch error:', err));
+    }
+
+    // Bind top buttons
+    const enableAllBtn = document.getElementById('enableAll');
+    const disableAllBtn = document.getElementById('disableAll');
+
+    if (enableAllBtn) enableAllBtn.onclick = () => toggleAllStatus('enable');
+    if (disableAllBtn) disableAllBtn.onclick = () => toggleAllStatus('disable');
+</script>
+
+
+
 @endsection

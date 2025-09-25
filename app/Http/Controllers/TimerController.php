@@ -13,32 +13,84 @@ class TimerController extends Controller
     const WORK_DAY_SECONDS = 9 * 60 * 60;
 
     public function seniorTimers()
+{
+    $juniors = User::where('role', 'junior')->get();
+
+    $timers = $juniors->map(function ($junior) {
+        $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
+
+        if ($timer && $timer->status === 'running') {
+            $seconds_passed = now()->diffInSeconds($timer->updated_at);
+            $remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
+        } else {
+            $remaining_seconds = $timer ? $timer->remaining_seconds : self::WORK_DAY_SECONDS;
+        }
+
+        return [
+            'user_id'          => $junior->id,
+            'name'             => $junior->name,
+            'email'            => $junior->email,
+            'user'             => $junior,
+            'remaining_seconds'=> $remaining_seconds,
+            'elapsed_seconds'  => self::WORK_DAY_SECONDS - $remaining_seconds,
+            'status'           => $timer ? $timer->status : 'running',
+            'button_status'    => $timer ? $timer->button_status : 0, 
+        ];
+    });
+
+    return view('timers.senior', compact('timers'));
+}
+
+
+    public function toggleButtonStatus(Request $request)
     {
-        $juniors = User::where('role', 'junior')->get();
+        $request->validate([
+            'user_id' => 'required|integer',
+            'action'  => 'required|string|in:enable,disable',
+        ]);
 
-        $timers = $juniors->map(function ($junior) {
-            $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
+        $userId = $request->user_id;
+        $action = $request->action;
 
-            if ($timer && $timer->status === 'running') {
-                $seconds_passed = now()->diffInSeconds($timer->updated_at);
-                $remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
-            } else {
-                $remaining_seconds = $timer ? $timer->remaining_seconds : self::WORK_DAY_SECONDS;
-            }
+        $timerLog = UserTimerLog::where('user_id', $userId)->latest()->first();
+        if (!$timerLog) return response()->json(['success' => false, 'message' => 'Timer not found']);
 
-            return [
-                'user_id'          => $junior->id,
-                'name'             => $junior->name,
-                'email'            => $junior->email,
-                'user'              => $junior,
-                'remaining_seconds' => $remaining_seconds,
-                'elapsed_seconds'   => self::WORK_DAY_SECONDS - $remaining_seconds,
-                'status'            => $timer ? $timer->status : 'running',
-            ];
-        });
+        $timerLog->button_status = $action == 'enable' ? 1 : 0;
+        $timerLog->save();
 
-        return view('timers.senior', compact('timers'));
+        return response()->json([
+            'success' => true,
+            'button_status' => $timerLog->button_status
+        ]);
     }
+
+    public function toggleAllStatus(Request $request)
+    {
+        $request->validate(['action' => 'required|string|in:enable,disable']);
+
+        $status = $request->action == 'enable' ? 1 : 0;
+
+        // Get all juniors
+        $juniors = User::where('role', 'junior')->get();
+        $updated = [];
+
+        foreach ($juniors as $junior) {
+            $timerLog = UserTimerLog::where('user_id', $junior->id)->latest()->first();
+            if ($timerLog) {
+                $timerLog->button_status = $status;
+                $timerLog->save();
+
+                $updated[] = [
+                    'user_id' => $junior->id,
+                    'button_status' => $timerLog->button_status
+                ];
+            }
+        }
+
+        return response()->json(['success' => true, 'updated' => $updated]);
+    }
+
+
 
     public function updateTimer(Request $request)
     {

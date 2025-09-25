@@ -3,13 +3,12 @@
         <div class="col-auto">
             <div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;">
                 <!-- Sidebar toggles -->
-                <button type="button"
-                    style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#000;">
-                    <iconify-icon icon="heroicons:bars-3-solid" style="font-size:16px;"></iconify-icon>
+                <button type="button" class="sidebar-toggle">
+                    <iconify-icon icon="heroicons:bars-3-solid" class="icon text-2xl non-active"></iconify-icon>
+                    <iconify-icon icon="iconoir:arrow-right" class="icon text-2xl active"></iconify-icon>
                 </button>
-                <button type="button" class="d-lg-none"
-                    style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#000;">
-                    <iconify-icon icon="heroicons:bars-3-solid" style="font-size:16px;"></iconify-icon>
+                <button type="button" class="sidebar-mobile-toggle">
+                    <iconify-icon icon="heroicons:bars-3-solid" class="icon"></iconify-icon>
                 </button>
 
                 <!-- Timer Widget -->

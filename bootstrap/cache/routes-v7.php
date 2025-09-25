@@ -71,7 +71,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::jgvLe0JN2KoHMgIX',
+            '_route' => 'generated::vt67Xy6haaENPFfm',
           ),
           1 => NULL,
           2 => 
@@ -659,6 +659,44 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
+      '/timer/toggle-button-status' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'timer.toggleButtonStatus',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
+      '/timer/toggle-all-status' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'timer.toggleAllStatus',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
       '/admin/logins' => 
       array (
         0 => 
@@ -1175,7 +1213,7 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'generated::jgvLe0JN2KoHMgIX' => 
+    'generated::vt67Xy6haaENPFfm' => 
     array (
       'methods' => 
       array (
@@ -1204,7 +1242,7 @@ app('router')->setCompiledRoutes(
                         \'exception\' => $exception,
                     ]), status: $exception ? 500 : 200);
                 }";s:5:"scope";s:54:"Illuminate\\Foundation\\Configuration\\ApplicationBuilder";s:4:"this";N;s:4:"self";s:32:"00000000000003440000000000000000";}}',
-        'as' => 'generated::jgvLe0JN2KoHMgIX',
+        'as' => 'generated::vt67Xy6haaENPFfm',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2525,6 +2563,80 @@ app('router')->setCompiledRoutes(
         array (
         ),
         'as' => 'timer.junior',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'timer.toggleButtonStatus' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'timer/toggle-button-status',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\TimerController@toggleButtonStatus',
+        'controller' => 'App\\Http\\Controllers\\TimerController@toggleButtonStatus',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'timer.toggleButtonStatus',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'timer.toggleAllStatus' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'timer/toggle-all-status',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\TimerController@toggleAllStatus',
+        'controller' => 'App\\Http\\Controllers\\TimerController@toggleAllStatus',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'timer.toggleAllStatus',
       ),
       'fallback' => false,
       'defaults' => 
