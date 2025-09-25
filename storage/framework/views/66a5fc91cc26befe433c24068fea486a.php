@@ -1,5 +1,3 @@
-
-
 <?php
 $title = 'Senior Dashboard';
 $subTitle = 'All Junior Timers';
