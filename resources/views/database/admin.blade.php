@@ -37,7 +37,6 @@ $script ='<script>
             <table class="table bordered-table sm-table mb-0">
                 <thead>
                     <tr>
-                        <th scope="col">ID</th>
                         <th scope="col">Row #</th>
                         <th scope="col">Date</th>
                         <th scope="col">Name</th>
@@ -60,7 +59,7 @@ $script ='<script>
                 <tbody id="sheet-table-body">
                     @foreach($data as $row)
                     <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
-                        <td>{{ $row->id }}</td>
+
                         <td>{{ $row->sheet_row_number }}</td>
 
                         {{-- Date --}}
@@ -192,7 +191,9 @@ $script ='<script>
                         {{-- View (Resume) --}}
                         <td>
                             <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
-                            <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+                            <button type="button" class="btn btn-sm btn-info upload-btn">
+                                {{ !empty($row->resume) ? 'Change File' : 'Upload' }}
+                            </button>
 
                             @if(!empty($row->resume))
                             <a href="{{ asset('storage/resumes/' . $row->resume) }}" target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
@@ -224,7 +225,7 @@ $script ='<script>
         @endif
     </div>
 </div>
-@endsection
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
     .input-hint {
@@ -275,6 +276,7 @@ $script ='<script>
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const tableBody = document.getElementById("sheet-table-body");
+
         const exeColors = {
             'Called & Mailed': '#d4edda',
             'Not Interested': '#f8d7da',
@@ -330,15 +332,14 @@ $script ='<script>
             else if (key === '1st Follow Up Remarks') color = followColors[val] || color;
             else if (key === 'Course') color = courseColors[val] || color;
             else if (key === 'Time Zone') color = timezoneColors[val] || color;
-            else if (key === 'Amount') color = amountColors[val] || color;
             select.style.backgroundColor = color;
         }
 
         function formatPhoneNumber(value) {
             const digits = value.replace(/\D/g, "").slice(0, 10);
-            const part1 = digits.slice(0, 3);
-            const part2 = digits.slice(3, 6);
-            const part3 = digits.slice(6, 10);
+            const part1 = digits.slice(0, 3),
+                part2 = digits.slice(3, 6),
+                part3 = digits.slice(6, 10);
             if (digits.length > 6) return `${part1}-${part2}-${part3}`;
             if (digits.length > 3) return `${part1}-${part2}`;
             if (digits.length > 0) return part1;
@@ -436,8 +437,7 @@ $script ='<script>
                     dateFormat: "m/d/Y",
                     allowInput: true,
                     onChange: function(selectedDates, dateStr) {
-                        if (dateStr) input.style.backgroundColor = dateColor;
-                        else input.style.backgroundColor = '#fff';
+                        input.style.backgroundColor = dateStr ? dateColor : '#fff';
                     },
                     onReady: function(selectedDates, dateStr) {
                         if (input.value) input.style.backgroundColor = dateColor;
@@ -494,7 +494,6 @@ $script ='<script>
                         .fail(function() {
                             $('#loc-suggestions').remove();
                         });
-
                 });
                 $input.on('blur', function() {
                     setTimeout(() => $('#loc-suggestions').remove(), 200);
@@ -537,17 +536,6 @@ $script ='<script>
                 i.addEventListener('input', () => {
                     i.value = i.value.toUpperCase().replace(/[^A-Z\s]/g, '');
                     validateQualificationInput(i);
-                    context.querySelectorAll('input.resume-input').forEach(input => {
-                        input.addEventListener('change', function() {
-                            const file = this.files[0];
-                            if (!file) return;
-                            if (file.type !== "application/pdf") {
-                                alert("Only PDF files are allowed!");
-                                this.value = "";
-                                return;
-                            }
-                        });
-                    });
                 });
             });
         }
@@ -556,57 +544,29 @@ $script ='<script>
             let colKeys = [];
             let firstRow = tableBody.querySelector("tr");
             if (firstRow) {
-                firstRow.querySelectorAll("td[contenteditable=true], select[data-key], input[data-key]").forEach(cell => {
-                    colKeys.push(cell.dataset.key);
-                });
+                firstRow.querySelectorAll("input[data-key], select[data-key]").forEach(cell => colKeys.push(cell.dataset.key));
             }
+
             let newRow = document.createElement("tr");
             newRow.setAttribute("data-id", "new");
-            let cells = `<td>New</td><td>—</td>`;
+            let cells = `<td>—</td>`;
+
             colKeys.forEach(k => {
-                if (k === 'Exe Remarks') {
-                    const opts = ['Called & Mailed', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
-                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}">
-                    <option value="" disabled selected>-- Select Exe Remarks --</option>
-                    ${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}
-                </select></td>`;
-                } else if (k === 'Immigration') {
-                    const opts = ['Dependent Visa', 'Global Visa', 'Graduate Visa', 'Student Visa', 'Citizen', 'Permanent Residence(ILR)'];
-                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}">
-                    <option value="" disabled selected>-- Select Immigration --</option>
-                    ${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}
-                </select></td>`;
-                } else if (k === 'Relocation') {
-                    const opts = ['YES', 'NO'];
-                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}">
-                    <option value="" disabled selected>-- Select Relocation --</option>
-                    ${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}
-                </select></td>`;
-                } else if (k === '1st Follow Up Remarks') {
-                    const opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', 'Don\'t Call'];
-                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}">
-                    <option value="" disabled selected>-- Select Follow Up --</option>
-                    ${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}
-                </select></td>`;
-                } else if (k === 'Course') {
-                    const opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
-                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}">
-                    <option value="" disabled selected>-- Select Course --</option>
-                    ${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}
-                </select></td>`;
-                } else if (k === 'Time Zone') {
-                    const opts = ['EST', 'CST', 'MST', 'PST'];
-                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}">
-                    <option value="" disabled selected>-- Select Time Zone --</option>
-                    ${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}
-                </select></td>`;
+                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone'].includes(k)) {
+                    let opts = [];
+                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
+                    if (k === 'Immigration') opts = ['Dependent Visa', 'Global Visa', 'Graduate Visa', 'Student Visa', 'Citizen', 'Permanent Residence(ILR)'];
+                    if (k === 'Relocation') opts = ['YES', 'NO'];
+                    if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
+                    if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+                    if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
+                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
                 } else if (k === 'Amount') {
                     cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="$100"></td>`;
                 } else if (k === 'Location') {
                     cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
                 } else if (k === 'Date' || k === 'Graduation Date') {
-                    const placeholder = (k === 'Graduation Date') ? 'Graduation Date (MM/DD/YYYY)' : 'Date (MM/DD/YYYY)';
-                    cells += `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${placeholder}"><span class="small-hint"></span></td>`;
+                    cells += `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
                 } else if (k === 'Phone Number') {
                     cells += `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
                 } else if (k === 'Email Address') {
@@ -617,145 +577,187 @@ $script ='<script>
                     cells += `<td><input type="text" class="form-control qualification-input" data-key="${k}" placeholder="Qualification"><span class="small-hint"></span></td>`;
                 } else if (k === 'View') {
                     cells += `<td>
-                            <input type="file" accept="application/pdf" class="d-none resume-input" data-key="resume">
-                            <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-                            <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
-                            <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-                        </td>`;
-                } else {
-                    cells += `<td contenteditable="true" data-key="${k}"></td>`;
+                    <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
+                    <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+                    <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
+                    <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+                </td>`;
                 }
             });
+
             cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
             newRow.innerHTML = cells;
             tableBody.appendChild(newRow);
             applyInitialState(newRow);
-            attachSaveHandler(newRow.querySelector(".save-btn"));
         }
-        if (!tableBody.querySelector('tr[data-id="new"]')) addBlankRow();
+
+        // Check if we need to add a blank row on page load
+        // Only add if there are no existing "new" rows
+        const hasNewRow = tableBody.querySelector('tr[data-id="new"]');
+        const hasAnyRows = tableBody.querySelector('tr');
+
+        if (!hasNewRow && !hasAnyRows) {
+            // No rows at all - add one blank row
+            addBlankRow();
+        } else if (!hasNewRow && hasAnyRows) {
+            // Has existing rows but no "new" row - add blank row at the end
+            addBlankRow();
+        }
+        // If hasNewRow exists, we don't need to add another one
+
+        // Handle select color changes
         tableBody.addEventListener('change', function(e) {
             if (e.target.matches('select.dynamic-dropdown')) updateSelectColor(e.target);
         });
 
-        function attachSaveHandler(btn) {
-            btn.addEventListener("click", function() {
-                let saveBtn = this;
+        // Event delegation for save buttons (handles both existing and dynamically added buttons)
+        tableBody.addEventListener('click', function(e) {
+            if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
+                e.preventDefault();
+                let saveBtn = e.target.matches('.save-btn') ? e.target : e.target.closest('.save-btn');
                 let id = saveBtn.dataset.id;
                 let row = saveBtn.closest("tr");
-                saveBtn.disabled = true;
-                let originalHTML = saveBtn.innerHTML;
-                saveBtn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> Saving...`;
-                let updatedData = {};
-                row.querySelectorAll("td[contenteditable=true]").forEach(cell => updatedData[cell.dataset.key] = cell.innerText.trim());
-                row.querySelectorAll("select[data-key]").forEach(sel => updatedData[sel.dataset.key] = sel.value);
-                row.querySelectorAll("input.date-picker").forEach(inp => updatedData[inp.dataset.key] = inp.value);
-                row.querySelectorAll("input.location-autocomplete").forEach(inp => updatedData[inp.dataset.key] = inp.value);
-                row.querySelectorAll("input.phone-input").forEach(inp => updatedData[inp.dataset.key] = inp.value);
-                row.querySelectorAll("input.email-input").forEach(inp => updatedData[inp.dataset.key] = inp.value);
-                row.querySelectorAll("input.name-input").forEach(inp => updatedData[inp.dataset.key] = inp.value);
-                row.querySelectorAll("input.qualification-input").forEach(inp => updatedData[inp.dataset.key] = inp.value);
-                const url = id === 'new' ? '/dashboard/admin/google-sheet/store' : `/dashboard/admin/google-sheet/update/${id}`;
+                console.log("Saving row with id:", id);
+
+                // Collect all data from the row
+                let rowData = {};
+                row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
+                    let key = cell.dataset.key;
+                    let value = cell.value;
+                    rowData[key] = value;
+                });
+                console.log("Row data:", rowData);
+
+                // Create FormData object
                 let formData = new FormData();
-                if (id === 'new') {
-                    formData.append('rows[0]', JSON.stringify(updatedData));
+                formData.append("data", JSON.stringify(rowData));
+                formData.append("_token", "{{ csrf_token() }}");
+
+                // Handle resume file upload
+                let resumeInput = row.querySelector("input.resume-input");
+                if (resumeInput && resumeInput.files.length > 0) {
+                    formData.append("resume", resumeInput.files[0]);
+                }
+
+                // Determine URL and method
+                let url, method;
+                if (id === "new") {
+                    url = "{{ route('adminstore') }}";
+                    method = "POST";
                 } else {
-                    formData.append('data', JSON.stringify(updatedData));
-                    formData.append('_method', 'PATCH');
+                    url = "{{ route('adminupdate') }}";
+                    method = "POST";
+                    formData.append("id", id);
                 }
-                const resumeInput = row.querySelector('input.resume-input');
-                if (resumeInput && resumeInput.files[0]) {
-                    formData.append('resume', resumeInput.files[0]);
-                }
+
+                console.log("Sending to:", url, "Method:", method);
+
+                // Send the request
                 fetch(url, {
-                        method: 'POST',
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}"
-                        },
+                        method: method,
                         body: formData
                     })
-                    .then(res => res.json())
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+                        return res.json();
+                    })
+                    // In the save button click event handler, update the success callback:
                     .then(data => {
+                        console.log("Response from server:", data);
                         if (data.success) {
-                            if (id === 'new') {
-                                let rowData = data.rows[0];
-                                let html = `<td>${rowData.id}</td><td>${rowData.sheet_row_number}</td>`;
-                                Object.entries(rowData.data).forEach(([key, val]) => {
-                                    if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Amount'].includes(key)) {
-                                        let opts = [];
-                                        if (key === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
-                                        else if (key === 'Immigration') opts = ['Dependent Visa', 'Global Visa', 'Graduate Visa', 'Student Visa', 'Citizen', 'Permanent Residence(ILR)'];
-                                        else if (key === 'Relocation') opts = ['YES', 'NO'];
-                                        else if (key === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', 'Don\'t Call'];
-                                        else if (key === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
-                                        else if (key === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
-                                        else if (key === 'Amount') opts = Array.from({
-                                            length: 10
-                                        }, (_, i) => `$${100+i}`).concat(Array.from({
-                                            length: 10
-                                        }, (_, i) => `$${1000+i}`));
-                                        let optionsHTML = opts.map(o => `<option value="${o}" ${o===val ? 'selected' : '' }>${o}</option>`).join('');
-                                        html += `<td><select class="form-select dynamic-dropdown" data-key="${key}">${optionsHTML}</select></td>`;
-                                    } else if (key === 'Location') {
-                                        html += `<td><input type="text" class="form-control location-autocomplete" data-key="${key}" value="${val ?? ''}"><span class="small-hint"></span></td>`;
-                                    } else if (key === 'Date' || key === 'Graduation Date') {
-                                        html += `<td><input type="text" class="form-control date-picker" data-key="${key}" value="${val ?? ''}"></td>`;
-                                    } else if (key === 'Phone Number') {
-                                        html += `<td><input type="tel" class="form-control phone-input" data-key="${key}" value="${val ?? ''}" maxlength="12"><span class="phone-hint"></span></td>`;
-                                    } else if (key === 'Email Address') {
-                                        html += `<td><input type="email" class="form-control email-input" data-key="${key}" value="${val ?? ''}"><span class="small-hint"></span></td>`;
-                                    } else if (key === 'Name') {
-                                        html += `<td><input type="text" class="form-control name-input" data-key="${key}" value="${val ?? ''}"><span class="small-hint"></span></td>`;
-                                    } else if (key === 'Qualification') {
-                                        html += `<td><input type="text" class="form-control qualification-input" data-key="${key}" value="${val ?? ''}"><span class="small-hint"></span></td>`;
-                                    } else {
-                                        html += `<td contenteditable="true" data-key="${key}">${val ?? ''}</td>`;
-                                    }
-                                });
-                                html += `<td><button class="btn btn-sm btn-success save-btn" data-id="${rowData.id}"><i class="fas fa-save"></i> Save</button></td>`;
-                                row.setAttribute("id", "row-" + rowData.id);
-                                row.setAttribute("data-id", rowData.id);
-                                row.innerHTML = html;
-                                applyInitialState(row);
-                                attachSaveHandler(row.querySelector(".save-btn"));
-                                showMessage(" New row saved!", "success");
-                                addBlankRow();
-                            } else {
-                                row.querySelectorAll("select.dynamic-dropdown").forEach(s => updateSelectColor(s));
-                                row.querySelectorAll("input.phone-input").forEach(i => validatePhoneInput(i));
-                                row.querySelectorAll("input.email-input").forEach(i => validateEmailInput(i));
-                                row.querySelectorAll("input.name-input").forEach(i => validateNameInput(i));
-                                row.querySelectorAll("input.qualification-input").forEach(i => validateQualificationInput(i));
-                                showMessage("✓ Row updated!", "success");
-                            }
-                            if (data.row && data.row.resume_url) {
-                                const resumeTd = row.querySelector("td input.resume-input")?.closest("td");
-                                if (resumeTd) {
-                                    const viewBtn = resumeTd.querySelector(".view-btn");
-                                    const downloadBtn = resumeTd.querySelector(".download-btn");
+                            alert("Saved successfully");
+                            if (id === "new") {
+                                // Update the row with the new ID
+                                row.dataset.id = data.id;
+                                saveBtn.dataset.id = data.id;
+                                row.querySelector("td:first-child").innerText = data.sheet_row_number;
 
-                                    viewBtn.classList.remove("d-none");
-                                    downloadBtn.classList.remove("d-none");
+                                // Update resume buttons with correct URLs
+                                const viewBtn = row.querySelector('.view-btn');
+                                const downloadBtn = row.querySelector('.download-btn');
 
-                                    viewBtn.href = data.row.resume_url;
-                                    downloadBtn.href = data.row.resume_url;
+                                if (viewBtn && data.resume_path) {
+                                    viewBtn.href = `/dashboard/admin/google-sheet/view-resume/${data.id}`;
+                                    viewBtn.classList.remove('d-none');
+                                }
+
+                                if (downloadBtn && data.resume_path) {
+                                    downloadBtn.href = `/dashboard/admin/google-sheet/download-resume/${data.id}`;
+                                    downloadBtn.classList.remove('d-none');
+                                }
+
+                                // Only add a new blank row if this was a new row being saved
+                                const existingNewRows = tableBody.querySelectorAll('tr[data-id="new"]');
+                                if (existingNewRows.length === 0) {
+                                    addBlankRow();
                                 }
                             }
                         } else {
-                            showMessage("❌ Failed to save row", "danger");
+                            console.error("Server error:", data.message);
+                            alert("Error: " + (data.message || "Unknown error"));
                         }
                     })
-                    .catch(() => showMessage("⚠️ Server error!", "danger"))
-                    .finally(() => {
-                        saveBtn.disabled = false;
-                        saveBtn.innerHTML = originalHTML;
+                    .catch(err => {
+                        console.error("Fetch error:", err);
+                        alert("Save failed. Check console for details.");
                     });
-            });
-        }
-        document.querySelectorAll(".save-btn").forEach(btn => attachSaveHandler(btn));
-        applyInitialState(document);
-        document.addEventListener('click', function(e) {
-            if (!$(e.target).closest('#loc-suggestions, .location-autocomplete').length) $('#loc-suggestions').remove();
+            }
         });
+
+        // Handle file upload button clicks
+        tableBody.addEventListener('click', function(e) {
+            if (e.target.matches('.upload-btn')) {
+                const row = e.target.closest('tr');
+                const fileInput = row.querySelector('.resume-input');
+                fileInput.click();
+            }
+
+            // Handle view and download buttons for unsaved rows
+            if (e.target.matches('.view-btn') || e.target.matches('.download-btn')) {
+                const row = e.target.closest('tr');
+                const id = row.dataset.id;
+
+                if (id === "new") {
+                    e.preventDefault();
+                    alert("Please save the row first before viewing/downloading the resume.");
+                    return;
+                }
+            }
+        });
+
+        // Handle file selection
+        tableBody.addEventListener('change', function(e) {
+            if (e.target.matches('.resume-input')) {
+                const row = e.target.closest('tr');
+                const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+
+                // Show view and download buttons temporarily
+                const viewBtn = row.querySelector('.view-btn');
+                const downloadBtn = row.querySelector('.download-btn');
+
+                if (viewBtn) viewBtn.classList.remove('d-none');
+                if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                // Update button text
+                const uploadBtn = row.querySelector('.upload-btn');
+                if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                console.log('File selected:', fileName);
+            }
+        });
+
+        // Apply initial state to all existing rows
+        applyInitialState(document);
+
+        // Cleanup location suggestions
+        document.addEventListener('click', function(e) {
+            if (!$(e.target).closest('#loc-suggestions, .location-autocomplete').length)
+                $('#loc-suggestions').remove();
+        });
+
+        // Real-time validation
         tableBody.addEventListener('input', function(e) {
             if (e.target.matches('input.phone-input')) validatePhoneInput(e.target);
             if (e.target.matches('input.email-input')) {
@@ -775,89 +777,4 @@ $script ='<script>
         });
     });
 </script>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const tableBody = document.getElementById("sheet-table-body");
-        if (!tableBody) return console.error("❌ Table body not found");
-        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute("content");
-        if (!csrfToken) console.warn("⚠️ CSRF token not found in meta tag");
-        tableBody.addEventListener("click", function(e) {
-            const button = e.target.closest(".upload-btn");
-            if (!button) return;
-            const td = button.closest("td");
-            if (!td) return console.error("❌ Could not find <td> for Upload button");
-            const fileInput = td.querySelector(".resume-input");
-            if (!fileInput) return console.error("❌ No file input found in this cell");
-            fileInput.onchange = null;
-            fileInput.click();
-            fileInput.onchange = function() {
-                const file = fileInput.files[0];
-                if (!file) return console.warn("⚠️ No file selected.");
-                if (file.type !== "application/pdf") {
-                    alert("Only PDF files are allowed!");
-                    fileInput.value = "";
-                    return;
-                }
-                uploadResume(td, file, button);
-            };
-        });
-        async function uploadResume(td, file, button) {
-            const row = td.closest("tr");
-            if (!row) return console.error("❌ <tr> not found for this cell");
-            const recordId = row.getAttribute("data-id") || "new";
-            const formData = new FormData();
-            formData.append("resume", file);
-            let url = `/dashboard/admin/google-sheet/pdfstore`;
-            let method = "POST";
-            if (recordId !== "new") {
-                url = `/dashboard/admin/google-sheet/pdfupdate/${recordId}`;
-                formData.append("_method", "PATCH");
-                method = "POST";
-                console.log("🔄 Updating resume for record ID:", recordId);
-            } else {
-                console.log("➕ Creating new resume entry");
-            }
-            button.innerHTML = "Uploading...";
-            button.disabled = true;
-            try {
-                const response = await fetch(url, {
-                    method: method,
-                    headers: {
-                        "X-CSRF-TOKEN": csrfToken
-                    },
-                    body: formData,
-                    credentials: "same-origin"
-                });
-                if (response.status === 419) throw new Error("Session expired or CSRF token mismatch");
-                const resp = await response.json();
-                button.innerHTML = "Upload";
-                button.disabled = false;
-                if (resp.success && resp.resume_url) {
-                    if (resp.id) row.setAttribute("data-id", resp.id);
-                    const viewBtn = td.querySelector(".view-btn");
-                    const downloadBtn = td.querySelector(".download-btn");
-                    const resumePath = resp.resume_url;
-                    const fullUrl = resumePath.startsWith('http') ? resumePath : window.location.origin + '/' + resumePath;
-                    const filename = resumePath.split('/').pop();
-                    if (viewBtn) {
-                        viewBtn.classList.remove("d-none");
-                        viewBtn.href = fullUrl;
-                    }
-                    if (downloadBtn) {
-                        downloadBtn.classList.remove("d-none");
-                        downloadBtn.href = fullUrl;
-                        downloadBtn.setAttribute('download', filename);
-                    }
-                } else {
-                    console.error("⚠️ Upload failed. Response:", resp);
-                    alert("Upload failed.");
-                }
-            } catch (err) {
-                console.error("❌ Upload error:", err);
-                button.innerHTML = "Upload";
-                button.disabled = false;
-                alert(err.message || "Error uploading resume!");
-            }
-        }
-    });
-</script>
+@endsection

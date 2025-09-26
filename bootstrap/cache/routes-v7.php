@@ -71,7 +71,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::Xz0QIaZJgw3hVSKP',
+            '_route' => 'generated::nP0CPqR2FTY3JwVA',
           ),
           1 => NULL,
           2 => 
@@ -716,13 +716,13 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      '/dashboard/senior/google-sheet/seniorstore' => 
+      '/dashboard/senior/google-sheet/seniorupdate' => 
       array (
         0 => 
         array (
           0 => 
           array (
-            '_route' => 'seniorstore',
+            '_route' => 'seniorupdate',
           ),
           1 => NULL,
           2 => 
@@ -735,13 +735,13 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      '/dashboard/senior/google-sheet/seniorupdate' => 
+      '/dashboard/senior/google-sheet/seniorstore' => 
       array (
         0 => 
         array (
           0 => 
           array (
-            '_route' => 'seniorupdate',
+            '_route' => 'seniorstore',
           ),
           1 => NULL,
           2 => 
@@ -914,11 +914,11 @@ app('router')->setCompiledRoutes(
     ),
     2 => 
     array (
-      0 => '{^(?|/dashboard/(?|admin/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:66)|google\\-sheet/update/([^/]++)(*:102))|senior/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:157)|google\\-sheet/pdfupdate/([^/]++)(*:197))|junior/google\\-sheet/pdfupdate/([^/]++)(*:245))|/resumes/(?|upload/([^/]++)(*:281)|([^/]++)/status(*:304))|/payment/([^/]++)/status(*:337)|/training/([^/]++)/trastatus(*:373))/?$}sDu',
+      0 => '{^(?|/d(?|ashboard/(?|admin/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:69)|google\\-sheet/update/([^/]++)(*:105))|senior/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:160)|google\\-sheet/pdfupdate/([^/]++)(*:200))|junior/google\\-sheet/pdfupdate/([^/]++)(*:248))|ownload\\-resume/([^/]++)(*:281))|/view\\-resume/([^/]++)(*:312)|/resumes/(?|upload/([^/]++)(*:347)|([^/]++)/status(*:370))|/payment/([^/]++)/status(*:403)|/training/([^/]++)/trastatus(*:439))/?$}sDu',
     ),
     3 => 
     array (
-      66 => 
+      69 => 
       array (
         0 => 
         array (
@@ -944,7 +944,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      102 => 
+      105 => 
       array (
         0 => 
         array (
@@ -966,7 +966,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      157 => 
+      160 => 
       array (
         0 => 
         array (
@@ -992,7 +992,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      197 => 
+      200 => 
       array (
         0 => 
         array (
@@ -1014,7 +1014,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      245 => 
+      248 => 
       array (
         0 => 
         array (
@@ -1042,6 +1042,52 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
+            '_route' => 'download.resume',
+          ),
+          1 => 
+          array (
+            0 => 'id',
+          ),
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => true,
+          6 => NULL,
+        ),
+      ),
+      312 => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'view.resume',
+          ),
+          1 => 
+          array (
+            0 => 'id',
+          ),
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => true,
+          6 => NULL,
+        ),
+      ),
+      347 => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
             '_route' => 'resumes.upload',
           ),
           1 => 
@@ -1058,7 +1104,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      304 => 
+      370 => 
       array (
         0 => 
         array (
@@ -1080,7 +1126,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      337 => 
+      403 => 
       array (
         0 => 
         array (
@@ -1102,7 +1148,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      373 => 
+      439 => 
       array (
         0 => 
         array (
@@ -1248,7 +1294,7 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'generated::Xz0QIaZJgw3hVSKP' => 
+    'generated::nP0CPqR2FTY3JwVA' => 
     array (
       'methods' => 
       array (
@@ -1277,7 +1323,7 @@ app('router')->setCompiledRoutes(
                         \'exception\' => $exception,
                     ]), status: $exception ? 500 : 200);
                 }";s:5:"scope";s:54:"Illuminate\\Foundation\\Configuration\\ApplicationBuilder";s:4:"this";N;s:4:"self";s:32:"00000000000003440000000000000000";}}',
-        'as' => 'generated::Xz0QIaZJgw3hVSKP',
+        'as' => 'generated::nP0CPqR2FTY3JwVA',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2687,6 +2733,43 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
+    'seniorupdate' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'dashboard/senior/google-sheet/seniorupdate',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@seniorupdate',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@seniorupdate',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'seniorupdate',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
     'seniorstore' => 
     array (
       'methods' => 
@@ -2724,13 +2807,14 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'seniorupdate' => 
+    'view.resume' => 
     array (
       'methods' => 
       array (
-        0 => 'POST',
+        0 => 'GET',
+        1 => 'HEAD',
       ),
-      'uri' => 'dashboard/senior/google-sheet/seniorupdate',
+      'uri' => 'view-resume/{id}',
       'action' => 
       array (
         'middleware' => 
@@ -2738,14 +2822,52 @@ app('router')->setCompiledRoutes(
           0 => 'web',
           1 => 'auth',
         ),
-        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@seniorupdate',
-        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@seniorupdate',
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@viewResume',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@viewResume',
         'namespace' => NULL,
         'prefix' => '',
         'where' => 
         array (
         ),
-        'as' => 'seniorupdate',
+        'as' => 'view.resume',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'download.resume' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'download-resume/{id}',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@downloadResume',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@downloadResume',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'download.resume',
       ),
       'fallback' => false,
       'defaults' => 

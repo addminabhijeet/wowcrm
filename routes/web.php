@@ -44,6 +44,10 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/admin/google-sheet/fetch', [GoogleSheetController::class, 'adminfetch'])->name('google.sheet.adminfetch');
     Route::patch('/dashboard/admin/google-sheet/update/{id}', [GoogleSheetController::class, 'adminupdate'])->name('google.sheet.adminupdate');
     Route::post('/dashboard/admin/google-sheet/store', [GoogleSheetController::class, 'adminstore'])->name('google.sheet.adminstore');
+    Route::post('/dashboard/admin/google-sheet/adminupdate', [GoogleSheetController::class, 'adminupdate'])->name('adminupdate');
+    Route::post('/dashboard/admin/google-sheet/adminstore', [GoogleSheetController::class, 'adminstore'])->name('adminstore');
+    Route::get('/dashboard/admin/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewadminResume'])->name('view.admin.resume');
+    Route::get('/dashboard/admin/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadadminResume'])->name('download.admin.resume');
 
     Route::get('/dashboard/senior/google-sheet', [GoogleSheetController::class, 'senior'])->name('google.sheet.senior');
     Route::post('/dashboard/senior/google-sheet/fetch', [GoogleSheetController::class, 'seniorfetch'])->name('google.sheet.seniorfetch');
@@ -73,9 +77,12 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/timer/toggle-all-status', [TimerController::class, 'toggleAllStatus'])->name('timer.toggleAllStatus');
     Route::post('/dashboard/junior/google-sheet/juniorstore', [GoogleSheetController::class, 'juniorstore'])->name('juniorstore');
     Route::post('/dashboard/junior/google-sheet/juniorupdate', [GoogleSheetController::class, 'juniorupdate'])->name('juniorupdate');
-    Route::post('/dashboard/senior/google-sheet/seniorstore', [GoogleSheetController::class, 'seniorstore'])->name('seniorstore');
+    Route::get('/dashboard/senior/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewjuniorResume'])->name('view.resume');
+    Route::get('/dashboard/senior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadjuniorResume'])->name('download.resume');
     Route::post('/dashboard/senior/google-sheet/seniorupdate', [GoogleSheetController::class, 'seniorupdate'])->name('seniorupdate');
-
+    Route::post('/dashboard/senior/google-sheet/seniorstore', [GoogleSheetController::class, 'seniorstore'])->name('seniorstore');
+    Route::get('/dashboard/senior/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewseniorResume'])->name('view.resume');
+    Route::get('/dashboard/senior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadseniorResume'])->name('download.resume');
     
 });
 
