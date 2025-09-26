@@ -50,11 +50,11 @@ class DashboardController extends Controller
             $timer->remaining_seconds = max(0, $timer->remaining_seconds + $seconds_passed);
         }
 
-        // ✅ New logic: Check button_status before pausing
+
         if ($action !== 'tick' && $action !== 'resume') {
             if ($timer->button_status == 0) {
-                // Not enabled → notify frontend
-                $timer->notice_status = 1; // mark notice as enabled
+
+                $timer->notice_status = 1;
                 $timer->save();
 
                 return response()->json([
@@ -74,7 +74,7 @@ class DashboardController extends Controller
             $timer->pause_type = 'resume';
         } elseif ($action !== 'tick') {
             $timer->status = 'paused';
-            $timer->pause_type = $action; // lunch, tea, break
+            $timer->pause_type = $action; 
         }
 
         $timer->updated_at = $now;
@@ -82,7 +82,7 @@ class DashboardController extends Controller
 
         $elapsed_seconds = self::WORK_DAY_SECONDS - $timer->remaining_seconds;
 
-        // Log pause/resume event (keep old logic)
+       
         if ($action !== 'tick') {
             UserTimerPause::create([
                 'user_timer_log_id' => $timer->id,

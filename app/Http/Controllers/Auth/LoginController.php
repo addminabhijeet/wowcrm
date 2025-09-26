@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
 {
-    const WORK_DAY_SECONDS = 9 * 60 * 60; // 9 hours
+    const WORK_DAY_SECONDS = 9 * 60 * 60;
 
     public function showLoginForm()
     {
@@ -47,7 +47,7 @@ class LoginController extends Controller
                     'status' => 'running'
                 ]);
             } else {
-                // Deduct time since last update if it was running
+                
                 if ($lastTimer->status === 'running') {
                     $seconds_passed = now()->diffInSeconds($lastTimer->updated_at);
                     $lastTimer->remaining_seconds = max(0, $lastTimer->remaining_seconds - $seconds_passed);
@@ -93,5 +93,4 @@ class LoginController extends Controller
 
         return redirect('login');
     }
-
 }
