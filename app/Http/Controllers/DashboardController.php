@@ -47,9 +47,8 @@ class DashboardController extends Controller
         $istNow = now('Asia/Kolkata');
         $ist6am = $istNow->copy()->startOfDay()->addHours(6);
 
-        // ✅ Reset once if last update is before today's 6 AM
         if ($timer->updated_at->lt($ist6am)) {
-            $timer->remaining_seconds = self::WORK_DAY_SECONDS; // 9 hrs
+            $timer->remaining_seconds = self::WORK_DAY_SECONDS; 
             $timer->status = 'running';
             $timer->pause_type = 'reset';
             $timer->updated_at = $istNow;
@@ -76,7 +75,6 @@ class DashboardController extends Controller
             ]);
         }
 
-        // Normal tick/update logic
         if ($timer->status === 'running') {
             $seconds_passed = $now->diffInSeconds($timer->updated_at);
             $timer->remaining_seconds = max(0, $timer->remaining_seconds + $seconds_passed);
