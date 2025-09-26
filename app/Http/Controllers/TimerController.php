@@ -103,19 +103,18 @@ class TimerController extends Controller
         }
 
         $now = now();
-        $istNow = now('Asia/Kolkata'); // Force IST timezone
+        $istNow = now('Asia/Kolkata'); 
         $ist6am = $istNow->copy()->startOfDay()->addHours(6);
 
-        // ✅ Check if time is past 6 AM IST
         if ($istNow->greaterThan($ist6am)) {
-            // Log "absent" status once per day
+           
             $alreadyAbsent = UserTimerPause::where('user_id', $user->id)
                 ->whereDate('event_time', $istNow->toDateString())
                 ->where('pause_type', 'absent')
                 ->exists();
 
             if (!$alreadyAbsent) {
-                // Create absent pause entry
+                
                 UserTimerPause::create([
                     'user_timer_log_id' => $timer->id,
                     'user_id'           => $user->id,
@@ -126,8 +125,7 @@ class TimerController extends Controller
                     'event_time'        => $istNow,
                 ]);
 
-                // Reset timer
-                $timer->remaining_seconds = 0;
+                $timer->remaining_seconds = self::WORK_DAY_SECONDS; 
                 $timer->status = 'stopped';
                 $timer->pause_type = 'absent';
                 $timer->updated_at = $istNow;
@@ -145,7 +143,6 @@ class TimerController extends Controller
             }
         }
 
-        // Normal timer update logic
         if ($timer->status === 'running') {
             $seconds_passed = $now->diffInSeconds($timer->updated_at);
             $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
