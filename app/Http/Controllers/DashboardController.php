@@ -79,7 +79,7 @@ class DashboardController extends Controller
         // Normal tick/update logic
         if ($timer->status === 'running') {
             $seconds_passed = $now->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds + $seconds_passed);
         }
 
         if ($action === 'resume') {
