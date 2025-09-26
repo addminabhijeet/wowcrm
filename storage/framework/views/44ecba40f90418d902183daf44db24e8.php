@@ -686,12 +686,12 @@ $script ='<script>
                                 const downloadBtn = row.querySelector('.download-btn');
 
                                 if (viewBtn && data.resume_path) {
-                                    viewBtn.href = `/view-resume/${data.id}`;
+                                    viewBtn.href = `/dashboard/senior/google-sheet/view-resume/${data.id}`;
                                     viewBtn.classList.remove('d-none');
                                 }
 
                                 if (downloadBtn && data.resume_path) {
-                                    downloadBtn.href = `/download-resume/${data.id}`;
+                                    downloadBtn.href = `/dashboard/senior/google-sheet/download-resume/${data.id}`;
                                     downloadBtn.classList.remove('d-none');
                                 }
 
