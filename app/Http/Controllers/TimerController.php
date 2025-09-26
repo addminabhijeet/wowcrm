@@ -103,46 +103,29 @@ class TimerController extends Controller
         }
 
         $now = now();
-        $istNow = now('Asia/Kolkata'); 
+        $istNow = now('Asia/Kolkata');
         $ist6am = $istNow->copy()->startOfDay()->addHours(6);
 
-        if ($istNow->greaterThan($ist6am)) {
-           
-            $alreadyAbsent = UserTimerPause::where('user_id', $user->id)
-                ->whereDate('event_time', $istNow->toDateString())
-                ->where('pause_type', 'absent')
-                ->exists();
+        // ✅ Reset once if last update is before today's 6 AM
+        if ($timer->updated_at->lt($ist6am)) {
+            $timer->remaining_seconds = self::WORK_DAY_SECONDS; // 9 hrs
+            $timer->status = 'running';
+            $timer->pause_type = 'reset';
+            $timer->updated_at = $istNow;
+            $timer->save();
 
-            if (!$alreadyAbsent) {
-                
-                UserTimerPause::create([
-                    'user_timer_log_id' => $timer->id,
-                    'user_id'           => $user->id,
-                    'status'            => 'stopped',
-                    'pause_type'        => 'completed',
-                    'remaining_seconds' => 0,
-                    'elapsed_seconds'   => self::WORK_DAY_SECONDS,
-                    'event_time'        => $istNow,
-                ]);
-
-                $timer->remaining_seconds = self::WORK_DAY_SECONDS; 
-                $timer->status = 'stopped';
-                $timer->pause_type = 'absent';
-                $timer->updated_at = $istNow;
-                $timer->save();
-
-                return response()->json([
-                    'success'           => true,
-                    'remaining_seconds' => $timer->remaining_seconds,
-                    'elapsed_seconds'   => self::WORK_DAY_SECONDS,
-                    'status'            => $timer->status,
-                    'pause_type'        => $timer->pause_type,
-                    'notice_status'     => $timer->notice_status,
-                    'logout'            => true
-                ]);
-            }
+            return response()->json([
+                'success'           => true,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'elapsed_seconds'   => 0,
+                'status'            => $timer->status,
+                'pause_type'        => $timer->pause_type,
+                'notice_status'     => $timer->notice_status,
+                'logout'            => false
+            ]);
         }
 
+        // Normal tick/update logic
         if ($timer->status === 'running') {
             $seconds_passed = $now->diffInSeconds($timer->updated_at);
             $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
