@@ -317,7 +317,6 @@ class GoogleSheetController extends Controller
         // Base query
         $query = GoogleSheetData::query();
 
-        // Filter rows where 'Exe_Remarks' = 'Called & Mailed' OR created_by = "<user_id>|senior"
         $query->where(function ($q) use ($authUser) {
             $q->where('Exe_Remarks', 'Called & Mailed')
                 ->orWhere('created_by', "{$authUser->id}|senior");
