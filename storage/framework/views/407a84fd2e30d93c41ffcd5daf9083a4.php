@@ -60,15 +60,7 @@
                     </ul>
                 </li>
 
-                <li class="dropdown">
-                    <a href="javascript:void(0)">
-                        <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
-                        <span>Timer</span>
-                    </a>
-                    <ul class="sidebar-submenu">
-                        <li><a href="<?php echo e(route('timer.junior')); ?>"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Call Report</a></li>
-                    </ul>
-                </li>
+                
             <?php endif; ?>
 
             

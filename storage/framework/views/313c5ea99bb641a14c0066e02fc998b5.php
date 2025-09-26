@@ -10,4 +10,5 @@
         <li>-</li>
         <li class="fw-medium"><?php echo $subTitle;?></li>
     </ul>
-</div><?php /**PATH C:\xampp\htdocs\wowdash\resources\views/components/breadcrumb.blade.php ENDPATH**/ ?>
+</div>
+<?php /**PATH C:\xampp\htdocs\wowdash\resources\views/components/breadcrumb.blade.php ENDPATH**/ ?>

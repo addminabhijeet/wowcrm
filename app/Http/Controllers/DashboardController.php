@@ -43,13 +43,22 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Timer not found'], 404);
         }
 
-        $now = now();
+        // Current time in IST
         $istNow = now('Asia/Kolkata');
+
+        // Today 6 AM IST
         $ist6am = $istNow->copy()->startOfDay()->addHours(6);
+
+        // Timer's updated_at in IST
         $timerUpdatedIst = $timer->updated_at->copy()->timezone('Asia/Kolkata');
 
+        // Convert times to comparable numeric format YYMMDDHHMMSS
+        $istNowNum        = $istNow->format('ymdHis');
+        $ist6amNum        = $ist6am->format('ymdHis');
+        $timerUpdatedNum  = $timerUpdatedIst->format('ymdHis');
+
         // Reset timer if last update was before 6 AM today
-        if ($timerUpdatedIst->lt($ist6am)) {
+        if ($timerUpdatedNum < $ist6amNum) {
             $timer->remaining_seconds = self::WORK_DAY_SECONDS;
             $timer->status = 'running';
             $timer->pause_type = 'reset';
@@ -79,8 +88,8 @@ class DashboardController extends Controller
 
         // Update remaining seconds if timer was running
         if ($timer->status === 'running') {
-            $seconds_passed = $now->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
+            $seconds_passed = now()->diffInSeconds($timer->updated_at);
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds + $seconds_passed);
         }
 
         // Handle actions
@@ -92,7 +101,7 @@ class DashboardController extends Controller
             $timer->pause_type = $action;
         }
 
-        $timer->updated_at = $now;
+        $timer->updated_at = now();
         $timer->save();
 
         $elapsed_seconds = self::WORK_DAY_SECONDS - $timer->remaining_seconds;
@@ -105,7 +114,7 @@ class DashboardController extends Controller
                 'pause_type'        => $timer->pause_type,
                 'remaining_seconds' => $timer->remaining_seconds,
                 'elapsed_seconds'   => $elapsed_seconds,
-                'event_time'        => $now,
+                'event_time'        => now(),
             ]);
         }
 
