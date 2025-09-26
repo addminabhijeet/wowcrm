@@ -55,6 +55,16 @@ class DashboardController extends Controller
             $timer->updated_at = $istNow;
             $timer->save();
 
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
+                'user_id'           => $user->id,
+                'status'            => $timer->status,
+                'pause_type'        => $timer->pause_type,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'elapsed_seconds'   => 0,
+                'event_time'        => $istNow,
+            ]);
+
             return response()->json([
                 'success'           => true,
                 'remaining_seconds' => $timer->remaining_seconds,
