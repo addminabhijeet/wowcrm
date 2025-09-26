@@ -1,3 +1,4 @@
+
 <?php
 $title='Users Grid';
 $subTitle = 'Database';
@@ -649,10 +650,10 @@ $script ='<script>
                 // Determine URL and method
                 let url, method;
                 if (id === "new") {
-                    url = "<?php echo e(route('juniorstore')); ?>";
+                    url = "<?php echo e(route('adminstore')); ?>";
                     method = "POST";
                 } else {
-                    url = "<?php echo e(route('juniorupdate')); ?>";
+                    url = "<?php echo e(route('adminupdate')); ?>";
                     method = "POST";
                     formData.append("id", id);
                 }
@@ -686,12 +687,12 @@ $script ='<script>
                                 const downloadBtn = row.querySelector('.download-btn');
 
                                 if (viewBtn && data.resume_path) {
-                                    viewBtn.href = `/dashboard/junior/google-sheet/view-resume/${data.id}`;
+                                    viewBtn.href = `/dashboard/admin/google-sheet/view-resume/${data.id}`;
                                     viewBtn.classList.remove('d-none');
                                 }
 
                                 if (downloadBtn && data.resume_path) {
-                                    downloadBtn.href = `/dashboard/junior/google-sheet/download-resume/${data.id}`;
+                                    downloadBtn.href = `/dashboard/admin/google-sheet/download-resume/${data.id}`;
                                     downloadBtn.classList.remove('d-none');
                                 }
 
@@ -785,4 +786,4 @@ $script ='<script>
     });
 </script>
 <?php $__env->stopSection(); ?>
-<?php echo $__env->make('layout.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\wowdash\resources\views/database/junior.blade.php ENDPATH**/ ?>
+<?php echo $__env->make('layout.layout', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\wowdash\resources\views/database/admin.blade.php ENDPATH**/ ?>

@@ -71,7 +71,7 @@ app('router')->setCompiledRoutes(
         array (
           0 => 
           array (
-            '_route' => 'generated::nP0CPqR2FTY3JwVA',
+            '_route' => 'generated::w2rFojl0VS7CSyaQ',
           ),
           1 => NULL,
           2 => 
@@ -330,6 +330,44 @@ app('router')->setCompiledRoutes(
           0 => 
           array (
             '_route' => 'google.sheet.adminstore',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
+      '/dashboard/admin/google-sheet/adminupdate' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'adminupdate',
+          ),
+          1 => NULL,
+          2 => 
+          array (
+            'POST' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => false,
+          6 => NULL,
+        ),
+      ),
+      '/dashboard/admin/google-sheet/adminstore' => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'adminstore',
           ),
           1 => NULL,
           2 => 
@@ -914,11 +952,11 @@ app('router')->setCompiledRoutes(
     ),
     2 => 
     array (
-      0 => '{^(?|/d(?|ashboard/(?|admin/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:69)|google\\-sheet/update/([^/]++)(*:105))|senior/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:160)|google\\-sheet/pdfupdate/([^/]++)(*:200))|junior/google\\-sheet/pdfupdate/([^/]++)(*:248))|ownload\\-resume/([^/]++)(*:281))|/view\\-resume/([^/]++)(*:312)|/resumes/(?|upload/([^/]++)(*:347)|([^/]++)/status(*:370))|/payment/([^/]++)/status(*:403)|/training/([^/]++)/trastatus(*:439))/?$}sDu',
+      0 => '{^(?|/dashboard/(?|admin/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:66)|google\\-sheet/(?|update/([^/]++)(*:105)|view\\-resume/([^/]++)(*:134)|download\\-resume/([^/]++)(*:167)))|senior/(?|calendar(?:/([^/]++)(?:/([^/]++))?)?(*:223)|google\\-sheet/(?|pdfupdate/([^/]++)(*:266)|view\\-resume/([^/]++)(*:295)|download\\-resume/([^/]++)(*:328)))|junior/google\\-sheet/pdfupdate/([^/]++)(*:377))|/resumes/(?|upload/([^/]++)(*:413)|([^/]++)/status(*:436))|/payment/([^/]++)/status(*:469)|/training/([^/]++)/trastatus(*:505))/?$}sDu',
     ),
     3 => 
     array (
-      69 => 
+      66 => 
       array (
         0 => 
         array (
@@ -966,7 +1004,53 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      160 => 
+      134 => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'view.admin.resume',
+          ),
+          1 => 
+          array (
+            0 => 'id',
+          ),
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => true,
+          6 => NULL,
+        ),
+      ),
+      167 => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'download.admin.resume',
+          ),
+          1 => 
+          array (
+            0 => 'id',
+          ),
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => true,
+          6 => NULL,
+        ),
+      ),
+      223 => 
       array (
         0 => 
         array (
@@ -992,7 +1076,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      200 => 
+      266 => 
       array (
         0 => 
         array (
@@ -1014,52 +1098,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      248 => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'google.sheet.juniorpdfupdate',
-          ),
-          1 => 
-          array (
-            0 => 'id',
-          ),
-          2 => 
-          array (
-            'PATCH' => 0,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => true,
-          6 => NULL,
-        ),
-      ),
-      281 => 
-      array (
-        0 => 
-        array (
-          0 => 
-          array (
-            '_route' => 'download.resume',
-          ),
-          1 => 
-          array (
-            0 => 'id',
-          ),
-          2 => 
-          array (
-            'GET' => 0,
-            'HEAD' => 1,
-          ),
-          3 => NULL,
-          4 => false,
-          5 => true,
-          6 => NULL,
-        ),
-      ),
-      312 => 
+      295 => 
       array (
         0 => 
         array (
@@ -1082,7 +1121,52 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      347 => 
+      328 => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'download.resume',
+          ),
+          1 => 
+          array (
+            0 => 'id',
+          ),
+          2 => 
+          array (
+            'GET' => 0,
+            'HEAD' => 1,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => true,
+          6 => NULL,
+        ),
+      ),
+      377 => 
+      array (
+        0 => 
+        array (
+          0 => 
+          array (
+            '_route' => 'google.sheet.juniorpdfupdate',
+          ),
+          1 => 
+          array (
+            0 => 'id',
+          ),
+          2 => 
+          array (
+            'PATCH' => 0,
+          ),
+          3 => NULL,
+          4 => false,
+          5 => true,
+          6 => NULL,
+        ),
+      ),
+      413 => 
       array (
         0 => 
         array (
@@ -1104,7 +1188,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      370 => 
+      436 => 
       array (
         0 => 
         array (
@@ -1126,7 +1210,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      403 => 
+      469 => 
       array (
         0 => 
         array (
@@ -1148,7 +1232,7 @@ app('router')->setCompiledRoutes(
           6 => NULL,
         ),
       ),
-      439 => 
+      505 => 
       array (
         0 => 
         array (
@@ -1294,7 +1378,7 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
-    'generated::nP0CPqR2FTY3JwVA' => 
+    'generated::w2rFojl0VS7CSyaQ' => 
     array (
       'methods' => 
       array (
@@ -1323,7 +1407,7 @@ app('router')->setCompiledRoutes(
                         \'exception\' => $exception,
                     ]), status: $exception ? 500 : 200);
                 }";s:5:"scope";s:54:"Illuminate\\Foundation\\Configuration\\ApplicationBuilder";s:4:"this";N;s:4:"self";s:32:"00000000000003440000000000000000";}}',
-        'as' => 'generated::nP0CPqR2FTY3JwVA',
+        'as' => 'generated::w2rFojl0VS7CSyaQ',
       ),
       'fallback' => false,
       'defaults' => 
@@ -1928,6 +2012,156 @@ app('router')->setCompiledRoutes(
         array (
         ),
         'as' => 'google.sheet.adminstore',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'adminupdate' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'dashboard/admin/google-sheet/adminupdate',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@adminupdate',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@adminupdate',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'adminupdate',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'adminstore' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'POST',
+      ),
+      'uri' => 'dashboard/admin/google-sheet/adminstore',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@adminstore',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@adminstore',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'adminstore',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'view.admin.resume' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'dashboard/admin/google-sheet/view-resume/{id}',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@viewadminResume',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@viewadminResume',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'view.admin.resume',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'download.admin.resume' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'dashboard/admin/google-sheet/download-resume/{id}',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@downloadadminResume',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@downloadadminResume',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'download.admin.resume',
       ),
       'fallback' => false,
       'defaults' => 
@@ -2733,6 +2967,82 @@ app('router')->setCompiledRoutes(
       'waitSeconds' => NULL,
       'withTrashed' => false,
     ),
+    'view.resume' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'dashboard/senior/google-sheet/view-resume/{id}',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@viewseniorResume',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@viewseniorResume',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'view.resume',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
+    'download.resume' => 
+    array (
+      'methods' => 
+      array (
+        0 => 'GET',
+        1 => 'HEAD',
+      ),
+      'uri' => 'dashboard/senior/google-sheet/download-resume/{id}',
+      'action' => 
+      array (
+        'middleware' => 
+        array (
+          0 => 'web',
+          1 => 'auth',
+        ),
+        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@downloadseniorResume',
+        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@downloadseniorResume',
+        'namespace' => NULL,
+        'prefix' => '',
+        'where' => 
+        array (
+        ),
+        'as' => 'download.resume',
+      ),
+      'fallback' => false,
+      'defaults' => 
+      array (
+      ),
+      'wheres' => 
+      array (
+      ),
+      'bindingFields' => 
+      array (
+      ),
+      'lockSeconds' => NULL,
+      'waitSeconds' => NULL,
+      'withTrashed' => false,
+    ),
     'seniorupdate' => 
     array (
       'methods' => 
@@ -2792,82 +3102,6 @@ app('router')->setCompiledRoutes(
         array (
         ),
         'as' => 'seniorstore',
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'view.resume' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'GET',
-        1 => 'HEAD',
-      ),
-      'uri' => 'view-resume/{id}',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-        ),
-        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@viewResume',
-        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@viewResume',
-        'namespace' => NULL,
-        'prefix' => '',
-        'where' => 
-        array (
-        ),
-        'as' => 'view.resume',
-      ),
-      'fallback' => false,
-      'defaults' => 
-      array (
-      ),
-      'wheres' => 
-      array (
-      ),
-      'bindingFields' => 
-      array (
-      ),
-      'lockSeconds' => NULL,
-      'waitSeconds' => NULL,
-      'withTrashed' => false,
-    ),
-    'download.resume' => 
-    array (
-      'methods' => 
-      array (
-        0 => 'GET',
-        1 => 'HEAD',
-      ),
-      'uri' => 'download-resume/{id}',
-      'action' => 
-      array (
-        'middleware' => 
-        array (
-          0 => 'web',
-          1 => 'auth',
-        ),
-        'uses' => 'App\\Http\\Controllers\\GoogleSheetController@downloadResume',
-        'controller' => 'App\\Http\\Controllers\\GoogleSheetController@downloadResume',
-        'namespace' => NULL,
-        'prefix' => '',
-        'where' => 
-        array (
-        ),
-        'as' => 'download.resume',
       ),
       'fallback' => false,
       'defaults' => 

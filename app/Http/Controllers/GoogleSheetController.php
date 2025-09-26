@@ -13,8 +13,9 @@ class GoogleSheetController extends Controller
 {
     public function index()
     {
-        $data = GoogleSheetData::all();
-        return view('database.admin', compact('data'));
+        $data = GoogleSheetData::paginate(10);
+
+        return view('database.junior', compact('data'));
     }
 
     public function adminfetch(Request $request)
@@ -84,70 +85,230 @@ class GoogleSheetController extends Controller
     }
 
 
-    public function adminupdate(Request $request, $id)
+    public function adminupdate(Request $request)
     {
-        $rowData = $request->input('data');
+        $id = $request->input('id');
 
-        if (empty($rowData)) {
-            return response()->json(['success' => false, 'message' => 'No data provided']);
+        if (!$id) {
+            return response()->json(['success' => false, 'message' => 'ID is required']);
         }
 
         $row = GoogleSheetData::find($id);
-
         if (!$row) {
             return response()->json(['success' => false, 'message' => 'Row not found']);
         }
 
-        $user = Auth::user();
+        $rowData = json_decode($request->input('data'), true);
+        if (empty($rowData)) {
+            return response()->json(['success' => false, 'message' => 'No data provided']);
+        }
 
-        $row->update([
-            'data'       => json_encode($rowData, JSON_UNESCAPED_UNICODE),
-            'created_by' => "{$user->id}|{$user->role}",
-        ]);
+        // Handle resume file upload - Save actual file content
+        if ($request->hasFile('resume')) {
+            $file = $request->file('resume');
 
-        return response()->json([
-            'success' => true,
-            'row' => [
-                'id'               => $row->id,
+            // Validate it's a PDF
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            // Generate unique filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Store the actual file content
+                $filePath = $file->storeAs('resumes', $newName, 'public');
+
+                // Delete old resume file if exists
+                if ($row->resume && Storage::disk('public')->exists($row->resume)) {
+                    Storage::disk('public')->delete($row->resume);
+                }
+
+                $row->resume = $filePath; // Store file path instead of just filename
+
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // Prepare update data
+        $updateData = [
+            'Date' => isset($rowData['Date']) && !empty($rowData['Date']) ?
+                $this->parseDate($rowData['Date']) : null,
+            'Name' => $rowData['Name'] ?? null,
+            'Email_Address' => $rowData['Email Address'] ?? null,
+            'Phone_Number' => $rowData['Phone Number'] ?? null,
+            'Location' => $rowData['Location'] ?? null,
+            'Relocation' => $rowData['Relocation'] ?? null,
+            'Graduation_Date' => isset($rowData['Graduation Date']) && !empty($rowData['Graduation Date']) ?
+                $this->parseDate($rowData['Graduation Date']) : null,
+            'Immigration' => $rowData['Immigration'] ?? null,
+            'Course' => $rowData['Course'] ?? null,
+            'Amount' => isset($rowData['Amount']) ?
+                $this->parseAmount($rowData['Amount']) : null,
+            'Qualification' => $rowData['Qualification'] ?? null,
+            'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
+            'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
+            'Time_Zone' => $rowData['Time Zone'] ?? null,
+            'updated_at' => now(),
+        ];
+
+        // Only update resume if it was uploaded
+        if ($request->hasFile('resume')) {
+            $updateData['resume'] = $row->resume;
+        }
+
+        try {
+            $row->update($updateData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Row updated successfully',
+                'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'data'             => $rowData,
-                'created_by'       => $row->created_by
-            ]
-        ]);
+                'resume_path' => $row->resume // Return the file path for frontend
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Database error: ' . $e->getMessage()
+            ]);
+        }
     }
 
     public function adminstore(Request $request)
     {
-        $rowData = $request->input('rows.0');
+        $rowData = json_decode($request->input('data'), true);
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        $maxRow = GoogleSheetData::max('sheet_row_number') ?? 1;
+        $user = Auth::user();
+        $maxRow = GoogleSheetData::max('sheet_row_number') ?? 0;
         $nextRow = $maxRow + 1;
 
-        $user = Auth::user();
+        $record = new GoogleSheetData();
+        $record->sheet_row_number = $nextRow;
+        $record->created_by = $user->id . '|admin';
 
-        // 🔑 Use updateOrCreate instead of create
-        $newRow = GoogleSheetData::updateOrCreate(
-            ['sheet_row_number' => $nextRow],
-            [
-                'data'       => json_encode($rowData, JSON_UNESCAPED_UNICODE),
-                'created_by' => "{$user->id}|{$user->role}",
-            ]
-        );
+        // Map frontend keys to DB columns
+        $columnMap = [
+            'Date' => 'Date',
+            'Name' => 'Name',
+            'Email Address' => 'Email_Address',
+            'Phone Number' => 'Phone_Number',
+            'Location' => 'Location',
+            'Relocation' => 'Relocation',
+            'Graduation Date' => 'Graduation_Date',
+            'Immigration' => 'Immigration',
+            'Course' => 'Course',
+            'Amount' => 'Amount',
+            'Qualification' => 'Qualification',
+            'Exe Remarks' => 'Exe_Remarks',
+            '1st Follow Up Remarks' => 'First_Follow_Up_Remarks',
+            'Time Zone' => 'Time_Zone',
+        ];
+
+        // Assign values safely
+        foreach ($rowData as $key => $val) {
+            if (!isset($columnMap[$key])) continue;
+            $column = $columnMap[$key];
+
+            if (in_array($column, ['Date', 'Graduation_Date']) && !empty($val)) {
+                $val = $this->parseDate($val);
+            }
+
+            if ($column === 'Amount' && !empty($val)) {
+                $val = $this->parseAmount($val);
+            }
+
+            $record->$column = $val;
+        }
+
+        // Handle resume file upload - Save actual file content
+        if ($request->hasFile('resume')) {
+            $file = $request->file('resume');
+
+            // Validate it's a PDF
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Store the actual file content
+                $filePath = $file->storeAs('resumes', $newName, 'public');
+                $record->resume = $filePath; // Store file path
+            } catch (\Exception $e) {
+                // Continue without resume if upload fails
+                $record->resume = null;
+            }
+        }
+
+        try {
+            $record->save();
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Database error: ' . $e->getMessage()
+            ]);
+        }
 
         return response()->json([
             'success' => true,
-            'rows' => [[
-                'id'               => $newRow->id,
-                'sheet_row_number' => $newRow->sheet_row_number,
-                'data'             => $rowData,
-                'created_by'       => $newRow->created_by
-            ]]
+            'id' => $record->id,
+            'sheet_row_number' => $record->sheet_row_number,
+            'resume_path' => $record->resume
         ]);
     }
+
+    // Add a method to serve the PDF files
+    public function viewadminResume($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->resume) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->resume);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
+        ]);
+    }
+
+    // Add a method to download the PDF files
+    public function downloadadminResume($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->resume) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->resume);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download($filePath, basename($filePath));
+    }
+
 
     public function senior()
     {
@@ -253,10 +414,10 @@ class GoogleSheetController extends Controller
         return redirect()->route('google.sheet.senior')->with('success', 'Data fetched successfully!');
     }
 
-     public function seniorupdate(Request $request)
+    public function seniorupdate(Request $request)
     {
         $id = $request->input('id');
-        
+
         if (!$id) {
             return response()->json(['success' => false, 'message' => 'ID is required']);
         }
@@ -274,7 +435,7 @@ class GoogleSheetController extends Controller
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
-            
+
             // Validate it's a PDF
             if ($file->getMimeType() !== 'application/pdf') {
                 return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
@@ -285,18 +446,18 @@ class GoogleSheetController extends Controller
             $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
-            
+
             try {
                 // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
-                
+
                 // Delete old resume file if exists
                 if ($row->resume && Storage::disk('public')->exists($row->resume)) {
                     Storage::disk('public')->delete($row->resume);
                 }
-                
+
                 $row->resume = $filePath; // Store file path instead of just filename
-                
+
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
@@ -304,19 +465,19 @@ class GoogleSheetController extends Controller
 
         // Prepare update data
         $updateData = [
-            'Date' => isset($rowData['Date']) && !empty($rowData['Date']) ? 
-                     $this->parseDate($rowData['Date']) : null,
+            'Date' => isset($rowData['Date']) && !empty($rowData['Date']) ?
+                $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
             'Email_Address' => $rowData['Email Address'] ?? null,
             'Phone_Number' => $rowData['Phone Number'] ?? null,
             'Location' => $rowData['Location'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
-            'Graduation_Date' => isset($rowData['Graduation Date']) && !empty($rowData['Graduation Date']) ? 
-                               $this->parseDate($rowData['Graduation Date']) : null,
+            'Graduation_Date' => isset($rowData['Graduation Date']) && !empty($rowData['Graduation Date']) ?
+                $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
-            'Amount' => isset($rowData['Amount']) ? 
-                       $this->parseAmount($rowData['Amount']) : null,
+            'Amount' => isset($rowData['Amount']) ?
+                $this->parseAmount($rowData['Amount']) : null,
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
@@ -331,7 +492,7 @@ class GoogleSheetController extends Controller
 
         try {
             $row->update($updateData);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'Row updated successfully',
@@ -400,7 +561,7 @@ class GoogleSheetController extends Controller
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
-            
+
             // Validate it's a PDF
             if ($file->getMimeType() !== 'application/pdf') {
                 return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
@@ -439,16 +600,16 @@ class GoogleSheetController extends Controller
     }
 
     // Add a method to serve the PDF files
-    public function viewResume($id)
+    public function viewseniorResume($id)
     {
         $row = GoogleSheetData::find($id);
-        
+
         if (!$row || !$row->resume) {
             abort(404);
         }
 
         $filePath = storage_path('app/public/' . $row->resume);
-        
+
         if (!file_exists($filePath)) {
             abort(404);
         }
@@ -460,16 +621,16 @@ class GoogleSheetController extends Controller
     }
 
     // Add a method to download the PDF files
-    public function downloadResume($id)
+    public function downloadseniorResume($id)
     {
         $row = GoogleSheetData::find($id);
-        
+
         if (!$row || !$row->resume) {
             abort(404);
         }
 
         $filePath = storage_path('app/public/' . $row->resume);
-        
+
         if (!file_exists($filePath)) {
             abort(404);
         }
