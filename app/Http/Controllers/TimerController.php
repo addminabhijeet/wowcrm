@@ -70,7 +70,7 @@ class TimerController extends Controller
 
         $status = $request->action == 'enable' ? 1 : 0;
 
-
+        
         $juniors = User::where('role', 'junior')->get();
         $updated = [];
 
@@ -94,41 +94,17 @@ class TimerController extends Controller
 
     public function updateTimer(Request $request)
     {
-        $user   = Auth::user();
+        $user = Auth::user();
         $action = $request->input('action');
 
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
-        if (!$timer) {
-            return response()->json(['error' => 'Timer not found'], 404);
-        }
+        if (!$timer) return response()->json(['error' => 'Timer not found'], 404);
 
         $now = now();
-        $istNow = now('Asia/Kolkata');
-        $ist6am = $istNow->copy()->startOfDay()->addHours(6);
 
-        // ✅ Reset once if last update is before today's 6 AM
-        if ($timer->updated_at->lt($ist6am)) {
-            $timer->remaining_seconds = self::WORK_DAY_SECONDS; // 9 hrs
-            $timer->status = 'running';
-            $timer->pause_type = 'reset';
-            $timer->updated_at = $istNow;
-            $timer->save();
-
-            return response()->json([
-                'success'           => true,
-                'remaining_seconds' => $timer->remaining_seconds,
-                'elapsed_seconds'   => 0,
-                'status'            => $timer->status,
-                'pause_type'        => $timer->pause_type,
-                'notice_status'     => $timer->notice_status,
-                'logout'            => false
-            ]);
-        }
-
-        // Normal tick/update logic
         if ($timer->status === 'running') {
             $seconds_passed = $now->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds + $seconds_passed);
         }
 
         if ($action === 'resume') {
@@ -136,7 +112,7 @@ class TimerController extends Controller
             $timer->pause_type = 'resume';
         } elseif ($action !== 'tick') {
             $timer->status = 'paused';
-            $timer->pause_type = $action;
+            $timer->pause_type = $action; 
         }
 
         $timer->updated_at = $now;
@@ -144,6 +120,7 @@ class TimerController extends Controller
 
         $elapsed_seconds = self::WORK_DAY_SECONDS - $timer->remaining_seconds;
 
+     
         if ($action !== 'tick') {
             UserTimerPause::create([
                 'user_timer_log_id' => $timer->id,
@@ -157,16 +134,13 @@ class TimerController extends Controller
         }
 
         return response()->json([
-            'success'           => true,
             'remaining_seconds' => $timer->remaining_seconds,
             'elapsed_seconds'   => $elapsed_seconds,
             'status'            => $timer->status,
             'pause_type'        => $timer->pause_type,
-            'notice_status'     => $timer->notice_status,
             'logout'            => $timer->remaining_seconds <= 0
         ]);
     }
-
 
     public function allJuniorTimers()
     {
@@ -196,9 +170,12 @@ class TimerController extends Controller
     }
 
 
+    /**
+     * Timers for Admin Dashboard (all juniors + all seniors)
+     */
     public function adminTimers()
     {
-
+        // Assuming roles 'junior' and 'senior'
         $userIds = User::whereIn('role', ['junior', 'senior'])->pluck('id');
 
         $timers = UserTimerLog::with('pauses', 'user')
@@ -209,10 +186,12 @@ class TimerController extends Controller
         return view('timers.admin', compact('timers'));
     }
 
-
+    /**
+     * Optional: show timer details for a specific user
+     */
     public function juniorTimers()
     {
-
+        // Assuming roles 'junior' and 'senior'
         $userIds = User::whereIn('role', 'junior')->pluck('id');
 
         $timers = UserTimerLog::with('pauses', 'user')

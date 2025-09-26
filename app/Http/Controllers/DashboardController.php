@@ -44,29 +44,32 @@ class DashboardController extends Controller
         }
 
         $now = now();
+        $istNow = now('Asia/Kolkata');
+        $ist6am = $istNow->copy()->startOfDay()->addHours(6);
 
-        if ($timer->status === 'running') {
-            $seconds_passed = $now->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds + $seconds_passed);
+        // ✅ Reset once if last update is before today's 6 AM
+        if ($timer->updated_at->lt($ist6am)) {
+            $timer->remaining_seconds = self::WORK_DAY_SECONDS; // 9 hrs
+            $timer->status = 'running';
+            $timer->pause_type = 'reset';
+            $timer->updated_at = $istNow;
+            $timer->save();
+
+            return response()->json([
+                'success'           => true,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'elapsed_seconds'   => 0,
+                'status'            => $timer->status,
+                'pause_type'        => $timer->pause_type,
+                'notice_status'     => $timer->notice_status,
+                'logout'            => false
+            ]);
         }
 
-
-        if ($action !== 'tick' && $action !== 'resume') {
-            if ($timer->button_status == 0) {
-
-                $timer->notice_status = 1;
-                $timer->save();
-
-                return response()->json([
-                    'success'          => false,
-                    'message'          => 'Please wait for senior to enable.',
-                    'notice_status'    => $timer->notice_status,
-                    'remaining_seconds' => $timer->remaining_seconds,
-                    'elapsed_seconds'  => self::WORK_DAY_SECONDS - $timer->remaining_seconds,
-                    'status'           => $timer->status,
-                    'pause_type'       => $timer->pause_type,
-                ]);
-            }
+        // Normal tick/update logic
+        if ($timer->status === 'running') {
+            $seconds_passed = $now->diffInSeconds($timer->updated_at);
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
         }
 
         if ($action === 'resume') {
@@ -74,7 +77,7 @@ class DashboardController extends Controller
             $timer->pause_type = 'resume';
         } elseif ($action !== 'tick') {
             $timer->status = 'paused';
-            $timer->pause_type = $action; 
+            $timer->pause_type = $action;
         }
 
         $timer->updated_at = $now;
@@ -82,7 +85,6 @@ class DashboardController extends Controller
 
         $elapsed_seconds = self::WORK_DAY_SECONDS - $timer->remaining_seconds;
 
-       
         if ($action !== 'tick') {
             UserTimerPause::create([
                 'user_timer_log_id' => $timer->id,
