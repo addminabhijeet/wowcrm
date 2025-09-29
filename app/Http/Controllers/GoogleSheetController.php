@@ -645,17 +645,11 @@ class GoogleSheetController extends Controller
         }
     }
 
-    private function parseAmount($amountString)
+    protected function parseAmount($amount)
     {
-        if (empty($amountString)) {
-            return null;
-        }
-
-        // Remove $ and commas
-        $clean = str_replace(['$', ','], '', $amountString);
-
-        // Parse as integer (ignore decimals)
-        return (int) $clean;
+        // Remove non-digits
+        $amount = preg_replace('/[^0-9]/', '', $amount);
+        return $amount !== '' ? (int)$amount : null;
     }
 
 
