@@ -431,41 +431,48 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // Handle resume file upload
+        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
+            // Validate it's a PDF
             if ($file->getMimeType() !== 'application/pdf') {
                 return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
             }
 
+            // Generate unique filename
             $timestamp = now()->format('Ymd_His');
             $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
+                // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
 
+                // Delete old resume file if exists
                 if ($row->resume && Storage::disk('public')->exists($row->resume)) {
                     Storage::disk('public')->delete($row->resume);
                 }
 
-                $row->resume = $filePath;
+                $row->resume = $filePath; // Store file path instead of just filename
+
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
         }
 
-        // Update data array
+        // Prepare update data
         $updateData = [
-            'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
+            'Date' => isset($rowData['Date']) && !empty($rowData['Date']) ?
+                $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
             'Email_Address' => $rowData['Email Address'] ?? null,
             'Phone_Number' => $rowData['Phone Number'] ?? null,
             'Location' => $rowData['Location'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
-            'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
+            'Graduation_Date' => isset($rowData['Graduation Date']) && !empty($rowData['Graduation Date']) ?
+                $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
             'Amount' => isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : null,
@@ -476,7 +483,7 @@ class GoogleSheetController extends Controller
             'updated_at' => now(),
         ];
 
-        // Only update resume if uploaded
+        // Only update resume if it was uploaded
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
@@ -489,7 +496,7 @@ class GoogleSheetController extends Controller
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => $row->resume
+                'resume_path' => $row->resume // Return the file path for frontend
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -498,8 +505,6 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
-
-
 
     public function seniorstore(Request $request)
     {
