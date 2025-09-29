@@ -124,7 +124,39 @@ $script ='<script>
                             </select>
                         </td>
 
-                        
+                        {{-- Course --}}
+                        <td>
+                            @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
+                            <select class="form-select dynamic-dropdown" data-key="Course">
+                                <option value="">-- Select --</option>
+                                @foreach($courseOptions as $option)
+                                <option value="{{ $option }}" {{ $row->Course === $option ? 'selected' : '' }}>
+                                    {{ $option }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </td>
+
+                      
+
+                        {{-- Qualification --}}
+                        <td>
+                            <input type="text" class="form-control qualification-input" data-key="Qualification"
+                                value="{{ $row->Qualification ?? '' }}" placeholder="Qualification">
+                        </td>
+
+                        {{-- Exe Remarks --}}
+                        <td>
+                            @php $exeOptions = ['Called & Mailed','Not Interested','Others','N/A','VM','Busy']; @endphp
+                            <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
+                                <option value="">-- Select --</option>
+                                @foreach($exeOptions as $option)
+                                <option value="{{ $option }}" {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
+                                    {{ $option }}
+                                </option>
+                                @endforeach
+                            </select>
+                        </td>
 
                         {{-- 1st Follow Up Remarks --}}
                         <td>
