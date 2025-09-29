@@ -422,12 +422,18 @@ $script ='<script>
                 v = parts[0] + "." + parts.slice(1).join(""); // merge remaining parts
             }
 
+            // Remove leading zeros before integer part
+            if (v.startsWith("0") && !v.startsWith("0.")) {
+                v = v.replace(/^0+/, "") || "0";
+            }
+
             inp.value = v;
 
-            // Validation: allow numbers like 100, 100.5, 100.5555, etc.
+            // Validation
             if (/^\d*\.?\d*$/.test(v) && v !== ".") {
                 inp.classList.remove("invalid");
                 inp.classList.add("valid");
+                inp.classList.remove("neutral");
             } else if (v === "") {
                 inp.classList.remove("invalid");
                 inp.classList.remove("valid");
@@ -435,9 +441,9 @@ $script ='<script>
             } else {
                 inp.classList.add("invalid");
                 inp.classList.remove("valid");
+                inp.classList.remove("neutral");
             }
         }
-
 
         function initDatePickers(context = document) {
             context.querySelectorAll('input.date-picker').forEach(input => {

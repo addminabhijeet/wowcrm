@@ -475,8 +475,7 @@ class GoogleSheetController extends Controller
                 $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
-            'Amount' => isset($rowData['Amount']) ?
-                $this->parseAmount($rowData['Amount']) : null,
+            'Amount' => isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : null,
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
@@ -648,20 +647,17 @@ class GoogleSheetController extends Controller
 
     private function parseAmount($amountString)
     {
-        if (is_null($amountString) || $amountString === '') {
+        if (empty($amountString)) {
             return null;
         }
 
-        // Remove $ and , only, keep integer if entered as integer
+        // Remove $ and commas
         $clean = str_replace(['$', ','], '', $amountString);
 
-        // If integer, return as integer; if decimal, return float
-        if (strpos($clean, '.') !== false) {
-            return (float) $clean;
-        }
-
-        return (int) $clean;
+        // If it contains a dot, parse as float; otherwise as int
+        return strpos($clean, '.') !== false ? (float) $clean : (int) $clean;
     }
+
 
 
     // The PDF methods remain the same as they handle file uploads separately
