@@ -140,7 +140,7 @@ $script ='<script>
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ?? '' }}" placeholder="Amount">
+                                value="{{ $row->Amount ? number_format($row->Amount, 0) : '' }}" placeholder="Amount">
                         </td>
 
 
@@ -414,29 +414,15 @@ $script ='<script>
         function validateAmountInput(inp) {
             let v = inp.value.trim();
 
-            // Remove everything except digits and one dot
-            v = v.replace(/[^0-9.]/g, "");
+            // Remove all non-numeric characters
+            v = v.replace(/[^0-9]/g, "");
 
-            // Allow only one dot
-            const parts = v.split(".");
-            if (parts.length > 2) {
-                v = parts[0] + "." + parts.slice(1).join("");
-            }
+            // Remove leading zeros
+            v = v.replace(/^0+/, "") || "0";
 
-            // Limit to two decimals
-            if (parts[1]) {
-                parts[1] = parts[1].slice(0, 2);
-                v = parts[0] + "." + parts[1];
-            }
-
-            // Remove leading zeros for integer part
-            parts[0] = parts[0].replace(/^0+/, "") || "0";
-            v = parts[1] ? parts[0] + "." + parts[1] : parts[0];
-
-            inp.dataset.rawValue = v; // store raw numeric value
             inp.value = v;
 
-            // Validation classes
+            // Validation
             if (/^\d+$/.test(v)) {
                 inp.classList.remove("invalid");
                 inp.classList.add("valid");
@@ -451,31 +437,6 @@ $script ='<script>
                 inp.classList.remove("neutral");
             }
         }
-
-        // Optional: format with $ and commas on blur
-        document.querySelectorAll('input.amount-input').forEach(inp => {
-            // Initial validation
-            validateAmountInput(inp);
-
-            inp.addEventListener('input', () => validateAmountInput(inp));
-
-            inp.addEventListener('blur', () => {
-                let v = inp.dataset.rawValue || inp.value;
-                if (v !== "") {
-                    // Format with commas and optional $ prefix
-                    const num = parseFloat(v);
-                    inp.value = "$" + num.toLocaleString(undefined, {
-                        minimumFractionDigits: 0,
-                        maximumFractionDigits: 2
-                    });
-                }
-            });
-
-            inp.addEventListener('focus', () => {
-                // Remove $ and commas for editing
-                inp.value = inp.dataset.rawValue || inp.value.replace(/[^0-9.]/g, "");
-            });
-        });
 
         // Apply to inputs
         document.querySelectorAll('input.amount-input').forEach(i => {
