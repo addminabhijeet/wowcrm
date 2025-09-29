@@ -419,13 +419,13 @@ $script ='<script>
             // Only allow one dot
             const parts = v.split(".");
             if (parts.length > 2) {
-                v = parts[0] + "." + parts[1];
+                v = parts[0] + "." + parts.slice(1).join(""); // merge remaining parts
             }
 
             inp.value = v;
 
-            // Validation: allow numbers like 100 or 100.5 or 100.55
-            if (/^\d+(\.\d{1,2})?$/.test(v)) {
+            // Validation: allow numbers like 100, 100.5, 100.5555, etc.
+            if (/^\d*\.?\d*$/.test(v) && v !== ".") {
                 inp.classList.remove("invalid");
                 inp.classList.add("valid");
             } else if (v === "") {
