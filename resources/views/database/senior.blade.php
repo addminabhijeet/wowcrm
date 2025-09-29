@@ -140,7 +140,7 @@ $script ='<script>
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount">
+                                value="{{ $row->Amount ? number_format($row->Amount, 0) : '' }}" placeholder="Amount">
                         </td>
 
                         {{-- Qualification --}}
@@ -413,24 +413,16 @@ $script ='<script>
         function validateAmountInput(inp) {
             let v = inp.value.trim();
 
-            // Remove any non-numeric characters except dot
-            v = v.replace(/[^0-9.]/g, "");
+            // Remove all non-numeric characters
+            v = v.replace(/[^0-9]/g, "");
 
-            // Only allow one dot
-            const parts = v.split(".");
-            if (parts.length > 2) {
-                v = parts[0] + "." + parts.slice(1).join(""); // merge remaining parts
-            }
-
-            // Remove leading zeros before integer part
-            if (v.startsWith("0") && !v.startsWith("0.")) {
-                v = v.replace(/^0+/, "") || "0";
-            }
+            // Remove leading zeros
+            v = v.replace(/^0+/, "") || "0";
 
             inp.value = v;
 
             // Validation
-            if (/^\d*\.?\d*$/.test(v) && v !== ".") {
+            if (/^\d+$/.test(v)) {
                 inp.classList.remove("invalid");
                 inp.classList.add("valid");
                 inp.classList.remove("neutral");
@@ -444,6 +436,13 @@ $script ='<script>
                 inp.classList.remove("neutral");
             }
         }
+
+        // Apply to inputs
+        document.querySelectorAll('input.amount-input').forEach(i => {
+            validateAmountInput(i);
+            i.addEventListener('input', () => validateAmountInput(i));
+        });
+
 
         function initDatePickers(context = document) {
             context.querySelectorAll('input.date-picker').forEach(input => {
