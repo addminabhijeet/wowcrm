@@ -414,10 +414,10 @@ $script ='<script>
         function validateAmountInput(inp) {
             let v = inp.value.trim();
 
-            // Remove everything except digits and dot
+            // Remove everything except digits and one dot
             v = v.replace(/[^0-9.]/g, "");
 
-            // Only allow one dot
+            // Allow only one dot
             const parts = v.split(".");
             if (parts.length > 2) {
                 v = parts[0] + "." + parts.slice(1).join("");
@@ -429,12 +429,11 @@ $script ='<script>
                 v = parts[0] + "." + parts[1];
             }
 
-            // Remove leading zeros from integer part
+            // Remove leading zeros for integer part
             parts[0] = parts[0].replace(/^0+/, "") || "0";
             v = parts[1] ? parts[0] + "." + parts[1] : parts[0];
 
-            // Store the raw numeric value
-            inp.dataset.rawValue = v;
+            inp.dataset.rawValue = v; // store raw numeric value
             inp.value = v;
 
             // Validation classes
@@ -453,7 +452,7 @@ $script ='<script>
             }
         }
 
-
+        // Optional: format with $ and commas on blur
         document.querySelectorAll('input.amount-input').forEach(inp => {
             // Initial validation
             validateAmountInput(inp);
@@ -463,17 +462,36 @@ $script ='<script>
             inp.addEventListener('blur', () => {
                 let v = inp.dataset.rawValue || inp.value;
                 if (v !== "") {
-                    // Convert to float and format to 2 decimals
-                    let num = parseFloat(v);
-                    if (!isNaN(num)) {
-                        inp.value = "$" + num.toFixed(2); // always show 2 decimals
-                    }
+                    // Format with commas and optional $ prefix
+                    const num = parseFloat(v);
+                    inp.value = "$" + num.toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    });
                 }
             });
 
             inp.addEventListener('focus', () => {
-                // Remove $ for editing, restore raw value
+                // Remove $ and commas for editing
                 inp.value = inp.dataset.rawValue || inp.value.replace(/[^0-9.]/g, "");
+            });
+        });
+
+        // Apply to all amount inputs
+        document.querySelectorAll('input.amount-input').forEach(i => {
+            validateAmountInput(i);
+            i.addEventListener('input', () => validateAmountInput(i));
+        });
+
+        // Optional: format with $ on blur without changing the stored value
+        document.querySelectorAll('input.amount-input').forEach(i => {
+            i.addEventListener('blur', () => {
+                if (i.value !== "") {
+                    i.value = '$' + i.value;
+                }
+            });
+            i.addEventListener('focus', () => {
+                i.value = i.value.replace(/^\$/, ''); // remove $ when editing
             });
         });
 
