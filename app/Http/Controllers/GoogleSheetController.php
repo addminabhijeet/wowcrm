@@ -654,11 +654,9 @@ class GoogleSheetController extends Controller
         // Remove $ and commas
         $clean = str_replace(['$', ','], '', $amountString);
 
-        // If it contains a dot, parse as float; otherwise as int
-        return strpos($clean, '.') !== false ? (float) $clean : (int) $clean;
+        // Always parse as integer
+        return (int) $clean;
     }
-
-
 
     // The PDF methods remain the same as they handle file uploads separately
     public function seniorpdfstore(Request $request)
