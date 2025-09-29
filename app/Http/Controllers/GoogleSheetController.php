@@ -485,7 +485,7 @@ class GoogleSheetController extends Controller
             'updated_at' => now(),
         ];
 
-        // Only update resume if it was uploaded
+        // Only update resume 
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
