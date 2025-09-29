@@ -414,16 +414,30 @@ $script ='<script>
         function validateAmountInput(inp) {
             let v = inp.value.trim();
 
-            // Remove all non-numeric characters
-            v = v.replace(/[^0-9]/g, "");
+            // Remove everything except digits and one dot
+            v = v.replace(/[^0-9.]/g, "");
 
-            // Remove leading zeros
-            v = v.replace(/^0+/, "") || "0";
+            // Allow only one dot
+            const parts = v.split(".");
+            if (parts.length > 2) {
+                v = parts[0] + "." + parts.slice(1).join("");
+            }
 
+            // Limit to two decimals
+            if (parts[1]) {
+                parts[1] = parts[1].slice(0, 2);
+                v = parts[0] + "." + parts[1];
+            }
+
+            // Remove leading zeros for integer part
+            parts[0] = parts[0].replace(/^0+/, "") || "0";
+            v = parts[1] ? parts[0] + "." + parts[1] : parts[0];
+
+            inp.dataset.rawValue = v; // store raw numeric value
             inp.value = v;
 
             // Validation classes
-            if (/^\d+$/.test(v)) {
+            if (/^\d+(\.\d{1,2})?$/.test(v)) {
                 inp.classList.remove("invalid");
                 inp.classList.add("valid");
                 inp.classList.remove("neutral");
@@ -437,6 +451,31 @@ $script ='<script>
                 inp.classList.remove("neutral");
             }
         }
+
+        // Optional: format with $ and commas on blur
+        document.querySelectorAll('input.amount-input').forEach(inp => {
+            // Initial validation
+            validateAmountInput(inp);
+
+            inp.addEventListener('input', () => validateAmountInput(inp));
+
+            inp.addEventListener('blur', () => {
+                let v = inp.dataset.rawValue || inp.value;
+                if (v !== "") {
+                    // Format with commas and optional $ prefix
+                    const num = parseFloat(v);
+                    inp.value = "$" + num.toLocaleString(undefined, {
+                        minimumFractionDigits: 0,
+                        maximumFractionDigits: 2
+                    });
+                }
+            });
+
+            inp.addEventListener('focus', () => {
+                // Remove $ and commas for editing
+                inp.value = inp.dataset.rawValue || inp.value.replace(/[^0-9.]/g, "");
+            });
+        });
 
         // Apply to all amount inputs
         document.querySelectorAll('input.amount-input').forEach(i => {
