@@ -137,12 +137,7 @@ $script ='<script>
                             </select>
                         </td>
 
-                        {{-- Amount --}}
-                        <td>
-                            <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ?? '' }}" placeholder="Amount">
-                        </td>
-
+                      
 
                         {{-- Qualification --}}
                         <td>
