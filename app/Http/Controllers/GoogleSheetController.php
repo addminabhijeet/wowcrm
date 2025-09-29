@@ -476,8 +476,7 @@ class GoogleSheetController extends Controller
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
             'Amount' => isset($rowData['Amount']) ?
-                $this->parseAmount($rowData['Amount']) 
-                : $row->Amount,
+                $this->parseAmount($rowData['Amount']) : null,
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
@@ -485,7 +484,7 @@ class GoogleSheetController extends Controller
             'updated_at' => now(),
         ];
 
-        // Only update resume 
+        // Only update resume if it was uploaded
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
