@@ -412,12 +412,23 @@ $script ='<script>
 
         function validateAmountInput(inp) {
             let v = inp.value.trim();
+
+            // Normalize format
             if (v !== "" && !v.startsWith("$")) {
-                v = "$" + v.replace(/[^0-9]/g, "");
+                v = "$" + v;
             }
-            v = "$" + v.slice(1).replace(/[^0-9]/g, "");
+
+            // Keep only numbers and a single decimal point
+            v = "$" + v.slice(1).replace(/[^0-9.]/g, "");
+            const parts = v.slice(1).split(".");
+            if (parts.length > 2) {
+                v = "$" + parts[0] + "." + parts[1]; // only allow one decimal
+            }
+
             inp.value = v;
-            if (/^\$\d+$/.test(v)) {
+
+            // Validation
+            if (/^\$\d+(\.\d{1,2})?$/.test(v)) {
                 inp.classList.remove("invalid");
                 inp.classList.add("valid");
             } else if (v === "$") {
@@ -429,6 +440,7 @@ $script ='<script>
                 inp.classList.remove("valid");
             }
         }
+
 
         function initDatePickers(context = document) {
             context.querySelectorAll('input.date-picker').forEach(input => {
