@@ -140,9 +140,8 @@ $script ='<script>
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ? number_format($row->Amount, 0) : '' }}" placeholder="Amount">
+                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="$100">
                         </td>
-
 
                         {{-- Qualification --}}
                         <td>
@@ -413,37 +412,23 @@ $script ='<script>
 
         function validateAmountInput(inp) {
             let v = inp.value.trim();
-
-            // Remove all non-numeric characters
-            v = v.replace(/[^0-9]/g, "");
-
-            // Remove leading zeros
-            v = v.replace(/^0+/, "") || "0";
-
+            if (v !== "" && !v.startsWith("$")) {
+                v = "$" + v.replace(/[^0-9]/g, "");
+            }
+            v = "$" + v.slice(1).replace(/[^0-9]/g, "");
             inp.value = v;
-
-            // Validation
-            if (/^\d+$/.test(v)) {
+            if (/^\$\d+$/.test(v)) {
                 inp.classList.remove("invalid");
                 inp.classList.add("valid");
-                inp.classList.remove("neutral");
-            } else if (v === "") {
+            } else if (v === "$") {
                 inp.classList.remove("invalid");
                 inp.classList.remove("valid");
                 inp.classList.add("neutral");
             } else {
                 inp.classList.add("invalid");
                 inp.classList.remove("valid");
-                inp.classList.remove("neutral");
             }
         }
-
-        // Apply to inputs
-        document.querySelectorAll('input.amount-input').forEach(i => {
-            validateAmountInput(i);
-            i.addEventListener('input', () => validateAmountInput(i));
-        });
-
 
         function initDatePickers(context = document) {
             context.querySelectorAll('input.date-picker').forEach(input => {
@@ -577,7 +562,7 @@ $script ='<script>
                     if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
                     cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
                 } else if (k === 'Amount') {
-                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount"></td>`;
+                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="$100"></td>`;
                 } else if (k === 'Location') {
                     cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
                 } else if (k === 'Date' || k === 'Graduation Date') {
