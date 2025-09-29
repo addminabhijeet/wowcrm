@@ -139,13 +139,9 @@ $script ='<script>
 
                         {{-- Amount --}}
                         <td>
-                            <input type="text"
-                                class="form-control amount-input"
-                                data-key="Amount"
-                                value="{{ $row->Amount !== null ? '$' . number_format((float)$row->Amount, 2) : '' }}"
-                                placeholder="Amount">
+                            <input type="text" class="form-control amount-input" data-key="Amount"
+                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount">
                         </td>
-
 
                         {{-- Qualification --}}
                         <td>
