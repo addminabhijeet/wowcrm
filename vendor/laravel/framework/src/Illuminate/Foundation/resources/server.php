@@ -1,23 +1,24 @@
 <?php
 
-$publicPath = getcwd();
+$basePath = __DIR__ . '/../../../';   // Project root relative to this file
+$publicPath = realpath($basePath);
 
-$uri = urldecode(
-    parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? ''
-);
+// Parse URI
+$uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '');
 
-// This file allows us to emulate Apache's "mod_rewrite" functionality from the
-// built-in PHP web server. This provides a convenient way to test a Laravel
-// application without having installed a "real" web server software here.
+// Allow PHP’s built-in server to serve static files directly
 if ($uri !== '/' && file_exists($publicPath.$uri)) {
     return false;
 }
 
+// Logging (optional)
 $formattedDateTime = date('D M j H:i:s Y');
-
-$requestMethod = $_SERVER['REQUEST_METHOD'];
-$remoteAddress = $_SERVER['REMOTE_ADDR'].':'.$_SERVER['REMOTE_PORT'];
+$requestMethod     = $_SERVER['REQUEST_METHOD'] ?? 'CLI';
+$remoteAddress     = ($_SERVER['REMOTE_ADDR'] ?? '127.0.0.1').':'.
+                     ($_SERVER['REMOTE_PORT'] ?? '0');
 
 file_put_contents('php://stdout', "[$formattedDateTime] $remoteAddress [$requestMethod] URI: $uri\n");
 
+// Load index.php from project root
 require_once $publicPath.'/index.php';
+
