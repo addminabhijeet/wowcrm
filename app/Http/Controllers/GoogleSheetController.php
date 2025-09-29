@@ -476,7 +476,8 @@ class GoogleSheetController extends Controller
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
             'Amount' => isset($rowData['Amount']) ?
-                $this->parseAmount($rowData['Amount']) : null,
+                $this->parseAmount($rowData['Amount']) 
+                : $row->Amount,
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
@@ -648,8 +649,19 @@ class GoogleSheetController extends Controller
 
     private function parseAmount($amountString)
     {
+        if (is_null($amountString) || $amountString === '') {
+            return null;
+        }
+
+        // If already numeric, just return float
+        if (is_numeric($amountString)) {
+            return (float) $amountString;
+        }
+
+        // Otherwise clean it
         return (float) str_replace(['$', ','], '', $amountString);
     }
+
     // The PDF methods remain the same as they handle file uploads separately
     public function seniorpdfstore(Request $request)
     {
