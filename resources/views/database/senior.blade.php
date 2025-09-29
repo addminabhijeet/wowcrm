@@ -413,25 +413,22 @@ $script ='<script>
         function validateAmountInput(inp) {
             let v = inp.value.trim();
 
-            // Normalize format
-            if (v !== "" && !v.startsWith("$")) {
-                v = "$" + v;
-            }
+            // Remove any non-numeric characters except dot
+            v = v.replace(/[^0-9.]/g, "");
 
-            // Keep only numbers and a single decimal point
-            v = "$" + v.slice(1).replace(/[^0-9.]/g, "");
-            const parts = v.slice(1).split(".");
+            // Only allow one dot
+            const parts = v.split(".");
             if (parts.length > 2) {
-                v = "$" + parts[0] + "." + parts[1]; // only allow one decimal
+                v = parts[0] + "." + parts[1];
             }
 
             inp.value = v;
 
-            // Validation
-            if (/^\$\d+(\.\d{1,2})?$/.test(v)) {
+            // Validation: allow numbers like 100 or 100.5 or 100.55
+            if (/^\d+(\.\d{1,2})?$/.test(v)) {
                 inp.classList.remove("invalid");
                 inp.classList.add("valid");
-            } else if (v === "$") {
+            } else if (v === "") {
                 inp.classList.remove("invalid");
                 inp.classList.remove("valid");
                 inp.classList.add("neutral");

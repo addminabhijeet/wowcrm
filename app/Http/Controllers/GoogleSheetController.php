@@ -652,14 +652,17 @@ class GoogleSheetController extends Controller
             return null;
         }
 
-        // If already numeric, just return float
-        if (is_numeric($amountString)) {
-            return (float) $amountString;
+        // Remove $ and , only, keep integer if entered as integer
+        $clean = str_replace(['$', ','], '', $amountString);
+
+        // If integer, return as integer; if decimal, return float
+        if (strpos($clean, '.') !== false) {
+            return (float) $clean;
         }
 
-        // Otherwise clean it
-        return (float) str_replace(['$', ','], '', $amountString);
+        return (int) $clean;
     }
+
 
     // The PDF methods remain the same as they handle file uploads separately
     public function seniorpdfstore(Request $request)
