@@ -137,7 +137,12 @@ $script ='<script>
                             </select>
                         </td>
 
-                      
+                        {{-- Amount --}}
+                        <td>
+                            <input type="text" class="form-control amount-input" data-key="Amount"
+                                value="{{ $row->Amount ?? '' }}" placeholder="Amount">
+                        </td>
+
 
                         {{-- Qualification --}}
                         <td>
@@ -432,7 +437,7 @@ $script ='<script>
             inp.value = v;
 
             // Validation classes
-            if (/^\d+(\.\d{1,2})?$/.test(v)) {
+            if (/^\d+$/.test(v)) {
                 inp.classList.remove("invalid");
                 inp.classList.add("valid");
                 inp.classList.remove("neutral");
@@ -472,22 +477,10 @@ $script ='<script>
             });
         });
 
-        // Apply to all amount inputs
+        // Apply to inputs
         document.querySelectorAll('input.amount-input').forEach(i => {
             validateAmountInput(i);
             i.addEventListener('input', () => validateAmountInput(i));
-        });
-
-        // Optional: format with $ on blur without changing the stored value
-        document.querySelectorAll('input.amount-input').forEach(i => {
-            i.addEventListener('blur', () => {
-                if (i.value !== "") {
-                    i.value = '$' + i.value;
-                }
-            });
-            i.addEventListener('focus', () => {
-                i.value = i.value.replace(/^\$/, ''); // remove $ when editing
-            });
         });
 
 
