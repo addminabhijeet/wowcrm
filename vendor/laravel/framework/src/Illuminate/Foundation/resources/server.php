@@ -1,7 +1,7 @@
 <?php
 
-$basePath = __DIR__ . '/../../../';   // Project root relative to this file
-$publicPath = realpath($basePath);
+$basePath = realpath(__DIR__ . '/../../../../../../..'); // go up to project root
+$publicPath = $basePath; // since index.php is in root now
 
 // Parse URI
 $uri = urldecode(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH) ?? '');
