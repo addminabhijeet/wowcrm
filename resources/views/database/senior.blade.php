@@ -140,8 +140,9 @@ $script ='<script>
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ?? '' }}" placeholder="$100">
+                                value="{{ $row->Amount !== null ? '$' . $row->Amount : '' }}" placeholder="$100">
                         </td>
+
 
 
                         {{-- Qualification --}}
