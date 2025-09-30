@@ -413,7 +413,20 @@ $script ='<script>
             }
         }
 
-        
+        function validateAmountInput(inp) {
+            let v = inp.value.trim();
+
+            // Keep only digits and dots
+            let clean = '';
+            for (let char of v) {
+                if ((char >= '0' && char <= '9') || char === '.') {
+                    clean += char;
+                }
+            }
+
+            inp.value = clean;
+        }
+
 
         function initDatePickers(context = document) {
             context.querySelectorAll('input.date-picker').forEach(input => {
@@ -490,7 +503,10 @@ $script ='<script>
             context.querySelectorAll('select.dynamic-dropdown').forEach(s => updateSelectColor(s));
             initDatePickers(context);
             initLocationAutocomplete(context);
-            
+            context.querySelectorAll('input.amount-input').forEach(i => {
+                validateAmountInput(i);
+                i.addEventListener('input', () => validateAmountInput(i));
+            });
             context.querySelectorAll("input.phone-input").forEach(i => {
                 i.value = formatPhoneNumber(i.value);
                 validatePhoneInput(i);
