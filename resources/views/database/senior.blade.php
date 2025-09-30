@@ -567,7 +567,7 @@ $script ='<script>
                     if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
                     cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
                 } else if (k === 'Amount') {
-                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="$100"></td>`;
+                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount"></td>`;
                 } else if (k === 'Location') {
                     cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
                 } else if (k === 'Date' || k === 'Graduation Date') {
