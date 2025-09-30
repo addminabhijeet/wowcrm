@@ -490,10 +490,7 @@ $script ='<script>
             context.querySelectorAll('select.dynamic-dropdown').forEach(s => updateSelectColor(s));
             initDatePickers(context);
             initLocationAutocomplete(context);
-            context.querySelectorAll('input.amount-input').forEach(i => {
-                validateAmountInput(i);
-                i.addEventListener('input', () => validateAmountInput(i));
-            });
+            
             context.querySelectorAll("input.phone-input").forEach(i => {
                 i.value = formatPhoneNumber(i.value);
                 validatePhoneInput(i);
