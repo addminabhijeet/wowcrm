@@ -413,25 +413,7 @@ $script ='<script>
             }
         }
 
-        function validateAmountInput(inp) {
-            let v = inp.value.trim();
-            if (v !== "" && !v.startsWith("$")) {
-                v = "$" + v.replace(/[^0-9]/g, "");
-            }
-            v = "$" + v.slice(1).replace(/[^0-9]/g, "");
-            inp.value = v;
-            if (/^\$\d+$/.test(v)) {
-                inp.classList.remove("invalid");
-                inp.classList.add("valid");
-            } else if (v === "$") {
-                inp.classList.remove("invalid");
-                inp.classList.remove("valid");
-                inp.classList.add("neutral");
-            } else {
-                inp.classList.add("invalid");
-                inp.classList.remove("valid");
-            }
-        }
+        
 
         function initDatePickers(context = document) {
             context.querySelectorAll('input.date-picker').forEach(input => {
