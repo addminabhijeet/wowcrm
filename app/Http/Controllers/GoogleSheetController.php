@@ -921,5 +921,5 @@ class GoogleSheetController extends Controller
             'sheet_row_number' => $record->sheet_row_number
         ]);
     }
-
+  
 }
