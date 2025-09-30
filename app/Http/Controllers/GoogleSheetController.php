@@ -595,7 +595,7 @@ class GoogleSheetController extends Controller
             'success' => true,
             'id' => $record->id,
             'sheet_row_number' => $record->sheet_row_number,
-            'resume_path' => $record->resume
+            'resume_path' => !empty($record->resume) ? true : false
         ]);
     }
 

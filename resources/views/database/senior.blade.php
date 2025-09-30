@@ -199,8 +199,8 @@ $script ='<script>
                             </button>
 
                             @if(!empty($row->resume))
-                            <a href="{{ asset('storage/resumes/' . $row->resume) }}" target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
-                            <a href="{{ asset('storage/resumes/' . $row->resume) }}" download class="btn btn-sm btn-secondary download-btn">Download</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/view-resume/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/download-resume/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download</a>
                             @else
                             <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
                             <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
@@ -711,12 +711,11 @@ $script ='<script>
                         if (data.success) {
                             alert("Saved successfully");
                             if (id === "new") {
-                                // Update the row with the new ID
+                                // Update row with new ID
                                 row.dataset.id = data.id;
                                 saveBtn.dataset.id = data.id;
                                 row.querySelector("td:first-child").innerText = data.sheet_row_number;
 
-                                // Update resume buttons with correct URLs
                                 const viewBtn = row.querySelector('.view-btn');
                                 const downloadBtn = row.querySelector('.download-btn');
 
@@ -730,12 +729,13 @@ $script ='<script>
                                     downloadBtn.classList.remove('d-none');
                                 }
 
-                                // Only add a new blank row if this was a new row being saved
+                                // Only add new blank row if none exists
                                 const existingNewRows = tableBody.querySelectorAll('tr[data-id="new"]');
                                 if (existingNewRows.length === 0) {
                                     addBlankRow();
                                 }
                             }
+
                         } else {
                             console.error("Server error:", data.message);
                             alert("Error: " + (data.message || "Unknown error"));
