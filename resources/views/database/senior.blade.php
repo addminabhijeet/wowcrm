@@ -434,7 +434,21 @@ $script ='<script>
             }
 
             inp.value = clean;
+
+            // Apply CSS classes
+            const numericPart = clean.startsWith('$') ? clean.slice(1) : clean;
+            if (numericPart === '') {
+                inp.classList.remove('invalid', 'valid');
+                inp.classList.add('neutral');
+            } else if (!isNaN(Number(numericPart))) {
+                inp.classList.remove('invalid', 'neutral');
+                inp.classList.add('valid');
+            } else {
+                inp.classList.add('invalid');
+                inp.classList.remove('valid', 'neutral');
+            }
         }
+
 
 
 
