@@ -412,23 +412,40 @@ $script ='<script>
 
         function validateAmountInput(inp) {
             let v = inp.value.trim();
-            if (v !== "" && !v.startsWith("$")) {
-                v = "$" + v.replace(/[^0-9]/g, "");
+
+            // Remove everything except digits and a single dot
+            let clean = '';
+            let dotFound = false;
+            for (let char of v) {
+                if (char >= '0' && char <= '9') {
+                    clean += char;
+                } else if (char === '.' && !dotFound) {
+                    clean += '.';
+                    dotFound = true;
+                }
             }
-            v = "$" + v.slice(1).replace(/[^0-9]/g, "");
-            inp.value = v;
-            if (/^\$\d+$/.test(v)) {
-                inp.classList.remove("invalid");
-                inp.classList.add("valid");
-            } else if (v === "$") {
-                inp.classList.remove("invalid");
-                inp.classList.remove("valid");
-                inp.classList.add("neutral");
+
+            // Prepend $ if not already
+            if (clean !== '' && !clean.startsWith('$')) {
+                clean = '$' + clean;
+            }
+
+            inp.value = clean;
+
+            // Apply CSS classes
+            const numericPart = clean.startsWith('$') ? clean.slice(1) : clean;
+            if (numericPart === '') {
+                inp.classList.remove('invalid', 'valid');
+                inp.classList.add('neutral');
+            } else if (!isNaN(Number(numericPart))) {
+                inp.classList.remove('invalid', 'neutral');
+                inp.classList.add('valid');
             } else {
-                inp.classList.add("invalid");
-                inp.classList.remove("valid");
+                inp.classList.add('invalid');
+                inp.classList.remove('valid', 'neutral');
             }
         }
+
 
         function initDatePickers(context = document) {
             context.querySelectorAll('input.date-picker').forEach(input => {
@@ -457,32 +474,51 @@ $script ='<script>
         function initLocationAutocomplete(context = document) {
             $(context).find('input.location-autocomplete').each(function() {
                 const $input = $(this);
+
+                function applyCss(value) {
+                    if (!value) {
+                        $input.removeClass('valid invalid').addClass('neutral');
+                    } else {
+                        $input.removeClass('invalid neutral').addClass('valid');
+                    }
+                }
+
+                // Initial state
+                applyCss($input.val());
+
                 $input.on('input', function() {
                     const q = $(this).val().trim();
+                    applyCss(q);
+
                     if (q.length < 2) {
                         $('#loc-suggestions').remove();
                         return;
                     }
+
                     const key = 'pk.e91481c6e5f0a93703159ae988e641a0';
                     $.getJSON(`https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`)
                         .done(function(results) {
                             $('#loc-suggestions').remove();
                             const $list = $('<div id="loc-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>');
+
                             results.forEach(r => {
                                 const addr = r.address || {};
                                 const city = addr.city || addr.town || addr.village || '';
                                 const state = addr.state || addr.region || '';
                                 const country = addr.country || '';
                                 const display = [city, state, country].filter(Boolean).join(', ');
+
                                 const item = $('<a href="#" class="list-group-item list-group-item-action"></a>').text(display || r.display_name);
                                 item.on('click', function(e) {
                                     e.preventDefault();
                                     $input.val(display || r.display_name);
-                                    $input.css('background-color', '#d4edda');
+                                    applyCss(display || r.display_name); // Apply valid class
+                                    $input.css('background-color', '#d4edda'); // optional highlight
                                     $('#loc-suggestions').remove();
                                 });
                                 $list.append(item);
                             });
+
                             $('body').append($list);
                             const offset = $input.offset();
                             $list.css({
@@ -495,11 +531,13 @@ $script ='<script>
                             $('#loc-suggestions').remove();
                         });
                 });
+
                 $input.on('blur', function() {
                     setTimeout(() => $('#loc-suggestions').remove(), 200);
                 });
             });
         }
+
 
         function applyInitialState(context = document) {
             context.querySelectorAll('select.dynamic-dropdown').forEach(s => updateSelectColor(s));
