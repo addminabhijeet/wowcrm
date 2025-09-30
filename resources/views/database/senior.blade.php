@@ -419,7 +419,7 @@ $script ='<script>
             // Remove everything except digits and dots
             let clean = '';
             for (let char of v) {
-                if ((char >= '0' && char <= '9') || char === '.') {
+                if ((char >= '0' && char <= '9')) {
                     clean += char;
                 }
             }
