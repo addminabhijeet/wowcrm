@@ -476,7 +476,7 @@ class GoogleSheetController extends Controller
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
             'Amount' => isset($rowData['Amount']) ?
-                $this->parseAmount($rowData['Amount']) 
+                $this->parseAmount($rowData['Amount'])
                 : $row->Amount,
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
@@ -808,6 +808,12 @@ class GoogleSheetController extends Controller
 
     public function juniorupdate(Request $request, $id)
     {
+        $id = $request->input('id');
+
+        if (!$id) {
+            return response()->json(['success' => false, 'message' => 'ID is required']);
+        }
+
         $row = GoogleSheetData::find($id);
         if (!$row) {
             return response()->json(['success' => false, 'message' => 'Row not found']);
@@ -818,58 +824,81 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // Handle resume upload
+        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
+
+            // Validate it's a PDF
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            // Generate unique filename
             $timestamp = now()->format('Ymd_His');
-            $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
-            $newName   = Str::slug($filename) . "_{$timestamp}." . $extension;
-            $stored    = $file->storeAs('resumes', $newName, 'public');
-            $row->resume = basename($stored);
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Store the actual file content
+                $filePath = $file->storeAs('resumes', $newName, 'public');
+
+                // Delete old resume file if exists
+                if ($row->resume && Storage::disk('public')->exists($row->resume)) {
+                    Storage::disk('public')->delete($row->resume);
+                }
+
+                $row->resume = $filePath; // Store file path instead of just filename
+
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
         }
 
-        // Safely parse dates
-        $date = !empty($rowData['Date'])
-            ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d')
-            : null;
-
-        $graduationDate = !empty($rowData['Graduation Date'])
-            ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Graduation Date'])->format('Y-m-d')
-            : null;
-
-        // Map flattened columns
+        // Prepare update data
         $updateData = [
-            'Date'                     => $date,
-            'Name'                     => $rowData['Name'] ?? null,
-            'Email_Address'            => $rowData['Email Address'] ?? null,
-            'Phone_Number'             => $rowData['Phone Number'] ?? null,
-            'Location'                 => $rowData['Location'] ?? null,
-            'Relocation'               => $rowData['Relocation'] ?? null,
-            'Graduation_Date'          => $graduationDate,
-            'Immigration'              => $rowData['Immigration'] ?? null,
-            'Course'                   => $rowData['Course'] ?? null,
-            'Amount'                   => isset($rowData['Amount']) ? (float) str_replace(['$', ','], '', $rowData['Amount']) : null,
-            'Qualification'            => $rowData['Qualification'] ?? null,
-            'Exe_Remarks'              => $rowData['Exe Remarks'] ?? null,
-            'First_Follow_Up_Remarks'  => $rowData['1st Follow Up Remarks'] ?? null,
-            'Time_Zone'                => $rowData['Time Zone'] ?? null,
-            'View'                     => $rowData['View'] ?? null,
-            'resume'                   => $row->resume,
-            'data'                     => $rowData, // store JSON too
-            'created_by'               => $row->created_by, // keep original creator
+            'Date' => isset($rowData['Date']) && !empty($rowData['Date']) ?
+                $this->parseDate($rowData['Date']) : null,
+            'Name' => $rowData['Name'] ?? null,
+            'Email_Address' => $rowData['Email Address'] ?? null,
+            'Phone_Number' => $rowData['Phone Number'] ?? null,
+            'Location' => $rowData['Location'] ?? null,
+            'Relocation' => $rowData['Relocation'] ?? null,
+            'Graduation_Date' => isset($rowData['Graduation Date']) && !empty($rowData['Graduation Date']) ?
+                $this->parseDate($rowData['Graduation Date']) : null,
+            'Immigration' => $rowData['Immigration'] ?? null,
+            'Course' => $rowData['Course'] ?? null,
+            'Amount' => isset($rowData['Amount']) ?
+                $this->parseAmount($rowData['Amount'])
+                : $row->Amount,
+            'Qualification' => $rowData['Qualification'] ?? null,
+            'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
+            'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
+            'Time_Zone' => $rowData['Time Zone'] ?? null,
+            'updated_at' => now(),
         ];
 
-        $row->update($updateData);
+        // Only update resume if it was uploaded
+        if ($request->hasFile('resume')) {
+            $updateData['resume'] = $row->resume;
+        }
 
-        return response()->json([
-            'success' => true,
-            'row' => [
-                'id'         => $row->id,
-                'data'       => $row->data,
-                'resume_url' => $row->resume ? asset('storage/resumes/' . $row->resume) : null,
-            ]
-        ]);
+        try {
+            $row->update($updateData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Row updated successfully',
+                'id' => $row->id,
+                'sheet_row_number' => $row->sheet_row_number,
+                'resume_path' => $row->resume // Return the file path for frontend
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Database error: ' . $e->getMessage()
+            ]);
+        }
     }
 
 
