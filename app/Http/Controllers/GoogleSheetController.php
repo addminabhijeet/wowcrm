@@ -15,7 +15,7 @@ class GoogleSheetController extends Controller
     {
         $data = GoogleSheetData::paginate(10);
 
-        return view('database.junior', compact('data'));
+        return view('database.admin', compact('data'));
     }
 
     public function adminfetch(Request $request)
@@ -662,7 +662,7 @@ class GoogleSheetController extends Controller
         return (float) str_replace(['$', ','], '', $amountString);
     }
 
-    
+
     public function junior()
     {
         // Fetch 10 entries per page
@@ -833,8 +833,7 @@ class GoogleSheetController extends Controller
 
     public function juniorstore(Request $request)
     {
-        // Decode incoming row data
-        $rowData = json_decode($request->input('rows.0'), true);
+        $rowData = json_decode($request->input('data'), true);
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
@@ -864,7 +863,6 @@ class GoogleSheetController extends Controller
             'Exe Remarks' => 'Exe_Remarks',
             '1st Follow Up Remarks' => 'First_Follow_Up_Remarks',
             'Time Zone' => 'Time_Zone',
-            'View' => 'View'
         ];
 
         // Assign values safely
@@ -872,40 +870,41 @@ class GoogleSheetController extends Controller
             if (!isset($columnMap[$key])) continue;
             $column = $columnMap[$key];
 
-            // Convert dates to Y-m-d format
             if (in_array($column, ['Date', 'Graduation_Date']) && !empty($val)) {
-                try {
-                    $val = \Carbon\Carbon::createFromFormat('m/d/Y', $val)->format('Y-m-d');
-                } catch (\Exception $e) {
-                    $val = null; // fallback if date parsing fails
-                }
+                $val = $this->parseDate($val);
             }
 
-            // Convert Amount to float
             if ($column === 'Amount' && !empty($val)) {
-                $val = (float) str_replace(['$', ','], '', $val);
+                $val = $this->parseAmount($val);
             }
 
             $record->$column = $val;
         }
 
-        // Handle resume upload
+        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
+
+            // Validate it's a PDF
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
             $timestamp = now()->format('Ymd_His');
-            $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
-            $newName   = Str::slug($filename) . "_{$timestamp}." . $extension;
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                $file->storeAs('resumes', $newName, 'public');
-                $record->resume = $newName;
+                // Store the actual file content
+                $filePath = $file->storeAs('resumes', $newName, 'public');
+                $record->resume = $filePath; // Store file path
             } catch (\Exception $e) {
-                $record->resume = null; // fallback if upload fails
+                // Continue without resume if upload fails
+                $record->resume = null;
             }
         }
 
-        // Save record safely
         try {
             $record->save();
         } catch (\Exception $e) {
@@ -918,8 +917,47 @@ class GoogleSheetController extends Controller
         return response()->json([
             'success' => true,
             'id' => $record->id,
-            'sheet_row_number' => $record->sheet_row_number
+            'sheet_row_number' => $record->sheet_row_number,
+            'resume_path' => $record->resume
         ]);
     }
-  
+
+        // Add a method to serve the PDF files
+    public function viewjuniorResume($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->resume) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->resume);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->file($filePath, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
+        ]);
+    }
+
+    // Add a method to download the PDF files
+    public function downloadjuniorResume($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->resume) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->resume);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download($filePath, basename($filePath));
+    }
 }
