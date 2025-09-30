@@ -416,12 +416,19 @@ $script ='<script>
         function validateAmountInput(inp) {
             let v = inp.value.trim();
 
-            // Keep only digits and dots
+            // Remove everything except digits and dots
             let clean = '';
             for (let char of v) {
                 if ((char >= '0' && char <= '9') || char === '.') {
                     clean += char;
                 }
+            }
+
+            // Prepend $ if not already
+            if (clean !== '' && !clean.startsWith('$')) {
+                clean = '$' + clean;
+            } else if (clean === '') {
+                clean = '';
             }
 
             inp.value = clean;
