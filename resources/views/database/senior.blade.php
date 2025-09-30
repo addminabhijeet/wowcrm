@@ -140,7 +140,7 @@ $script ='<script>
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ? '$' . $row->Amount : '' }}" placeholder="$100">
+                                value="{{ $row->Amount ?? '' }}" placeholder="$100">
                         </td>
 
 
@@ -413,18 +413,15 @@ $script ='<script>
 
         function validateAmountInput(inp) {
             let v = inp.value.trim();
-
-            // Remove all non-digit characters
-            v = v.replace(/[^0-9]/g, "");
-
-            // Set cleaned value back
+            if (v !== "" && !v.startsWith("$")) {
+                v = "$" + v.replace(/[^0-9]/g, "");
+            }
+            v = "$" + v.slice(1).replace(/[^0-9]/g, "");
             inp.value = v;
-
-            // Validation states
-            if (/^\d+$/.test(v)) {
+            if (/^\$\d+$/.test(v)) {
                 inp.classList.remove("invalid");
                 inp.classList.add("valid");
-            } else if (v === "") {
+            } else if (v === "$") {
                 inp.classList.remove("invalid");
                 inp.classList.remove("valid");
                 inp.classList.add("neutral");
@@ -433,7 +430,6 @@ $script ='<script>
                 inp.classList.remove("valid");
             }
         }
-
 
         function initDatePickers(context = document) {
             context.querySelectorAll('input.date-picker').forEach(input => {
