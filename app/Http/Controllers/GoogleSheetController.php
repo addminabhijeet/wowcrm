@@ -169,7 +169,7 @@ class GoogleSheetController extends Controller
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => $row->resume // Return the file path for frontend
+                'resume_path' => !empty($record->resume) ? true : false
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -266,7 +266,7 @@ class GoogleSheetController extends Controller
             'success' => true,
             'id' => $record->id,
             'sheet_row_number' => $record->sheet_row_number,
-            'resume_path' => $record->resume
+            'resume_path' => !empty($record->resume) ? true : false
         ]);
     }
 
@@ -498,7 +498,7 @@ class GoogleSheetController extends Controller
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => $row->resume // Return the file path for frontend
+                'resume_path' => !empty($record->resume) ? true : false
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -820,7 +820,7 @@ class GoogleSheetController extends Controller
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => $row->resume // Return the file path for frontend
+                'resume_path' => !empty($record->resume) ? true : false
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -918,7 +918,7 @@ class GoogleSheetController extends Controller
             'success' => true,
             'id' => $record->id,
             'sheet_row_number' => $record->sheet_row_number,
-            'resume_path' => $record->resume
+            'resume_path' => !empty($record->resume) ? true : false
         ]);
     }
 
