@@ -416,23 +416,26 @@ $script ='<script>
         function validateAmountInput(inp) {
             let v = inp.value.trim();
 
-            // Remove everything except digits and dots
+            // Remove everything except digits and a single dot
             let clean = '';
+            let dotFound = false;
             for (let char of v) {
-                if ((char >= '0' && char <= '9')) {
+                if (char >= '0' && char <= '9') {
                     clean += char;
+                } else if (char === '.' && !dotFound) {
+                    clean += '.';
+                    dotFound = true;
                 }
             }
 
             // Prepend $ if not already
             if (clean !== '' && !clean.startsWith('$')) {
                 clean = '$' + clean;
-            } else if (clean === '') {
-                clean = '';
             }
 
             inp.value = clean;
         }
+
 
 
         function initDatePickers(context = document) {
