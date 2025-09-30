@@ -806,7 +806,7 @@ class GoogleSheetController extends Controller
         return redirect()->route('google.sheet.junior')->with('success', 'Data fetched successfully!');
     }
 
-    public function juniorupdate(Request $request, $id)
+    public function juniorupdate(Request $request)
     {
         $id = $request->input('id');
 
