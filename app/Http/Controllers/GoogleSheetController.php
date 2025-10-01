@@ -313,29 +313,38 @@ class GoogleSheetController extends Controller
     public function senior()
     {
         $authUser = Auth::user();
-        $lastPart = $authUser->id . '|senior';
 
-        // Build query
-        $query = GoogleSheetData::query();
+        // Build patterns for LIKE match
+        $userPattern = "%:" . $authUser->id . "|senior";
+        $zeroPattern = "%:0|senior";
 
-        $query->where(function ($q) use ($authUser, $lastPart) {
-            $q->where('Exe_Remarks', 'Called & Mailed')
-                ->orWhere('created_by', $lastPart) // exact match
-                ->orWhere('created_by', 'LIKE', "%:{$lastPart}"); // must end with id|senior
+        $data = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+            // Direct match with "id|senior"
+            $q->where('created_by', $authUser->id . '|senior')
+                // Direct match with "0|senior"
+                ->orWhere('created_by', '0|senior')
+                // Matches if last part is ":id|senior"
+                ->orWhere('created_by', 'LIKE', $userPattern)
+                // Matches if last part is ":0|senior"
+                ->orWhere('created_by', 'LIKE', $zeroPattern);
         })
-            ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$lastPart, $lastPart]); // enforce last part check
+            // Ensure it's truly the LAST part of created_by
+            ->where(function ($q) use ($authUser) {
+                $q->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|senior', $authUser->id . '|senior'])
+                    ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|senior', '0|senior']);
+            })
+            ->paginate(10);
 
-        // Paginate
-        $data = $query->paginate(10);
-
-        // Add forwarded_by
+        // Map forwarded_by dynamically
         $data->getCollection()->transform(function ($item) use ($authUser) {
             $parts = explode('|', $item->created_by ?? '');
             $userId = $parts[0] ?? null;
             $role   = $parts[1] ?? 'unknown';
 
-            if ($userId == $authUser->id && $role === 'senior') {
+            if ($userId == $authUser->id) {
                 $forwardedBy = "SELF ({$userId}) ({$role})";
+            } elseif ($userId == 0) {
+                $forwardedBy = "SYSTEM (0) ({$role})";
             } else {
                 $user = \App\Models\User::find($userId);
                 $name = $user ? $user->name : 'Unknown';
@@ -348,6 +357,7 @@ class GoogleSheetController extends Controller
 
         return view('database.senior', compact('data'));
     }
+
 
 
 
