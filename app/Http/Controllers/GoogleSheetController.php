@@ -319,8 +319,11 @@ class GoogleSheetController extends Controller
 
         $query->where(function ($q) use ($authUser) {
             $q->where('Exe_Remarks', 'Called & Mailed')
-                ->orWhere('created_by', "{$authUser->id}|senior");
+                ->orWhere('created_by', "{$authUser->id}|senior")
+                ->orWhere('created_by', 'LIKE', "%|junior:0|senior")
+                ->orWhere('created_by', 'LIKE', "%|junior:{$authUser->id}|senior");
         });
+
 
         // Paginate 10 per page
         $data = $query->paginate(10);
@@ -490,6 +493,34 @@ class GoogleSheetController extends Controller
             $updateData['resume'] = $row->resume;
         }
 
+        // Start with existing created_by value
+        $updateData['created_by'] = $row->created_by;
+
+        if (isset($rowData['Exe Remarks'])) {
+            $exeRemark = $rowData['Exe Remarks'];
+
+            if ($exeRemark === 'Ready To Paid') {
+                // Append ":0|accountant" only if not already present
+                if (strpos($updateData['created_by'], ':0|accountant') === false) {
+                    $updateData['created_by'] .= ':0|accountant';
+                }
+            } elseif ($exeRemark === 'Called & Mailed') {
+                $tag = $id . '|senior';
+                // Append only if created_by exactly matches the tag
+                if ($updateData['created_by'] === $tag) {
+                    $updateData['created_by'] .= ':' . $tag;
+                }
+            } else {
+                // For all other remarks, apply "Revert To Junior" logic
+                $tag = $id . '|junior';
+                // Append only if tag already exists in created_by
+                if (strpos($updateData['created_by'], $tag) !== false) {
+                    $updateData['created_by'] .= ':' . $tag;
+                }
+            }
+        }
+
+
         try {
             $row->update($updateData);
 
@@ -555,8 +586,22 @@ class GoogleSheetController extends Controller
                 $val = $this->parseAmount($val);
             }
 
+            if ($column === 'Exe_Remarks') {
+                $exeRemarksValue = $val; // capture Exe_Remarks for condition check
+            }
+
             $record->$column = $val;
         }
+
+        // Set created_by conditionally based on Exe_Remarks
+        if ($exeRemarksValue === 'Called & Mailed') {
+            $record->created_by = $user->id . '|senior:' . $user->id . '|senior';
+        } elseif ($exeRemarksValue === 'Ready To Paid') {
+            $record->created_by = $user->id . '|senior:' . $user->id . '|senior:0|accountant';
+        } else {
+            $record->created_by = $user->id . '|senior';
+        }
+
 
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
@@ -812,6 +857,18 @@ class GoogleSheetController extends Controller
             $updateData['resume'] = $row->resume;
         }
 
+        // === New created_by logic ===
+        if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed') {
+            // Append only once if not already present
+            if (strpos($row->created_by, ':0|senior') === false) {
+                $updateData['created_by'] = $row->created_by . ':0|senior';
+            } else {
+                $updateData['created_by'] = $row->created_by;
+            }
+        } else {
+            $updateData['created_by'] = $row->created_by;
+        }
+
         try {
             $row->update($updateData);
 
@@ -820,7 +877,7 @@ class GoogleSheetController extends Controller
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => !empty($record->resume) ? true : false
+                'resume_path' => !empty($row->resume) ? true : false
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -829,6 +886,7 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
+
 
 
     public function juniorstore(Request $request)
@@ -845,7 +903,6 @@ class GoogleSheetController extends Controller
 
         $record = new GoogleSheetData();
         $record->sheet_row_number = $nextRow;
-        $record->created_by = $user->id . '|junior';
 
         // Map frontend keys to DB columns
         $columnMap = [
@@ -865,6 +922,8 @@ class GoogleSheetController extends Controller
             'Time Zone' => 'Time_Zone',
         ];
 
+        $exeRemarksValue = null;
+
         // Assign values safely
         foreach ($rowData as $key => $val) {
             if (!isset($columnMap[$key])) continue;
@@ -878,7 +937,18 @@ class GoogleSheetController extends Controller
                 $val = $this->parseAmount($val);
             }
 
+            if ($column === 'Exe_Remarks') {
+                $exeRemarksValue = $val; // capture Exe_Remarks for condition check
+            }
+
             $record->$column = $val;
+        }
+
+        // Set created_by conditionally
+        if ($exeRemarksValue === 'Called & Mailed') {
+            $record->created_by = $user->id . '|junior:0|senior';
+        } else {
+            $record->created_by = $user->id . '|junior';
         }
 
         // Handle resume file upload - Save actual file content
@@ -922,7 +992,8 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-        // Add a method to serve the PDF files
+
+    // Add a method to serve the PDF files
     public function viewjuniorResume($id)
     {
         $row = GoogleSheetData::find($id);
