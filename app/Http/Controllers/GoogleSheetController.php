@@ -716,12 +716,11 @@ class GoogleSheetController extends Controller
         $query = GoogleSheetData::query();
 
         $query->where(function ($q) use ($authUser) {
-            $q->where('Exe_Remarks', 'Called & Mailed')
-                ->orWhere('created_by', "{$authUser->id}|senior")
+            $q->orWhere('created_by', "{$authUser->id}|senior")
                 ->orWhere('created_by', 'LIKE', "%|junior:0|senior")
                 ->orWhere('created_by', 'LIKE', "%|junior:{$authUser->id}|senior");
         });
-        
+
         $data = GoogleSheetData::paginate(10);
 
         return view('database.junior', compact('data'));
