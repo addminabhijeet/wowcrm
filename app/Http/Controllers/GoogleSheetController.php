@@ -711,20 +711,18 @@ class GoogleSheetController extends Controller
     public function junior()
     {
         $authUser = Auth::user();
+        $pattern = "%:" . $authUser->id . "|junior"; // will check last part
 
-        // Base query
-        $query = GoogleSheetData::query();
-
-        $query->where(function ($q) use ($authUser) {
-            $q->orWhere('created_by', "{$authUser->id}|senior")
-                ->orWhere('created_by', 'LIKE', "%|junior:0|senior")
-                ->orWhere('created_by', 'LIKE', "%|junior:{$authUser->id}|senior");
-        });
-
-        $data = GoogleSheetData::paginate(10);
+        $data = GoogleSheetData::where(function ($q) use ($authUser, $pattern) {
+            $q->where('created_by', $authUser->id . '|junior') // exact match
+                ->orWhere('created_by', 'LIKE', $pattern);       // ends with :id|junior
+        })
+            ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']) // ensures it's last part
+            ->paginate(10);
 
         return view('database.junior', compact('data'));
     }
+
 
     public function juniorfetch(Request $request)
     {
