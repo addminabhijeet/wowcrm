@@ -313,28 +313,28 @@ class GoogleSheetController extends Controller
     public function senior()
     {
         $authUser = Auth::user();
+        $lastPart = $authUser->id . '|senior';
 
-        // Base query
+        // Build query
         $query = GoogleSheetData::query();
 
-        $query->where(function ($q) use ($authUser) {
+        $query->where(function ($q) use ($authUser, $lastPart) {
             $q->where('Exe_Remarks', 'Called & Mailed')
-                ->orWhere('created_by', "{$authUser->id}|senior")
-                ->orWhere('created_by', 'LIKE', "%|junior:0|senior")
-                ->orWhere('created_by', 'LIKE', "%|junior:{$authUser->id}|senior");
-        });
+                ->orWhere('created_by', $lastPart) // exact match
+                ->orWhere('created_by', 'LIKE', "%:{$lastPart}"); // must end with id|senior
+        })
+            ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$lastPart, $lastPart]); // enforce last part check
 
-
-        // Paginate 10 per page
+        // Paginate
         $data = $query->paginate(10);
 
-        // Map forwarded_by dynamically
+        // Add forwarded_by
         $data->getCollection()->transform(function ($item) use ($authUser) {
             $parts = explode('|', $item->created_by ?? '');
             $userId = $parts[0] ?? null;
             $role   = $parts[1] ?? 'unknown';
 
-            if ($userId == $authUser->id) {
+            if ($userId == $authUser->id && $role === 'senior') {
                 $forwardedBy = "SELF ({$userId}) ({$role})";
             } else {
                 $user = \App\Models\User::find($userId);
@@ -348,6 +348,7 @@ class GoogleSheetController extends Controller
 
         return view('database.senior', compact('data'));
     }
+
 
 
     public function seniorfetch(Request $request)
