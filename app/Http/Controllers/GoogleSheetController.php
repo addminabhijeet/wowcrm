@@ -710,7 +710,18 @@ class GoogleSheetController extends Controller
 
     public function junior()
     {
-        // Fetch 10 entries per page
+        $authUser = Auth::user();
+
+        // Base query
+        $query = GoogleSheetData::query();
+
+        $query->where(function ($q) use ($authUser) {
+            $q->where('Exe_Remarks', 'Called & Mailed')
+                ->orWhere('created_by', "{$authUser->id}|senior")
+                ->orWhere('created_by', 'LIKE', "%|junior:0|senior")
+                ->orWhere('created_by', 'LIKE', "%|junior:{$authUser->id}|senior");
+        });
+        
         $data = GoogleSheetData::paginate(10);
 
         return view('database.junior', compact('data'));
