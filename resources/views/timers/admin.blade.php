@@ -30,27 +30,29 @@
                         @endphp
                         <div class="d-flex gap-2">
                             <select name="hours" class="form-select rounded-pill px-16 py-6">
-                                @for($h=0; $h<=24; $h++)
+                                @for($h = 0; $h <= 24; $h++)
                                     <option value="{{ $h }}" {{ $h == $hours ? 'selected' : '' }}>{{ $h }} h</option>
                                 @endfor
                             </select>
 
                             <select name="minutes" class="form-select rounded-pill px-16 py-6">
-                                @for($m=0; $m<60; $m+=5)
+                                @for($m = 0; $m < 60; $m += 5)
                                     <option value="{{ $m }}" {{ $m == $minutes ? 'selected' : '' }}>{{ $m }} m</option>
                                 @endfor
                             </select>
                         </div>
-                        @error('work_day_seconds')
-                            <small class="text-danger">{{ $message }}</small>
-                        @enderror
+                        @if($errors->has('hours') || $errors->has('minutes'))
+                            <small class="text-danger">
+                                {{ $errors->first('hours') ?: '' }} {{ $errors->first('minutes') ?: '' }}
+                            </small>
+                        @endif
                     </div>
 
                     {{-- Daily Base Time --}}
                     <div class="mb-16">
                         <label class="form-label fw-medium">Daily Base Time</label>
                         <input type="time" name="daily_base_time" class="form-control rounded-pill px-16 py-6" 
-                               value="{{ old('daily_base_time', $timersetting->daily_base_time ?? '20:00') }}">
+                               value="{{ old('daily_base_time', $timersetting->daily_base_time ?? '20:00') }}" required>
                         @error('daily_base_time')
                             <small class="text-danger">{{ $message }}</small>
                         @enderror
