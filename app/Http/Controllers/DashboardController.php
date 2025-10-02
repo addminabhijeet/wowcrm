@@ -28,11 +28,8 @@ class DashboardController extends Controller
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
 
         if ($timer) {
-            if ($timer->status === 'running') {
-                $seconds_passed = now()->diffInSeconds($timer->updated_at);
-                $remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
-            } else {
-                $remaining_seconds = $timer->remaining_seconds;
+            if ($timer) {
+            $remaining_seconds = $timer->remaining_seconds;
             }
             $elapsed_seconds = self::WORK_DAY_SECONDS - $remaining_seconds;
             $status = $timer->status;
@@ -42,11 +39,7 @@ class DashboardController extends Controller
             $status = 'running';
         }
 
-
-        $resumes = Resume::where('status', 'pending_review')->get();
-
         return view('dashboard.junior', compact(
-            'resumes',
             'remaining_seconds',
             'elapsed_seconds',
             'status'
@@ -194,7 +187,6 @@ class DashboardController extends Controller
                 'status'            => $timer->status,
                 'pause_type'        => $timer->pause_type,
                 'remaining_seconds' => $timer->remaining_seconds,
-                'elapsed_seconds'   => 0,
                 'event_time'        => $istNow,
             ]);
 
@@ -236,7 +228,6 @@ class DashboardController extends Controller
                 'status'            => $timer->status,
                 'pause_type'        => $timer->pause_type,
                 'remaining_seconds' => $timer->remaining_seconds,
-                'elapsed_seconds'   => $elapsed_seconds,
                 'event_time'        => now(),
             ]);
         }
