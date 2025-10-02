@@ -47,24 +47,12 @@ class DashboardController extends Controller
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
 
         if ($timer) {
-            if ($timer->status === 'running') {
-                $seconds_passed = now()->diffInSeconds($timer->updated_at);
-                $remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
-            } else {
-                $remaining_seconds = $timer->remaining_seconds;
-            }
+            $remaining_seconds = $timer->remaining_seconds;
             $elapsed_seconds = self::WORK_DAY_SECONDS - $remaining_seconds;
             $status = $timer->status;
-        } else {
-            $remaining_seconds = self::WORK_DAY_SECONDS;
-            $elapsed_seconds = 0;
-            $status = 'running';
         }
 
-        $resumes = Resume::where('status', 'forwarded_to_senior')->get();
-
         return view('dashboard.senior', compact(
-            'resumes',
             'remaining_seconds',
             'elapsed_seconds',
             'status'
@@ -78,25 +66,12 @@ class DashboardController extends Controller
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
 
         if ($timer) {
-            if ($timer->status === 'running') {
-                $seconds_passed = now()->diffInSeconds($timer->updated_at);
-                $remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
-            } else {
-                $remaining_seconds = $timer->remaining_seconds;
-            }
+            $remaining_seconds = $timer->remaining_seconds;
             $elapsed_seconds = self::WORK_DAY_SECONDS - $remaining_seconds;
             $status = $timer->status;
-        } else {
-            $remaining_seconds = self::WORK_DAY_SECONDS;
-            $elapsed_seconds = 0;
-            $status = 'running';
         }
 
-
-        $resumes = Resume::where('status', 'pending_review')->get();
-
         return view('dashboard.trainer', compact(
-            'resumes',
             'remaining_seconds',
             'elapsed_seconds',
             'status'
@@ -110,25 +85,12 @@ class DashboardController extends Controller
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
 
         if ($timer) {
-            if ($timer->status === 'running') {
-                $seconds_passed = now()->diffInSeconds($timer->updated_at);
-                $remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
-            } else {
-                $remaining_seconds = $timer->remaining_seconds;
-            }
+            $remaining_seconds = $timer->remaining_seconds;
             $elapsed_seconds = self::WORK_DAY_SECONDS - $remaining_seconds;
             $status = $timer->status;
-        } else {
-            $remaining_seconds = self::WORK_DAY_SECONDS;
-            $elapsed_seconds = 0;
-            $status = 'running';
         }
 
-
-        $resumes = Resume::where('status', 'pending_review')->get();
-
         return view('dashboard.accountant', compact(
-            'resumes',
             'remaining_seconds',
             'elapsed_seconds',
             'status'

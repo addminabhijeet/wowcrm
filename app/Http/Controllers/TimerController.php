@@ -19,22 +19,23 @@ class TimerController extends Controller
         $timers = $juniors->map(function ($junior) {
             $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
 
-            if ($timer && $timer->status === 'running') {
-                $seconds_passed = now()->diffInSeconds($timer->updated_at);
-                $remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
-            } else {
-                $remaining_seconds = $timer ? $timer->remaining_seconds : self::WORK_DAY_SECONDS;
-            }
+        if ($timer) {
+            $remaining_seconds = $timer->remaining_seconds;
+            $elapsed_seconds = self::WORK_DAY_SECONDS - $remaining_seconds;
+            $status = $timer->status;
+            $button_status = $timer->button_status;
+            $notice_status = $timer->notice_status;
+        }
 
             return [
                 'user_id'          => $junior->id,
                 'name'             => $junior->name,
                 'email'            => $junior->email,
-                'user'             => $junior,
                 'remaining_seconds' => $remaining_seconds,
-                'elapsed_seconds'  => self::WORK_DAY_SECONDS - $remaining_seconds,
-                'status'           => $timer ? $timer->status : 'running',
-                'button_status'    => $timer ? $timer->button_status : 0,
+                'elapsed_seconds'  => $elapsed_seconds,
+                'status'           => $status,
+                'button_status'    => $button_status,
+                'notice_status'    => $notice_status,
             ];
         });
 
