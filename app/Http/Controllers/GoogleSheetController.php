@@ -515,12 +515,23 @@ class GoogleSheetController extends Controller
                 if (strpos($updateData['created_by'], ':0|accountant') === false) {
                     $updateData['created_by'] .= ':0|accountant';
                 }
+
+                //  Replace "0|senior" with actual senior ID (only if it ends with 0|senior)
+                if (preg_match('/0\|senior$/', $updateData['created_by'])) {
+                    $updateData['created_by'] = preg_replace(
+                        '/0\|senior$/',
+                        $id . '|senior',
+                        $updateData['created_by']
+                    );
+                }
             } elseif ($exeRemark === 'Called & Mailed') {
                 $tag = $id . '|senior';
+                $zerotag = '0|senior';
                 // Append only if created_by exactly matches the tag
                 if ($updateData['created_by'] === $tag) {
-                    $updateData['created_by'] .= ':' . $tag;
+                    $updateData['created_by'] .= ':' . $zerotag;
                 }
+                
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
                 // Match any integer followed by "|junior"
@@ -532,8 +543,18 @@ class GoogleSheetController extends Controller
                         $updateData['created_by'] .= ':' . $tag;
                     }
                 }
+
+                //  Replace "0|senior" with actual senior ID (only if it ends with 0|senior)
+                if (preg_match('/0\|senior$/', $updateData['created_by'])) {
+                    $updateData['created_by'] = preg_replace(
+                        '/0\|senior$/',
+                        $id . '|senior',
+                        $updateData['created_by']
+                    );
+                }
             }
         }
+
 
 
         try {
