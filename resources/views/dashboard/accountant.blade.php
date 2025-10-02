@@ -14,8 +14,8 @@
                         <div class="card-body p-20">
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                 <div>
-                                    <p class="fw-medium text-primary-light mb-1">Total Users</p>
-                                    <h6 class="mb-0">{{ $users->count() }}</h6>
+                                    <p class="fw-medium text-primary-light mb-1">Total Resumes</p>
+                                    <h6 class="mb-0">{{ $resumes->count() }}</h6>
                                 </div>
                                 <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
                                     <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>
@@ -25,7 +25,7 @@
                                 <span class="d-inline-flex align-items-center gap-1 text-success-main">
                                     <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +6
                                 </span>
-                                Last 30 days total users
+                                Last 30 days total resumes
                             </p>
                         </div>
                     </div><!-- card end -->
@@ -35,8 +35,8 @@
                         <div class="card-body p-20">
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                 <div>
-                                    <p class="fw-medium text-primary-light mb-1">Total Junior Users</p>
-                                    <h6 class="mb-0">{{ $users->where('role', 'junior')->count() }}</h6>
+                                    <p class="fw-medium text-primary-light mb-1">Total Pending Resumes</p>
+                                    <h6 class="mb-0">{{ $resumes->where('status', 'pending')->count() }}</h6>
                                 </div>
                                 <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
                                     <iconify-icon icon="fa-solid:award" class="text-white text-2xl mb-0"></iconify-icon>
@@ -46,7 +46,7 @@
                                 <span class="d-inline-flex align-items-center gap-1 text-danger-main">
                                     <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -1
                                 </span>
-                                Last 30 days Junior Users
+                                Last 30 days total pending resumes
                             </p>
                         </div>
                     </div><!-- card end -->
@@ -56,8 +56,8 @@
                         <div class="card-body p-20">
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                 <div>
-                                    <p class="fw-medium text-primary-light mb-1">Total Senior Users</p>
-                                    <h6 class="mb-0">{{ $users->where('role', 'senior')->count() }}</h6>
+                                    <p class="fw-medium text-primary-light mb-1">Total Inreview Resumes</p>
+                                    <h6 class="mb-0">{{ $resumes->where('status', 'in_review')->count() }}</h6>
                                 </div>
                                 <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
                                     <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
@@ -67,7 +67,7 @@
                                 <span class="d-inline-flex align-items-center gap-1 text-success-main">
                                     <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +1
                                 </span>
-                                Last 30 days Senior Users
+                                Last 30 days total inreview resumes
                             </p>
                         </div>
                     </div><!-- card end -->
@@ -77,8 +77,8 @@
                         <div class="card-body p-20">
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                 <div>
-                                    <p class="fw-medium text-primary-light mb-1">Total Candidates</p>
-                                    <h6 class="mb-0">{{ $users->where('role', 'customer')->count() }}</h6>
+                                    <p class="fw-medium text-primary-light mb-1">Total Completed Resumes</p>
+                                    <h6 class="mb-0">{{ $resumes->where('status', 'completed')->count() }}</h6>
                                 </div>
                                 <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
                                     <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl mb-0"></iconify-icon>
@@ -88,7 +88,7 @@
                                 <span class="d-inline-flex align-items-center gap-1 text-success-main">
                                     <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +$1
                                 </span>
-                                Last 30 days Candidates
+                                Last 30 days Total completed resumes
                             </p>
                         </div>
                     </div><!-- card end -->
@@ -127,46 +127,76 @@
                                         <table class="table bordered-table sm-table mb-0">
                                             <thead>
                                                 <tr>
-                                                    <th scope="col">Users</th>
-                                                    <th scope="col">Role</th>
-                                                    <th scope="col">Created At</th>
-                                                    <th scope="col">Updated At</th>
+                                                    <th scope="col">ID</th>
+                                                    <th scope="col">Candidate</th>
+                                                    <th scope="col">Status</th>
+                                                    <th scope="col">File</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                @foreach($users as $user)
+                                                @foreach($resumes as $resume)
                                                 <tr>
-                                                    <!-- User info (avatar + name + email) -->
+                                                    <!-- Candidate -->
                                                     <td>
                                                         <div class="d-flex align-items-center">
                                                             <img src="{{ asset('assets/images/users/user1.png') }}" 
-                                                                alt="{{ $user->name }}" 
+                                                                alt="{{ $resume->candidate_name }}" 
                                                                 class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
                                                             <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">{{ $user->name }}</h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">{{ $user->email }}</span>
+                                                                <h6 class="text-md mb-0 fw-medium">{{ $resume->candidate_name }}</h6>
+                                                                <span class="text-sm text-secondary-light fw-medium">ID: {{ $resume->id }}</span>
                                                             </div>
                                                         </div>
                                                     </td>
 
-                                                    <!-- Role -->
+                                                    <!-- Status -->
                                                     <td class="text-center">
-                                                        <span class="bg-primary-focus text-primary-main px-24 py-4 rounded-pill fw-medium text-sm">
-                                                            {{ ucfirst($user->role) }}
-                                                        </span>
+                                                        <form action="{{ route('resumes.updateStatus', $resume->id) }}" method="POST">
+                                                            @csrf
+                                                            @method('PATCH')
+                                                            <select name="status" onchange="this.form.submit()" 
+                                                                    class="form-select form-select-sm w-auto px-24 py-6 rounded-pill fw-medium text-sm 
+                                                                        {{ $resume->status }}">
+                                                                @php
+                                                                    $statuses = [
+                                                                        'pending_review' => 'Pending Review',
+                                                                        'forwarded_to_senior' => 'Forwarded to Senior',
+                                                                        'customer_confirmation' => 'Customer Confirmation',
+                                                                    ];
+                                                                @endphp
+                                                                @foreach($statuses as $key => $label)
+                                                                    <option value="{{ $key }}" {{ $resume->status === $key ? 'selected' : '' }}>
+                                                                        {{ $label }}
+                                                                    </option>
+                                                                @endforeach
+                                                            </select>
+                                                        </form>
                                                     </td>
 
-                                                    <!-- Created at -->
+                                                    <!-- File -->
                                                     <td>
-                                                        <span class="text-sm text-secondary-light fw-medium">
-                                                            {{ $user->created_at->format('d M Y') }}
-                                                        </span>
+                                                        <div class="d-flex gap-3">
+                                                            <!-- Download button -->
+                                                            <a href="{{ asset('storage/resumes/' . $resume->resume_file) }}" 
+                                                            class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2"
+                                                            download="{{ $resume->candidate_name }}_resume.pdf" 
+                                                            rel="noopener noreferrer">
+                                                                <i class="fas fa-download"></i> Download
+                                                            </a>
+                                                            <!-- View button -->
+                                                            <a href="{{ asset('storage/resumes/' . $resume->resume_file) }}" 
+                                                            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
+                                                            target="_blank" 
+                                                            rel="noopener noreferrer">
+                                                                <i class="fas fa-eye"></i> View
+                                                            </a>
+                                                        </div>
                                                     </td>
 
                                                     <!-- Updated at -->
                                                     <td>
                                                         <span class="text-sm text-secondary-light fw-medium">
-                                                            {{ $user->updated_at->format('d M Y') }}
+                                                            {{ $resume->updated_at->format('d M Y') }}
                                                         </span>
                                                     </td>
                                                 </tr>
