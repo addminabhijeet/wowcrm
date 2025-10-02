@@ -170,35 +170,5 @@ class TimerController extends Controller
     }
 
 
-    /**
-     * Timers for Admin Dashboard (all juniors + all seniors)
-     */
-    public function adminTimers()
-    {
-        // Assuming roles 'junior' and 'senior'
-        $userIds = User::whereIn('role', ['junior', 'senior'])->pluck('id');
-
-        $timers = UserTimerLog::with('pauses', 'user')
-            ->whereIn('user_id', $userIds)
-            ->latest()
-            ->get();
-
-        return view('timers.admin', compact('timers'));
-    }
-
-    /**
-     * Optional: show timer details for a specific user
-     */
-    public function juniorTimers()
-    {
-        // Assuming roles 'junior' and 'senior'
-        $userIds = User::whereIn('role', 'junior')->pluck('id');
-
-        $timers = UserTimerLog::with('pauses', 'user')
-            ->whereIn('user_id', $userIds)
-            ->latest()
-            ->get();
-
-        return view('timers.admin', compact('timers'));
-    }
+    
 }

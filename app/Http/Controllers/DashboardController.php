@@ -28,15 +28,9 @@ class DashboardController extends Controller
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
 
         if ($timer) {
-            if ($timer) {
             $remaining_seconds = $timer->remaining_seconds;
-            }
             $elapsed_seconds = self::WORK_DAY_SECONDS - $remaining_seconds;
             $status = $timer->status;
-        } else {
-            $remaining_seconds = self::WORK_DAY_SECONDS;
-            $elapsed_seconds = 0;
-            $status = 'running';
         }
 
         return view('dashboard.junior', compact(
