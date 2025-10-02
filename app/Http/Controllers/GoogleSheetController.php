@@ -523,10 +523,14 @@ class GoogleSheetController extends Controller
                 }
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
-                $tag = $id . '|junior';
-                // Append only if tag already exists in created_by
-                if (strpos($updateData['created_by'], $tag) !== false) {
-                    $updateData['created_by'] .= ':' . $tag;
+                // Match any integer followed by "|junior"
+                if (preg_match('/(\d+)\|junior/', $updateData['created_by'], $matches)) {
+                    $juniorId = $matches[1]; // Extract the integer
+                    $tag = $juniorId . '|junior';
+                    // Append only if tag already exists in created_by
+                    if (strpos($updateData['created_by'], $tag) !== false) {
+                        $updateData['created_by'] .= ':' . $tag;
+                    }
                 }
             }
         }
