@@ -134,7 +134,7 @@
                         <span>Calendar</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('calendar.seniorUser') }}"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>Accountant Cal.</a></li>
+                        <li><a href="{{ route('calendar.accountantUser') }}"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>Accountant Cal.</a></li>
                     </ul>
                 </li>
 
@@ -144,7 +144,7 @@
                         <span>Database</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet</a></li>
+                        <li><a href="{{ route('google.sheet.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet</a></li>
                     </ul>
                 </li>
 
@@ -208,6 +208,59 @@
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('timer.admin') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Report</a></li>
+                    </ul>
+                </li>
+            @endif
+
+            {{-- ================= Trainer ================= --}}
+            @if($role === 'trainer')
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                        <span>Dashboard</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('dashboard.index') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Trainer Dashboard</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="hugeicons:invoice-03" class="menu-icon"></iconify-icon>
+                        <span>Calendar</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('calendar.trainerUser') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Trainer Cal.</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                        <span>Database</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                        <span>Report</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('call.reports.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Call Report</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                        <span>Timer</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('timer.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Report</a></li>
                     </ul>
                 </li>
             @endif
