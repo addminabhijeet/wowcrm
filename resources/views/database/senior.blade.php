@@ -596,7 +596,7 @@ $script ='<script>
             colKeys.forEach(k => {
                 if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone'].includes(k)) {
                     let opts = [];
-                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
+                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Ready To Paid', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
                     if (k === 'Immigration') opts = ['Dependent Visa', 'Global Visa', 'Graduate Visa', 'Student Visa', 'Citizen', 'Permanent Residence(ILR)'];
                     if (k === 'Relocation') opts = ['YES', 'NO'];
                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
