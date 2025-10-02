@@ -22,22 +22,24 @@ class TimerController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'work_day_seconds' => 'required|integer|min:0',
-            'daily_base_time'  => 'required|date_format:H:i',
+            'work_day_hours'   => 'required|integer|min:0',
+            'work_day_minutes' => 'required|integer|min:0|max:59',
+            'daily_base_hours'   => 'required|integer|min:0|max:23',
+            'daily_base_minutes' => 'required|integer|min:0|max:59',
         ]);
 
-        $timersetting = TimerSetting::first();
+        $workDaySeconds = $request->work_day_hours * 3600 + $request->work_day_minutes * 60;
+        $dailyBaseTime  = sprintf('%02d:%02d', $request->daily_base_hours, $request->daily_base_minutes);
 
-        if (!$timersetting) {
-            $timersetting = new TimerSetting();
-        }
+        $timersetting = TimerSetting::first() ?? new TimerSetting();
 
-        $timersetting->work_day_seconds = $request->work_day_seconds;
-        $timersetting->daily_base_time  = $request->daily_base_time;
+        $timersetting->work_day_seconds = $workDaySeconds;
+        $timersetting->daily_base_time  = $dailyBaseTime;
         $timersetting->save();
 
         return redirect()->back()->with('success', 'Timer settings updated successfully!');
     }
+
 
     const WORK_DAY_SECONDS = 9 * 60 * 60;
 
