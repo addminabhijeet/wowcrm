@@ -38,7 +38,7 @@ class LoginController extends Controller
             if ($lastTimer) {
                 UserTimerPause::create([
                     'user_timer_log_id' => $lastTimer->id,
-                    'user_id' => $login->id,
+                    'user_id' => Auth::id(),
                     'status' => 'start',
                     'pause_type' => 'login',
                     'remaining_seconds' => $lastTimer->remaining_seconds,
