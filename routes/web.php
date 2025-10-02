@@ -87,8 +87,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/junior/juniortimer', [TimerController::class, 'juniorTimers'])->name('timer.junior');
     Route::post('/timer/toggle-button-status', [TimerController::class, 'toggleButtonStatus'])->name('timer.toggleButtonStatus');
     Route::post('/timer/toggle-all-status', [TimerController::class, 'toggleAllStatus'])->name('timer.toggleAllStatus');
-    Route::get('/dashboard/admin/timer-settings', [TimerController::class, 'index'])->name('timers.admin');
-    Route::post('/dashboard/admin/timer-settings', [TimerController::class, 'update'])->name('timers.update');
+    Route::get('/dashboard/admin/timer-settings', [TimerController::class, 'index'])->name('timer.admin');
+    Route::post('/dashboard/admin/timer-settings', [TimerController::class, 'update'])->name('timer.update');
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
