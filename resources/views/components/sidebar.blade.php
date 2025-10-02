@@ -144,7 +144,7 @@
                         <span>Database</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href=""><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet</a></li>
+                        <li><a href="{{ route('google.sheet.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet</a></li>
                     </ul>
                 </li>
 
