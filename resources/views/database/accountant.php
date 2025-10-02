@@ -11,6 +11,7 @@ $script ='<script>
 @endphp
 
 @section('content')
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <div class="card h-100 p-0 radius-12">
     <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
         <div class="d-flex align-items-center flex-wrap gap-3">
