@@ -30,13 +30,13 @@
                         @endphp
                         <div class="d-flex gap-2">
                             <select name="hours" class="form-select rounded-pill px-16 py-6">
-                                @for($h=0; $h<=24; $h++)
+                                @for($h = 0; $h <= 24; $h++)
                                     <option value="{{ $h }}" {{ $h == $hours ? 'selected' : '' }}>{{ $h }} h</option>
                                 @endfor
                             </select>
 
                             <select name="minutes" class="form-select rounded-pill px-16 py-6">
-                                @for($m=0; $m<60; $m+=5)
+                                @for($m = 0; $m < 60; $m += 5)
                                     <option value="{{ $m }}" {{ $m == $minutes ? 'selected' : '' }}>{{ $m }} m</option>
                                 @endfor
                             </select>

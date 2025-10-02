@@ -14,7 +14,6 @@ class TimerController extends Controller
 
     public function index()
     {
-        // Get the first (or only) timer setting
         $timersetting = TimerSetting::first();
         return view('timers.admin', compact('timersetting'));
     }
@@ -31,7 +30,10 @@ class TimerController extends Controller
 
         // Convert hours + minutes to total seconds
         $timersetting->work_day_seconds = ($request->hours * 3600) + ($request->minutes * 60);
-        $timersetting->daily_base_time  = $request->daily_base_time;
+
+        // Ensure daily_base_time is H:i format
+        $timersetting->daily_base_time = date('H:i', strtotime($request->daily_base_time));
+
         $timersetting->save();
 
         return redirect()->back()->with('success', 'Timer settings updated successfully!');
