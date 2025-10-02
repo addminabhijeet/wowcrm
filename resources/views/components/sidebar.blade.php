@@ -26,7 +26,7 @@
                         <span>Dashboard</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('dashboard.index') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Dashboard</a></li>
+                        <li><a href="{{ route('dashboard.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Dashboard</a></li>
                     </ul>
                 </li>
 
@@ -71,7 +71,7 @@
                         <span>Dashboard</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('dashboard.index') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Senior Dashboard</a></li>
+                        <li><a href="{{ route('dashboard.senior') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Senior Dashboard</a></li>
                     </ul>
                 </li>
 
@@ -124,7 +124,7 @@
                         <span>Dashboard</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('dashboard.index') }}"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>Accountant Dashboard</a></li>
+                        <li><a href="{{ route('dashboard.accountant') }}"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>Accountant Dashboard</a></li>
                     </ul>
                 </li>
 
@@ -167,7 +167,7 @@
                         <span>Dashboard</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('dashboard.index') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Admin Dashboard</a></li>
+                        <li><a href="{{ route('dashboard.admin') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Admin Dashboard</a></li>
                     </ul>
                 </li>
 
@@ -220,7 +220,7 @@
                         <span>Dashboard</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('dashboard.index') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Trainer Dashboard</a></li>
+                        <li><a href="{{ route('dashboard.trainer') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Trainer Dashboard</a></li>
                     </ul>
                 </li>
 
