@@ -22,7 +22,7 @@ class TimerController extends Controller
     public function update(Request $request)
     {
         $request->validate([
-            'hours' => 'required|integer|min:0',
+            'hours' => 'required|integer|min:0|max:24',
             'minutes' => 'required|integer|min:0|max:59',
             'daily_base_time' => 'required|date_format:H:i',
         ]);

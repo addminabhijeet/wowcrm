@@ -14,3 +14,4 @@ class TimerSetting extends Model
         'daily_base_time',
     ];
 }
+
