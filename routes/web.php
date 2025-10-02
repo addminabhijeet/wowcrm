@@ -10,28 +10,17 @@ use App\Http\Controllers\LoginsController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\GoogleSheetController;
 use App\Http\Controllers\CallReportController;
-
-
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\RoleDashboards\JuniorDashboardController;
-use App\Http\Controllers\RoleDashboards\SeniorDashboardController;
-use App\Http\Controllers\RoleDashboards\CustomerDashboardController;
-use App\Http\Controllers\RoleDashboards\AccountantDashboardController;
-use App\Http\Controllers\RoleDashboards\TrainerDashboardController;
-use App\Http\Controllers\RoleDashboards\AdminDashboardController;
 use App\Http\Controllers\TimerController;
 
 Route::middleware(['auth'])->group(function () {
-    // Default dashboard route
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
-    // Separate dashboards per role
-    Route::get('/dashboard/junior', [JuniorDashboardController::class, 'index'])->name('dashboard.junior');
-    Route::get('/dashboard/senior', [SeniorDashboardController::class, 'index'])->name('dashboard.senior');
-    Route::get('/dashboard/customer', [CustomerDashboardController::class, 'index'])->name('dashboard.customer');
-    Route::get('/dashboard/accountant', [AccountantDashboardController::class, 'index'])->name('dashboard.accountant');
-    Route::get('/dashboard/trainer', [TrainerDashboardController::class, 'index'])->name('dashboard.trainer');
-    Route::get('/dashboard/admin', [AdminDashboardController::class, 'index'])->name('dashboard.admin');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
+    Route::get('/dashboard/junior', [DashboardController::class, 'junior'])->name('dashboard.junior');
+    Route::get('/dashboard/senior', [DashboardController::class, 'senior'])->name('dashboard.senior');
+    Route::get('/dashboard/customer', [DashboardController::class, 'customer'])->name('dashboard.customer');
+    Route::get('/dashboard/accountant', [DashboardController::class, 'accountant'])->name('dashboard.accountant');
+    Route::get('/dashboard/trainer', [DashboardController::class, 'trainer'])->name('dashboard.trainer');
 
     Route::get('/dashboard/admin/calendar/{month?}/{year?}', [CalendarController::class, 'index'])->name('calendar.index');
     Route::get('/dashboard/senior/calendar/{month?}/{year?}', [CalendarController::class, 'seniorUser'])->name('calendar.seniorUser');
@@ -90,15 +79,14 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/junior/call-reports', [CallReportController::class, 'junior'])->name('call.reports.junior');
     Route::get('/dashboard/senior/call-reports', [CallReportController::class, 'senior'])->name('call.reports.senior');
 
-    Route::match(['get','post'], '/timer/update', [DashboardController::class, 'updateTimer'])->name('timer.update');
+    Route::match(['get', 'post'], '/timer/update', [DashboardController::class, 'updateTimer'])->name('timer.update');
     Route::get('/dashboard/senior/seniortimer', [TimerController::class, 'seniorTimers'])->name('timer.senior');
-    Route::match(['get','post'], '/timer/updatejunior', [TimerController::class, 'updateTimer'])->name('timer.updatejunior');
+    Route::match(['get', 'post'], '/timer/updatejunior', [TimerController::class, 'updateTimer'])->name('timer.updatejunior');
     Route::get('/timer/all-juniors', [TimerController::class, 'allJuniorTimers'])->name('timer.alljuniors');
     Route::get('/dashboard/admin/admintimer', [TimerController::class, 'adminTimers'])->name('timer.admin');
     Route::get('/dashboard/junior/juniortimer', [TimerController::class, 'juniorTimers'])->name('timer.junior');
     Route::post('/timer/toggle-button-status', [TimerController::class, 'toggleButtonStatus'])->name('timer.toggleButtonStatus');
     Route::post('/timer/toggle-all-status', [TimerController::class, 'toggleAllStatus'])->name('timer.toggleAllStatus');
-    
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
@@ -114,8 +102,3 @@ Route::patch('/resumes/{id}/status', [ResumeController::class, 'updateStatus'])-
 Route::patch('/payment/{id}/status', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
 Route::patch('/training/{id}/trastatus', [PaymentController::class, 'traupdateStatus'])->name('training.updateStatus');
 Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('login.history');
-
-
-
-
-
