@@ -527,11 +527,15 @@ class GoogleSheetController extends Controller
             } elseif ($exeRemark === 'Called & Mailed') {
                 $tag = $id . '|senior';
                 $zerotag = '0|senior';
-                // Append only if created_by exactly matches the tag
-                if ($updateData['created_by'] === $tag) {
+
+                // Get the last segment after the last colon
+                $parts = explode(':', $updateData['created_by']);
+                $lastPart = end($parts);
+
+                // Append only if the last part exactly matches the tag
+                if ($lastPart === $tag) {
                     $updateData['created_by'] .= ':' . $zerotag;
                 }
-                
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
                 // Match any integer followed by "|junior"
@@ -631,11 +635,11 @@ class GoogleSheetController extends Controller
 
         // Set created_by conditionally based on Exe_Remarks
         if ($exeRemarksValue === 'Called & Mailed') {
-            $record->created_by = $user->id . '|senior';
+            $record->created_by = $user->id . '|senior:0|senior';
         } elseif ($exeRemarksValue === 'Ready To Paid') {
             $record->created_by = $user->id . '|senior:0|accountant';
         } else {
-            $record->created_by = '0|senior';
+            $record->created_by = $user->id . '|senior';
         }
 
 
