@@ -282,6 +282,7 @@ $script ='<script>
 
         const exeColors = {
             'Called & Mailed': '#d4edda',
+            'Ready To Paid': '#d4edda',
             'Not Interested': '#f8d7da',
             'Others': '#d1ecf1',
             'N/A': '#e2e3e5',
