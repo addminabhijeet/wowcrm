@@ -18,25 +18,34 @@ class TimerController extends Controller
         return view('timers.admin', compact('timersetting'));
     }
 
-    public function update(Request $request)
+    // Update Work Day Duration only
+    public function updateWorkDay(Request $request)
     {
         $request->validate([
             'hours' => 'required|integer|min:0|max:24',
             'minutes' => 'required|integer|min:0|max:59',
-            'daily_base_time' => 'required|date_format:H:i',
         ]);
 
         $timersetting = TimerSetting::first() ?? new TimerSetting();
 
-        // Convert hours + minutes to total seconds
         $timersetting->work_day_seconds = ($request->hours * 3600) + ($request->minutes * 60);
-
-        // Ensure daily_base_time is H:i format
-        $timersetting->daily_base_time = date('H:i', strtotime($request->daily_base_time));
-
         $timersetting->save();
 
-        return redirect()->back()->with('success', 'Timer settings updated successfully!');
+        return redirect()->back()->with('success', 'Work Day Duration updated successfully!');
+    }
+
+    // Update Daily Base Time only
+    public function updateBaseTime(Request $request)
+    {
+        $request->validate([
+            'daily_base_time' => 'required|date_format:H:i',
+        ]);
+
+        $timersetting = TimerSetting::first() ?? new TimerSetting();
+        $timersetting->daily_base_time = $request->daily_base_time;
+        $timersetting->save();
+
+        return redirect()->back()->with('success', 'Daily Base Time updated successfully!');
     }
 
 
