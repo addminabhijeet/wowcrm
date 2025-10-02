@@ -33,7 +33,7 @@ class LoginController extends Controller
                 'logged_in_at' => now()
             ]);
 
-            $lastTimer = UserTimerLog::where('user_id', Auth::id());
+            $lastTimer = UserTimerLog::where('user_id', Auth::id())->latest()->first();
 
             if ($lastTimer) {
                 UserTimerPause::create([
@@ -45,7 +45,7 @@ class LoginController extends Controller
                     'event_time' => now(),
                 ]);
             }
-            
+
             $role = Auth::user()->role;
 
             switch ($role) {
@@ -75,7 +75,7 @@ class LoginController extends Controller
     {
         $user = Auth::user();
         if ($user) {
-            $latestTimer = UserTimerLog::where('user_id', $user->id);
+            $latestTimer = UserTimerLog::where('user_id', $user->id)->latest()->first();
             if ($latestTimer) {
                 UserTimerPause::create([
                     'user_timer_log_id' => $latestTimer->id,
