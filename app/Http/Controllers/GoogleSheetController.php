@@ -631,11 +631,11 @@ class GoogleSheetController extends Controller
 
         // Set created_by conditionally based on Exe_Remarks
         if ($exeRemarksValue === 'Called & Mailed') {
-            $record->created_by = $user->id . '|senior:' . $user->id . '|senior';
-        } elseif ($exeRemarksValue === 'Ready To Paid') {
-            $record->created_by = $user->id . '|senior:' . $user->id . '|senior:0|accountant';
-        } else {
             $record->created_by = $user->id . '|senior';
+        } elseif ($exeRemarksValue === 'Ready To Paid') {
+            $record->created_by = $user->id . '|senior:0|accountant';
+        } else {
+            $record->created_by = '0|senior';
         }
 
 
