@@ -134,7 +134,7 @@
                         <span>Calendar</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('calendar.accountantUser') }}"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>Accountant Cal.</a></li>
+                        <li><a href=""><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>Accountant Cal.</a></li>
                     </ul>
                 </li>
 
