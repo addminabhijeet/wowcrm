@@ -14,7 +14,6 @@ class UserTimerPause extends Model
         'status',
         'pause_type',
         'remaining_seconds',
-        'elapsed_seconds',
         'event_time'
     ];
 

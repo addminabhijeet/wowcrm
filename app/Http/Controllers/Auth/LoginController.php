@@ -7,11 +7,10 @@ use App\Models\Login;
 use App\Models\UserTimerLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Models\UserTimerPause;
 
 class LoginController extends Controller
 {
-    const WORK_DAY_SECONDS = 9 * 60 * 60;
-
     public function showLoginForm()
     {
         return view('auth.signin');
@@ -34,29 +33,18 @@ class LoginController extends Controller
                 'logged_in_at' => now()
             ]);
 
-            $lastTimer = UserTimerLog::where('user_id', Auth::id())
-                ->latest()
-                ->first();
+            $lastTimer = UserTimerLog::where('user_id', Auth::id());
 
-            if (!$lastTimer || $lastTimer->status === 'completed') {
-                UserTimerLog::create([
-                    'user_id' => Auth::id(),
-                    'login_id' => $login->id,
-                    'start_time' => now(),
-                    'remaining_seconds' => self::WORK_DAY_SECONDS,
-                    'status' => 'running'
+            if ($lastTimer) {
+                UserTimerPause::create([
+                    'user_timer_log_id' => $lastTimer->id,
+                    'user_id' => $login->id,
+                    'status' => 'start',
+                    'pause_type' => 'login',
+                    'remaining_seconds' => $lastTimer->remaining_seconds,
+                    'event_time' => now(),
                 ]);
-            } else {
-                
-                if ($lastTimer->status === 'running') {
-                    $seconds_passed = now()->diffInSeconds($lastTimer->updated_at);
-                    $lastTimer->remaining_seconds = max(0, $lastTimer->remaining_seconds - $seconds_passed);
-                }
-                $lastTimer->updated_at = now();
-                $lastTimer->save();
             }
-
-
             return redirect()->route('dashboard.index');
         }
 
@@ -68,29 +56,22 @@ class LoginController extends Controller
     public function logout(Request $request)
     {
         $user = Auth::user();
-
         if ($user) {
-            $timer = UserTimerLog::where('user_id', $user->id)
-                ->latest()
-                ->first();
-
-            if ($timer && $timer->status === 'running') {
-                $seconds_passed = now()->diffInSeconds($timer->updated_at);
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
-            }
-
-            if ($timer) {
-                $timer->status = 'paused';
-                $timer->pause_type = 'logout';
-                $timer->updated_at = now();
-                $timer->save();
+            $latestTimer = UserTimerLog::where('user_id', $user->id);
+            if ($latestTimer) {
+                UserTimerPause::create([
+                    'user_timer_log_id' => $latestTimer->id,
+                    'user_id' => $user->id,
+                    'status' => 'paused',
+                    'pause_type' => 'logout',
+                    'remaining_seconds' => $latestTimer->remaining_seconds,
+                    'event_time' => now(),
+                ]);
             }
         }
-
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-
         return redirect('login');
     }
 }
