@@ -13,6 +13,7 @@ use App\Http\Controllers\CallReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TimerController;
 
+
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
@@ -87,6 +88,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/junior/juniortimer', [TimerController::class, 'juniorTimers'])->name('timer.junior');
     Route::post('/timer/toggle-button-status', [TimerController::class, 'toggleButtonStatus'])->name('timer.toggleButtonStatus');
     Route::post('/timer/toggle-all-status', [TimerController::class, 'toggleAllStatus'])->name('timer.toggleAllStatus');
+    Route::get('/dashboard/admin/timer-settings', [TimerController::class, 'index'])->name('timers.admin');
+    Route::post('/dashboard/admin/timer-settings', [TimerController::class, 'update'])->name('timers.update');
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
@@ -102,3 +105,5 @@ Route::patch('/resumes/{id}/status', [ResumeController::class, 'updateStatus'])-
 Route::patch('/payment/{id}/status', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
 Route::patch('/training/{id}/trastatus', [PaymentController::class, 'traupdateStatus'])->name('training.updateStatus');
 Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('login.history');
+
+
