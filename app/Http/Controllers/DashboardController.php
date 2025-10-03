@@ -43,17 +43,20 @@ class DashboardController extends Controller
         $remaining_seconds = $workDaySeconds;
         $elapsed_seconds   = 0;
         $status            = 'running';
+        $button_status     = 0; // default hidden
 
         if ($timer) {
             $remaining_seconds = $timer->remaining_seconds;
             $elapsed_seconds   = $workDaySeconds - $remaining_seconds;
             $status            = $timer->status;
+            $button_status     = $timer->button_status; // 0 = hide, 1 = show
         }
 
         return view('dashboard.junior', compact(
             'remaining_seconds',
             'elapsed_seconds',
-            'status'
+            'status',
+            'button_status'
         ));
     }
 
@@ -139,7 +142,7 @@ class DashboardController extends Controller
 
         return view('dashboard.customer', compact('payments'));
     }
-    
+
     public function updateTimer(Request $request)
     {
         $user   = Auth::user();
