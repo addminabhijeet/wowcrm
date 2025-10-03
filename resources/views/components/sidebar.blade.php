@@ -81,7 +81,7 @@
                         <span>Calendar</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('calendar.seniorUser') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Senior Cal.</a></li>
+                        <li><a href=""><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Senior Cal.</a></li>
                     </ul>
                 </li>
 
