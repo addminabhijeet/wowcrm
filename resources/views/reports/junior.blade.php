@@ -8,34 +8,34 @@ $script = '<script>
             name: "SELL",
             data: [{
                 x: "8 pm",
-                y: Number("{{ $t8to9pm }}"),
+                y: Number("{{ $t8to9pm ?? 0 }}"),
             }, {
                 x: "9 pm",
-                y: Number("{{ $t9to10pm }}"),
+                y: Number("{{ $t9to10pm ?? 0 }}"),
             }, {
                 x: "10 pm",
-                y: Number("{{ $t10to11pm }}"),
+                y: Number("{{ $t10to11pm ?? 0 }}"),
             }, {
                 x: "11 pm",
-                y: Number("{{ $t11to12pm }}"),
+                y: Number("{{ $t11to12pm ?? 0 }}"),
             }, {
                 x: "12 pm",
-                y: Number("{{ $t12to1am }}"),
+                y: Number("{{ $t12to1am ?? 0 }}"),
             }, {
                 x: "1 am",
-                y: Number("{{ $t1to2am }}"),
+                y: Number("{{ $t1to2am ?? 0 }}"),
             }, {
                 x: "2 am",
-                y: Number("{{ $t2to3am }}"),
+                y: Number("{{ $t2to3am ?? 0 }}"),
             }, {
                 x: "3 am",
-                y: Number("{{ $t3to4am }}"),
+                y: Number("{{ $t3to4am ?? 0 }}"),
             }, {
                 x: "4 am",
-                y: Number("{{ $t4to5am }}"),
+                y: Number("{{ $t4to5am ?? 0 }}"),
             }, {
                 x: "5 am",
-                y: Number("{{ $t5to6am }}"),
+                y: Number("{{ $t5to6am ?? 0 }}"),
             }]
         }],
         chart: {
@@ -504,16 +504,7 @@ $script = '<script>
             </div>
         </div>
     </div>
-    <p>8-9 PM: {{ $t8to9pm }}</p>
-    <p>9-10 PM: {{ $t9to10pm }}</p>
-    <p>10-11 PM: {{ $t10to11pm }}</p>
-    <p>11-12 PM: {{ $t11to12pm }}</p>
-    <p>12-1 AM: {{ $t12to1am }}</p>
-    <p>1-2 AM: {{ $t1to2am }}</p>
-    <p>2-3 AM: {{ $t2to3am }}</p>
-    <p>3-4 AM: {{ $t3to4am }}</p>
-    <p>4-5 AM: {{ $t4to5am }}</p>
-    <p>5-6 AM: {{ $t5to6am }}</p>
+
 
 </div>
 
