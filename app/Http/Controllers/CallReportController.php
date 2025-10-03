@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Models\GoogleSheetData;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -162,51 +163,51 @@ class CallReportController extends Controller
             ->count();
 
         return view('reports.senior', compact(
-            'callsPerHour', 'hourLabels',
-            'daysThisWeek', 'dayLabels',
-            'callsPerMonth', 'totalCallsToday'
+            'callsPerHour',
+            'hourLabels',
+            'daysThisWeek',
+            'dayLabels',
+            'callsPerMonth',
+            'totalCallsToday'
         ));
     }
 
 
-public function junior()
-{
-    // Total calls
-    $totalCalls = GoogleSheetData::count();
+    public function junior()
+    {
+        // Total calls
+        $totalCalls = GoogleSheetData::count();
 
-    // Total "Called & Mailed" calls
-    $calledAndMailedCalls = GoogleSheetData::where('Exe_Remarks', 'Called & Mailed')->count();
+        // Total "Called & Mailed" calls
+        $calledAndMailedCalls = GoogleSheetData::where('Exe_Remarks', 'Called & Mailed')->count();
 
-    // Total other calls
-    $otherCalls = GoogleSheetData::whereNotNull('Exe_Remarks')
-        ->where('Exe_Remarks', '<>', 'Called & Mailed')
-        ->count();
+        // Total other calls
+        $otherCalls = GoogleSheetData::whereNotNull('Exe_Remarks')
+            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->count();
 
-    // Group data by hour of updated_at
-    $hourlyCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-        ->groupBy('hour')
-        ->orderBy('hour')
-        ->pluck('count', 'hour') // key = hour, value = count
-        ->toArray();
+        // Group data by hour of updated_at
+        $hourlyCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->groupBy('hour')
+            ->orderBy('hour')
+            ->pluck('count', 'hour') // key = hour, value = count
+            ->toArray();
 
-    // Fill missing hours with 0 (optional)
-    $allHours = range(0, 23);
-    $chartData = [];
-    foreach ($allHours as $h) {
-        $chartData[] = [
-            'x' => $h . ':00',
-            'y' => $hourlyCalls[$h] ?? 0,
-        ];
+        // Fill missing hours with 0 (optional)
+        $allHours = range(0, 23);
+        $chartData = [];
+        foreach ($allHours as $h) {
+            $chartData[] = [
+                'x' => $h . ':00',
+                'y' => $hourlyCalls[$h] ?? 0,
+            ];
+        }
+
+        return view('reports.junior', compact(
+            'totalCalls',
+            'otherCalls',
+            'calledAndMailedCalls',
+            'chartData'
+        ));
     }
-
-    return view('reports.junior', compact(
-        'totalCalls',
-        'otherCalls',
-        'calledAndMailedCalls',
-        'chartData'
-    ));
-}
-
-
-
 }
