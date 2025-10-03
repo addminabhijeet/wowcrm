@@ -140,42 +140,29 @@ class DashboardController extends Controller
     }
 
     public function updateTimer(Request $request)
-{
-    try {
+    {
         $settings = $this->getTimerSettings();
-        $workDaySeconds = $settings['work_day_seconds'] ?? 32400; // fallback 9hrs
-        $dailyBaseTime  = $settings['daily_base_time'] ?? '20:00:00';
+        $workDaySeconds = $settings['work_day_seconds'];
+        $dailyBaseTime  = $settings['daily_base_time']; // e.g. "20:00:00"
 
         $user   = Auth::user();
-        if (!$user) {
-            return response()->json([
-                'success' => false,
-                'message' => 'User not authenticated.'
-            ], 401);
-        }
+        $action = $request->input('action');
 
-        $action = $request->input('action', 'tick');
-
-        // Get latest timer log
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
         if (!$timer) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Timer not found.'
-            ], 404);
+            return response()->json(['error' => 'Timer not found'], 404);
         }
 
         $istNow = now('Asia/Kolkata');
 
-        // Ensure start_time is Carbon
-        $timer->start_time = $timer->start_time ? \Carbon\Carbon::parse($timer->start_time) : null;
-        $timer->updated_at = $timer->updated_at ? \Carbon\Carbon::parse($timer->updated_at) : $istNow;
-
-        // Today's base time
         [$h, $m, $s] = explode(':', $dailyBaseTime);
-        $todayBaseTime = $istNow->copy()->startOfDay()->addHours($h)->addMinutes($m)->addSeconds($s);
+        $todayBaseTime = $istNow->copy()->startOfDay()
+            ->addHours((int)$h)
+            ->addMinutes((int)$m)
+            ->addSeconds((int)$s);
 
-        // If before base time and no start, block
+
+        // If before today's base time and no start_time set, block timer
         if ($istNow->lt($todayBaseTime) && !$timer->start_time) {
             return response()->json([
                 'success' => false,
@@ -183,7 +170,7 @@ class DashboardController extends Controller
             ]);
         }
 
-        // Initialize timer if needed
+        // Initialize if no start_time
         if (!$timer->start_time) {
             $timer->start_time = $todayBaseTime;
             $timer->remaining_seconds = $workDaySeconds;
@@ -192,27 +179,29 @@ class DashboardController extends Controller
             $timer->save();
         }
 
-        // Calculate elapsed since last update
+        // Update elapsed / remaining time
         $secondsPassed = $istNow->diffInSeconds($timer->updated_at);
-
         if ($timer->status === 'running') {
             $timer->remaining_seconds = max(0, $timer->remaining_seconds - $secondsPassed);
             $timer->start_time = $timer->start_time->copy()->addSeconds($secondsPassed);
         }
 
-        // Reset threshold check (3hrs)
+        // Reset threshold check (always 3 hrs)
         $gap = $istNow->diffInSeconds($timer->start_time);
         $threshold = 3 * 3600;
 
         if ($gap > $threshold) {
-            $hoursToAdd = $istNow->isFriday() ? 72 : 24;
-            $timer->start_time = $timer->start_time->copy()->addHours($hoursToAdd);
+            if ($istNow->isFriday()) {
+                $timer->start_time = $timer->start_time->copy()->addHours(72);
+            } else {
+                $timer->start_time = $timer->start_time->copy()->addHours(24);
+            }
             $timer->remaining_seconds = $workDaySeconds;
             $timer->status = 'running';
             $timer->pause_type = 'reset';
         }
 
-        // Handle actions
+        // Handle action
         if ($action === 'resume') {
             $timer->status = 'running';
             $timer->pause_type = 'resume';
@@ -223,6 +212,8 @@ class DashboardController extends Controller
 
         $timer->updated_at = $istNow;
         $timer->save();
+
+        $elapsed_seconds = $workDaySeconds - $timer->remaining_seconds;
 
         // Record pause events
         if ($action !== 'tick') {
@@ -236,24 +227,14 @@ class DashboardController extends Controller
             ]);
         }
 
-        $elapsed_seconds = $workDaySeconds - $timer->remaining_seconds;
-
         return response()->json([
             'success'           => true,
             'remaining_seconds' => $timer->remaining_seconds,
             'elapsed_seconds'   => $elapsed_seconds,
             'status'            => $timer->status,
             'pause_type'        => $timer->pause_type,
-            'notice_status'     => $timer->notice_status ?? 0,
+            'notice_status'     => $timer->notice_status,
             'logout'            => $timer->remaining_seconds <= 0
         ]);
-    } catch (\Throwable $e) {
-        return response()->json([
-            'success' => false,
-            'message' => 'Server error: ' . $e->getMessage(),
-            'trace'   => $e->getTraceAsString()
-        ], 500);
     }
-}
-
 }
