@@ -176,11 +176,7 @@ $script ='<script>
                             </select>
                         </td>
 
-                        {{-- Forwarded By --}}
-                        <td>
-                            <input type="text" class="form-control name-input" data-key="forwardedBy"
-                                value="{{ $row->forwardedBy ?? '' }}" placeholder="Forwarded By" readonly>
-                        </td>
+
 
                         {{-- Time Zone --}}
                         <td>
@@ -193,6 +189,12 @@ $script ='<script>
                                 </option>
                                 @endforeach
                             </select>
+                        </td>
+
+                        {{-- Forwarded By --}}
+                        <td>
+                            <input type="text" class="form-control name-input" data-key="forwardedBy"
+                                value="{{ $row->forwardedBy ?? '' }}" placeholder="Forwarded By" readonly>
                         </td>
 
                         {{-- View (Resume) --}}
