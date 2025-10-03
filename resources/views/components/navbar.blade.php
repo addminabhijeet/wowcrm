@@ -1,5 +1,5 @@
 @php
-    $button_status = $button_status ?? 0; 
+    $button_status = $button_status; 
 @endphp
 
 <div class="navbar-header">
