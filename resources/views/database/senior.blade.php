@@ -622,9 +622,7 @@ $script ='<script>
                     cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
                 } else if (k === 'Name') {
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                } else if (k === 'Qualification') {
-                    cells += `<td><input type="text" class="form-control qualification-input" data-key="${k}" placeholder="Qualification"><span class="small-hint"></span></td>`;
-                } else if (k === 'Forwarded By') {
+                                } else if (k === 'Forwarded By') {
                     cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="${k}" placeholder="Forwarded By"><span class="small-hint"></span></td>`;
                 } else if (k === 'View') {
                     cells += `<td>
