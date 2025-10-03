@@ -8,34 +8,34 @@ $script = '<script>
             name: "SELL",
             data: [{
                 x: "8 pm",
-                y: "{{ $t8to9pm }}",
+                y: Number("{{ $t8to9pm }}"),
             }, {
                 x: "9 pm",
-                y: "{{ $t9to10pm }}",
+                y: Number("{{ $t9to10pm }}"),
             }, {
                 x: "10 pm",
-                y: "{{ $t10to11pm }}",
+                y: Number("{{ $t10to11pm }}"),
             }, {
                 x: "11 pm",
-                y: "{{ $t11to12pm }}",
+                y: Number("{{ $t11to12pm }}"),
             }, {
                 x: "12 pm",
-                y: "{{ $t12to1am }}",
+                y: Number("{{ $t12to1am }}"),
             }, {
                 x: "1 am",
-                y: "{{ $t1to2am }}",
+                y: Number("{{ $t1to2am }}"),
             }, {
                 x: "2 am",
-                y: "{{ $t2to3am }}",
+                y: Number("{{ $t2to3am }}"),
             }, {
                 x: "3 am",
-                y: "{{ $t3to4am }}",
+                y: Number("{{ $t3to4am }}"),
             }, {
                 x: "4 am",
-                y: "{{ $t4to5am }}",
+                y: Number("{{ $t4to5am }}"),
             }, {
                 x: "5 am",
-                y: "{{ $t5to6am }}",
+                y: Number("{{ $t5to6am }}"),
             }]
         }],
         chart: {
