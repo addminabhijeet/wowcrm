@@ -52,6 +52,7 @@ $script ='<script>
                         <th scope="col">Exe Remarks</th>
                         <th scope="col">1st Follow Up Remarks</th>
                         <th scope="col">Time Zone</th>
+                        <th scope="col">Forwarded By</th>
                         <th scope="col">View</th>
                         <th scope="col" class="text-center">Actions</th>
                     </tr>
