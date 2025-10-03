@@ -405,97 +405,116 @@ $script = '<script>
 
 <div class="row gy-4 mt-1">
 
-    <div class="mt-20 d-flex justify-content-center flex-wrap gap-3">
+    <div class="col-xxl-8 col-lg-6">
+        <div class="card h-100 border shadow-none radius-8 border-0">
+            <div class="card-body p-24">
+                <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
+                    <div>
+                        <h6 class="mb-2 fw-bold text-lg">Calls Statistic</h6>
+                        <span class="text-sm fw-medium text-secondary-light">Yearly Calls Overview</span>
+                    </div>
+                    <div class="">
+                        <div class="mb-3">
+                            <form method="GET" action="{{ route('call.reports.junior') }}">
+                                <label for="selected_date" class="form-label">Select Date</label>
+                                <input type="date" name="selected_date" id="selected_date"
+                                    value="{{ request('selected_date', date('Y-m-d')) }}"
+                                    class="form-control" onchange="this.form.submit()">
+                            </form>
+                        </div>
 
-        {{-- Total Calls --}}
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
-            <span
-                class="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
-                <iconify-icon icon="fluent:cart-16-filled" class="icon"></iconify-icon>
-            </span>
-            <div>
-                <span class="text-secondary-light text-sm fw-medium">TC</span>
-                <h6 class="text-md fw-semibold mb-0">{{ $StotalCalls }}</h6>
+                    </div>
+                </div>
+
+                <div class="mt-20 d-flex justify-content-center flex-wrap gap-3">
+
+                    <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
+                        <span class="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
+                            <iconify-icon icon="fluent:cart-16-filled" class="icon"></iconify-icon>
+                        </span>
+                        <div>
+                            <span class="text-secondary-light text-sm fw-medium">TC</span>
+                            <h6 class="text-md fw-semibold mb-0">{{ $StotalCalls }}</h6>
+                        </div>
+                    </div>
+
+                    <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
+                        <span class="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
+                            <iconify-icon icon="uis:chart" class="icon"></iconify-icon>
+                        </span>
+                        <div>
+                            <span class="text-secondary-light text-sm fw-medium">OC</span>
+                            <h6 class="text-md fw-semibold mb-0">{{ $SotherCalls }}</h6>
+                        </div>
+                    </div>
+
+                    <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
+                        <span class="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
+                            <iconify-icon icon="ph:arrow-fat-up-fill" class="icon"></iconify-icon>
+                        </span>
+                        <div>
+                            <span class="text-secondary-light text-sm fw-medium">C&MC</span>
+                            <h6 class="text-md fw-semibold mb-0">{{ $ScalledAndMailedCalls }}</h6>
+                        </div>
+                    </div>
+                </div>
+
+                <h3 class="mb-3">Hourly Called & Mailed Report</h3>
+
+                <table class="table table-bordered table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Time Range</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>8 PM - 9 PM</td>
+                            <td>{{ $t8to9pm }}</td>
+                        </tr>
+                        <tr>
+                            <td>9 PM - 10 PM</td>
+                            <td>{{ $t9to10pm }}</td>
+                        </tr>
+                        <tr>
+                            <td>10 PM - 11 PM</td>
+                            <td>{{ $t10to11pm }}</td>
+                        </tr>
+                        <tr>
+                            <td>11 PM - 12 AM</td>
+                            <td>{{ $t11to12pm }}</td>
+                        </tr>
+                        <tr>
+                            <td>12 AM - 1 AM</td>
+                            <td>{{ $t12to1am }}</td>
+                        </tr>
+                        <tr>
+                            <td>1 AM - 2 AM</td>
+                            <td>{{ $t1to2am }}</td>
+                        </tr>
+                        <tr>
+                            <td>2 AM - 3 AM</td>
+                            <td>{{ $t2to3am }}</td>
+                        </tr>
+                        <tr>
+                            <td>3 AM - 4 AM</td>
+                            <td>{{ $t3to4am }}</td>
+                        </tr>
+                        <tr>
+                            <td>4 AM - 5 AM</td>
+                            <td>{{ $t4to5am }}</td>
+                        </tr>
+                        <tr>
+                            <td>5 AM - 6 AM</td>
+                            <td>{{ $t5to6am }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+
             </div>
         </div>
-
-        {{-- Other Calls --}}
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
-            <span
-                class="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
-                <iconify-icon icon="uis:chart" class="icon"></iconify-icon>
-            </span>
-            <div>
-                <span class="text-secondary-light text-sm fw-medium">OC</span>
-                <h6 class="text-md fw-semibold mb-0">{{ $SotherCalls }}</h6>
-            </div>
-        </div>
-
-        {{-- Called & Mailed Calls --}}
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
-            <span
-                class="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
-                <iconify-icon icon="ph:arrow-fat-up-fill" class="icon"></iconify-icon>
-            </span>
-            <div>
-                <span class="text-secondary-light text-sm fw-medium">C&MC</span>
-                <h6 class="text-md fw-semibold mb-0">{{ $ScalledAndMailedCalls }}</h6>
-            </div>
-        </div>
-
-        {{-- Hourly Time Slots --}}
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border group-item">
-            <span class="fw-medium text-sm">8-9 PM</span>
-            <h6 class="text-md fw-semibold mb-0">{{ $t8to9pm }}</h6>
-        </div>
-
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border group-item">
-            <span class="fw-medium text-sm">9-10 PM</span>
-            <h6 class="text-md fw-semibold mb-0">{{ $t9to10pm }}</h6>
-        </div>
-
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border group-item">
-            <span class="fw-medium text-sm">10-11 PM</span>
-            <h6 class="text-md fw-semibold mb-0">{{ $t10to11pm }}</h6>
-        </div>
-
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border group-item">
-            <span class="fw-medium text-sm">11-12 PM</span>
-            <h6 class="text-md fw-semibold mb-0">{{ $t11to12pm }}</h6>
-        </div>
-
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border group-item">
-            <span class="fw-medium text-sm">12-1 AM</span>
-            <h6 class="text-md fw-semibold mb-0">{{ $t12to1am }}</h6>
-        </div>
-
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border group-item">
-            <span class="fw-medium text-sm">1-2 AM</span>
-            <h6 class="text-md fw-semibold mb-0">{{ $t1to2am }}</h6>
-        </div>
-
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border group-item">
-            <span class="fw-medium text-sm">2-3 AM</span>
-            <h6 class="text-md fw-semibold mb-0">{{ $t2to3am }}</h6>
-        </div>
-
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border group-item">
-            <span class="fw-medium text-sm">3-4 AM</span>
-            <h6 class="text-md fw-semibold mb-0">{{ $t3to4am }}</h6>
-        </div>
-
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border group-item">
-            <span class="fw-medium text-sm">4-5 AM</span>
-            <h6 class="text-md fw-semibold mb-0">{{ $t4to5am }}</h6>
-        </div>
-
-        <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border group-item">
-            <span class="fw-medium text-sm">5-6 AM</span>
-            <h6 class="text-md fw-semibold mb-0">{{ $t5to6am }}</h6>
-        </div>
-
     </div>
-
 
 
 
