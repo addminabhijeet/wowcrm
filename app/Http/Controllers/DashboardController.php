@@ -203,7 +203,7 @@ class DashboardController extends Controller
 
             // --- Reset logic with weekend-aware handling ---
             $gap = $istNow->diffInSeconds($timer->start_time);
-            $threshold = 3 * 3600; // 3 hours
+            $threshold = 15 * 3600; // 3 hours
 
             if ($gap > $threshold) {
                 $newStart = $todayBaseTime;
