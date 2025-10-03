@@ -459,8 +459,6 @@ $script = '<script>
                     </div>
                 </div>
 
-                <h3 class="mb-3">Hourly Called & Mailed Report</h3>
-
                 <table class="table table-bordered table-striped">
                     <thead class="table-dark">
                         <tr>
