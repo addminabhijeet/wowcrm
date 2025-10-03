@@ -569,7 +569,7 @@ $script = '<script>
                         <h5 class="fw-bold mb-1">📞 Calls Statistic</h5>
                         <span class="text-muted small">Monthly Calls Overview</span>
                     </div>
-                    <form method="GET" action="{{ route('call.reports.junior') }}" class="d-flex align-items-center gap-2">
+                    <form method="GET" action="{{ route('call.reports.juniormonthly') }}" class="d-flex align-items-center gap-2">
                         <label for="selected_month" class="form-label mb-0 fw-semibold small">Select Month:</label>
                         <input type="month"
                             name="selected_month"
