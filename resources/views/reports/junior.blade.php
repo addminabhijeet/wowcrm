@@ -406,113 +406,89 @@ $script = '<script>
 <div class="row gy-4 mt-1">
 
     <div class="col-xxl-8 col-lg-6">
-        <div class="card h-100 border shadow-none radius-8 border-0">
-            <div class="card-body p-24">
-                <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
-                    <div>
-                        <h6 class="mb-2 fw-bold text-lg">Calls Statistic</h6>
-                        <span class="text-sm fw-medium text-secondary-light">Yearly Calls Overview</span>
-                    </div>
-                    <div class="">
-                        <div class="mb-3">
-                            <form method="GET" action="{{ route('call.reports.junior') }}">
-                                <label for="selected_date" class="form-label">Select Date</label>
-                                <input type="date" name="selected_date" id="selected_date"
-                                    value="{{ request('selected_date', date('Y-m-d')) }}"
-                                    class="form-control" onchange="this.form.submit()">
-                            </form>
-                        </div>
-
-                    </div>
+    <div class="card h-100 border-0 shadow-sm radius-12">
+        <div class="card-body p-4">
+            <!-- Header -->
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+                <div>
+                    <h5 class="fw-bold mb-1">📞 Calls Statistic</h5>
+                    <span class="text-muted small">Yearly Calls Overview</span>
                 </div>
+                <form method="GET" action="{{ route('call.reports.junior') }}" class="d-flex align-items-center gap-2">
+                    <label for="selected_date" class="form-label mb-0 fw-semibold small">Select Date:</label>
+                    <input type="date" 
+                           name="selected_date" 
+                           id="selected_date"
+                           value="{{ request('selected_date', date('Y-m-d')) }}"
+                           class="form-control form-control-sm"
+                           onchange="this.form.submit()">
+                </form>
+            </div>
 
-                <div class="mt-20 d-flex justify-content-center flex-wrap gap-3">
-
-                    <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
-                        <span class="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
-                            <iconify-icon icon="fluent:cart-16-filled" class="icon"></iconify-icon>
-                        </span>
-                        <div>
-                            <span class="text-secondary-light text-sm fw-medium">TC</span>
-                            <h6 class="text-md fw-semibold mb-0">{{ $StotalCalls }}</h6>
+            <!-- Stats Section -->
+            <div class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                        <div class="icon mb-2 text-primary fs-2">
+                            <i class="bi bi-telephone-fill"></i>
                         </div>
-                    </div>
-
-                    <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
-                        <span class="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
-                            <iconify-icon icon="uis:chart" class="icon"></iconify-icon>
-                        </span>
                         <div>
-                            <span class="text-secondary-light text-sm fw-medium">OC</span>
-                            <h6 class="text-md fw-semibold mb-0">{{ $SotherCalls }}</h6>
-                        </div>
-                    </div>
-
-                    <div class="d-inline-flex align-items-center gap-2 p-2 radius-8 border pe-36 br-hover-primary group-item">
-                        <span class="bg-neutral-100 w-44-px h-44-px text-xxl radius-8 d-flex justify-content-center align-items-center text-secondary-light group-hover:bg-primary-600 group-hover:text-white">
-                            <iconify-icon icon="ph:arrow-fat-up-fill" class="icon"></iconify-icon>
-                        </span>
-                        <div>
-                            <span class="text-secondary-light text-sm fw-medium">C&MC</span>
-                            <h6 class="text-md fw-semibold mb-0">{{ $ScalledAndMailedCalls }}</h6>
+                            <small class="text-muted d-block">Total Calls (TC)</small>
+                            <h4 class="fw-bold text-dark mb-0">{{ $StotalCalls }}</h4>
                         </div>
                     </div>
                 </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                        <div class="icon mb-2 text-success fs-2">
+                            <i class="bi bi-bar-chart-fill"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Other Calls (OC)</small>
+                            <h4 class="fw-bold text-dark mb-0">{{ $SotherCalls }}</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                        <div class="icon mb-2 text-warning fs-2">
+                            <i class="bi bi-envelope-paper-fill"></i>
+                        </div>
+                        <div>
+                            <small class="text-muted d-block">Called & Mailed (C&MC)</small>
+                            <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-                <table class="table table-bordered table-striped">
-                    <thead class="table-dark">
+            <!-- Table Section -->
+            <div class="table-responsive">
+                <table class="table table-hover table-bordered align-middle mb-0">
+                    <thead class="table-primary">
                         <tr>
-                            <th>Time Range</th>
-                            <th>Count</th>
+                            <th class="fw-semibold">⏰ Time Range</th>
+                            <th class="fw-semibold text-center">📊 Called & Mailed Count</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>8 PM - 9 PM</td>
-                            <td>{{ $t8to9pm }}</td>
-                        </tr>
-                        <tr>
-                            <td>9 PM - 10 PM</td>
-                            <td>{{ $t9to10pm }}</td>
-                        </tr>
-                        <tr>
-                            <td>10 PM - 11 PM</td>
-                            <td>{{ $t10to11pm }}</td>
-                        </tr>
-                        <tr>
-                            <td>11 PM - 12 AM</td>
-                            <td>{{ $t11to12pm }}</td>
-                        </tr>
-                        <tr>
-                            <td>12 AM - 1 AM</td>
-                            <td>{{ $t12to1am }}</td>
-                        </tr>
-                        <tr>
-                            <td>1 AM - 2 AM</td>
-                            <td>{{ $t1to2am }}</td>
-                        </tr>
-                        <tr>
-                            <td>2 AM - 3 AM</td>
-                            <td>{{ $t2to3am }}</td>
-                        </tr>
-                        <tr>
-                            <td>3 AM - 4 AM</td>
-                            <td>{{ $t3to4am }}</td>
-                        </tr>
-                        <tr>
-                            <td>4 AM - 5 AM</td>
-                            <td>{{ $t4to5am }}</td>
-                        </tr>
-                        <tr>
-                            <td>5 AM - 6 AM</td>
-                            <td>{{ $t5to6am }}</td>
-                        </tr>
+                        <tr><td>8 PM - 9 PM</td><td class="text-center"><span class="badge bg-info">{{ $t8to9pm }}</span></td></tr>
+                        <tr><td>9 PM - 10 PM</td><td class="text-center"><span class="badge bg-info">{{ $t9to10pm }}</span></td></tr>
+                        <tr><td>10 PM - 11 PM</td><td class="text-center"><span class="badge bg-info">{{ $t10to11pm }}</span></td></tr>
+                        <tr><td>11 PM - 12 AM</td><td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span></td></tr>
+                        <tr><td>12 AM - 1 AM</td><td class="text-center"><span class="badge bg-info">{{ $t12to1am }}</span></td></tr>
+                        <tr><td>1 AM - 2 AM</td><td class="text-center"><span class="badge bg-info">{{ $t1to2am }}</span></td></tr>
+                        <tr><td>2 AM - 3 AM</td><td class="text-center"><span class="badge bg-info">{{ $t2to3am }}</span></td></tr>
+                        <tr><td>3 AM - 4 AM</td><td class="text-center"><span class="badge bg-info">{{ $t3to4am }}</span></td></tr>
+                        <tr><td>4 AM - 5 AM</td><td class="text-center"><span class="badge bg-info">{{ $t4to5am }}</span></td></tr>
+                        <tr><td>5 AM - 6 AM</td><td class="text-center"><span class="badge bg-info">{{ $t5to6am }}</span></td></tr>
                     </tbody>
                 </table>
-
             </div>
         </div>
     </div>
+</div>
+
 
 
 
