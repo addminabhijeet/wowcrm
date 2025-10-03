@@ -528,7 +528,7 @@ $script = '<script>
                     <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                         <div>
                             <span class="text-secondary-light fw-normal mb-12 text-xl">Total Calls (TC)</span>
-                            <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
+                            <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
                         </div>
                         <div class="position-relative">
                             <div id="semiCircleGauge"></div>
