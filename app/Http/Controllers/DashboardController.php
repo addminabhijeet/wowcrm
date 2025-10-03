@@ -59,6 +59,20 @@ class DashboardController extends Controller
         ));
     }
 
+    public function getButtonStatus()
+    {
+        $user  = Auth::user();
+
+        $button_status = UserTimerLog::where('user_id', $user->id)
+            ->latest()
+            ->value('button_status') ?? 0;
+
+        return response()->json([
+            'button_status' => $button_status
+        ]);
+    }
+
+
     public function senior()
     {
         $settings = $this->getTimerSettings();

@@ -429,3 +429,24 @@
     handleActiveState();
     startTimer();
 </script>
+
+<script>
+function checkButtonStatus() {
+    fetch("{{ route('button.status') }}")
+        .then(response => response.json())
+        .then(data => {
+            if (data.button_status == 1) {
+                document.getElementById('controlButtons').style.display = 'flex';
+            } else {
+                document.getElementById('controlButtons').style.display = 'none';
+            }
+        })
+        .catch(err => console.error(err));
+}
+
+// Run once immediately
+checkButtonStatus();
+
+// Then poll every 30 seconds (adjust as needed)
+setInterval(checkButtonStatus, 1000);
+</script>

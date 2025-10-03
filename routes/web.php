@@ -22,6 +22,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/customer', [DashboardController::class, 'customer'])->name('dashboard.customer');
     Route::get('/dashboard/accountant', [DashboardController::class, 'accountant'])->name('dashboard.accountant');
     Route::get('/dashboard/trainer', [DashboardController::class, 'trainer'])->name('dashboard.trainer');
+    Route::get('/button/status', [DashboardController::class, 'getButtonStatus'])->name('button.status');
 
     Route::get('/dashboard/admin/calendar/{month?}/{year?}', [CalendarController::class, 'index'])->name('calendar.index');
     Route::get('/dashboard/senior/calendar/{month?}/{year?}', [CalendarController::class, 'seniorUser'])->name('calendar.seniorUser');
