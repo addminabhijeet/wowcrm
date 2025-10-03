@@ -58,6 +58,9 @@
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('call.reports.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Call Report</a></li>
                     </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('call.reports.juniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Call Report</a></li>
+                    </ul>
                 </li>
 
                 
