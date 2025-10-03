@@ -601,7 +601,7 @@ $script ='<script>
             let cells = `<td>—</td>`;
 
             colKeys.forEach(k => {
-                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone'].includes(k)) {
+                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Forwarded By'].includes(k)) {
                     let opts = [];
                     if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Ready To Paid', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
                     if (k === 'Immigration') opts = ['Dependent Visa', 'Global Visa', 'Graduate Visa', 'Student Visa', 'Citizen', 'Permanent Residence(ILR)'];
