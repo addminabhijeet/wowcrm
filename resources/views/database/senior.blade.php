@@ -178,7 +178,7 @@ $script ='<script>
                         {{-- Forwarded By --}}
                         <td>
                             <input type="text" class="form-control name-input" data-key="forwardedBy"
-                                value="{{ $row->$forwardedBy ?? '' }}" placeholder="Forwarded By" readonly>
+                                value="{{ $row->forwardedBy ?? '' }}" placeholder="Forwarded By" readonly>
                         </td>
 
                         {{-- Time Zone --}}
