@@ -412,14 +412,14 @@ $script = '<script>
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
                     <div>
                         <h5 class="fw-bold mb-1">📞 Calls Statistic</h5>
-                        <span class="text-muted small">Yearly Calls Overview</span>
+                        <span class="text-muted small">Monthly Calls Overview</span>
                     </div>
                     <form method="GET" action="{{ route('call.reports.junior') }}" class="d-flex align-items-center gap-2">
-                        <label for="selected_date" class="form-label mb-0 fw-semibold small">Select Date:</label>
-                        <input type="date"
-                            name="selected_date"
-                            id="selected_date"
-                            value="{{ request('selected_date', date('Y-m-d')) }}"
+                        <label for="selected_month" class="form-label mb-0 fw-semibold small">Select Month:</label>
+                        <input type="month"
+                            name="selected_month"
+                            id="selected_month"
+                            value="{{ request('selected_month', date('Y-m')) }}"
                             class="form-control form-control-sm"
                             onchange="this.form.submit()">
                     </form>
@@ -434,7 +434,7 @@ $script = '<script>
                             </div>
                             <div>
                                 <small class="text-muted d-block">Total Calls (TC)</small>
-                                <h4 class="fw-bold text-dark mb-0">{{ $StotalCalls }}</h4>
+                                <h4 class="fw-bold text-dark mb-0">{{ $MtotalCalls }}</h4>
                             </div>
                         </div>
                     </div>
@@ -445,7 +445,7 @@ $script = '<script>
                             </div>
                             <div>
                                 <small class="text-muted d-block">Other Calls (OC)</small>
-                                <h4 class="fw-bold text-dark mb-0">{{ $SotherCalls }}</h4>
+                                <h4 class="fw-bold text-dark mb-0">{{ $MotherCalls }}</h4>
                             </div>
                         </div>
                     </div>
@@ -456,7 +456,7 @@ $script = '<script>
                             </div>
                             <div>
                                 <small class="text-muted d-block">Called & Mailed (C&MC)</small>
-                                <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
+                                <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
                             </div>
                         </div>
                     </div>
@@ -518,6 +518,7 @@ $script = '<script>
             </div>
         </div>
     </div>
+
 
     <div class="col-xxl-4 col-lg-6">
         <div class="card h-100 radius-8 border-0">
