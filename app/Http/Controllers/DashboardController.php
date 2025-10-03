@@ -24,6 +24,7 @@ class DashboardController extends Controller
             'daily_base_time'  => $setting ? $setting->daily_base_time : '07:00:00',  // 8 PM default
         ];
     }
+    const WORK_DAY_SECONDS = 9 * 60 * 60;
 
     public function index()
     {
@@ -141,103 +142,93 @@ class DashboardController extends Controller
     
     public function updateTimer(Request $request)
     {
-        try {
-            $settings = $this->getTimerSettings();
-            $workDaySeconds = $settings['work_day_seconds'] ?? 32400; // fallback 9hrs
-            $dailyBaseTime  = $settings['daily_base_time'] ?? '07:00:00';
+        $user   = Auth::user();
+        $action = $request->input('action');
 
-            $user = Auth::user();
-            if (!$user) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'User not authenticated.'
-                ], 401);
-            }
+        $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+        if (!$timer) {
+            return response()->json(['error' => 'Timer not found'], 404);
+        }
 
-            $action = $request->input('action', 'tick');
+        $istNow = now('Asia/Kolkata');
 
-            // Get latest timer log
-            $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
-            if (!$timer) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Timer not found.'
-                ], 404);
-            }
+        // Fixed daily base time: 20:00 IST
+        $today20 = $istNow->copy()->startOfDay()->addHours(20);
 
-            $istNow = now('Asia/Kolkata');
-
-            $timer->start_time = $timer->start_time ? \Carbon\Carbon::parse($timer->start_time) : null;
-            $timer->updated_at = $timer->updated_at ? \Carbon\Carbon::parse($timer->updated_at) : $istNow;
-
-            [$h, $m, $s] = explode(':', $dailyBaseTime);
-            $todayBaseTime = $istNow->copy()->startOfDay()
-                ->addHours((int)$h)
-                ->addMinutes((int)$m)
-                ->addSeconds((int)$s);
-
-            if ($istNow->lt($todayBaseTime) && !$timer->start_time) {
-                return response()->json([
-                    'success' => false,
-                    'message' => "Timer can start only after {$dailyBaseTime} IST."
-                ]);
-            }
-
-            if (!$timer->start_time) {
-                $timer->start_time = $todayBaseTime;
-                $timer->remaining_seconds = $workDaySeconds;
-                $timer->status = 'running';
-                $timer->pause_type = 'resume';
-                $timer->save();
-            }
-
-            // Calculate elapsed since last update
-            $secondsPassed = $istNow->diffInSeconds($timer->updated_at);
-
-            if ($timer->status === 'running') {
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds - $secondsPassed);
-                $timer->start_time = $timer->start_time->copy()->addSeconds($secondsPassed);
-            }
-
-            // Handle actions
-            if ($action === 'resume') {
-                $timer->status = 'running';
-                $timer->pause_type = 'resume';
-            } elseif ($action !== 'tick') {
-                $timer->status = 'paused';
-                $timer->pause_type = $action;
-
-                // Record pause events
-                UserTimerPause::create([
-                    'user_timer_log_id' => $timer->id,
-                    'user_id'           => $user->id,
-                    'status'            => $timer->status,
-                    'pause_type'        => $timer->pause_type,
-                    'remaining_seconds' => $timer->remaining_seconds,
-                    'event_time'        => $istNow,
-                ]);
-            }
-
-            $timer->updated_at = $istNow;
-            $timer->save();
-
-            $elapsed_seconds = $workDaySeconds - $timer->remaining_seconds;
-
-            return response()->json([
-                'success'           => true,
-                'remaining_seconds' => $timer->remaining_seconds,
-                'elapsed_seconds'   => $elapsed_seconds,
-                'status'            => $timer->status,
-                'pause_type'        => $timer->pause_type,
-                'notice_status'     => $timer->notice_status ?? 0,
-                'logout'            => $timer->remaining_seconds <= 0
-            ]);
-        } catch (\Throwable $e) {
+        // If before today's 20:00, block the timer
+        if ($istNow->lt($today20) && !$timer->start_time) {
             return response()->json([
                 'success' => false,
-                'message' => 'Server error: ' . $e->getMessage(),
-                'trace'   => $e->getTraceAsString()
-            ], 500);
+                'message' => 'Timer can start only after 20:00 IST.'
+            ]);
         }
+
+        // If no start_time yet, initialize with today’s 20:00
+        if (!$timer->start_time) {
+            $timer->start_time = $today20;
+            $timer->remaining_seconds = self::WORK_DAY_SECONDS;
+            $timer->status = 'running';
+            $timer->pause_type = 'resume';
+            $timer->save();
+        }
+
+        // Calculate elapsed & update start_time dynamically
+        $secondsPassed = $istNow->diffInSeconds($timer->updated_at);
+        if ($timer->status === 'running') {
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds - $secondsPassed);
+            $timer->start_time = $timer->start_time->copy()->addSeconds($secondsPassed);
+        }
+
+        // Check reset threshold
+        $gap = $istNow->diffInSeconds($timer->start_time);
+
+        $threshold = 3 * 3600; // always 3 hrs
+        if ($gap > $threshold) {
+            if ($istNow->isFriday()) {
+                // On Friday → reset 72 hrs ahead
+                $timer->start_time = $timer->start_time->copy()->addHours(72);
+            } else {
+                // Other days → reset 24 hrs ahead
+                $timer->start_time = $timer->start_time->copy()->addHours(24);
+            }
+            $timer->remaining_seconds = self::WORK_DAY_SECONDS;
+            $timer->status = 'running';
+            $timer->pause_type = 'reset';
+        }
+
+        // Handle actions
+        if ($action === 'resume') {
+            $timer->status = 'running';
+            $timer->pause_type = 'resume';
+        } elseif ($action !== 'tick') {
+            $timer->status = 'paused';
+            $timer->pause_type = $action;
+        }
+
+        $timer->updated_at = $istNow;
+        $timer->save();
+
+        $elapsed_seconds = self::WORK_DAY_SECONDS - $timer->remaining_seconds;
+
+        if ($action !== 'tick') {
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
+                'user_id'           => $user->id,
+                'status'            => $timer->status,
+                'pause_type'        => $timer->pause_type,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'event_time'        => $istNow,
+            ]);
+        }
+
+        return response()->json([
+            'success'           => true,
+            'remaining_seconds' => $timer->remaining_seconds,
+            'elapsed_seconds'   => $elapsed_seconds,
+            'status'            => $timer->status,
+            'pause_type'        => $timer->pause_type,
+            'notice_status'     => $timer->notice_status,
+            'logout'            => $timer->remaining_seconds <= 0
+        ]);
     }
 }
