@@ -415,7 +415,7 @@ $script = '<script>
                     </div>
                     <div class="">
                         <div class="mb-3">
-                            <form method="GET" action="{{ route('reports.junior') }}">
+                            <form method="GET" action="{{ route('call.reports.junior') }}">
                                 <label for="selected_date" class="form-label">Select Date</label>
                                 <input type="date" name="selected_date" id="selected_date"
                                     value="{{ request('selected_date', date('Y-m-d')) }}"
