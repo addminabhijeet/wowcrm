@@ -138,7 +138,6 @@ class DashboardController extends Controller
 
         return view('dashboard.customer', compact('payments'));
     }
-
     public function updateTimer(Request $request)
     {
         try {
@@ -146,7 +145,7 @@ class DashboardController extends Controller
             $workDaySeconds = $settings['work_day_seconds'] ?? 32400; // fallback 9hrs
             $dailyBaseTime  = $settings['daily_base_time'] ?? '07:00:00';
 
-            $user   = Auth::user();
+            $user = Auth::user();
             if (!$user) {
                 return response()->json([
                     'success' => false,
@@ -167,7 +166,7 @@ class DashboardController extends Controller
 
             $istNow = now('Asia/Kolkata');
 
-            // Ensure start_time is Carbon
+            // Ensure start_time and updated_at are Carbon instances
             $timer->start_time = $timer->start_time ? \Carbon\Carbon::parse($timer->start_time) : null;
             $timer->updated_at = $timer->updated_at ? \Carbon\Carbon::parse($timer->updated_at) : $istNow;
 
@@ -177,8 +176,7 @@ class DashboardController extends Controller
                 ->addMinutes((int)$m)
                 ->addSeconds((int)$s);
 
-
-            // If before base time and no start, block
+            // Block before daily base time if timer hasn't started
             if ($istNow->lt($todayBaseTime) && !$timer->start_time) {
                 return response()->json([
                     'success' => false,
@@ -203,13 +201,24 @@ class DashboardController extends Controller
                 $timer->start_time = $timer->start_time->copy()->addSeconds($secondsPassed);
             }
 
-            // Reset threshold check (3hrs)
+            // --- Reset logic with weekend-aware handling ---
             $gap = $istNow->diffInSeconds($timer->start_time);
-            $threshold = 3 * 3600;
+            $threshold = 3 * 3600; // 3 hours
 
             if ($gap > $threshold) {
-                $hoursToAdd = $istNow->isFriday() ? 72 : 24;
-                $timer->start_time = $timer->start_time->copy()->addHours($hoursToAdd);
+                $newStart = $todayBaseTime;
+
+                // If current time past end of today's workday, roll to next valid day
+                if ($istNow->gt($todayBaseTime->copy()->addSeconds($workDaySeconds))) {
+                    $newStart = $todayBaseTime->copy()->addDay();
+
+                    // Skip weekends
+                    while (in_array($newStart->dayOfWeek, [\Carbon\Carbon::SATURDAY, \Carbon\Carbon::SUNDAY])) {
+                        $newStart->addDay();
+                    }
+                }
+
+                $timer->start_time = $newStart;
                 $timer->remaining_seconds = $workDaySeconds;
                 $timer->status = 'running';
                 $timer->pause_type = 'reset';
