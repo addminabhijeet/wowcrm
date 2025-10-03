@@ -1,176 +1,562 @@
 @extends('layout.layout')
-
 @php
 $title='Call Report';
-$subTitle='Called and Mailed Report';
+$subTitle = 'Called and Mailed Report';
+$script = '<script>
+    var options = {
+        series: [{
+            name: "SELL",
+            data: [{
+                x: "8 pm",
+                y: Number("{{ $t8to9pm ?? 0 }}"),
+            }, {
+                x: "9 pm",
+                y: Number("{{ $t9to10pm ?? 0 }}"),
+            }, {
+                x: "10 pm",
+                y: Number("{{ $t10to11pm ?? 0 }}"),
+            }, {
+                x: "11 pm",
+                y: Number("{{ $t11to12pm ?? 0 }}"),
+            }, {
+                x: "12 pm",
+                y: Number("{{ $t12to1am ?? 0 }}"),
+            }, {
+                x: "1 am",
+                y: Number("{{ $t1to2am ?? 0 }}"),
+            }, {
+                x: "2 am",
+                y: Number("{{ $t2to3am ?? 0 }}"),
+            }, {
+                x: "3 am",
+                y: Number("{{ $t3to4am ?? 0 }}"),
+            }, {
+                x: "4 am",
+                y: Number("{{ $t4to5am ?? 0 }}"),
+            }, {
+                x: "5 am",
+                y: Number("{{ $t5to6am ?? 0 }}"),
+            }]
+        }],
+        chart: {
+            type: "bar",
+            height: 310,
+            toolbar: {
+                show: false
+            }
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 4,
+                horizontal: false,
+                columnWidth: "23%",
+                endingShape: "rounded",
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        fill: {
+            type: "gradient",
+            colors: ["#487FFF"],
+            gradient: {
+                shade: "light",
+                type: "vertical",
+                shadeIntensity: 0.5,
+                gradientToColors: ["#487FFF"],
+                inverseColors: false,
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 100],
+            },
+        },
+        grid: {
+            show: true,
+            borderColor: "#D1D5DB",
+            strokeDashArray: 4,
+            position: "back",
+        },
+        xaxis: {
+            type: "category",
+            categories: ["8 pm", "9 pm", "10 pm", "11 pm", "12 pm", "1 am", "2 am", "3 am", "4 am", "5 am"]
+        },
+        yaxis: {
+            labels: {
+                formatter: function(value) {
+                    return (value / 1).toFixed(0) + "CM";
+                }
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(value) {
+                    return value / 1 + "CM";
+                }
+            }
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#barChart"), options);
+    chart.render();
+
+
+
+    var options = {
+        series: [75],
+        chart: {
+            height: 165,
+            width: 120,
+            type: "radialBar",
+            sparkline: {
+                enabled: false
+            },
+            toolbar: {
+                show: false
+            },
+            padding: {
+                left: -32,
+                right: -32,
+                top: -32,
+                bottom: -32
+            },
+            margin: {
+                left: -32,
+                right: -32,
+                top: -32,
+                bottom: -32
+            }
+        },
+        plotOptions: {
+            radialBar: {
+                offsetY: -24,
+                offsetX: -14,
+                startAngle: -90,
+                endAngle: 90,
+                track: {
+                    background: "#E3E6E9",
+
+                    dropShadow: {
+                        enabled: false,
+                        top: 2,
+                        left: 0,
+                        color: "#999",
+                        opacity: 1,
+                        blur: 2
+                    }
+                },
+                dataLabels: {
+                    show: false,
+                    name: {
+                        show: false
+                    },
+                    value: {
+                        offsetY: -2,
+                        fontSize: "22px"
+                    }
+                }
+            }
+        },
+        fill: {
+            type: "gradient",
+            colors: ["#9DBAFF"],
+            gradient: {
+                shade: "dark",
+                type: "horizontal",
+                shadeIntensity: 0.5,
+                gradientToColors: ["#487FFF"],
+                inverseColors: true,
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 100]
+            }
+        },
+        stroke: {
+            lineCap: "round",
+        },
+        labels: ["Percent"],
+    };
+
+    var chart = new ApexCharts(document.querySelector("#semiCircleGauge"), options);
+    chart.render();
+
+
+
+    function createChart(chartId, chartColor) {
+
+        let currentYear = new Date().getFullYear();
+
+        var options = {
+            series: [{
+                name: "series1",
+                data: [0, 10, 8, 25, 15, 26, 13, 35, 15, 39, 16, 46, 42],
+            }, ],
+            chart: {
+                type: "area",
+                width: 164,
+                height: 72,
+
+                sparkline: {
+                    enabled: true
+                },
+
+                toolbar: {
+                    show: false
+                },
+                padding: {
+                    left: 0,
+                    right: 0,
+                    top: 0,
+                    bottom: 0
+                }
+            },
+            dataLabels: {
+                enabled: false
+            },
+            stroke: {
+                curve: "smooth",
+                width: 2,
+                colors: [chartColor],
+                lineCap: "round"
+            },
+            grid: {
+                show: true,
+                borderColor: "transparent",
+                strokeDashArray: 0,
+                position: "back",
+                xaxis: {
+                    lines: {
+                        show: false
+                    }
+                },
+                yaxis: {
+                    lines: {
+                        show: false
+                    }
+                },
+                row: {
+                    colors: undefined,
+                    opacity: 0.5
+                },
+                column: {
+                    colors: undefined,
+                    opacity: 0.5
+                },
+                padding: {
+                    top: -3,
+                    right: 0,
+                    bottom: 0,
+                    left: 0
+                },
+            },
+            fill: {
+                type: "gradient",
+                colors: [chartColor],
+                gradient: {
+                    shade: "light",
+                    type: "vertical",
+                    shadeIntensity: 0.5,
+                    gradientToColors: [`${chartColor}00`],
+                    inverseColors: false,
+                    opacityFrom: .8,
+                    opacityTo: 0.3,
+                    stops: [0, 100],
+                },
+            },
+
+            markers: {
+                colors: [chartColor],
+                strokeWidth: 2,
+                size: 0,
+                hover: {
+                    size: 8
+                }
+            },
+            xaxis: {
+                labels: {
+                    show: false
+                },
+                categories: [`Jan ${currentYear}`, `Feb ${currentYear}`, `Mar ${currentYear}`, `Apr ${currentYear}`, `May ${currentYear}`, `Jun ${currentYear}`, `Jul ${currentYear}`, `Aug ${currentYear}`, `Sep ${currentYear}`, `Oct ${currentYear}`, `Nov ${currentYear}`, `Dec ${currentYear}`],
+                tooltip: {
+                    enabled: false,
+                },
+            },
+            yaxis: {
+                labels: {
+                    show: false
+                }
+            },
+            tooltip: {
+                x: {
+                    format: "dd/MM/yy HH:mm"
+                },
+            },
+        };
+
+        var chart = new ApexCharts(document.querySelector(`#${chartId}`), options);
+        chart.render();
+    }
+
+
+    createChart("areaChart", "#FF9F29");
+
+
+
+    var options = {
+        series: [{
+            name: "Sales",
+            data: [{
+                x: "Mon",
+                y: 20,
+            }, {
+                x: "Tue",
+                y: 40,
+            }, {
+                x: "Wed",
+                y: 20,
+            }, {
+                x: "Thur",
+                y: 30,
+            }, {
+                x: "Fri",
+                y: 40,
+            }, {
+                x: "Sat",
+                y: 35,
+            }]
+        }],
+        chart: {
+            type: "bar",
+            width: 164,
+            height: 80,
+            sparkline: {
+                enabled: true
+            },
+            toolbar: {
+                show: false
+            }
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 6,
+                horizontal: false,
+                columnWidth: 14,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        states: {
+            hover: {
+                filter: {
+                    type: "none"
+                }
+            }
+        },
+        fill: {
+            type: "gradient",
+            colors: ["#E3E6E9"],
+            gradient: {
+                shade: "light",
+                type: "vertical",
+                shadeIntensity: 0.5,
+                gradientToColors: ["#E3E6E9"],
+                inverseColors: false,
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 100],
+            },
+        },
+        grid: {
+            show: false,
+            borderColor: "#D1D5DB",
+            strokeDashArray: 1,
+            position: "back",
+        },
+        xaxis: {
+            labels: {
+                show: false
+            },
+            type: "category",
+            categories: ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat"]
+        },
+        yaxis: {
+            labels: {
+                show: false,
+                formatter: function(value) {
+                    return (value / 1000).toFixed(0) + "k";
+                }
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(value) {
+                    return value / 1000 + "k";
+                }
+            }
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#dailyIconBarChart"), options);
+    chart.render();
+</script>';
 @endphp
 
 @section('content')
+
 <div class="row gy-4 mt-1">
 
-    <!-- Main Bar Chart -->
     <div class="col-xxl-8 col-lg-6">
-        <div class="card h-100 border shadow-none radius-8 border-0">
-            <div class="card-body p-24">
-                <div class="d-flex align-items-center flex-wrap gap-2 justify-content-between">
+        <div class="card h-100 border-0 shadow-sm radius-12">
+            <div class="card-body p-4">
+                <!-- Header -->
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
                     <div>
-                        <h6 class="mb-2 fw-bold text-lg">Called and Mailed Statistic</h6>
-                        <span class="text-sm fw-medium text-secondary-light" id="chartLabel">Yearly overview</span>
+                        <h5 class="fw-bold mb-1">📞 Calls Statistic</h5>
+                        <span class="text-muted small">Yearly Calls Overview</span>
                     </div>
-                    <div>
-                        <select id="timeFrameSelect" class="form-select form-select-sm w-auto bg-base border text-secondary-light">
-                            <option value="yearly">Yearly</option>
-                            <option value="monthly">Monthly</option>
-                            <option value="weekly">Weekly</option>
-                            <option value="today">Today</option>
-                        </select>
+                    <form method="GET" action="{{ route('call.reports.junior') }}" class="d-flex align-items-center gap-2">
+                        <label for="selected_date" class="form-label mb-0 fw-semibold small">Select Date:</label>
+                        <input type="date"
+                            name="selected_date"
+                            id="selected_date"
+                            value="{{ request('selected_date', date('Y-m-d')) }}"
+                            class="form-control form-control-sm"
+                            onchange="this.form.submit()">
+                    </form>
+                </div>
+
+                <!-- Stats Section -->
+                <div class="row g-3 mb-4">
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                            <div class="icon mb-2 text-primary fs-2">
+                                <i class="bi bi-telephone-fill"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Total Calls (TC)</small>
+                                <h4 class="fw-bold text-dark mb-0">{{ $StotalCalls }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                            <div class="icon mb-2 text-success fs-2">
+                                <i class="bi bi-bar-chart-fill"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Other Calls (OC)</small>
+                                <h4 class="fw-bold text-dark mb-0">{{ $SotherCalls }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                            <div class="icon mb-2 text-warning fs-2">
+                                <i class="bi bi-envelope-paper-fill"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Called & Mailed (C&MC)</small>
+                                <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div id="barChart" class="barChart mt-4"></div>
+
+                <!-- Table Section -->
+                <div class="table-responsive">
+                    <table class="table table-hover table-bordered align-middle mb-0">
+                        <thead class="table-primary">
+                            <tr>
+                                <th class="fw-semibold">⏰ Time Range</th>
+                                <th class="fw-semibold text-center">📊 Called & Mailed Count</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>8 PM - 9 PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t8to9pm }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>9 PM - 10 PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t9to10pm }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>10 PM - 11 PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t10to11pm }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>11 PM - 12 AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>12 AM - 1 AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t12to1am }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>1 AM - 2 AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t1to2am }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>2 AM - 3 AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t2to3am }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>3 AM - 4 AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t3to4am }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>4 AM - 5 AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t4to5am }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>5 AM - 6 AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t5to6am }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Side Charts -->
     <div class="col-xxl-4 col-lg-6">
         <div class="card h-100 radius-8 border-0">
             <div class="card-body p-24">
                 <h6 class="mb-2 fw-bold text-lg">Statistic</h6>
 
-                <!-- SemiCircle Gauge -->
-                <div class="d-flex align-items-center gap-1 justify-content-between mb-4">
-                    <div>
-                        <span class="text-secondary-light fw-normal mb-1 text-xl">Daily Calls</span>
-                        <h5 class="fw-semibold mb-0" id="semiGaugeLabel">{{ $totalCallsToday }}</h5>
+                <div class="mt-24">
+                    <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                        <div>
+                            <span class="text-secondary-light fw-normal mb-12 text-xl">Total Calls (TC)</span>
+                            <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
+                        </div>
+                        <div class="position-relative">
+                            <div id="semiCircleGauge"></div>
+                            <span class="w-36-px h-36-px rounded-circle bg-neutral-100 d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0">
+                                <iconify-icon icon="mdi:emoji" class="text-primary-600 text-md mb-0"></iconify-icon>
+                            </span>
+                        </div>
                     </div>
-                    <div id="semiCircleGauge"></div>
-                </div>
 
-                <!-- Area Chart -->
-                <div class="d-flex align-items-center gap-1 justify-content-between mb-4">
-                    <div>
-                        <span class="text-secondary-light fw-normal mb-1 text-xl">Monthly Calls</span>
-                        <h5 class="fw-semibold mb-0" id="areaChartLabel">{{ array_sum($callsPerMonth) }}</h5>
+                    <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                        <div>
+                            <span class="text-secondary-light fw-normal mb-12 text-xl">Other Calls (OC)</span>
+                            <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
+                        </div>
+                        <div id="areaChart"></div>
                     </div>
-                    <div id="areaChart"></div>
-                </div>
 
-                <!-- Daily Mini Bar Chart -->
-                <div class="d-flex align-items-center gap-1 justify-content-between">
-                    <div>
-                        <span class="text-secondary-light fw-normal mb-1 text-xl">This Week</span>
-                        <h5 class="fw-semibold mb-0" id="miniBarLabel">{{ array_sum($daysThisWeek) }}</h5>
+                    <div class="d-flex align-items-center gap-1 justify-content-between">
+                        <div>
+                            <span class="text-secondary-light fw-normal mb-12 text-xl">Called & Mailed Calls (C&MC)</span>
+                            <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
+                        </div>
+                        <div id="dailyIconBarChart"></div>
                     </div>
-                    <div id="dailyIconBarChart"></div>
                 </div>
             </div>
         </div>
     </div>
-
 </div>
+
 @endsection
-
-@push('scripts')
-<script>
-document.addEventListener("DOMContentLoaded", function () {
-
-    const chartLabel = document.getElementById("chartLabel");
-    const semiGaugeLabel = document.getElementById("semiGaugeLabel");
-    const areaChartLabel = document.getElementById("areaChartLabel");
-    const miniBarLabel = document.getElementById("miniBarLabel");
-
-    const chartData = {
-        yearly: {
-            main: JSON.parse('@json($callsPerMonth)'),
-            mainCategories: ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],
-            area: JSON.parse('@json($callsPerMonth)'),
-            mini: JSON.parse('@json($daysThisWeek)'),
-            label: "Yearly overview",
-            semi: $totalCallsToday 
-        },
-        monthly: {
-            main: JSON.parse('@json($callsPerHour)'),
-            mainCategories: JSON.parse('@json($hourLabels)'),
-            area: JSON.parse('@json($callsPerHour)'),
-            mini: JSON.parse('@json($daysThisWeek)'),
-            label: "Monthly overview",
-            semi: $totalCallsToday 
-        },
-        weekly: {
-            main: JSON.parse('@json($daysThisWeek)'),
-            mainCategories: JSON.parse('@json($dayLabels)'),
-            area: JSON.parse('@json($daysThisWeek)'),
-            mini: JSON.parse('@json($daysThisWeek)'),
-            label: "Weekly overview",
-            semi: $totalCallsToday 
-        },
-        today: {
-            main: JSON.parse('@json($callsPerHour)'),
-            mainCategories: JSON.parse('@json($hourLabels)'),
-            area: JSON.parse('@json($callsPerHour)'),
-            mini: JSON.parse('@json($daysThisWeek)'),
-            label: "Today overview",
-            semi: $totalCallsToday 
-        }
-    };
-
-    // ===== ApexCharts setup (main, semi, area, mini) =====
-    const mainChart = new ApexCharts(document.querySelector("#barChart"), {
-        series: [{ name: "Calls", data: chartData.yearly.main }],
-        chart: { type: "bar", height: 310, toolbar: { show: false } },
-        plotOptions: { bar: { borderRadius: 4, columnWidth: "23%" } },
-        dataLabels: { enabled: false },
-        xaxis: { categories: chartData.yearly.mainCategories },
-        yaxis: { labels: { formatter: val => val + " calls" } },
-        tooltip: { y: { formatter: val => val + " calls" } }
-    });
-    mainChart.render();
-
-    const semiGauge = new ApexCharts(document.querySelector("#semiCircleGauge"), {
-        series: [chartData.yearly.semi],
-        chart: { type: "radialBar", height: 165, width: 120 },
-        plotOptions: { radialBar: { startAngle: -90, endAngle: 90, track: { background: "#E3E6E9" }, dataLabels: { show: false } } },
-        fill: { type: "gradient", colors: ["#9DBAFF"], gradient: { gradientToColors: ["#487FFF"] } },
-        stroke: { lineCap: "round" }
-    });
-    semiGauge.render();
-
-    const areaChart = new ApexCharts(document.querySelector("#areaChart"), {
-        series: [{ data: chartData.yearly.area }],
-        chart: { type: "area", height: 72, sparkline: { enabled: true } },
-        stroke: { curve: "smooth", width: 2, colors: ["#FF9F29"] },
-        fill: { type: "gradient", gradient: { gradientToColors: ["#FF9F2900"], opacityFrom: 0.8, opacityTo: 0.3 } },
-        xaxis: { categories: chartData.yearly.mainCategories }
-    });
-    areaChart.render();
-
-    const miniBarChart = new ApexCharts(document.querySelector("#dailyIconBarChart"), {
-        series: [{ data: chartData.yearly.mini }],
-        chart: { type: "bar", height: 80, width: 164, sparkline: { enabled: true } },
-        plotOptions: { bar: { borderRadius: 6, columnWidth: 14 } },
-        fill: { type: "gradient", colors: ["#E3E6E9"] }
-    });
-    miniBarChart.render();
-
-    // ===== Dropdown Change =====
-    document.getElementById("timeFrameSelect").addEventListener("change", function () {
-        const tf = this.value;
-        const data = chartData[tf];
-
-        mainChart.updateOptions({
-            series: [{ data: data.main }],
-            xaxis: { categories: data.mainCategories }
-        });
-        areaChart.updateOptions({ series: [{ data: data.area }], xaxis: { categories: data.mainCategories } });
-        miniBarChart.updateOptions({ series: [{ data: data.mini }] });
-
-        semiGauge.updateSeries([data.semi]);
-
-        chartLabel.innerText = data.label;
-        semiGaugeLabel.innerText = data.semi;
-        areaChartLabel.innerText = data.area.reduce((a,b)=>a+b,0);
-        miniBarLabel.innerText = data.mini.reduce((a,b)=>a+b,0);
-    });
-});
-</script>
-@endpush
