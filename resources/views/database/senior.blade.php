@@ -143,9 +143,6 @@ $script ='<script>
                                 value="{{ $row->Amount !== null ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount">
                         </td>
 
-
-
-
                         {{-- Qualification --}}
                         <td>
                             <input type="text" class="form-control qualification-input" data-key="Qualification"
@@ -176,6 +173,12 @@ $script ='<script>
                                 </option>
                                 @endforeach
                             </select>
+                        </td>
+
+                        {{-- Forwarded By --}}
+                        <td>
+                            <input type="text" class="form-control name-input" data-key="forwardedBy"
+                                value="{{ $row->$forwardedBy ?? '' }}" placeholder="Forwarded By" readonly>
                         </td>
 
                         {{-- Time Zone --}}
