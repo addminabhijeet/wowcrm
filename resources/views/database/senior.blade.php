@@ -193,8 +193,8 @@ $script ='<script>
 
                         {{-- Forwarded By --}}
                         <td>
-                            <input type="text" class="form-control name-input" data-key="forwardedBy"
-                                value="{{ $forwardedBy ?? '' }}" placeholder="Forwarded By" readonly>
+                            <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
+                                value="{{ $row->created_by ?? '' }}" placeholder="Forwarded By" readonly>
                         </td>
 
                         {{-- View (Resume) --}}
