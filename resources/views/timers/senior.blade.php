@@ -294,45 +294,46 @@ $script = '<script>
                 return;
             }
 
-            const card = document.querySelector(`.user-grid-card[data-user-id='${userId}']`);
-            if (!card) {
-                console.warn(`Card not found for user_id ${userId}`);
-                return;
-            }
-
-            const dropdown = card.querySelector('.dropdown button');
-            const btnContainer = card.querySelector('.ps-16');
-
-            // Update dropdown style
-            if (dropdown) {
-                dropdown.className = data.button_status == 0
-                    ? 'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white'
-                    : 'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
-            } else {
-                console.warn(`Dropdown not found for user ${userId}`);
-            }
-
-            // Update action button
-            if (btnContainer) {
-                btnContainer.innerHTML = data.button_status == 0
-                    ? `
-                    <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
-                        <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                        Enable Junior
-                    </a>`
-                    : `
-                    <a href="javascript:void(0)" class="btn btn-danger disable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
-                        <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
-                        Disable Junior
-                    </a>`;
-            } else {
-                console.warn(`Button container not found for user ${userId}`);
-            }
-
-            // Re-bind events after DOM change
-            setupStatusButtons();
+            updateUserCard(userId, data.button_status);
         })
         .catch(err => console.error(`Fetch error for user ${userId}:`, err));
+    }
+
+    // Update UI for a given user card
+    function updateUserCard(userId, buttonStatus) {
+        const card = document.querySelector(`.user-grid-card[data-user-id='${userId}']`);
+        if (!card) {
+            console.warn(`Card not found for user_id ${userId}`);
+            return;
+        }
+
+        const dropdown = card.querySelector('.dropdown button');
+        const btnContainer = card.querySelector('.ps-16');
+
+        // Update dropdown style
+        if (dropdown) {
+            dropdown.className = buttonStatus == 0
+                ? 'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white'
+                : 'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
+        }
+
+        // Update action button
+        if (btnContainer) {
+            btnContainer.innerHTML = buttonStatus == 0
+                ? `
+                <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
+                    <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                    Enable Junior
+                </a>`
+                : `
+                <a href="javascript:void(0)" class="btn btn-danger disable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
+                    <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
+                    Disable Junior
+                </a>`;
+        }
+
+        // Re-bind events after DOM change
+        setupStatusButtons();
     }
 
     // Bind all existing buttons
@@ -345,8 +346,29 @@ $script = '<script>
         });
     }
 
-    // Initial binding on page load
+    // Auto update button status every second
+    function checkButtonStatus() {
+        fetch("{{ route('button.status') }}")
+            .then(response => response.json())
+            .then(data => {
+                // Expecting format: [{user_id: 1, button_status: 1}, {user_id: 2, button_status: 0}, ...]
+                if (Array.isArray(data)) {
+                    data.forEach(user => {
+                        updateUserCard(user.user_id, user.button_status);
+                    });
+                } else {
+                    console.warn("Unexpected data format:", data);
+                }
+            })
+            .catch(err => console.error("Polling error:", err));
+    }
+
+    // Initial setup
     setupStatusButtons();
+    checkButtonStatus();
+
+    // Poll every 1 second
+    setInterval(checkButtonStatus, 1000);
 </script>
 
 
@@ -371,47 +393,76 @@ $script = '<script>
 
             console.log('Bulk toggle response:', data);
 
-            data.updated.forEach(user => {
-                const card = document.querySelector(`.user-grid-card[data-user-id='${user.user_id}']`);
-                if (!card) {
-                    console.warn(`User card not found for user_id ${user.user_id}`);
-                    return;
-                }
-
-                const btnContainer = card.querySelector('.ps-16');
-                const dropdown = card.querySelector('.dropdown button');
-
-                // Update dropdown style
-                if (!dropdown) {
-                    console.warn(`Dropdown button not found for user_id ${user.user_id}`);
-                } else {
-                    dropdown.className = user.button_status
-                        ? 'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white'
-                        : 'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
-                }
-
-                // Update action button
-                if (!btnContainer) {
-                    console.warn(`Button container not found for user_id ${user.user_id}`);
-                } else {
-                    btnContainer.innerHTML = user.button_status
-                        ? `
-                        <a href="javascript:void(0)" class="btn btn-danger disable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${user.user_id}">
-                            <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
-                            Disable Junior
-                        </a>`
-                        : `
-                        <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${user.user_id}">
-                            <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                            Enable Junior
-                        </a>`;
-                }
-            });
+            // Update all user cards after bulk action
+            if (Array.isArray(data.updated)) {
+                data.updated.forEach(user => {
+                    updateUserCard(user.user_id, user.button_status);
+                });
+            }
 
             // Re-bind events
             setupStatusButtons();
         })
         .catch(err => console.error('Bulk toggle fetch error:', err));
+    }
+
+    // Update UI for a given user card
+    function updateUserCard(userId, buttonStatus) {
+        const card = document.querySelector(`.user-grid-card[data-user-id='${userId}']`);
+        if (!card) return;
+
+        const btnContainer = card.querySelector('.ps-16');
+        const dropdown = card.querySelector('.dropdown button');
+
+        // Update dropdown style
+        if (dropdown) {
+            dropdown.className = buttonStatus
+                ? 'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white'
+                : 'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
+        }
+
+        // Update action button
+        if (btnContainer) {
+            btnContainer.innerHTML = buttonStatus
+                ? `
+                <a href="javascript:void(0)" class="btn btn-danger disable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
+                    <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
+                    Disable Junior
+                </a>`
+                : `
+                <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
+                    <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                    Enable Junior
+                </a>`;
+        }
+    }
+
+    // Bind enable/disable events
+    function setupStatusButtons() {
+        document.querySelectorAll('.enable-junior').forEach(btn => {
+            btn.onclick = () => toggleButtonStatus(btn.dataset.user, 'enable');
+        });
+        document.querySelectorAll('.disable-junior').forEach(btn => {
+            btn.onclick = () => toggleButtonStatus(btn.dataset.user, 'disable');
+        });
+    }
+
+    // Auto update button status for all juniors
+    function checkButtonStatus() {
+        fetch("{{ route('button.status') }}")
+            .then(response => response.json())
+            .then(data => {
+                // Expecting format: [{user_id: 1, button_status: 1}, {user_id: 2, button_status: 0}, ...]
+                if (Array.isArray(data)) {
+                    data.forEach(user => {
+                        updateUserCard(user.user_id, user.button_status);
+                    });
+                    setupStatusButtons();
+                } else {
+                    console.warn("Unexpected response:", data);
+                }
+            })
+            .catch(err => console.error("Polling error:", err));
     }
 
     // Bind top buttons
@@ -420,8 +471,13 @@ $script = '<script>
 
     if (enableAllBtn) enableAllBtn.onclick = () => toggleAllStatus('enable');
     if (disableAllBtn) disableAllBtn.onclick = () => toggleAllStatus('disable');
-</script>
 
+    // Run once immediately
+    checkButtonStatus();
+
+    // Poll every 1 second
+    setInterval(checkButtonStatus, 1000);
+</script>
 
 
 @endsection
