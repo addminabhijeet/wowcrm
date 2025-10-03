@@ -216,7 +216,6 @@
         </div>
     </div>
 </div>
-
 <style>
     #statusOverlay {
         position: fixed;
@@ -247,40 +246,52 @@
 <div id="statusOverlay"></div>
 
 <script>
-    let timerInterval, backendSyncInterval;
+    // Timer State
+    let timerInterval, backendSyncInterval, overlayTimeout, inactiveTimeout;
     let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
-    let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
-    let status = "{{ $status ?? 'running' }}";
+    let elapsedSeconds   = Number("{{ $elapsed_seconds ?? 0 }}");
+    let status           = "{{ $status ?? 'running' }}";
 
-    let inactiveTimeout;
-    const INACTIVE_LIMIT = 2 * 60 * 1000;
+    const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes
 
+    console.log("Init values → Remaining:", remainingSeconds, "Elapsed:", elapsedSeconds, "Status:", status);
+
+    // Format seconds to HH:MM:SS
     function formatTime(sec) {
-        sec = Math.floor(sec);
+        sec = Math.max(0, Math.floor(sec));
         const h = Math.floor(sec / 3600);
         const m = Math.floor((sec % 3600) / 60);
         const s = sec % 60;
         return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
+    // Update countdown & elapsed UI
     function updateUI() {
+        console.log("Updating UI → Remaining:", remainingSeconds, "Elapsed:", elapsedSeconds, "Status:", status);
         document.getElementById('countdown').innerText = formatTime(remainingSeconds);
-        document.getElementById('elapsed').innerText = formatTime(elapsedSeconds);
+        document.getElementById('elapsed').innerText   = formatTime(elapsedSeconds);
     }
 
+    // Force logout
     function forceLogout() {
+        console.warn("Force logout triggered.");
         fetch("{{ route('logout') }}", {
             method: "POST",
             headers: {
                 "X-CSRF-TOKEN": "{{ csrf_token() }}",
                 "Content-Type": "application/json"
             }
-        }).then(() => window.location.href = "/login");
+        }).then(() => {
+            console.log("Redirecting to /login");
+            window.location.href = "/login";
+        });
     }
 
-    let overlayTimeout;
-
+    // Show overlay message
     function showOverlay(message) {
+        if (!message) return;
+        console.log("Overlay message:", message);
+
         const overlay = document.getElementById('statusOverlay');
         overlay.innerText = message;
         overlay.classList.add('show');
@@ -291,14 +302,28 @@
         }, 3000);
     }
 
+    // Pause messages mapping
+    function getPauseMessage(type) {
+        const messages = {
+            'resume': "Timer resumed.",
+            'break':  "Break started.",
+            'lunch':  "Lunch paused.",
+            'reset':  "Timer reset.",
+            'paused': "Timer paused."
+        };
+        return messages[type] || null;
+    }
+
+    // Start ticking timer
     function startTimer() {
-        clearInterval(timerInterval);
-        clearInterval(backendSyncInterval);
+        console.log("Starting timer...");
+        stopTimer();
 
         timerInterval = setInterval(() => {
             if (status === 'running' && remainingSeconds > 0) {
                 remainingSeconds--;
                 elapsedSeconds++;
+                console.log("Tick → Remaining:", remainingSeconds, "Elapsed:", elapsedSeconds);
                 updateUI();
             }
         }, 1000);
@@ -306,119 +331,134 @@
         backendSyncInterval = setInterval(syncWithBackend, 1000);
     }
 
+    // Stop ticking timer
     function stopTimer() {
+        console.log("Stopping timer...");
         clearInterval(timerInterval);
         clearInterval(backendSyncInterval);
     }
 
+    // Handle backend response
+    function handleResponse(data) {
+        console.log("Backend response:", data);
+
+        // Senior approval required case
+        if (data.success === false && data.notice_status === 1) {
+            showOverlay(data.message || "Please wait for senior to enable.");
+            return;
+        }
+
+        // General failure
+        if (!data.success) {
+            showOverlay(data.message || "Something went wrong");
+            return;
+        }
+
+        // Notices from backend
+        if (data.notice_status === 1 && data.message) {
+            showOverlay(data.message);
+        }
+
+        // Pause/Resume messages
+        const pauseMsg = getPauseMessage(data.pause_type);
+        if (pauseMsg) showOverlay(pauseMsg);
+
+        // Sync state
+        remainingSeconds = data.remaining_seconds;
+        elapsedSeconds   = data.elapsed_seconds;
+        status           = data.status;
+        updateUI();
+
+        // Handle logout
+        if (data.logout) {
+            console.warn("Logout flag received from backend.");
+            stopTimer();
+            showOverlay("Your work session has ended.");
+            forceLogout();
+        }
+    }
+
+    // Sync timer with backend
     function syncWithBackend() {
+        console.log("Syncing with backend...");
         fetch("{{ route('timer.update') }}", {
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ action: 'tick' })
+        })
+        .then(res => res.json())
+        .then(handleResponse)
+        .catch(err => console.error("Backend sync error:", err));
+    }
+
+    // Handle control button clicks
+    document.querySelectorAll('#controlButtons button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const type = btn.getAttribute('data-type');
+            console.log("Control button clicked → Action:", type);
+
+            fetch("{{ route('timer.update') }}", {
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": "{{ csrf_token() }}",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({
-                    action: 'tick'
-                })
+                body: JSON.stringify({ action: type })
             })
             .then(res => res.json())
-            .then(data => {
-
-                if (data.notice_status === 1 && data.message) {
-                    showOverlay(data.message);
-                }
-
-                remainingSeconds = data.remaining_seconds;
-                elapsedSeconds = data.elapsed_seconds;
-                status = data.status;
-                updateUI();
-
-                if (data.logout) {
-                    stopTimer();
-                    alert("Your 9-hour work session has ended.");
-                    forceLogout();
-                }
-            });
-    }
-
-
-    document.querySelectorAll('#controlButtons button').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const type = btn.getAttribute('data-type');
-
-            fetch("{{ route('timer.update') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        action: type
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-
-                    if (data.success === false && data.notice_status === 1) {
-                        showOverlay(data.message || "Please wait for senior to enable.");
-                        return;
-                    }
-
-
-                    remainingSeconds = data.remaining_seconds;
-                    elapsedSeconds = data.elapsed_seconds;
-                    status = data.status;
-                    updateUI();
-                });
+            .then(handleResponse)
+            .catch(err => console.error("Control button fetch error:", err));
         });
     });
 
-
-
+    // Inactivity Timer
     function resetInactiveTimer() {
+        console.log("Resetting inactivity timer...");
         clearTimeout(inactiveTimeout);
         inactiveTimeout = setTimeout(() => {
+            console.warn("User inactive for", INACTIVE_LIMIT / 1000, "seconds.");
             showOverlay("You were inactive! Timer stopped.");
             stopTimer();
         }, INACTIVE_LIMIT);
     }
 
-
+    // Handle user active state (resume timer on return)
     function handleActiveState() {
+        console.log("Handling active state (resume timer).");
+
         fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    action: "resume"
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                remainingSeconds = data.remaining_seconds;
-                elapsedSeconds = data.elapsed_seconds;
-                status = data.status;
-                updateUI();
-            });
+            method: "POST",
+            headers: {
+                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ action: "resume" })
+        })
+        .then(res => res.json())
+        .then(handleResponse)
+        .catch(err => console.error("Active state fetch error:", err));
 
         resetInactiveTimer();
     }
 
-
+    // Activity listeners
     ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt => {
-        window.addEventListener(evt, resetInactiveTimer);
+        window.addEventListener(evt, () => {
+            console.log("Activity detected:", evt);
+            resetInactiveTimer();
+        });
     });
 
     document.addEventListener('visibilitychange', () => {
-        if (document.visibilityState === 'visible') {
-            handleActiveState();
-        }
+        console.log("Visibility changed:", document.visibilityState);
+        if (document.visibilityState === 'visible') handleActiveState();
     });
 
-
+    // Init
+    console.log("Initializing timer script...");
     updateUI();
     resetInactiveTimer();
     handleActiveState();
