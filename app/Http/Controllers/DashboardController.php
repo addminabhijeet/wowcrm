@@ -150,50 +150,53 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Timer not found'], 404);
         }
 
+        // Current time in IST
         $istNow = now('Asia/Kolkata');
 
-        // Fixed daily base time: 20:00 IST
-        $today20 = $istNow->copy()->startOfDay()->addHours(20);
+        // Today 6 AM IST
+        $ist6am = $istNow->copy()->startOfDay()->addHours(6);
 
-        // If before today's 20:00, block the timer
-        if ($istNow->lt($today20) && !$timer->start_time) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Timer can start only after 20:00 IST.'
-            ]);
-        }
+        // Timer's updated_at in IST
+        $timerUpdatedIst = $timer->updated_at->copy()->timezone('Asia/Kolkata');
 
-        // If no start_time yet, initialize with today’s 20:00
-        if (!$timer->start_time) {
-            $timer->start_time = $today20;
-            $timer->remaining_seconds = self::WORK_DAY_SECONDS;
-            $timer->status = 'running';
-            $timer->pause_type = 'resume';
-            $timer->save();
-        }
+        // Convert times to comparable numeric format YYMMDDHHMMSS
+        $istNowNum        = $istNow->format('ymdHis');
+        $ist6amNum        = $ist6am->format('ymdHis');
+        $timerUpdatedNum  = $timerUpdatedIst->format('ymdHis');
 
-        // Calculate elapsed & update start_time dynamically
-        $secondsPassed = $istNow->diffInSeconds($timer->updated_at);
-        if ($timer->status === 'running') {
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds - $secondsPassed);
-            $timer->start_time = $timer->start_time->copy()->addSeconds($secondsPassed);
-        }
-
-        // Check reset threshold
-        $gap = $istNow->diffInSeconds($timer->start_time);
-
-        $threshold = 3 * 3600; // always 3 hrs
-        if ($gap > $threshold) {
-            if ($istNow->isFriday()) {
-                // On Friday → reset 72 hrs ahead
-                $timer->start_time = $timer->start_time->copy()->addHours(72);
-            } else {
-                // Other days → reset 24 hrs ahead
-                $timer->start_time = $timer->start_time->copy()->addHours(24);
-            }
+        // Reset timer if last update was before 6 AM today
+        if ($timerUpdatedNum < $ist6amNum) {
             $timer->remaining_seconds = self::WORK_DAY_SECONDS;
             $timer->status = 'running';
             $timer->pause_type = 'reset';
+            $timer->updated_at = $istNow;
+            $timer->save();
+
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
+                'user_id'           => $user->id,
+                'status'            => $timer->status,
+                'pause_type'        => $timer->pause_type,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'elapsed_seconds'   => 0,
+                'event_time'        => $istNow,
+            ]);
+
+            return response()->json([
+                'success'           => true,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'elapsed_seconds'   => 0,
+                'status'            => $timer->status,
+                'pause_type'        => $timer->pause_type,
+                'notice_status'     => $timer->notice_status,
+                'logout'            => false
+            ]);
+        }
+
+        // Update remaining seconds if timer was running
+        if ($timer->status === 'running') {
+            $seconds_passed = now()->diffInSeconds($timer->updated_at);
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds + $seconds_passed);
         }
 
         // Handle actions
@@ -205,7 +208,7 @@ class DashboardController extends Controller
             $timer->pause_type = $action;
         }
 
-        $timer->updated_at = $istNow;
+        $timer->updated_at = now();
         $timer->save();
 
         $elapsed_seconds = self::WORK_DAY_SECONDS - $timer->remaining_seconds;
@@ -217,7 +220,8 @@ class DashboardController extends Controller
                 'status'            => $timer->status,
                 'pause_type'        => $timer->pause_type,
                 'remaining_seconds' => $timer->remaining_seconds,
-                'event_time'        => $istNow,
+                'elapsed_seconds'   => $elapsed_seconds,
+                'event_time'        => now(),
             ]);
         }
 
