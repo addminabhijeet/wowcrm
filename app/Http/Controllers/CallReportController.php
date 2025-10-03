@@ -248,4 +248,66 @@ class CallReportController extends Controller
             't5to6am'
         ));
     }
+
+    public function juniormonthly(Request $request)
+    {
+        // Selected month (default current month in YYYY-MM format)
+        $selectedMonth = $request->input('selected_month', date('Y-m'));
+
+        // Extract year and month for filtering
+        [$year, $month] = explode('-', $selectedMonth);
+
+        // Base query filtered by selected month
+        $query = GoogleSheetData::whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month);
+
+        // Selected month totals
+        $MtotalCalls = $query->count();
+        $McalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
+
+        // Other calls (excluding Called & Mailed)
+        $MotherCalls = GoogleSheetData::whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->whereNotNull('Exe_Remarks')
+            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->count();
+
+        // Hour-wise "Called & Mailed" counts
+        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Initialize hour variables (20 = 8 PM, etc.)
+        $t8to9pm = $hourlyCalledMailed[20] ?? 0;
+        $t9to10pm = $hourlyCalledMailed[21] ?? 0;
+        $t10to11pm = $hourlyCalledMailed[22] ?? 0;
+        $t11to12pm = $hourlyCalledMailed[23] ?? 0;
+        $t12to1am = $hourlyCalledMailed[0] ?? 0;
+        $t1to2am = $hourlyCalledMailed[1] ?? 0;
+        $t2to3am = $hourlyCalledMailed[2] ?? 0;
+        $t3to4am = $hourlyCalledMailed[3] ?? 0;
+        $t4to5am = $hourlyCalledMailed[4] ?? 0;
+        $t5to6am = $hourlyCalledMailed[5] ?? 0;
+
+        return view('reports.junior', compact(
+            'MtotalCalls',
+            'McalledAndMailedCalls',
+            'MotherCalls',
+            'selectedMonth',
+            't8to9pm',
+            't9to10pm',
+            't10to11pm',
+            't11to12pm',
+            't12to1am',
+            't1to2am',
+            't2to3am',
+            't3to4am',
+            't4to5am',
+            't5to6am'
+        ));
+    }
 }
