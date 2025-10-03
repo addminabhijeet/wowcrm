@@ -8,16 +8,16 @@ $script = '<script>
             name: "SELL",
             data: [{
                 x: "8 pm",
-                y: $t8to9am,
+                y: $t8to9pm,
             }, {
                 x: "9 pm",
-                y: $t9to10am,
+                y: $t9to10pm,
             }, {
                 x: "10 pm",
-                y: $t10to11am,
+                y: $t10to11pm,
             }, {
                 x: "11 pm",
-                y: $t11to12am,
+                y: $t11to12pm,
             }, {
                 x: "12 pm",
                 y: $t12to1am,
