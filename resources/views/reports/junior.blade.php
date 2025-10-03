@@ -4,100 +4,77 @@ $title='Call Report';
 $subTitle = 'Called and Mailed Report';
 $script = '<script>
     var options = {
-        series: [{
-            name: "SELL",
-            data: [{
-                x: "8 pm",
-                y: Number("{{ $t8to9pm }}"),
-            }, {
-                x: "9 pm",
-                y: Number("{{ $t9to10pm }}"),
-            }, {
-                x: "10 pm",
-                y: Number("{{ $t10to11pm }}"),
-            }, {
-                x: "11 pm",
-                y: Number("{{ $t11to12pm }}"),
-            }, {
-                x: "12 pm",
-                y: Number("{{ $t12to1am }}"),
-            }, {
-                x: "1 am",
-                y: Number("{{ $t1to2am }}"),
-            }, {
-                x: "2 am",
-                y: Number("{{ $t2to3am }}"),
-            }, {
-                x: "3 am",
-                y: Number("{{ $t3to4am }}"),
-            }, {
-                x: "4 am",
-                y: Number("{{ $t4to5am }}"),
-            }, {
-                x: "5 am",
-                y: Number("{{ $t5to6am }}"),
-            }]
-        }],
-        chart: {
-            type: "bar",
-            height: 310,
-            toolbar: {
-                show: false
-            }
+    series: [{
+        name: "SELL",
+        data: [
+            { x: "8 pm",  y: {{ $t8to9pm }} },
+            { x: "9 pm",  y: {{ $t9to10pm }} },
+            { x: "10 pm", y: {{ $t10to11pm }} },
+            { x: "11 pm", y: {{ $t11to12pm }} },
+            { x: "12 pm", y: {{ $t12to1am }} },
+            { x: "1 am",  y: {{ $t1to2am }} },
+            { x: "2 am",  y: {{ $t2to3am }} },
+            { x: "3 am",  y: {{ $t3to4am }} },
+            { x: "4 am",  y: {{ $t4to5am }} },
+            { x: "5 am",  y: {{ $t5to6am }} },
+        ]
+    }],
+    chart: {
+        type: "bar",
+        height: 310,
+        toolbar: { show: false }
+    },
+    plotOptions: {
+        bar: {
+            borderRadius: 4,
+            horizontal: false,
+            columnWidth: "23%",
+            endingShape: "rounded",
+        }
+    },
+    dataLabels: { enabled: false },
+    fill: {
+        type: "gradient",
+        colors: ["#487FFF"],
+        gradient: {
+            shade: "light",
+            type: "vertical",
+            shadeIntensity: 0.5,
+            gradientToColors: ["#487FFF"],
+            inverseColors: false,
+            opacityFrom: 1,
+            opacityTo: 1,
+            stops: [0, 100],
         },
-        plotOptions: {
-            bar: {
-                borderRadius: 4,
-                horizontal: false,
-                columnWidth: "23%",
-                endingShape: "rounded",
-            }
-        },
-        dataLabels: {
-            enabled: false
-        },
-        fill: {
-            type: "gradient",
-            colors: ["#487FFF"],
-            gradient: {
-                shade: "light",
-                type: "vertical",
-                shadeIntensity: 0.5,
-                gradientToColors: ["#487FFF"],
-                inverseColors: false,
-                opacityFrom: 1,
-                opacityTo: 1,
-                stops: [0, 100],
-            },
-        },
-        grid: {
-            show: true,
-            borderColor: "#D1D5DB",
-            strokeDashArray: 4,
-            position: "back",
-        },
-        xaxis: {
-            type: "category",
-            categories: ["8 pm", "9 pm", "10 pm", "11 pm", "12 pm", "1 am", "2 am", "3 am", "4 am", "5 am"]
-        },
-        yaxis: {
-            labels: {
-                formatter: function(value) {
-                    return (value / 1).toFixed(0) + "CM";
-                }
-            }
-        },
-        tooltip: {
-            y: {
-                formatter: function(value) {
-                    return value / 1 + "CM";
-                }
+    },
+    grid: {
+        show: true,
+        borderColor: "#D1D5DB",
+        strokeDashArray: 4,
+        position: "back",
+    },
+    xaxis: {
+        type: "category",
+        categories: ["8 pm", "9 pm", "10 pm", "11 pm", "12 pm", "1 am", "2 am", "3 am", "4 am", "5 am"]
+    },
+    yaxis: {
+        labels: {
+            formatter: function(value) {
+                return value.toFixed(0) + " CM";
             }
         }
-    };
+    },
+    tooltip: {
+        y: {
+            formatter: function(value) {
+                return value + " CM";
+            }
+        }
+    }
+};
 
-    var chart = new ApexCharts(document.querySelector("#barChart"), options);
-    chart.render();
+var chart = new ApexCharts(document.querySelector("#barChart"), options);
+chart.render();
 
 
 
