@@ -48,23 +48,28 @@ class TimerController extends Controller
         return redirect()->back()->with('success', 'Daily Base Time updated successfully!');
     }
 
-
-
-    const WORK_DAY_SECONDS = 9 * 60 * 60;
-
     public function seniorTimers()
     {
+        $timerSetting = TimerSetting::first();
+        $workDaySeconds = $timerSetting ? $timerSetting->work_day_seconds : 9 * 60 * 60;
+
         $juniors = User::where('role', 'junior')->get();
 
-        $timers = $juniors->map(function ($junior) {
+        $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
             $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
 
             if ($timer) {
                 $remaining_seconds = $timer->remaining_seconds;
-                $elapsed_seconds = self::WORK_DAY_SECONDS - $remaining_seconds;
+                $elapsed_seconds = $workDaySeconds - $remaining_seconds;
                 $status = $timer->status;
                 $button_status = $timer->button_status;
                 $notice_status = $timer->notice_status;
+            } else {
+                $remaining_seconds = $workDaySeconds;
+                $elapsed_seconds = 0;
+                $status = 'running';
+                $button_status = 1;
+                $notice_status = 0;
             }
 
             return [
@@ -81,6 +86,7 @@ class TimerController extends Controller
 
         return view('timers.senior', compact('timers'));
     }
+
 
 
     public function toggleButtonStatus(Request $request)
@@ -141,11 +147,14 @@ class TimerController extends Controller
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
         if (!$timer) return response()->json(['error' => 'Timer not found'], 404);
 
+        $timerSetting = TimerSetting::first();
+        $workDaySeconds = $timerSetting ? $timerSetting->work_day_seconds : 9 * 60 * 60;
+
         $now = now();
 
         if ($timer->status === 'running') {
             $seconds_passed = $now->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds + $seconds_passed);
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed); // subtract!
         }
 
         if ($action === 'resume') {
@@ -159,8 +168,7 @@ class TimerController extends Controller
         $timer->updated_at = $now;
         $timer->save();
 
-        $elapsed_seconds = self::WORK_DAY_SECONDS - $timer->remaining_seconds;
-
+        $elapsed_seconds = $workDaySeconds - $timer->remaining_seconds;
 
         if ($action !== 'tick') {
             UserTimerPause::create([
@@ -183,24 +191,28 @@ class TimerController extends Controller
         ]);
     }
 
+
     public function allJuniorTimers()
     {
+        $timerSetting = TimerSetting::first();
+        $workDaySeconds = $timerSetting ? $timerSetting->work_day_seconds : 9 * 60 * 60;
+
         $juniors = User::where('role', 'junior')->get();
 
-        $timers = $juniors->map(function ($junior) {
+        $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
             $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
 
             if ($timer && $timer->status === 'running') {
                 $seconds_passed = now()->diffInSeconds($timer->updated_at);
                 $remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
             } else {
-                $remaining_seconds = $timer ? $timer->remaining_seconds : self::WORK_DAY_SECONDS;
+                $remaining_seconds = $timer ? $timer->remaining_seconds : $workDaySeconds;
             }
 
             return [
                 'user_id'          => $junior->id,
                 'remaining_seconds' => $remaining_seconds,
-                'elapsed_seconds'  => self::WORK_DAY_SECONDS - $remaining_seconds,
+                'elapsed_seconds'  => $workDaySeconds - $remaining_seconds,
                 'status'           => $timer ? $timer->status : 'running',
                 'pause_type'       => $timer ? $timer->pause_type : null,
                 'logout'           => $remaining_seconds <= 0,
