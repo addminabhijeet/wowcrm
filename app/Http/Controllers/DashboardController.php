@@ -43,7 +43,6 @@ class DashboardController extends Controller
         $remaining_seconds = $workDaySeconds;
         $elapsed_seconds   = 0;
         $status            = 'running';
-        $button_status     = 0; // default hidden
 
         if ($timer) {
             $remaining_seconds = $timer->remaining_seconds;
