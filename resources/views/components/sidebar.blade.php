@@ -177,7 +177,7 @@
                         <span>Calendar</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('calendar.index') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Candidates Cal.</a></li>
+                        <li><a href=""><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Candidates Cal.</a></li>
                     </ul>
                 </li>
 
