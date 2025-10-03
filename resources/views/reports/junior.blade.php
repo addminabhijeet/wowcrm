@@ -4,78 +4,100 @@ $title='Call Report';
 $subTitle = 'Called and Mailed Report';
 $script = '<script>
     var options = {
-    series: [{
-        name: "SELL",
-data: [
-    { x: "8 pm",  y: {{ json_encode($t8to9pm) }} },
-    { x: "9 pm",  y: {{ json_encode($t9to10pm) }} },
-    { x: "10 pm", y: {{ json_encode($t10to11pm) }} },
-    { x: "11 pm", y: {{ json_encode($t11to12pm) }} },
-    { x: "12 pm", y: {{ json_encode($t12to1am) }} },
-    { x: "1 am",  y: {{ json_encode($t1to2am) }} },
-    { x: "2 am",  y: {{ json_encode($t2to3am) }} },
-    { x: "3 am",  y: {{ json_encode($t3to4am) }} },
-    { x: "4 am",  y: {{ json_encode($t4to5am) }} },
-    { x: "5 am",  y: {{ json_encode($t5to6am) }} },
-]
-
-    }],
-    chart: {
-        type: "bar",
-        height: 310,
-        toolbar: { show: false }
-    },
-    plotOptions: {
-        bar: {
-            borderRadius: 4,
-            horizontal: false,
-            columnWidth: "23%",
-            endingShape: "rounded",
-        }
-    },
-    dataLabels: { enabled: false },
-    fill: {
-        type: "gradient",
-        colors: ["#487FFF"],
-        gradient: {
-            shade: "light",
-            type: "vertical",
-            shadeIntensity: 0.5,
-            gradientToColors: ["#487FFF"],
-            inverseColors: false,
-            opacityFrom: 1,
-            opacityTo: 1,
-            stops: [0, 100],
+        series: [{
+            name: "SELL",
+            data: [{
+                x: "8 pm",
+                y: Number("{{ $t8to9pm }}"),
+            }, {
+                x: "9 pm",
+                y: Number("{{ $t9to10pm }}"),
+            }, {
+                x: "10 pm",
+                y: Number("{{ $t10to11pm }}"),
+            }, {
+                x: "11 pm",
+                y: Number("{{ $t11to12pm }}"),
+            }, {
+                x: "12 pm",
+                y: Number("{{ $t12to1am }}"),
+            }, {
+                x: "1 am",
+                y: Number("{{ $t1to2am }}"),
+            }, {
+                x: "2 am",
+                y: Number("{{ $t2to3am }}"),
+            }, {
+                x: "3 am",
+                y: Number("{{ $t3to4am }}"),
+            }, {
+                x: "4 am",
+                y: Number("{{ $t4to5am }}"),
+            }, {
+                x: "5 am",
+                y: Number("{{ $t5to6am }}"),
+            }]
+        }],
+        chart: {
+            type: "bar",
+            height: 310,
+            toolbar: {
+                show: false
+            }
         },
-    },
-    grid: {
-        show: true,
-        borderColor: "#D1D5DB",
-        strokeDashArray: 4,
-        position: "back",
-    },
-    xaxis: {
-        type: "category",
-        categories: ["8 pm", "9 pm", "10 pm", "11 pm", "12 pm", "1 am", "2 am", "3 am", "4 am", "5 am"]
-    },
-    yaxis: {
-        labels: {
-            formatter: function(value) {
-                return value.toFixed(0) + " CM";
+        plotOptions: {
+            bar: {
+                borderRadius: 4,
+                horizontal: false,
+                columnWidth: "23%",
+                endingShape: "rounded",
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        fill: {
+            type: "gradient",
+            colors: ["#487FFF"],
+            gradient: {
+                shade: "light",
+                type: "vertical",
+                shadeIntensity: 0.5,
+                gradientToColors: ["#487FFF"],
+                inverseColors: false,
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 100],
+            },
+        },
+        grid: {
+            show: true,
+            borderColor: "#D1D5DB",
+            strokeDashArray: 4,
+            position: "back",
+        },
+        xaxis: {
+            type: "category",
+            categories: ["8 pm", "9 pm", "10 pm", "11 pm", "12 pm", "1 am", "2 am", "3 am", "4 am", "5 am"]
+        },
+        yaxis: {
+            labels: {
+                formatter: function(value) {
+                    return (value / 1).toFixed(0) + "CM";
+                }
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(value) {
+                    return value / 1 + "CM";
+                }
             }
         }
-    },
-    tooltip: {
-        y: {
-            formatter: function(value) {
-                return value + " CM";
-            }
-        }
-    }
-};
+    };
 
-var chart = new ApexCharts(document.querySelector("#barChart"), options);
-chart.render();
+    var chart = new ApexCharts(document.querySelector("#barChart"), options);
+    chart.render();
 
 
 
@@ -482,6 +504,17 @@ chart.render();
             </div>
         </div>
     </div>
+    <p>8-9 PM: {{ $t8to9pm }}</p>
+    <p>9-10 PM: {{ $t9to10pm }}</p>
+    <p>10-11 PM: {{ $t10to11pm }}</p>
+    <p>11-12 PM: {{ $t11to12pm }}</p>
+    <p>12-1 AM: {{ $t12to1am }}</p>
+    <p>1-2 AM: {{ $t1to2am }}</p>
+    <p>2-3 AM: {{ $t2to3am }}</p>
+    <p>3-4 AM: {{ $t3to4am }}</p>
+    <p>4-5 AM: {{ $t4to5am }}</p>
+    <p>5-6 AM: {{ $t5to6am }}</p>
+
 </div>
 
 @endsection
