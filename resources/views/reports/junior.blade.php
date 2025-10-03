@@ -434,7 +434,7 @@ $script = '<script>
                         </span>
                         <div>
                             <span class="text-secondary-light text-sm fw-medium">TC</span>
-                            <h6 class="text-md fw-semibold mb-0">{{ $totalCalls }}</h6>
+                            <h6 class="text-md fw-semibold mb-0">{{ $StotalCalls }}</h6>
                         </div>
                     </div>
 
@@ -444,7 +444,7 @@ $script = '<script>
                         </span>
                         <div>
                             <span class="text-secondary-light text-sm fw-medium">OC</span>
-                            <h6 class="text-md fw-semibold mb-0">{{ $otherCalls }}</h6>
+                            <h6 class="text-md fw-semibold mb-0">{{ $SotherCalls }}</h6>
                         </div>
                     </div>
 
@@ -454,7 +454,7 @@ $script = '<script>
                         </span>
                         <div>
                             <span class="text-secondary-light text-sm fw-medium">C&MC</span>
-                            <h6 class="text-md fw-semibold mb-0">{{ $calledAndMailedCalls }}</h6>
+                            <h6 class="text-md fw-semibold mb-0">{{ $ScalledAndMailedCalls }}</h6>
                         </div>
                     </div>
                 </div>
