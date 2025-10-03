@@ -293,7 +293,7 @@ class CallReportController extends Controller
         $t4to5am = $hourlyCalledMailed[4] ?? 0;
         $t5to6am = $hourlyCalledMailed[5] ?? 0;
 
-        return view('reports.junior', compact(
+        return view('reports.juniormonthly', compact(
             'MtotalCalls',
             'McalledAndMailedCalls',
             'MotherCalls',
