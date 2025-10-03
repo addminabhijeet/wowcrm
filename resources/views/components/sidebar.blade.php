@@ -197,7 +197,7 @@
                         <span>Report</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('call.reports.index') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Call Report</a></li>
+                        <li><a href=""><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Call Report</a></li>
                     </ul>
                 </li>
 
