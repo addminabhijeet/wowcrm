@@ -11,6 +11,8 @@ use App\Models\UserTimerPause;
 
 class LoginController extends Controller
 {
+    const WORK_DAY_SECONDS = 9 * 60 * 60;
+
     public function showLoginForm()
     {
         return view('auth.signin');
@@ -32,6 +34,18 @@ class LoginController extends Controller
                 'user_agent' => $request->header('User-Agent'),
                 'logged_in_at' => now()
             ]);
+
+            $lastTimer = UserTimerLog::where('user_id', Auth::id())->latest()->first();
+
+            if (!$lastTimer) {
+                UserTimerLog::create([
+                    'user_id' => Auth::id(),
+                    'login_id' => $login->id,
+                    'start_time' => now(),
+                    'remaining_seconds' => self::WORK_DAY_SECONDS,
+                    'status' => 'running'
+                ]);
+            }
 
             $lastTimer = UserTimerLog::where('user_id', Auth::id())->latest()->first();
 
