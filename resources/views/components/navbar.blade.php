@@ -1,6 +1,4 @@
-@php
-    $button_status = $button_status; 
-@endphp
+
 
 <div class="navbar-header">
     <div class="row align-items-center justify-content-between">
@@ -39,7 +37,6 @@
                         <span id="elapsed" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">00:00:00</span>
                     </div>
 
-                    @if($button_status == 1)
                     <div id="controlButtons" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
                         <button data-type="resume" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
                             <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
@@ -57,7 +54,6 @@
                             <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                         </button>
                     </div>
-                    @endif
                 </div>
             </div>
         </div>
