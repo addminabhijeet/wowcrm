@@ -266,7 +266,7 @@ $script = '<script>
     // 🚀 Initialize
     setupControlButtons();
     setInterval(localTick, 1000); // smooth countdown every second
-    setInterval(updateAllTimers, 10000); // sync with DB every 10s
+    setInterval(updateAllTimers, 1000); // sync with DB every 10s
 </script>
 
 <script>
