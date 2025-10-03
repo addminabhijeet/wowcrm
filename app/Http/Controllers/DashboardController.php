@@ -21,7 +21,7 @@ class DashboardController extends Controller
         $setting = TimerSetting::first();
         return [
             'work_day_seconds' => $setting ? $setting->work_day_seconds : (9 * 3600), // 9 hours default
-            'daily_base_time'  => $setting ? $setting->daily_base_time : '20:00:00',  // 8 PM default
+            'daily_base_time'  => $setting ? $setting->daily_base_time : '07:00:00',  // 8 PM default
         ];
     }
 
@@ -144,7 +144,7 @@ class DashboardController extends Controller
         try {
             $settings = $this->getTimerSettings();
             $workDaySeconds = $settings['work_day_seconds'] ?? 32400; // fallback 9hrs
-            $dailyBaseTime  = $settings['daily_base_time'] ?? '20:00:00';
+            $dailyBaseTime  = $settings['daily_base_time'] ?? '07:00:00';
 
             $user   = Auth::user();
             if (!$user) {
