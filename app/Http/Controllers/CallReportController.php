@@ -153,7 +153,7 @@ class CallReportController extends Controller
         $t4to5am = $hourlyCalledMailed[4] ?? 0;
         $t5to6am = $hourlyCalledMailed[5] ?? 0;
 
-        return view('reports.junior', compact(
+        return view('reports.senior', compact(
             'totalCalls',
             'calledAndMailedCalls',
             'otherCalls',
@@ -218,7 +218,7 @@ class CallReportController extends Controller
         $t4to5am = $hourlyCalledMailed[4] ?? 0;
         $t5to6am = $hourlyCalledMailed[5] ?? 0;
 
-        return view('reports.juniormonthly', compact(
+        return view('reports.seniormonthly', compact(
             'MtotalCalls',
             'McalledAndMailedCalls',
             'MotherCalls',
@@ -280,7 +280,7 @@ class CallReportController extends Controller
         $t4to5am = $hourlyCalledMailed[4] ?? 0;
         $t5to6am = $hourlyCalledMailed[5] ?? 0;
 
-        return view('reports.juniormonthly', compact(
+        return view('reports.alljuniordaily', compact(
             'MtotalCalls',
             'McalledAndMailedCalls',
             'MotherCalls',
@@ -342,7 +342,7 @@ class CallReportController extends Controller
         $t4to5am = $hourlyCalledMailed[4] ?? 0;
         $t5to6am = $hourlyCalledMailed[5] ?? 0;
 
-        return view('reports.juniormonthly', compact(
+        return view('reports.alljuniormonthly', compact(
             'MtotalCalls',
             'McalledAndMailedCalls',
             'MotherCalls',
