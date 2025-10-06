@@ -48,31 +48,34 @@ document.addEventListener('DOMContentLoaded', function() {
         events: "{{ route('calendar.juniorEvents') }}",
         displayEventTime: false, // <-- hide time
         displayEventEnd: false,  // <-- hide end time
-        dayCellDidMount: function(info) {
-            var eventsOnDate = calendar.getEvents().filter(event => {
-                return event.startStr.slice(0,10) === info.date.toISOString().slice(0,10);
-            });
-
-            if(eventsOnDate.length > 0){
-                var container = document.createElement('div');
-                container.className = 'fc-day-events-container';
-
-                eventsOnDate.forEach(function(event){
-                    var dot = document.createElement('span');
-                    dot.className = 'event-dot';
-                    dot.style.backgroundColor = event.extendedProps.label_color;
-                    dot.title = event.extendedProps.label; // tooltip only
-                    container.appendChild(dot);
-                });
-
-                var countEl = document.createElement('span');
-                countEl.className = 'event-count';
-                countEl.innerText = eventsOnDate.length;
-                container.appendChild(countEl);
-
-                info.el.appendChild(container);
-            }
+        eventContent: function() {
+            return { domNodes: [] }; // <-- completely remove default title rendering
         },
+        // dayCellDidMount: function(info) {
+        //     var eventsOnDate = calendar.getEvents().filter(event => {
+        //         return event.startStr.slice(0,10) === info.date.toISOString().slice(0,10);
+        //     });
+
+        //     if(eventsOnDate.length > 0){
+        //         var container = document.createElement('div');
+        //         container.className = 'fc-day-events-container';
+
+        //         eventsOnDate.forEach(function(event){
+        //             var dot = document.createElement('span');
+        //             dot.className = 'event-dot';
+        //             dot.style.backgroundColor = event.extendedProps.label_color;
+        //             dot.title = event.extendedProps.label; // tooltip only
+        //             container.appendChild(dot);
+        //         });
+
+        //         var countEl = document.createElement('span');
+        //         countEl.className = 'event-count';
+        //         countEl.innerText = eventsOnDate.length;
+        //         container.appendChild(countEl);
+
+        //         info.el.appendChild(container);
+        //     }
+        // },
         dateClick: function(info) {
             var eventsOnDate = calendar.getEvents().filter(event => {
                 return event.startStr.slice(0,10) === info.dateStr;
