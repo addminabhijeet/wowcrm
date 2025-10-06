@@ -48,9 +48,6 @@ document.addEventListener('DOMContentLoaded', function() {
         events: "{{ route('calendar.juniorEvents') }}",
         displayEventTime: false, // <-- hide time
         displayEventEnd: false,  // <-- hide end time
-        eventContent: function() {
-            return { domNodes: [] }; // <-- completely remove default title rendering
-        },
         dayCellDidMount: function(info) {
             var eventsOnDate = calendar.getEvents().filter(event => {
                 return event.startStr.slice(0,10) === info.date.toISOString().slice(0,10);
