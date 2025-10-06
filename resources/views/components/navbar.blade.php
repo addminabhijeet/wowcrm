@@ -229,13 +229,13 @@
 <div id="statusOverlay"></div>
 
 <script>
-    let timerInterval, backendSyncInterval;
+    let backendSyncInterval;
     let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
     let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
     let status = "{{ $status ?? 'running' }}";
 
     let inactiveTimeout;
-    const INACTIVE_LIMIT = 2 * 60 * 1000;
+    const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes inactivity
 
     function formatTime(sec) {
         sec = Math.floor(sec);
@@ -273,26 +273,7 @@
         }, 3000);
     }
 
-    function startTimer() {
-        clearInterval(timerInterval);
-        clearInterval(backendSyncInterval);
-
-        timerInterval = setInterval(() => {
-            if (status === 'running' && remainingSeconds > 0) {
-                remainingSeconds--;
-                elapsedSeconds++;
-                updateUI();
-            }
-        }, 1000);
-
-        backendSyncInterval = setInterval(syncWithBackend, 1000);
-    }
-
-    function stopTimer() {
-        clearInterval(timerInterval);
-        clearInterval(backendSyncInterval);
-    }
-
+    // 🔁 Sync only with backend — no local ticking
     function syncWithBackend() {
         fetch("{{ route('timer.update') }}", {
                 method: "POST",
@@ -306,6 +287,7 @@
             })
             .then(res => res.json())
             .then(data => {
+                if (!data.success) return;
 
                 if (data.notice_status === 1 && data.message) {
                     showOverlay(data.message);
@@ -317,14 +299,15 @@
                 updateUI();
 
                 if (data.logout) {
-                    stopTimer();
+                    clearInterval(backendSyncInterval);
                     alert("Your 9-hour work session has ended.");
                     forceLogout();
                 }
-            });
+            })
+            .catch(err => console.error("Timer sync failed:", err));
     }
 
-
+    // 🔘 Control buttons (pause/resume/etc)
     document.querySelectorAll('#controlButtons button').forEach(btn => {
         btn.addEventListener('click', () => {
             const type = btn.getAttribute('data-type');
@@ -341,12 +324,10 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-
                     if (data.success === false && data.notice_status === 1) {
                         showOverlay(data.message || "Please wait for senior to enable.");
                         return;
                     }
-
 
                     remainingSeconds = data.remaining_seconds;
                     elapsedSeconds = data.elapsed_seconds;
@@ -356,17 +337,25 @@
         });
     });
 
-
-
+    // 💤 Auto pause on inactivity
     function resetInactiveTimer() {
         clearTimeout(inactiveTimeout);
         inactiveTimeout = setTimeout(() => {
             showOverlay("You were inactive! Timer stopped.");
-            stopTimer();
+            fetch("{{ route('timer.update') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: "pause"
+                })
+            });
         }, INACTIVE_LIMIT);
     }
 
-
+    // 🏃‍♂️ Resume when user active again
     function handleActiveState() {
         fetch("{{ route('timer.update') }}", {
                 method: "POST",
@@ -380,15 +369,16 @@
             })
             .then(res => res.json())
             .then(data => {
-                remainingSeconds = data.remaining_seconds;
-                elapsedSeconds = data.elapsed_seconds;
-                status = data.status;
-                updateUI();
+                if (data.success) {
+                    remainingSeconds = data.remaining_seconds;
+                    elapsedSeconds = data.elapsed_seconds;
+                    status = data.status;
+                    updateUI();
+                }
             });
 
         resetInactiveTimer();
     }
-
 
     ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt => {
         window.addEventListener(evt, resetInactiveTimer);
@@ -400,12 +390,15 @@
         }
     });
 
-
+    // 🕒 Initialize
     updateUI();
     resetInactiveTimer();
     handleActiveState();
-    startTimer();
+
+    // 🔁 Backend-only timer sync every second
+    backendSyncInterval = setInterval(syncWithBackend, 1000);
 </script>
+
 
 <script>
     function checkButtonStatus() {
