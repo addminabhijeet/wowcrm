@@ -18,9 +18,11 @@ $script ='<script>
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>10</option>
             </select>
-            <form class="navbar-search">
-                <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
+            <!-- Search Input -->
+            <form class="navbar-search position-relative" autocomplete="off">
+                <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control" placeholder="Search Name, Email, Phone">
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+                <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>Status</option>
@@ -29,7 +31,8 @@ $script ='<script>
             </select>
         </div>
     </div>
-    <div class="card-body p-24">
+    <div class="card-body p-24" id="senior-table-wrapper">
+        @include('database.partials.senior_table', ['data' => $data])
         <div class="table-responsive scroll-sm">
             @if($data->isEmpty())
             <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
@@ -824,6 +827,84 @@ $script ='<script>
             if (e.target.matches('input.qualification-input')) {
                 e.target.value = e.target.value.toUpperCase().replace(/[^A-Z\s]/g, '');
                 validateQualificationInput(e.target);
+            }
+        });
+    });
+</script>
+
+<!-- AJAX search & pagination -->
+<script>
+    $(document).ready(function() {
+
+        function fetchData(search = '', page = 1) {
+            $.ajax({
+                url: "{{ route('senior') }}",
+                type: 'GET',
+                data: {
+                    search: search,
+                    page: page
+                },
+                success: function(res) {
+                    $('#senior-table-wrapper').html(res);
+                }
+            });
+        }
+
+        // Live suggestions
+        let timer;
+        $('#senior-search').on('input', function() {
+            clearTimeout(timer);
+            let query = $(this).val();
+
+            if (query.length < 3) {
+                $('#search-suggestions').empty().hide();
+                fetchData(''); // reset table if input <3 letters
+                return;
+            }
+
+            timer = setTimeout(() => {
+                $.ajax({
+                    url: "{{ route('senior.suggestions') }}",
+                    type: 'GET',
+                    data: {
+                        query: query
+                    },
+                    success: function(res) {
+                        let suggestions = '';
+                        if (res.length > 0) {
+                            res.forEach(item => {
+                                suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
+                            });
+                        } else {
+                            suggestions = '<span class="list-group-item">No results found</span>';
+                        }
+                        $('#search-suggestions').html(suggestions).show();
+                    }
+                });
+            }, 300);
+        });
+
+        // Click suggestion
+        $(document).on('click', '#search-suggestions a', function(e) {
+            e.preventDefault();
+            let text = $(this).text();
+            $('#senior-search').val(text);
+            $('#search-suggestions').empty().hide();
+            fetchData(text);
+        });
+
+        // Pagination click
+        $(document).on('click', '.pagination a', function(e) {
+            e.preventDefault();
+            let page = $(this).attr('href').split('page=')[1];
+            let search = $('#senior-search').val();
+            fetchData(search, page);
+        });
+
+        // Click outside suggestions
+        $(document).click(function(e) {
+            if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
+                $('#search-suggestions').empty().hide();
             }
         });
     });

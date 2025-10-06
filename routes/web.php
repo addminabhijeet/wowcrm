@@ -49,6 +49,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/senior/google-sheet/seniorstore', [GoogleSheetController::class, 'seniorstore'])->name('seniorstore');
     Route::get('/dashboard/senior/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewseniorResume'])->name('view.resume');
     Route::get('/dashboard/senior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadseniorResume'])->name('download.resume');
+    Route::get('/dashboard/senior/google-sheet/search', [GoogleSheetController::class, 'seniorSuggestions'])->name('senior.suggestions');
 
     Route::get('/dashboard/junior/google-sheet', [GoogleSheetController::class, 'junior'])->name('google.sheet.junior');
     Route::post('/dashboard/junior/google-sheet/fetch', [GoogleSheetController::class, 'juniorfetch'])->name('google.sheet.juniorfetch');

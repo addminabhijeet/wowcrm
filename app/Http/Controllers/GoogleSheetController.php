@@ -377,30 +377,36 @@ class GoogleSheetController extends Controller
     }
 
 
-    public function senior()
+    public function senior(Request $request)
     {
         $authUser = Auth::user();
+        $search = $request->input('search');
 
         // Build patterns for LIKE match
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
-        $data = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            // Direct match with "id|senior"
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
             $q->where('created_by', $authUser->id . '|senior')
-                // Direct match with "0|senior"
                 ->orWhere('created_by', '0|senior')
-                // Matches if last part is ":id|senior"
                 ->orWhere('created_by', 'LIKE', $userPattern)
-                // Matches if last part is ":0|senior"
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
         })
-            // Ensure it's truly the LAST part of created_by
             ->where(function ($q) use ($authUser) {
                 $q->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|senior', $authUser->id . '|senior'])
                     ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|senior', '0|senior']);
-            })
-            ->paginate(10);
+            });
+
+        // Filter by search if present
+        if ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $data = $query->orderBy('id', 'desc')->paginate(10);
 
         // Map forwarded_by dynamically
         $data->getCollection()->transform(function ($item) use ($authUser) {
@@ -422,12 +428,43 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        if ($request->ajax()) {
+            return view('database.partials.senior_table', compact('data'))->render();
+        }
+
         return view('database.senior', compact('data'));
     }
 
+    // AJAX endpoint for search suggestions
+    public function seniorSuggestions(Request $request)
+    {
+        $authUser = Auth::user();
+        $query = $request->input('query');
 
+        $results = [];
 
+        if ($query && strlen($query) >= 3) {
+            $results = GoogleSheetData::where(function ($q) use ($authUser) {
+                $userPattern = "%:" . $authUser->id . "|senior";
+                $zeroPattern = "%:0|senior";
 
+                $q->where('created_by', $authUser->id . '|senior')
+                    ->orWhere('created_by', '0|senior')
+                    ->orWhere('created_by', 'LIKE', $userPattern)
+                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+            })
+                ->where(function ($q) use ($query) {
+                    $q->where('Name', 'LIKE', "%{$query}%")
+                        ->orWhere('Email_Address', 'LIKE', "%{$query}%")
+                        ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
+                })
+                ->limit(10)
+                ->get(['id', 'Name', 'Email_Address', 'Phone_Number']);
+        }
+
+        return response()->json($results);
+    }
+    
     public function seniorfetch(Request $request)
     {
         $request->validate([
