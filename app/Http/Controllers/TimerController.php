@@ -138,60 +138,6 @@ class TimerController extends Controller
     }
 
 
-
-    public function updateTimer(Request $request)
-    {
-        $user = Auth::user();
-        $action = $request->input('action');
-
-        $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
-        if (!$timer) return response()->json(['error' => 'Timer not found'], 404);
-
-        $timerSetting = TimerSetting::first();
-        $workDaySeconds = $timerSetting ? $timerSetting->work_day_seconds : 9 * 60 * 60;
-
-        $now = now();
-
-        if ($timer->status === 'running') {
-            $seconds_passed = $now->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed); // subtract!
-        }
-
-        if ($action === 'resume') {
-            $timer->status = 'running';
-            $timer->pause_type = 'resume';
-        } elseif ($action !== 'tick') {
-            $timer->status = 'paused';
-            $timer->pause_type = $action;
-        }
-
-        $timer->updated_at = $now;
-        $timer->save();
-
-        $elapsed_seconds = $workDaySeconds - $timer->remaining_seconds;
-
-        if ($action !== 'tick') {
-            UserTimerPause::create([
-                'user_timer_log_id' => $timer->id,
-                'user_id'           => $user->id,
-                'status'            => $timer->status,
-                'pause_type'        => $timer->pause_type,
-                'remaining_seconds' => $timer->remaining_seconds,
-                'elapsed_seconds'   => $elapsed_seconds,
-                'event_time'        => $now,
-            ]);
-        }
-
-        return response()->json([
-            'remaining_seconds' => $timer->remaining_seconds,
-            'elapsed_seconds'   => $elapsed_seconds,
-            'status'            => $timer->status,
-            'pause_type'        => $timer->pause_type,
-            'logout'            => $timer->remaining_seconds <= 0
-        ]);
-    }
-
-
     public function allJuniorTimers()
     {
         $timerSetting = TimerSetting::first();
