@@ -85,7 +85,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/seniormonthly/call-reports', [CallReportController::class, 'seniormonthly'])->name('call.reports.seniormonthly');
     Route::get('/dashboard/alljuniordaily/call-reports', [CallReportController::class, 'alljuniordaily'])->name('call.reports.alljuniordaily');
     Route::get('/dashboard/alljuniorlist/call-reports', [CallReportController::class, 'alljuniorlist'])->name('call.reports.alljuniorlist');
-    Route::get('/dashboard/alljuniormonthly/call-reports', [CallReportController::class, 'alljuniormonthly'])->name('call.reports.alljuniormonthly');
+    Route::get('/dashboard/alljuniormonthly/call-reports/{userId}', [CallReportController::class, 'alljuniormonthly'])->name('call.reports.alljuniormonthly');
+    Route::get('/dashboard/alljuniordaily/call-reports/{userId}', [CallReportController::class, 'alljuniordaily'])->name('call.reports.alljuniordaily');
+
 
     Route::match(['get', 'post'], '/timer/update', [DashboardController::class, 'updateTimer'])->name('timer.update');
     Route::get('/dashboard/senior/seniortimer', [TimerController::class, 'seniorTimers'])->name('timer.senior');

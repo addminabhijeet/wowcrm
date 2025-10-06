@@ -49,11 +49,11 @@ $script = '<script>
                 <thead>
                     <tr>
                         <th>S.L</th>
-                        <th>Create Date</th>
+
                         <th>Name</th>
                         <th>Email</th>
                         <th>Role</th>
-                        <th>Department</th>
+
                         <th class="text-center">Action</th>
                     </tr>
                 </thead>
@@ -61,14 +61,21 @@ $script = '<script>
                     @forelse($juniorUsers as $index => $user)
                     <tr>
                         <td>{{ $index + 1 }}</td>
-                        <td>{{ $user->created_at->format('d M Y') }}</td>
+
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->role }}</td>
-                        <td>{{ $user->department ?? 'N/A' }}</td> <!-- Assuming department column exists -->
+
                         <td class="text-center">
-                            <a href="{{ route('call.reports.alljuniordaily', $user->id) }}" class="btn btn-sm btn-primary">View</a>
+                            <a href="{{ route('call.reports.alljuniormonthly', $user->id) }}" class="btn btn-sm btn-primary">
+                                View Monthly
+                            </a>
+
+                            <a href="{{ route('call.reports.alljuniordaily', $user->id) }}" class="btn btn-sm btn-success">
+                                View Daily
+                            </a>
                         </td>
+
                     </tr>
                     @empty
                     <tr>

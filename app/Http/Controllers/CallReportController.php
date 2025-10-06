@@ -254,41 +254,39 @@ class CallReportController extends Controller
         ));
     }
 
-public function alljuniorlist(Request $request)
-{
-    // Fetch all users with role 'junior'
-    $juniorUsers = User::where('role', 'junior')->get();
-
-    // Pass users to the view
-    return view('reports.alljuniorlist', compact('juniorUsers'));
-}
-
-
-    public function alljuniordaily(Request $request)
+    public function alljuniorlist(Request $request)
     {
+        // Fetch all users with role 'junior'
+        $juniorUsers = User::where('role', 'junior')->get();
+
+        // Pass users to the view
+        return view('reports.alljuniorlist', compact('juniorUsers'));
+    }
+
+
+    public function alljuniordaily(Request $request, $userId)
+    {
+        $juniorUser = User::findOrFail($userId);
+
         // Selected month (default current month in YYYY-MM format)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
-
-        // Extract year and month for filtering
         [$year, $month] = explode('-', $selectedMonth);
 
-        // Base query filtered by selected month
-        $query = GoogleSheetData::whereYear('updated_at', $year)
+        $createdByKey = "{$juniorUser->id}|junior";
+
+        // Base query filtered by junior and month
+        $query = GoogleSheetData::where('created_by', $createdByKey)
+            ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month);
 
-        // Selected month totals
         $MtotalCalls = $query->count();
         $McalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
-
-        // Other calls (excluding Called & Mailed)
-        $MotherCalls = GoogleSheetData::whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
-            ->whereNotNull('Exe_Remarks')
+        $MotherCalls = (clone $query)->whereNotNull('Exe_Remarks')
             ->where('Exe_Remarks', '<>', 'Called & Mailed')
             ->count();
 
-        // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', $createdByKey)
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -296,7 +294,6 @@ public function alljuniorlist(Request $request)
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Initialize hour variables (20 = 8 PM, etc.)
         $t8to9pm = $hourlyCalledMailed[20] ?? 0;
         $t9to10pm = $hourlyCalledMailed[21] ?? 0;
         $t10to11pm = $hourlyCalledMailed[22] ?? 0;
@@ -309,6 +306,7 @@ public function alljuniorlist(Request $request)
         $t5to6am = $hourlyCalledMailed[5] ?? 0;
 
         return view('reports.alljuniordaily', compact(
+            'juniorUser',
             'MtotalCalls',
             'McalledAndMailedCalls',
             'MotherCalls',
@@ -326,31 +324,30 @@ public function alljuniorlist(Request $request)
         ));
     }
 
-    public function alljuniormonthly(Request $request)
-    {
-        // Selected month (default current month in YYYY-MM format)
-        $selectedMonth = $request->input('selected_month', date('Y-m'));
 
-        // Extract year and month for filtering
+    public function alljuniormonthly(Request $request, $userId)
+    {
+        $juniorUser = User::findOrFail($userId);
+
+        // Selected month (default current month)
+        $selectedMonth = $request->input('selected_month', date('Y-m'));
         [$year, $month] = explode('-', $selectedMonth);
 
-        // Base query filtered by selected month
-        $query = GoogleSheetData::whereYear('updated_at', $year)
+        // Base query filtered by junior user and month
+        $createdByKey = "{$juniorUser->id}|junior"; // adjust if your created_by format differs
+        $query = GoogleSheetData::where('created_by', $createdByKey)
+            ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month);
 
-        // Selected month totals
         $MtotalCalls = $query->count();
         $McalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
-
-        // Other calls (excluding Called & Mailed)
-        $MotherCalls = GoogleSheetData::whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+        $MotherCalls = (clone $query)
             ->whereNotNull('Exe_Remarks')
             ->where('Exe_Remarks', '<>', 'Called & Mailed')
             ->count();
 
-        // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', $createdByKey)
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -358,19 +355,20 @@ public function alljuniorlist(Request $request)
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Initialize hour variables (20 = 8 PM, etc.)
-        $t8to9pm = $hourlyCalledMailed[20] ?? 0;
+        // Map hours (same as your seniormonthly)
+        $t8to9pm  = $hourlyCalledMailed[20] ?? 0;
         $t9to10pm = $hourlyCalledMailed[21] ?? 0;
         $t10to11pm = $hourlyCalledMailed[22] ?? 0;
         $t11to12pm = $hourlyCalledMailed[23] ?? 0;
-        $t12to1am = $hourlyCalledMailed[0] ?? 0;
-        $t1to2am = $hourlyCalledMailed[1] ?? 0;
-        $t2to3am = $hourlyCalledMailed[2] ?? 0;
-        $t3to4am = $hourlyCalledMailed[3] ?? 0;
-        $t4to5am = $hourlyCalledMailed[4] ?? 0;
-        $t5to6am = $hourlyCalledMailed[5] ?? 0;
+        $t12to1am  = $hourlyCalledMailed[0] ?? 0;
+        $t1to2am   = $hourlyCalledMailed[1] ?? 0;
+        $t2to3am   = $hourlyCalledMailed[2] ?? 0;
+        $t3to4am   = $hourlyCalledMailed[3] ?? 0;
+        $t4to5am   = $hourlyCalledMailed[4] ?? 0;
+        $t5to6am   = $hourlyCalledMailed[5] ?? 0;
 
-        return view('reports.alljuniormonthly', compact(
+        return view('reports.seniormonthly', compact(
+            'juniorUser',
             'MtotalCalls',
             'McalledAndMailedCalls',
             'MotherCalls',
@@ -387,6 +385,7 @@ public function alljuniorlist(Request $request)
             't5to6am'
         ));
     }
+
 
     public function junior(Request $request)
     {
