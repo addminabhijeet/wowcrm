@@ -202,11 +202,10 @@ class DashboardController extends Controller
 
         $workDaySeconds = $timerSetting->work_day_seconds;
 
-        // ⏱ Update remaining seconds by 2 instead of full elapsed seconds
+        // ⏱ Update remaining seconds if timer is running
         if ($timer->status === 'running') {
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds - 2); // decrease by 2
-        } elseif ($timer->status === 'paused') {
-            $timer->remaining_seconds = min($workDaySeconds, $timer->remaining_seconds + 2); // increase by 2 if needed
+            $secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds + $secondsPassed -1);
         }
 
         // 🧭 Handle actions
@@ -224,6 +223,7 @@ class DashboardController extends Controller
 
         // 🔢 Calculate elapsed time
         $elapsedSeconds = max(0, $workDaySeconds - $timer->remaining_seconds);
+
 
         // 🧾 Log pause/resume event (only if not a tick update)
         if ($action !== 'tick') {
