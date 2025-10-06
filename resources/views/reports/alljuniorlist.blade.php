@@ -67,12 +67,7 @@ $script = '<script>
                         <td>{{ $user->role }}</td>
                         <td>{{ $user->department ?? 'N/A' }}</td> <!-- Assuming department column exists -->
                         <td class="text-center">
-                            <a href="{{ route('users.edit', $user->id) }}" class="btn btn-sm btn-primary">Edit</a>
-                            <form action="{{ route('users.destroy', $user->id) }}" method="POST" style="display:inline-block;">
-                                @csrf
-                                @method('DELETE')
-                                <button type="submit" class="btn btn-sm btn-danger">Delete</button>
-                            </form>
+                            <a href="{{ route('call.reports.alljuniordaily', $user->id) }}" class="btn btn-sm btn-primary">View</a>
                         </td>
                     </tr>
                     @empty
