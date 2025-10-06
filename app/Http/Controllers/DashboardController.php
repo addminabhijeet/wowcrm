@@ -222,7 +222,8 @@ class DashboardController extends Controller
         $timer->save();
 
         // 🔢 Calculate elapsed time
-        $elapsedSeconds = $workDaySeconds - $timer->remaining_seconds;
+        $elapsedSeconds = max(0, $workDaySeconds - $timer->remaining_seconds);
+
 
         // 🧾 Log pause/resume event (only if not a tick update)
         if ($action !== 'tick') {
