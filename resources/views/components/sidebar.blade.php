@@ -104,16 +104,16 @@
                         <span>Report</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('call.reports.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Report</a></li>
+                        <li><a href="{{ route('call.reports.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Personal Report</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('call.reports.seniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Report</a></li>
+                        <li><a href="{{ route('call.reports.seniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('call.reports.alljuniordaily') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Report</a></li>
+                        <li><a href="{{ route('call.reports.alljuniordaily') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Candidate Report</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('call.reports.alljuniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Report</a></li>
+                        <li><a href="{{ route('call.reports.alljuniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Candidate Report</a></li>
                     </ul>
                 </li>
 

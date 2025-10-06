@@ -253,6 +253,27 @@ class CallReportController extends Controller
         ));
     }
 
+    public function alljuniorlist(Request $request)
+    {
+        
+
+        return view('reports.alljuniorlist', compact(
+            'MtotalCalls',
+            'McalledAndMailedCalls',
+            'MotherCalls',
+            'selectedMonth',
+            't8to9pm',
+            't9to10pm',
+            't10to11pm',
+            't11to12pm',
+            't12to1am',
+            't1to2am',
+            't2to3am',
+            't3to4am',
+            't4to5am',
+            't5to6am'
+        ));
+    }
 
     public function alljuniordaily(Request $request)
     {
