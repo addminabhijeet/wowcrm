@@ -113,7 +113,7 @@
                         <li><a href="{{ route('call.reports.alljuniordaily') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Candidate Report</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('call.reports.alljuniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Candidate Report</a></li>
+                        <li><a href="{{ route('call.reports.alljuniorlist', ['userId' => Auth::id()]) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Candidate Report</a></li>
                     </ul>
                 </li>
 
