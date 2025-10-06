@@ -250,16 +250,6 @@
         document.getElementById('elapsed').innerText = formatTime(elapsedSeconds);
     }
 
-    // function forceLogout() {
-    //     fetch("{{ route('logout') }}", {
-    //         method: "POST",
-    //         headers: {
-    //             "X-CSRF-TOKEN": "{{ csrf_token() }}",
-    //             "Content-Type": "application/json"
-    //         }
-    //     }).then(() => window.location.href = "/login");
-    // }
-
     let overlayTimeout;
 
     function showOverlay(message) {
