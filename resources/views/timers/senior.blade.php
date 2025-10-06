@@ -210,7 +210,7 @@ $script = '<script>
         });
     }
 
-    // Bulk refresh from server (every 10s)
+    // Bulk refresh from server 
     function updateAllTimers() {
         fetch("{{ route('timer.alljuniors') }}")
             .then(res => res.json())
