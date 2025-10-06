@@ -18,7 +18,7 @@
             <div class="py-res-120">
                 <div class="row align-items-center">
                     <div class="col-lg-6">
-                        <h3 class="mb-32 max-w-1000-px">Our site is creating. Keep persistence, we are not far off</h3>
+                        <h3 class="mb-32 max-w-1000-px">We Make Every Connection into Lasting Relationships!</h3>
                         <p class="text-neutral-500 max-w-700-px text-lg">We have been spending extended periods to send off our new site. Join our mailing list or follow us on Facebook for get most recent update.</p>
 
                         <div class="countdown my-56 d-flex align-items-center flex-wrap gap-md-4 gap-3" id="coming-soon">
