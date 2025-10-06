@@ -838,7 +838,7 @@ $script ='<script>
 
         function fetchData(search = '', page = 1) {
             $.ajax({
-                url: "{{ route('senior') }}",
+                url: "{{ route('google.sheet.senior') }}",
                 type: 'GET',
                 data: {
                     search: search,
