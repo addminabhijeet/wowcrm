@@ -225,9 +225,12 @@
         pointer-events: auto;
     }
 </style>
-
 <div id="statusOverlay"></div>
+
 <script>
+    // ===============================
+    // Timer Variables
+    // ===============================
     let backendSyncInterval;
     let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
     let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
@@ -235,7 +238,11 @@
 
     let inactiveTimeout;
     const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes inactivity
+    let overlayTimeout;
 
+    // ===============================
+    // Helper Functions
+    // ===============================
     function formatTime(sec) {
         sec = Math.floor(sec);
         const h = Math.floor(sec / 3600);
@@ -246,15 +253,18 @@
 
     function updateUI() {
         console.log("[UI] Updating display → Remaining:", remainingSeconds, "Elapsed:", elapsedSeconds, "Status:", status);
-        document.getElementById('countdown').innerText = formatTime(remainingSeconds);
-        document.getElementById('elapsed').innerText = formatTime(elapsedSeconds);
-    }
+        const countdownElem = document.getElementById('countdown');
+        const elapsedElem = document.getElementById('elapsed');
 
-    let overlayTimeout;
+        if (countdownElem) countdownElem.innerText = formatTime(remainingSeconds);
+        if (elapsedElem) elapsedElem.innerText = formatTime(elapsedSeconds);
+    }
 
     function showOverlay(message) {
         console.log("[Overlay] Message:", message);
         const overlay = document.getElementById('statusOverlay');
+        if (!overlay) return;
+
         overlay.innerText = message;
         overlay.classList.add('show');
 
@@ -264,7 +274,9 @@
         }, 3000);
     }
 
-    // 🔁 Sync only with backend — no local ticking
+    // ===============================
+    // Backend Sync
+    // ===============================
     function syncWithBackend() {
         console.log("[Sync] Sending tick to backend...");
         fetch("{{ route('timer.update') }}", {
@@ -273,7 +285,9 @@
                     "X-CSRF-TOKEN": "{{ csrf_token() }}",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ action: 'tick' })
+                body: JSON.stringify({
+                    action: 'tick'
+                })
             })
             .then(res => res.json())
             .then(data => {
@@ -303,7 +317,9 @@
             .catch(err => console.error("[Sync] Timer sync failed:", err));
     }
 
-    // 🔘 Control buttons (pause/resume/etc)
+    // ===============================
+    // Control Buttons (Pause/Resume/etc)
+    // ===============================
     document.querySelectorAll('#controlButtons button').forEach(btn => {
         btn.addEventListener('click', () => {
             const type = btn.getAttribute('data-type');
@@ -315,7 +331,9 @@
                         "X-CSRF-TOKEN": "{{ csrf_token() }}",
                         "Content-Type": "application/json"
                     },
-                    body: JSON.stringify({ action: type })
+                    body: JSON.stringify({
+                        action: type
+                    })
                 })
                 .then(res => res.json())
                 .then(data => {
@@ -335,25 +353,30 @@
         });
     });
 
-    // 💤 Auto pause on inactivity
+    // ===============================
+    // Inactivity Handling
+    // ===============================
     function resetInactiveTimer() {
         clearTimeout(inactiveTimeout);
         console.log("[Inactivity] Timer reset");
+
         inactiveTimeout = setTimeout(() => {
             console.warn("[Inactivity] User inactive! Pausing timer...");
             showOverlay("You were inactive! Timer stopped.");
+
             fetch("{{ route('timer.update') }}", {
                 method: "POST",
                 headers: {
                     "X-CSRF-TOKEN": "{{ csrf_token() }}",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ action: "pause" })
+                body: JSON.stringify({
+                    action: "pause"
+                })
             }).catch(err => console.error("[Inactivity] Pause request failed:", err));
         }, INACTIVE_LIMIT);
     }
 
-    // 🏃‍♂️ Resume when user active again
     function handleActiveState() {
         console.log("[Active] User active again, resuming...");
         fetch("{{ route('timer.update') }}", {
@@ -362,7 +385,9 @@
                     "X-CSRF-TOKEN": "{{ csrf_token() }}",
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ action: "resume" })
+                body: JSON.stringify({
+                    action: "resume"
+                })
             })
             .then(res => res.json())
             .then(data => {
@@ -385,27 +410,27 @@
 
     document.addEventListener('visibilitychange', () => {
         console.log("[Visibility] Changed:", document.visibilityState);
-        if (document.visibilityState === 'visible') {
-            handleActiveState();
-        }
+        if (document.visibilityState === 'visible') handleActiveState();
     });
 
-    // 🕒 Initialize
+    // ===============================
+    // Initialize Timer
+    // ===============================
     console.log("[Init] Timer script initializing...");
     updateUI();
     resetInactiveTimer();
     handleActiveState();
 
-    // 🔁 Backend-only timer sync every second
-    console.log("[Init] Starting backend sync interval (1s)");
     backendSyncInterval = setInterval(syncWithBackend, 1000);
+    console.log("[Init] Backend sync interval started (1s)");
 </script>
 
 <script>
-    // 🔍 Function to check button status from backend
+    // ===============================
+    // Button Status Check
+    // ===============================
     function checkButtonStatus() {
         console.log("[Status Check] Fetching button status...");
-        
         fetch("{{ route('button.status') }}")
             .then(response => {
                 if (!response.ok) throw new Error("Network response was not ok");
@@ -423,12 +448,10 @@
                 }
 
                 if (data.button_status == 1) {
-                    // ✅ Show control buttons, hide Start button
                     controlButtons.style.display = 'flex';
                     startButtonContainer.style.display = 'none';
                     console.log("[Status Check] Control buttons visible, start button hidden.");
                 } else {
-                    // 🚫 Hide control buttons, show Start button
                     controlButtons.style.display = 'none';
                     startButtonContainer.style.display = 'flex';
                     console.log("[Status Check] Start button visible, control buttons hidden.");
@@ -437,9 +460,6 @@
             .catch(err => console.error("[Status Check] Error fetching button status:", err));
     }
 
-    // 🚀 Run once immediately
     checkButtonStatus();
-
-    // 🔁 Poll every 1 second (1000 ms)
     setInterval(checkButtonStatus, 1000);
 </script>
