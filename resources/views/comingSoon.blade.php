@@ -23,20 +23,20 @@
 
                         <div class="countdown my-56 d-flex align-items-center flex-wrap gap-md-4 gap-3" id="coming-soon">
                             <div class="d-flex flex-column align-items-center">
-                                <h4 class="days countdown-item mb-0 w-110-px fw-medium h-110-px bg-neutral-900 w-100 h-100 rounded-circle text-white aspect-ratio-1 d-flex justify-content-center align-items-center">0</h4>
-                                <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">days</span>
+                                <h4 class="day-name mb-0 w-110-px fw-medium h-110-px bg-neutral-900 text-white rounded-circle d-flex justify-content-center align-items-center">Mon</h4>
+                                <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">Day</span>
                             </div>
                             <div class="d-flex flex-column align-items-center">
-                                <h4 class="hours countdown-item mb-0 w-110-px fw-medium h-110-px bg-neutral-900 w-100 h-100 rounded-circle text-white aspect-ratio-1 d-flex justify-content-center align-items-center">0</h4>
-                                <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">Hours</span>
+                                <h4 class="month-name mb-0 w-110-px fw-medium h-110-px bg-neutral-900 text-white rounded-circle d-flex justify-content-center align-items-center">Oct</h4>
+                                <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">Month</span>
                             </div>
                             <div class="d-flex flex-column align-items-center">
-                                <h4 class="minutes countdown-item mb-0 w-110-px fw-medium h-110-px bg-neutral-900 w-100 h-100 rounded-circle text-white aspect-ratio-1 d-flex justify-content-center align-items-center">0</h4>
-                                <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">Minutes</span>
+                                <h4 class="date-number mb-0 w-110-px fw-medium h-110-px bg-neutral-900 text-white rounded-circle d-flex justify-content-center align-items-center">06</h4>
+                                <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">Date</span>
                             </div>
                             <div class="d-flex flex-column align-items-center">
-                                <h4 class="seconds countdown-item mb-0 w-110-px fw-medium h-110-px bg-neutral-900 w-100 h-100 rounded-circle text-white aspect-ratio-1 d-flex justify-content-center align-items-center">0</h4>
-                                <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">Seconds</span>
+                                <h4 class="year-number mb-0 w-110-px fw-medium h-110-px bg-neutral-900 text-white rounded-circle d-flex justify-content-center align-items-center">2025</h4>
+                                <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">Year</span>
                             </div>
                         </div>
 
@@ -60,56 +60,16 @@
     </div>
 
     <script>
-    (function() {
-        /***** CALCULATE THE TIME REMAINING *****/
-        function getTimeRemaining(endtime) {
-            var t = Date.parse(endtime) - Date.parse(new Date());
+        (function() {
+            const now = new Date();
+            const days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+            const months = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
 
-            /***** CONVERT THE TIME TO A USEABLE FORMAT *****/
-            var seconds = Math.floor((t / 1000) % 60);
-            var minutes = Math.floor((t / 1000 / 60) % 60);
-            var hours = Math.floor((t / (1000 * 60 * 60)) % 24);
-            var days = Math.floor(t / (1000 * 60 * 60 * 24));
-
-            /***** OUTPUT THE CLOCK DATA AS A REUSABLE OBJECT *****/
-            return {
-                total: t,
-                days: days,
-                hours: hours,
-                minutes: minutes,
-                seconds: seconds,
-            };
-        }
-
-        /***** DISPLAY THE CLOCK AND STOP IT WHEN IT REACHES ZERO *****/
-        function initializeClock(id, endtime) {
-            var clock = document.getElementById(id);
-            var daysSpan = clock.querySelector(".days");
-            var hoursSpan = clock.querySelector(".hours");
-            var minutesSpan = clock.querySelector(".minutes");
-            var secondsSpan = clock.querySelector(".seconds");
-
-            function updateClock() {
-                var t = getTimeRemaining(endtime);
-
-                daysSpan.innerHTML = t.days;
-                hoursSpan.innerHTML = ("0" + t.hours).slice(-2);
-                minutesSpan.innerHTML = ("0" + t.minutes).slice(-2);
-                secondsSpan.innerHTML = ("0" + t.seconds).slice(-2);
-
-                if (t.total <= 0) {
-                    clearInterval(timeinterval);
-                }
-            }
-
-            updateClock(); // run function once at first to avoid delay
-            var timeinterval = setInterval(updateClock, 1000);
-        }
-
-        /***** SET A VALID END DATE *****/
-        var deadline = new Date(Date.parse(new Date()) + 99 * 24 * 60 * 60 * 1000);
-        initializeClock("coming-soon", deadline);
-    })();
+            document.querySelector(".day-name").textContent = days[now.getDay()];
+            document.querySelector(".month-name").textContent = months[now.getMonth()];
+            document.querySelector(".date-number").textContent = ("0" + now.getDate()).slice(-2);
+            document.querySelector(".year-number").textContent = now.getFullYear();
+        })();
     </script>
 
     <x-script />
