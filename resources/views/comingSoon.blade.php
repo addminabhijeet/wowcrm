@@ -19,7 +19,7 @@
                 <div class="row align-items-center">
                     <div class="col-lg-6">
                         <h3 class="mb-32 max-w-1000-px">We Make Every Connection into Lasting Relationships!</h3>
-                        <p class="text-neutral-500 max-w-700-px text-lg">We have been spending extended periods to send off our new site. Join our mailing list or follow us on Facebook for get most recent update.</p>
+                        <p class="text-neutral-500 max-w-700-px text-lg">At Norlox Solutions, we believe business is not only built on data alone, but it calls for TRUST. We transform every interaction into insights; every lead into loyalty, and every customer into a lifelong partner. Because meaningful growth starts with meaningful connections. </p>
 
                         <div class="countdown my-56 d-flex align-items-center flex-wrap gap-md-4 gap-3" id="coming-soon">
                             <div class="d-flex flex-column align-items-center">
