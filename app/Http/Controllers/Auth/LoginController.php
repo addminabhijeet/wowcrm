@@ -8,10 +8,10 @@ use App\Models\UserTimerLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserTimerPause;
+use App\Models\TimerSetting;
 
 class LoginController extends Controller
 {
-    const WORK_DAY_SECONDS = 9 * 60 * 60;
 
     public function showLoginForm()
     {
@@ -20,46 +20,56 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
+        // Validate login credentials
         $credentials = $request->validate([
-            'email' => ['required', 'email'],
+            'email'    => ['required', 'email'],
             'password' => ['required']
         ]);
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
+            // Record login info
             $login = Login::create([
-                'user_id' => Auth::id(),
-                'ip_address' => $request->ip(),
-                'user_agent' => $request->header('User-Agent'),
-                'logged_in_at' => now()
+                'user_id'     => Auth::id(),
+                'ip_address'  => $request->ip(),
+                'user_agent'  => $request->header('User-Agent'),
+                'logged_in_at'=> now(),
             ]);
 
+            // Fetch work day seconds from settings dynamically
+            $settings = TimerSetting::first();
+            if (!$settings) {
+                return response()->json(['error' => 'Timer settings not configured'], 500);
+            }
+            $workDaySeconds = $settings->work_day_seconds;
+
+            // Check if user already has a timer
             $lastTimer = UserTimerLog::where('user_id', Auth::id())->latest()->first();
 
             if (!$lastTimer) {
-                UserTimerLog::create([
-                    'user_id' => Auth::id(),
-                    'login_id' => $login->id,
-                    'start_time' => now(),
-                    'remaining_seconds' => self::WORK_DAY_SECONDS,
-                    'status' => 'running'
+                $lastTimer = UserTimerLog::create([
+                    'user_id'           => Auth::id(),
+                    'login_id'          => $login->id,
+                    'start_time'        => now(),
+                    'remaining_seconds' => $workDaySeconds,
+                    'status'            => 'running',
                 ]);
             }
 
-            $lastTimer = UserTimerLog::where('user_id', Auth::id())->latest()->first();
-
+            // Log a pause/resume event
             if ($lastTimer) {
                 UserTimerPause::create([
                     'user_timer_log_id' => $lastTimer->id,
-                    'user_id' => Auth::id(),
-                    'status' => 'start',
-                    'pause_type' => 'login',
+                    'user_id'           => Auth::id(),
+                    'status'            => 'start',
+                    'pause_type'        => 'login',
                     'remaining_seconds' => $lastTimer->remaining_seconds,
-                    'event_time' => now(),
+                    'event_time'        => now(),
                 ]);
             }
 
+            // Redirect based on user role
             $role = Auth::user()->role;
 
             switch ($role) {
