@@ -7,11 +7,11 @@
         <iconify-icon icon="radix-icons:cross-2"></iconify-icon>
     </button>
 
-    <div style="text-align: center;">
-        <a href="" class="sidebar-logo">
-            <img src="{{ asset('assets/images/logo.png') }}" alt="site logo" class="light-logo">
-            <img src="{{ asset('assets/images/logo-light.png') }}" alt="site logo" class="dark-logo">
-            <img src="{{ asset('assets/images/logo-icon.png') }}" alt="site logo" class="logo-icon">
+    <div class="sidebar-logo d-flex justify-content-center align-items-center" style="text-align:center; padding: 20px 0;">
+        <a href="#">
+            <img src="{{ asset('assets/images/logo.png') }}" alt="site logo" class="light-logo" style="max-width: 120px; display: block;">
+            <img src="{{ asset('assets/images/logo-light.png') }}" alt="site logo" class="dark-logo" style="max-width: 120px; display: none;">
+            <img src="{{ asset('assets/images/logo-icon.png') }}" alt="site logo" class="logo-icon" style="max-width: 60px; display: none;">
         </a>
     </div>
 
