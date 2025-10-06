@@ -1,5 +1,3 @@
-
-
 <div class="navbar-header">
     <div class="row align-items-center justify-content-between">
         <div class="col-auto">
@@ -54,6 +52,14 @@
                             <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                         </button>
                     </div>
+
+                    <!-- Placeholder for Start button -->
+                    <div id="startButtonContainer" style="display:none;align-items:center;gap:4px;flex-wrap:wrap;margin-left:4px;">
+                        <button id="startButton" style="width:65px;height:28px;border-radius:14px;background:#28a745;border:1px solid #1e7e34;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">
+                            <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Start
+                        </button>
+                    </div>
+
                 </div>
             </div>
         </div>
@@ -427,22 +433,29 @@
 </script>
 
 <script>
-function checkButtonStatus() {
-    fetch("{{ route('button.status') }}")
-        .then(response => response.json())
-        .then(data => {
-            if (data.button_status == 1) {
-                document.getElementById('controlButtons').style.display = 'flex';
-            } else {
-                document.getElementById('controlButtons').style.display = 'none';
-            }
-        })
-        .catch(err => console.error(err));
-}
+    function checkButtonStatus() {
+        fetch("{{ route('button.status') }}")
+            .then(response => response.json())
+            .then(data => {
+                const controlButtons = document.getElementById('controlButtons');
+                const startButtonContainer = document.getElementById('startButtonContainer');
 
-// Run once immediately
-checkButtonStatus();
+                if (data.button_status == 1) {
+                    // Show existing buttons, hide Start
+                    controlButtons.style.display = 'flex';
+                    startButtonContainer.style.display = 'none';
+                } else {
+                    // Hide existing buttons, show Start
+                    controlButtons.style.display = 'none';
+                    startButtonContainer.style.display = 'flex';
+                }
+            })
+            .catch(err => console.error(err));
+    }
 
-// Then poll every 30 seconds (adjust as needed)
-setInterval(checkButtonStatus, 1000);
+    // Run once immediately
+    checkButtonStatus();
+
+    // Then poll every 30 seconds (adjust as needed)
+    setInterval(checkButtonStatus, 1000);
 </script>
