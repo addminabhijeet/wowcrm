@@ -20,7 +20,7 @@ $subTitle = 'Calendar';
     </div>
 </div>
 
-<!-- Modal for showing total count of events of a selected date -->
+<!-- Modal for showing count of events on a selected date -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content radius-16 bg-base">
@@ -29,7 +29,7 @@ $subTitle = 'Calendar';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-24" id="modalBody">
-                <!-- Total count will be displayed here -->
+                <!-- Event count will be dynamically displayed here -->
             </div>
         </div>
     </div>
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         events: "{{ route('calendar.juniorEvents') }}", // AJAX source
         eventColor: '#378006',
         dateClick: function(info) {
-            // Filter events on the clicked date
+            // Count events on the clicked date
             var eventsOnDate = calendar.getEvents().filter(event => {
                 return event.startStr.slice(0,10) === info.dateStr;
             });
@@ -58,9 +58,13 @@ document.addEventListener('DOMContentLoaded', function() {
             var modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = '';
 
-            // Show total count instead of full list
-            var totalCount = eventsOnDate.length;
-            modalBody.innerHTML = `<h4 class="text-primary-light">Total Events: ${totalCount}</h4>`;
+            // Show total count instead of listing events
+            modalBody.innerHTML = `
+                <div class="text-center">
+                    <h2 class="text-primary-light fw-semibold text-lg">${eventsOnDate.length}</h2>
+                    <p class="text-secondary-light">event(s) on this date</p>
+                </div>
+            `;
 
             document.getElementById('modalDate').innerText = info.dateStr;
 
