@@ -50,16 +50,14 @@
                     <tr>
                         <th scope="col">
                             <div class="d-flex align-items-center gap-10">
-                                <div class="form-check style-check d-flex align-items-center">
-                                    <input class="form-check-input radius-4 border input-form-dark" type="checkbox" name="checkbox" id="selectAll">
-                                </div>
                                 S.L
                             </div>
                         </th>
                         <th scope="col">Create Date</th>
+                        <th scope="col">Name </th>
+                        <th scope="col">Email </th>
                         <th scope="col">Role </th>
-                        <th scope="col">Description</th>
-                        <th scope="col" class="text-center">Status</th>
+                        <th scope="col">Department</th>
                         <th scope="col" class="text-center">Action</th>
                     </tr>
                 </thead>
@@ -67,13 +65,12 @@
                     <tr>
                         <td>
                             <div class="d-flex align-items-center gap-10">
-                                <div class="form-check style-check d-flex align-items-center">
-                                    <input class="form-check-input radius-4 border border-neutral-400" type="checkbox" name="checkbox">
-                                </div>
                                 01
                             </div>
                         </td>
                         <td>25 Jan 2024</td>
+                        <td>Test Kumar</td>
+                        <td>email@gmail.com</td>
                         <td>Test</td>
                         <td>
                             <p class="max-w-500-px">Lorem Ipsum is simply dummy text of the printing and typesetting</p>
