@@ -37,26 +37,27 @@ class CalendarController extends Controller
 
     public function juniorUser(Request $request)
     {
-        // Get date range from request (day, week, month)
         $view = $request->input('view', 'month'); // day, week, month
-        $date = $request->input('date', now());   // reference date
+        $date = $request->input('date', now());
 
-        $start = null;
-        $end = null;
+        $start = $end = Carbon::parse($date);
 
-        if ($view === 'day') {
-            $start = Carbon::parse($date)->startOfDay();
-            $end = Carbon::parse($date)->endOfDay();
-        } elseif ($view === 'week') {
-            $start = Carbon::parse($date)->startOfWeek();
-            $end = Carbon::parse($date)->endOfWeek();
-        } else { // month
-            $start = Carbon::parse($date)->startOfMonth();
-            $end = Carbon::parse($date)->endOfMonth();
+        switch ($view) {
+            case 'day':
+                $start = $start->startOfDay();
+                $end = $end->endOfDay();
+                break;
+            case 'week':
+                $start = $start->startOfWeek();
+                $end = $end->endOfWeek();
+                break;
+            default: // month
+                $start = $start->startOfMonth();
+                $end = $end->endOfMonth();
+                break;
         }
 
-        // Fetch events within the date range
-        $events = UserTimerPause::where('user_id', Auth::id()) // <-- filter by logged-in user
+        $events = UserTimerPause::where('user_id', Auth::id())
             ->whereBetween('event_time', [$start, $end])
             ->orderBy('event_time', 'asc')
             ->get();
@@ -66,32 +67,30 @@ class CalendarController extends Controller
 
     public function getEvents(Request $request)
     {
-        $events = UserTimerPause::select('id', 'title', 'start_date', 'end_date', 'description', 'pause_type', 'status', 'label')
+        $events = UserTimerPause::where('user_id', Auth::id())
+            ->select('id', 'title', 'start_date', 'end_date', 'description', 'pause_type', 'status', 'label')
             ->get();
 
-        // Define dynamic colors based on label type from DB or a mapping
+        // Centralized label colors
         $labelColors = [
-            'login' => '#007bff',   // blue
-            'resume' => '#28a745',  // green
-            'pause' => '#ffc107',   // yellow
-            'other' => '#6c757d'    // gray
+            'login' => '#007bff',
+            'resume' => '#28a745',
+            'pause' => '#ffc107',
+            'other' => '#6c757d'
         ];
 
-        $eventsData = $events->map(function ($event) use ($labelColors) {
-            return [
-                'id' => $event->id,
-                'title' => $event->title ?? ucfirst($event->pause_type),
-                'start' => $event->start_date,
-                'end' => $event->end_date,
-                'description' => $event->description,
-                'label' => $event->label ?? 'Other',
-                'label_color' => $labelColors[$event->label] ?? $labelColors['other']
-            ];
-        });
+        $eventsData = $events->map(fn($event) => [
+            'id' => $event->id,
+            'title' => $event->title ?? ucfirst($event->pause_type),
+            'start' => $event->start_date,
+            'end' => $event->end_date,
+            'description' => $event->description,
+            'label' => $event->label ?? 'other',
+            'label_color' => $labelColors[strtolower($event->label)] ?? $labelColors['other']
+        ]);
 
         return response()->json($eventsData);
     }
-
 
     public function updateStatus(Request $request)
     {
