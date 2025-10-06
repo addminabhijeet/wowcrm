@@ -110,10 +110,10 @@
                         <li><a href="{{ route('call.reports.seniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Report</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('call.reports.juniordaily') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Report</a></li>
+                        <li><a href="{{ route('call.reports.alljuniordaily') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Report</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('call.reports.juniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Report</a></li>
+                        <li><a href="{{ route('call.reports.alljuniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Report</a></li>
                     </ul>
                 </li>
 
