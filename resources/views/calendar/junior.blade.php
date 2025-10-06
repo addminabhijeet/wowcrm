@@ -46,6 +46,11 @@ document.addEventListener('DOMContentLoaded', function() {
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
         events: "{{ route('calendar.juniorEvents') }}",
+        displayEventTime: false, // <-- hide time
+        displayEventEnd: false,  // <-- hide end time
+        eventContent: function() {
+            return { domNodes: [] }; // <-- completely remove default title rendering
+        },
         dayCellDidMount: function(info) {
             var eventsOnDate = calendar.getEvents().filter(event => {
                 return event.startStr.slice(0,10) === info.date.toISOString().slice(0,10);
@@ -59,7 +64,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     var dot = document.createElement('span');
                     dot.className = 'event-dot';
                     dot.style.backgroundColor = event.extendedProps.label_color;
-                    dot.title = event.title;
+                    dot.title = event.extendedProps.label; // tooltip only
                     container.appendChild(dot);
                 });
 
