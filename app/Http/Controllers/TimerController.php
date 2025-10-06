@@ -202,10 +202,7 @@ class TimerController extends Controller
         $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
             $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
 
-            if ($timer && $timer->status === 'running') {
-                $seconds_passed = now()->diffInSeconds($timer->updated_at);
-                $remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
-            } else {
+            if ($timer) {
                 $remaining_seconds = $timer ? $timer->remaining_seconds : $workDaySeconds;
             }
 
