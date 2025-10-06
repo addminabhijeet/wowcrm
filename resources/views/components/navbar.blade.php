@@ -225,106 +225,367 @@
         pointer-events: auto;
     }
 </style>
-<div id="statusOverlay"></div>
+[UI] Updating display → Remaining: 32397.465258 Elapsed: 2.5347419999998237 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32395.451693, elapsed_seconds: 4.548307000000932, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32395.451693 Elapsed: 4.548307000000932 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32393.44692, elapsed_seconds: 6.553080000001501, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32393.44692 Elapsed: 6.553080000001501 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32391.461042, elapsed_seconds: 8.538958000001003, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32391.461042 Elapsed: 8.538958000001003 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32389.457933, elapsed_seconds: 10.542066999998497, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32389.457933 Elapsed: 10.542066999998497 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32387.450296, elapsed_seconds: 12.54970400000093, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32387.450296 Elapsed: 12.54970400000093 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32385.460795, elapsed_seconds: 14.539205000000948, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32385.460795 Elapsed: 14.539205000000948 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32383.448495, elapsed_seconds: 16.55150499999945, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32383.448495 Elapsed: 16.55150499999945 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32381.448783, elapsed_seconds: 18.55121700000018, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32381.448783 Elapsed: 18.55121700000018 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32379.461516, elapsed_seconds: 20.538484000000608, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32379.461516 Elapsed: 20.538484000000608 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32377.46093, elapsed_seconds: 22.5390699999989, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32377.46093 Elapsed: 22.5390699999989 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32375.446187, elapsed_seconds: 24.553812999998627, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32375.446187 Elapsed: 24.553812999998627 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32373.457614, elapsed_seconds: 26.542386000000988, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32373.457614 Elapsed: 26.542386000000988 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32371.455183, elapsed_seconds: 28.544817000001785, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32371.455183 Elapsed: 28.544817000001785 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32369.443514, elapsed_seconds: 30.556486000001314, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32369.443514 Elapsed: 30.556486000001314 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32367.460486, elapsed_seconds: 32.539514000000054, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32367.460486 Elapsed: 32.539514000000054 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32365.458458, elapsed_seconds: 34.541541999999026, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32365.458458 Elapsed: 34.541541999999026 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32363.457255, elapsed_seconds: 36.54274499999883, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32363.457255 Elapsed: 36.54274499999883 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32361.459138, elapsed_seconds: 38.54086200000165, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32361.459138 Elapsed: 38.54086200000165 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32359.450209, elapsed_seconds: 40.54979100000128, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32359.450209 Elapsed: 40.54979100000128 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32357.448059, elapsed_seconds: 42.551941000001534, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32357.448059 Elapsed: 42.551941000001534 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32355.448311, elapsed_seconds: 44.5516889999999, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32355.448311 Elapsed: 44.5516889999999 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32353.451645, elapsed_seconds: 46.54835499999899, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32353.451645 Elapsed: 46.54835499999899 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32351.451346, elapsed_seconds: 48.54865399999835, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32351.451346 Elapsed: 48.54865399999835 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32349.453946, elapsed_seconds: 50.54605399999855, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32349.453946 Elapsed: 50.54605399999855 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32347.458574, elapsed_seconds: 52.541425999999774, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32347.458574 Elapsed: 52.541425999999774 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32345.461127, elapsed_seconds: 54.53887300000133, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32345.461127 Elapsed: 54.53887300000133 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32343.467953, elapsed_seconds: 56.5320470000006, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32343.467953 Elapsed: 56.5320470000006 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32341.466743, elapsed_seconds: 58.53325699999914, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32341.466743 Elapsed: 58.53325699999914 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32339.450061, elapsed_seconds: 60.54993900000045, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32339.450061 Elapsed: 60.54993900000045 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32337.461857, elapsed_seconds: 62.53814300000158, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32337.461857 Elapsed: 62.53814300000158 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32335.458115, elapsed_seconds: 64.54188499999873, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32335.458115 Elapsed: 64.54188499999873 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32333.450423, elapsed_seconds: 66.54957700000159, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32333.450423 Elapsed: 66.54957700000159 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seconds: 32331.463326, elapsed_seconds: 68.53667399999904, status: 'running', pause_type: 'resume', …}
+junior:391 [UI] Updating display → Remaining: 32331.463326 Elapsed: 68.53667399999904 Status: running
+junior:576 [Status Check] Response: {button_status: 0}
+junior:593 [Status Check] Start button visible, control buttons hidden.
+junior:417 [Sync] Sending tick to backend...
+junior:569 [Status Check] Fetching button status...
+junior:430 [Sync] Response: {success: true, remaining_seco
 
-<script>
-    // ===============================
-    // Timer Variables
-    // ===============================
-    let backendSyncInterval;
-    let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
-    let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
-    let status = "{{ $status ?? 'running' }}";
+public function updateTimer(Request $request)
+{
+$user = Auth::user();
+$action = $request->input('action');
 
-    let inactiveTimeout;
-    const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes inactivity
-    let overlayTimeout;
+// Get the latest timer log for the user
+$timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+if (!$timer) {
+return response()->json(['error' => 'Timer not found'], 404);
+}
 
-    // ===============================
-    // Helper Functions
-    // ===============================
-    function formatTime(sec) {
-        sec = Math.floor(sec);
-        const h = Math.floor(sec / 3600);
-        const m = Math.floor((sec % 3600) / 60);
-        const s = sec % 60;
-        return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+// Current time (uses default timezone)
+$currentTime = now();
+
+// Fetch work day duration from settings
+$timerSetting = TimerSetting::first();
+if (!$timerSetting) {
+return response()->json(['error' => 'Timer settings not configured'], 500);
+}
+
+$workDaySeconds = $timerSetting->work_day_seconds;
+
+// ⏱ Update remaining seconds if timer is running
+if ($timer->status === 'running') {
+$secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
+$timer->remaining_seconds = max(0, $timer->remaining_seconds - $secondsPassed);
+}
+
+// 🧭 Handle actions
+if ($action === 'resume') {
+$timer->status = 'running';
+$timer->pause_type = 'resume';
+} elseif ($action !== 'tick') {
+$timer->status = 'paused';
+$timer->pause_type = $action;
+}
+
+// 🕓 Update timestamp and save
+$timer->updated_at = $currentTime;
+$timer->save();
+
+// 🔢 Calculate elapsed time
+$elapsedSeconds = max(0, $workDaySeconds - $timer->remaining_seconds);
+
+
+// 🧾 Log pause/resume event (only if not a tick update)
+if ($action !== 'tick') {
+UserTimerPause::create([
+'user_timer_log_id' => $timer->id,
+'user_id' => $user->id,
+'status' => $timer->status,
+'pause_type' => $timer->pause_type,
+'remaining_seconds' => $timer->remaining_seconds,
+'elapsed_seconds' => $elapsedSeconds,
+'event_time' => $currentTime,
+]);
+}
+
+// 🧠 Return response
+return response()->json([
+'success' => true,
+'remaining_seconds' => $timer->remaining_seconds,
+'elapsed_seconds' => $elapsedSeconds,
+'status' => $timer->status,
+'pause_type' => $timer->pause_type,
+'notice_status' => $timer->notice_status,
+'logout' => $timer->remaining_seconds <= 0
+    ]);
     }
 
-    function updateUI() {
-        console.log("[UI] Updating display → Remaining:", remainingSeconds, "Elapsed:", elapsedSeconds, "Status:", status);
-        const countdownElem = document.getElementById('countdown');
-        const elapsedElem = document.getElementById('elapsed');
+    public function junior()
+    {
+    // Fetch timer settings
+    $settings=TimerSetting::first();
+    if (!$settings) {
+    return response()->json(['error' => 'Timer settings not configured'], 500);
+    }
+    $workDaySeconds = $settings->work_day_seconds;
 
-        if (countdownElem) countdownElem.innerText = formatTime(remainingSeconds);
-        if (elapsedElem) elapsedElem.innerText = formatTime(elapsedSeconds);
+    $user = Auth::user();
+    $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+
+    $remaining_seconds = $workDaySeconds;
+    $elapsed_seconds = 0;
+    $status = 'running';
+    $button_status = 1; // default to show if no timer exists
+
+    if ($timer) {
+    $remaining_seconds = $timer->remaining_seconds;
+    $elapsed_seconds = $workDaySeconds - $remaining_seconds;
+    $status = $timer->status;
+    $button_status = $timer->button_status ?? 1;
     }
 
-    function showOverlay(message) {
-        console.log("[Overlay] Message:", message);
-        const overlay = document.getElementById('statusOverlay');
-        if (!overlay) return;
-
-        overlay.innerText = message;
-        overlay.classList.add('show');
-
-        clearTimeout(overlayTimeout);
-        overlayTimeout = setTimeout(() => {
-            overlay.classList.remove('show');
-        }, 3000);
+    return view('dashboard.junior', compact(
+    'remaining_seconds',
+    'elapsed_seconds',
+    'status',
+    'button_status'
+    ));
     }
 
-    // ===============================
-    // Backend Sync
-    // ===============================
-    function syncWithBackend() {
-        console.log("[Sync] Sending tick to backend...");
-        fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    action: 'tick'
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log("[Sync] Response:", data);
+    <div id="statusOverlay"></div>
 
-                if (!data.success) {
-                    console.warn("[Sync] No success response");
-                    return;
-                }
+    <script>
+        // ===============================
+        // Timer Variables
+        // ===============================
+        let backendSyncInterval;
+        let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
+        let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
+        let status = "{{ $status ?? 'running' }}";
 
-                if (data.notice_status === 1 && data.message) {
-                    showOverlay(data.message);
-                }
+        let inactiveTimeout;
+        const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes inactivity
+        let overlayTimeout;
 
-                remainingSeconds = data.remaining_seconds;
-                elapsedSeconds = data.elapsed_seconds;
-                status = data.status;
-                updateUI();
+        // ===============================
+        // Helper Functions
+        // ===============================
+        function formatTime(sec) {
+            sec = Math.floor(sec);
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = sec % 60;
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
 
-                if (data.logout) {
-                    console.warn("[Sync] Work session ended. Logging out...");
-                    clearInterval(backendSyncInterval);
-                    alert("Your 9-hour work session has ended.");
-                    // forceLogout();
-                }
-            })
-            .catch(err => console.error("[Sync] Timer sync failed:", err));
-    }
+        function updateUI() {
+            console.log("[UI] Updating display → Remaining:", remainingSeconds, "Elapsed:", elapsedSeconds, "Status:", status);
+            const countdownElem = document.getElementById('countdown');
+            const elapsedElem = document.getElementById('elapsed');
 
-    // ===============================
-    // Control Buttons (Pause/Resume/etc)
-    // ===============================
-    document.querySelectorAll('#controlButtons button').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const type = btn.getAttribute('data-type');
-            console.log("[Action] Button clicked:", type);
+            if (countdownElem) countdownElem.innerText = formatTime(remainingSeconds);
+            if (elapsedElem) elapsedElem.innerText = formatTime(elapsedSeconds);
+        }
 
+        function showOverlay(message) {
+            console.log("[Overlay] Message:", message);
+            const overlay = document.getElementById('statusOverlay');
+            if (!overlay) return;
+
+            overlay.innerText = message;
+            overlay.classList.add('show');
+
+            clearTimeout(overlayTimeout);
+            overlayTimeout = setTimeout(() => {
+                overlay.classList.remove('show');
+            }, 3000);
+        }
+
+        // ===============================
+        // Backend Sync
+        // ===============================
+        function syncWithBackend() {
+            console.log("[Sync] Sending tick to backend...");
             fetch("{{ route('timer.update') }}", {
                     method: "POST",
                     headers: {
@@ -332,134 +593,222 @@
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        action: type
+                        action: 'tick'
                     })
                 })
                 .then(res => res.json())
                 .then(data => {
-                    console.log("[Action] Response:", data);
+                    console.log("[Sync] Response:", data);
 
-                    if (data.success === false && data.notice_status === 1) {
-                        showOverlay(data.message || "Please wait for senior to enable.");
+                    if (!data.success) {
+                        console.warn("[Sync] No success response");
                         return;
+                    }
+
+                    if (data.notice_status === 1 && data.message) {
+                        showOverlay(data.message);
                     }
 
                     remainingSeconds = data.remaining_seconds;
                     elapsedSeconds = data.elapsed_seconds;
                     status = data.status;
                     updateUI();
+
+                    if (data.logout) {
+                        console.warn("[Sync] Work session ended. Logging out...");
+                        clearInterval(backendSyncInterval);
+                        alert("Your 9-hour work session has ended.");
+                        // forceLogout();
+                    }
                 })
-                .catch(err => console.error("[Action] Failed to send:", err));
+                .catch(err => console.error("[Sync] Timer sync failed:", err));
+        }
+
+        // ===============================
+        // Control Buttons (Pause/Resume/etc)
+        // ===============================
+        document.querySelectorAll('#controlButtons button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.getAttribute('data-type');
+                console.log("[Action] Button clicked:", type);
+
+                fetch("{{ route('timer.update') }}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            action: type
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("[Action] Response:", data);
+
+                        if (data.success === false && data.notice_status === 1) {
+                            showOverlay(data.message || "Please wait for senior to enable.");
+                            return;
+                        }
+
+                        remainingSeconds = data.remaining_seconds;
+                        elapsedSeconds = data.elapsed_seconds;
+                        status = data.status;
+                        updateUI();
+                    })
+                    .catch(err => console.error("[Action] Failed to send:", err));
+            });
         });
-    });
 
-    // ===============================
-    // Inactivity Handling
-    // ===============================
-    function resetInactiveTimer() {
-        clearTimeout(inactiveTimeout);
-        console.log("[Inactivity] Timer reset");
+        // ===============================
+        // Inactivity Handling
+        // ===============================
+        function resetInactiveTimer() {
+            clearTimeout(inactiveTimeout);
+            console.log("[Inactivity] Timer reset");
 
-        inactiveTimeout = setTimeout(() => {
-            console.warn("[Inactivity] User inactive! Pausing timer...");
-            showOverlay("You were inactive! Timer stopped.");
+            inactiveTimeout = setTimeout(() => {
+                console.warn("[Inactivity] User inactive! Pausing timer...");
+                showOverlay("You were inactive! Timer stopped.");
 
+                fetch("{{ route('timer.update') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        action: "pause"
+                    })
+                }).catch(err => console.error("[Inactivity] Pause request failed:", err));
+            }, INACTIVE_LIMIT);
+        }
+
+        function handleActiveState() {
+            console.log("[Active] User active again, resuming...");
             fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    action: "pause"
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        action: "resume"
+                    })
                 })
-            }).catch(err => console.error("[Inactivity] Pause request failed:", err));
-        }, INACTIVE_LIMIT);
-    }
-
-    function handleActiveState() {
-        console.log("[Active] User active again, resuming...");
-        fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    action: "resume"
+                .then(res => res.json())
+                .then(data => {
+                    console.log("[Active] Resume response:", data);
+                    if (data.success) {
+                        remainingSeconds = data.remaining_seconds;
+                        elapsedSeconds = data.elapsed_seconds;
+                        status = data.status;
+                        updateUI();
+                    }
                 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log("[Active] Resume response:", data);
-                if (data.success) {
-                    remainingSeconds = data.remaining_seconds;
-                    elapsedSeconds = data.elapsed_seconds;
-                    status = data.status;
-                    updateUI();
-                }
-            })
-            .catch(err => console.error("[Active] Resume request failed:", err));
+                .catch(err => console.error("[Active] Resume request failed:", err));
 
+            resetInactiveTimer();
+        }
+
+        ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt => {
+            window.addEventListener(evt, resetInactiveTimer);
+        });
+
+        document.addEventListener('visibilitychange', () => {
+            console.log("[Visibility] Changed:", document.visibilityState);
+            if (document.visibilityState === 'visible') handleActiveState();
+        });
+
+        // ===============================
+        // Initialize Timer
+        // ===============================
+        console.log("[Init] Timer script initializing...");
+        updateUI();
         resetInactiveTimer();
-    }
+        handleActiveState();
 
-    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt => {
-        window.addEventListener(evt, resetInactiveTimer);
-    });
+        backendSyncInterval = setInterval(syncWithBackend, 1000);
+        console.log("[Init] Backend sync interval started (1s)");
+    </script>
 
-    document.addEventListener('visibilitychange', () => {
-        console.log("[Visibility] Changed:", document.visibilityState);
-        if (document.visibilityState === 'visible') handleActiveState();
-    });
+    <script>
+        // ===============================
+        // Button Status Check
+        // ===============================
+        function checkButtonStatus() {
+            console.log("[Status Check] Fetching button status...");
+            fetch("{{ route('button.status') }}")
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("[Status Check] Response:", data);
 
-    // ===============================
-    // Initialize Timer
-    // ===============================
-    console.log("[Init] Timer script initializing...");
-    updateUI();
-    resetInactiveTimer();
-    handleActiveState();
+                    const controlButtons = document.getElementById('controlButtons');
+                    const startButtonContainer = document.getElementById('startButtonContainer');
 
-    backendSyncInterval = setInterval(syncWithBackend, 1000);
-    console.log("[Init] Backend sync interval started (1s)");
-</script>
+                    if (!controlButtons || !startButtonContainer) {
+                        console.warn("[Status Check] Required elements not found in DOM.");
+                        return;
+                    }
 
-<script>
-    // ===============================
-    // Button Status Check
-    // ===============================
-    function checkButtonStatus() {
-        console.log("[Status Check] Fetching button status...");
-        fetch("{{ route('button.status') }}")
-            .then(response => {
-                if (!response.ok) throw new Error("Network response was not ok");
-                return response.json();
-            })
-            .then(data => {
-                console.log("[Status Check] Response:", data);
+                    if (data.button_status == 1) {
+                        controlButtons.style.display = 'flex';
+                        startButtonContainer.style.display = 'none';
+                        console.log("[Status Check] Control buttons visible, start button hidden.");
+                    } else {
+                        controlButtons.style.display = 'none';
+                        startButtonContainer.style.display = 'flex';
+                        console.log("[Status Check] Start button visible, control buttons hidden.");
+                    }
+                })
+                .catch(err => console.error("[Status Check] Error fetching button status:", err));
+        }
 
-                const controlButtons = document.getElementById('controlButtons');
-                const startButtonContainer = document.getElementById('startButtonContainer');
+        checkButtonStatus();
+        setInterval(checkButtonStatus, 1000);
+    </script>
 
-                if (!controlButtons || !startButtonContainer) {
-                    console.warn("[Status Check] Required elements not found in DOM.");
-                    return;
-                }
+    correct the time, here it decrease 2 second in 1 second and increase elasped second 2 sec in 1 sec,
 
-                if (data.button_status == 1) {
-                    controlButtons.style.display = 'flex';
-                    startButtonContainer.style.display = 'none';
-                    console.log("[Status Check] Control buttons visible, start button hidden.");
-                } else {
-                    controlButtons.style.display = 'none';
-                    startButtonContainer.style.display = 'flex';
-                    console.log("[Status Check] Start button visible, control buttons hidden.");
-                }
-            })
-            .catch(err => console.error("[Status Check] Error fetching button status:", err));
-    }
 
-    checkButtonStatus();
-    setInterval(checkButtonStatus, 1000);
-</script>
+    <script>
+        // ===============================
+        // Button Status Check
+        // ===============================
+        function checkButtonStatus() {
+            console.log("[Status Check] Fetching button status...");
+            fetch("{{ route('button.status') }}")
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.json();
+                })
+                .then(data => {
+                    console.log("[Status Check] Response:", data);
+
+                    const controlButtons = document.getElementById('controlButtons');
+                    const startButtonContainer = document.getElementById('startButtonContainer');
+
+                    if (!controlButtons || !startButtonContainer) {
+                        console.warn("[Status Check] Required elements not found in DOM.");
+                        return;
+                    }
+
+                    if (data.button_status == 1) {
+                        controlButtons.style.display = 'flex';
+                        startButtonContainer.style.display = 'none';
+                        console.log("[Status Check] Control buttons visible, start button hidden.");
+                    } else {
+                        controlButtons.style.display = 'none';
+                        startButtonContainer.style.display = 'flex';
+                        console.log("[Status Check] Start button visible, control buttons hidden.");
+                    }
+                })
+                .catch(err => console.error("[Status Check] Error fetching button status:", err));
+        }
+
+        checkButtonStatus();
+        setInterval(checkButtonStatus, 1000);
+    </script>
