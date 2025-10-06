@@ -250,15 +250,15 @@
         document.getElementById('elapsed').innerText = formatTime(elapsedSeconds);
     }
 
-    function forceLogout() {
-        fetch("{{ route('logout') }}", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Content-Type": "application/json"
-            }
-        }).then(() => window.location.href = "/login");
-    }
+    // function forceLogout() {
+    //     fetch("{{ route('logout') }}", {
+    //         method: "POST",
+    //         headers: {
+    //             "X-CSRF-TOKEN": "{{ csrf_token() }}",
+    //             "Content-Type": "application/json"
+    //         }
+    //     }).then(() => window.location.href = "/login");
+    // }
 
     let overlayTimeout;
 
@@ -301,7 +301,7 @@
                 if (data.logout) {
                     clearInterval(backendSyncInterval);
                     alert("Your 9-hour work session has ended.");
-                    forceLogout();
+                    // forceLogout();
                 }
             })
             .catch(err => console.error("Timer sync failed:", err));
