@@ -103,6 +103,38 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
+        // --- Extract Email & Phone for uniqueness check ---
+        $email = $rowData['Email Address'] ?? null;
+        $phone = $rowData['Phone Number'] ?? null;
+
+        // Check for duplicate Email (ignore current record)
+        if (!empty($email)) {
+            $emailExists = GoogleSheetData::where('Email_Address', $email)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($emailExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email address already exists in records.'
+                ]);
+            }
+        }
+
+        // Check for duplicate Phone (ignore current record)
+        if (!empty($phone)) {
+            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($phoneExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phone number already exists in records.'
+                ]);
+            }
+        }
+
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
@@ -139,8 +171,8 @@ class GoogleSheetController extends Controller
             'Date' => isset($rowData['Date']) && !empty($rowData['Date']) ?
                 $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
-            'Email_Address' => $rowData['Email Address'] ?? null,
-            'Phone_Number' => $rowData['Phone Number'] ?? null,
+            'Email_Address' => $email,
+            'Phone_Number' => $phone,
             'Location' => $rowData['Location'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => isset($rowData['Graduation Date']) && !empty($rowData['Graduation Date']) ?
@@ -169,7 +201,7 @@ class GoogleSheetController extends Controller
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => !empty($record->resume) ? true : false
+                'resume_path' => !empty($row->resume) ? true : false
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -178,6 +210,7 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
+
 
     public function adminstore(Request $request)
     {
@@ -213,6 +246,10 @@ class GoogleSheetController extends Controller
             'Time Zone' => 'Time_Zone',
         ];
 
+        // Temporary storage for checking unique fields
+        $email = null;
+        $phone = null;
+
         // Assign values safely
         foreach ($rowData as $key => $val) {
             if (!isset($columnMap[$key])) continue;
@@ -226,7 +263,36 @@ class GoogleSheetController extends Controller
                 $val = $this->parseAmount($val);
             }
 
+            if ($column === 'Email_Address') {
+                $email = $val;
+            }
+
+            if ($column === 'Phone_Number') {
+                $phone = $val;
+            }
+
             $record->$column = $val;
+        }
+
+        // --- Check for duplicate Email or Phone ---
+        if (!empty($email)) {
+            $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
+            if ($emailExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email address already exists in records.'
+                ]);
+            }
+        }
+
+        if (!empty($phone)) {
+            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
+            if ($phoneExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phone number already exists in records.'
+                ]);
+            }
         }
 
         // Handle resume file upload - Save actual file content
@@ -269,6 +335,7 @@ class GoogleSheetController extends Controller
             'resume_path' => !empty($record->resume) ? true : false
         ]);
     }
+
 
     // Add a method to serve the PDF files
     public function viewadminResume($id)
@@ -445,6 +512,38 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
+        // --- Extract Email & Phone for uniqueness check ---
+        $email = $rowData['Email Address'] ?? null;
+        $phone = $rowData['Phone Number'] ?? null;
+
+        // Check for duplicate Email (ignore current record)
+        if (!empty($email)) {
+            $emailExists = GoogleSheetData::where('Email_Address', $email)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($emailExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email address already exists in records.'
+                ]);
+            }
+        }
+
+        // Check for duplicate Phone (ignore current record)
+        if (!empty($phone)) {
+            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($phoneExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phone number already exists in records.'
+                ]);
+            }
+        }
+
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
@@ -481,8 +580,8 @@ class GoogleSheetController extends Controller
             'Date' => isset($rowData['Date']) && !empty($rowData['Date']) ?
                 $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
-            'Email_Address' => $rowData['Email Address'] ?? null,
-            'Phone_Number' => $rowData['Phone Number'] ?? null,
+            'Email_Address' => $email,
+            'Phone_Number' => $phone,
             'Location' => $rowData['Location'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => isset($rowData['Graduation Date']) && !empty($rowData['Graduation Date']) ?
@@ -490,8 +589,7 @@ class GoogleSheetController extends Controller
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
             'Amount' => isset($rowData['Amount']) ?
-                $this->parseAmount($rowData['Amount'])
-                : $row->Amount,
+                $this->parseAmount($rowData['Amount']) : $row->Amount,
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
@@ -516,7 +614,7 @@ class GoogleSheetController extends Controller
                     $updateData['created_by'] .= ':0|accountant';
                 }
 
-                //  Replace "0|senior" with actual senior ID (only if it ends with 0|senior)
+                // Replace "0|senior" with actual senior ID (only if it ends with 0|senior)
                 if (preg_match('/0\|senior$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
                         '/0\|senior$/',
@@ -548,7 +646,7 @@ class GoogleSheetController extends Controller
                     }
                 }
 
-                //  Replace "0|senior" with actual senior ID (only if it ends with 0|senior)
+                // Replace "0|senior" with actual senior ID (only if it ends with 0|senior)
                 if (preg_match('/0\|senior$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
                         '/0\|senior$/',
@@ -559,8 +657,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-
-
         try {
             $row->update($updateData);
 
@@ -569,7 +665,7 @@ class GoogleSheetController extends Controller
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => !empty($record->resume) ? true : false
+                'resume_path' => !empty($row->resume) ? true : false
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -578,6 +674,7 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
+
 
     public function seniorstore(Request $request)
     {
