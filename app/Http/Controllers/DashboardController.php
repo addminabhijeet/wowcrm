@@ -175,53 +175,13 @@ class DashboardController extends Controller
         // Current time in IST
         $istNow = now('Asia/Kolkata');
 
-        // Today 6 AM IST
-        $ist6am = $istNow->copy()->startOfDay()->addHours(6);
-
-        // Timer's updated_at in IST
-        $timerUpdatedIst = $timer->updated_at->copy()->timezone('Asia/Kolkata');
-
-        // Convert times to comparable numeric format YYMMDDHHMMSS
-        $istNowNum        = $istNow->format('ymdHis');
-        $ist6amNum        = $ist6am->format('ymdHis');
-        $timerUpdatedNum  = $timerUpdatedIst->format('ymdHis');
-
-        // Reset timer if last update was before 6 AM today
-        if ($timerUpdatedNum < $ist6amNum) {
-            $timer->remaining_seconds = self::WORK_DAY_SECONDS;
-            $timer->status = 'running';
-            $timer->pause_type = 'reset';
-            $timer->updated_at = $istNow;
-            $timer->save();
-
-            UserTimerPause::create([
-                'user_timer_log_id' => $timer->id,
-                'user_id'           => $user->id,
-                'status'            => $timer->status,
-                'pause_type'        => $timer->pause_type,
-                'remaining_seconds' => $timer->remaining_seconds,
-                'elapsed_seconds'   => 0,
-                'event_time'        => $istNow,
-            ]);
-
-            return response()->json([
-                'success'           => true,
-                'remaining_seconds' => $timer->remaining_seconds,
-                'elapsed_seconds'   => 0,
-                'status'            => $timer->status,
-                'pause_type'        => $timer->pause_type,
-                'notice_status'     => $timer->notice_status,
-                'logout'            => false
-            ]);
-        }
-
-        // Update remaining seconds if timer was running
+        // ⏱ Update remaining seconds if timer is running
         if ($timer->status === 'running') {
             $seconds_passed = now()->diffInSeconds($timer->updated_at);
             $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
         }
 
-        // Handle actions
+        // 🧭 Handle actions
         if ($action === 'resume') {
             $timer->status = 'running';
             $timer->pause_type = 'resume';
@@ -230,11 +190,14 @@ class DashboardController extends Controller
             $timer->pause_type = $action;
         }
 
+        // 🕓 Update timestamp and save
         $timer->updated_at = now();
         $timer->save();
 
+        // 🔢 Calculate elapsed time
         $elapsed_seconds = self::WORK_DAY_SECONDS - $timer->remaining_seconds;
 
+        // 🧾 Log pause/resume event (only if not tick)
         if ($action !== 'tick') {
             UserTimerPause::create([
                 'user_timer_log_id' => $timer->id,
@@ -247,6 +210,7 @@ class DashboardController extends Controller
             ]);
         }
 
+        // 🧠 Return response
         return response()->json([
             'success'           => true,
             'remaining_seconds' => $timer->remaining_seconds,
