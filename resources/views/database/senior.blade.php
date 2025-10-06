@@ -35,7 +35,6 @@ $script ='<script>
     </div>
 
     <div class="card-body p-24" id="senior-table-wrapper">
-        @include('database.partials.senior_table', ['data' => $data])
         <div class="table-responsive scroll-sm">
             @if($data->isEmpty())
             <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
