@@ -187,34 +187,16 @@ $script = '<script>
         return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
-    // Local tick for smooth countdown
-    function localTick() {
-        document.querySelectorAll('.timer-widget').forEach(widget => {
-            let remaining = parseInt(widget.dataset.remaining);
-            let elapsed = parseInt(widget.dataset.elapsed);
-
-            if (widget.dataset.status === 'running' && remaining > 0) {
-                remaining -= 1;
-                elapsed += 1;
-
-                widget.dataset.remaining = remaining;
-                widget.dataset.elapsed = elapsed;
-
-                widget.querySelector('.countdown').innerText = formatTime(remaining);
-                widget.querySelector('.elapsed').innerText = formatTime(elapsed);
-
-                if (remaining <= 0) {
-                    alert("User " + widget.dataset.user + " has finished their 9-hour session.");
-                }
-            }
-        });
-    }
-
-    // Bulk refresh from server 
+    // Fetch all timers from backend every second
     function updateAllTimers() {
         fetch("{{ route('timer.alljuniors') }}")
             .then(res => res.json())
             .then(timers => {
+                if (!Array.isArray(timers)) {
+                    console.warn("Invalid timer response:", timers);
+                    return;
+                }
+
                 timers.forEach(data => {
                     const widget = document.querySelector(`.timer-widget[data-user='${data.user_id}']`);
                     if (!widget) return;
@@ -225,10 +207,16 @@ $script = '<script>
 
                     widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
                     widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
+
+                    // Optional: notify when timer hits 0
+                    if (data.remaining_seconds <= 0 && data.status === 'finished') {
+                        alert(`User ${data.user_id} has finished their 9-hour session.`);
+                    }
                 });
             })
-            .catch(err => console.error("Timer bulk fetch error", err));
+            .catch(err => console.error("Timer fetch error:", err));
     }
+
 
     function setupControlButtons() {
         document.querySelectorAll('.timer-widget').forEach(widget => {
@@ -265,7 +253,6 @@ $script = '<script>
 
     // 🚀 Initialize
     setupControlButtons();
-    setInterval(localTick, 1000); // smooth countdown every second
     setInterval(updateAllTimers, 1000); // sync with DB every 10s
 </script>
 
@@ -275,28 +262,28 @@ $script = '<script>
         console.log(`Toggling user ${userId} to ${action}...`);
 
         fetch("{{ route('timer.toggleButtonStatus') }}", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                user_id: userId,
-                action: action
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    user_id: userId,
+                    action: action
+                })
             })
-        })
-        .then(res => res.json())
-        .then(data => {
-            console.log(`Response for user ${userId}:`, data);
+            .then(res => res.json())
+            .then(data => {
+                console.log(`Response for user ${userId}:`, data);
 
-            if (!data.success) {
-                console.error(`Failed to toggle user ${userId}:`, data.message);
-                return;
-            }
+                if (!data.success) {
+                    console.error(`Failed to toggle user ${userId}:`, data.message);
+                    return;
+                }
 
-            updateUserCard(userId, data.button_status);
-        })
-        .catch(err => console.error(`Fetch error for user ${userId}:`, err));
+                updateUserCard(userId, data.button_status);
+            })
+            .catch(err => console.error(`Fetch error for user ${userId}:`, err));
     }
 
     // Update UI for a given user card
@@ -312,20 +299,20 @@ $script = '<script>
 
         // Update dropdown style
         if (dropdown) {
-            dropdown.className = buttonStatus == 0
-                ? 'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white'
-                : 'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
+            dropdown.className = buttonStatus == 0 ?
+                'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white' :
+                'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
         }
 
         // Update action button
         if (btnContainer) {
-            btnContainer.innerHTML = buttonStatus == 0
-                ? `
+            btnContainer.innerHTML = buttonStatus == 0 ?
+                `
                 <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
                     <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
                     Enable Junior
-                </a>`
-                : `
+                </a>` :
+                `
                 <a href="javascript:void(0)" class="btn btn-danger disable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
                     <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
                     Disable Junior
@@ -377,33 +364,35 @@ $script = '<script>
     function toggleAllStatus(action) {
         console.log(`Attempting to ${action} all juniors...`);
         fetch("{{ route('timer.toggleAllStatus') }}", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ action: action })
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (!data.success) {
-                console.error('Bulk toggle failed:', data);
-                return;
-            }
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: action
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error('Bulk toggle failed:', data);
+                    return;
+                }
 
-            console.log('Bulk toggle response:', data);
+                console.log('Bulk toggle response:', data);
 
-            // Update all user cards after bulk action
-            if (Array.isArray(data.updated)) {
-                data.updated.forEach(user => {
-                    updateUserCard(user.user_id, user.button_status);
-                });
-            }
+                // Update all user cards after bulk action
+                if (Array.isArray(data.updated)) {
+                    data.updated.forEach(user => {
+                        updateUserCard(user.user_id, user.button_status);
+                    });
+                }
 
-            // Re-bind events
-            setupStatusButtons();
-        })
-        .catch(err => console.error('Bulk toggle fetch error:', err));
+                // Re-bind events
+                setupStatusButtons();
+            })
+            .catch(err => console.error('Bulk toggle fetch error:', err));
     }
 
     // Update UI for a given user card
@@ -416,20 +405,20 @@ $script = '<script>
 
         // Update dropdown style
         if (dropdown) {
-            dropdown.className = buttonStatus
-                ? 'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white'
-                : 'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
+            dropdown.className = buttonStatus ?
+                'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white' :
+                'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
         }
 
         // Update action button
         if (btnContainer) {
-            btnContainer.innerHTML = buttonStatus
-                ? `
+            btnContainer.innerHTML = buttonStatus ?
+                `
                 <a href="javascript:void(0)" class="btn btn-danger disable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
                     <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
                     Disable Junior
-                </a>`
-                : `
+                </a>` :
+                `
                 <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
                     <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
                     Enable Junior
