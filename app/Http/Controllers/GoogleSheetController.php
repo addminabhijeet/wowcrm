@@ -970,6 +970,38 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
+        // --- Extract Email & Phone for uniqueness check ---
+        $email = $rowData['Email Address'] ?? null;
+        $phone = $rowData['Phone Number'] ?? null;
+
+        // Check for duplicate Email (ignore current record)
+        if (!empty($email)) {
+            $emailExists = GoogleSheetData::where('Email_Address', $email)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($emailExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email address already exists in records.'
+                ]);
+            }
+        }
+
+        // Check for duplicate Phone (ignore current record)
+        if (!empty($phone)) {
+            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($phoneExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phone number already exists in records.'
+                ]);
+            }
+        }
+
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
@@ -1006,8 +1038,8 @@ class GoogleSheetController extends Controller
             'Date' => isset($rowData['Date']) && !empty($rowData['Date']) ?
                 $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
-            'Email_Address' => $rowData['Email Address'] ?? null,
-            'Phone_Number' => $rowData['Phone Number'] ?? null,
+            'Email_Address' => $email,
+            'Phone_Number' => $phone,
             'Location' => $rowData['Location'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => isset($rowData['Graduation Date']) && !empty($rowData['Graduation Date']) ?
@@ -1059,14 +1091,40 @@ class GoogleSheetController extends Controller
         }
     }
 
-
-
     public function juniorstore(Request $request)
     {
         $rowData = json_decode($request->input('data'), true);
 
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
+        }
+
+        // --- Extract Email & Phone for uniqueness check ---
+        $email = $rowData['Email Address'] ?? null;
+        $phone = $rowData['Phone Number'] ?? null;
+
+        // Check for duplicate Email
+        if (!empty($email)) {
+            $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
+
+            if ($emailExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email address already exists in records.'
+                ]);
+            }
+        }
+
+        // Check for duplicate Phone
+        if (!empty($phone)) {
+            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
+
+            if ($phoneExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phone number already exists in records.'
+                ]);
+            }
         }
 
         $user = Auth::user();
@@ -1163,7 +1221,6 @@ class GoogleSheetController extends Controller
             'resume_path' => !empty($record->resume) ? true : false
         ]);
     }
-
 
     // Add a method to serve the PDF files
     public function viewjuniorResume($id)
