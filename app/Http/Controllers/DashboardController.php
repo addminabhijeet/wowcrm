@@ -116,12 +116,14 @@ class DashboardController extends Controller
             $remaining_seconds = $timer->remaining_seconds;
             $elapsed_seconds   = $workDaySeconds - $remaining_seconds;
             $status            = $timer->status;
+            $button_status     = $timer->button_status;
         }
 
         return view('dashboard.trainer', compact(
             'remaining_seconds',
             'elapsed_seconds',
-            'status'
+            'status',
+            'button_status'
         ));
     }
 
@@ -141,12 +143,14 @@ class DashboardController extends Controller
             $remaining_seconds = $timer->remaining_seconds;
             $elapsed_seconds   = $workDaySeconds - $remaining_seconds;
             $status            = $timer->status;
+            $button_status     = $timer->button_status;
         }
 
         return view('dashboard.accountant', compact(
             'remaining_seconds',
             'elapsed_seconds',
-            'status'
+            'status',
+            'button_status'
         ));
     }
 
