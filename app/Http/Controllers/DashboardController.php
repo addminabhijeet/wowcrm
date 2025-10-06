@@ -205,7 +205,7 @@ class DashboardController extends Controller
         // ⏱ Update remaining seconds if timer is running
         if ($timer->status === 'running') {
             $secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds + $secondsPassed -1);
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds + 2 * $secondsPassed);
         }
 
         // 🧭 Handle actions
