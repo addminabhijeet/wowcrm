@@ -191,20 +191,21 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Timer not found'], 404);
         }
 
-        // Current time in IST
-        $istNow = now('Asia/Kolkata');
+        // Current time (uses default timezone)
+        $currentTime = now();
 
-        // Fetch work day seconds from settings
+        // Fetch work day duration from settings
         $timerSetting = TimerSetting::first();
         if (!$timerSetting) {
             return response()->json(['error' => 'Timer settings not configured'], 500);
         }
+
         $workDaySeconds = $timerSetting->work_day_seconds;
 
         // ⏱ Update remaining seconds if timer is running
         if ($timer->status === 'running') {
-            $seconds_passed = $istNow->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
+            $secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds - $secondsPassed);
         }
 
         // 🧭 Handle actions
@@ -217,13 +218,13 @@ class DashboardController extends Controller
         }
 
         // 🕓 Update timestamp and save
-        $timer->updated_at = $istNow;
+        $timer->updated_at = $currentTime;
         $timer->save();
 
         // 🔢 Calculate elapsed time
-        $elapsed_seconds = $workDaySeconds - $timer->remaining_seconds;
+        $elapsedSeconds = $workDaySeconds - $timer->remaining_seconds;
 
-        // 🧾 Log pause/resume event (only if not tick)
+        // 🧾 Log pause/resume event (only if not a tick update)
         if ($action !== 'tick') {
             UserTimerPause::create([
                 'user_timer_log_id' => $timer->id,
@@ -231,8 +232,8 @@ class DashboardController extends Controller
                 'status'            => $timer->status,
                 'pause_type'        => $timer->pause_type,
                 'remaining_seconds' => $timer->remaining_seconds,
-                'elapsed_seconds'   => $elapsed_seconds,
-                'event_time'        => $istNow,
+                'elapsed_seconds'   => $elapsedSeconds,
+                'event_time'        => $currentTime,
             ]);
         }
 
@@ -240,7 +241,7 @@ class DashboardController extends Controller
         return response()->json([
             'success'           => true,
             'remaining_seconds' => $timer->remaining_seconds,
-            'elapsed_seconds'   => $elapsed_seconds,
+            'elapsed_seconds'   => $elapsedSeconds,
             'status'            => $timer->status,
             'pause_type'        => $timer->pause_type,
             'notice_status'     => $timer->notice_status,
