@@ -68,29 +68,36 @@ class CalendarController extends Controller
     public function getEvents(Request $request)
     {
         $events = UserTimerPause::where('user_id', Auth::id())
-            ->select('id', 'title', 'start_date', 'end_date', 'description', 'pause_type', 'status', 'label')
+            ->orderBy('event_time', 'asc')
             ->get();
 
-        // Centralized label colors
+        // Dynamic colors based on pause_type or label
         $labelColors = [
-            'login' => '#007bff',
+            'login'  => '#007bff',
             'resume' => '#28a745',
-            'pause' => '#ffc107',
-            'other' => '#6c757d'
+            'pause'  => '#ffc107',
+            'other'  => '#6c757d'
         ];
 
-        $eventsData = $events->map(fn($event) => [
-            'id' => $event->id,
-            'title' => $event->title ?? ucfirst($event->pause_type),
-            'start' => $event->start_date,
-            'end' => $event->end_date,
-            'description' => $event->description,
-            'label' => $event->label ?? 'other',
-            'label_color' => $labelColors[strtolower($event->label)] ?? $labelColors['other']
-        ]);
+        $eventsData = $events->map(function ($event) use ($labelColors) {
+            return [
+                'id' => $event->id,
+                'title' => ucfirst($event->pause_type),
+                'start' => $event->event_time,
+                'end'   => $event->event_time, // you can adjust if you have duration
+                'extendedProps' => [
+                    'status'  => $event->status,
+                    'pause_type' => $event->pause_type,
+                    'remaining_seconds' => $event->remaining_seconds,
+                    'label' => $event->pause_type,
+                    'label_color' => $labelColors[$event->pause_type] ?? $labelColors['other'],
+                ]
+            ];
+        });
 
         return response()->json($eventsData);
     }
+
 
     public function updateStatus(Request $request)
     {
