@@ -24,7 +24,6 @@ class DashboardController extends Controller
             'daily_base_time'  => $setting ? $setting->daily_base_time : '07:00:00',  // 8 PM default
         ];
     }
-    const WORK_DAY_SECONDS = 9 * 60 * 60;
 
     public function index()
     {
@@ -34,8 +33,12 @@ class DashboardController extends Controller
 
     public function junior()
     {
-        $settings = $this->getTimerSettings();
-        $workDaySeconds = $settings['work_day_seconds'];
+        // Fetch timer settings
+        $settings = TimerSetting::first();
+        if (!$settings) {
+            return response()->json(['error' => 'Timer settings not configured'], 500);
+        }
+        $workDaySeconds = $settings->work_day_seconds;
 
         $user  = Auth::user();
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
@@ -43,12 +46,13 @@ class DashboardController extends Controller
         $remaining_seconds = $workDaySeconds;
         $elapsed_seconds   = 0;
         $status            = 'running';
+        $button_status     = 1; // default to show if no timer exists
 
         if ($timer) {
             $remaining_seconds = $timer->remaining_seconds;
             $elapsed_seconds   = $workDaySeconds - $remaining_seconds;
             $status            = $timer->status;
-            $button_status     = $timer->button_status; // 0 = hide, 1 = show
+            $button_status     = $timer->button_status ?? 1;
         }
 
         return view('dashboard.junior', compact(
@@ -75,8 +79,12 @@ class DashboardController extends Controller
 
     public function senior()
     {
-        $settings = $this->getTimerSettings();
-        $workDaySeconds = $settings['work_day_seconds'];
+        // Fetch timer settings
+        $settings = TimerSetting::first();
+        if (!$settings) {
+            return response()->json(['error' => 'Timer settings not configured'], 500);
+        }
+        $workDaySeconds = $settings->work_day_seconds;
 
         $user  = Auth::user();
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
@@ -84,26 +92,30 @@ class DashboardController extends Controller
         $remaining_seconds = $workDaySeconds;
         $elapsed_seconds   = 0;
         $status            = 'running';
+        $button_status     = 1; // default to show if no timer exists
 
         if ($timer) {
             $remaining_seconds = $timer->remaining_seconds;
             $elapsed_seconds   = $workDaySeconds - $remaining_seconds;
             $status            = $timer->status;
-            $button_status     = $timer->button_status; // 0 = hide, 1 = show
+            $button_status     = $timer->button_status ?? 1;
         }
 
-        return view('dashboard.junior', compact(
+        return view('dashboard.senior', compact(
             'remaining_seconds',
             'elapsed_seconds',
             'status',
             'button_status'
         ));
     }
-
     public function trainer()
     {
-        $settings = $this->getTimerSettings();
-        $workDaySeconds = $settings['work_day_seconds'];
+        // Fetch timer settings dynamically
+        $settings = TimerSetting::first();
+        if (!$settings) {
+            return response()->json(['error' => 'Timer settings not configured'], 500);
+        }
+        $workDaySeconds = $settings->work_day_seconds;
 
         $user  = Auth::user();
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
@@ -111,12 +123,13 @@ class DashboardController extends Controller
         $remaining_seconds = $workDaySeconds;
         $elapsed_seconds   = 0;
         $status            = 'running';
+        $button_status     = 1; // default to show if no timer exists
 
         if ($timer) {
             $remaining_seconds = $timer->remaining_seconds;
             $elapsed_seconds   = $workDaySeconds - $remaining_seconds;
             $status            = $timer->status;
-            $button_status     = $timer->button_status;
+            $button_status     = $timer->button_status ?? 1;
         }
 
         return view('dashboard.trainer', compact(
@@ -129,8 +142,12 @@ class DashboardController extends Controller
 
     public function accountant()
     {
-        $settings = $this->getTimerSettings();
-        $workDaySeconds = $settings['work_day_seconds'];
+        // Fetch timer settings dynamically
+        $settings = TimerSetting::first();
+        if (!$settings) {
+            return response()->json(['error' => 'Timer settings not configured'], 500);
+        }
+        $workDaySeconds = $settings->work_day_seconds;
 
         $user  = Auth::user();
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
@@ -138,12 +155,13 @@ class DashboardController extends Controller
         $remaining_seconds = $workDaySeconds;
         $elapsed_seconds   = 0;
         $status            = 'running';
+        $button_status     = 1; // default to show if no timer exists
 
         if ($timer) {
             $remaining_seconds = $timer->remaining_seconds;
             $elapsed_seconds   = $workDaySeconds - $remaining_seconds;
             $status            = $timer->status;
-            $button_status     = $timer->button_status;
+            $button_status     = $timer->button_status ?? 1;
         }
 
         return view('dashboard.accountant', compact(
@@ -167,6 +185,7 @@ class DashboardController extends Controller
         $user   = Auth::user();
         $action = $request->input('action');
 
+        // Get the latest timer log for the user
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
         if (!$timer) {
             return response()->json(['error' => 'Timer not found'], 404);
@@ -175,9 +194,16 @@ class DashboardController extends Controller
         // Current time in IST
         $istNow = now('Asia/Kolkata');
 
+        // Fetch work day seconds from settings
+        $timerSetting = TimerSetting::first();
+        if (!$timerSetting) {
+            return response()->json(['error' => 'Timer settings not configured'], 500);
+        }
+        $workDaySeconds = $timerSetting->work_day_seconds;
+
         // ⏱ Update remaining seconds if timer is running
         if ($timer->status === 'running') {
-            $seconds_passed = now()->diffInSeconds($timer->updated_at);
+            $seconds_passed = $istNow->diffInSeconds($timer->updated_at);
             $timer->remaining_seconds = max(0, $timer->remaining_seconds - $seconds_passed);
         }
 
@@ -191,11 +217,11 @@ class DashboardController extends Controller
         }
 
         // 🕓 Update timestamp and save
-        $timer->updated_at = now();
+        $timer->updated_at = $istNow;
         $timer->save();
 
         // 🔢 Calculate elapsed time
-        $elapsed_seconds = self::WORK_DAY_SECONDS - $timer->remaining_seconds;
+        $elapsed_seconds = $workDaySeconds - $timer->remaining_seconds;
 
         // 🧾 Log pause/resume event (only if not tick)
         if ($action !== 'tick') {
@@ -206,7 +232,7 @@ class DashboardController extends Controller
                 'pause_type'        => $timer->pause_type,
                 'remaining_seconds' => $timer->remaining_seconds,
                 'elapsed_seconds'   => $elapsed_seconds,
-                'event_time'        => now(),
+                'event_time'        => $istNow,
             ]);
         }
 
