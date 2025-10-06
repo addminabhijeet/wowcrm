@@ -23,19 +23,19 @@
 
                         <div class="countdown my-56 d-flex align-items-center flex-wrap gap-md-4 gap-3" id="coming-soon">
                             <div class="d-flex flex-column align-items-center">
-                                <h4 class="day-name mb-0 w-110-px fw-medium h-110-px bg-neutral-900 text-white rounded-circle d-flex justify-content-center align-items-center">Mon</h4>
+                                <h4 class="day-name mb-0 w-110-px fw-medium h-110-px bg-white text-black rounded-circle border border-dark d-flex justify-content-center align-items-center">Mon</h4>
                                 <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">Day</span>
                             </div>
                             <div class="d-flex flex-column align-items-center">
-                                <h4 class="month-name mb-0 w-110-px fw-medium h-110-px bg-neutral-900 text-white rounded-circle d-flex justify-content-center align-items-center">Oct</h4>
+                                <h4 class="month-name mb-0 w-110-px fw-medium h-110-px bg-white text-black rounded-circle border border-dark d-flex justify-content-center align-items-center">Oct</h4>
                                 <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">Month</span>
                             </div>
                             <div class="d-flex flex-column align-items-center">
-                                <h4 class="date-number mb-0 w-110-px fw-medium h-110-px bg-neutral-900 text-white rounded-circle d-flex justify-content-center align-items-center">06</h4>
+                                <h4 class="date-number mb-0 w-110-px fw-medium h-110-px bg-white text-black rounded-circle border border-dark d-flex justify-content-center align-items-center">06</h4>
                                 <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">Date</span>
                             </div>
                             <div class="d-flex flex-column align-items-center">
-                                <h4 class="year-number mb-0 w-110-px fw-medium h-110-px bg-neutral-900 text-white rounded-circle d-flex justify-content-center align-items-center">2025</h4>
+                                <h4 class="year-number mb-0 w-110-px fw-medium h-110-px bg-white text-black rounded-circle border border-dark d-flex justify-content-center align-items-center">2025</h4>
                                 <span class="text-neutral-500 text-md text-uppercase fw-medium mt-8">Year</span>
                             </div>
                         </div>
