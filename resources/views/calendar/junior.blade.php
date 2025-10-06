@@ -20,7 +20,7 @@ $subTitle = 'Calendar';
     </div>
 </div>
 
-<!-- Modal for showing count of events on a selected date -->
+<!-- Modal for showing events of a selected date -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content radius-16 bg-base">
@@ -29,7 +29,7 @@ $subTitle = 'Calendar';
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body p-24" id="modalBody">
-                <!-- Event count will be dynamically displayed here -->
+                <!-- Events will be dynamically appended here -->
             </div>
         </div>
     </div>
@@ -50,7 +50,7 @@ document.addEventListener('DOMContentLoaded', function() {
         events: "{{ route('calendar.juniorEvents') }}", // AJAX source
         eventColor: '#378006',
         dateClick: function(info) {
-            // Count events on the clicked date
+            // Filter events on the clicked date
             var eventsOnDate = calendar.getEvents().filter(event => {
                 return event.startStr.slice(0,10) === info.dateStr;
             });
@@ -58,13 +58,39 @@ document.addEventListener('DOMContentLoaded', function() {
             var modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = '';
 
-            // Show total count instead of listing events
-            modalBody.innerHTML = `
-                <div class="text-center">
-                    <h2 class="text-primary-light fw-semibold text-lg">${eventsOnDate.length}</h2>
-                    <p class="text-secondary-light">event(s) on this date</p>
-                </div>
-            `;
+            if(eventsOnDate.length > 0) {
+                eventsOnDate.forEach(function(event) {
+                    modalBody.innerHTML += `
+                        <div class="mb-24 border-bottom pb-16">
+                            <div class="mb-12">
+                                <span class="text-secondary-light txt-sm fw-medium">Title</span>
+                                <h6 class="text-primary-light fw-semibold text-md mt-4">${event.title}</h6>
+                            </div>
+                            <div class="mb-12">
+                                <span class="text-secondary-light txt-sm fw-medium">Start Date</span>
+                                <h6 class="text-primary-light fw-semibold text-md mt-4">${new Date(event.start).toLocaleString()}</h6>
+                            </div>
+                            <div class="mb-12">
+                                <span class="text-secondary-light txt-sm fw-medium">End Date</span>
+                                <h6 class="text-primary-light fw-semibold text-md mt-4">${event.end ? new Date(event.end).toLocaleString() : ''}</h6>
+                            </div>
+                            <div class="mb-12">
+                                <span class="text-secondary-light txt-sm fw-medium">Description</span>
+                                <h6 class="text-primary-light fw-semibold text-md mt-4">${event.extendedProps.description || 'N/A'}</h6>
+                            </div>
+                            <div class="mb-12">
+                                <span class="text-secondary-light txt-sm fw-medium">Label</span>
+                                <h6 class="text-primary-light fw-semibold text-md mt-4 d-flex align-items-center gap-2">
+                                    <span class="w-8-px h-8-px rounded-circle"></span>
+                                    ${event.extendedProps.label || 'General'}
+                                </h6>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                modalBody.innerHTML = '<p class="text-secondary-light">No events on this date.</p>';
+            }
 
             document.getElementById('modalDate').innerText = info.dateStr;
 
