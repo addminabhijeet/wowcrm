@@ -16,7 +16,7 @@
     <div class="auth-right py-32 px-24 d-flex flex-column justify-content-center">
         <div class="max-w-464-px mx-auto w-100">
             <div style="text-align: center;">
-                <a href="" class="mb-40 max-w-290-px" style="width: 80%;">
+                <a href="" class="mb-40 max-w-290-px" style="width: 50%;">
                     <img src="{{ asset('assets/images/logo.png') }}" alt="">
                 </a>
                 <h4 class="mb-12">Sign In to your Account</h4>
