@@ -89,12 +89,14 @@ class DashboardController extends Controller
             $remaining_seconds = $timer->remaining_seconds;
             $elapsed_seconds   = $workDaySeconds - $remaining_seconds;
             $status            = $timer->status;
+            $button_status     = $timer->button_status; // 0 = hide, 1 = show
         }
 
-        return view('dashboard.senior', compact(
+        return view('dashboard.junior', compact(
             'remaining_seconds',
             'elapsed_seconds',
-            'status'
+            'status',
+            'button_status'
         ));
     }
 

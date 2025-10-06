@@ -43,7 +43,7 @@
                         <div class="mt-24 max-w-500-px text-start">
                             <span class="fw-semibold text-neutral-600 text-lg text-hover-neutral-600">Something exciting is always happening! Want to be the first to know? Stay Connected</span>
                             <form action="#" class="mt-16 d-flex gap-16 flex-sm-row flex-column">
-                                <input type="email" class="form-control text-start py-24 flex-grow-1" placeholder="nsdashboard@gmail.com" required>
+                                <input type="email" class="form-control text-start py-24 flex-grow-1" placeholder="info@norloxsolutions.com" required>
                                 <button type="submit" class="btn btn-primary-600 px-24 flex-shrink-0 d-flex align-items-center justify-content-center gap-8">
                                     <i class="ri-notification-2-line"></i> Knock Us
                                 </button>
