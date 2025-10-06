@@ -8,82 +8,7 @@ $subTitle = 'Calendar';
 @section('content')
 
 <div class="row gy-4">
-    <div class="col-xxl-3 col-lg-4">
-        <div class="card h-100 p-0">
-            <div class="card-body p-24">
-                <div class="mt-32">
-                    @foreach($events as $event)
-                    <div class="event-item d-flex align-items-center justify-content-between gap-4 pb-16 mb-16 border border-start-0 border-end-0 border-top-0">
-                        <div class="">
-                            <div class="d-flex align-items-center gap-10">
-                                <span class="w-12-px h-12-px bg-warning-600 rounded-circle fw-medium"></span>
-                                <span class="text-secondary-light">
-                                    {{ \Carbon\Carbon::parse($event->start_date)->format('d M Y, h:i A') }} -
-                                    {{ \Carbon\Carbon::parse($event->end_date)->format('d M Y, h:i A') }}
-                                </span>
-                            </div>
-                            <span class="text-primary-light fw-semibold text-md mt-4">Take {{ $event->status }} for {{ $event->pause_type }}</span>
-                        </div>
-                        <div class="dropdown">
-                            <button type="button" data-bs-toggle="dropdown" aria-expanded="false">
-                                <iconify-icon icon="entypo:dots-three-vertical" class="icon text-secondary-light"></iconify-icon>
-                            </button>
-                            <ul class="dropdown-menu p-12 border bg-base shadow">
-                                <li>
-                                    <button type="button" class="dropdown-item px-16 py-8 rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-10"
-                                        data-bs-toggle="modal"
-                                        data-bs-target="#eventModal{{ $event->id }}">
-                                        <iconify-icon icon="hugeicons:view" class="icon text-lg line-height-1"></iconify-icon>
-                                        View
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                    </div>
-
-
-                    <!-- Modal for event details -->
-                    <div class="modal fade" id="eventModal{{ $event->id }}" tabindex="-1" aria-labelledby="eventModalLabel{{ $event->id }}" aria-hidden="true">
-                        <div class="modal-dialog modal-lg modal-dialog-centered">
-                            <div class="modal-content radius-16 bg-base">
-                                <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                                    <h1 class="modal-title fs-5" id="eventModalLabel{{ $event->id }}">View Details</h1>
-                                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                </div>
-                                <div class="modal-body p-24">
-                                    <div class="mb-12">
-                                        <span class="text-secondary-light txt-sm fw-medium">Title</span>
-                                        <h6 class="text-primary-light fw-semibold text-md mb-0 mt-4">{{ $event->title }}</h6>
-                                    </div>
-                                    <div class="mb-12">
-                                        <span class="text-secondary-light txt-sm fw-medium">Start Date</span>
-                                        <h6 class="text-primary-light fw-semibold text-md mb-0 mt-4">{{ \Carbon\Carbon::parse($event->start_date)->format('d M Y, h:i A') }}</h6>
-                                    </div>
-                                    <div class="mb-12">
-                                        <span class="text-secondary-light txt-sm fw-medium">End Date</span>
-                                        <h6 class="text-primary-light fw-semibold text-md mb-0 mt-4">{{ \Carbon\Carbon::parse($event->end_date)->format('d M Y, h:i A') }}</h6>
-                                    </div>
-                                    <div class="mb-12">
-                                        <span class="text-secondary-light txt-sm fw-medium">Description</span>
-                                        <h6 class="text-primary-light fw-semibold text-md mb-0 mt-4">{{ $event->description ?? 'N/A' }}</h6>
-                                    </div>
-                                    <div class="mb-12">
-                                        <span class="text-secondary-light txt-sm fw-medium">Label</span>
-                                        <h6 class="text-primary-light fw-semibold text-md mb-0 mt-4 d-flex align-items-center gap-2">
-                                            <span class="w-8-px h-8-px rounded-circle"></span>
-                                            {{ $event->label ?? 'General' }}
-                                        </h6>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    @endforeach
-                </div>
-            </div>
-        </div>
-    </div>
-    <div class="col-xxl-9 col-lg-8">
+    <div class="col-12">
         <div class="card h-100 p-0">
             <div class="card-body p-24">
                 <div id='wrap'>
@@ -95,36 +20,88 @@ $subTitle = 'Calendar';
     </div>
 </div>
 
+<!-- Modal for showing events of a selected date -->
+<div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content radius-16 bg-base">
+            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                <h1 class="modal-title fs-5" id="eventModalLabel">Events on <span id="modalDate"></span></h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-24" id="modalBody">
+                <!-- Events will be dynamically appended here -->
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
+document.addEventListener('DOMContentLoaded', function() {
+    var calendarEl = document.getElementById('calendar');
 
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth', // default view
-            headerToolbar: {
-                left: 'prev,next today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay'
-            },
-            events: "{{ route('calendar.juniorEvents') }}", // AJAX source
-            eventColor: '#378006', // default color if label_color missing
-            eventClick: function(info) {
-                // Populate modal with event info
-                document.getElementById('eventModalTitle').innerText = info.event.title;
-                document.getElementById('eventModalStart').innerText = new Date(info.event.start).toLocaleString();
-                document.getElementById('eventModalEnd').innerText = info.event.end ? new Date(info.event.end).toLocaleString() : '';
-                document.getElementById('eventModalDescription').innerText = info.event.extendedProps.description || 'N/A';
-                document.getElementById('eventModalLabel').innerText = info.event.extendedProps.label || 'General';
+    var calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        headerToolbar: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'dayGridMonth,timeGridWeek,timeGridDay'
+        },
+        events: "{{ route('calendar.juniorEvents') }}", // AJAX source
+        eventColor: '#378006',
+        dateClick: function(info) {
+            // Filter events on the clicked date
+            var eventsOnDate = calendar.getEvents().filter(event => {
+                return event.startStr.slice(0,10) === info.dateStr;
+            });
 
-                // Show modal
-                var modal = new bootstrap.Modal(document.getElementById('eventModal'));
-                modal.show();
+            var modalBody = document.getElementById('modalBody');
+            modalBody.innerHTML = '';
+
+            if(eventsOnDate.length > 0) {
+                eventsOnDate.forEach(function(event) {
+                    modalBody.innerHTML += `
+                        <div class="mb-24 border-bottom pb-16">
+                            <div class="mb-12">
+                                <span class="text-secondary-light txt-sm fw-medium">Title</span>
+                                <h6 class="text-primary-light fw-semibold text-md mt-4">${event.title}</h6>
+                            </div>
+                            <div class="mb-12">
+                                <span class="text-secondary-light txt-sm fw-medium">Start Date</span>
+                                <h6 class="text-primary-light fw-semibold text-md mt-4">${new Date(event.start).toLocaleString()}</h6>
+                            </div>
+                            <div class="mb-12">
+                                <span class="text-secondary-light txt-sm fw-medium">End Date</span>
+                                <h6 class="text-primary-light fw-semibold text-md mt-4">${event.end ? new Date(event.end).toLocaleString() : ''}</h6>
+                            </div>
+                            <div class="mb-12">
+                                <span class="text-secondary-light txt-sm fw-medium">Description</span>
+                                <h6 class="text-primary-light fw-semibold text-md mt-4">${event.extendedProps.description || 'N/A'}</h6>
+                            </div>
+                            <div class="mb-12">
+                                <span class="text-secondary-light txt-sm fw-medium">Label</span>
+                                <h6 class="text-primary-light fw-semibold text-md mt-4 d-flex align-items-center gap-2">
+                                    <span class="w-8-px h-8-px rounded-circle"></span>
+                                    ${event.extendedProps.label || 'General'}
+                                </h6>
+                            </div>
+                        </div>
+                    `;
+                });
+            } else {
+                modalBody.innerHTML = '<p class="text-secondary-light">No events on this date.</p>';
             }
-        });
 
-        calendar.render();
+            document.getElementById('modalDate').innerText = info.dateStr;
+
+            // Show modal
+            var modal = new bootstrap.Modal(document.getElementById('eventModal'));
+            modal.show();
+        }
     });
+
+    calendar.render();
+});
 </script>
 
 @endsection
