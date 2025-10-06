@@ -238,7 +238,7 @@ $script = '<script>
                 btn.addEventListener('click', () => {
                     const action = btn.dataset.type;
 
-                    fetch("{{ route('timer.updatejunior') }}", {
+                    fetch("{{ route('timer.update') }}", {
                             method: "POST",
                             headers: {
                                 "X-CSRF-TOKEN": "{{ csrf_token() }}",
