@@ -949,11 +949,26 @@ $script ='<script>
         // Click suggestion
         $(document).on('click', '#search-suggestions a', function(e) {
             e.preventDefault();
-            const text = $(this).text();
-            $('#senior-search').val(text);
+            const rowId = $(this).data('id'); // get the row ID
+            $('#senior-search').val($(this).text());
             $('#search-suggestions').empty().hide();
-            fetchTable(text);
+
+            // Fetch only this row
+            $.ajax({
+                url: "{{ route('google.sheet.senior') }}",
+                type: 'GET',
+                data: {
+                    row_id: rowId
+                },
+                success: function(res) {
+                    $('#senior-table-wrapper').html(res);
+                },
+                error: function(err) {
+                    console.error(err);
+                }
+            });
         });
+
 
         // Pagination click
         $(document).on('click', '.pagination a', function(e) {

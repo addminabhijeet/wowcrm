@@ -380,6 +380,7 @@ class GoogleSheetController extends Controller
     {
         $authUser = Auth::user();
         $search = $request->input('search');
+        $rowId = $request->input('row_id');
 
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
@@ -391,7 +392,9 @@ class GoogleSheetController extends Controller
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
         });
 
-        if ($search && strlen($search) >= 3) {
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
             $query->where(function ($q) use ($search) {
                 $q->where('Name', 'LIKE', "%{$search}%")
                     ->orWhere('Email_Address', 'LIKE', "%{$search}%")
