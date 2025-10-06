@@ -18,12 +18,14 @@ $script ='<script>
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>10</option>
             </select>
+
             <!-- Search Input -->
             <form class="navbar-search position-relative" autocomplete="off">
                 <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control" placeholder="Search Name, Email, Phone">
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
                 <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
+
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>Status</option>
                 <option>Active</option>
@@ -31,6 +33,7 @@ $script ='<script>
             </select>
         </div>
     </div>
+
     <div class="card-body p-24" id="senior-table-wrapper">
         @include('database.partials.senior_table', ['data' => $data])
         <div class="table-responsive scroll-sm">
@@ -832,73 +835,133 @@ $script ='<script>
     });
 </script>
 
-<!-- AJAX search & pagination -->
+<style>
+    .input-hint {
+        font-size: .85rem;
+        color: #6c757d;
+    }
+
+    select.dynamic-dropdown {
+        min-width: 160px;
+    }
+
+    input.valid {
+        background-color: #d4edda;
+    }
+
+    input.invalid {
+        background-color: #f8d7da;
+    }
+
+    input.neutral {
+        background-color: #ffffff;
+    }
+
+    select.neutral {
+        background-color: #ffffff;
+    }
+
+    select.valid {
+        background-color: #d4edda;
+    }
+
+    .phone-hint,
+    .small-hint {
+        font-size: .8rem;
+        color: #6c757d;
+        display: block;
+        margin-top: 2px;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<!-- AJAX Search + Suggestions + Pagination -->
 <script>
     $(document).ready(function() {
 
-        function fetchData(search = '', page = 1) {
+        // -----------------------------
+        // Helper: Debounce
+        // -----------------------------
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this,
+                    args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
+
+        // -----------------------------
+        // Fetch Table Data via AJAX
+        // -----------------------------
+        function fetchTable(search = '', page = 1) {
             $.ajax({
                 url: "{{ route('google.sheet.senior') }}",
                 type: 'GET',
                 data: {
-                    search: search,
-                    page: page
+                    search,
+                    page
                 },
                 success: function(res) {
                     $('#senior-table-wrapper').html(res);
+                },
+                error: function(err) {
+                    console.error(err);
                 }
             });
         }
 
-        // Live suggestions
-        let timer;
-        $('#senior-search').on('input', function() {
-            clearTimeout(timer);
-            let query = $(this).val();
-
+        // -----------------------------
+        // Live Search Suggestions
+        // -----------------------------
+        const showSuggestions = debounce(function() {
+            const query = $('#senior-search').val().trim();
             if (query.length < 3) {
                 $('#search-suggestions').empty().hide();
-                fetchData(''); // reset table if input <3 letters
+                fetchTable(''); // reset table
                 return;
             }
 
-            timer = setTimeout(() => {
-                $.ajax({
-                    url: "{{ route('senior.suggestions') }}",
-                    type: 'GET',
-                    data: {
-                        query: query
-                    },
-                    success: function(res) {
-                        let suggestions = '';
-                        if (res.length > 0) {
-                            res.forEach(item => {
-                                suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
-                            });
-                        } else {
-                            suggestions = '<span class="list-group-item">No results found</span>';
-                        }
-                        $('#search-suggestions').html(suggestions).show();
+            $.ajax({
+                url: "{{ route('senior.suggestions') }}",
+                type: 'GET',
+                data: {
+                    query
+                },
+                success: function(res) {
+                    let suggestions = '';
+                    if (res.length) {
+                        res.forEach(item => {
+                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
+                        });
+                    } else {
+                        suggestions = '<span class="list-group-item">No results found</span>';
                     }
-                });
-            }, 300);
-        });
+                    $('#search-suggestions').html(suggestions).show();
+                }
+            });
+        }, 300);
+
+        $('#senior-search').on('input', showSuggestions);
 
         // Click suggestion
         $(document).on('click', '#search-suggestions a', function(e) {
             e.preventDefault();
-            let text = $(this).text();
+            const text = $(this).text();
             $('#senior-search').val(text);
             $('#search-suggestions').empty().hide();
-            fetchData(text);
+            fetchTable(text);
         });
 
         // Pagination click
         $(document).on('click', '.pagination a', function(e) {
             e.preventDefault();
-            let page = $(this).attr('href').split('page=')[1];
-            let search = $('#senior-search').val();
-            fetchData(search, page);
+            const page = $(this).attr('href').split('page=')[1];
+            const search = $('#senior-search').val();
+            fetchTable(search, page);
         });
 
         // Click outside suggestions
@@ -907,6 +970,7 @@ $script ='<script>
                 $('#search-suggestions').empty().hide();
             }
         });
+
     });
 </script>
 @endsection

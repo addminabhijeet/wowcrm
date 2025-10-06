@@ -376,13 +376,11 @@ class GoogleSheetController extends Controller
         return response()->download($filePath, basename($filePath));
     }
 
-
     public function senior(Request $request)
     {
         $authUser = Auth::user();
         $search = $request->input('search');
 
-        // Build patterns for LIKE match
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
@@ -391,13 +389,8 @@ class GoogleSheetController extends Controller
                 ->orWhere('created_by', '0|senior')
                 ->orWhere('created_by', 'LIKE', $userPattern)
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
-        })
-            ->where(function ($q) use ($authUser) {
-                $q->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|senior', $authUser->id . '|senior'])
-                    ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|senior', '0|senior']);
-            });
+        });
 
-        // Filter by search if present
         if ($search && strlen($search) >= 3) {
             $query->where(function ($q) use ($search) {
                 $q->where('Name', 'LIKE', "%{$search}%")
@@ -435,7 +428,9 @@ class GoogleSheetController extends Controller
         return view('database.senior', compact('data'));
     }
 
-    // AJAX endpoint for search suggestions
+    // -----------------------------
+    // AJAX Search Suggestions
+    // -----------------------------
     public function seniorSuggestions(Request $request)
     {
         $authUser = Auth::user();
@@ -464,7 +459,7 @@ class GoogleSheetController extends Controller
 
         return response()->json($results);
     }
-    
+
     public function seniorfetch(Request $request)
     {
         $request->validate([
