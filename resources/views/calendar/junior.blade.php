@@ -20,17 +20,15 @@ $subTitle = 'Calendar';
     </div>
 </div>
 
-<!-- Modal for showing events of a selected date -->
+<!-- Modal -->
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content radius-16 bg-base">
             <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
                 <h1 class="modal-title fs-5" id="eventModalLabel">Events on <span id="modalDate"></span></h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-24" id="modalBody">
-                <!-- Events will be dynamically appended here -->
-            </div>
+            <div class="modal-body p-24" id="modalBody"></div>
         </div>
     </div>
 </div>
@@ -47,54 +45,64 @@ document.addEventListener('DOMContentLoaded', function() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        events: "{{ route('calendar.juniorEvents') }}", // AJAX source
+        events: "{{ route('calendar.juniorEvents') }}",
         eventColor: '#378006',
+        dayCellDidMount: function(info) {
+            var eventsOnDate = calendar.getEvents().filter(event => {
+                return event.startStr.slice(0,10) === info.date.toISOString().slice(0,10);
+            });
+
+            if(eventsOnDate.length > 0){
+                var container = document.createElement('div');
+                container.className = 'fc-day-events-container';
+
+                eventsOnDate.forEach(function(event){
+                    var dot = document.createElement('span');
+                    dot.className = 'event-dot';
+                    dot.style.backgroundColor = event.extendedProps.label_color || '#378006';
+                    dot.title = event.title;
+                    container.appendChild(dot);
+                });
+
+                var countEl = document.createElement('span');
+                countEl.className = 'event-count';
+                countEl.innerText = eventsOnDate.length;
+                container.appendChild(countEl);
+
+                info.el.appendChild(container);
+            }
+        },
         dateClick: function(info) {
-            // Filter events on the clicked date
             var eventsOnDate = calendar.getEvents().filter(event => {
                 return event.startStr.slice(0,10) === info.dateStr;
             });
 
+            eventsOnDate.sort((a,b) => new Date(a.start) - new Date(b.start));
+
             var modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = '';
 
-            if(eventsOnDate.length > 0) {
-                eventsOnDate.forEach(function(event) {
+            if(eventsOnDate.length > 0){
+                eventsOnDate.forEach(function(event){
                     modalBody.innerHTML += `
-                        <div class="mb-24 border-bottom pb-16">
-                            <div class="mb-12">
-                                <span class="text-secondary-light txt-sm fw-medium">Title</span>
-                                <h6 class="text-primary-light fw-semibold text-md mt-4">${event.title}</h6>
+                        <div class="event-item p-16 mb-16 border rounded shadow-sm bg-light">
+                            <div class="d-flex justify-content-between align-items-center mb-8">
+                                <h5 class="fw-semibold">${event.title}</h5>
+                                <span class="badge" style="background-color:${event.extendedProps.label_color}; color:white;">
+                                    ${event.extendedProps.label}
+                                </span>
                             </div>
-                            <div class="mb-12">
-                                <span class="text-secondary-light txt-sm fw-medium">Start Date</span>
-                                <h6 class="text-primary-light fw-semibold text-md mt-4">${new Date(event.start).toLocaleString()}</h6>
-                            </div>
-                            <div class="mb-12">
-                                <span class="text-secondary-light txt-sm fw-medium">End Date</span>
-                                <h6 class="text-primary-light fw-semibold text-md mt-4">${event.end ? new Date(event.end).toLocaleString() : ''}</h6>
-                            </div>
-                            <div class="mb-12">
-                                <span class="text-secondary-light txt-sm fw-medium">Description</span>
-                                <h6 class="text-primary-light fw-semibold text-md mt-4">${event.extendedProps.description || 'N/A'}</h6>
-                            </div>
-                            <div class="mb-12">
-                                <span class="text-secondary-light txt-sm fw-medium">Label</span>
-                                <h6 class="text-primary-light fw-semibold text-md mt-4 d-flex align-items-center gap-2">
-                                    <span class="w-8-px h-8-px rounded-circle"></span>
-                                    ${event.extendedProps.label || 'General'}
-                                </h6>
-                            </div>
+                            <p class="mb-4"><strong>Time:</strong> ${new Date(event.start).toLocaleString()} - ${event.end ? new Date(event.end).toLocaleString() : 'N/A'}</p>
+                            <p class="mb-0"><strong>Description:</strong> ${event.extendedProps.description || 'N/A'}</p>
                         </div>
                     `;
                 });
             } else {
-                modalBody.innerHTML = '<p class="text-secondary-light">No events on this date.</p>';
+                modalBody.innerHTML = '<p class="text-secondary-light text-center">No events on this date.</p>';
             }
 
             document.getElementById('modalDate').innerText = info.dateStr;
 
-            // Show modal
             var modal = new bootstrap.Modal(document.getElementById('eventModal'));
             modal.show();
         }
@@ -103,5 +111,13 @@ document.addEventListener('DOMContentLoaded', function() {
     calendar.render();
 });
 </script>
+
+<style>
+.fc-day-events-container { display:flex; flex-wrap:wrap; justify-content:center; margin-top:2px; gap:2px; }
+.event-dot { width:8px; height:8px; border-radius:50%; display:inline-block; }
+.event-count { display:inline-block; font-size:10px; font-weight:bold; background:#e1f5e0; color:#1a6f00; padding:2px 6px; border-radius:10px; margin-left:4px; }
+.event-item { background:#f8f9fa; }
+.event-item h5 { font-size:16px; }
+</style>
 
 @endsection

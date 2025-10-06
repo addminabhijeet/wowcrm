@@ -66,31 +66,30 @@ class CalendarController extends Controller
 
     public function getEvents(Request $request)
     {
-        $start = $request->input('start'); // ISO string from FullCalendar
-        $end   = $request->input('end');
+        $events = UserTimerPause::select('id', 'title', 'start_date', 'end_date', 'description', 'pause_type', 'status', 'label')
+            ->get();
 
-        // Convert to Carbon
-        $startDate = Carbon::parse($start);
-        $endDate   = Carbon::parse($end);
+        // Define dynamic colors based on label type from DB or a mapping
+        $labelColors = [
+            'login' => '#007bff',   // blue
+            'resume' => '#28a745',  // green
+            'pause' => '#ffc107',   // yellow
+            'other' => '#6c757d'    // gray
+        ];
 
-        // Fetch events only for logged-in user
-        $events = UserTimerPause::where('user_id', Auth::id())
-            ->whereBetween('event_time', [$startDate, $endDate])
-            ->get()
-            ->map(function ($event) {
-                return [
-                    'id' => $event->id,
-                    'title' => $event->pause_type,
-                    'start' => $event->event_time, // or $event->start_date if using start/end columns
-                    'end' => $event->end_date ?? $event->event_time,
-                    'description' => $event->remaining_seconds,
-                    'elapsed_seconds' => $event->elapsed_seconds,
-                    'status' => $event->status,
-                    'color' => $event->label_color ?? '#378006', // FullCalendar color
-                ];
-            });
+        $eventsData = $events->map(function ($event) use ($labelColors) {
+            return [
+                'id' => $event->id,
+                'title' => $event->title ?? ucfirst($event->pause_type),
+                'start' => $event->start_date,
+                'end' => $event->end_date,
+                'description' => $event->description,
+                'label' => $event->label ?? 'Other',
+                'label_color' => $labelColors[$event->label] ?? $labelColors['other']
+            ];
+        });
 
-        return response()->json($events);
+        return response()->json($eventsData);
     }
 
 
