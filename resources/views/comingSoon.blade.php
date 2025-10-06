@@ -9,7 +9,7 @@
     <div class="custom-bg">
         <div class="container container--xl">
             <div class="d-flex align-items-center justify-content-between py-24">
-                <a href="" class="">
+                <a href="" class="" style="width: 50%;">
                     <img src="{{ asset('assets/images/logo.png') }}" alt="">
                 </a>
                 <a href="{{ route('login') }}" class="btn btn-outline-primary-600 text-sm"> LogIn </a>
