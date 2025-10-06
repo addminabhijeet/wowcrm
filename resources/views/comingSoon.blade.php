@@ -15,7 +15,7 @@
                 <a href="{{ route('login') }}" class="btn btn-outline-primary-600 text-sm"> LogIn </a>
             </div>
 
-            <div class="py-res-120" style="padding:0;">
+            <div class="py-res-120" style="padding-top:0;">
                 <div class="row align-items-center">
                     <div class="col-lg-6">
                         <h3 class="mb-32 max-w-1000-px">We Make Every Connection into Lasting Relationships!</h3>
