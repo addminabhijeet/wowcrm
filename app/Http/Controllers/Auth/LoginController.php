@@ -43,28 +43,26 @@ class LoginController extends Controller
                 return response()->json(['error' => 'Timer settings not configured'], 500);
             }
             $workDaySeconds = $settings->work_day_seconds;
+            $today = now()->startOfDay();
 
-            // Check if user already has a timer
-            $lastTimer = UserTimerLog::where('user_id', Auth::id())->latest()->first();
+            $lastTimerToday = UserTimerLog::where('user_id', Auth::id())
+            ->whereDate('start_time', $today)
+            ->latest()
+            ->first();
 
-            if (!$lastTimer) {
-                $lastTimer = UserTimerLog::create([
+            if (!$lastTimerToday) {
+                UserTimerLog::create([
                     'user_id'           => Auth::id(),
                     'login_id'          => $login->id,
-                    'start_time'        => now(),
                     'remaining_seconds' => $workDaySeconds,
                     'status'            => 'paused',
                 ]);
-            }
-
-            // Log a pause/resume event
-            if ($lastTimer) {
                 UserTimerPause::create([
-                    'user_timer_log_id' => $lastTimer->id,
+                    'user_timer_log_id' => $lastTimerToday->id,
                     'user_id'           => Auth::id(),
                     'status'            => 'start',
                     'pause_type'        => 'login',
-                    'remaining_seconds' => $lastTimer->remaining_seconds,
+                    'remaining_seconds' => $lastTimerToday->remaining_seconds,
                     'event_time'        => now(),
                 ]);
             }
