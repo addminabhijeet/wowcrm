@@ -135,7 +135,7 @@ class CalendarController extends Controller
             ->orderBy('event_time', 'asc')
             ->get();
 
-        return view('calendar.junior', compact('events', 'view', 'date', 'user_id'));
+        return view('calendar.junior', compact('events', 'view', 'date'));
     }
 
 
