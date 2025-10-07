@@ -165,12 +165,10 @@ class CalendarController extends Controller
 
         // Define dynamic colors based on attendance status
         $statusColors = [
-            'present'    => '#28a745', // green
-            'absent'     => '#dc3545', // red
-            'late'       => '#ffc107', // yellow
-            'holiday'    => '#17a2b8', // blue
-            'work_from_home' => '#6f42c1', // purple
-            'other'      => '#6c757d', // gray
+            'login'  => '#007bff',
+            'resume' => '#28a745',
+            'pause'  => '#ffc107',
+            'other'  => '#6c757d'
         ];
 
         $eventsData = $attendances->map(function ($attendance) use ($statusColors) {
