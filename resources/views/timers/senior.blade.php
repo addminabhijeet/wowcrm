@@ -48,7 +48,7 @@ $script = '<script>
         <div class="row gy-4">
             @foreach($timers as $timer)
             <div class="col-xxl-3 col-md-6 user-grid-card">
-                <div class="position-relative border radius-16 overflow-hidden pt-4">
+                <div class="position-relative border radius-16 overflow-hidden" style="padding-top: 30px;">
                     <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
 
                     <!-- Dropdown -->
