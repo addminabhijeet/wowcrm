@@ -852,8 +852,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const scrollContainer = document.querySelector('.scroll-sm');
     if (!scrollContainer) return;
 
-    const SENSOR_RATIO = 0.8; // 20% of container width on left/right acts as sensor
-    const MAX_SPEED = 50; // max pixels per frame
+    const SENSOR_RATIO = 0.2; // 20% of container width on left/right acts as sensor
+    const MAX_SPEED = 20; // max pixels per move
 
     scrollContainer.addEventListener('mousemove', function(e) {
         const rect = scrollContainer.getBoundingClientRect();
@@ -875,15 +875,15 @@ document.addEventListener('DOMContentLoaded', function() {
         scrollContainer.scrollLeft += speed;
     });
 
+    // Remove grab-drag, only visual feedback
     scrollContainer.addEventListener('mouseenter', () => {
-        scrollContainer.style.cursor = 'grab';
+        scrollContainer.style.cursor = 'pointer';
     });
     scrollContainer.addEventListener('mouseleave', () => {
         scrollContainer.style.cursor = 'default';
     });
 });
 </script>
-
 
 
 
