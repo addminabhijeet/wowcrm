@@ -821,9 +821,9 @@ $script ='<script>
 
     /* Webkit browsers (Chrome, Edge, Safari) */
     .scroll-sm::-webkit-scrollbar {
-        height: 50px;
+        height: 100px;
         /* horizontal scrollbar height */
-        width: 50px;
+        width: 100px;
         /* vertical scrollbar width */
     }
 
