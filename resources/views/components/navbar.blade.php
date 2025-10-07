@@ -573,31 +573,40 @@
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const startButtonContainer = document.getElementById('startButtonContainer');
+document.addEventListener('DOMContentLoaded', function() {
+    const startButtonContainer = document.getElementById('startButtonContainer');
 
-        // Check if timer already exists
-        fetch('{{ route("timer.starthide") }}', {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    check: true
-                }) // Only check, don't start
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (!data.exists) {
-                    // Show start button only if timer doesn't exist
-                    startButtonContainer.style.display = 'flex';
-                } else {
-                    // Timer exists, hide start button
-                    startButtonContainer.style.display = 'none';
-                    console.log('⏱ Timer already started today.');
-                }
-            })
-            .catch(err => console.error('Error checking timer:', err));
-    });
+    // Check if timer already exists
+    fetch('{{ route("timer.starthide") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                check: true
+            }) // Only check, don't start
+        })
+        .then(response => {
+            console.log('✅ Response status:', response.status);
+            return response.json();
+        })
+        .then(data => {
+            console.log('📊 Timer check response:', data);
+            if (!data.exists) {
+                // Show start button only if timer doesn't exist
+                startButtonContainer.style.display = 'flex';
+            } else {
+                // Timer exists, hide start button
+                startButtonContainer.style.display = 'none';
+                console.log('⏱ Timer already started today.');
+            }
+        })
+        .catch(err => {
+            console.error('❌ Error checking timer:', err);
+            if (err instanceof TypeError) {
+                console.error('TypeError - likely a network or CORS issue');
+            }
+        });
+});
 </script>
