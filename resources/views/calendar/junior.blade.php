@@ -48,18 +48,29 @@ $subTitle = 'Calendar';
             events: "{{ route('calendar.juniorEvents') }}",
             displayEventTime: false,
             displayEventEnd: false,
+            // No default title rendering
             eventContent: function() {
-                // Prevent FullCalendar from rendering title or background
                 return {
                     domNodes: []
                 };
             },
+
+            // Add a subtle visual indicator only on hover or click
             eventDidMount: function(info) {
-                // Remove background and border colors for events
-                info.el.style.backgroundColor = 'transparent';
-                info.el.style.borderColor = 'transparent';
-                info.el.style.color = 'transparent';
+                const eventColor = info.event.extendedProps.label_color || '#6c757d';
+
+                // Create a hidden dot element (indicator)
+                const dot = document.createElement('span');
+                dot.classList.add('event-dot');
+                dot.style.backgroundColor = eventColor;
+
+                // Append dot inside the day cell (not visible initially)
+                const cell = info.el.closest('.fc-daygrid-day');
+                if (cell && !cell.querySelector('.event-dot')) {
+                    cell.appendChild(dot);
+                }
             },
+
 
             dateClick: function(info) {
                 var eventsOnDate = calendar.getEvents().filter(event => {
@@ -101,16 +112,39 @@ $subTitle = 'Calendar';
 </script>
 
 <style>
-/* Hide any colored dots, borders, or background from events */
-.fc-event, 
-.fc-daygrid-event, 
+/* Hide all event colors & titles by default */
+.fc-event,
+.fc-daygrid-event,
 .fc-event-dot {
     background: transparent !important;
     border: none !important;
     color: transparent !important;
     box-shadow: none !important;
 }
+
+/* Subtle dot indicator (hidden until hover/focus) */
+.event-dot {
+    display: block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    margin: 2px auto 0;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+/* When hovering a date cell, reveal the dot */
+.fc-daygrid-day:hover .event-dot {
+    opacity: 1;
+}
+
+/* When a day is clicked or focused (keyboard nav) */
+.fc-daygrid-day:focus-within .event-dot,
+.fc-day-today .event-dot {
+    opacity: 1;
+}
 </style>
+
 
 
 @endsection
