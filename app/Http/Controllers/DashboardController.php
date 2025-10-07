@@ -338,20 +338,6 @@ class DashboardController extends Controller
         // 🔢 Calculate elapsed time
         $elapsedSeconds = max(0, $workDaySeconds - $timer->remaining_seconds);
 
-
-        // 🧾 Log pause/resume event (only if not a tick update)
-        if ($action !== 'tick') {
-            UserTimerPause::create([
-                'user_timer_log_id' => $timer->id,
-                'user_id'           => $user->id,
-                'status'            => $timer->status,
-                'pause_type'        => $timer->pause_type,
-                'remaining_seconds' => $timer->remaining_seconds,
-                'elapsed_seconds'   => $elapsedSeconds,
-                'event_time'        => $currentTime,
-            ]);
-        }
-
         // 🧠 Return response
         return response()->json([
             'success'           => true,
