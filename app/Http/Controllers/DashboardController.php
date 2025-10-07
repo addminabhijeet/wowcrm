@@ -143,6 +143,34 @@ class DashboardController extends Controller
         }
     }
 
+    public function checkTimerHide(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Not authenticated'], 401);
+            }
+
+            $today = now()->startOfDay();
+
+            // Check if timer exists for today
+            $existingTimer = UserTimerLog::where('user_id', $user->id)
+                ->whereDate('created_at', $today)
+                ->first();
+
+            return response()->json([
+                'exists' => $existingTimer ? true : false,
+                'timer'  => $existingTimer ?? null
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ], 500);
+        }
+    }
+
 
 
     public function senior()
