@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\UserTimerPause;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class CalendarController extends Controller
 {
@@ -86,6 +87,55 @@ class CalendarController extends Controller
                 'start' => $event->event_time,
                 'end'   => $event->event_time, // you can adjust if you have duration
                 'extendedProps' => [
+                    'status'  => $event->status,
+                    'pause_type' => $event->pause_type,
+                    'remaining_seconds' => $event->remaining_seconds,
+                    'label' => $event->pause_type,
+                    'label_color' => $labelColors[$event->pause_type] ?? $labelColors['other'],
+                ]
+            ];
+        });
+
+        return response()->json($eventsData);
+    }
+
+    public function alljuniorlist(Request $request)
+    {
+        // Fetch all users with role 'junior'
+        $juniorUsers = User::where('role', 'junior')->get();
+
+        // Pass users to the view
+        return view('calendar.alljuniorlist', compact('juniorUsers'));
+    }
+
+    public function getAllJuniorEvents(Request $request)
+    {
+        // Fetch all juniors
+        $juniorUsers = User::where('role', 'junior')->get()->keyBy('id');
+
+        // Fetch all UserTimerPause events for these junior users
+        $events = UserTimerPause::whereIn('user_id', $juniorUsers->keys())
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        // Dynamic colors based on pause_type or label
+        $labelColors = [
+            'login'  => '#007bff',
+            'resume' => '#28a745',
+            'pause'  => '#ffc107',
+            'other'  => '#6c757d'
+        ];
+
+        $eventsData = $events->map(function ($event) use ($labelColors, $juniorUsers) {
+            $userName = $juniorUsers[$event->user_id]->name ?? 'Junior User';
+            return [
+                'id' => $event->id,
+                'title' => $userName . ': ' . ucfirst($event->pause_type),
+                'start' => $event->event_time,
+                'end'   => $event->event_time, // adjust if you have duration
+                'extendedProps' => [
+                    'user_id' => $event->user_id,
+                    'user_name' => $userName,
                     'status'  => $event->status,
                     'pause_type' => $event->pause_type,
                     'remaining_seconds' => $event->remaining_seconds,
