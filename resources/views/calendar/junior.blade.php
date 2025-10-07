@@ -49,16 +49,24 @@ document.addEventListener('DOMContentLoaded', function() {
         displayEventTime: false,
         displayEventEnd: false,
 
-        // No event rendering at all
+        // Prevent default event rendering
         eventContent: function() {
             return { domNodes: [] };
         },
 
-        // Ensure events take no visual space
+        // Highlight dates with events and remove event elements
         eventDidMount: function(info) {
-            info.el.remove(); // Completely remove the event element
+            // Remove the event element so no visual space is taken
+            info.el.remove();
+
+            // Add subtle highlight to the day cell
+            const cell = info.el.closest('.fc-daygrid-day');
+            if (cell) {
+                cell.classList.add('has-event');
+            }
         },
 
+        // Handle date click to show modal
         dateClick: function(info) {
             var eventsOnDate = calendar.getEvents().filter(event => {
                 return event.startStr.slice(0, 10) === info.dateStr;
@@ -110,17 +118,11 @@ document.addEventListener('DOMContentLoaded', function() {
     display: none !important;
 }
 
-/* Keep all day cells uniform */
+/* Keep day cells uniform */
 .fc-daygrid-day-frame {
     min-height: 60px; /* uniform height */
     padding: 4px;
     display: block !important;
-}
-
-/* Hover effect on all dates for better UX */
-.fc-daygrid-day:hover {
-    background-color: rgba(0, 0, 0, 0.03);
-    cursor: pointer;
 }
 
 /* Highlight today */
@@ -134,12 +136,29 @@ document.addEventListener('DOMContentLoaded', function() {
     border: 1px solid #e5e5e5 !important;
 }
 
-/* Remove any leftover spacing from hidden events */
+/* Remove leftover spacing from hidden events */
 .fc-daygrid-day-events {
     min-height: 0 !important;
     height: 0 !important;
     padding: 0 !important;
     margin: 0 !important;
+}
+
+/* Subtle highlight for dates that have events */
+.fc-daygrid-day.has-event {
+    background-color: rgba(0, 123, 255, 0.08);
+    transition: background-color 0.2s ease;
+}
+
+/* Slightly darker on hover */
+.fc-daygrid-day.has-event:hover {
+    background-color: rgba(0, 123, 255, 0.15);
+}
+
+/* Hover effect for all dates */
+.fc-daygrid-day:hover {
+    cursor: pointer;
+    background-color: rgba(0,0,0,0.02);
 }
 </style>
 
