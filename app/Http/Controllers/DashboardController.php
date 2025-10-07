@@ -75,6 +75,7 @@ class DashboardController extends Controller
             'button_status' => $button_status
         ]);
     }
+
     public function startTimer(Request $request)
     {
         try {
@@ -91,17 +92,25 @@ class DashboardController extends Controller
             $workDaySeconds = $settings->work_day_seconds;
             $today = now()->startOfDay();
 
+            // Check if timer already exists for today
             $existingTimer = UserTimerLog::where('user_id', $user->id)
                 ->whereDate('created_at', $today)
                 ->first();
 
+            // Handle "check only" requests
+            if ($request->input('check')) {
+                return response()->json(['exists' => $existingTimer ? true : false]);
+            }
+
+            // If timer exists, don't create a new one
             if ($existingTimer) {
                 return response()->json(['exists' => true]);
             }
 
+            // Create a new timer
             $timer = UserTimerLog::create([
                 'user_id'           => $user->id,
-                'login_id'          => $user->id ?? null,
+                'login_id'          => $user->id,
                 'start_time'        => now(),
                 'remaining_seconds' => $workDaySeconds,
                 'status'            => 'running',
@@ -125,6 +134,7 @@ class DashboardController extends Controller
             ], 500);
         }
     }
+
 
     public function senior()
     {

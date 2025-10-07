@@ -531,7 +531,6 @@
             })
             .then(data => {
                 console.log('🔹 Check timer response:', data);
-
                 if (data.exists) {
                     console.log('⏱ Timer already started for today.');
                     startButtonContainer.style.display = 'none';
@@ -551,7 +550,8 @@
                     headers: {
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json'
-                    }
+                    },
+                    body: JSON.stringify({}) // No check parameter here
                 })
                 .then(res => {
                     console.log('🔹 Start timer response status:', res.status);
