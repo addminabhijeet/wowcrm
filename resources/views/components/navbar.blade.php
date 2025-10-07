@@ -358,6 +358,7 @@
     // ===============================
     // Inactivity Handling
     // ===============================
+    let wasInactive = false;
     function resetInactiveTimer() {
         clearTimeout(inactiveTimeout);
         console.log("[Inactivity] Timer reset");
@@ -365,7 +366,7 @@
         inactiveTimeout = setTimeout(() => {
             console.warn("[Inactivity] User inactive! Pausing timer...");
             showOverlay("You were inactive! Timer stopped.");
-
+            wasInactive = true; 
             fetch("{{ route('timer.update') }}", {
                 method: "POST",
                 headers: {
