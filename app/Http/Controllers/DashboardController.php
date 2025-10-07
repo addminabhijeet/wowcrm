@@ -329,6 +329,14 @@ class DashboardController extends Controller
                 'status'            => 'paused',
                 'pause_type'        => 'inactive',
             ]);
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
+                'user_id'           => $user->id,
+                'status'            => 'paused',
+                'pause_type'        => 'inactive',
+                'remaining_seconds' => $workDaySeconds,
+                'event_time'        => now(),
+            ]);
         }
 
         // 🕓 Update timestamp and save
