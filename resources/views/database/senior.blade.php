@@ -990,7 +990,8 @@ $script ='<script>
 
 <style>
     .scroll-sm {
-        overflow: scroll;
+        overflow-x: scroll;
+        overflow-y: hidden;
         /* always show scrollbar */
         scrollbar-gutter: stable;
         /* prevent layout shift */
@@ -1000,7 +1001,7 @@ $script ='<script>
     .scroll-sm::-webkit-scrollbar {
         height: 36px;
         /* horizontal scrollbar thickness */
-        width: 36px;
+        width: 0;
         /* vertical scrollbar thickness */
     }
 
