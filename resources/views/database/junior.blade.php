@@ -813,4 +813,42 @@ $script ='<script>
         });
     });
 </script>
+
+<style>
+    .scroll-sm {
+        overflow: auto;
+    }
+
+    /* Webkit browsers (Chrome, Edge, Safari) */
+    .scroll-sm::-webkit-scrollbar {
+        height: 12px;
+        /* horizontal scrollbar height */
+        width: 12px;
+        /* vertical scrollbar width */
+    }
+
+    .scroll-sm::-webkit-scrollbar-thumb {
+        background-color: #888;
+        /* scrollbar color */
+        border-radius: 6px;
+    }
+
+    .scroll-sm::-webkit-scrollbar-thumb:hover {
+        background-color: #555;
+    }
+
+    .scroll-sm::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+        /* track color */
+        border-radius: 6px;
+    }
+
+    /* Firefox */
+    .scroll-sm {
+        scrollbar-width: thin;
+        /* options: auto, thin, none */
+        scrollbar-color: #888 #f1f1f1;
+        /* thumb and track */
+    }
+</style>
 @endsection
