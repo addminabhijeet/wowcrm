@@ -140,7 +140,7 @@ $script ='<script>
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="$100">
+                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount">
                         </td>
 
                         {{-- Qualification --}}
@@ -864,20 +864,56 @@ document.addEventListener('DOMContentLoaded', () => {
     const scrollContainer = document.querySelector('.scroll-sm');
     const allRows = Array.from(document.querySelectorAll('#sheet-table-body tr'));
 
-    // Smooth horizontal scroll
+    // =========================
+    // Smooth horizontal scroll + mouse-based scroll
+    // =========================
     if (scrollContainer) {
+        // Mouse move scroll
         scrollContainer.addEventListener('mousemove', e => {
             const rect = scrollContainer.getBoundingClientRect();
             const scrollPercent = (e.clientX - rect.left) / rect.width;
             scrollContainer.scrollLeft = scrollPercent * (scrollContainer.scrollWidth - scrollContainer.clientWidth);
         });
+
+        // Auto-scroll smoothly if mouse leaves container
+        let autoScrollInterval;
+        scrollContainer.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
+        scrollContainer.addEventListener('mouseleave', () => {
+            autoScrollInterval = setInterval(() => {
+                scrollContainer.scrollLeft += 1;
+                if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
+                    scrollContainer.scrollLeft = 0;
+                }
+            }, 20);
+        });
+
+        // =========================
+        // Mouse-drag scroll
+        // =========================
+        let isDragging = false, startX, scrollLeftStart;
+        scrollContainer.addEventListener('mousedown', e => {
+            isDragging = true;
+            scrollContainer.classList.add('dragging');
+            startX = e.pageX - scrollContainer.offsetLeft;
+            scrollLeftStart = scrollContainer.scrollLeft;
+        });
+        scrollContainer.addEventListener('mouseleave', () => { isDragging = false; scrollContainer.classList.remove('dragging'); });
+        scrollContainer.addEventListener('mouseup', () => { isDragging = false; scrollContainer.classList.remove('dragging'); });
+        scrollContainer.addEventListener('mousemove', e => {
+            if (!isDragging) return;
+            e.preventDefault();
+            const x = e.pageX - scrollContainer.offsetLeft;
+            const walk = (x - startX) * 1; // scroll-fastness multiplier
+            scrollContainer.scrollLeft = scrollLeftStart - walk;
+        });
     }
 
-    // Get visible & enabled editable fields in a row
+    // =========================
+    // Helper functions
+    // =========================
     const getFields = row => Array.from(row.querySelectorAll('input, select, textarea'))
         .filter(el => el.offsetParent && !el.disabled && !el.readOnly && el.type !== 'hidden');
 
-    // Focus with highlight
     const focusField = el => {
         el.focus();
         if (el.tagName === 'INPUT' && el.type === 'text') el.select();
@@ -886,7 +922,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => el.classList.remove('focus-highlight'), 500);
     };
 
-    // Move focus forward/backward
     const moveFocus = (field, forward = true) => {
         const row = field.closest('tr');
         const idx = allRows.indexOf(row);
@@ -904,7 +939,9 @@ document.addEventListener('DOMContentLoaded', () => {
         if (target) focusField(target);
     };
 
-    // Navigation & Save button handling
+    // =========================
+    // Navigation & Save handling
+    // =========================
     allRows.forEach(row => {
         const fields = getFields(row);
         const saveBtn = row.querySelector('.save-btn');
@@ -936,7 +973,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // =========================
     // Custom shortcuts: Alt+S/U/V
+    // =========================
     document.addEventListener('keydown', e => {
         if (!e.altKey) return;
         const key = e.key.toLowerCase();
@@ -957,6 +996,7 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 
 <style>
+/* Highlight focused field briefly */
 .focus-highlight {
     animation: highlightFlash 0.5s ease-in-out;
 }
@@ -965,7 +1005,14 @@ document.addEventListener('DOMContentLoaded', () => {
     50% { background-color: #fff59d; }
     100% { background-color: transparent; }
 }
+
+/* Mouse-drag cursor */
+.scroll-sm.dragging {
+    cursor: grabbing;
+    cursor: -webkit-grabbing;
+}
 </style>
+
 
 
 <!-- Feature	Shortcut / Action
