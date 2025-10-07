@@ -92,7 +92,7 @@ class DashboardController extends Controller
         $remaining_seconds = $workDaySeconds;
         $elapsed_seconds   = 0;
         $status            = 'running';
-        $button_status     = 1; // default to show if no timer exists
+        $button_status     = 1; 
 
         if ($timer) {
             $remaining_seconds = $timer->remaining_seconds;
@@ -108,6 +108,7 @@ class DashboardController extends Controller
             'button_status'
         ));
     }
+
     public function trainer()
     {
         // Fetch timer settings dynamically
