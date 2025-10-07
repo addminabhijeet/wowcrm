@@ -406,13 +406,9 @@
         resetInactiveTimer();
     }
 
-    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt => {
-        window.addEventListener(evt, resetInactiveTimer);
-    });
-
-    document.addEventListener('visibilitychange', () => {
-        console.log("[Visibility] Changed:", document.visibilityState);
-        if (document.visibilityState === 'visible') handleActiveState();
+    // Only detect real user activity: mouse moves, clicks, and keyboard input
+    ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
+        window.addEventListener(evt, handleActiveState);
     });
 
     // ===============================
@@ -421,7 +417,6 @@
     console.log("[Init] Timer script initializing...");
     updateUI();
     resetInactiveTimer();
-    handleActiveState();
 
     backendSyncInterval = setInterval(syncWithBackend, 1000);
     console.log("[Init] Backend sync interval started (1s)");
@@ -570,40 +565,40 @@
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const startHideButtonContainer = document.getElementById('startHideButtonContainer');
+    document.addEventListener('DOMContentLoaded', function() {
+        const startHideButtonContainer = document.getElementById('startHideButtonContainer');
 
-    // Check if timer already exists
-    fetch('{{ route("timer.starthide") }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                check: true
-            }) // Only check, don't start
-        })
-        .then(response => {
-            console.log('✅ Response status:', response.status);
-            return response.json();
-        })
-        .then(data => {
-            console.log('📊 Timer check response:', data);
-            if (!data.exists) {
-                // Show start button only if timer doesn't exist
-                startHideButtonContainer.style.display = 'flex';
-            } else {
-                // Timer exists, hide start button
-                startHideButtonContainer.style.display = 'none';
-                console.log('⏱ Timer already started today.');
-            }
-        })
-        .catch(err => {
-            console.error('❌ Error checking timer:', err);
-            if (err instanceof TypeError) {
-                console.error('TypeError - likely a network or CORS issue');
-            }
-        });
-});
+        // Check if timer already exists
+        fetch('{{ route("timer.starthide") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    check: true
+                }) // Only check, don't start
+            })
+            .then(response => {
+                console.log('✅ Response status:', response.status);
+                return response.json();
+            })
+            .then(data => {
+                console.log('📊 Timer check response:', data);
+                if (!data.exists) {
+                    // Show start button only if timer doesn't exist
+                    startHideButtonContainer.style.display = 'flex';
+                } else {
+                    // Timer exists, hide start button
+                    startHideButtonContainer.style.display = 'none';
+                    console.log('⏱ Timer already started today.');
+                }
+            })
+            .catch(err => {
+                console.error('❌ Error checking timer:', err);
+                if (err instanceof TypeError) {
+                    console.error('TypeError - likely a network or CORS issue');
+                }
+            });
+    });
 </script>
