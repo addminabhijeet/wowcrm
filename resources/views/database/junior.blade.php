@@ -815,74 +815,85 @@ $script ='<script>
 </script>
 
 <style>
-.scroll-sm {
-    overflow-x: auto; /* only horizontal scroll */
-    overflow-y: hidden;
-    cursor: grab;
-}
+    .scroll-sm {
+        overflow: scroll;
+        /* always show scrollbar */
+        scrollbar-gutter: stable;
+        /* prevent layout shift */
+    }
 
-/* Webkit browsers (Chrome, Edge, Safari) */
-.scroll-sm::-webkit-scrollbar {
-    height: 12px; /* horizontal scrollbar height */
-}
+    /* === Chrome, Edge, Safari === */
+    .scroll-sm::-webkit-scrollbar {
+        height: 36px;
+        /* horizontal scrollbar thickness */
+        width: 36px;
+        /* vertical scrollbar thickness */
+    }
 
-.scroll-sm::-webkit-scrollbar-thumb {
-    background-color: #888;
-    border-radius: 6px;
-}
+    .scroll-sm::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #888, #666);
+        border-radius: 18px;
+        /* rounded ends */
+        border: 6px solid #f1f1f1;
+        /* gives space inside thumb */
+        transition: background 0.3s, border-color 0.3s, height 0.3s;
+    }
 
-.scroll-sm::-webkit-scrollbar-thumb:hover {
-    background-color: #555;
-}
+    .scroll-sm::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #555, #333);
+        border-color: #e0e0e0;
+    }
 
-.scroll-sm::-webkit-scrollbar-track {
-    background-color: #f1f1f1;
-    border-radius: 6px;
-}
+    .scroll-sm::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+        border-radius: 18px;
+    }
 
-/* Firefox */
-.scroll-sm {
-    scrollbar-width: thin;
-    scrollbar-color: #888 #f1f1f1;
-}
+    /* === Firefox === */
+    .scroll-sm {
+        scrollbar-width: auto;
+        /* thicker style */
+        scrollbar-color: #666 #f1f1f1;
+        /* thumb + track */
+    }
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const scrollContainer = document.querySelector('.scroll-sm');
-    if (!scrollContainer) return;
+    document.addEventListener('DOMContentLoaded', function() {
+        const scrollContainer = document.querySelector('.scroll-sm');
+        if (!scrollContainer) return;
 
-    const SENSOR_RATIO = 0.2; // 20% of container width on left/right acts as sensor
-    const MAX_SPEED = 20; // max pixels per move
+        const SENSOR_RATIO = 0.2; // 20% of container width on left/right acts as sensor
+        const MAX_SPEED = 20; // max pixels per move
 
-    scrollContainer.addEventListener('mousemove', function(e) {
-        const rect = scrollContainer.getBoundingClientRect();
-        const scrollWidth = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-        if (scrollWidth <= 0) return;
+        scrollContainer.addEventListener('mousemove', function(e) {
+            const rect = scrollContainer.getBoundingClientRect();
+            const scrollWidth = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+            if (scrollWidth <= 0) return;
 
-        const offsetX = e.clientX - rect.left; // mouse X inside container
-        const width = rect.width;
-        let speed = 0;
+            const offsetX = e.clientX - rect.left; // mouse X inside container
+            const width = rect.width;
+            let speed = 0;
 
-        if (offsetX < width * SENSOR_RATIO) {
-            // Left sensor zone: scroll left
-            speed = -MAX_SPEED * (1 - offsetX / (width * SENSOR_RATIO));
-        } else if (offsetX > width * (1 - SENSOR_RATIO)) {
-            // Right sensor zone: scroll right
-            speed = MAX_SPEED * ((offsetX - width * (1 - SENSOR_RATIO)) / (width * SENSOR_RATIO));
-        }
+            if (offsetX < width * SENSOR_RATIO) {
+                // Left sensor zone: scroll left
+                speed = -MAX_SPEED * (1 - offsetX / (width * SENSOR_RATIO));
+            } else if (offsetX > width * (1 - SENSOR_RATIO)) {
+                // Right sensor zone: scroll right
+                speed = MAX_SPEED * ((offsetX - width * (1 - SENSOR_RATIO)) / (width * SENSOR_RATIO));
+            }
 
-        scrollContainer.scrollLeft += speed;
+            scrollContainer.scrollLeft += speed;
+        });
+
+        // Remove grab-drag, only visual feedback
+        scrollContainer.addEventListener('mouseenter', () => {
+            scrollContainer.style.cursor = 'pointer';
+        });
+        scrollContainer.addEventListener('mouseleave', () => {
+            scrollContainer.style.cursor = 'default';
+        });
     });
-
-    // Remove grab-drag, only visual feedback
-    scrollContainer.addEventListener('mouseenter', () => {
-        scrollContainer.style.cursor = 'pointer';
-    });
-    scrollContainer.addEventListener('mouseleave', () => {
-        scrollContainer.style.cursor = 'default';
-    });
-});
 </script>
 
 
