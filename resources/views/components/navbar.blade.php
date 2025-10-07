@@ -508,52 +508,75 @@
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const startButtonContainer = document.getElementById('startButtonContainer');
-    const startButton = document.getElementById('startButton');
+    document.addEventListener('DOMContentLoaded', function() {
+        const startButtonContainer = document.getElementById('startButtonContainer');
+        const startButton = document.getElementById('startButton');
 
-    // Check if today's timer already exists
-    fetch('{{ route("timer.start") }}', {
-        method: 'POST',
-        headers: {
-            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ check: true })
-    })
-    .then(res => res.json())
-    .then(data => {
-        if (data.exists) {
-            startButtonContainer.style.display = 'none';
-        } else {
-            startButtonContainer.style.display = 'flex';
-        }
-    });
+        console.log('🕒 DOM loaded, checking if timer exists for today...');
 
-    // On Start button click
-    startButton.addEventListener('click', function() {
+        // Check if today's timer already exists
         fetch('{{ route("timer.start") }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(res => res.json())
-        .then(data => {
-            if (data.success) {
-                startButtonContainer.style.display = 'none';
-                alert('✅ Timer started for today!');
-                // Optional: reload the page or update UI
-                location.reload();
-            } else if (data.exists) {
-                startButtonContainer.style.display = 'none';
-                alert('⏱ Timer already exists for today.');
-            } else {
-                alert('⚠️ Something went wrong starting the timer.');
-            }
-        })
-        .catch(err => console.error(err));
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    check: true
+                })
+            })
+            .then(res => {
+                console.log('🔹 Response status:', res.status);
+                return res.json();
+            })
+            .then(data => {
+                console.log('🔹 Check timer response:', data);
+
+                if (data.exists) {
+                    console.log('⏱ Timer already started for today.');
+                    startButtonContainer.style.display = 'none';
+                } else {
+                    console.log('✅ No timer found for today, showing start button.');
+                    startButtonContainer.style.display = 'flex';
+                }
+            })
+            .catch(err => console.error('❌ Error checking timer existence:', err));
+
+        // On Start button click
+        startButton.addEventListener('click', function() {
+            console.log('▶️ Start button clicked. Sending timer start request...');
+
+            fetch('{{ route("timer.start") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(res => {
+                    console.log('🔹 Start timer response status:', res.status);
+                    return res.json();
+                })
+                .then(data => {
+                    console.log('🔹 Start timer response data:', data);
+
+                    if (data.success) {
+                        console.log('✅ Timer successfully started:', data.timer);
+                        startButtonContainer.style.display = 'none';
+                        alert('✅ Timer started for today!');
+                        location.reload();
+                    } else if (data.exists) {
+                        console.warn('⚠️ Timer already exists for today.');
+                        startButtonContainer.style.display = 'none';
+                        alert('⏱ Timer already exists for today.');
+                    } else {
+                        console.error('⚠️ Unexpected response while starting timer:', data);
+                        alert('⚠️ Something went wrong starting the timer.');
+                    }
+                })
+                .catch(err => {
+                    console.error('❌ Error starting timer:', err);
+                });
+        });
     });
-});
 </script>
