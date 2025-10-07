@@ -381,7 +381,9 @@
 
     function handleActiveState() {
         console.log("[Active] User active again, resuming...");
-        
+        // Only show overlay if previously inactive
+        const showActiveOverlay = wasInactive;
+        wasInactive = false; // reset inactivity flag
         fetch("{{ route('timer.update') }}", {
                 method: "POST",
                 headers: {
@@ -399,7 +401,9 @@
                     remainingSeconds = data.remaining_seconds;
                     elapsedSeconds = data.elapsed_seconds;
                     status = data.status;
-                    showOverlay("You were active now! Timer running.");
+                    if (showActiveOverlay) {
+                        showOverlay("You were active now! Timer running.");
+                    }
                     updateUI();
                 }
             })
