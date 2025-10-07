@@ -49,7 +49,7 @@ $script = '<script>
             @foreach($timers as $timer)
             <div class="col-xxl-3 col-md-6 user-grid-card">
                 <div class="position-relative border radius-16 overflow-hidden">
-                    <!-- Removed the background image div -->
+                    <div src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
 
                     <!-- Dropdown -->
                     <div class="dropdown position-absolute top-0 end-0 me-16 mt-16">
@@ -73,7 +73,7 @@ $script = '<script>
                         <div class="timer-widget"
                             data-user="{{ $timer['user_id'] }}"
                             data-remaining="{{ $timer['remaining_seconds'] }}"
-                            data- elapsed="{{ $timer['elapsed_seconds'] }}"
+                            data-elapsed="{{ $timer['elapsed_seconds'] }}"
                             data-status="{{ $timer['status'] }}"
                             style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
 
@@ -118,7 +118,6 @@ $script = '<script>
                                 </button>
                             </div>
                         </div>
-
                         <!-- Action Buttons -->
                         @if($timer['button_status'] == 0)
                         <a href="javascript:void(0)"
@@ -138,7 +137,6 @@ $script = '<script>
 
                     </div>
                 </div>
-
             </div>
             @endforeach
         </div>
