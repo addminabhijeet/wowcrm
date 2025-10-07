@@ -23,6 +23,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/accountant', [DashboardController::class, 'accountant'])->name('dashboard.accountant');
     Route::get('/dashboard/trainer', [DashboardController::class, 'trainer'])->name('dashboard.trainer');
     Route::get('/button/status', [DashboardController::class, 'getButtonStatus'])->name('button.status');
+    Route::post('/start-timer', [DashboardController::class, 'startTimer'])->name('timer.start');
+
 
     Route::get('/dashboard/admin/calendar/{month?}/{year?}', [CalendarController::class, 'index'])->name('calendar.index');
     Route::get('/dashboard/accountant/calendar/{month?}/{year?}', [CalendarController::class, 'accountantUser'])->name('calendar.accountantUser');

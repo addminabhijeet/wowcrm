@@ -53,12 +53,14 @@
                         </button>
                     </div>
 
-                    <!-- Placeholder for Start button -->
+                    <!-- Start Button -->
                     <div id="startButtonContainer" style="display:none;align-items:center;gap:4px;flex-wrap:wrap;margin-left:4px;">
-                        <button id="startButton" style="width:65px;height:28px;border-radius:14px;background:#28a745;border:1px solid #1e7e34;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">
+                        <button id="startButton"
+                            style="width:65px;height:28px;border-radius:14px;background:#28a745;border:1px solid #1e7e34;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">
                             <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Start
                         </button>
                     </div>
+
 
                 </div>
             </div>
@@ -226,60 +228,106 @@
     }
 </style>
 
-    <div id="statusOverlay"></div>
+<div id="statusOverlay"></div>
 
-    <script>
-        // ===============================
-        // Timer Variables
-        // ===============================
-        let backendSyncInterval;
-        let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
-        let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
-        let status = "{{ $status ?? 'running' }}";
+<script>
+    // ===============================
+    // Timer Variables
+    // ===============================
+    let backendSyncInterval;
+    let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
+    let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
+    let status = "{{ $status ?? 'running' }}";
 
-        let inactiveTimeout;
-        const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes inactivity
-        let overlayTimeout;
+    let inactiveTimeout;
+    const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes inactivity
+    let overlayTimeout;
 
-        // ===============================
-        // Helper Functions
-        // ===============================
-        function formatTime(sec) {
-            sec = Math.floor(sec);
-            const h = Math.floor(sec / 3600);
-            const m = Math.floor((sec % 3600) / 60);
-            const s = sec % 60;
-            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }
+    // ===============================
+    // Helper Functions
+    // ===============================
+    function formatTime(sec) {
+        sec = Math.floor(sec);
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
+        return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+    }
 
-        function updateUI() {
-            console.log("[UI] Updating display → Remaining:", remainingSeconds, "Elapsed:", elapsedSeconds, "Status:", status);
-            const countdownElem = document.getElementById('countdown');
-            const elapsedElem = document.getElementById('elapsed');
+    function updateUI() {
+        console.log("[UI] Updating display → Remaining:", remainingSeconds, "Elapsed:", elapsedSeconds, "Status:", status);
+        const countdownElem = document.getElementById('countdown');
+        const elapsedElem = document.getElementById('elapsed');
 
-            if (countdownElem) countdownElem.innerText = formatTime(remainingSeconds);
-            if (elapsedElem) elapsedElem.innerText = formatTime(elapsedSeconds);
-        }
+        if (countdownElem) countdownElem.innerText = formatTime(remainingSeconds);
+        if (elapsedElem) elapsedElem.innerText = formatTime(elapsedSeconds);
+    }
 
-        function showOverlay(message) {
-            console.log("[Overlay] Message:", message);
-            const overlay = document.getElementById('statusOverlay');
-            if (!overlay) return;
+    function showOverlay(message) {
+        console.log("[Overlay] Message:", message);
+        const overlay = document.getElementById('statusOverlay');
+        if (!overlay) return;
 
-            overlay.innerText = message;
-            overlay.classList.add('show');
+        overlay.innerText = message;
+        overlay.classList.add('show');
 
-            clearTimeout(overlayTimeout);
-            overlayTimeout = setTimeout(() => {
-                overlay.classList.remove('show');
-            }, 3000);
-        }
+        clearTimeout(overlayTimeout);
+        overlayTimeout = setTimeout(() => {
+            overlay.classList.remove('show');
+        }, 3000);
+    }
 
-        // ===============================
-        // Backend Sync
-        // ===============================
-        function syncWithBackend() {
-            console.log("[Sync] Sending tick to backend...");
+    // ===============================
+    // Backend Sync
+    // ===============================
+    function syncWithBackend() {
+        console.log("[Sync] Sending tick to backend...");
+        fetch("{{ route('timer.update') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: 'tick'
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("[Sync] Response:", data);
+
+                if (!data.success) {
+                    console.warn("[Sync] No success response");
+                    return;
+                }
+
+                if (data.notice_status === 1 && data.message) {
+                    showOverlay(data.message);
+                }
+
+                remainingSeconds = data.remaining_seconds;
+                elapsedSeconds = data.elapsed_seconds;
+                status = data.status;
+                updateUI();
+
+                if (data.logout) {
+                    console.warn("[Sync] Work session ended. Logging out...");
+                    clearInterval(backendSyncInterval);
+                    alert("Your 9-hour work session has ended.");
+                    // forceLogout();
+                }
+            })
+            .catch(err => console.error("[Sync] Timer sync failed:", err));
+    }
+
+    // ===============================
+    // Control Buttons (Pause/Resume/etc)
+    // ===============================
+    document.querySelectorAll('#controlButtons button').forEach(btn => {
+        btn.addEventListener('click', () => {
+            const type = btn.getAttribute('data-type');
+            console.log("[Action] Button clicked:", type);
+
             fetch("{{ route('timer.update') }}", {
                     method: "POST",
                     headers: {
@@ -287,220 +335,225 @@
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        action: 'tick'
+                        action: type
                     })
                 })
                 .then(res => res.json())
                 .then(data => {
-                    console.log("[Sync] Response:", data);
+                    console.log("[Action] Response:", data);
 
-                    if (!data.success) {
-                        console.warn("[Sync] No success response");
+                    if (data.success === false && data.notice_status === 1) {
+                        showOverlay(data.message || "Please wait for senior to enable.");
                         return;
-                    }
-
-                    if (data.notice_status === 1 && data.message) {
-                        showOverlay(data.message);
                     }
 
                     remainingSeconds = data.remaining_seconds;
                     elapsedSeconds = data.elapsed_seconds;
                     status = data.status;
                     updateUI();
-
-                    if (data.logout) {
-                        console.warn("[Sync] Work session ended. Logging out...");
-                        clearInterval(backendSyncInterval);
-                        alert("Your 9-hour work session has ended.");
-                        // forceLogout();
-                    }
                 })
-                .catch(err => console.error("[Sync] Timer sync failed:", err));
-        }
-
-        // ===============================
-        // Control Buttons (Pause/Resume/etc)
-        // ===============================
-        document.querySelectorAll('#controlButtons button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const type = btn.getAttribute('data-type');
-                console.log("[Action] Button clicked:", type);
-
-                fetch("{{ route('timer.update') }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            action: type
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        console.log("[Action] Response:", data);
-
-                        if (data.success === false && data.notice_status === 1) {
-                            showOverlay(data.message || "Please wait for senior to enable.");
-                            return;
-                        }
-
-                        remainingSeconds = data.remaining_seconds;
-                        elapsedSeconds = data.elapsed_seconds;
-                        status = data.status;
-                        updateUI();
-                    })
-                    .catch(err => console.error("[Action] Failed to send:", err));
-            });
+                .catch(err => console.error("[Action] Failed to send:", err));
         });
+    });
 
-        // ===============================
-        // Inactivity Handling
-        // ===============================
-        function resetInactiveTimer() {
-            clearTimeout(inactiveTimeout);
-            console.log("[Inactivity] Timer reset");
+    // ===============================
+    // Inactivity Handling
+    // ===============================
+    function resetInactiveTimer() {
+        clearTimeout(inactiveTimeout);
+        console.log("[Inactivity] Timer reset");
 
-            inactiveTimeout = setTimeout(() => {
-                console.warn("[Inactivity] User inactive! Pausing timer...");
-                showOverlay("You were inactive! Timer stopped.");
+        inactiveTimeout = setTimeout(() => {
+            console.warn("[Inactivity] User inactive! Pausing timer...");
+            showOverlay("You were inactive! Timer stopped.");
 
-                fetch("{{ route('timer.update') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        action: "pause"
-                    })
-                }).catch(err => console.error("[Inactivity] Pause request failed:", err));
-            }, INACTIVE_LIMIT);
-        }
-
-        function handleActiveState() {
-            console.log("[Active] User active again, resuming...");
             fetch("{{ route('timer.update') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        action: "resume"
-                    })
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: "pause"
                 })
-                .then(res => res.json())
-                .then(data => {
-                    console.log("[Active] Resume response:", data);
-                    if (data.success) {
-                        remainingSeconds = data.remaining_seconds;
-                        elapsedSeconds = data.elapsed_seconds;
-                        status = data.status;
-                        updateUI();
-                    }
+            }).catch(err => console.error("[Inactivity] Pause request failed:", err));
+        }, INACTIVE_LIMIT);
+    }
+
+    function handleActiveState() {
+        console.log("[Active] User active again, resuming...");
+        fetch("{{ route('timer.update') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: "resume"
                 })
-                .catch(err => console.error("[Active] Resume request failed:", err));
+            })
+            .then(res => res.json())
+            .then(data => {
+                console.log("[Active] Resume response:", data);
+                if (data.success) {
+                    remainingSeconds = data.remaining_seconds;
+                    elapsedSeconds = data.elapsed_seconds;
+                    status = data.status;
+                    updateUI();
+                }
+            })
+            .catch(err => console.error("[Active] Resume request failed:", err));
 
-            resetInactiveTimer();
-        }
-
-        ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt => {
-            window.addEventListener(evt, resetInactiveTimer);
-        });
-
-        document.addEventListener('visibilitychange', () => {
-            console.log("[Visibility] Changed:", document.visibilityState);
-            if (document.visibilityState === 'visible') handleActiveState();
-        });
-
-        // ===============================
-        // Initialize Timer
-        // ===============================
-        console.log("[Init] Timer script initializing...");
-        updateUI();
         resetInactiveTimer();
-        handleActiveState();
+    }
 
-        backendSyncInterval = setInterval(syncWithBackend, 1000);
-        console.log("[Init] Backend sync interval started (1s)");
-    </script>
+    ['mousemove', 'keydown', 'scroll', 'click'].forEach(evt => {
+        window.addEventListener(evt, resetInactiveTimer);
+    });
 
-    <script>
-        // ===============================
-        // Button Status Check
-        // ===============================
-        function checkButtonStatus() {
-            console.log("[Status Check] Fetching button status...");
-            fetch("{{ route('button.status') }}")
-                .then(response => {
-                    if (!response.ok) throw new Error("Network response was not ok");
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("[Status Check] Response:", data);
+    document.addEventListener('visibilitychange', () => {
+        console.log("[Visibility] Changed:", document.visibilityState);
+        if (document.visibilityState === 'visible') handleActiveState();
+    });
 
-                    const controlButtons = document.getElementById('controlButtons');
-                    const startButtonContainer = document.getElementById('startButtonContainer');
+    // ===============================
+    // Initialize Timer
+    // ===============================
+    console.log("[Init] Timer script initializing...");
+    updateUI();
+    resetInactiveTimer();
+    handleActiveState();
 
-                    if (!controlButtons || !startButtonContainer) {
-                        console.warn("[Status Check] Required elements not found in DOM.");
-                        return;
-                    }
+    backendSyncInterval = setInterval(syncWithBackend, 1000);
+    console.log("[Init] Backend sync interval started (1s)");
+</script>
 
-                    if (data.button_status == 1) {
-                        controlButtons.style.display = 'flex';
-                        startButtonContainer.style.display = 'none';
-                        console.log("[Status Check] Control buttons visible, start button hidden.");
-                    } else {
-                        controlButtons.style.display = 'none';
-                        startButtonContainer.style.display = 'flex';
-                        console.log("[Status Check] Start button visible, control buttons hidden.");
-                    }
-                })
-                .catch(err => console.error("[Status Check] Error fetching button status:", err));
+<script>
+    // ===============================
+    // Button Status Check
+    // ===============================
+    function checkButtonStatus() {
+        console.log("[Status Check] Fetching button status...");
+        fetch("{{ route('button.status') }}")
+            .then(response => {
+                if (!response.ok) throw new Error("Network response was not ok");
+                return response.json();
+            })
+            .then(data => {
+                console.log("[Status Check] Response:", data);
+
+                const controlButtons = document.getElementById('controlButtons');
+                const startButtonContainer = document.getElementById('startButtonContainer');
+
+                if (!controlButtons || !startButtonContainer) {
+                    console.warn("[Status Check] Required elements not found in DOM.");
+                    return;
+                }
+
+                if (data.button_status == 1) {
+                    controlButtons.style.display = 'flex';
+                    startButtonContainer.style.display = 'none';
+                    console.log("[Status Check] Control buttons visible, start button hidden.");
+                } else {
+                    controlButtons.style.display = 'none';
+                    startButtonContainer.style.display = 'flex';
+                    console.log("[Status Check] Start button visible, control buttons hidden.");
+                }
+            })
+            .catch(err => console.error("[Status Check] Error fetching button status:", err));
+    }
+
+    checkButtonStatus();
+    setInterval(checkButtonStatus, 1000);
+</script>
+
+
+<script>
+    // ===============================
+    // Button Status Check
+    // ===============================
+    function checkButtonStatus() {
+        console.log("[Status Check] Fetching button status...");
+        fetch("{{ route('button.status') }}")
+            .then(response => {
+                if (!response.ok) throw new Error("Network response was not ok");
+                return response.json();
+            })
+            .then(data => {
+                console.log("[Status Check] Response:", data);
+
+                const controlButtons = document.getElementById('controlButtons');
+                const startButtonContainer = document.getElementById('startButtonContainer');
+
+                if (!controlButtons || !startButtonContainer) {
+                    console.warn("[Status Check] Required elements not found in DOM.");
+                    return;
+                }
+
+                if (data.button_status == 1) {
+                    controlButtons.style.display = 'flex';
+                    startButtonContainer.style.display = 'none';
+                    console.log("[Status Check] Control buttons visible, start button hidden.");
+                } else {
+                    controlButtons.style.display = 'none';
+                    startButtonContainer.style.display = 'flex';
+                    console.log("[Status Check] Start button visible, control buttons hidden.");
+                }
+            })
+            .catch(err => console.error("[Status Check] Error fetching button status:", err));
+    }
+
+    checkButtonStatus();
+    setInterval(checkButtonStatus, 1000);
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const startButtonContainer = document.getElementById('startButtonContainer');
+    const startButton = document.getElementById('startButton');
+
+    // Check if today's timer already exists
+    fetch('{{ route("timer.start") }}', {
+        method: 'POST',
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ check: true })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.exists) {
+            startButtonContainer.style.display = 'none';
+        } else {
+            startButtonContainer.style.display = 'flex';
         }
+    });
 
-        checkButtonStatus();
-        setInterval(checkButtonStatus, 1000);
-    </script>
-
-
-    <script>
-        // ===============================
-        // Button Status Check
-        // ===============================
-        function checkButtonStatus() {
-            console.log("[Status Check] Fetching button status...");
-            fetch("{{ route('button.status') }}")
-                .then(response => {
-                    if (!response.ok) throw new Error("Network response was not ok");
-                    return response.json();
-                })
-                .then(data => {
-                    console.log("[Status Check] Response:", data);
-
-                    const controlButtons = document.getElementById('controlButtons');
-                    const startButtonContainer = document.getElementById('startButtonContainer');
-
-                    if (!controlButtons || !startButtonContainer) {
-                        console.warn("[Status Check] Required elements not found in DOM.");
-                        return;
-                    }
-
-                    if (data.button_status == 1) {
-                        controlButtons.style.display = 'flex';
-                        startButtonContainer.style.display = 'none';
-                        console.log("[Status Check] Control buttons visible, start button hidden.");
-                    } else {
-                        controlButtons.style.display = 'none';
-                        startButtonContainer.style.display = 'flex';
-                        console.log("[Status Check] Start button visible, control buttons hidden.");
-                    }
-                })
-                .catch(err => console.error("[Status Check] Error fetching button status:", err));
-        }
-
-        checkButtonStatus();
-        setInterval(checkButtonStatus, 1000);
-    </script>
+    // On Start button click
+    startButton.addEventListener('click', function() {
+        fetch('{{ route("timer.start") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                startButtonContainer.style.display = 'none';
+                alert('✅ Timer started for today!');
+                // Optional: reload the page or update UI
+                location.reload();
+            } else if (data.exists) {
+                startButtonContainer.style.display = 'none';
+                alert('⏱ Timer already exists for today.');
+            } else {
+                alert('⚠️ Something went wrong starting the timer.');
+            }
+        })
+        .catch(err => console.error(err));
+    });
+});
+</script>
