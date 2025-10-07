@@ -58,40 +58,40 @@ class CalendarController extends Controller
                 break;
         }
 
-        $events = UserTimerPause::where('user_id', Auth::id())
-            ->whereBetween('event_time', [$start, $end])
-            ->orderBy('event_time', 'asc')
-            ->get();
-
-        return view('calendar.junior', compact('events', 'view', 'date'));
+        return view('calendar.junior', compact('view', 'date'));
     }
 
-    public function getEvents(Request $request)
+    // ✅ FullCalendar event JSON endpoint
+    public function juniorEvents(Request $request)
     {
-        $events = UserTimerPause::where('user_id', Auth::id())
+        $userId = Auth::id();
+
+        $events = UserTimerPause::where('user_id', $userId)
             ->orderBy('event_time', 'asc')
             ->get();
 
-        // Dynamic colors based on pause_type or label
+        // Define color mapping for clarity
         $labelColors = [
-            'login'  => '#007bff',
+            'start'  => '#007bff',
             'resume' => '#28a745',
             'pause'  => '#ffc107',
+            'stop'   => '#dc3545',
             'other'  => '#6c757d'
         ];
 
         $eventsData = $events->map(function ($event) use ($labelColors) {
+            $type = strtolower($event->pause_type ?? 'other');
+
             return [
-                'id' => $event->id,
-                'title' => ucfirst($event->pause_type),
+                'id'    => $event->id,
+                'title' => ucfirst($type),
                 'start' => $event->event_time,
-                'end'   => $event->event_time, // you can adjust if you have duration
+                'allDay' => false,
                 'extendedProps' => [
-                    'status'  => $event->status,
-                    'pause_type' => $event->pause_type,
-                    'remaining_seconds' => $event->remaining_seconds,
-                    'label' => $event->pause_type,
-                    'label_color' => $labelColors[$event->pause_type] ?? $labelColors['other'],
+                    'status'            => $event->status ?? 'N/A',
+                    'pause_type'        => $type,
+                    'remaining_seconds' => $event->remaining_seconds ?? 0,
+                    'label_color'       => $labelColors[$type] ?? $labelColors['other'],
                 ]
             ];
         });

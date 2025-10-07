@@ -30,8 +30,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/admin/calendar/{month?}/{year?}', [CalendarController::class, 'index'])->name('calendar.index');
     Route::get('/dashboard/accountant/calendar/{month?}/{year?}', [CalendarController::class, 'accountantUser'])->name('calendar.accountantUser');
     Route::get('/dashboard/trainer/calendar/{month?}/{year?}', [CalendarController::class, 'trainerUser'])->name('calendar.trainerUser');
-    Route::get('/dashboard/junior/calendar/', [CalendarController::class, 'juniorUser'])->name('calendar.juniorUser');
-    Route::get('/dashboard/junior/calendar/events', [CalendarController::class, 'getEvents'])->name('calendar.juniorEvents');
+    Route::get('/dashboard/junior/calendar/', [CalendarController::class, 'juniorUser'])->name('calendar.junior');
+    Route::get('/dashboard/junior/calendar/events', [CalendarController::class, 'juniorEvents'])->name('calendar.juniorEvents');
     Route::get('/dashboard/senior/calendar/', [CalendarController::class, 'seniorUser'])->name('calendar.seniorUser');
     Route::get('/dashboard/senior/calendar/alljuniorlist', [CalendarController::class, 'allJuniorlist'])->name('calendar.allJuniorlist');
     Route::get('/dashboard/senior/calendar/alljunior/{userId}', [CalendarController::class, 'alljuniorUser'])->name('calendar.alljuniorUser');
