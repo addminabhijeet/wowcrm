@@ -852,27 +852,31 @@ document.addEventListener('DOMContentLoaded', function() {
     const scrollContainer = document.querySelector('.scroll-sm');
     if (!scrollContainer) return;
 
-    const SENSOR_PADDING = 50; // extra pixels outside container to trigger scroll
+    const SENSOR_RATIO = 0.2; // 20% of container width on left/right acts as sensor
 
-    document.addEventListener('mousemove', function(e) {
+    scrollContainer.addEventListener('mousemove', function(e) {
         const rect = scrollContainer.getBoundingClientRect();
         const scrollWidth = scrollContainer.scrollWidth - scrollContainer.clientWidth;
         if (scrollWidth <= 0) return;
 
-        // Calculate extended area
-        const startX = rect.left - SENSOR_PADDING;
-        const endX = rect.right + SENSOR_PADDING;
+        const offsetX = e.clientX - rect.left; // mouse X inside container
+        const width = rect.width;
 
-        // Only scroll if mouse is within the extended area
-        if (e.clientX >= startX && e.clientX <= endX) {
-            // Map mouse position to scroll percentage
-            const offsetX = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
-            const scrollPercent = offsetX / rect.width;
-            scrollContainer.scrollLeft = scrollPercent * scrollWidth;
+        let scrollPercent;
+        if (offsetX < width * SENSOR_RATIO) {
+            // Left sensor zone
+            scrollPercent = 0;
+        } else if (offsetX > width * (1 - SENSOR_RATIO)) {
+            // Right sensor zone
+            scrollPercent = 1;
+        } else {
+            // Middle area
+            scrollPercent = (offsetX - width * SENSOR_RATIO) / (width * (1 - 2 * SENSOR_RATIO));
         }
+
+        scrollContainer.scrollLeft = scrollPercent * scrollWidth;
     });
 
-    // Cursor effect
     scrollContainer.addEventListener('mouseenter', () => {
         scrollContainer.style.cursor = 'grab';
     });
