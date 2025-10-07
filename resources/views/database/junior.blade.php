@@ -816,7 +816,8 @@ $script ='<script>
 
 <style>
     .scroll-sm {
-        overflow: scroll;
+        overflow-x: scroll;
+        overflow-y: hidden;
         /* always show scrollbar */
         scrollbar-gutter: stable;
         /* prevent layout shift */
@@ -826,7 +827,7 @@ $script ='<script>
     .scroll-sm::-webkit-scrollbar {
         height: 36px;
         /* horizontal scrollbar thickness */
-        width: 36px;
+        width: 0;
         /* vertical scrollbar thickness */
     }
 
@@ -857,45 +858,4 @@ $script ='<script>
         /* thumb + track */
     }
 </style>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const scrollContainer = document.querySelector('.scroll-sm');
-        if (!scrollContainer) return;
-
-        const SENSOR_RATIO = 0.2; // 20% of container width on left/right acts as sensor
-        const MAX_SPEED = 20; // max pixels per move
-
-        scrollContainer.addEventListener('mousemove', function(e) {
-            const rect = scrollContainer.getBoundingClientRect();
-            const scrollWidth = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-            if (scrollWidth <= 0) return;
-
-            const offsetX = e.clientX - rect.left; // mouse X inside container
-            const width = rect.width;
-            let speed = 0;
-
-            if (offsetX < width * SENSOR_RATIO) {
-                // Left sensor zone: scroll left
-                speed = -MAX_SPEED * (1 - offsetX / (width * SENSOR_RATIO));
-            } else if (offsetX > width * (1 - SENSOR_RATIO)) {
-                // Right sensor zone: scroll right
-                speed = MAX_SPEED * ((offsetX - width * (1 - SENSOR_RATIO)) / (width * SENSOR_RATIO));
-            }
-
-            scrollContainer.scrollLeft += speed;
-        });
-
-        // Remove grab-drag, only visual feedback
-        scrollContainer.addEventListener('mouseenter', () => {
-            scrollContainer.style.cursor = 'pointer';
-        });
-        scrollContainer.addEventListener('mouseleave', () => {
-            scrollContainer.style.cursor = 'default';
-        });
-    });
-</script>
-
-
-
 @endsection
