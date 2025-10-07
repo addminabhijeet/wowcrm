@@ -49,7 +49,7 @@ $script = '<script>
             @foreach($timers as $timer)
             <div class="col-xxl-3 col-md-6 user-grid-card">
                 <div class="position-relative border radius-16 overflow-hidden">
-                    <div src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
+                    <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
 
                     <!-- Dropdown -->
                     <div class="dropdown position-absolute top-0 end-0 me-16 mt-16">
