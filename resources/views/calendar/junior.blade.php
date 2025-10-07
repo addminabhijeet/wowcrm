@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @php
-$title='Calendar';
+$title = 'Calendar';
 $subTitle = 'Calendar';
 @endphp
 
@@ -11,9 +11,9 @@ $subTitle = 'Calendar';
     <div class="col-12">
         <div class="card h-100 p-0">
             <div class="card-body p-24">
-                <div id='wrap'>
-                    <div id='calendar'></div>
-                    <div style='clear:both'></div>
+                <div id="wrap">
+                    <div id="calendar"></div>
+                    <div style="clear:both"></div>
                 </div>
             </div>
         </div>
@@ -49,20 +49,16 @@ document.addEventListener('DOMContentLoaded', function() {
         displayEventTime: false,
         displayEventEnd: false,
 
-        // Prevent default event display completely
+        // No event rendering at all
         eventContent: function() {
             return { domNodes: [] };
         },
 
-        // Ensure no inline color or background is applied
+        // Ensure events take no visual space
         eventDidMount: function(info) {
-            info.el.style.backgroundColor = 'transparent';
-            info.el.style.borderColor = 'transparent';
-            info.el.style.color = 'transparent';
-            info.el.style.boxShadow = 'none';
+            info.el.remove(); // Completely remove the event element
         },
 
-        // Handle date click to show modal with events
         dateClick: function(info) {
             var eventsOnDate = calendar.getEvents().filter(event => {
                 return event.startStr.slice(0, 10) === info.dateStr;
@@ -103,28 +99,56 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-/* Completely hide all event visuals */
+/* Fully remove all event traces */
 .fc-event,
 .fc-daygrid-event,
 .fc-event-dot,
 .fc-event-main,
 .fc-daygrid-day-events,
-.fc-daygrid-day-top .fc-daygrid-event-harness {
-    background: transparent !important;
-    border: none !important;
-    color: transparent !important;
-    box-shadow: none !important;
-    visibility: hidden !important;
+.fc-daygrid-event-harness,
+.fc-daygrid-event-harness-abs {
+    display: none !important;
 }
 
-/* Remove spacing left by hidden events */
+/* Prevent extra spacing or height for hidden events */
 .fc-daygrid-day-frame {
-    min-height: auto !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-end;
+    height: 100% !important;
 }
 
-/* Keep cells and calendar clean */
-.fc-daygrid-day-number {
-    z-index: 2;
+/* Keep all day cells uniform */
+.fc-daygrid-day {
+    vertical-align: top;
+    height: auto !important;
+}
+
+/* Clean up layout */
+.fc-daygrid-day-top {
+    display: flex;
+    justify-content: flex-end;
+    padding: 4px 6px;
+}
+
+/* Keep today's date highlighted normally */
+.fc-day-today {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+}
+
+/* Maintain border & grid uniformity */
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border: 1px solid #e5e5e5 !important;
+}
+
+/* Remove any invisible padding left by event wrappers */
+.fc-daygrid-day-events {
+    min-height: 0 !important;
+    height: 0 !important;
+    padding: 0 !important;
+    margin: 0 !important;
 }
 </style>
 
