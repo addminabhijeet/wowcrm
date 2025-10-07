@@ -75,57 +75,55 @@ class DashboardController extends Controller
             'button_status' => $button_status
         ]);
     }
-
     public function startTimer(Request $request)
     {
-        $user = Auth::user();
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Not authenticated'], 401);
+            }
 
-        // Fetch timer settings
-        $settings = TimerSetting::first();
-        if (!$settings) {
-            return response()->json(['error' => 'Timer settings not configured'], 500);
-        }
+            $settings = TimerSetting::first();
+            if (!$settings) {
+                return response()->json(['error' => 'Timer settings missing'], 500);
+            }
 
-        $workDaySeconds = $settings->work_day_seconds;
-        $today = now()->startOfDay();
+            $workDaySeconds = $settings->work_day_seconds;
+            $today = now()->startOfDay();
 
-        // Check if timer already exists for today
-        $existingTimer = UserTimerLog::where('user_id', $user->id)
-            ->whereDate('created_at', $today)
-            ->first();
+            $existingTimer = UserTimerLog::where('user_id', $user->id)
+                ->whereDate('created_at', $today)
+                ->first();
 
-        if ($existingTimer) {
-            return response()->json([
-                'exists'  => true,
-                'message' => 'Timer already started for today.'
+            if ($existingTimer) {
+                return response()->json(['exists' => true]);
+            }
+
+            $timer = UserTimerLog::create([
+                'user_id'           => $user->id,
+                'start_time'        => now(),
+                'remaining_seconds' => $workDaySeconds,
+                'status'            => 'running',
             ]);
+
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
+                'user_id'           => $user->id,
+                'status'            => 'running',
+                'pause_type'        => 'start',
+                'remaining_seconds' => $workDaySeconds,
+                'event_time'        => now(),
+            ]);
+
+            return response()->json(['success' => true, 'timer' => $timer]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ], 500);
         }
-
-        // Create a new running timer for today
-        $timer = UserTimerLog::create([
-            'user_id'           => $user->id,
-            'start_time'        => now(),
-            'remaining_seconds' => $workDaySeconds,
-            'status'            => 'running',
-        ]);
-
-        // Log an event in UserTimerPause
-        UserTimerPause::create([
-            'user_timer_log_id' => $timer->id,
-            'user_id'           => $user->id,
-            'status'            => 'running',
-            'pause_type'        => 'start',
-            'remaining_seconds' => $workDaySeconds,
-            'event_time'        => now(),
-        ]);
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Timer started successfully.',
-            'timer'   => $timer
-        ]);
     }
-
 
     public function senior()
     {
