@@ -505,7 +505,6 @@
     checkButtonStatus();
     setInterval(checkButtonStatus, 1000);
 </script>
-
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const startButtonContainer = document.getElementById('startButtonContainer');
@@ -513,7 +512,28 @@ document.addEventListener('DOMContentLoaded', function() {
 
     console.log('🕒 DOM loaded, checking if timer exists for today...');
 
-    // Check if today's timer already exists
+    function hideStartButton() {
+        startButtonContainer.style.display = 'none';
+        console.log('⏱ Start button hidden.');
+    }
+
+    function showStartButton() {
+        startButtonContainer.style.display = 'flex';
+        console.log('✅ Start button visible.');
+    }
+
+    function updateButtonVisibility(timerData) {
+        // Hide button if timer exists or is running
+        if (!timerData) return showStartButton();
+
+        if (timerData.status === 'running' || timerData.exists || timerData.timer) {
+            hideStartButton();
+        } else {
+            showStartButton();
+        }
+    }
+
+    // Initial check if timer exists
     fetch('{{ route("timer.start") }}', {
         method: 'POST',
         headers: {
@@ -525,19 +545,11 @@ document.addEventListener('DOMContentLoaded', function() {
     .then(res => res.json())
     .then(data => {
         console.log('🔹 Check timer response:', data);
-
-        // Hide start button if timer exists
-        if (data.exists || data.timer) {
-            console.log('⏱ Timer already exists. Hiding start button.');
-            startButtonContainer.style.display = 'none';
-        } else {
-            console.log('✅ No timer found, showing start button.');
-            startButtonContainer.style.display = 'flex';
-        }
+        updateButtonVisibility(data);
     })
     .catch(err => console.error('❌ Error checking timer existence:', err));
 
-    // On Start button click
+    // Start button click
     startButton.addEventListener('click', function() {
         console.log('▶️ Start button clicked. Sending timer start request...');
 
@@ -552,20 +564,25 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(res => res.json())
         .then(data => {
             console.log('🔹 Start timer response data:', data);
-
-            if (data.success || data.exists || data.timer) {
-                console.log('✅ Timer already started or created:', data.timer || data);
-                startButtonContainer.style.display = 'none'; // always hide
-                alert('⏱ Timer is running for today!');
-                location.reload();
-            } else {
-                console.error('⚠️ Unexpected response while starting timer:', data);
-                alert('⚠️ Something went wrong starting the timer.');
-            }
+            updateButtonVisibility(data); // hide immediately
+            alert('⏱ Timer is running for today!');
+            location.reload();
         })
-        .catch(err => {
-            console.error('❌ Error starting timer:', err);
-        });
+        .catch(err => console.error('❌ Error starting timer:', err));
     });
+
+    // Example: Periodic status check (if you have one)
+    function fetchTimerStatus() {
+        fetch('{{ route("timer.status") }}') // replace with your status endpoint
+            .then(res => res.json())
+            .then(data => {
+                console.log('[Status Check] Response:', data);
+                updateButtonVisibility(data.timer || { status: data.status, exists: data.exists });
+            })
+            .catch(err => console.error('❌ Status check error:', err));
+    }
+
+    // Optional: poll every 5 seconds
+    setInterval(fetchTimerStatus, 5000);
 });
 </script>
