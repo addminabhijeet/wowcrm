@@ -31,6 +31,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/junior/calendar/events', [CalendarController::class, 'getEvents'])->name('calendar.juniorEvents');
     Route::get('/dashboard/senior/calendar/', [CalendarController::class, 'seniorUser'])->name('calendar.seniorUser');
     Route::get('/dashboard/senior/calendar/alljuniorlist', [CalendarController::class, 'allJuniorlist'])->name('calendar.allJuniorlist');
+    Route::get('/dashboard/junior/calendar/alljunior', [CalendarController::class, 'alljuniorUser'])->name('calendar.alljuniorUser');
     Route::get('/dashboard/senior/calendar/alljuniorlist/events', [CalendarController::class, 'getallJuniorEvents'])->name('calendar.allJuniorEvents');
     Route::get('/dashboard/senior/calendar/events', [CalendarController::class, 'getSeniorEvents'])->name('calendar.seniorEvents');
     Route::post('/dashboard/calendar/update-status', [CalendarController::class, 'updateStatus'])->name('calendar.updateStatus');
