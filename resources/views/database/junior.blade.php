@@ -850,31 +850,38 @@ $script ='<script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const scrollContainer = document.querySelector('.scroll-sm');
+    if (!scrollContainer) return;
 
-    if (scrollContainer) {
-        scrollContainer.addEventListener('mousemove', function(e) {
-            const rect = scrollContainer.getBoundingClientRect();
-            const offsetX = e.clientX - rect.left; // mouse X inside container
-            const width = rect.width;
+    const SENSOR_PADDING = 50; // extra pixels outside container to trigger scroll
 
-            // Only scroll if content overflows
-            const scrollWidth = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-            if(scrollWidth > 0){
-                const scrollPercent = offsetX / width; // 0 to 1
-                scrollContainer.scrollLeft = scrollPercent * scrollWidth;
-            }
-        });
+    document.addEventListener('mousemove', function(e) {
+        const rect = scrollContainer.getBoundingClientRect();
+        const scrollWidth = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+        if (scrollWidth <= 0) return;
 
-        // Optional: add grab cursor effect
-        scrollContainer.addEventListener('mouseleave', () => {
-            scrollContainer.style.cursor = 'default';
-        });
-        scrollContainer.addEventListener('mouseenter', () => {
-            scrollContainer.style.cursor = 'grab';
-        });
-    }
+        // Calculate extended area
+        const startX = rect.left - SENSOR_PADDING;
+        const endX = rect.right + SENSOR_PADDING;
+
+        // Only scroll if mouse is within the extended area
+        if (e.clientX >= startX && e.clientX <= endX) {
+            // Map mouse position to scroll percentage
+            const offsetX = Math.min(Math.max(e.clientX - rect.left, 0), rect.width);
+            const scrollPercent = offsetX / rect.width;
+            scrollContainer.scrollLeft = scrollPercent * scrollWidth;
+        }
+    });
+
+    // Cursor effect
+    scrollContainer.addEventListener('mouseenter', () => {
+        scrollContainer.style.cursor = 'grab';
+    });
+    scrollContainer.addEventListener('mouseleave', () => {
+        scrollContainer.style.cursor = 'default';
+    });
 });
 </script>
+
 
 
 
