@@ -821,16 +821,16 @@ $script ='<script>
 
     /* Webkit browsers (Chrome, Edge, Safari) */
     .scroll-sm::-webkit-scrollbar {
-        height: 100px;
+        height: 40px;
         /* horizontal scrollbar height */
-        width: 100px;
+        width: 40px;
         /* vertical scrollbar width */
     }
 
     .scroll-sm::-webkit-scrollbar-thumb {
         background-color: #888;
         /* scrollbar color */
-        border-radius: 6px;
+        border-radius: 12px;
     }
 
     .scroll-sm::-webkit-scrollbar-thumb:hover {
@@ -840,13 +840,13 @@ $script ='<script>
     .scroll-sm::-webkit-scrollbar-track {
         background-color: #f1f1f1;
         /* track color */
-        border-radius: 6px;
+        border-radius: 12px;
     }
 
     /* Firefox */
     .scroll-sm {
-        scrollbar-width: thin;
-        /* options: auto, thin, none */
+        scrollbar-width: auto;
+        /* thicker scrollbar */
         scrollbar-color: #888 #f1f1f1;
         /* thumb and track */
     }
