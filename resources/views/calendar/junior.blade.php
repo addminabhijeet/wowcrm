@@ -33,40 +33,64 @@ $subTitle = 'Calendar';
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("[Calendar] DOM loaded — initializing FullCalendar...");
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        events: "{{ route('calendar.juniorEvents') }}",
-        displayEventTime: false,
-        displayEventEnd: false,
+        var calendarEl = document.getElementById('calendar');
+        if (!calendarEl) {
+            console.error("[Calendar] Element with ID 'calendar' not found!");
+            return;
+        }
 
-        eventContent: function() { return { domNodes: [] }; },
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: "{{ route('calendar.juniorEvents') }}",
+            displayEventTime: false,
+            displayEventEnd: false,
 
-        eventDidMount: function(info) {
-            info.el.remove();
-            const cell = info.el.closest('.fc-daygrid-day');
-            if (cell) {
-                cell.classList.add('has-event');
-            }
-        },
+            eventContent: function() {
+                console.log("[Calendar] eventContent called");
+                return {
+                    domNodes: []
+                };
+            },
 
-        dateClick: function(info) {
-            var eventsOnDate = calendar.getEvents().filter(e => e.startStr.slice(0, 10) === info.dateStr);
-            eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
+            eventDidMount: function(info) {
+                console.log("[Calendar] eventDidMount:", info.event.title, info.event.startStr);
+                info.el.remove();
+                const cell = info.el.closest('.fc-daygrid-day');
+                if (cell) {
+                    console.log("[Calendar] Adding 'has-event' class to cell for date:", cell.dataset.date);
+                    cell.classList.add('has-event');
+                } else {
+                    console.warn("[Calendar] Could not find cell for event:", info.event.title);
+                }
+            },
 
-            var modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = '';
+            dateClick: function(info) {
+                console.log("[Calendar] dateClick:", info.dateStr);
 
-            if (eventsOnDate.length > 0) {
-                eventsOnDate.forEach(event => {
-                    modalBody.innerHTML += `
+                var eventsOnDate = calendar.getEvents().filter(e => e.startStr.slice(0, 10) === info.dateStr);
+                console.log(`[Calendar] Found ${eventsOnDate.length} event(s) on this date.`);
+
+                eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+                var modalBody = document.getElementById('modalBody');
+                if (!modalBody) {
+                    console.error("[Calendar] Modal body element not found!");
+                    return;
+                }
+                modalBody.innerHTML = '';
+
+                if (eventsOnDate.length > 0) {
+                    eventsOnDate.forEach(event => {
+                        console.log("[Calendar] Rendering event in modal:", event.title, event.extendedProps);
+                        modalBody.innerHTML += `
                         <div class="event-item p-16 mb-16 border rounded bg-light">
                             <h5 class="fw-semibold mb-8">${event.title}</h5>
                             <p><strong>Status:</strong> ${event.extendedProps.status}</p>
@@ -75,58 +99,65 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p><strong>Pause Type:</strong> ${event.extendedProps.pause_type}</p>
                         </div>
                     `;
-                });
-            } else {
-                modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
+                    });
+                } else {
+                    console.log("[Calendar] No events found for this date.");
+                    modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
+                }
+
+                document.getElementById('modalDate').innerText = info.dateStr;
+
+                console.log("[Calendar] Opening event modal...");
+                new bootstrap.Modal(document.getElementById('eventModal')).show();
             }
+        });
 
-            document.getElementById('modalDate').innerText = info.dateStr;
-            new bootstrap.Modal(document.getElementById('eventModal')).show();
-        }
+        console.log("[Calendar] Rendering calendar...");
+        calendar.render();
+
+        console.log("[Calendar] Initialization complete ✅");
     });
-
-    calendar.render();
-});
 </script>
 
+
 <style>
-.fc-event,
-.fc-daygrid-event,
-.fc-event-dot,
-.fc-event-main,
-.fc-daygrid-day-events,
-.fc-daygrid-event-harness,
-.fc-daygrid-event-harness-abs {
-    display: none !important;
-}
+    .fc-event,
+    .fc-daygrid-event,
+    .fc-event-dot,
+    .fc-event-main,
+    .fc-daygrid-day-events,
+    .fc-daygrid-event-harness,
+    .fc-daygrid-event-harness-abs {
+        display: none !important;
+    }
 
-.fc-daygrid-day-frame {
-    min-height: 60px;
-    padding: 4px;
-    display: block !important;
-}
+    .fc-daygrid-day-frame {
+        min-height: 60px;
+        padding: 4px;
+        display: block !important;
+    }
 
-.fc-day-today {
-    background-color: rgba(0, 123, 255, 0.1) !important;
-}
+    .fc-day-today {
+        background-color: rgba(0, 123, 255, 0.1) !important;
+    }
 
-.fc-theme-standard td,
-.fc-theme-standard th {
-    border: 1px solid #e5e5e5 !important;
-}
+    .fc-theme-standard td,
+    .fc-theme-standard th {
+        border: 1px solid #e5e5e5 !important;
+    }
 
-.fc-daygrid-day.has-event {
-    background-color: rgba(0, 123, 255, 0.08);
-    transition: background-color 0.2s ease;
-}
+    .fc-daygrid-day.has-event {
+        background-color: rgba(0, 123, 255, 0.08);
+        transition: background-color 0.2s ease;
+    }
 
-.fc-daygrid-day.has-event:hover {
-    background-color: rgba(0, 123, 255, 0.15);
-}
+    .fc-daygrid-day.has-event:hover {
+        background-color: rgba(0, 123, 255, 0.15);
+    }
 
-.fc-daygrid-day:hover {
-    cursor: pointer;
-    background-color: rgba(0,0,0,0.02);
-}
+    .fc-daygrid-day:hover {
+        cursor: pointer;
+        background-color: rgba(0, 0, 0, 0.02);
+    }
 </style>
 @endsection
