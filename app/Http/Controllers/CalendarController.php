@@ -99,7 +99,7 @@ class CalendarController extends Controller
         return response()->json($eventsData);
     }
 
-    public function alljuniorlist(Request $request)
+    public function allJuniorlist(Request $request)
     {
         // Fetch all users with role 'junior'
         $juniorUsers = User::where('role', 'junior')->get();
