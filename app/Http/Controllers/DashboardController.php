@@ -101,6 +101,7 @@ class DashboardController extends Controller
 
             $timer = UserTimerLog::create([
                 'user_id'           => $user->id,
+                'login_id'          => $user->id ?? null,
                 'start_time'        => now(),
                 'remaining_seconds' => $workDaySeconds,
                 'status'            => 'running',
