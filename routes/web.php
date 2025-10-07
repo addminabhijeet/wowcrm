@@ -24,6 +24,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/trainer', [DashboardController::class, 'trainer'])->name('dashboard.trainer');
     Route::get('/button/status', [DashboardController::class, 'getButtonStatus'])->name('button.status');
     Route::post('/dashboard/start-timer', [DashboardController::class, 'startTimer'])->name('timer.start');
+    Route::post('/dashboard/start-timer-hide', [DashboardController::class, 'startTimerHide'])->name('timer.starthide');
 
 
     Route::get('/dashboard/admin/calendar/{month?}/{year?}', [CalendarController::class, 'index'])->name('calendar.index');
