@@ -99,7 +99,7 @@ class CalendarController extends Controller
         return response()->json($eventsData);
     }
 
-    public function allJuniorlist(Request $request)
+    public function allJuniorlist(Request $request, $user_id)
     {
         $view = $request->input('view', 'month'); // day, week, month
         $date = $request->input('date', now());
@@ -121,13 +121,14 @@ class CalendarController extends Controller
                 break;
         }
 
-        $events = UserTimerPause::where('user_id', Auth::id())
+        $events = UserTimerPause::where('user_id', $user_id)
             ->whereBetween('event_time', [$start, $end])
             ->orderBy('event_time', 'asc')
             ->get();
 
-        return view('calendar.junior', compact('events', 'view', 'date'));
+        return view('calendar.junior', compact('events', 'view', 'date', 'user_id'));
     }
+
 
     public function getAllJuniorEvents(Request $request)
     {
