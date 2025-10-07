@@ -28,7 +28,24 @@ class LoginController extends Controller
 
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
-            
+
+            // === Added: Create UserTimerPause on login ===
+            $user = Auth::user();
+            if ($user) {
+                $latestTimer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+                if ($latestTimer) {
+                    UserTimerPause::create([
+                        'user_timer_log_id' => $latestTimer->id,
+                        'user_id' => $user->id,
+                        'status' => 'resumed',
+                        'pause_type' => 'login',
+                        'remaining_seconds' => $latestTimer->remaining_seconds,
+                        'event_time' => now(),
+                    ]);
+                }
+            }
+            // =============================================
+
             // Redirect based on user role
             $role = Auth::user()->role;
 
@@ -54,6 +71,7 @@ class LoginController extends Controller
             'email' => 'The provided credentials do not match our records.'
         ])->onlyInput('email');
     }
+
 
     public function logout(Request $request)
     {
