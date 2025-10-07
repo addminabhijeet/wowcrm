@@ -1,8 +1,8 @@
 @extends('layout.layout')
 
 @php
-$title='Calendar';
-$subTitle = 'Calendar';
+    $title = 'Calendar';
+    $subTitle = 'Calendar';
 @endphp
 
 @section('content')
@@ -24,7 +24,7 @@ $subTitle = 'Calendar';
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+            <div class="modal-header py-16 px-24 border-bottom">
                 <h1 class="modal-title fs-5" id="eventModalLabel">Events on <span id="modalDate"></span></h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -48,23 +48,29 @@ document.addEventListener('DOMContentLoaded', function() {
         events: "{{ route('calendar.juniorEvents') }}",
         displayEventTime: false,
         displayEventEnd: false,
+
+        // ✅ Hide event content inside date box
         eventContent: function() {
-            return { domNodes: [] }; // remove default event rendering
+            return { domNodes: [] };
         },
+
+        // ✅ Show modal with details on date click
         dateClick: function(info) {
             var eventsOnDate = calendar.getEvents().filter(event => {
                 return event.startStr.slice(0,10) === info.dateStr;
             });
 
-            eventsOnDate.sort((a,b) => new Date(a.start) - new Date(b.start));
+            // Sort by time
+            eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
 
             var modalBody = document.getElementById('modalBody');
             modalBody.innerHTML = '';
 
-            if(eventsOnDate.length > 0){
-                eventsOnDate.forEach(function(event){
+            if (eventsOnDate.length > 0) {
+                eventsOnDate.forEach(function(event) {
                     modalBody.innerHTML += `
-                        <div class="event-item p-16 mb-16 border rounded shadow-sm bg-light">
+                        <div class="event-item p-16 mb-16 border rounded shadow-sm" 
+                             style="background:${event.extendedProps.label_color}1a; border-left:5px solid ${event.extendedProps.label_color}">
                             <div class="d-flex justify-content-between align-items-center mb-8">
                                 <h5 class="fw-semibold">${event.title}</h5>
                             </div>
@@ -91,8 +97,15 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-.event-item { background:#f8f9fa; }
-.event-item h5 { font-size:16px; }
+.event-item { transition: 0.3s ease; }
+.event-item:hover { background-color: #f1f1f1; }
+.fc-daygrid-day-number {
+    color: #000;
+    font-weight: 500;
+}
+.fc-daygrid-day-frame {
+    cursor: pointer;
+}
 </style>
 
 @endsection

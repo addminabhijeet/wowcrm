@@ -71,27 +71,31 @@ class CalendarController extends Controller
             ->orderBy('event_time', 'asc')
             ->get();
 
-        // Dynamic colors based on pause_type or label
+        // Dynamic label colors (can later be fetched from DB)
         $labelColors = [
             'login'  => '#007bff',
             'resume' => '#28a745',
             'pause'  => '#ffc107',
-            'other'  => '#6c757d'
+            'logout' => '#dc3545',
+            'other'  => '#6c757d',
         ];
 
         $eventsData = $events->map(function ($event) use ($labelColors) {
+            $label = strtolower($event->pause_type);
             return [
-                'id' => $event->id,
+                'id'    => $event->id,
                 'title' => ucfirst($event->pause_type),
                 'start' => $event->event_time,
-                'end'   => $event->event_time, // you can adjust if you have duration
+                'end'   => $event->event_time, // Adjust if duration exists
+                'backgroundColor' => $labelColors[$label] ?? $labelColors['other'],
+                'borderColor'     => $labelColors[$label] ?? $labelColors['other'],
                 'extendedProps' => [
-                    'status'  => $event->status,
-                    'pause_type' => $event->pause_type,
+                    'status'            => $event->status,
+                    'pause_type'        => $event->pause_type,
                     'remaining_seconds' => $event->remaining_seconds,
-                    'label' => $event->pause_type,
-                    'label_color' => $labelColors[$event->pause_type] ?? $labelColors['other'],
-                ]
+                    'label'             => $label,
+                    'label_color'       => $labelColors[$label] ?? $labelColors['other'],
+                ],
             ];
         });
 
