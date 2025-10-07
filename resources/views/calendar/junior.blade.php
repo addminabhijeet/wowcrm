@@ -35,35 +35,45 @@ $subTitle = 'Calendar';
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar');
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        events: "{{ route('calendar.juniorEvents') }}",
-        displayEventTime: false,
-        displayEventEnd: false,
-        eventContent: function() {
-            return { domNodes: [] }; // remove default event rendering
-        },
-        dateClick: function(info) {
-            var eventsOnDate = calendar.getEvents().filter(event => {
-                return event.startStr.slice(0,10) === info.dateStr;
-            });
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: "{{ route('calendar.juniorEvents') }}",
+            displayEventTime: false,
+            displayEventEnd: false,
+            eventContent: function() {
+                // Prevent FullCalendar from rendering title or background
+                return {
+                    domNodes: []
+                };
+            },
+            eventDidMount: function(info) {
+                // Remove background and border colors for events
+                info.el.style.backgroundColor = 'transparent';
+                info.el.style.borderColor = 'transparent';
+                info.el.style.color = 'transparent';
+            },
 
-            eventsOnDate.sort((a,b) => new Date(a.start) - new Date(b.start));
+            dateClick: function(info) {
+                var eventsOnDate = calendar.getEvents().filter(event => {
+                    return event.startStr.slice(0, 10) === info.dateStr;
+                });
 
-            var modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = '';
+                eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
 
-            if(eventsOnDate.length > 0){
-                eventsOnDate.forEach(function(event){
-                    modalBody.innerHTML += `
+                var modalBody = document.getElementById('modalBody');
+                modalBody.innerHTML = '';
+
+                if (eventsOnDate.length > 0) {
+                    eventsOnDate.forEach(function(event) {
+                        modalBody.innerHTML += `
                         <div class="event-item p-16 mb-16 border rounded shadow-sm bg-light">
                             <div class="d-flex justify-content-between align-items-center mb-8">
                                 <h5 class="fw-semibold">${event.title}</h5>
@@ -74,25 +84,33 @@ document.addEventListener('DOMContentLoaded', function() {
                             <p class="mb-0"><strong>Pause Type:</strong> ${event.extendedProps.pause_type}</p>
                         </div>
                     `;
-                });
-            } else {
-                modalBody.innerHTML = '<p class="text-secondary-light text-center">No events on this date.</p>';
+                    });
+                } else {
+                    modalBody.innerHTML = '<p class="text-secondary-light text-center">No events on this date.</p>';
+                }
+
+                document.getElementById('modalDate').innerText = info.dateStr;
+
+                var modal = new bootstrap.Modal(document.getElementById('eventModal'));
+                modal.show();
             }
+        });
 
-            document.getElementById('modalDate').innerText = info.dateStr;
-
-            var modal = new bootstrap.Modal(document.getElementById('eventModal'));
-            modal.show();
-        }
+        calendar.render();
     });
-
-    calendar.render();
-});
 </script>
 
 <style>
-.event-item { background:#f8f9fa; }
-.event-item h5 { font-size:16px; }
+/* Hide any colored dots, borders, or background from events */
+.fc-event, 
+.fc-daygrid-event, 
+.fc-event-dot {
+    background: transparent !important;
+    border: none !important;
+    color: transparent !important;
+    box-shadow: none !important;
+}
 </style>
+
 
 @endsection
