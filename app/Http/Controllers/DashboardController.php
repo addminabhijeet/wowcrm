@@ -309,9 +309,26 @@ class DashboardController extends Controller
         if ($action === 'resume') {
             $timer->status = 'running';
             $timer->pause_type = 'resume';
+
+            UserTimerLog::create([
+                'user_id'           => $user->id,
+                'login_id'          => $user->id,
+                'start_time'        => $currentTime,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'status'            => 'running',
+                'pause_type'        => 'resume',
+            ]);
         } elseif ($action !== 'tick') {
             $timer->status = 'paused';
-            $timer->pause_type = $action;
+            $timer->pause_type = 'inactive';
+            UserTimerLog::create([
+                'user_id'           => $user->id,
+                'login_id'          => $user->id,
+                'start_time'        => $currentTime,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'status'            => 'paused',
+                'pause_type'        => 'inactive',
+            ]);
         }
 
         // 🕓 Update timestamp and save
