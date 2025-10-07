@@ -30,6 +30,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/trainer/calendar/{month?}/{year?}', [CalendarController::class, 'trainerUser'])->name('calendar.trainerUser');
     Route::get('/dashboard/junior/calendar/', [CalendarController::class, 'juniorUser'])->name('calendar.juniorUser');
     Route::get('/dashboard/junior/calendar/events', [CalendarController::class, 'getEvents'])->name('calendar.juniorEvents');
+    Route::get('/dashboard/senior/calendar/', [CalendarController::class, 'seniorUser'])->name('calendar.seniorUser');
+    Route::get('/dashboard/senior/calendar/events', [CalendarController::class, 'getSeniorEvents'])->name('calendar.seniorEvents');
     Route::post('/dashboard/calendar/update-status', [CalendarController::class, 'updateStatus'])->name('calendar.updateStatus');
 
     Route::get('/dashboard/admin/google-sheet', [GoogleSheetController::class, 'index'])->name('google.sheet.index');
