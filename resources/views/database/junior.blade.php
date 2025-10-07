@@ -815,41 +815,36 @@ $script ='<script>
 </script>
 
 <style>
-    .scroll-sm {
-        overflow: auto;
-    }
+.scroll-sm {
+    overflow-x: auto; /* only horizontal scroll */
+    overflow-y: hidden;
+    cursor: grab;
+}
 
-    /* Webkit browsers (Chrome, Edge, Safari) */
-    .scroll-sm::-webkit-scrollbar {
-        height: 40px;
-        /* horizontal scrollbar height */
-        width: 40px;
-        /* vertical scrollbar width */
-    }
+/* Webkit browsers (Chrome, Edge, Safari) */
+.scroll-sm::-webkit-scrollbar {
+    height: 12px; /* horizontal scrollbar height */
+}
 
-    .scroll-sm::-webkit-scrollbar-thumb {
-        background-color: #888;
-        /* scrollbar color */
-        border-radius: 12px;
-    }
+.scroll-sm::-webkit-scrollbar-thumb {
+    background-color: #888;
+    border-radius: 6px;
+}
 
-    .scroll-sm::-webkit-scrollbar-thumb:hover {
-        background-color: #555;
-    }
+.scroll-sm::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
 
-    .scroll-sm::-webkit-scrollbar-track {
-        background-color: #f1f1f1;
-        /* track color */
-        border-radius: 12px;
-    }
+.scroll-sm::-webkit-scrollbar-track {
+    background-color: #f1f1f1;
+    border-radius: 6px;
+}
 
-    /* Firefox */
-    .scroll-sm {
-        scrollbar-width: auto;
-        /* thicker scrollbar */
-        scrollbar-color: #888 #f1f1f1;
-        /* thumb and track */
-    }
+/* Firefox */
+.scroll-sm {
+    scrollbar-width: thin;
+    scrollbar-color: #888 #f1f1f1;
+}
 </style>
 
 <script>
@@ -857,23 +852,30 @@ document.addEventListener('DOMContentLoaded', function() {
     const scrollContainer = document.querySelector('.scroll-sm');
 
     if (scrollContainer) {
-        // Listen for mousemove inside input/select fields
         scrollContainer.addEventListener('mousemove', function(e) {
-            // Get relative X position inside container
             const rect = scrollContainer.getBoundingClientRect();
             const offsetX = e.clientX - rect.left; // mouse X inside container
             const width = rect.width;
 
-            // Determine scroll percentage
-            const scrollPercent = offsetX / width;
-
-            // Set scrollLeft based on content width
+            // Only scroll if content overflows
             const scrollWidth = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-            scrollContainer.scrollLeft = scrollPercent * scrollWidth;
+            if(scrollWidth > 0){
+                const scrollPercent = offsetX / width; // 0 to 1
+                scrollContainer.scrollLeft = scrollPercent * scrollWidth;
+            }
+        });
+
+        // Optional: add grab cursor effect
+        scrollContainer.addEventListener('mouseleave', () => {
+            scrollContainer.style.cursor = 'default';
+        });
+        scrollContainer.addEventListener('mouseenter', () => {
+            scrollContainer.style.cursor = 'grab';
         });
     }
 });
 </script>
+
 
 
 @endsection
