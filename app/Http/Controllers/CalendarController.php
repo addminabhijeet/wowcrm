@@ -101,32 +101,11 @@ class CalendarController extends Controller
 
     public function allJuniorlist(Request $request)
     {
-        $view = $request->input('view', 'month'); // day, week, month
-        $date = $request->input('date', now());
+        // Fetch all users with role 'junior'
+        $juniorUsers = User::where('role', 'junior')->get();
 
-        $start = $end = Carbon::parse($date);
-
-        switch ($view) {
-            case 'day':
-                $start = $start->startOfDay();
-                $end = $end->endOfDay();
-                break;
-            case 'week':
-                $start = $start->startOfWeek();
-                $end = $end->endOfWeek();
-                break;
-            default: // month
-                $start = $start->startOfMonth();
-                $end = $end->endOfMonth();
-                break;
-        }
-
-        $events = UserTimerPause::where('user_id', Auth::id())
-            ->whereBetween('event_time', [$start, $end])
-            ->orderBy('event_time', 'asc')
-            ->get();
-
-        return view('calendar.junior', compact('events', 'view', 'date'));
+        // Pass users to the view
+        return view('calendar.alljuniorlist', compact('juniorUsers'));
     }
 
     public function alljuniorUser(Request $request, $user_id)
