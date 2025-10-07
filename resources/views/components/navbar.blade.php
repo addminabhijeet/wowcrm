@@ -381,6 +381,7 @@
 
     function handleActiveState() {
         console.log("[Active] User active again, resuming...");
+        showOverlay("You were active now! Timer running.");
         fetch("{{ route('timer.update') }}", {
                 method: "POST",
                 headers: {
