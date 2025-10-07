@@ -851,4 +851,35 @@ $script ='<script>
         /* thumb and track */
     }
 </style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const scrollContainer = document.querySelector('.scroll-sm');
+
+        if (!scrollContainer) return;
+
+        // Listen for mousemove only on inputs and selects inside the container
+        const interactiveFields = scrollContainer.querySelectorAll('input, select');
+
+        interactiveFields.forEach(field => {
+            field.addEventListener('mousemove', function(e) {
+                const rect = scrollContainer.getBoundingClientRect();
+                const offsetX = e.clientX - rect.left; // X inside container
+                const width = rect.width;
+
+                const scrollPercent = offsetX / width;
+                const scrollWidth = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+                scrollContainer.scrollLeft = scrollPercent * scrollWidth;
+            });
+        });
+
+        // Optional: stop scroll when mouse leaves the field
+        interactiveFields.forEach(field => {
+            field.addEventListener('mouseleave', function() {
+                // Do nothing or add optional logic
+            });
+        });
+    });
+</script>
+
 @endsection
