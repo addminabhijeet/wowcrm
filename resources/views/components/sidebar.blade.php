@@ -87,7 +87,7 @@
                         <li><a href="{{ route('calendar.seniorUser') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Personal Calendar</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('calendar.alljuniorlist', ['userId' => Auth::id()]) }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Candidate Calendar</a></li>
+                        <li><a href="{{ route('calendar.alljuniorlist') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Candidate Calendar</a></li>
                     </ul>
                 </li>
 
