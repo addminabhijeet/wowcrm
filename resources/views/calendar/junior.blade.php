@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
-/* Fully remove all event traces */
+/* Completely hide all event visuals */
 .fc-event,
 .fc-daygrid-event,
 .fc-event-dot,
@@ -110,40 +110,31 @@ document.addEventListener('DOMContentLoaded', function() {
     display: none !important;
 }
 
-/* Prevent extra spacing or height for hidden events */
-.fc-daygrid-day-frame {
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    align-items: flex-end;
-    height: 100% !important;
-}
-
 /* Keep all day cells uniform */
-.fc-daygrid-day {
-    vertical-align: top;
-    height: auto !important;
+.fc-daygrid-day-frame {
+    min-height: 60px; /* uniform height */
+    padding: 4px;
+    display: block !important;
 }
 
-/* Clean up layout */
-.fc-daygrid-day-top {
-    display: flex;
-    justify-content: flex-end;
-    padding: 4px 6px;
+/* Hover effect on all dates for better UX */
+.fc-daygrid-day:hover {
+    background-color: rgba(0, 0, 0, 0.03);
+    cursor: pointer;
 }
 
-/* Keep today's date highlighted normally */
+/* Highlight today */
 .fc-day-today {
     background-color: rgba(0, 123, 255, 0.1) !important;
 }
 
-/* Maintain border & grid uniformity */
+/* Maintain grid borders */
 .fc-theme-standard td,
 .fc-theme-standard th {
     border: 1px solid #e5e5e5 !important;
 }
 
-/* Remove any invisible padding left by event wrappers */
+/* Remove any leftover spacing from hidden events */
 .fc-daygrid-day-events {
     min-height: 0 !important;
     height: 0 !important;
