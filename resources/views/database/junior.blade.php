@@ -852,8 +852,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const scrollContainer = document.querySelector('.scroll-sm');
     if (!scrollContainer) return;
 
-    const SENSOR_RATIO = 0.2; // 20% of container width on left/right acts as sensor
-    const MAX_SPEED = 20; // max pixels per frame
+    const SENSOR_RATIO = 0.8; // 20% of container width on left/right acts as sensor
+    const MAX_SPEED = 50; // max pixels per frame
 
     scrollContainer.addEventListener('mousemove', function(e) {
         const rect = scrollContainer.getBoundingClientRect();
