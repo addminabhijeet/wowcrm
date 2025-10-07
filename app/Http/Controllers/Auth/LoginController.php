@@ -53,7 +53,7 @@ class LoginController extends Controller
                     'login_id'          => $login->id,
                     'start_time'        => now(),
                     'remaining_seconds' => $workDaySeconds,
-                    'status'            => 'running',
+                    'status'            => 'paused',
                 ]);
             }
 
