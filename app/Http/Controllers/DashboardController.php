@@ -143,7 +143,7 @@ class DashboardController extends Controller
         }
     }
 
-    public function checkTimerHide(Request $request)
+    public function startTimerHide(Request $request)
     {
         try {
             $user = Auth::user();
