@@ -813,17 +813,17 @@ $script ='<script>
         });
     });
 </script>
-
 <style>
 .scroll-sm {
-    overflow-x: auto; /* only horizontal scroll */
+    overflow-x: hidden; /* hide default scrollbar for smoother effect */
     overflow-y: hidden;
     cursor: grab;
+    position: relative;
 }
 
 /* Webkit browsers (Chrome, Edge, Safari) */
 .scroll-sm::-webkit-scrollbar {
-    height: 12px; /* horizontal scrollbar height */
+    height: 12px;
 }
 
 .scroll-sm::-webkit-scrollbar-thumb {
@@ -851,30 +851,42 @@ $script ='<script>
 document.addEventListener('DOMContentLoaded', function() {
     const scrollContainer = document.querySelector('.scroll-sm');
 
-    if (scrollContainer) {
-        scrollContainer.addEventListener('mousemove', function(e) {
-            const rect = scrollContainer.getBoundingClientRect();
-            const offsetX = e.clientX - rect.left; // mouse X inside container
-            const width = rect.width;
+    if (!scrollContainer) return;
 
-            // Only scroll if content overflows
-            const scrollWidth = scrollContainer.scrollWidth - scrollContainer.clientWidth;
-            if(scrollWidth > 0){
-                const scrollPercent = offsetX / width; // 0 to 1
-                scrollContainer.scrollLeft = scrollPercent * scrollWidth;
-            }
-        });
+    let targetScroll = 0;
+    let currentScroll = 0;
+    const ease = 0.1; // smaller = slower easing
 
-        // Optional: add grab cursor effect
-        scrollContainer.addEventListener('mouseleave', () => {
-            scrollContainer.style.cursor = 'default';
-        });
-        scrollContainer.addEventListener('mouseenter', () => {
-            scrollContainer.style.cursor = 'grab';
-        });
+    scrollContainer.addEventListener('mousemove', function(e) {
+        const rect = scrollContainer.getBoundingClientRect();
+        const offsetX = e.clientX - rect.left; // mouse X inside container
+        const width = rect.width;
+
+        const scrollWidth = scrollContainer.scrollWidth - scrollContainer.clientWidth;
+        if (scrollWidth > 0) {
+            const scrollPercent = offsetX / width; // 0 to 1
+            targetScroll = scrollPercent * scrollWidth;
+        }
+    });
+
+    function animateScroll() {
+        currentScroll += (targetScroll - currentScroll) * ease;
+        scrollContainer.scrollLeft = currentScroll;
+        requestAnimationFrame(animateScroll);
     }
+
+    animateScroll();
+
+    // Cursor effect
+    scrollContainer.addEventListener('mouseenter', () => {
+        scrollContainer.style.cursor = 'grab';
+    });
+    scrollContainer.addEventListener('mouseleave', () => {
+        scrollContainer.style.cursor = 'default';
+    });
 });
 </script>
+
 
 
 
