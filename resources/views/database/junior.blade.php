@@ -858,25 +858,27 @@ $script ='<script>
         /* thumb + track */
     }
 </style>
-
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const scrollContainer = document.querySelector('.scroll-sm');
     const allRows = Array.from(document.querySelectorAll('#sheet-table-body tr'));
 
     // =========================
-    // Smooth horizontal scroll + mouse-based scroll
+    // Smooth horizontal scroll + mouse-based + drag scroll
     // =========================
     if (scrollContainer) {
+        // Auto-scroll interval
+        let autoScrollInterval;
+
         // Mouse move scroll
         scrollContainer.addEventListener('mousemove', e => {
+            if (isDragging) return; // skip if dragging
             const rect = scrollContainer.getBoundingClientRect();
             const scrollPercent = (e.clientX - rect.left) / rect.width;
             scrollContainer.scrollLeft = scrollPercent * (scrollContainer.scrollWidth - scrollContainer.clientWidth);
         });
 
-        // Auto-scroll smoothly if mouse leaves container
-        let autoScrollInterval;
+        // Auto-scroll if mouse leaves
         scrollContainer.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
         scrollContainer.addEventListener('mouseleave', () => {
             autoScrollInterval = setInterval(() => {
@@ -891,19 +893,22 @@ document.addEventListener('DOMContentLoaded', () => {
         // Mouse-drag scroll
         // =========================
         let isDragging = false, startX, scrollLeftStart;
+
         scrollContainer.addEventListener('mousedown', e => {
             isDragging = true;
             scrollContainer.classList.add('dragging');
             startX = e.pageX - scrollContainer.offsetLeft;
             scrollLeftStart = scrollContainer.scrollLeft;
         });
-        scrollContainer.addEventListener('mouseleave', () => { isDragging = false; scrollContainer.classList.remove('dragging'); });
+
         scrollContainer.addEventListener('mouseup', () => { isDragging = false; scrollContainer.classList.remove('dragging'); });
+        scrollContainer.addEventListener('mouseleave', () => { isDragging = false; scrollContainer.classList.remove('dragging'); });
+
         scrollContainer.addEventListener('mousemove', e => {
             if (!isDragging) return;
             e.preventDefault();
             const x = e.pageX - scrollContainer.offsetLeft;
-            const walk = (x - startX) * 1; // scroll-fastness multiplier
+            const walk = (x - startX) * 1; // scroll speed multiplier
             scrollContainer.scrollLeft = scrollLeftStart - walk;
         });
     }
@@ -950,7 +955,7 @@ document.addEventListener('DOMContentLoaded', () => {
             field.addEventListener('keydown', e => {
                 const forward = (e.key === 'Enter' && !e.shiftKey) || (e.key === 'Tab' && !e.shiftKey);
                 const backward = (e.key === 'Enter' && e.shiftKey) || (e.key === 'Tab' && e.shiftKey);
-                if (forward) { e.preventDefault(); 
+                if (forward) { e.preventDefault();
                     const last = fields.indexOf(field) === fields.length - 1;
                     last && saveBtn ? focusField(saveBtn) : moveFocus(field, true);
                 } else if (backward) { e.preventDefault(); moveFocus(field, false); }
@@ -961,11 +966,11 @@ document.addEventListener('DOMContentLoaded', () => {
             saveBtn.addEventListener('keydown', e => {
                 const forward = (e.key === 'Enter' || e.key === 'Tab') && !e.shiftKey;
                 const backward = (e.key === 'Enter' || e.key === 'Tab') && e.shiftKey;
-                if (forward) { e.preventDefault(); 
+                if (forward) { e.preventDefault();
                     const nextRow = allRows[allRows.indexOf(row)+1] || allRows[0];
                     const nf = getFields(nextRow); nf.length && focusField(nf[0]);
                 }
-                if (backward) { e.preventDefault(); 
+                if (backward) { e.preventDefault();
                     const prevRow = allRows[allRows.indexOf(row)-1] || allRows[allRows.length-1];
                     const pf = getFields(prevRow); pf.length && focusField(pf[pf.length-1]);
                 }
