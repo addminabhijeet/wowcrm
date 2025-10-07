@@ -853,6 +853,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (!scrollContainer) return;
 
     const SENSOR_RATIO = 0.2; // 20% of container width on left/right acts as sensor
+    const MAX_SPEED = 20; // max pixels per frame
 
     scrollContainer.addEventListener('mousemove', function(e) {
         const rect = scrollContainer.getBoundingClientRect();
@@ -861,20 +862,17 @@ document.addEventListener('DOMContentLoaded', function() {
 
         const offsetX = e.clientX - rect.left; // mouse X inside container
         const width = rect.width;
+        let speed = 0;
 
-        let scrollPercent;
         if (offsetX < width * SENSOR_RATIO) {
-            // Left sensor zone
-            scrollPercent = 0;
+            // Left sensor zone: scroll left
+            speed = -MAX_SPEED * (1 - offsetX / (width * SENSOR_RATIO));
         } else if (offsetX > width * (1 - SENSOR_RATIO)) {
-            // Right sensor zone
-            scrollPercent = 1;
-        } else {
-            // Middle area
-            scrollPercent = (offsetX - width * SENSOR_RATIO) / (width * (1 - 2 * SENSOR_RATIO));
+            // Right sensor zone: scroll right
+            speed = MAX_SPEED * ((offsetX - width * (1 - SENSOR_RATIO)) / (width * SENSOR_RATIO));
         }
 
-        scrollContainer.scrollLeft = scrollPercent * scrollWidth;
+        scrollContainer.scrollLeft += speed;
     });
 
     scrollContainer.addEventListener('mouseenter', () => {
