@@ -61,7 +61,6 @@
                         </button>
                     </div>
 
-
                 </div>
             </div>
         </div>
@@ -525,14 +524,12 @@
                     check: true
                 })
             })
-            .then(res => {
-                console.log('🔹 Response status:', res.status);
-                return res.json();
-            })
+            .then(res => res.json())
             .then(data => {
                 console.log('🔹 Check timer response:', data);
+
                 if (data.exists) {
-                    console.log('⏱ Timer already started for today.');
+                    console.log('⏱ Timer already started for today. Hiding start button.');
                     startButtonContainer.style.display = 'none';
                 } else {
                     console.log('✅ No timer found for today, showing start button.');
@@ -553,21 +550,18 @@
                     },
                     body: JSON.stringify({}) // No check parameter here
                 })
-                .then(res => {
-                    console.log('🔹 Start timer response status:', res.status);
-                    return res.json();
-                })
+                .then(res => res.json())
                 .then(data => {
                     console.log('🔹 Start timer response data:', data);
 
                     if (data.success) {
                         console.log('✅ Timer successfully started:', data.timer);
-                        startButtonContainer.style.display = 'none';
+                        startButtonContainer.style.display = 'none'; // hide after creating
                         alert('✅ Timer started for today!');
                         location.reload();
                     } else if (data.exists) {
                         console.warn('⚠️ Timer already exists for today.');
-                        startButtonContainer.style.display = 'none';
+                        startButtonContainer.style.display = 'none'; // hide if exists
                         alert('⏱ Timer already exists for today.');
                     } else {
                         console.error('⚠️ Unexpected response while starting timer:', data);

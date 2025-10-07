@@ -99,12 +99,17 @@ class DashboardController extends Controller
 
             // Handle "check only" requests
             if ($request->input('check')) {
-                return response()->json(['exists' => $existingTimer ? true : false]);
+                return response()->json([
+                    'exists' => $existingTimer ? true : false
+                ]);
             }
 
-            // If timer exists, don't create a new one
+            // If timer exists, respond accordingly
             if ($existingTimer) {
-                return response()->json(['exists' => true]);
+                return response()->json([
+                    'exists' => true,
+                    'timer' => $existingTimer
+                ]);
             }
 
             // Create a new timer
@@ -125,7 +130,10 @@ class DashboardController extends Controller
                 'event_time'        => now(),
             ]);
 
-            return response()->json(['success' => true, 'timer' => $timer]);
+            return response()->json([
+                'success' => true,
+                'timer' => $timer
+            ]);
         } catch (\Exception $e) {
             return response()->json([
                 'error' => true,
@@ -134,6 +142,7 @@ class DashboardController extends Controller
             ], 500);
         }
     }
+
 
 
     public function senior()
