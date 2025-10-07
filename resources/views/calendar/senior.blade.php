@@ -45,7 +45,7 @@ document.addEventListener('DOMContentLoaded', function() {
             center: 'title',
             right: 'dayGridMonth,timeGridWeek,timeGridDay'
         },
-        events: "{{ route('calendar.juniorEvents') }}",
+        events: "{{ route('calendar.seniorEvents') }}",
         displayEventTime: false,
         displayEventEnd: false,
 
