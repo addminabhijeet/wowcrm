@@ -31,7 +31,7 @@ $script = '<script>
                 <div class="card border">
                     <div class="card-body">
                         <h6 class="text-md text-primary-light mb-16">Profile Image</h6>
-
+<form action="#">
                         <!-- Upload Image Start -->
                         <div class="mb-24 mt-16">
                             <div class="avatar-upload">
@@ -48,7 +48,7 @@ $script = '<script>
                         </div>
                         <!-- Upload Image End -->
 
-                        <form action="#">
+                        
                             <div class="mb-20">
                                 <label for="name" class="form-label fw-semibold text-primary-light text-sm mb-8">Full Name <span class="text-danger-600">*</span></label>
                                 <input type="text" class="form-control radius-8" id="name" placeholder="Enter Full Name">
