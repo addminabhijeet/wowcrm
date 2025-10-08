@@ -17,7 +17,7 @@ class UserController extends Controller
         return view('user.admin', compact('users'));
     }
 
-    public function admincreate($role)
+    public function admincreate()
     {
         return view('user.admincreate', compact('role'));
     }
@@ -76,8 +76,8 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." . strtolower($role))
-            ->with('success', ucfirst($role) . ' deleted successfully!');
+        return redirect()->route("users." )
+            ->with('success',  ' deleted successfully!');
     }
 
     public function junior()
@@ -86,7 +86,7 @@ class UserController extends Controller
         return view('user.junior', compact('users'));
     }
 
-    public function juniorcreate($role)
+    public function juniorcreate()
     {
         return view('user.juniorcreate', compact('role'));
     }
@@ -171,8 +171,8 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." . strtolower($role))
-            ->with('success', ucfirst($role) . ' deleted successfully!');
+        return redirect()->route("users." )
+            ->with('success',  ' deleted successfully!');
     }
 
     public function senior()
@@ -181,7 +181,7 @@ class UserController extends Controller
         return view('user.senior', compact('users'));
     }
 
-    public function seniorcreate($role)
+    public function seniorcreate()
     {
         return view('user.seniorcreate', compact('role'));
     }
@@ -240,8 +240,8 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." . strtolower($role))
-            ->with('success', ucfirst($role) . ' deleted successfully!');
+        return redirect()->route("users." )
+            ->with('success',  ' deleted successfully!');
     }
 
     public function trainer()
@@ -250,7 +250,7 @@ class UserController extends Controller
         return view('user.trainer', compact('users'));
     }
 
-    public function trainercreate($role)
+    public function trainercreate()
     {
         return view('user.trainercreate', compact('role'));
     }
@@ -309,8 +309,8 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." . strtolower($role))
-            ->with('success', ucfirst($role) . ' deleted successfully!');
+        return redirect()->route("users." )
+            ->with('success',  ' deleted successfully!');
     }
 
     public function accountant()
@@ -319,7 +319,7 @@ class UserController extends Controller
         return view('user.accountant', compact('users'));
     }
 
-    public function accountantcreate($role)
+    public function accountantcreate()
     {
         return view('user.accountantcreate', compact('role'));
     }
@@ -378,8 +378,8 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." . strtolower($role))
-            ->with('success', ucfirst($role) . ' deleted successfully!');
+        return redirect()->route("users." )
+            ->with('success',  ' deleted successfully!');
     }
 
     public function customer()
@@ -388,7 +388,7 @@ class UserController extends Controller
         return view('user.customer', compact('users'));
     }
 
-    public function customercreate($role)
+    public function customercreate()
     {
         return view('user.customercreate', compact('role'));
     }
@@ -447,7 +447,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." . strtolower($role))
-            ->with('success', ucfirst($role) . ' deleted successfully!');
+        return redirect()->route("users." )
+            ->with('success',  ' deleted successfully!');
     }
 }
