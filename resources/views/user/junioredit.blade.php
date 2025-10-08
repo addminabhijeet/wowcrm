@@ -116,10 +116,6 @@ $script ='<script>
                                             <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
                                         </label>
                                     </div>
-                                    <div class="avatar-preview">
-                                        <div id="imagePreview">
-                                        </div>
-                                    </div>
 
                                     <!-- Avatar Preview -->
                                     <div class="avatar-preview">
