@@ -107,7 +107,7 @@ $script ='<script>
                                     <div class="avatar-preview">
                                         <img
                                             id="imagePreview"
-                                            src="{{ $user->image ? asset('storage/user_images/' . $user->image) : asset('assets/images/default-avatar.png') }}"
+                                            src="{{ $user->image ? asset('storage/user_images/' . $user->image) : asset('assets/images/user-grid/user-grid-img14.png') }}"
                                            >
                                     </div>
                                 </div>
