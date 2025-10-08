@@ -17,7 +17,7 @@ class UserController extends Controller
 
     public function admincreate($role)
     {
-        return view('user.create', compact('role'));
+        return view('user.admincreate', compact('role'));
     }
 
     public function adminstore(Request $request)
@@ -42,7 +42,7 @@ class UserController extends Controller
     public function adminedit($id)
     {
         $user = User::findOrFail($id);
-        return view('user.edit', compact('user'));
+        return view('user.adminedit', compact('user'));
     }
 
     public function adminupdate(Request $request, $id)
@@ -86,7 +86,7 @@ class UserController extends Controller
 
     public function juniorcreate($role)
     {
-        return view('user.create', compact('role'));
+        return view('user.juniorcreate', compact('role'));
     }
 
     public function juniorstore(Request $request)
@@ -111,7 +111,7 @@ class UserController extends Controller
     public function junioredit($id)
     {
         $user = User::findOrFail($id);
-        return view('user.edit', compact('user'));
+        return view('user.junioredit', compact('user'));
     }
 
     public function juniorupdate(Request $request, $id)
@@ -155,7 +155,7 @@ class UserController extends Controller
 
     public function seniorcreate($role)
     {
-        return view('user.create', compact('role'));
+        return view('user.seniorcreate', compact('role'));
     }
 
     public function seniorstore(Request $request)
@@ -180,7 +180,7 @@ class UserController extends Controller
     public function senioredit($id)
     {
         $user = User::findOrFail($id);
-        return view('user.edit', compact('user'));
+        return view('user.senioredit', compact('user'));
     }
 
     public function seniorupdate(Request $request, $id)
@@ -224,7 +224,7 @@ class UserController extends Controller
 
     public function trainercreate($role)
     {
-        return view('user.create', compact('role'));
+        return view('user.trainercreate', compact('role'));
     }
 
     public function trainerstore(Request $request)
@@ -249,7 +249,7 @@ class UserController extends Controller
     public function traineredit($id)
     {
         $user = User::findOrFail($id);
-        return view('user.edit', compact('user'));
+        return view('user.traineredit', compact('user'));
     }
 
     public function trainerupdate(Request $request, $id)
@@ -293,7 +293,7 @@ class UserController extends Controller
 
     public function accountantcreate($role)
     {
-        return view('user.create', compact('role'));
+        return view('user.accountantcreate', compact('role'));
     }
 
     public function accountantstore(Request $request)
@@ -318,7 +318,7 @@ class UserController extends Controller
     public function accountantedit($id)
     {
         $user = User::findOrFail($id);
-        return view('user.edit', compact('user'));
+        return view('user.accountantedit', compact('user'));
     }
 
     public function accountantupdate(Request $request, $id)
@@ -362,7 +362,7 @@ class UserController extends Controller
 
     public function customercreate($role)
     {
-        return view('user.create', compact('role'));
+        return view('user.customercreate', compact('role'));
     }
 
     public function customerstore(Request $request)
@@ -387,7 +387,7 @@ class UserController extends Controller
     public function customeredit($id)
     {
         $user = User::findOrFail($id);
-        return view('user.edit', compact('user'));
+        return view('user.customeredit', compact('user'));
     }
 
     public function customerupdate(Request $request, $id)
