@@ -23,6 +23,10 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                             </button>
                         </li>
                     </ul>
+                    <a  href="{{ route('users.junior.create') }}" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+                        <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                        Add New Candidate
+                    </a>
                 </div>
 
                 <div class="tab-content" id="pills-tabContent">

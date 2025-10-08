@@ -21,7 +21,11 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                 <span class="text-sm fw-semibold py-6 px-12 bg-neutral-500 rounded-pill text-white line-height-1 ms-12 notification-alert">35</span>
                             </button>
                         </li>
-
+                    </ul>
+                    <a  href="{{ route('users.junior.create') }}" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+                        <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                        Add New Senior
+                    </a>
                 </div>
 
                 <div class="tab-content" id="pills-tabContent">
