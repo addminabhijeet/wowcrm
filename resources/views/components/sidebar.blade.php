@@ -192,16 +192,16 @@
                         <span>Candidate</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('user.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Candidate</a></li>
+                        <li><a href="{{ route('users.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Candidate</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('user.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Candidate</a></li>
+                        <li><a href="{{ route('users.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Candidate</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('user.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Accountant Candidate</a></li>
+                        <li><a href="{{ route('users.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Accountant Candidate</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('user.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer Candidate</a></li>
+                        <li><a href="{{ route('users.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer Candidate</a></li>
                     </ul>
                 </li>
 
