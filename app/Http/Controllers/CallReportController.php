@@ -263,7 +263,6 @@ class CallReportController extends Controller
         return view('reports.alljuniorlist', compact('juniorUsers'));
     }
 
-
     public function alljuniordaily(Request $request, $userId)
     {
         // Get the junior user

@@ -6,15 +6,11 @@ $subTitle = 'Calendar';
 @endphp
 
 @section('content')
-
 <div class="row gy-4">
     <div class="col-12">
         <div class="card h-100 p-0">
             <div class="card-body p-24">
-                <div id="wrap">
-                    <div id="calendar"></div>
-                    <div style="clear:both"></div>
-                </div>
+                <div id="calendar"></div>
             </div>
         </div>
     </div>
@@ -24,9 +20,11 @@ $subTitle = 'Calendar';
 <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="eventModalLabel">Events on <span id="modalDate"></span></h1>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            <div class="modal-header py-16 px-24 border-0">
+                <h1 class="modal-title fs-5" id="eventModalLabel">
+                    Events on <span id="modalDate"></span>
+                </h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-24" id="modalBody"></div>
         </div>
@@ -35,131 +33,131 @@ $subTitle = 'Calendar';
 
 <script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.8/index.global.min.js"></script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    var calendarEl = document.getElementById('calendar');
+    document.addEventListener('DOMContentLoaded', function() {
+        console.log("[Calendar] DOM loaded — initializing FullCalendar...");
 
-    var calendar = new FullCalendar.Calendar(calendarEl, {
-        initialView: 'dayGridMonth',
-        headerToolbar: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'dayGridMonth,timeGridWeek,timeGridDay'
-        },
-        events: "{{ route('calendar.juniorEvents') }}",
-        displayEventTime: false,
-        displayEventEnd: false,
+        var calendarEl = document.getElementById('calendar');
+        if (!calendarEl) {
+            console.error("[Calendar] Element with ID 'calendar' not found!");
+            return;
+        }
 
-        // Prevent default event rendering
-        eventContent: function() {
-            return { domNodes: [] };
-        },
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,timeGridWeek,timeGridDay'
+            },
+            events: "{{ route('calendar.juniorEvents') }}",
+            displayEventTime: false,
+            displayEventEnd: false,
 
-        // Highlight dates with events and remove event elements
-        eventDidMount: function(info) {
-            // Remove the event element so no visual space is taken
-            info.el.remove();
+            eventContent: function() {
+                console.log("[Calendar] eventContent called");
+                return {
+                    domNodes: []
+                };
+            },
 
-            // Add subtle highlight to the day cell
-            const cell = info.el.closest('.fc-daygrid-day');
-            if (cell) {
-                cell.classList.add('has-event');
-            }
-        },
+            eventDidMount: function(info) {
+                console.log("[Calendar] eventDidMount:", info.event.title, info.event.startStr);
+                info.el.remove();
+                const cell = info.el.closest('.fc-daygrid-day');
+                if (cell) {
+                    console.log("[Calendar] Adding 'has-event' class to cell for date:", cell.dataset.date);
+                    cell.classList.add('has-event');
+                } else {
+                    console.warn("[Calendar] Could not find cell for event:", info.event.title);
+                }
+            },
 
-        // Handle date click to show modal
-        dateClick: function(info) {
-            var eventsOnDate = calendar.getEvents().filter(event => {
-                return event.startStr.slice(0, 10) === info.dateStr;
-            });
+            dateClick: function(info) {
+                console.log("[Calendar] dateClick:", info.dateStr);
 
-            eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
+                var eventsOnDate = calendar.getEvents().filter(e => e.startStr.slice(0, 10) === info.dateStr);
+                console.log(`[Calendar] Found ${eventsOnDate.length} event(s) on this date.`);
 
-            var modalBody = document.getElementById('modalBody');
-            modalBody.innerHTML = '';
+                eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
 
-            if (eventsOnDate.length > 0) {
-                eventsOnDate.forEach(function(event) {
-                    modalBody.innerHTML += `
-                        <div class="event-item p-16 mb-16 border rounded shadow-sm bg-light">
-                            <div class="d-flex justify-content-between align-items-center mb-8">
-                                <h5 class="fw-semibold">${event.title}</h5>
-                            </div>
-                            <p class="mb-4"><strong>Status:</strong> ${event.extendedProps.status}</p>
-                            <p class="mb-4"><strong>Time:</strong> ${new Date(event.start).toLocaleString()}</p>
-                            <p class="mb-4"><strong>Remaining Seconds:</strong> ${event.extendedProps.remaining_seconds}</p>
-                            <p class="mb-0"><strong>Pause Type:</strong> ${event.extendedProps.pause_type}</p>
+                var modalBody = document.getElementById('modalBody');
+                if (!modalBody) {
+                    console.error("[Calendar] Modal body element not found!");
+                    return;
+                }
+                modalBody.innerHTML = '';
+
+                if (eventsOnDate.length > 0) {
+                    eventsOnDate.forEach(event => {
+                        console.log("[Calendar] Rendering event in modal:", event.title, event.extendedProps);
+                        modalBody.innerHTML += `
+                        <div class="event-item p-16 mb-16 border rounded bg-light">
+                            <h5 class="fw-semibold mb-8">${event.title}</h5>
+                            <p><strong>Status:</strong> ${event.extendedProps.status}</p>
+                            <p><strong>Time:</strong> ${new Date(event.start).toLocaleString()}</p>
+                            <p><strong>Remaining Seconds:</strong> ${event.extendedProps.remaining_seconds}</p>
+                            <p><strong>Pause Type:</strong> ${event.extendedProps.pause_type}</p>
                         </div>
                     `;
-                });
-            } else {
-                modalBody.innerHTML = '<p class="text-secondary-light text-center">No events on this date.</p>';
+                    });
+                } else {
+                    console.log("[Calendar] No events found for this date.");
+                    modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
+                }
+
+                document.getElementById('modalDate').innerText = info.dateStr;
+
+                console.log("[Calendar] Opening event modal...");
+                new bootstrap.Modal(document.getElementById('eventModal')).show();
             }
+        });
 
-            document.getElementById('modalDate').innerText = info.dateStr;
+        console.log("[Calendar] Rendering calendar...");
+        calendar.render();
 
-            var modal = new bootstrap.Modal(document.getElementById('eventModal'));
-            modal.show();
-        }
+        console.log("[Calendar] Initialization complete ✅");
     });
-
-    calendar.render();
-});
 </script>
 
+
 <style>
-/* Completely hide all event visuals */
-.fc-event,
-.fc-daygrid-event,
-.fc-event-dot,
-.fc-event-main,
-.fc-daygrid-day-events,
-.fc-daygrid-event-harness,
-.fc-daygrid-event-harness-abs {
-    display: none !important;
-}
+    .fc-event,
+    .fc-daygrid-event,
+    .fc-event-dot,
+    .fc-event-main,
+    .fc-daygrid-day-events,
+    .fc-daygrid-event-harness,
+    .fc-daygrid-event-harness-abs {
+        display: none !important;
+    }
 
-/* Keep day cells uniform */
-.fc-daygrid-day-frame {
-    min-height: 60px; /* uniform height */
-    padding: 4px;
-    display: block !important;
-}
+    .fc-daygrid-day-frame {
+        min-height: 60px;
+        padding: 4px;
+        display: block !important;
+    }
 
-/* Highlight today */
-.fc-day-today {
-    background-color: rgba(0, 123, 255, 0.1) !important;
-}
+    .fc-day-today {
+        background-color: rgba(0, 123, 255, 0.1) !important;
+    }
 
-/* Maintain grid borders */
-.fc-theme-standard td,
-.fc-theme-standard th {
-    border: 1px solid #e5e5e5 !important;
-}
+    .fc-theme-standard td,
+    .fc-theme-standard th {
+        border: 1px solid #e5e5e5 !important;
+    }
 
-/* Remove leftover spacing from hidden events */
-.fc-daygrid-day-events {
-    min-height: 0 !important;
-    height: 0 !important;
-    padding: 0 !important;
-    margin: 0 !important;
-}
+    .fc-daygrid-day.has-event {
+        background-color: rgba(0, 123, 255, 0.08);
+        transition: background-color 0.2s ease;
+    }
 
-/* Subtle highlight for dates that have events */
-.fc-daygrid-day.has-event {
-    background-color: rgba(0, 123, 255, 0.08);
-    transition: background-color 0.2s ease;
-}
+    .fc-daygrid-day.has-event:hover {
+        background-color: rgba(0, 123, 255, 0.15);
+    }
 
-/* Slightly darker on hover */
-.fc-daygrid-day.has-event:hover {
-    background-color: rgba(0, 123, 255, 0.15);
-}
-
-/* Hover effect for all dates */
-.fc-daygrid-day:hover {
-    cursor: pointer;
-    background-color: rgba(0,0,0,0.02);
-}
+    .fc-daygrid-day:hover {
+        cursor: pointer;
+        background-color: rgba(0, 0, 0, 0.02);
+    }
 </style>
-
 @endsection

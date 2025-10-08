@@ -76,6 +76,102 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function startTimer(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Not authenticated'], 401);
+            }
+
+            $settings = TimerSetting::first();
+            if (!$settings) {
+                return response()->json(['error' => 'Timer settings missing'], 500);
+            }
+
+            $workDaySeconds = $settings->work_day_seconds;
+            $today = now()->startOfDay();
+
+            // Check if timer already exists for today
+            $existingTimer = UserTimerLog::where('user_id', $user->id)
+                ->whereDate('created_at', $today)
+                ->first();
+
+            // Handle "check only" requests
+            if ($request->input('check')) {
+                return response()->json([
+                    'exists' => $existingTimer ? true : false
+                ]);
+            }
+
+            // If timer exists, respond accordingly
+            if ($existingTimer) {
+                return response()->json([
+                    'exists' => true,
+                    'timer' => $existingTimer
+                ]);
+            }
+
+            // Create a new timer
+            $timer = UserTimerLog::create([
+                'user_id'           => $user->id,
+                'login_id'          => $user->id,
+                'start_time'        => now(),
+                'remaining_seconds' => $workDaySeconds,
+                'status'            => 'running',
+            ]);
+
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
+                'user_id'           => $user->id,
+                'status'            => 'running',
+                'pause_type'        => 'start',
+                'remaining_seconds' => $workDaySeconds,
+                'event_time'        => now(),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'timer' => $timer
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ], 500);
+        }
+    }
+
+    public function startTimerHide(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Not authenticated'], 401);
+            }
+
+            $today = now()->startOfDay();
+
+            // Check if timer exists for today
+            $existingTimer = UserTimerLog::where('user_id', $user->id)
+                ->whereDate('created_at', $today)
+                ->first();
+
+            return response()->json([
+                'exists' => $existingTimer ? true : false,
+                'timer'  => $existingTimer ?? null
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error' => true,
+                'message' => $e->getMessage(),
+                'trace' => $e->getTraceAsString(),
+            ], 500);
+        }
+    }
+
+
 
     public function senior()
     {
@@ -92,7 +188,7 @@ class DashboardController extends Controller
         $remaining_seconds = $workDaySeconds;
         $elapsed_seconds   = 0;
         $status            = 'running';
-        $button_status     = 1; // default to show if no timer exists
+        $button_status     = 1;
 
         if ($timer) {
             $remaining_seconds = $timer->remaining_seconds;
@@ -108,6 +204,7 @@ class DashboardController extends Controller
             'button_status'
         ));
     }
+
     public function trainer()
     {
         // Fetch timer settings dynamically
@@ -205,16 +302,41 @@ class DashboardController extends Controller
         // ⏱ Update remaining seconds if timer is running
         if ($timer->status === 'running') {
             $secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed/2));
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
         }
 
         // 🧭 Handle actions
         if ($action === 'resume') {
             $timer->status = 'running';
             $timer->pause_type = 'resume';
+
+            UserTimerLog::create([
+                'user_id'           => $user->id,
+                'login_id'          => $user->id,
+                'start_time'        => $currentTime,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'status'            => 'running',
+                'pause_type'        => 'resume',
+            ]);
         } elseif ($action !== 'tick') {
             $timer->status = 'paused';
-            $timer->pause_type = $action;
+            $timer->pause_type = 'inactive';
+            UserTimerLog::create([
+                'user_id'           => $user->id,
+                'login_id'          => $user->id,
+                'start_time'        => $currentTime,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'status'            => 'paused',
+                'pause_type'        => 'inactive',
+            ]);
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
+                'user_id'           => $user->id,
+                'status'            => 'paused',
+                'pause_type'        => 'inactive',
+                'remaining_seconds' => $workDaySeconds,
+                'event_time'        => now(),
+            ]);
         }
 
         // 🕓 Update timestamp and save
@@ -223,20 +345,6 @@ class DashboardController extends Controller
 
         // 🔢 Calculate elapsed time
         $elapsedSeconds = max(0, $workDaySeconds - $timer->remaining_seconds);
-
-
-        // 🧾 Log pause/resume event (only if not a tick update)
-        if ($action !== 'tick') {
-            UserTimerPause::create([
-                'user_timer_log_id' => $timer->id,
-                'user_id'           => $user->id,
-                'status'            => $timer->status,
-                'pause_type'        => $timer->pause_type,
-                'remaining_seconds' => $timer->remaining_seconds,
-                'elapsed_seconds'   => $elapsedSeconds,
-                'event_time'        => $currentTime,
-            ]);
-        }
 
         // 🧠 Return response
         return response()->json([

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\UserTimerPause;
 use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class CalendarController extends Controller
 {
@@ -57,7 +58,79 @@ class CalendarController extends Controller
                 break;
         }
 
-        $events = UserTimerPause::where('user_id', Auth::id())
+        return view('calendar.junior', compact('view', 'date'));
+    }
+
+    // ✅ FullCalendar event JSON endpoint
+    public function juniorEvents(Request $request)
+    {
+        $userId = Auth::id();
+
+        $events = UserTimerPause::where('user_id', $userId)
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        // Define color mapping for clarity
+        $labelColors = [
+            'start'  => '#007bff',
+            'resume' => '#28a745',
+            'pause'  => '#ffc107',
+            'stop'   => '#dc3545',
+            'other'  => '#6c757d'
+        ];
+
+        $eventsData = $events->map(function ($event) use ($labelColors) {
+            $type = strtolower($event->pause_type ?? 'other');
+
+            return [
+                'id'    => $event->id,
+                'title' => ucfirst($type),
+                'start' => $event->event_time,
+                'allDay' => false,
+                'extendedProps' => [
+                    'status'            => $event->status ?? 'N/A',
+                    'pause_type'        => $type,
+                    'remaining_seconds' => $event->remaining_seconds ?? 0,
+                    'label_color'       => $labelColors[$type] ?? $labelColors['other'],
+                ]
+            ];
+        });
+
+        return response()->json($eventsData);
+    }
+
+    public function allJuniorlist(Request $request)
+    {
+        // Fetch all users with role 'junior'
+        $juniorUsers = User::where('role', 'junior')->get();
+
+        // Pass users to the view
+        return view('calendar.alljuniorlist', compact('juniorUsers'));
+    }
+
+    public function alljuniorUser(Request $request, $user_id)
+    {
+        $view = $request->input('view', 'month'); // day, week, month
+        $date = $request->input('date', now());
+
+        $start = $end = Carbon::parse($date);
+
+        switch ($view) {
+            case 'day':
+                $start = $start->startOfDay();
+                $end = $end->endOfDay();
+                break;
+            case 'week':
+                $start = $start->startOfWeek();
+                $end = $end->endOfWeek();
+                break;
+            default: // month
+                $start = $start->startOfMonth();
+                $end = $end->endOfMonth();
+                break;
+        }
+
+        $events = UserTimerPause::where('user_id', $user_id)
             ->whereBetween('event_time', [$start, $end])
             ->orderBy('event_time', 'asc')
             ->get();
@@ -65,9 +138,14 @@ class CalendarController extends Controller
         return view('calendar.junior', compact('events', 'view', 'date'));
     }
 
-    public function getEvents(Request $request)
+
+    public function getAllJuniorEvents(Request $request)
     {
-        $events = UserTimerPause::where('user_id', Auth::id())
+        // Fetch all juniors
+        $juniorUsers = User::where('role', 'junior')->get()->keyBy('id');
+
+        // Fetch all UserTimerPause events for these junior users
+        $events = UserTimerPause::whereIn('user_id', $juniorUsers->keys())
             ->orderBy('event_time', 'asc')
             ->get();
 
@@ -79,13 +157,16 @@ class CalendarController extends Controller
             'other'  => '#6c757d'
         ];
 
-        $eventsData = $events->map(function ($event) use ($labelColors) {
+        $eventsData = $events->map(function ($event) use ($labelColors, $juniorUsers) {
+            $userName = $juniorUsers[$event->user_id]->name ?? 'Junior User';
             return [
                 'id' => $event->id,
-                'title' => ucfirst($event->pause_type),
+                'title' => $userName . ': ' . ucfirst($event->pause_type),
                 'start' => $event->event_time,
-                'end'   => $event->event_time, // you can adjust if you have duration
+                'end'   => $event->event_time, // adjust if you have duration
                 'extendedProps' => [
+                    'user_id' => $event->user_id,
+                    'user_name' => $userName,
                     'status'  => $event->status,
                     'pause_type' => $event->pause_type,
                     'remaining_seconds' => $event->remaining_seconds,
@@ -114,28 +195,78 @@ class CalendarController extends Controller
         return response()->json(['success' => true, 'status' => $attendance->status]);
     }
 
-    public function seniorUser($month = null, $year = null)
+    public function seniorUser(Request $request)
     {
-        $month = $month ?? date('m');
-        $year = $year ?? date('Y');
+        $view = $request->input('view', 'month'); // day, week, month
+        $date = $request->input('date', now());
 
-        $startOfMonth = Carbon::createFromDate($year, $month, 1);
-        $endOfMonth = $startOfMonth->copy()->endOfMonth();
+        $start = $end = Carbon::parse($date);
 
-        // Get all days in month
-        $dates = [];
-        for ($day = $startOfMonth->day; $day <= $endOfMonth->day; $day++) {
-            $dates[] = $startOfMonth->copy()->day($day);
+        switch ($view) {
+            case 'day':
+                $start = $start->startOfDay();
+                $end = $end->endOfDay();
+                break;
+            case 'week':
+                $start = $start->startOfWeek();
+                $end = $end->endOfWeek();
+                break;
+            default: // month
+                $start = $start->startOfMonth();
+                $end = $end->endOfMonth();
+                break;
         }
 
-        // Get attendance for logged-in user
+        // Fetch attendance for the logged-in user within the selected range
         $attendances = Attendance::where('user_id', Auth::id())
-            ->whereBetween('date', [$startOfMonth, $endOfMonth])
+            ->whereBetween('date', [$start, $end])
             ->get()
             ->keyBy(function ($item) {
-                return $item->date->format('Y-m-d');
+                return Carbon::parse($item->date)->format('Y-m-d');
             });
 
-        return view('calendar.senior', compact('dates', 'attendances', 'month', 'year'));
+        // Optional: Build array of all dates in range (useful for calendar)
+        $dates = [];
+        $period = Carbon::parse($start)->daysUntil($end);
+        foreach ($period as $day) {
+            $dates[] = $day->copy();
+        }
+
+        return view('calendar.senior', compact('dates', 'attendances', 'view', 'date'));
+    }
+
+    public function getSeniorEvents(Request $request)
+    {
+        $userId = Auth::id();
+
+        // Fetch all attendance records for the user
+        $attendances = Attendance::where('user_id', $userId)
+            ->orderBy('date', 'asc')
+            ->get();
+
+        // Define dynamic colors based on attendance status
+        $statusColors = [
+            'login'  => '#007bff',
+            'resume' => '#28a745',
+            'pause'  => '#ffc107',
+            'other'  => '#6c757d'
+        ];
+
+        $eventsData = $attendances->map(function ($attendance) use ($statusColors) {
+            $status = $attendance->status ?? 'other';
+            return [
+                'id' => $attendance->id,
+                'title' => ucfirst(str_replace('_', ' ', $status)),
+                'start' => $attendance->date,
+                'end'   => $attendance->date, // same-day events
+                'extendedProps' => [
+                    'status' => $status,
+                    'label_color' => $statusColors[$status] ?? $statusColors['other'],
+                    'remarks' => $attendance->remarks ?? '',
+                ],
+            ];
+        });
+
+        return response()->json($eventsData);
     }
 }

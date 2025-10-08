@@ -29,45 +29,22 @@ class LoginController extends Controller
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
-            // Record login info
-            $login = Login::create([
-                'user_id'     => Auth::id(),
-                'ip_address'  => $request->ip(),
-                'user_agent'  => $request->header('User-Agent'),
-                'logged_in_at'=> now(),
-            ]);
-
-            // Fetch work day seconds from settings dynamically
-            $settings = TimerSetting::first();
-            if (!$settings) {
-                return response()->json(['error' => 'Timer settings not configured'], 500);
+            // === Added: Create UserTimerPause on login ===
+            $user = Auth::user();
+            if ($user) {
+                $latestTimer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+                if ($latestTimer) {
+                    UserTimerPause::create([
+                        'user_timer_log_id' => $latestTimer->id,
+                        'user_id' => $user->id,
+                        'status' => 'resumed',
+                        'pause_type' => 'login',
+                        'remaining_seconds' => $latestTimer->remaining_seconds,
+                        'event_time' => now(),
+                    ]);
+                }
             }
-            $workDaySeconds = $settings->work_day_seconds;
-
-            // Check if user already has a timer
-            $lastTimer = UserTimerLog::where('user_id', Auth::id())->latest()->first();
-
-            if (!$lastTimer) {
-                $lastTimer = UserTimerLog::create([
-                    'user_id'           => Auth::id(),
-                    'login_id'          => $login->id,
-                    'start_time'        => now(),
-                    'remaining_seconds' => $workDaySeconds,
-                    'status'            => 'running',
-                ]);
-            }
-
-            // Log a pause/resume event
-            if ($lastTimer) {
-                UserTimerPause::create([
-                    'user_timer_log_id' => $lastTimer->id,
-                    'user_id'           => Auth::id(),
-                    'status'            => 'start',
-                    'pause_type'        => 'login',
-                    'remaining_seconds' => $lastTimer->remaining_seconds,
-                    'event_time'        => now(),
-                ]);
-            }
+            // =============================================
 
             // Redirect based on user role
             $role = Auth::user()->role;
@@ -94,6 +71,7 @@ class LoginController extends Controller
             'email' => 'The provided credentials do not match our records.'
         ])->onlyInput('email');
     }
+
 
     public function logout(Request $request)
     {

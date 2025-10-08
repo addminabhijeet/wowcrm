@@ -36,7 +36,7 @@
                         <span>Calendar</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('calendar.juniorUser') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Cal.</a></li>
+                        <li><a href="{{ route('calendar.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Cal.</a></li>
                     </ul>
                 </li>
 
@@ -84,7 +84,10 @@
                         <span>Calendar</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href=""><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Senior Cal.</a></li>
+                        <li><a href="{{ route('calendar.seniorUser') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Personal Calendar</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Candidate Calendar</a></li>
                     </ul>
                 </li>
 
@@ -110,7 +113,7 @@
                         <li><a href="{{ route('call.reports.seniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('call.reports.alljuniorlist', ['userId' => Auth::id()]) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Candidate Report</a></li>
+                        <li><a href="{{ route('call.reports.alljuniorlist', ['userId' => Auth::id()]) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Team Report</a></li>
                     </ul>
                 </li>
 
