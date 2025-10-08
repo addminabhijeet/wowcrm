@@ -68,7 +68,7 @@ $script = '<script>
                                 <label for="phone" class="form-label fw-semibold text-primary-light text-sm mb-8">
                                     Phone
                                 </label>
-                                <input type="text" name="phone" class="form-control radius-8" id="phone" placeholder="Enter phone number">
+                                <input type="text" name="phone" min="1000000000" max="9999999999" oninput="this.value = this.value.slice(0, 10);" class="form-control radius-8" id="phone" placeholder="Enter phone number">
                             </div>
 
                             <div class="mb-20">
@@ -79,9 +79,6 @@ $script = '<script>
                                     <option value="">Select Designation</option>
                                     <option value="Executive">Executive</option>
                                     <option value="Caller">Caller</option>
-                                    <option value="Manager">Manager</option>
-                                    <option value="HR">HR</option>
-                                    <option value="Admin">Admin</option>
                                 </select>
                             </div>
 
