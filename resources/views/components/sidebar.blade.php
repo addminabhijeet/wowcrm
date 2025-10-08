@@ -195,6 +195,9 @@
                         <li><a href="{{ route('users.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Candidate</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
+                        <li><a href="{{ route('users.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Candidate</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
                         <li><a href="{{ route('users.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Candidate</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
