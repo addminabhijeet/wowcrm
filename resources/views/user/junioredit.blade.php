@@ -108,7 +108,7 @@ $script ='<script>
                             <h6 class="text-md text-primary-light mb-16">Profile Image</h6>
 
                             <div class="mb-24 mt-16">
-                                <div class="avatar-preview">
+                                <div class="avatar-upload">
                                     <!-- Edit / Upload Button -->
                                     <div class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
                                         <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" hidden>
