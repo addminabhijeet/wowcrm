@@ -97,7 +97,7 @@ $script ='<script>
                     </li>
                     <li class="nav-item" role="presentation">
                         <button class="nav-link d-flex align-items-center px-24" id="pills-notification-tab" data-bs-toggle="pill" data-bs-target="#pills-notification" type="button" role="tab" aria-controls="pills-notification" aria-selected="false" tabindex="-1">
-                            Notification Settings
+                            Settings
                         </button>
                     </li>
                 </ul>
