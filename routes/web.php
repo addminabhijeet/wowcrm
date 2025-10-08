@@ -16,6 +16,13 @@ use App\Http\Controllers\TimerController;
 
 Route::middleware(['auth'])->group(function () {
 
+    Route::get('/dashboard/admin/index', [DashboardController::class, 'index'])->name('dashboard.admin');
+    Route::get('/dashboard/admin/junior', [DashboardController::class, 'junior'])->name('dashboard.junior');
+    Route::get('/dashboard/admin/senior', [DashboardController::class, 'senior'])->name('dashboard.senior');
+    Route::get('/dashboard/admin/trainer', [DashboardController::class, 'trainer'])->name('dashboard.trainer');
+    Route::get('/dashboard/admin/accountant', [DashboardController::class, 'accountant'])->name('dashboard.accountant');
+    Route::get('/dashboard/admin/customer', [DashboardController::class, 'customer'])->name('dashboard.customer');
+
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
     Route::get('/dashboard/junior', [DashboardController::class, 'junior'])->name('dashboard.junior');
     Route::get('/dashboard/senior', [DashboardController::class, 'senior'])->name('dashboard.senior');
@@ -25,7 +32,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/button/status', [DashboardController::class, 'getButtonStatus'])->name('button.status');
     Route::post('/dashboard/start-timer', [DashboardController::class, 'startTimer'])->name('timer.start');
     Route::post('/dashboard/start-timer-hide', [DashboardController::class, 'startTimerHide'])->name('timer.starthide');
-
 
     Route::get('/dashboard/admin/calendar/{month?}/{year?}', [CalendarController::class, 'index'])->name('calendar.index');
     Route::get('/dashboard/accountant/calendar/{month?}/{year?}', [CalendarController::class, 'accountantUser'])->name('calendar.accountantUser');
@@ -93,7 +99,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/alljuniorlist/call-reports', [CallReportController::class, 'alljuniorlist'])->name('call.reports.alljuniorlist');
     Route::get('/dashboard/alljuniormonthly/call-reports/{userId}', [CallReportController::class, 'alljuniormonthly'])->name('call.reports.alljuniormonthly');
     Route::get('/dashboard/alljuniordaily/call-reports/{userId}', [CallReportController::class, 'alljuniordaily'])->name('call.reports.alljuniordaily');
-
 
     Route::match(['get', 'post'], '/timer/update', [DashboardController::class, 'updateTimer'])->name('timer.update');
     Route::get('/dashboard/senior/seniortimer', [TimerController::class, 'seniorTimers'])->name('timer.senior');
