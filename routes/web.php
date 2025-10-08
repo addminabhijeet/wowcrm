@@ -12,16 +12,17 @@ use App\Http\Controllers\GoogleSheetController;
 use App\Http\Controllers\CallReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TimerController;
+use App\Http\Controllers\UserController;
 
 
 Route::middleware(['auth'])->group(function () {
 
-    Route::get('/dashboard/admin/index', [DashboardController::class, 'index'])->name('dashboard.admin');
-    Route::get('/dashboard/admin/junior', [DashboardController::class, 'junior'])->name('dashboard.junior');
-    Route::get('/dashboard/admin/senior', [DashboardController::class, 'senior'])->name('dashboard.senior');
-    Route::get('/dashboard/admin/trainer', [DashboardController::class, 'trainer'])->name('dashboard.trainer');
-    Route::get('/dashboard/admin/accountant', [DashboardController::class, 'accountant'])->name('dashboard.accountant');
-    Route::get('/dashboard/admin/customer', [DashboardController::class, 'customer'])->name('dashboard.customer');
+    Route::get('/dashboard/admin/index', [UserController::class, 'index'])->name('user.admin');
+    Route::get('/dashboard/admin/junior', [UserController::class, 'junior'])->name('user.junior');
+    Route::get('/dashboard/admin/senior', [UserController::class, 'senior'])->name('user.senior');
+    Route::get('/dashboard/admin/trainer', [UserController::class, 'trainer'])->name('user.trainer');
+    Route::get('/dashboard/admin/accountant', [UserController::class, 'accountant'])->name('user.accountant');
+    Route::get('/dashboard/admin/customer', [UserController::class, 'customer'])->name('user.customer');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
     Route::get('/dashboard/junior', [DashboardController::class, 'junior'])->name('dashboard.junior');
