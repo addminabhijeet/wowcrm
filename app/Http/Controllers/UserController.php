@@ -93,7 +93,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users.admin" . strtolower($validated['role']))
+        return redirect()->route("users.admin.edit" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
@@ -292,7 +292,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users.senior" . strtolower($validated['role']))
+        return redirect()->route("users.senior.edit" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
@@ -391,7 +391,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users.trainer" . strtolower($validated['role']))
+        return redirect()->route("users.trainer.edit" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
@@ -490,7 +490,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users.account" . strtolower($validated['role']))
+        return redirect()->route("users.accountant.edit" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
@@ -590,7 +590,7 @@ class UserController extends Controller
         }
 
         $user->update($validated);
-        return redirect()->route("users.customer" . strtolower($validated['role']))
+        return redirect()->route("users.customer.edit" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
