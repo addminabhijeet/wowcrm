@@ -4,20 +4,15 @@ $title='View Profile';
 $subTitle = 'View Profile';
 $script ='<script>
     // ======================== Upload Image Start =====================
-    function readURL(input) {
-        if (input.files && input.files[0]) {
-            var reader = new FileReader();
-            reader.onload = function(e) {
-                $("#imagePreview").css("background-image", "url(" + e.target.result + ")");
-                $("#imagePreview").hide();
-                $("#imagePreview").fadeIn(650);
-            }
-            reader.readAsDataURL(input.files[0]);
+
+    document.getElementById('imageUpload').addEventListener('change', function(event) {
+        const [file] = this.files;
+        if (file) {
+            const preview = document.getElementById('imagePreview');
+            preview.src = URL.createObjectURL(file);
         }
-    }
-    $("#imageUpload").change(function() {
-        readURL(this);
     });
+
     // ======================== Upload Image End =====================
 
     // ================== Password Show Hide Js Start ==========
@@ -110,19 +105,25 @@ $script ='<script>
                             <h6 class="text-md text-primary-light mb-16">Profile Image</h6>
                             <!-- Upload Image Start -->
                             <div class="mb-24 mt-16">
-                                <div class="avatar-upload">
-                                    <div class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
-                                        <input type='file' name="image" id="imageUpload" accept=".png, .jpg, .jpeg" hidden>
-                                        <label for="imageUpload" class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle">
-                                            <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
-                                        </label>
-                                    </div>
-                                    <div class="avatar-preview">
-                                        <div id="imagePreview">
-                                        </div>
+                                <div class="avatar-upload position-relative">
+                                    <!-- Image Input -->
+                                    <input type="file" name="image" id="imageUpload" accept=".png, .jpg, .jpeg" hidden>
+                                    <label for="imageUpload" class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer w-32 h-32 d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 rounded-circle bg-hover-primary-100">
+                                        <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
+                                    </label>
+
+                                    <!-- Image Preview -->
+                                    <div class="avatar-preview w-120 h-120 radius-8 border">
+                                        <img id="imagePreview"
+                                            src="{{ $user->image ? asset('storage/user_images/' . $user->image) : asset('assets/images/default-avatar.png') }}"
+                                            alt="Profile Image"
+                                            class="w-100 h-100 object-fit-cover radius-8">
                                     </div>
                                 </div>
                             </div>
+
+
+
                             <!-- Upload Image End -->
 
                             <div class="row">
@@ -141,7 +142,7 @@ $script ='<script>
                                 <div class="col-sm-6">
                                     <div class="mb-20">
                                         <label for="number" class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
-                                        <input type="number"  name="phone" value="{{ $user->phone }}" min="1000000000" max="9999999999" oninput="this.value = this.value.slice(0, 10);" placeholder="Enter phone number" class="form-control radius-8">
+                                        <input type="number" name="phone" value="{{ $user->phone }}" min="1000000000" max="9999999999" oninput="this.value = this.value.slice(0, 10);" placeholder="Enter phone number" class="form-control radius-8">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
