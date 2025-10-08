@@ -44,7 +44,7 @@ $script ='<script>
             <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" alt="" class="w-100 object-fit-cover">
             <div class="pb-24 ms-16 mb-24 me-16  mt--100">
                 <div class="text-center border border-top-0 border-start-0 border-end-0">
-                    <img src="{{ asset('assets/images/user-grid/user-grid-img14.png') }}" alt="" class="border br-white border-width-2-px w-200-px h-200-px rounded-circle object-fit-cover">
+                    <img src="{{ $user->image ? asset('storage/user_images/' . $user->image) : asset('assets/images/user-grid/user-grid-img14.png') }}" alt="" class="border br-white border-width-2-px w-200-px h-200-px rounded-circle object-fit-cover">
                     <h6 class="mb-0 mt-16">{{ $user->name }}</h6>
                     <span class="text-secondary-light mb-16">{{ $user->email }}</span>
                 </div>
@@ -118,7 +118,7 @@ $script ='<script>
                                     </div>
 
                                     <!-- Avatar Preview -->
-                                    <div class="avatar-preview">
+                                    <div class="avatar-upload">
                                         <img
                                             id="imagePreview"
                                             src="{{ $user->image ? asset('storage/user_images/' . $user->image) : asset('assets/images/user-grid/user-grid-img14.png') }}"
