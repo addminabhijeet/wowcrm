@@ -79,7 +79,7 @@ $script ='<script>
             </div>
         </div>
     </div>
-    
+
 
     <div class="col-lg-8">
         <div class="card h-100">
@@ -145,23 +145,27 @@ $script ='<script>
                                 </div>
                                 <div class="col-sm-6">
                                     <div class="mb-20">
-                                        <label for="depart" class="form-label fw-semibold text-primary-light text-sm mb-8">Role <span class="text-danger-600">*</span> </label>
-                                        <select class="form-control radius-8 form-select" id="depart">
-                                            <option>Enter Event Title </option>
-                                            <option>Enter Event Title One </option>
-                                            <option>Enter Event Title Two</option>
+                                        <label for="role" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                            Role <span class="text-danger-600">*</span>
+                                        </label>
+                                        <select name="role" id="role" class="form-control radius-8 form-select" required>
+                                            <option value="" disabled>Select Role</option>
+                                            <option value="junior" {{ $user->role == 'junior' ? 'selected' : '' }}>Junior</option>
+                                            <option value="senior" {{ $user->role == 'senior' ? 'selected' : '' }}>Senior</option>
+                                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
+                                            <option value="customer" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
+                                            <option value="accountant" {{ $user->role == 'accountant' ? 'selected' : '' }}>Accountant</option>
                                         </select>
                                     </div>
                                 </div>
-                                
-                            </div>
-                            <div class="d-flex align-items-center justify-content-center gap-3">
-                                <button type="button" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-56 py-11 radius-8">
-                                    Cancel
-                                </button>
-                                <button type="button" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
-                                    Save
-                                </button>
+                                <div class="d-flex align-items-center justify-content-center gap-3">
+                                    <button type="button" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-56 py-11 radius-8">
+                                        Cancel
+                                    </button>
+                                    <button type="button" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
+                                        Save
+                                    </button>
+                                </div>
                             </div>
                         </form>
                     </div>
