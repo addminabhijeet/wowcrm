@@ -18,44 +18,44 @@ use App\Http\Controllers\UserController;
 Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/admin/index', [UserController::class, 'index'])->name('user.admin');
-    Route::get('/dashboard/admin/admincreate', [UserController::class, 'admincreate'])->name('users.admin.create');
-    Route::post('/dashboard/admin/adminstore', [UserController::class, 'adminstore'])->name('users.admin.store');
-    Route::get('/dashboard/admin/{id}/adminedit', [UserController::class, 'adminedit'])->name('users.admin.edit');
-    Route::put('/dashboard/admin/adminupdate/{id}', [UserController::class, 'adminupdate'])->name('users.admin.update');
-    Route::delete('/dashboard/admin/admindestroy/{id}', [UserController::class, 'admindestroy'])->name('users.admin.destroy');
+    Route::get('/dashboard/admin/create', [UserController::class, 'admincreate'])->name('users.admin.create');
+    Route::post('/dashboard/admin/store', [UserController::class, 'adminstore'])->name('users.admin.store');
+    Route::get('/dashboard/admin/{id}/edit', [UserController::class, 'adminedit'])->name('users.admin.edit');
+    Route::put('/dashboard/admin/update/{id}', [UserController::class, 'adminupdate'])->name('users.admin.update');
+    Route::delete('/dashboard/admin/destroy/{id}', [UserController::class, 'admindestroy'])->name('users.admin.destroy');
 
     Route::get('/dashboard/admin/junior', [UserController::class, 'junior'])->name('user.junior');
     Route::get('/dashboard/admin/junior/create', [UserController::class, 'juniorcreate'])->name('users.junior.create');
     Route::post('/dashboard/admin/junior/store', [UserController::class, 'juniorstore'])->name('users.junior.store');
-    Route::get('/dashboard/admin/{id}/junior/edit', [UserController::class, 'junioredit'])->name('users.junior.edit');
+    Route::get('/dashboard/admin/junior/{id}/edit', [UserController::class, 'junioredit'])->name('users.junior.edit');
     Route::put('/dashboard/admin/junior/update/{id}', [UserController::class, 'juniorupdate'])->name('users.junior.update');
     Route::delete('/dashboard/admin/junior/destroy/{id}', [UserController::class, 'juniordestroy'])->name('users.junior.destroy');
 
     Route::get('/dashboard/admin/senior', [UserController::class, 'senior'])->name('user.senior');
     Route::get('/dashboard/admin/senior/create', [UserController::class, 'seniorcreate'])->name('users.senior.create');
     Route::post('/dashboard/admin/senior/store', [UserController::class, 'seniorstore'])->name('users.senior.store');
-    Route::get('/dashboard/admin/{id}/senior/edit', [UserController::class, 'senioredit'])->name('users.senior.edit');
+    Route::get('/dashboard/admin/senior/{id}/edit', [UserController::class, 'senioredit'])->name('users.senior.edit');
     Route::put('/dashboard/admin/senior/update/{id}', [UserController::class, 'seniorupdate'])->name('users.senior.update');
     Route::delete('/dashboard/admin/senior/destroy/{id}', [UserController::class, 'seniordestroy'])->name('users.senior.destroy');
 
     Route::get('/dashboard/admin/trainer', [UserController::class, 'trainer'])->name('user.trainer');
     Route::get('/dashboard/admin/trainer/create', [UserController::class, 'trainercreate'])->name('users.trainer.create');
     Route::post('/dashboard/admin/trainer/store', [UserController::class, 'trainerstore'])->name('users.trainer.store');
-    Route::get('/dashboard/admin/{id}/trainer/edit', [UserController::class, 'traineredit'])->name('users.trainer.edit');
+    Route::get('/dashboard/admin/trainer/{id}/edit', [UserController::class, 'traineredit'])->name('users.trainer.edit');
     Route::put('/dashboard/admin/trainer/update/{id}', [UserController::class, 'trainerupdate'])->name('users.trainer.update');
     Route::delete('/dashboard/admin/trainer/update/{id}', [UserController::class, 'trainerdestroy'])->name('users.trainer.destroy');
 
     Route::get('/dashboard/admin/accountant', [UserController::class, 'accountant'])->name('user.accountant');
     Route::get('/dashboard/admin/accountant/create', [UserController::class, 'accountantcreate'])->name('users.accountant.create');
     Route::post('/dashboard/admin/accountant/store', [UserController::class, 'accountantstore'])->name('users.accountant.store');
-    Route::get('/dashboard/admin/{id}/accountant/edit', [UserController::class, 'accountantedit'])->name('users.accountant.edit');
+    Route::get('/dashboard/admin/accountant/{id}/edit', [UserController::class, 'accountantedit'])->name('users.accountant.edit');
     Route::put('/dashboard/admin/accountant/update/{id}', [UserController::class, 'accountantupdate'])->name('users.accountant.update');
     Route::delete('/dashboard/admin/accountant/update/{id}', [UserController::class, 'accountantdestroy'])->name('users.accountant.destroy');
 
     Route::get('/dashboard/admin/customer', [UserController::class, 'customer'])->name('user.customer');
     Route::get('/dashboard/admin/customer/create', [UserController::class, 'customercreate'])->name('users.customer.create');
     Route::post('/dashboard/admin/customer/store', [UserController::class, 'customerstore'])->name('users.customer.store');
-    Route::get('/dashboard/admin/{id}/customer/edit', [UserController::class, 'customeredit'])->name('users.customer.edit');
+    Route::get('/dashboard/admin/customer/{id}/edit', [UserController::class, 'customeredit'])->name('users.customer.edit');
     Route::put('/dashboard/admin/customer/update/{id}', [UserController::class, 'customerupdate'])->name('users.customer.update');
     Route::delete('/dashboard/admin/customer/destroy/{id}', [UserController::class, 'customerdestroy'])->name('users.customer.destroy');
 
