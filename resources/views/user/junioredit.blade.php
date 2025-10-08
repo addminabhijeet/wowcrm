@@ -126,8 +126,7 @@ $script ='<script>
                                         <img
                                             id="imagePreview"
                                             src="{{ $user->image ? asset('storage/user_images/' . $user->image) : asset('assets/images/default-avatar.png') }}"
-                                            alt="Profile Image"
-                                            class="w-100 h-100 object-fit-cover radius-8">
+                                           >
                                     </div>
                                 </div>
                             </div>
