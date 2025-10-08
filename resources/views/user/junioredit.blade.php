@@ -41,7 +41,6 @@ $script ='<script>
 @section('content')
 
 <div class="row gy-4">
-    @foreach($user as $user)
     <div class="col-lg-4">
         <div class="user-grid-card position-relative border radius-16 overflow-hidden bg-base h-100">
             <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" alt="" class="w-100 object-fit-cover">
@@ -80,7 +79,7 @@ $script ='<script>
             </div>
         </div>
     </div>
-    @endforeach
+    
 
     <div class="col-lg-8">
         <div class="card h-100">
