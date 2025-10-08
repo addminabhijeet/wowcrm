@@ -798,6 +798,51 @@ $script ='<script>
     });
 </script>
 
+<style>
+    .scroll-sm {
+        overflow-x: scroll;
+        overflow-y: hidden;
+        /* always show scrollbar */
+        scrollbar-gutter: stable;
+        /* prevent layout shift */
+    }
+
+    /* === Chrome, Edge, Safari === */
+    .scroll-sm::-webkit-scrollbar {
+        height: 36px;
+        /* horizontal scrollbar thickness */
+        width: 0;
+        /* vertical scrollbar thickness */
+    }
+
+    .scroll-sm::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #888, #666);
+        border-radius: 18px;
+        /* rounded ends */
+        border: 6px solid #f1f1f1;
+        /* gives space inside thumb */
+        transition: background 0.3s, border-color 0.3s, height 0.3s;
+    }
+
+    .scroll-sm::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #555, #333);
+        border-color: #e0e0e0;
+    }
+
+    .scroll-sm::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+        border-radius: 18px;
+    }
+
+    /* === Firefox === */
+    .scroll-sm {
+        scrollbar-width: auto;
+        /* thicker style */
+        scrollbar-color: #666 #f1f1f1;
+        /* thumb + track */
+    }
+</style>
+
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     const scrollContainer = document.querySelector('.scroll-sm');
