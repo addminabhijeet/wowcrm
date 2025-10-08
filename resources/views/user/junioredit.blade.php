@@ -63,7 +63,7 @@ $script ='<script>
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
                             <span class="w-30 text-md fw-semibold text-primary-light"> Phone Number</span>
-                            <span class="w-70 text-secondary-light fw-medium">: (1) 2536 2561 2365</span>
+                            <span class="w-70 text-secondary-light fw-medium">: {{ $user->email }}</span>
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
                             <span class="w-30 text-md fw-semibold text-primary-light"> Role</span>
@@ -71,7 +71,7 @@ $script ='<script>
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
                             <span class="w-30 text-md fw-semibold text-primary-light"> Designation</span>
-                            <span class="w-70 text-secondary-light fw-medium">: Caller</span>
+                            <span class="w-70 text-secondary-light fw-medium">: {{ $user->designation }}</span>
                         </li>
 
                     </ul>
@@ -158,6 +158,22 @@ $script ='<script>
                                         </select>
                                     </div>
                                 </div>
+                                <div class="col-sm-6">
+                                    <div class="mb-20">
+                                        <label for="designation" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                            Designation <span class="text-danger-600">*</span>
+                                        </label>
+                                        <select name="designation" id="designation" class="form-control radius-8 form-select" required>
+                                            <option value="" disabled>Select Designation</option>
+                                            <option value="Executive" {{ $user->designation == 'Executive' ? 'selected' : '' }}>Executive</option>
+                                            <option value="Caller" {{ $user->designation == 'Caller' ? 'selected' : '' }}>Caller</option>
+                                            <option value="Manager" {{ $user->designation == 'Manager' ? 'selected' : '' }}>Manager</option>
+                                            <option value="HR" {{ $user->designation == 'HR' ? 'selected' : '' }}>HR</option>
+                                            <option value="Admin" {{ $user->designation == 'Admin' ? 'selected' : '' }}>Admin</option>
+                                        </select>
+                                    </div>
+                                </div>
+
                                 <div class="d-flex align-items-center justify-content-center gap-3">
                                     <button type="button" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-56 py-11 radius-8">
                                         Cancel
