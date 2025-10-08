@@ -3,7 +3,6 @@
 $title='View Profile';
 $subTitle = 'View Profile';
 $script ='<script>
-
     // ================== Password Show Hide Js Start ==========
     function initializePasswordToggle(toggleSelector) {
         $(toggleSelector).on("click", function() {
@@ -92,26 +91,32 @@ $script ='<script>
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="pills-edit-profile" role="tabpanel" aria-labelledby="pills-edit-profile-tab" tabindex="0">
                             <h6 class="text-md text-primary-light mb-16">Profile Image</h6>
-                            <!-- Upload Image Start -->
+
                             <div class="mb-24 mt-16">
                                 <div class="avatar-upload position-relative">
-                                    <!-- Image Input -->
-                                    <input type="file" name="image" id="imageUpload" accept=".png, .jpg, .jpeg" hidden>
-                                    <label for="imageUpload" class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer w-32 h-32 d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 rounded-circle bg-hover-primary-100">
-                                        <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
-                                    </label>
+                                    <!-- Edit / Upload Button -->
+                                    <div class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
+                                        <input
+                                            type="file"
+                                            name="image"
+                                            id="imageUpload"
+                                            accept=".png, .jpg, .jpeg"
+                                            hidden>
+                                        <label for="imageUpload" class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle">
+                                            <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
+                                        </label>
+                                    </div>
 
-                                    <!-- Image Preview -->
-                                    <div class="avatar-preview w-120 h-120 radius-8 border">
-                                        <img id="imagePreview"
+                                    <!-- Avatar Preview -->
+                                    <div class="avatar-preview w-100 h-100 radius-8 overflow-hidden">
+                                        <img
+                                            id="imagePreview"
                                             src="{{ $user->image ? asset('storage/user_images/' . $user->image) : asset('assets/images/default-avatar.png') }}"
                                             alt="Profile Image"
                                             class="w-100 h-100 object-fit-cover radius-8">
                                     </div>
                                 </div>
                             </div>
-
-
 
                             <!-- Upload Image End -->
 
@@ -215,13 +220,13 @@ $script ='<script>
 </div>
 
 <script>
-document.getElementById('imageUpload').addEventListener('change', function(event){
-    const [file] = this.files;
-    if(file){
-        const preview = document.getElementById('imagePreview');
-        preview.src = URL.createObjectURL(file);
-    }
-});
+    document.getElementById('imageUpload').addEventListener('change', function(event) {
+        const [file] = this.files;
+        if (file) {
+            const preview = document.getElementById('imagePreview');
+            preview.src = URL.createObjectURL(file);
+        }
+    });
 </script>
 
 @endsection
