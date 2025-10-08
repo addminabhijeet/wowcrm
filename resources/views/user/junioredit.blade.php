@@ -229,14 +229,6 @@ $script ='<script>
     </div>
 </div>
 
-<script>
-    document.getElementById('imageUpload').addEventListener('change', function(event) {
-        const [file] = this.files;
-        if (file) {
-            const preview = document.getElementById('imagePreview');
-            preview.src = URL.createObjectURL(file);
-        }
-    });
-</script>
+
 
 @endsection
