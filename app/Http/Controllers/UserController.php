@@ -144,7 +144,6 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // ✅ Validate all relevant fields
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email,' . $user->id,
@@ -155,36 +154,31 @@ class UserController extends Controller
             'password'    => 'nullable|string|min:6|confirmed',
         ]);
 
-        // ✅ Handle status separately (checkbox)
         $validated['status'] = $request->has('status') ? 1 : 0;
 
-        // ✅ Handle image upload
         if ($request->hasFile('image')) {
-            // Delete old image if exists
             if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
                 Storage::delete('public/user_images/' . $user->image);
             }
 
-            // Save new image
             $filename = time() . '.' . $request->image->extension();
             $request->image->storeAs('public/user_images', $filename);
             $validated['image'] = $filename;
         }
 
-        // ✅ Handle password update only if provided
         if (!empty($request->password)) {
             $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
         }
 
-        // 🔹 Dump validated data before updating
-        dd($validated);
-
-        // ✅ Update user
         $user->update($validated);
 
-        return redirect()->route("users.junior" . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+        return redirect()
+            ->route('users.junior.edit', $user->id)
+            ->with('success', 'User updated successfully!');
     }
+
 
     // ======================
     // DELETE
