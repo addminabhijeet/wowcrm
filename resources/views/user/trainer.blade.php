@@ -22,7 +22,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                             </button>
                         </li>
                     </ul>
-                    <a  href="{{ route('users.junior.create') }}" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+                    <a  href="{{ route('users.trainer.create') }}" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
                         <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
                         Add New Trainer
                     </a>
@@ -66,10 +66,14 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 
                                         <!-- Edit -->
                                         <td class="text-center">
-                                            <a href="{{ route('users.trainer.edit', $user->id) }}"
-                                                class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2">
-                                                <i class="fa fa-edit"></i> Edit
-                                            </a>
+                                            <div class="d-flex align-items-center gap-10 justify-content-center">
+                                                <a href="{{ route('users.trainer.edit', $user->id) }}" class="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle">
+                                                    <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
+                                                </a>
+                                                <a href="{{ route('users.trainer.destroy', $user->id) }}" class="remove-item-btn bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle">
+                                                    <iconify-icon icon="fluent:delete-24-regular" class="menu-icon"></iconify-icon>
+                                                </a>
+                                            </div>
                                         </td>
 
                                         <!-- Created at -->
