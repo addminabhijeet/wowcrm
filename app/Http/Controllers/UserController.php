@@ -19,7 +19,7 @@ class UserController extends Controller
 
     public function admincreate()
     {
-        return view('user.admincreate', compact('role'));
+        return view('user.admincreate');
     }
 
     public function adminstore(Request $request)
@@ -88,7 +88,7 @@ class UserController extends Controller
 
     public function juniorcreate()
     {
-        return view('user.juniorcreate', compact('role'));
+        return view('user.juniorcreate');
     }
 
     public function juniorstore(Request $request)
@@ -183,7 +183,7 @@ class UserController extends Controller
 
     public function seniorcreate()
     {
-        return view('user.seniorcreate', compact('role'));
+        return view('user.seniorcreate');
     }
 
     public function seniorstore(Request $request)
@@ -252,7 +252,7 @@ class UserController extends Controller
 
     public function trainercreate()
     {
-        return view('user.trainercreate', compact('role'));
+        return view('user.trainercreate');
     }
 
     public function trainerstore(Request $request)
@@ -321,7 +321,7 @@ class UserController extends Controller
 
     public function accountantcreate()
     {
-        return view('user.accountantcreate', compact('role'));
+        return view('user.accountantcreate');
     }
 
     public function accountantstore(Request $request)
@@ -390,7 +390,7 @@ class UserController extends Controller
 
     public function customercreate()
     {
-        return view('user.customercreate', compact('role'));
+        return view('user.customercreate');
     }
 
     public function customerstore(Request $request)
