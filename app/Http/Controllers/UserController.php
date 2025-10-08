@@ -64,13 +64,31 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'role'  => 'required|string',
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'nullable|string',
+            'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password'    => 'nullable|string|min:6|confirmed',
         ]);
 
-        if ($request->filled('password')) {
+        $validated['status'] = $request->has('status') ? 1 : 0;
+
+        if ($request->hasFile('image')) {
+            if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
+                Storage::delete('public/user_images/' . $user->image);
+            }
+
+            $filename = time() . '.' . $request->image->extension();
+            $request->image->storeAs('public/user_images', $filename);
+            $validated['image'] = $filename;
+        }
+
+        if (!empty($request->password)) {
             $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
         }
 
         $user->update($validated);
@@ -245,13 +263,31 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'role'  => 'required|string',
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'nullable|string',
+            'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password'    => 'nullable|string|min:6|confirmed',
         ]);
 
-        if ($request->filled('password')) {
+        $validated['status'] = $request->has('status') ? 1 : 0;
+
+        if ($request->hasFile('image')) {
+            if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
+                Storage::delete('public/user_images/' . $user->image);
+            }
+
+            $filename = time() . '.' . $request->image->extension();
+            $request->image->storeAs('public/user_images', $filename);
+            $validated['image'] = $filename;
+        }
+
+        if (!empty($request->password)) {
             $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
         }
 
         $user->update($validated);
@@ -326,13 +362,31 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'role'  => 'required|string',
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'nullable|string',
+            'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password'    => 'nullable|string|min:6|confirmed',
         ]);
 
-        if ($request->filled('password')) {
+        $validated['status'] = $request->has('status') ? 1 : 0;
+
+        if ($request->hasFile('image')) {
+            if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
+                Storage::delete('public/user_images/' . $user->image);
+            }
+
+            $filename = time() . '.' . $request->image->extension();
+            $request->image->storeAs('public/user_images', $filename);
+            $validated['image'] = $filename;
+        }
+
+        if (!empty($request->password)) {
             $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
         }
 
         $user->update($validated);
@@ -407,13 +461,31 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'role'  => 'required|string',
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'nullable|string',
+            'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password'    => 'nullable|string|min:6|confirmed',
         ]);
 
-        if ($request->filled('password')) {
+        $validated['status'] = $request->has('status') ? 1 : 0;
+
+        if ($request->hasFile('image')) {
+            if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
+                Storage::delete('public/user_images/' . $user->image);
+            }
+
+            $filename = time() . '.' . $request->image->extension();
+            $request->image->storeAs('public/user_images', $filename);
+            $validated['image'] = $filename;
+        }
+
+        if (!empty($request->password)) {
             $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
         }
 
         $user->update($validated);
@@ -487,18 +559,37 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
+        $user = User::findOrFail($id);
+
         $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'role'  => 'required|string',
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'nullable|string',
+            'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password'    => 'nullable|string|min:6|confirmed',
         ]);
 
-        if ($request->filled('password')) {
+        $validated['status'] = $request->has('status') ? 1 : 0;
+
+        if ($request->hasFile('image')) {
+            if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
+                Storage::delete('public/user_images/' . $user->image);
+            }
+
+            $filename = time() . '.' . $request->image->extension();
+            $request->image->storeAs('public/user_images', $filename);
+            $validated['image'] = $filename;
+        }
+
+        if (!empty($request->password)) {
             $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
         }
 
         $user->update($validated);
-
         return redirect()->route("users.customer" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
