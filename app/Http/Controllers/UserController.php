@@ -34,7 +34,7 @@ class UserController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         User::create($validated);
 
-        return redirect()->route("users." . strtolower($validated['role']))
+        return redirect()->route("users.admin" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' added successfully!');
     }
 
@@ -63,7 +63,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users." . strtolower($validated['role']))
+        return redirect()->route("users.admin" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
@@ -76,7 +76,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users.")
+        return redirect()->route("users.admin")
             ->with('success',  ' deleted successfully!');
     }
 
@@ -170,7 +170,7 @@ class UserController extends Controller
         // ✅ Update user
         $user->update($validated);
 
-        return redirect()->route("users." . strtolower($validated['role']))
+        return redirect()->route("users.junior" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
@@ -183,7 +183,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users.")
+        return redirect()->route("users.junior")
             ->with('success',  ' deleted successfully!');
     }
 
@@ -210,7 +210,7 @@ class UserController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         User::create($validated);
 
-        return redirect()->route("users." . strtolower($validated['role']))
+        return redirect()->route("users.senior" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' added successfully!');
     }
 
@@ -239,7 +239,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users." . strtolower($validated['role']))
+        return redirect()->route("users.senior" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
@@ -252,7 +252,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users.")
+        return redirect()->route("users.senior")
             ->with('success',  ' deleted successfully!');
     }
 
@@ -279,7 +279,7 @@ class UserController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         User::create($validated);
 
-        return redirect()->route("users." . strtolower($validated['role']))
+        return redirect()->route("users.trainer" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' added successfully!');
     }
 
@@ -308,7 +308,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users." . strtolower($validated['role']))
+        return redirect()->route("users.trainer" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
@@ -321,7 +321,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users.")
+        return redirect()->route("users.trainer")
             ->with('success',  ' deleted successfully!');
     }
 
@@ -348,7 +348,7 @@ class UserController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         User::create($validated);
 
-        return redirect()->route("users." . strtolower($validated['role']))
+        return redirect()->route("users.account" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' added successfully!');
     }
 
@@ -377,7 +377,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users." . strtolower($validated['role']))
+        return redirect()->route("users.account" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
@@ -390,7 +390,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users.")
+        return redirect()->route("users.account")
             ->with('success',  ' deleted successfully!');
     }
 
@@ -417,7 +417,7 @@ class UserController extends Controller
         $validated['password'] = Hash::make($validated['password']);
         User::create($validated);
 
-        return redirect()->route("users." . strtolower($validated['role']))
+        return redirect()->route("users.customer" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' added successfully!');
     }
 
@@ -446,7 +446,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users." . strtolower($validated['role']))
+        return redirect()->route("users.customer" . strtolower($validated['role']))
             ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
@@ -459,7 +459,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users.")
+        return redirect()->route("users.customer")
             ->with('success',  ' deleted successfully!');
     }
 }
