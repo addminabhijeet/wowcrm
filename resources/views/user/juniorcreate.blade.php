@@ -77,7 +77,7 @@ $script = '<script>
                                 </label>
                                 <select name="designation" id="designation" class="form-control radius-8 form-select" required>
                                     <option value="">Select Designation</option>
-                                    <option value="Executive">Executive</option>
+                                  
                                     <option value="Caller">Caller</option>
                                 </select>
                             </div>
@@ -86,15 +86,17 @@ $script = '<script>
                                 <label for="role" class="form-label fw-semibold text-primary-light text-sm mb-8">
                                     Role <span class="text-danger-600">*</span>
                                 </label>
-                                <select name="role" id="role" class="form-control radius-8 form-select" required>
-                                    <option value="">Select Role</option>
-                                    <option value="junior">Junior</option>
+                                <select name="role" id="role" class="form-control radius-8 form-select" disabled>
+                                    <option value="junior" selected>Junior</option>
                                     <option value="senior">Senior</option>
                                     <option value="admin">Admin</option>
                                     <option value="customer">Customer</option>
-                                    <option value="account">Account</option>
+                                    <option value="accountant">Account</option>
                                 </select>
+                                <!-- Hidden input to submit the value -->
+                                <input type="hidden" name="role" value="junior">
                             </div>
+
 
                             <div class="mb-20">
                                 <label for="password" class="form-label fw-semibold text-primary-light text-sm mb-8">
@@ -114,9 +116,6 @@ $script = '<script>
                             </div>
 
                             <div class="d-flex align-items-center justify-content-center gap-3">
-                                <button type="reset" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-56 py-11 radius-8">
-                                    Cancel
-                                </button>
                                 <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
                                     Save
                                 </button>
