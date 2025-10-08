@@ -46,8 +46,8 @@ class UserController extends Controller
 
         User::create($validated);
 
-        return redirect()->route("users.admin" . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' added successfully!');
+        return redirect()->route("users.admin")
+            ->with('success', ' added successfully!');
     }
 
     // ======================
@@ -93,8 +93,9 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users.admin.edit" . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+        return redirect()
+            ->route("users.admin.edit", $user->id)
+            ->with('success', ' updated successfully!');
     }
 
     // ======================
@@ -245,8 +246,8 @@ class UserController extends Controller
         $validated['password'] = Hash::make($validated['password']);
 
         User::create($validated);
-        return redirect()->route("users.senior" . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' added successfully!');
+        return redirect()->route("users.senior")
+            ->with('success', ' added successfully!');
     }
 
     // ======================
@@ -292,8 +293,8 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users.senior.edit" . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+        return redirect()->route("users.senior.edit", $user->id)
+            ->with('success', ' updated successfully!');
     }
 
     // ======================
@@ -344,8 +345,8 @@ class UserController extends Controller
 
         User::create($validated);
 
-        return redirect()->route("users.trainer" . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' added successfully!');
+        return redirect()->route("users.trainer")
+            ->with('success', ' added successfully!');
     }
 
     // ======================
@@ -391,8 +392,8 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users.trainer.edit" . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+        return redirect()->route("users.trainer.edit", $user->id)
+            ->with('success', ' updated successfully!');
     }
 
     // ======================
@@ -443,8 +444,8 @@ class UserController extends Controller
 
         User::create($validated);
 
-        return redirect()->route("users.account" . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' added successfully!');
+        return redirect()->route("users.account")
+            ->with('success', ' added successfully!');
     }
 
     // ======================
@@ -490,8 +491,8 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users.accountant.edit" . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+        return redirect()->route("users.accountant.edit", $user->id)
+            ->with('success', ' updated successfully!');
     }
 
     // ======================
@@ -542,8 +543,8 @@ class UserController extends Controller
 
         User::create($validated);
 
-        return redirect()->route("users.customer" . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' added successfully!');
+        return redirect()->route("users.customer")
+            ->with('success', ' added successfully!');
     }
 
     // ======================
@@ -590,8 +591,8 @@ class UserController extends Controller
         }
 
         $user->update($validated);
-        return redirect()->route("users.customer.edit" . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+        return redirect()->route("users.customer.edit", $user->id)
+            ->with('success', ' updated successfully!');
     }
 
     // ======================
