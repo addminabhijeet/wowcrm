@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 
 class UserController extends Controller
@@ -13,10 +15,136 @@ class UserController extends Controller
         return view('user.admin', compact('users'));
     }
 
+    public function admincreate($role)
+    {
+        return view('user.create', compact('role'));
+    }
+
+    public function adminstore(Request $request)
+    {
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|min:6',
+            'role'     => 'required|string',
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+        User::create($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+    }
+
+    // ======================
+    // EDIT / UPDATE
+    // ======================
+    public function adminedit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user.edit', compact('user'));
+    }
+
+    public function adminupdate(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'role'  => 'required|string',
+        ]);
+
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+    }
+
+    // ======================
+    // DELETE
+    // ======================
+    public function admindestroy($id)
+    {
+        $user = User::findOrFail($id);
+        $role = $user->role;
+        $user->delete();
+
+        return redirect()->route("users." . strtolower($role))
+                         ->with('success', ucfirst($role) . ' deleted successfully!');
+    }
+
     public function junior()
     {
         $users = User::where('role', 'junior')->get();
         return view('user.junior', compact('users'));
+    }
+
+    public function juniorcreate($role)
+    {
+        return view('user.create', compact('role'));
+    }
+
+    public function juniorstore(Request $request)
+    {
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|min:6',
+            'role'     => 'required|string',
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+        User::create($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+    }
+
+    // ======================
+    // EDIT / UPDATE
+    // ======================
+    public function junioredit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user.edit', compact('user'));
+    }
+
+    public function juniorupdate(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'role'  => 'required|string',
+        ]);
+
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+    }
+
+    // ======================
+    // DELETE
+    // ======================
+    public function juniordestroy($id)
+    {
+        $user = User::findOrFail($id);
+        $role = $user->role;
+        $user->delete();
+
+        return redirect()->route("users." . strtolower($role))
+                         ->with('success', ucfirst($role) . ' deleted successfully!');
     }
 
     public function senior()
@@ -25,10 +153,136 @@ class UserController extends Controller
         return view('user.senior', compact('users'));
     }
 
+    public function seniorcreate($role)
+    {
+        return view('user.create', compact('role'));
+    }
+
+    public function seniorstore(Request $request)
+    {
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|min:6',
+            'role'     => 'required|string',
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+        User::create($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+    }
+
+    // ======================
+    // EDIT / UPDATE
+    // ======================
+    public function senioredit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user.edit', compact('user'));
+    }
+
+    public function seniorupdate(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'role'  => 'required|string',
+        ]);
+
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+    }
+
+    // ======================
+    // DELETE
+    // ======================
+    public function seniordestroy($id)
+    {
+        $user = User::findOrFail($id);
+        $role = $user->role;
+        $user->delete();
+
+        return redirect()->route("users." . strtolower($role))
+                         ->with('success', ucfirst($role) . ' deleted successfully!');
+    }
+
     public function trainer()
     {
         $users = User::where('role', 'trainer')->get();
         return view('user.trainer', compact('users'));
+    }
+
+    public function trainercreate($role)
+    {
+        return view('user.create', compact('role'));
+    }
+
+    public function trainerstore(Request $request)
+    {
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|min:6',
+            'role'     => 'required|string',
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+        User::create($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+    }
+
+    // ======================
+    // EDIT / UPDATE
+    // ======================
+    public function traineredit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user.edit', compact('user'));
+    }
+
+    public function trainerupdate(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'role'  => 'required|string',
+        ]);
+
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+    }
+
+    // ======================
+    // DELETE
+    // ======================
+    public function trainerdestroy($id)
+    {
+        $user = User::findOrFail($id);
+        $role = $user->role;
+        $user->delete();
+
+        return redirect()->route("users." . strtolower($role))
+                         ->with('success', ucfirst($role) . ' deleted successfully!');
     }
 
     public function accountant()
@@ -37,9 +291,135 @@ class UserController extends Controller
         return view('user.accountant', compact('users'));
     }
 
+    public function accountantcreate($role)
+    {
+        return view('user.create', compact('role'));
+    }
+
+    public function accountantstore(Request $request)
+    {
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|min:6',
+            'role'     => 'required|string',
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+        User::create($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+    }
+
+    // ======================
+    // EDIT / UPDATE
+    // ======================
+    public function accountantedit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user.edit', compact('user'));
+    }
+
+    public function accountantupdate(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'role'  => 'required|string',
+        ]);
+
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+    }
+
+    // ======================
+    // DELETE
+    // ======================
+    public function accountantdestroy($id)
+    {
+        $user = User::findOrFail($id);
+        $role = $user->role;
+        $user->delete();
+
+        return redirect()->route("users." . strtolower($role))
+                         ->with('success', ucfirst($role) . ' deleted successfully!');
+    }
+
     public function customer()
     {
         $users = User::where('role', 'customer')->get();
         return view('user.customer', compact('users'));
+    }
+
+    public function customercreate($role)
+    {
+        return view('user.create', compact('role'));
+    }
+
+    public function customerstore(Request $request)
+    {
+        $validated = $request->validate([
+            'name'     => 'required|string|max:255',
+            'email'    => 'required|email|unique:users',
+            'password' => 'required|min:6',
+            'role'     => 'required|string',
+        ]);
+
+        $validated['password'] = Hash::make($validated['password']);
+        User::create($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+    }
+
+    // ======================
+    // EDIT / UPDATE
+    // ======================
+    public function customeredit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user.edit', compact('user'));
+    }
+
+    public function customerupdate(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:users,email,' . $user->id,
+            'role'  => 'required|string',
+        ]);
+
+        if ($request->filled('password')) {
+            $validated['password'] = Hash::make($request->password);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+    }
+
+    // ======================
+    // DELETE
+    // ======================
+    public function customerdestroy($id)
+    {
+        $user = User::findOrFail($id);
+        $role = $user->role;
+        $user->delete();
+
+        return redirect()->route("users." . strtolower($role))
+                         ->with('success', ucfirst($role) . ' deleted successfully!');
     }
 }
