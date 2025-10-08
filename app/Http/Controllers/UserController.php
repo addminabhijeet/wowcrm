@@ -5,6 +5,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage;
 
 
 class UserController extends Controller
@@ -115,25 +116,47 @@ class UserController extends Controller
     }
 
     public function juniorupdate(Request $request, $id)
-    {
-        $user = User::findOrFail($id);
+{
+    $user = User::findOrFail($id);
 
-        $validated = $request->validate([
-            'name'  => 'required|string|max:255',
-            'email' => 'required|email|unique:users,email,' . $user->id,
-            'role'  => 'required|string',
-        ]);
+    // ✅ Validate all relevant fields
+    $validated = $request->validate([
+        'name'        => 'required|string|max:255',
+        'email'       => 'required|email|unique:users,email,' . $user->id,
+        'phone'       => 'nullable|string|max:20',
+        'designation' => 'nullable|string',
+        'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
+        'status'      => 'required|boolean',
+        'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+        'password'    => 'nullable|string|min:6|confirmed',
+    ]);
 
-        if ($request->filled('password')) {
-            $validated['password'] = Hash::make($request->password);
+    // ✅ Handle image upload
+    if ($request->hasFile('image')) {
+        // Delete old image if exists
+        if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
+            Storage::delete('public/user_images/' . $user->image);
         }
 
-        $user->update($validated);
-
-        return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+        // Save new image
+        $filename = time() . '.' . $request->image->extension();
+        $request->image->storeAs('public/user_images', $filename);
+        $validated['image'] = $filename;
     }
 
+    // ✅ Handle password update only if provided
+    if (!empty($request->password)) {
+        $validated['password'] = Hash::make($request->password);
+    } else {
+        unset($validated['password']);
+    }
+
+    // ✅ Update user
+    $user->update($validated);
+
+    return redirect()->route("users." . strtolower($validated['role']))
+                     ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+}
     // ======================
     // DELETE
     // ======================
