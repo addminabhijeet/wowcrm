@@ -153,33 +153,7 @@ $script ='<script>
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-sm-6">
-                                    <div class="mb-20">
-                                        <label for="desig" class="form-label fw-semibold text-primary-light text-sm mb-8">Designation <span class="text-danger-600">*</span> </label>
-                                        <select class="form-control radius-8 form-select" id="desig">
-                                            <option>Enter Designation Title </option>
-                                            <option>Enter Designation Title One </option>
-                                            <option>Enter Designation Title Two</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <div class="mb-20">
-                                        <label for="Language" class="form-label fw-semibold text-primary-light text-sm mb-8">Language <span class="text-danger-600">*</span> </label>
-                                        <select class="form-control radius-8 form-select" id="Language">
-                                            <option> English</option>
-                                            <option> Bangla </option>
-                                            <option> Hindi</option>
-                                            <option> Arabic</option>
-                                        </select>
-                                    </div>
-                                </div>
-                                <div class="col-sm-12">
-                                    <div class="mb-20">
-                                        <label for="desc" class="form-label fw-semibold text-primary-light text-sm mb-8">Description</label>
-                                        <textarea name="#0" class="form-control radius-8" id="desc" placeholder="Write description..."></textarea>
-                                    </div>
-                                </div>
+                                
                             </div>
                             <div class="d-flex align-items-center justify-content-center gap-3">
                                 <button type="button" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-56 py-11 radius-8">
