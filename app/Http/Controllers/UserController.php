@@ -76,7 +76,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." )
+        return redirect()->route("users.")
             ->with('success',  ' deleted successfully!');
     }
 
@@ -87,32 +87,32 @@ class UserController extends Controller
     }
 
     public function juniorstore(Request $request)
-{
-    $validated = $request->validate([
-        'name'        => 'required|string|max:255',
-        'email'       => 'required|email|unique:users,email',
-        'phone'       => 'nullable|string|max:20',
-        'designation' => 'required|string',
-        'role'        => 'required|string',
-        'password'    => 'required|string|min:6',
-        'status'      => 'required|boolean',
-        'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-    ]);
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email',
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'required|string',
+            'role'        => 'required|string',
+            'password'    => 'required|string|min:6',
+            'status'      => 'required|boolean',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
 
-    // Handle Image Upload
-    if ($request->hasFile('image')) {
-        $imageName = time() . '_' . $request->image->getClientOriginalName();
-        $request->image->storeAs('public/user_images', $imageName);
-        $validated['image'] = $imageName;
+        // Handle Image Upload
+        if ($request->hasFile('image')) {
+            $imageName = time() . '_' . $request->image->getClientOriginalName();
+            $request->image->storeAs('public/user_images', $imageName);
+            $validated['image'] = $imageName;
+        }
+
+        $validated['password'] = Hash::make($validated['password']);
+
+        User::create($validated);
+
+        return redirect()->route("users.junior")
+            ->with('success', 'Junior user added successfully!');
     }
-
-    $validated['password'] = Hash::make($validated['password']);
-
-    User::create($validated);
-
-    return redirect()->route("users.junior")
-                     ->with('success', 'Junior user added successfully!');
-}
 
     // ======================
     // EDIT / UPDATE
@@ -178,7 +178,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." )
+        return redirect()->route("users.")
             ->with('success',  ' deleted successfully!');
     }
 
@@ -247,7 +247,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." )
+        return redirect()->route("users.")
             ->with('success',  ' deleted successfully!');
     }
 
@@ -316,7 +316,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." )
+        return redirect()->route("users.")
             ->with('success',  ' deleted successfully!');
     }
 
@@ -385,7 +385,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." )
+        return redirect()->route("users.")
             ->with('success',  ' deleted successfully!');
     }
 
@@ -454,7 +454,7 @@ class UserController extends Controller
         $role = $user->role;
         $user->delete();
 
-        return redirect()->route("users." )
+        return redirect()->route("users.")
             ->with('success',  ' deleted successfully!');
     }
 }
