@@ -162,7 +162,7 @@ $script ='<script>
                                             <option value="junior" {{ $user->role == 'junior' ? 'selected' : '' }}>Junior</option>
                                             <option value="senior" {{ $user->role == 'senior' ? 'selected' : '' }}>Senior</option>
                                             <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                                            <option value="customer" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
+                                            <option value="candidate" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
                                             <option value="accountant" {{ $user->role == 'accountant' ? 'selected' : '' }}>Accountant</option>
                                         </select>
                                     </div>
@@ -174,15 +174,17 @@ $script ='<script>
                                             Designation <span class="text-danger-600">*</span>
                                         </label>
                                         <select name="designation" id="designation" class="form-control radius-8 form-select" required>
-                                            <option value="" disabled>Select Designation</option>
-                                            <option value="Executive" {{ $user->designation == 'Executive' ? 'selected' : '' }}>Executive</option>
-                                            <option value="Caller" {{ $user->designation == 'Caller' ? 'selected' : '' }}>Caller</option>
-                                            <option value="Manager" {{ $user->designation == 'Manager' ? 'selected' : '' }}>Manager</option>
-                                            <option value="HR" {{ $user->designation == 'HR' ? 'selected' : '' }}>HR</option>
+                                            <option value="" disabled {{ !$user->designation ? 'selected' : '' }}>Select Designation</option>
+                                            <option value="Accountant" {{ $user->designation == 'Accountant' ? 'selected' : '' }}>Accountant</option>
                                             <option value="Admin" {{ $user->designation == 'Admin' ? 'selected' : '' }}>Admin</option>
+                                            <option value="Candidate" {{ $user->designation == 'Candidate' ? 'selected' : '' }}>Candidate</option>
+                                            <option value="Junior" {{ $user->designation == 'Junior' ? 'selected' : '' }}>Junior</option>
+                                            <option value="Senior" {{ $user->designation == 'Senior' ? 'selected' : '' }}>Senior</option>
+                                            <option value="Trainer" {{ $user->designation == 'Trainer' ? 'selected' : '' }}>Trainer</option>
                                         </select>
                                     </div>
                                 </div>
+
 
                                 <div class="d-flex align-items-center justify-content-center gap-3">
                                     <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
