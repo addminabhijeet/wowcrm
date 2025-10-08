@@ -9,15 +9,16 @@ $script ='<script>
             var reader = new FileReader();
             reader.onload = function(e) {
                 $("#imagePreview").css("background-image", "url(" + e.target.result + ")");
-                $("#imagePreview").hide();
-                $("#imagePreview").fadeIn(650);
+                $("#imagePreview").hide().fadeIn(650);
             }
             reader.readAsDataURL(input.files[0]);
         }
     }
+
     $("#imageUpload").change(function() {
         readURL(this);
     });
+
     // ================== Password Show Hide Js Start ==========
     function initializePasswordToggle(toggleSelector) {
         $(toggleSelector).on("click", function() {
@@ -121,8 +122,7 @@ $script ='<script>
                                     <div class="avatar-preview">
                                         <img
                                             id="imagePreview"
-                                            src="{{ $user->image ? asset('storage/user_images/' . $user->image) : asset('assets/images/user-grid/user-grid-img14.png') }}"
-                                           >
+                                            src="{{ $user->image ? asset('storage/user_images/' . $user->image) : asset('assets/images/user-grid/user-grid-img14.png') }}">
                                     </div>
                                 </div>
                             </div>
