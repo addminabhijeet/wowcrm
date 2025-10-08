@@ -112,8 +112,7 @@ $script ='<script>
                                 <div class="avatar-upload">
                                     <!-- Edit / Upload Button -->
                                     <div class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
-                                        <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" hidden>
-                                        <label for="imageUpload" class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle">
+                                        <input type="file" name="image" id="imageUpload" accept=".png, .jpg, .jpeg" hidden>                                        <label for="imageUpload" class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle">
                                             <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
                                         </label>
                                     </div>
