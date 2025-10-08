@@ -3,6 +3,21 @@
 $title='View Profile';
 $subTitle = 'View Profile';
 $script ='<script>
+    // ======================== Upload Image Start =====================
+    function readURL(input) {
+        if (input.files && input.files[0]) {
+            var reader = new FileReader();
+            reader.onload = function(e) {
+                $("#imagePreview").css("background-image", "url(" + e.target.result + ")");
+                $("#imagePreview").hide();
+                $("#imagePreview").fadeIn(650);
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
+    $("#imageUpload").change(function() {
+        readURL(this);
+    });
     // ================== Password Show Hide Js Start ==========
     function initializePasswordToggle(toggleSelector) {
         $(toggleSelector).on("click", function() {
@@ -96,15 +111,14 @@ $script ='<script>
                                 <div class="avatar-upload">
                                     <!-- Edit / Upload Button -->
                                     <div class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
-                                        <input
-                                            type="file"
-                                            name="image"
-                                            id="imageUpload"
-                                            accept=".png, .jpg, .jpeg"
-                                            hidden>
+                                        <input type='file' id="imageUpload" accept=".png, .jpg, .jpeg" hidden>
                                         <label for="imageUpload" class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle">
                                             <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
                                         </label>
+                                    </div>
+                                    <div class="avatar-preview">
+                                        <div id="imagePreview">
+                                        </div>
                                     </div>
 
                                     <!-- Avatar Preview -->
