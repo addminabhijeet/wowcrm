@@ -144,10 +144,22 @@ $script ='<script>
                         </td>
 
                         {{-- Qualification --}}
-                        <td>
-                            <input type="text" class="form-control qualification-input" data-key="Qualification"
-                                value="{{ $row->Qualification ?? '' }}" placeholder="Qualification">
-                        </td>
+<td>
+    @php 
+        $qualificationOptions = [
+            'Masters','Master of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.']; 
+    @endphp
+
+    <select class="form-select dynamic-dropdown" data-key="Qualification">
+        <option value="">-- Select --</option>
+        @foreach($qualificationOptions as $option)
+            <option value="{{ $option }}" {{ $row->Qualification === $option ? 'selected' : '' }}>
+                {{ $option }}
+            </option>
+        @endforeach
+    </select>
+</td>
+
 
                         {{-- Exe Remarks --}}
                         <td>
