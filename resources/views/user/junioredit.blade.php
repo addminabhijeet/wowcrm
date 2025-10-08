@@ -41,8 +41,8 @@ $script ='<script>
 @section('content')
 
 <div class="row gy-4">
-    <div class="col-lg-4" style="padding-top: 50px;">
-        <div class="user-grid-card position-relative border radius-16 overflow-hidden bg-base h-100">
+    <div class="col-lg-4">
+        <div class="user-grid-card position-relative border radius-16 overflow-hidden bg-base h-100" style="padding-top: 50px;">
             <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" alt="" class="w-100 object-fit-cover">
             <div class="pb-24 ms-16 mb-24 me-16  mt--100">
                 <div class="text-center border border-top-0 border-start-0 border-end-0">
