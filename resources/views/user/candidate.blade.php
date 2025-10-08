@@ -28,11 +28,12 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                 <div class="tab-content" id="pills-tabContent">
                     <div class="tab-pane fade show active" id="pills-to-do-list" role="tabpanel" aria-labelledby="pills-to-do-list-tab" tabindex="0">
                         <div class="table-responsive scroll-sm">
-                            <table class="table bordered-table sm-table mb-0">
+                            <table class="table bordered-table sm-table mb-0 align-middle">
                                 <thead>
                                     <tr>
                                         <th scope="col">Users</th>
-                                        <th scope="col">Role</th>
+                                        <th scope="col" class="text-center">Role</th>
+                                        <th scope="col" class="text-center">Edit</th>
                                         <th scope="col">Created At</th>
                                         <th scope="col">Updated At</th>
                                     </tr>
@@ -60,23 +61,32 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                             </span>
                                         </td>
 
+                                        <!-- Edit -->
+                                        <td class="text-center">
+                                            <a href="{{ route('users.edit', $user->id) }}"
+                                                class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2">
+                                                <i class="fa fa-edit"></i> Edit
+                                            </a>
+                                        </td>
+
                                         <!-- Created at -->
                                         <td>
                                             <span class="text-sm text-secondary-light fw-medium">
-                                                {{ $user->created_at->format('d M Y') }}
+                                                {{ $user->created_at ? $user->created_at->format('d M Y') : '-' }}
                                             </span>
                                         </td>
 
                                         <!-- Updated at -->
                                         <td>
                                             <span class="text-sm text-secondary-light fw-medium">
-                                                {{ $user->updated_at->format('d M Y') }}
+                                                {{ $user->updated_at ? $user->updated_at->format('d M Y') : '-' }}
                                             </span>
                                         </td>
                                     </tr>
                                     @endforeach
                                 </tbody>
                             </table>
+
                         </div>
                     </div>
                 </div>
