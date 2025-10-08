@@ -63,7 +63,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 
                                         <!-- Edit -->
                                         <td class="text-center">
-                                            <a href="{{ route('users.edit', $user->id) }}"
+                                            <a href="{{ route('users.candidate.edit', $user->id) }}"
                                                 class="btn btn-sm btn-outline-primary d-inline-flex align-items-center gap-2">
                                                 <i class="fa fa-edit"></i> Edit
                                             </a>
