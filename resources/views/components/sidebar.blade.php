@@ -74,7 +74,7 @@
                         <span>Dashboard</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('dashboard.senior') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Senior Dashboard</a></li>
+                        <li><a href="{{ route('dashboard.senior') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
                     </ul>
                 </li>
 
@@ -87,7 +87,7 @@
                         <li><a href="{{ route('calendar.seniorUser') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Personal Calendar</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Candidate Calendar</a></li>
+                        <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Junior Calendar</a></li>
                     </ul>
                 </li>
 
@@ -97,7 +97,10 @@
                         <span>Database</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet</a></li>
+                        <li><a href="{{ route('google.sheet.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Called & Mailed</a></li>
                     </ul>
                 </li>
 
@@ -146,7 +149,7 @@
                         <span>Calendar</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href=""><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>Accountant Cal.</a></li>
+                        <li><a href=""><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>Calendar</a></li>
                     </ul>
                 </li>
 
@@ -156,7 +159,7 @@
                         <span>Database</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet</a></li>
+                        <li><a href="{{ route('google.sheet.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
                     </ul>
                 </li>
 
@@ -179,7 +182,26 @@
                         <span>Dashboard</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('dashboard.admin') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Admin Dashboard</a></li>
+                        <li><a href="{{ route('dashboard.admin') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Dashboard</a></li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+                    <a href="javascript:void(0)">
+                        <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                        <span>Candidate</span>
+                    </a>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('user.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Candidate</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('user.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Candidate</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('user.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Accountant Candidate</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('user.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer Candidate</a></li>
                     </ul>
                 </li>
 
@@ -189,7 +211,13 @@
                         <span>Calendar</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href=""><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Candidates Cal.</a></li>
+                        <li><a href=""><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Personal Calendar</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href=""><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Junior Calendar</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href=""><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Senior Calendar</a></li>
                     </ul>
                 </li>
 
@@ -199,7 +227,7 @@
                         <span>Database</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.index') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet</a></li>
+                        <li><a href="{{ route('google.sheet.index') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
                     </ul>
                 </li>
 
@@ -232,7 +260,7 @@
                         <span>Dashboard</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('dashboard.trainer') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Trainer Dashboard</a></li>
+                        <li><a href="{{ route('dashboard.trainer') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
                     </ul>
                 </li>
 
@@ -242,7 +270,7 @@
                         <span>Calendar</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href=""><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Trainer Cal.</a></li>
+                        <li><a href=""><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Calendar</a></li>
                     </ul>
                 </li>
 
@@ -252,7 +280,7 @@
                         <span>Database</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet</a></li>
+                        <li><a href="{{ route('google.sheet.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
                     </ul>
                 </li>
 
