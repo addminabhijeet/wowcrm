@@ -86,26 +86,33 @@ class UserController extends Controller
         return view('user.junior', compact('users'));
     }
 
-    public function juniorcreate()
-    {
-        return view('user.juniorcreate');
-    }
-
     public function juniorstore(Request $request)
-    {
-        $validated = $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users',
-            'password' => 'required|min:6',
-            'role'     => 'required|string',
-        ]);
+{
+    $validated = $request->validate([
+        'name'        => 'required|string|max:255',
+        'email'       => 'required|email|unique:users,email',
+        'phone'       => 'nullable|string|max:20',
+        'designation' => 'required|string',
+        'role'        => 'required|string',
+        'password'    => 'required|string|min:6',
+        'status'      => 'required|boolean',
+        'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+    ]);
 
-        $validated['password'] = Hash::make($validated['password']);
-        User::create($validated);
-
-        return redirect()->route("users." . strtolower($validated['role']))
-            ->with('success', ucfirst($validated['role']) . ' added successfully!');
+    // Handle Image Upload
+    if ($request->hasFile('image')) {
+        $imageName = time() . '_' . $request->image->getClientOriginalName();
+        $request->image->storeAs('public/user_images', $imageName);
+        $validated['image'] = $imageName;
     }
+
+    $validated['password'] = Hash::make($validated['password']);
+
+    User::create($validated);
+
+    return redirect()->route("users.junior")
+                     ->with('success', 'Junior user added successfully!');
+}
 
     // ======================
     // EDIT / UPDATE
