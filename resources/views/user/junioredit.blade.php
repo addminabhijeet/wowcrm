@@ -93,7 +93,7 @@ $script ='<script>
                             <h6 class="text-md text-primary-light mb-16">Profile Image</h6>
 
                             <div class="mb-24 mt-16">
-                                <div class="avatar-upload position-relative">
+                                <div class="avatar-upload">
                                     <!-- Edit / Upload Button -->
                                     <div class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
                                         <input
@@ -108,7 +108,7 @@ $script ='<script>
                                     </div>
 
                                     <!-- Avatar Preview -->
-                                    <div class="avatar-preview w-100 h-100 radius-8 overflow-hidden">
+                                    <div class="avatar-preview">
                                         <img
                                             id="imagePreview"
                                             src="{{ $user->image ? asset('storage/user_images/' . $user->image) : asset('assets/images/default-avatar.png') }}"
@@ -117,6 +117,7 @@ $script ='<script>
                                     </div>
                                 </div>
                             </div>
+
 
                             <!-- Upload Image End -->
 
