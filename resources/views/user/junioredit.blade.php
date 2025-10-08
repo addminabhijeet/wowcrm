@@ -141,7 +141,7 @@ $script ='<script>
                                 <div class="col-sm-6">
                                     <div class="mb-20">
                                         <label for="number" class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
-                                        <input type="number"  name="phone" value="{{ $user->phone }}" placeholder="Enter phone number" class="form-control radius-8">
+                                        <input type="number"  name="phone" value="{{ $user->phone }}" min="1000000000" max="9999999999" oninput="this.value = this.value.slice(0, 10);" placeholder="Enter phone number" class="form-control radius-8">
                                     </div>
                                 </div>
                                 <div class="col-sm-6">
