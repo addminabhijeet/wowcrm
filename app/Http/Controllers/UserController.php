@@ -86,6 +86,11 @@ class UserController extends Controller
         return view('user.junior', compact('users'));
     }
 
+    public function juniorcreate()
+    {
+        return view('user.juniorcreate');
+    }
+
     public function juniorstore(Request $request)
     {
         $validated = $request->validate([
