@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class UserController extends Controller
         User::create($validated);
 
         return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+            ->with('success', ucfirst($validated['role']) . ' added successfully!');
     }
 
     // ======================
@@ -63,7 +64,7 @@ class UserController extends Controller
         $user->update($validated);
 
         return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
     // ======================
@@ -76,7 +77,7 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route("users." . strtolower($role))
-                         ->with('success', ucfirst($role) . ' deleted successfully!');
+            ->with('success', ucfirst($role) . ' deleted successfully!');
     }
 
     public function junior()
@@ -103,7 +104,7 @@ class UserController extends Controller
         User::create($validated);
 
         return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+            ->with('success', ucfirst($validated['role']) . ' added successfully!');
     }
 
     // ======================
@@ -116,47 +117,51 @@ class UserController extends Controller
     }
 
     public function juniorupdate(Request $request, $id)
-{
-    $user = User::findOrFail($id);
+    {
+        $user = User::findOrFail($id);
 
-    // ✅ Validate all relevant fields
-    $validated = $request->validate([
-        'name'        => 'required|string|max:255',
-        'email'       => 'required|email|unique:users,email,' . $user->id,
-        'phone'       => 'nullable|string|max:20',
-        'designation' => 'nullable|string',
-        'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
-        'status'      => 'required|boolean',
-        'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
-        'password'    => 'nullable|string|min:6|confirmed',
-    ]);
+        // ✅ Validate all relevant fields
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'nullable|string',
+            'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password'    => 'nullable|string|min:6|confirmed',
+        ]);
 
-    // ✅ Handle image upload
-    if ($request->hasFile('image')) {
-        // Delete old image if exists
-        if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
-            Storage::delete('public/user_images/' . $user->image);
+        // ✅ Handle status separately (checkbox)
+        $validated['status'] = $request->has('status') ? 1 : 0;
+
+        // ✅ Handle image upload
+        if ($request->hasFile('image')) {
+            // Delete old image if exists
+            if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
+                Storage::delete('public/user_images/' . $user->image);
+            }
+
+            // Save new image
+            $filename = time() . '.' . $request->image->extension();
+            $request->image->storeAs('public/user_images', $filename);
+            $validated['image'] = $filename;
         }
 
-        // Save new image
-        $filename = time() . '.' . $request->image->extension();
-        $request->image->storeAs('public/user_images', $filename);
-        $validated['image'] = $filename;
+        // ✅ Handle password update only if provided
+        if (!empty($request->password)) {
+            $validated['password'] = Hash::make($request->password);
+        }
+
+        // 🔹 Dump validated data before updating
+        dd($validated);
+
+        // ✅ Update user
+        $user->update($validated);
+
+        return redirect()->route("users." . strtolower($validated['role']))
+            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
-    // ✅ Handle password update only if provided
-    if (!empty($request->password)) {
-        $validated['password'] = Hash::make($request->password);
-    } else {
-        unset($validated['password']);
-    }
-
-    // ✅ Update user
-    $user->update($validated);
-
-    return redirect()->route("users." . strtolower($validated['role']))
-                     ->with('success', ucfirst($validated['role']) . ' updated successfully!');
-}
     // ======================
     // DELETE
     // ======================
@@ -167,7 +172,7 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route("users." . strtolower($role))
-                         ->with('success', ucfirst($role) . ' deleted successfully!');
+            ->with('success', ucfirst($role) . ' deleted successfully!');
     }
 
     public function senior()
@@ -194,7 +199,7 @@ class UserController extends Controller
         User::create($validated);
 
         return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+            ->with('success', ucfirst($validated['role']) . ' added successfully!');
     }
 
     // ======================
@@ -223,7 +228,7 @@ class UserController extends Controller
         $user->update($validated);
 
         return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
     // ======================
@@ -236,7 +241,7 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route("users." . strtolower($role))
-                         ->with('success', ucfirst($role) . ' deleted successfully!');
+            ->with('success', ucfirst($role) . ' deleted successfully!');
     }
 
     public function trainer()
@@ -263,7 +268,7 @@ class UserController extends Controller
         User::create($validated);
 
         return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+            ->with('success', ucfirst($validated['role']) . ' added successfully!');
     }
 
     // ======================
@@ -292,7 +297,7 @@ class UserController extends Controller
         $user->update($validated);
 
         return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
     // ======================
@@ -305,7 +310,7 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route("users." . strtolower($role))
-                         ->with('success', ucfirst($role) . ' deleted successfully!');
+            ->with('success', ucfirst($role) . ' deleted successfully!');
     }
 
     public function accountant()
@@ -332,7 +337,7 @@ class UserController extends Controller
         User::create($validated);
 
         return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+            ->with('success', ucfirst($validated['role']) . ' added successfully!');
     }
 
     // ======================
@@ -361,7 +366,7 @@ class UserController extends Controller
         $user->update($validated);
 
         return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
     // ======================
@@ -374,7 +379,7 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route("users." . strtolower($role))
-                         ->with('success', ucfirst($role) . ' deleted successfully!');
+            ->with('success', ucfirst($role) . ' deleted successfully!');
     }
 
     public function customer()
@@ -401,7 +406,7 @@ class UserController extends Controller
         User::create($validated);
 
         return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' added successfully!');
+            ->with('success', ucfirst($validated['role']) . ' added successfully!');
     }
 
     // ======================
@@ -430,7 +435,7 @@ class UserController extends Controller
         $user->update($validated);
 
         return redirect()->route("users." . strtolower($validated['role']))
-                         ->with('success', ucfirst($validated['role']) . ' updated successfully!');
+            ->with('success', ucfirst($validated['role']) . ' updated successfully!');
     }
 
     // ======================
@@ -443,6 +448,6 @@ class UserController extends Controller
         $user->delete();
 
         return redirect()->route("users." . strtolower($role))
-                         ->with('success', ucfirst($role) . ' deleted successfully!');
+            ->with('success', ucfirst($role) . ' deleted successfully!');
     }
 }
