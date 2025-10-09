@@ -389,17 +389,20 @@ class DashboardController extends Controller
                 ->latest('id')
                 ->first();
 
+            // Define all pause types we want to block re-pause from
+            $blockedPauseTypes = ['lunch', 'tea', 'break', 'inactive'];
+
             if ($latestLog) {
-                // Check if already paused for lunch/tea/break
-                if (!in_array($latestLog->pause_type, ['lunch', 'tea', 'break'])) {
-                    // Update only if not in lunch/tea/break
+                // Skip if already in any paused state (lunch, tea, break, inactive)
+                if (!in_array($latestLog->pause_type, $blockedPauseTypes)) {
+                    // Update log to inactive
                     $latestLog->update([
                         'remaining_seconds' => $timer->remaining_seconds,
                         'status'            => 'paused',
                         'pause_type'        => 'inactive',
                     ]);
 
-                    // Log pause event for audit only when updated
+                    // Record pause event for audit
                     UserTimerPause::create([
                         'user_timer_log_id' => $timer->id,
                         'user_id'           => $user->id,
@@ -410,7 +413,7 @@ class DashboardController extends Controller
                     ]);
                 }
             } else {
-                // Create fallback log if none found
+                // Fallback if no timer log found
                 UserTimerPause::create([
                     'user_timer_log_id' => $timer->id,
                     'user_id'           => $user->id,
@@ -421,6 +424,7 @@ class DashboardController extends Controller
                 ]);
             }
         }
+
 
 
 
