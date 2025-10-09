@@ -102,8 +102,9 @@ $script = '<script>
                                 </span>
                             </div>
 
+
                             <!-- Control Buttons -->
-                            <div class="seniorcontrolButtons" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                            <div class="seniorcontrolButtons" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
                                 <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
                                     <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
                                 </button>
@@ -223,14 +224,25 @@ $script = '<script>
 <script>
     // Setup control buttons for all timer widgets
     function setupseniorControlButtons() {
+        console.debug("[Debug] Initializing senior control buttons...");
+
         document.querySelectorAll('.timer-widget').forEach(widget => {
             const userId = widget.dataset.user;
+            console.debug(`[Debug] Found timer widget for user ID: ${userId}`);
 
-            widget.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
+            const controlButtons = widget.querySelectorAll('.seniorcontrolButtons button');
+            if (!controlButtons.length) {
+                console.debug(`[Debug] No control buttons found for user ${userId}`);
+                return;
+            }
+
+            controlButtons.forEach(btn => {
+                const type = btn.getAttribute('data-type');
+                const juniorId = btn.getAttribute('data-user');
+                console.debug(`[Debug] Binding click for user ${juniorId} (${type})`);
+
                 btn.addEventListener('click', () => {
-                    const type = btn.getAttribute('data-type');
-                    const juniorId = btn.getAttribute('data-user');
-                    console.log(`[Action] User ${userId} clicked: ${type}`);
+                    console.log(`[Action] Senior (${userId}) clicked: ${type} for Junior (${juniorId})`);
 
                     fetch("{{ route('timer.update') }}", {
                             method: "POST",
@@ -240,14 +252,15 @@ $script = '<script>
                             },
                             body: JSON.stringify({
                                 action: type,
-                                user_id: userId
+                                user_id: juniorId
                             })
                         })
                         .then(res => res.json())
                         .then(data => {
-                            console.log(`[Action] Response for user ${userId}:`, data);
+                            console.debug(`[Debug] Response for Junior ${juniorId}:`, data);
 
                             if (data.success === false && data.notice_status === 1) {
+                                console.debug(`[Debug] Overlay Triggered for Junior ${juniorId}: ${data.message}`);
                                 showOverlay(data.message || "Please wait for senior to enable.");
                                 return;
                             }
@@ -257,18 +270,27 @@ $script = '<script>
                             widget.dataset.elapsed = data.elapsed_seconds;
                             widget.dataset.status = data.status;
 
-                            widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
-                            widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
+                            const countdown = widget.querySelector('.countdown');
+                            const elapsed = widget.querySelector('.elapsed');
+
+                            if (countdown) countdown.innerText = formatTime(data.remaining_seconds);
+                            if (elapsed) elapsed.innerText = formatTime(data.elapsed_seconds);
+
+                            console.debug(`[Debug] UI updated for Junior ${juniorId}`);
                         })
-                        .catch(err => console.error(`[Action] Failed for user ${userId}:`, err));
+                        .catch(err => console.error(`[Action] Failed for Junior ${juniorId}:`, err));
                 });
             });
         });
     }
 
     // Initialize everything
-    setupseniorControlButtons();
+    document.addEventListener("DOMContentLoaded", () => {
+        console.debug("[Debug] DOM fully loaded. Setting up senior control buttons...");
+        setupseniorControlButtons();
+    });
 </script>
+
 
 <script>
     // Toggle single junior enable/disable
