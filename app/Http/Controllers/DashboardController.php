@@ -306,6 +306,12 @@ class DashboardController extends Controller
         }
 
         if ($action === 'resume') {
+            // Silently skip resume if paused for break, lunch, or tea
+            if ($timer->status === 'paused' && in_array($timer->pause_type, ['break', 'lunch', 'tea'])) {
+                // Just return early without doing anything
+                return;
+            }
+
             $timer->status = 'running';
             $timer->pause_type = 'resume';
 
