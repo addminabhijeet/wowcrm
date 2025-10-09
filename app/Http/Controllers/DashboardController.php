@@ -312,7 +312,7 @@ class DashboardController extends Controller
 
             // Get latest timer log for the user with pause_type inactive and not lunch, break, tea
             $latestLog = UserTimerLog::where('user_id', $user->id)
-                ->where('pause_type', 'inactive')
+                
                 ->latest('id')
                 ->first();
 
