@@ -219,48 +219,47 @@ $script = '<script>
     }
 
     // Setup control buttons for all timer widgets
-    function setupSeniorControlButtons() {
-        document.querySelectorAll('.timer-widget .seniorcontrolButtons button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const type = btn.getAttribute('data-type');
-                const juniorId = btn.getAttribute('data-user'); // ✅ Correct: button's own data-user
-                console.log(`[Action] User ${juniorId} clicked: ${type}`);
+    function setupseniorControlButtons() {
+        document.querySelectorAll('.timer-widget').forEach(widget => {
+            const userId = widget.dataset.user;
 
-                fetch("{{ route('timer.update') }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            action: type,
-                            user_id: juniorId
+            widget.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const type = btn.getAttribute('data-type');
+                    const juniorId = btn.getAttribute('data-user');
+                    console.log(`[Action] User ${userId} clicked: ${type}`);
+
+                    fetch("{{ route('timer.update') }}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({ action: type, user_id: userId })
                         })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        console.log(`[Action] Response for user ${juniorId}:`, data);
+                        .then(res => res.json())
+                        .then(data => {
+                            console.log(`[Action] Response for user ${userId}:`, data);
 
-                        if (data.success === false && data.notice_status === 1) {
-                            showOverlay(data.message || "Please wait for senior to enable.");
-                            return;
-                        }
+                            if (data.success === false && data.notice_status === 1) {
+                                showOverlay(data.message || "Please wait for senior to enable.");
+                                return;
+                            }
 
-                        // Update widget UI
-                        const widget = document.querySelector(`.timer-widget[data-user='${juniorId}']`);
-                        if (!widget) return;
+                            // Update widget UI
+                            widget.dataset.remaining = data.remaining_seconds;
+                            widget.dataset.elapsed = data.elapsed_seconds;
+                            widget.dataset.status = data.status;
 
-                        widget.dataset.remaining = data.remaining_seconds;
-                        widget.dataset.elapsed = data.elapsed_seconds;
-                        widget.dataset.status = data.status;
-
-                        widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
-                        widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
-                    })
-                    .catch(err => console.error(`[Action] Failed for user ${juniorId}:`, err));
+                            widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
+                            widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
+                        })
+                        .catch(err => console.error(`[Action] Failed for user ${userId}:`, err));
+                });
             });
         });
     }
+
     // Initialize everything
     setupseniorControlButtons();
     setInterval(updateAllTimers, 1000); // sync with DB every second
