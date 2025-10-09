@@ -179,6 +179,7 @@ $script = '<script>
 <div id="statusOverlay"></div>
 
 <script>
+    // Format seconds to HH:MM:SS
     function formatTime(sec) {
         sec = Math.max(0, Math.floor(sec));
         const h = Math.floor(sec / 3600);
@@ -217,50 +218,55 @@ $script = '<script>
             .catch(err => console.error("Timer fetch error:", err));
     }
 
-
+    // Setup control buttons for all timer widgets
     function setupControlButtons() {
-        // ===============================
-        // Control Buttons (Pause/Resume/etc)
-        // ===============================
-        document.querySelectorAll('#controlButtons button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                const type = btn.getAttribute('data-type');
-                console.log("[Action] Button clicked:", type);
+        document.querySelectorAll('.timer-widget').forEach(widget => {
+            const userId = widget.dataset.user;
 
-                fetch("{{ route('timer.update') }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            action: type
+            widget.querySelectorAll('.controlButtons button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const type = btn.getAttribute('data-type');
+                    console.log(`[Action] User ${userId} clicked: ${type}`);
+
+                    fetch("{{ route('timer.update') }}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                action: type,
+                                user_id: userId
+                            })
                         })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        console.log("[Action] Response:", data);
+                        .then(res => res.json())
+                        .then(data => {
+                            console.log(`[Action] Response for user ${userId}:`, data);
 
-                        if (data.success === false && data.notice_status === 1) {
-                            showOverlay(data.message || "Please wait for senior to enable.");
-                            return;
-                        }
+                            if (data.success === false && data.notice_status === 1) {
+                                showOverlay(data.message || "Please wait for senior to enable.");
+                                return;
+                            }
 
-                        remainingSeconds = data.remaining_seconds;
-                        elapsedSeconds = data.elapsed_seconds;
-                        status = data.status;
-                        updateUI();
-                    })
-                    .catch(err => console.error("[Action] Failed to send:", err));
+                            // Update widget UI
+                            widget.dataset.remaining = data.remaining_seconds;
+                            widget.dataset.elapsed = data.elapsed_seconds;
+                            widget.dataset.status = data.status;
+
+                            widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
+                            widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
+                        })
+                        .catch(err => console.error(`[Action] Failed for user ${userId}:`, err));
+                });
             });
         });
-
     }
 
-    // 🚀 Initialize
+    // Initialize everything
     setupControlButtons();
-    setInterval(updateAllTimers, 1000); // sync with DB every 10s
+    setInterval(updateAllTimers, 1000); // sync with DB every second
 </script>
+
 
 <script>
     // Toggle single junior enable/disable
