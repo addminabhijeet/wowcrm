@@ -217,7 +217,10 @@ $script = '<script>
             })
             .catch(err => console.error("Timer fetch error:", err));
     }
+    setInterval(updateAllTimers, 1000); // sync with DB every second
+</script>
 
+<script>
     // Setup control buttons for all timer widgets
     function setupseniorControlButtons() {
         document.querySelectorAll('.timer-widget').forEach(widget => {
@@ -235,7 +238,10 @@ $script = '<script>
                                 "X-CSRF-TOKEN": "{{ csrf_token() }}",
                                 "Content-Type": "application/json"
                             },
-                            body: JSON.stringify({ action: type, user_id: userId })
+                            body: JSON.stringify({
+                                action: type,
+                                user_id: userId
+                            })
                         })
                         .then(res => res.json())
                         .then(data => {
@@ -262,9 +268,7 @@ $script = '<script>
 
     // Initialize everything
     setupseniorControlButtons();
-    setInterval(updateAllTimers, 1000); // sync with DB every second
 </script>
-
 
 <script>
     // Toggle single junior enable/disable
