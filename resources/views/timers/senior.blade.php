@@ -104,16 +104,16 @@ $script = '<script>
 
                             <!-- Control Buttons -->
                             <div class="seniorcontrolButtons" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                <button data-type="resumebreak" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
+                                <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
                                     <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
                                 </button>
-                                <button data-type="lunch" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
+                                <button data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
                                     <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
                                 </button>
-                                <button data-type="tea" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
+                                <button data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
                                     <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
                                 </button>
-                                <button data-type="break" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
+                                <button data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
                             </div>
@@ -226,7 +226,8 @@ $script = '<script>
             widget.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const type = btn.getAttribute('data-type');
-                    console.log(`[Action] User ${userId} clicked: ${type}`);
+                    const juniorId = btn.getAttribute('data-user'); // get correct junior ID
+                    console.log(`[Action] User ${juniorId} clicked: ${type}`);
 
                     fetch("{{ route('timer.update') }}", {
                             method: "POST",
@@ -236,12 +237,12 @@ $script = '<script>
                             },
                             body: JSON.stringify({
                                 action: type,
-                                user_id: userId
+                                user_id: juniorId // send correct junior ID
                             })
                         })
                         .then(res => res.json())
                         .then(data => {
-                            console.log(`[Action] Response for user ${userId}:`, data);
+                            console.log(`[Action] Response for user ${juniorId}:`, data);
 
                             if (data.success === false && data.notice_status === 1) {
                                 showOverlay(data.message || "Please wait for senior to enable.");
