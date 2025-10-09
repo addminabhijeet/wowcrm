@@ -632,16 +632,7 @@ $script ='<script>
                 } else if (k === 'Name') {
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
                 }else if (k === 'forwardedBy') {
-    const currentUser = "{{ Auth::user()->name ?? '' }}";
-    cells += `<td>
-        <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" value="${currentUser}" placeholder="Forwarded By" readonly>
-        <span class="small-hint"></span>
-    </td>`;
-
-
-
-
-
+                    cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
                 } else if (k === 'View') {
                     cells += `<td>
                     <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
