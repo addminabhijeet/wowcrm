@@ -309,7 +309,36 @@ class DashboardController extends Controller
             $timer->status = 'running';
             $timer->pause_type = 'resume';
 
-            // Get latest timer log for the user
+            // Get latest timer log for the user with pause_type inactive and not lunch, break, tea
+            $latestLog = UserTimerLog::where('user_id', $user->id)
+                ->where('pause_type', 'inactive')
+                ->latest('id')
+                ->first();
+
+            if ($latestLog) {
+                $latestLog->update([
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'status'            => 'running',
+                    'pause_type'        => 'resume',
+                ]);
+            } else {
+                UserTimerPause::create([
+                    'user_timer_log_id' => $timer->id,
+                    'user_id'           => $user->id,
+                    'status'            => 'id not found',
+                    'pause_type'        => $action,
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'event_time'        => now(),
+                ]);
+            }
+        }
+
+        // New case: resumebreak
+        if ($action === 'resumebreak') {
+            $timer->status = 'running';
+            $timer->pause_type = 'resume';
+
+            // Get latest timer log for the user (no pause_type check)
             $latestLog = UserTimerLog::where('user_id', $user->id)
                 ->latest('id')
                 ->first();
@@ -330,7 +359,6 @@ class DashboardController extends Controller
                     'event_time'        => now(),
                 ]);
             }
-
         } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
 
             $pauseLabels = [
