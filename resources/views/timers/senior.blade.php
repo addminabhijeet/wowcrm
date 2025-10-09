@@ -47,7 +47,7 @@ $script = '<script>
     <div class="card-body p-24">
         <div class="row gy-4">
             @foreach($timers as $timer)
-            <div class="col-xxl-3 col-md-6 user-grid-card">
+            <div class="col-xxl-3 col-md-6 user-grid-card" data-user-id="{{ $timer['user_id'] }}">
                 <div class="position-relative border radius-16 overflow-hidden" style="padding-top: 30px;">
                     <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
 
@@ -118,6 +118,7 @@ $script = '<script>
                                 </button>
                             </div>
                         </div>
+
                         <!-- Action Buttons -->
                         @if($timer['button_status'] == 0)
                         <a href="javascript:void(0)"
@@ -134,7 +135,6 @@ $script = '<script>
                             <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
                         </a>
                         @endif
-
                     </div>
                 </div>
             </div>
@@ -173,13 +173,9 @@ $script = '<script>
     </div>
 </div>
 
-
-
-
 <div id="statusOverlay"></div>
 
 <script>
-    // Format seconds to HH:MM:SS
     function formatTime(sec) {
         sec = Math.max(0, Math.floor(sec));
         const h = Math.floor(sec / 3600);
@@ -188,15 +184,11 @@ $script = '<script>
         return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
 
-    // Fetch all timers from backend every second
     function updateAllTimers() {
         fetch("{{ route('timer.alljuniors') }}")
             .then(res => res.json())
             .then(timers => {
-                if (!Array.isArray(timers)) {
-                    console.warn("Invalid timer response:", timers);
-                    return;
-                }
+                if (!Array.isArray(timers)) return console.warn("Invalid timer response:", timers);
 
                 timers.forEach(data => {
                     const widget = document.querySelector(`.timer-widget[data-user='${data.user_id}']`);
@@ -209,7 +201,6 @@ $script = '<script>
                     widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
                     widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
 
-                    // Optional: notify when timer hits 0
                     if (data.remaining_seconds <= 0 && data.status === 'finished') {
                         alert(`User ${data.user_id} has finished their 9-hour session.`);
                     }
@@ -218,54 +209,47 @@ $script = '<script>
             .catch(err => console.error("Timer fetch error:", err));
     }
 
-    // Setup control buttons for all timer widgets
     function setupseniorControlButtons() {
         document.querySelectorAll('.timer-widget').forEach(widget => {
-            const userId = widget.dataset.user;
-
             widget.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const type = btn.getAttribute('data-type');
-                    const juniorId = btn.getAttribute('data-user'); // get correct junior ID
+                    const juniorId = btn.getAttribute('data-user');
+
                     console.log(`[Action] User ${juniorId} clicked: ${type}`);
 
                     fetch("{{ route('timer.update') }}", {
-                            method: "POST",
-                            headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                action: type,
-                                user_id: juniorId // send correct junior ID
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            console.log(`[Action] Response for user ${juniorId}:`, data);
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ action: type, user_id: juniorId })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log(`[Action] Response for user ${juniorId}:`, data);
 
-                            if (data.success === false && data.notice_status === 1) {
-                                showOverlay(data.message || "Please wait for senior to enable.");
-                                return;
-                            }
+                        if (data.success === false && data.notice_status === 1) {
+                            showOverlay(data.message || "Please wait for senior to enable.");
+                            return;
+                        }
 
-                            // Update widget UI
-                            widget.dataset.remaining = data.remaining_seconds;
-                            widget.dataset.elapsed = data.elapsed_seconds;
-                            widget.dataset.status = data.status;
+                        widget.dataset.remaining = data.remaining_seconds;
+                        widget.dataset.elapsed = data.elapsed_seconds;
+                        widget.dataset.status = data.status;
 
-                            widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
-                            widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
-                        })
-                        .catch(err => console.error(`[Action] Failed for user ${userId}:`, err));
+                        widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
+                        widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
+                    })
+                    .catch(err => console.error(`[Action] Failed for user ${juniorId}:`, err));
                 });
             });
         });
     }
 
-    // Initialize everything
     setupseniorControlButtons();
-    setInterval(updateAllTimers, 1000); // sync with DB every second
+    setInterval(updateAllTimers, 1000);
 </script>
 
 
