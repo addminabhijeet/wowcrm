@@ -331,6 +331,19 @@ $script ='<script>
             'MST': '#cce5ff',
             'PST': '#fff3cd'
         };
+        const qualificationColors = {
+            'Masters': '#e2f0d9',
+            'Master of Science': '#cce5ff',
+            'Bachelors': '#e2f0d9',
+            'PG': '#cce5ff',
+            'MBA': '#e2f0d9',
+            'PG Diploma': '#e2f0d9',
+            'M.Tech': '#cce5ff',
+            'B.Tech': '#e2f0d9',
+            'MA': '#e2f0d9',
+            'Associate Degree': '#cce5ff',
+            'Aerospace Proj. Manag.': '#e2f0d9',
+        };
         const dateColor = "#e0f7fa";
         const amountColors = "#e0f7fa";
 
@@ -344,6 +357,7 @@ $script ='<script>
             else if (key === '1st Follow Up Remarks') color = followColors[val] || color;
             else if (key === 'Course') color = courseColors[val] || color;
             else if (key === 'Time Zone') color = timezoneColors[val] || color;
+            else if (key === 'Qualification') color = qualificationColors[val] || color;
             select.style.backgroundColor = color;
         }
 
@@ -577,7 +591,7 @@ $script ='<script>
             let cells = `<td>—</td>`;
 
             colKeys.forEach(k => {
-                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone','Qualification'].includes(k)) {
+                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
                     let opts = [];
                     if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
                     if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
@@ -844,162 +858,199 @@ $script ='<script>
 </style>
 
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-    const scrollContainer = document.querySelector('.scroll-sm');
-    const allRows = Array.from(document.querySelectorAll('#sheet-table-body tr'));
+    document.addEventListener('DOMContentLoaded', () => {
+        const scrollContainer = document.querySelector('.scroll-sm');
+        const allRows = Array.from(document.querySelectorAll('#sheet-table-body tr'));
 
-    // =========================
-    // Smooth horizontal scroll + mouse-based + drag scroll
-    // =========================
-    if (scrollContainer) {
-        // Auto-scroll interval
-        let autoScrollInterval;
+        // =========================
+        // Smooth horizontal scroll + mouse-based + drag scroll
+        // =========================
+        if (scrollContainer) {
+            // Auto-scroll interval
+            let autoScrollInterval;
 
-        // Mouse move scroll
-        scrollContainer.addEventListener('mousemove', e => {
-            if (isDragging) return; // skip if dragging
-            const rect = scrollContainer.getBoundingClientRect();
-            const scrollPercent = (e.clientX - rect.left) / rect.width;
-            scrollContainer.scrollLeft = scrollPercent * (scrollContainer.scrollWidth - scrollContainer.clientWidth);
-        });
+            // Mouse move scroll
+            scrollContainer.addEventListener('mousemove', e => {
+                if (isDragging) return; // skip if dragging
+                const rect = scrollContainer.getBoundingClientRect();
+                const scrollPercent = (e.clientX - rect.left) / rect.width;
+                scrollContainer.scrollLeft = scrollPercent * (scrollContainer.scrollWidth - scrollContainer.clientWidth);
+            });
 
-        // Auto-scroll if mouse leaves
-        scrollContainer.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
-        scrollContainer.addEventListener('mouseleave', () => {
-            autoScrollInterval = setInterval(() => {
-                scrollContainer.scrollLeft += 1;
-                if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
-                    scrollContainer.scrollLeft = 0;
+            // Auto-scroll if mouse leaves
+            scrollContainer.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
+            scrollContainer.addEventListener('mouseleave', () => {
+                autoScrollInterval = setInterval(() => {
+                    scrollContainer.scrollLeft += 1;
+                    if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
+                        scrollContainer.scrollLeft = 0;
+                    }
+                }, 20);
+            });
+
+            // =========================
+            // Mouse-drag scroll
+            // =========================
+            let isDragging = false,
+                startX, scrollLeftStart;
+
+            scrollContainer.addEventListener('mousedown', e => {
+                isDragging = true;
+                scrollContainer.classList.add('dragging');
+                startX = e.pageX - scrollContainer.offsetLeft;
+                scrollLeftStart = scrollContainer.scrollLeft;
+            });
+
+            scrollContainer.addEventListener('mouseup', () => {
+                isDragging = false;
+                scrollContainer.classList.remove('dragging');
+            });
+            scrollContainer.addEventListener('mouseleave', () => {
+                isDragging = false;
+                scrollContainer.classList.remove('dragging');
+            });
+
+            scrollContainer.addEventListener('mousemove', e => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - scrollContainer.offsetLeft;
+                const walk = (x - startX) * 1; // scroll speed multiplier
+                scrollContainer.scrollLeft = scrollLeftStart - walk;
+            });
+        }
+
+        // =========================
+        // Helper functions
+        // =========================
+        const getFields = row => Array.from(row.querySelectorAll('input, select, textarea'))
+            .filter(el => el.offsetParent && !el.disabled && !el.readOnly && el.type !== 'hidden');
+
+        const focusField = el => {
+            el.focus();
+            if (el.tagName === 'INPUT' && el.type === 'text') el.select();
+            el.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+            el.classList.add('focus-highlight');
+            setTimeout(() => el.classList.remove('focus-highlight'), 500);
+        };
+
+        const moveFocus = (field, forward = true) => {
+            const row = field.closest('tr');
+            const idx = allRows.indexOf(row);
+            const fields = getFields(row);
+            const saveBtn = row.querySelector('.save-btn');
+            const fIdx = fields.indexOf(field);
+            let target = forward ? fields[fIdx + 1] : fields[fIdx - 1];
+
+            if (!target) {
+                if (forward && saveBtn) {
+                    focusField(saveBtn);
+                    return;
                 }
-            }, 20);
+                const nextRow = allRows[forward ? idx + 1 : idx - 1] || allRows[forward ? 0 : allRows.length - 1];
+                const nextFields = getFields(nextRow);
+                if (nextFields.length) target = forward ? nextFields[0] : nextFields[nextFields.length - 1];
+            }
+            if (target) focusField(target);
+        };
+
+        // =========================
+        // Navigation & Save handling
+        // =========================
+        allRows.forEach(row => {
+            const fields = getFields(row);
+            const saveBtn = row.querySelector('.save-btn');
+
+            fields.forEach(field => {
+                field.addEventListener('keydown', e => {
+                    const forward = (e.key === 'Enter' && !e.shiftKey) || (e.key === 'Tab' && !e.shiftKey);
+                    const backward = (e.key === 'Enter' && e.shiftKey) || (e.key === 'Tab' && e.shiftKey);
+                    if (forward) {
+                        e.preventDefault();
+                        const last = fields.indexOf(field) === fields.length - 1;
+                        last && saveBtn ? focusField(saveBtn) : moveFocus(field, true);
+                    } else if (backward) {
+                        e.preventDefault();
+                        moveFocus(field, false);
+                    }
+                });
+            });
+
+            if (saveBtn) {
+                saveBtn.addEventListener('keydown', e => {
+                    const forward = (e.key === 'Enter' || e.key === 'Tab') && !e.shiftKey;
+                    const backward = (e.key === 'Enter' || e.key === 'Tab') && e.shiftKey;
+                    if (forward) {
+                        e.preventDefault();
+                        const nextRow = allRows[allRows.indexOf(row) + 1] || allRows[0];
+                        const nf = getFields(nextRow);
+                        nf.length && focusField(nf[0]);
+                    }
+                    if (backward) {
+                        e.preventDefault();
+                        const prevRow = allRows[allRows.indexOf(row) - 1] || allRows[allRows.length - 1];
+                        const pf = getFields(prevRow);
+                        pf.length && focusField(pf[pf.length - 1]);
+                    }
+                });
+            }
         });
 
         // =========================
-        // Mouse-drag scroll
+        // Custom shortcuts: Alt+S/U/V
         // =========================
-        let isDragging = false, startX, scrollLeftStart;
+        document.addEventListener('keydown', e => {
+            if (!e.altKey) return;
+            const key = e.key.toLowerCase();
+            const row = document.activeElement.closest('tr');
+            if (!row) return;
 
-        scrollContainer.addEventListener('mousedown', e => {
-            isDragging = true;
-            scrollContainer.classList.add('dragging');
-            startX = e.pageX - scrollContainer.offsetLeft;
-            scrollLeftStart = scrollContainer.scrollLeft;
+            if (key === 's') { // Save
+                const btn = row.querySelector('.save-btn');
+                if (btn) btn.click();
+                e.preventDefault();
+            }
+            if (key === 'u') { // Upload
+                const fileInput = row.querySelector('.resume-input');
+                if (fileInput) fileInput.click();
+                e.preventDefault();
+            }
+            if (key === 'v') { // View
+                const viewBtn = row.querySelector('.view-btn');
+                if (viewBtn && !viewBtn.classList.contains('d-none')) viewBtn.click();
+                e.preventDefault();
+            }
         });
-
-        scrollContainer.addEventListener('mouseup', () => { isDragging = false; scrollContainer.classList.remove('dragging'); });
-        scrollContainer.addEventListener('mouseleave', () => { isDragging = false; scrollContainer.classList.remove('dragging'); });
-
-        scrollContainer.addEventListener('mousemove', e => {
-            if (!isDragging) return;
-            e.preventDefault();
-            const x = e.pageX - scrollContainer.offsetLeft;
-            const walk = (x - startX) * 1; // scroll speed multiplier
-            scrollContainer.scrollLeft = scrollLeftStart - walk;
-        });
-    }
-
-    // =========================
-    // Helper functions
-    // =========================
-    const getFields = row => Array.from(row.querySelectorAll('input, select, textarea'))
-        .filter(el => el.offsetParent && !el.disabled && !el.readOnly && el.type !== 'hidden');
-
-    const focusField = el => {
-        el.focus();
-        if (el.tagName === 'INPUT' && el.type === 'text') el.select();
-        el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
-        el.classList.add('focus-highlight');
-        setTimeout(() => el.classList.remove('focus-highlight'), 500);
-    };
-
-    const moveFocus = (field, forward = true) => {
-        const row = field.closest('tr');
-        const idx = allRows.indexOf(row);
-        const fields = getFields(row);
-        const saveBtn = row.querySelector('.save-btn');
-        const fIdx = fields.indexOf(field);
-        let target = forward ? fields[fIdx + 1] : fields[fIdx - 1];
-
-        if (!target) {
-            if (forward && saveBtn) { focusField(saveBtn); return; }
-            const nextRow = allRows[forward ? idx + 1 : idx - 1] || allRows[forward ? 0 : allRows.length - 1];
-            const nextFields = getFields(nextRow);
-            if (nextFields.length) target = forward ? nextFields[0] : nextFields[nextFields.length - 1];
-        }
-        if (target) focusField(target);
-    };
-
-    // =========================
-    // Navigation & Save handling
-    // =========================
-    allRows.forEach(row => {
-        const fields = getFields(row);
-        const saveBtn = row.querySelector('.save-btn');
-
-        fields.forEach(field => {
-            field.addEventListener('keydown', e => {
-                const forward = (e.key === 'Enter' && !e.shiftKey) || (e.key === 'Tab' && !e.shiftKey);
-                const backward = (e.key === 'Enter' && e.shiftKey) || (e.key === 'Tab' && e.shiftKey);
-                if (forward) { e.preventDefault();
-                    const last = fields.indexOf(field) === fields.length - 1;
-                    last && saveBtn ? focusField(saveBtn) : moveFocus(field, true);
-                } else if (backward) { e.preventDefault(); moveFocus(field, false); }
-            });
-        });
-
-        if (saveBtn) {
-            saveBtn.addEventListener('keydown', e => {
-                const forward = (e.key === 'Enter' || e.key === 'Tab') && !e.shiftKey;
-                const backward = (e.key === 'Enter' || e.key === 'Tab') && e.shiftKey;
-                if (forward) { e.preventDefault();
-                    const nextRow = allRows[allRows.indexOf(row)+1] || allRows[0];
-                    const nf = getFields(nextRow); nf.length && focusField(nf[0]);
-                }
-                if (backward) { e.preventDefault();
-                    const prevRow = allRows[allRows.indexOf(row)-1] || allRows[allRows.length-1];
-                    const pf = getFields(prevRow); pf.length && focusField(pf[pf.length-1]);
-                }
-            });
-        }
     });
-
-    // =========================
-    // Custom shortcuts: Alt+S/U/V
-    // =========================
-    document.addEventListener('keydown', e => {
-        if (!e.altKey) return;
-        const key = e.key.toLowerCase();
-        const row = document.activeElement.closest('tr');
-        if (!row) return;
-
-        if (key === 's') { // Save
-            const btn = row.querySelector('.save-btn'); if (btn) btn.click(); e.preventDefault();
-        }
-        if (key === 'u') { // Upload
-            const fileInput = row.querySelector('.resume-input'); if (fileInput) fileInput.click(); e.preventDefault();
-        }
-        if (key === 'v') { // View
-            const viewBtn = row.querySelector('.view-btn'); if (viewBtn && !viewBtn.classList.contains('d-none')) viewBtn.click(); e.preventDefault();
-        }
-    });
-});
 </script>
 
 <style>
-/* Highlight focused field briefly */
-.focus-highlight {
-    animation: highlightFlash 0.5s ease-in-out;
-}
-@keyframes highlightFlash {
-    0% { background-color: #fff3b0; }
-    50% { background-color: #fff59d; }
-    100% { background-color: transparent; }
-}
+    /* Highlight focused field briefly */
+    .focus-highlight {
+        animation: highlightFlash 0.5s ease-in-out;
+    }
 
-/* Mouse-drag cursor */
-.scroll-sm.dragging {
-    cursor: grabbing;
-    cursor: -webkit-grabbing;
-}
+    @keyframes highlightFlash {
+        0% {
+            background-color: #fff3b0;
+        }
+
+        50% {
+            background-color: #fff59d;
+        }
+
+        100% {
+            background-color: transparent;
+        }
+    }
+
+    /* Mouse-drag cursor */
+    .scroll-sm.dragging {
+        cursor: grabbing;
+        cursor: -webkit-grabbing;
+    }
 </style>
 @endsection
