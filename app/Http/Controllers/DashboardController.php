@@ -279,7 +279,8 @@ class DashboardController extends Controller
 
     public function updateTimer(Request $request)
     {
-        $user   = Auth::user();
+        $userId = $request->input('user_id');
+        $user = $userId ? User::find($userId) : Auth::user();
         $action = $request->input('action');
 
         // Get the latest timer log for the user
