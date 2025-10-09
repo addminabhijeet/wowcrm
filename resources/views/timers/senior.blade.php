@@ -225,85 +225,46 @@ $script = '<script>
 <script>
     // Setup control buttons for all timer widgets
     function setupseniorControlButtons() {
-        console.debug("[Debug] Initializing senior control buttons...");
-
-        document.querySelectorAll('.timer-widget').forEach(widget => {
-            const userId = widget.dataset.user;
-            console.debug(`[Debug] Found timer widget for user ID: ${userId}`);
-
-            const controlButtons = widget.querySelectorAll('.seniorcontrolButtons button');
-            if (!controlButtons.length) {
-                console.debug(`[Debug] No control buttons found for user ${userId}`);
-                return;
-            }
-
-            controlButtons.forEach(btn => {
+        document.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
+            btn.addEventListener('click', () => {
                 const type = btn.getAttribute('data-type');
-                const juniorId = btn.getAttribute('data-user');
-                console.debug(`[Debug] Binding click for junior ${juniorId} (${type})`);
+                const userId = btn.getAttribute('data-user');
 
-                btn.addEventListener('click', () => {
-                    console.log(`[Action] Senior (${userId}) clicked: ${type} for Junior (${juniorId})`);
+                console.log(`[Action] Button clicked: ${type} (User ID: ${userId})`);
 
-                    fetch("{{ route('timer.update') }}", {
-                            method: "POST",
-                            headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                action: type,
-                                user_id: juniorId
-                            })
+                fetch("{{ route('timer.update') }}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            action: type,
+                            user_id: userId
                         })
-                        .then(async res => {
-                            const text = await res.text();
-                            if (!text) {
-                                console.warn(`[Debug] Empty response from server for junior ${juniorId}`);
-                                return {};
-                            }
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("[Action] Response:", data);
 
-                            try {
-                                return JSON.parse(text);
-                            } catch (e) {
-                                console.error(`[Debug] JSON parse failed for junior ${juniorId}:`, e, text);
-                                return {};
-                            }
-                        })
-                        .then(data => {
-                            if (!data || Object.keys(data).length === 0) {
-                                console.warn(`[Debug] No valid data returned for junior ${juniorId}`);
-                                return;
-                            }
+                        if (data.success === false && data.notice_status === 1) {
+                            showOverlay(data.message || "Please wait for senior to enable.");
+                            return;
+                        }
 
-                            console.debug(`[Debug] Response for Junior ${juniorId}:`, data);
-
-                            if (data.success === false && data.notice_status === 1) {
-                                console.debug(`[Debug] Overlay Triggered for Junior ${juniorId}: ${data.message}`);
-                                showOverlay(data.message || "Please wait for senior to enable.");
-                                return;
-                            }
-
-                            // Update widget UI
-                            widget.dataset.remaining = data.remaining_seconds;
-                            widget.dataset.elapsed = data.elapsed_seconds;
-                            widget.dataset.status = data.status;
-
-                            const countdown = widget.querySelector('.countdown');
-                            const elapsed = widget.querySelector('.elapsed');
-
-                            if (countdown && data.remaining_seconds !== undefined)
-                                countdown.innerText = formatTime(data.remaining_seconds);
-
-                            if (elapsed && data.elapsed_seconds !== undefined)
-                                elapsed.innerText = formatTime(data.elapsed_seconds);
-
-                            console.debug(`[Debug] UI updated for Junior ${juniorId}`);
-                        })
-                        .catch(err => console.error(`[Action] Failed for Junior ${juniorId}:`, err));
-                });
+                        // Update individual timer UI for this user only
+                        const timerWidget = document.querySelector(`.timer-widget[data-user='${userId}']`);
+                        if (timerWidget) {
+                            timerWidget.dataset.status = data.status;
+                            timerWidget.dataset.remainingSeconds = data.remaining_seconds;
+                            timerWidget.dataset.elapsedSeconds = data.elapsed_seconds;
+                            updateUI(userId, data); // assume updateUI handles per-user updates
+                        }
+                    })
+                    .catch(err => console.error("[Action] Failed to send:", err));
             });
         });
+
     }
 
     // Initialize once DOM is ready
