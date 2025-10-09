@@ -219,36 +219,42 @@ $script = '<script>
 
 
     function setupControlButtons() {
-        document.querySelectorAll('.timer-widget').forEach(widget => {
-            const userId = widget.dataset.user;
+        // ===============================
+        // Control Buttons (Pause/Resume/etc)
+        // ===============================
+        document.querySelectorAll('#controlButtons button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.getAttribute('data-type');
+                console.log("[Action] Button clicked:", type);
 
-            widget.querySelectorAll('button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const action = btn.dataset.type;
-
-                    fetch("{{ route('timer.update') }}", {
-                            method: "POST",
-                            headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                user_id: userId,
-                                action
-                            })
+                fetch("{{ route('timer.update') }}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            action: type
                         })
-                        .then(res => res.json())
-                        .then(data => {
-                            widget.dataset.remaining = data.remaining_seconds;
-                            widget.dataset.elapsed = data.elapsed_seconds;
-                            widget.dataset.status = data.status;
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("[Action] Response:", data);
 
-                            widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
-                            widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
-                        });
-                });
+                        if (data.success === false && data.notice_status === 1) {
+                            showOverlay(data.message || "Please wait for senior to enable.");
+                            return;
+                        }
+
+                        remainingSeconds = data.remaining_seconds;
+                        elapsedSeconds = data.elapsed_seconds;
+                        status = data.status;
+                        updateUI();
+                    })
+                    .catch(err => console.error("[Action] Failed to send:", err));
             });
         });
+
     }
 
     // 🚀 Initialize
