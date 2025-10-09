@@ -103,7 +103,7 @@ $script = '<script>
                             </div>
 
                             <!-- Control Buttons -->
-                            <div class="controlButtons" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                            <div class="seniorcontrolButtons" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
                                 <button data-type="resumebreak" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
                                     <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
                                 </button>
@@ -219,11 +219,11 @@ $script = '<script>
     }
 
     // Setup control buttons for all timer widgets
-    function setupControlButtons() {
+    function setupseniorControlButtons() {
         document.querySelectorAll('.timer-widget').forEach(widget => {
             const userId = widget.dataset.user;
 
-            widget.querySelectorAll('.controlButtons button').forEach(btn => {
+            widget.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
                 btn.addEventListener('click', () => {
                     const type = btn.getAttribute('data-type');
                     console.log(`[Action] User ${userId} clicked: ${type}`);
@@ -263,7 +263,7 @@ $script = '<script>
     }
 
     // Initialize everything
-    setupControlButtons();
+    setupseniorControlButtons();
     setInterval(updateAllTimers, 1000); // sync with DB every second
 </script>
 
