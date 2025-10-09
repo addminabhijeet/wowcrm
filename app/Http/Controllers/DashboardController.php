@@ -311,6 +311,7 @@ class DashboardController extends Controller
 
             // Get latest timer log for the user
             $latestLog = UserTimerLog::where('user_id', $user->id)
+                ->whereNotIn('pause_type', ['lunch', 'break', 'tea'])
                 ->latest('id')
                 ->first();
 
@@ -330,7 +331,6 @@ class DashboardController extends Controller
                     'event_time'        => now(),
                 ]);
             }
-
         } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
 
             $pauseLabels = [
