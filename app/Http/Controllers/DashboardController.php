@@ -390,12 +390,27 @@ class DashboardController extends Controller
                 ->first();
 
             if ($latestLog) {
-                $latestLog->update([
-                    'remaining_seconds' => $timer->remaining_seconds,
-                    'status'            => 'paused',
-                    'pause_type'        => 'inactive',
-                ]);
+                // Check if already paused for lunch/tea/break
+                if (!in_array($latestLog->pause_type, ['lunch', 'tea', 'break'])) {
+                    // Update only if not in lunch/tea/break
+                    $latestLog->update([
+                        'remaining_seconds' => $timer->remaining_seconds,
+                        'status'            => 'paused',
+                        'pause_type'        => 'inactive',
+                    ]);
+
+                    // Log pause event for audit only when updated
+                    UserTimerPause::create([
+                        'user_timer_log_id' => $timer->id,
+                        'user_id'           => $user->id,
+                        'status'            => 'paused',
+                        'pause_type'        => 'inactive',
+                        'remaining_seconds' => $timer->remaining_seconds,
+                        'event_time'        => now(),
+                    ]);
+                }
             } else {
+                // Create fallback log if none found
                 UserTimerPause::create([
                     'user_timer_log_id' => $timer->id,
                     'user_id'           => $user->id,
@@ -405,16 +420,8 @@ class DashboardController extends Controller
                     'event_time'        => now(),
                 ]);
             }
-
-            UserTimerPause::create([
-                'user_timer_log_id' => $timer->id,
-                'user_id'           => $user->id,
-                'status'            => 'paused',
-                'pause_type'        => 'inactive',
-                'remaining_seconds' => $timer->remaining_seconds,
-                'event_time'        => now(),
-            ]);
         }
+
 
 
         // 🕓 Update timestamp and save
