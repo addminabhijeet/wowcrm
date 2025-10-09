@@ -631,13 +631,14 @@ $script ='<script>
                     cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
                 } else if (k === 'Name') {
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                } else if (k === 'Forwarded By') {
-    // Automatically fill with logged-in user or leave blank, readonly
+} else if (k === 'Forwarded By') {
     const currentUser = "{{ Auth::user()->name ?? '' }}";
     cells += `<td>
         <input type="text" class="form-control forwardedBy-input" data-key="Forwarded By" value="${currentUser}" placeholder="Forwarded By" readonly>
         <span class="small-hint"></span>
     </td>`;
+
+
 
                 } else if (k === 'View') {
                     cells += `<td>
