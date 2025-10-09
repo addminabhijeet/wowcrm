@@ -609,37 +609,38 @@ $script ='<script>
             let cells = `<td>—</td>`;
 
             colKeys.forEach(k => {
-                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
+                const key = k.trim(); // trim any extra spaces
+                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(key)) {
                     let opts = [];
-                    if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
-                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Ready To Paid', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
-                    if (k === 'Immigration') opts = ['Dependent Visa', 'Global Visa', 'Graduate Visa', 'Student Visa', 'Citizen', 'Permanent Residence(ILR)'];
-                    if (k === 'Relocation') opts = ['YES', 'NO'];
-                    if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
-                    if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
-                    if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
-                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
-                } else if (k === 'Amount') {
-                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount"></td>`;
-                } else if (k === 'Location') {
-                    cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
-                } else if (k === 'Date' || k === 'Graduation Date') {
-                    cells += `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
-                } else if (k === 'Phone Number') {
-                    cells += `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
-                } else if (k === 'Email Address') {
-                    cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
-                } else if (k === 'Name') {
-                    cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                } else if (k === 'Forwarded By') {
-                    cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="${k}" placeholder="Forwarded By"><span class="small-hint"></span></td>`;
-                } else if (k === 'View') {
+                    if (key === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
+                    if (key === 'Exe Remarks') opts = ['Called & Mailed', 'Ready To Paid', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
+                    if (key === 'Immigration') opts = ['Dependent Visa', 'Global Visa', 'Graduate Visa', 'Student Visa', 'Citizen', 'Permanent Residence(ILR)'];
+                    if (key === 'Relocation') opts = ['YES', 'NO'];
+                    if (key === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
+                    if (key === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+                    if (key === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
+                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${key}"><option value="" disabled selected>-- Select ${key} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
+                } else if (key === 'Amount') {
+                    cells += `<td><input type="text" class="form-control amount-input" data-key="${key}" placeholder="Amount"></td>`;
+                } else if (key === 'Location') {
+                    cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${key}" placeholder="Location"><span class="small-hint"></span></td>`;
+                } else if (key === 'Date' || key === 'Graduation Date') {
+                    cells += `<td><input type="text" class="form-control date-picker" data-key="${key}" placeholder="${key} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
+                } else if (key === 'Phone Number') {
+                    cells += `<td><input type="tel" class="form-control phone-input" data-key="${key}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
+                } else if (key === 'Email Address') {
+                    cells += `<td><input type="email" class="form-control email-input" data-key="${key}" placeholder="Email"><span class="small-hint"></span></td>`;
+                } else if (key === 'Name') {
+                    cells += `<td><input type="text" class="form-control name-input" data-key="${key}" placeholder="Name"><span class="small-hint"></span></td>`;
+                } else if (key === 'Forwarded By') {
+                    cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="${key}" placeholder="Forwarded By"><span class="small-hint"></span></td>`;
+                } else if (key === 'View') {
                     cells += `<td>
-                    <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
-                    <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-                    <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
-                    <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-                </td>`;
+            <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
+            <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+            <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
+            <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+        </td>`;
                 }
             });
 
