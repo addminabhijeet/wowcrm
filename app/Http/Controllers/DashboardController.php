@@ -308,6 +308,7 @@ class DashboardController extends Controller
         if ($action === 'resume') {
             $timer->status = 'running';
             $timer->pause_type = 'resume';
+            $timer->save();
 
             // Get latest timer log for the user with pause_type inactive and not lunch, break, tea
             $latestLog = UserTimerLog::where('user_id', $user->id)
@@ -337,6 +338,7 @@ class DashboardController extends Controller
         if ($action === 'resumebreak') {
             $timer->status = 'running';
             $timer->pause_type = 'resume';
+            $timer->save();
 
             // Get latest timer log for the user (no pause_type check)
             $latestLog = UserTimerLog::where('user_id', $user->id)
