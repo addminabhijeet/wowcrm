@@ -305,30 +305,103 @@ class DashboardController extends Controller
             $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
         }
 
-        // 🧭 Handle actions
         if ($action === 'resume') {
             $timer->status = 'running';
             $timer->pause_type = 'resume';
 
-            UserTimerLog::create([
+            // Get latest timer log for the user
+            $latestLog = UserTimerLog::where('user_id', $user->id)
+                ->latest('id')
+                ->first();
+
+            if ($latestLog) {
+                $latestLog->update([
+                    'start_time'        => $currentTime,
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'status'            => 'running',
+                    'pause_type'        => 'resume',
+                ]);
+            } else {
+                UserTimerLog::create([
+                    'user_id'           => $user->id,
+                    'login_id'          => $user->id,
+                    'start_time'        => $currentTime,
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'status'            => 'running',
+                    'pause_type'        => 'resume',
+                ]);
+            }
+        } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
+
+            $pauseLabels = [
+                'lunch' => 'Lunch Break',
+                'tea'   => 'Tea Break',
+                'break' => 'Short Break',
+            ];
+
+            $timer->status = 'paused';
+            $timer->pause_type = $action;
+
+            // Get latest timer log for the user
+            $latestLog = UserTimerLog::where('user_id', $user->id)
+                ->latest('id')
+                ->first();
+
+            if ($latestLog) {
+                $latestLog->update([
+                    'start_time'        => $currentTime,
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'status'            => 'paused',
+                    'pause_type'        => $action,
+                ]);
+            } else {
+                UserTimerLog::create([
+                    'user_id'           => $user->id,
+                    'login_id'          => $user->id,
+                    'start_time'        => $currentTime,
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'status'            => 'paused',
+                    'pause_type'        => $action,
+                ]);
+            }
+
+            // Log the pause in UserTimerPause
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
                 'user_id'           => $user->id,
-                'login_id'          => $user->id,
-                'start_time'        => $currentTime,
-                'remaining_seconds' => $timer->remaining_seconds,
-                'status'            => 'running',
-                'pause_type'        => 'resume',
+                'status'            => 'paused',
+                'pause_type'        => $action,
+                'remaining_seconds' => $workDaySeconds,
+                'event_time'        => now(),
+                'note'              => $pauseLabels[$action] ?? ucfirst($action),
             ]);
         } elseif ($action !== 'tick') {
+            // Default inactive pause (manual stop or idle)
             $timer->status = 'paused';
             $timer->pause_type = 'inactive';
-            UserTimerLog::create([
-                'user_id'           => $user->id,
-                'login_id'          => $user->id,
-                'start_time'        => $currentTime,
-                'remaining_seconds' => $timer->remaining_seconds,
-                'status'            => 'paused',
-                'pause_type'        => 'inactive',
-            ]);
+
+            $latestLog = UserTimerLog::where('user_id', $user->id)
+                ->latest('id')
+                ->first();
+
+            if ($latestLog) {
+                $latestLog->update([
+                    'start_time'        => $currentTime,
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'status'            => 'paused',
+                    'pause_type'        => 'inactive',
+                ]);
+            } else {
+                UserTimerLog::create([
+                    'user_id'           => $user->id,
+                    'login_id'          => $user->id,
+                    'start_time'        => $currentTime,
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'status'            => 'paused',
+                    'pause_type'        => 'inactive',
+                ]);
+            }
+
             UserTimerPause::create([
                 'user_timer_log_id' => $timer->id,
                 'user_id'           => $user->id,
@@ -336,8 +409,10 @@ class DashboardController extends Controller
                 'pause_type'        => 'inactive',
                 'remaining_seconds' => $workDaySeconds,
                 'event_time'        => now(),
+                'note'              => 'Inactive Pause',
             ]);
         }
+
 
         // 🕓 Update timestamp and save
         $timer->updated_at = $currentTime;
