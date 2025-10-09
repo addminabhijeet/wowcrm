@@ -209,6 +209,7 @@ $script = '<script>
                     widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
                     widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
 
+                    // Optional: notify when timer hits 0
                     if (data.remaining_seconds <= 0 && data.status === 'finished') {
                         alert(`User ${data.user_id} has finished their 9-hour session.`);
                     }
@@ -260,12 +261,10 @@ $script = '<script>
             });
         });
     }
-
     // Initialize everything
-    setupSeniorControlButtons();
+    setupseniorControlButtons();
     setInterval(updateAllTimers, 1000); // sync with DB every second
 </script>
-
 
 
 <script>
