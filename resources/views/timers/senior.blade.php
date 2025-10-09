@@ -103,6 +103,7 @@ $script = '<script>
                             </div>
 
 
+
                             <!-- Control Buttons -->
                             <div class="seniorcontrolButtons" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
                                 <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
@@ -239,7 +240,7 @@ $script = '<script>
             controlButtons.forEach(btn => {
                 const type = btn.getAttribute('data-type');
                 const juniorId = btn.getAttribute('data-user');
-                console.debug(`[Debug] Binding click for user ${juniorId} (${type})`);
+                console.debug(`[Debug] Binding click for junior ${juniorId} (${type})`);
 
                 btn.addEventListener('click', () => {
                     console.log(`[Action] Senior (${userId}) clicked: ${type} for Junior (${juniorId})`);
@@ -255,8 +256,26 @@ $script = '<script>
                                 user_id: juniorId
                             })
                         })
-                        .then(res => res.json())
+                        .then(async res => {
+                            const text = await res.text();
+                            if (!text) {
+                                console.warn(`[Debug] Empty response from server for junior ${juniorId}`);
+                                return {};
+                            }
+
+                            try {
+                                return JSON.parse(text);
+                            } catch (e) {
+                                console.error(`[Debug] JSON parse failed for junior ${juniorId}:`, e, text);
+                                return {};
+                            }
+                        })
                         .then(data => {
+                            if (!data || Object.keys(data).length === 0) {
+                                console.warn(`[Debug] No valid data returned for junior ${juniorId}`);
+                                return;
+                            }
+
                             console.debug(`[Debug] Response for Junior ${juniorId}:`, data);
 
                             if (data.success === false && data.notice_status === 1) {
@@ -273,8 +292,11 @@ $script = '<script>
                             const countdown = widget.querySelector('.countdown');
                             const elapsed = widget.querySelector('.elapsed');
 
-                            if (countdown) countdown.innerText = formatTime(data.remaining_seconds);
-                            if (elapsed) elapsed.innerText = formatTime(data.elapsed_seconds);
+                            if (countdown && data.remaining_seconds !== undefined)
+                                countdown.innerText = formatTime(data.remaining_seconds);
+
+                            if (elapsed && data.elapsed_seconds !== undefined)
+                                elapsed.innerText = formatTime(data.elapsed_seconds);
 
                             console.debug(`[Debug] UI updated for Junior ${juniorId}`);
                         })
@@ -284,12 +306,14 @@ $script = '<script>
         });
     }
 
-    // Initialize everything
+    // Initialize once DOM is ready
     document.addEventListener("DOMContentLoaded", () => {
         console.debug("[Debug] DOM fully loaded. Setting up senior control buttons...");
         setupseniorControlButtons();
     });
 </script>
+
+
 
 
 <script>
