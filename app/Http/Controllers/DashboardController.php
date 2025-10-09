@@ -305,6 +305,10 @@ class DashboardController extends Controller
             $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
         }
 
+        // Store previous status before any change
+        $previousStatus = $timer->status;
+        $previousPauseType = $timer->pause_type;
+
         if ($action === 'resume' || $action === 'resumebreak') {
             // If currently paused for break, lunch, or tea
             if ($timer->status === 'paused' && in_array($timer->pause_type, ['break', 'lunch', 'tea'])) {
@@ -340,19 +344,22 @@ class DashboardController extends Controller
                 ]);
             }
 
-            $lastPause = UserTimerPause::where('user_id', $user->id)
+            $lastPause = UserTimerLog::where('user_id', $user->id)
                 ->latest('id')
                 ->first();
 
             if ($lastPause && in_array($lastPause->pause_type, ['lunch', 'tea', 'break', 'inactive'])) {
-                UserTimerPause::create([
-                    'user_timer_log_id' => $timer->id,
-                    'user_id'           => $user->id,
-                    'status'            => 'running',
-                    'pause_type'        => 'resume',
-                    'remaining_seconds' => $timer->remaining_seconds,
-                    'event_time'        => now(),
-                ]);
+                // Create UserTimerPause only when status actually changed from paused → running
+                if ($previousStatus === 'paused' && $timer->status === 'running') {
+                    UserTimerPause::create([
+                        'user_timer_log_id' => $timer->id,
+                        'user_id'           => $user->id,
+                        'status'            => 'running',
+                        'pause_type'        => 'resume',
+                        'remaining_seconds' => $timer->remaining_seconds,
+                        'event_time'        => now(),
+                    ]);
+                }
             }
         } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
 
