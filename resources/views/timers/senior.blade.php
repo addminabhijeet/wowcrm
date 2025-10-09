@@ -3,6 +3,11 @@
 @php
 $title = 'Senior Dashboard';
 $subTitle = 'All Junior Timers';
+$script = '<script>
+    $(".delete-btn").on("click", function() {
+        $(this).closest(".user-grid-card").addClass("d-none")
+    });
+</script>';
 @endphp
 
 @section('content')
@@ -11,37 +16,52 @@ $subTitle = 'All Junior Timers';
         <div class="d-flex align-items-center flex-wrap gap-3">
             <span class="text-md fw-medium text-secondary-light mb-0">Show</span>
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
-                @for($i = 1; $i <= 10; $i++)
-                    <option>{{ $i }}</option>
-                @endfor
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+                <option>10</option>
             </select>
             <form class="navbar-search">
                 <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
             </form>
         </div>
-        <a href="javascript:void(0)" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" id="enableAll">
+        <a href="javascript:void(0)" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
+            id="enableAll">
             <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
             Enable All Junior
         </a>
-        <a href="javascript:void(0)" class="btn btn-danger text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" id="disableAll">
+
+        <a href="javascript:void(0)" class="btn btn-danger text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
+            id="disableAll">
             <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
             Disable All Junior
         </a>
     </div>
-
     <div class="card-body p-24">
         <div class="row gy-4">
             @foreach($timers as $timer)
-            <div class="col-xxl-3 col-md-6 user-grid-card" data-user-id="{{ $timer['user_id'] }}">
+            <div class="col-xxl-3 col-md-6 user-grid-card">
                 <div class="position-relative border radius-16 overflow-hidden" style="padding-top: 30px;">
                     <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
+
+                    <!-- Dropdown -->
                     <div class="dropdown position-absolute top-0 end-0 me-16 mt-16">
-                        <button type="button"
-                            class="{{ $timer['button_status'] == 0 ? 'bg-danger' : 'bg-white-gradient-light' }} w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white"
-                            disabled>
+                        @if($timer['button_status'] == 0)
+                        <button type="button" class="bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white" disabled>
                             <iconify-icon icon="entypo:dots-three-vertical" class="icon"></iconify-icon>
                         </button>
+                        @else
+                        <button type="button" class="bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white" disabled>
+                            <iconify-icon icon="entypo:dots-three-vertical" class="icon"></iconify-icon>
+                        </button>
+                        @endif
                     </div>
 
                     <div class="ps-16 pb-16 pe-16 text-center mt--50">
@@ -57,115 +77,178 @@ $subTitle = 'All Junior Timers';
                             data-status="{{ $timer['status'] }}"
                             style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
 
+                            <!-- Countdown -->
                             <div style="margin-right:10px;text-align:center;min-width:60px;">
                                 <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
                                     <iconify-icon icon="mdi:timer-outline" style="color:#dc3545;font-size:14px;"></iconify-icon>
-                                    <small style="color:#6c757d;font-size:10px;">Countdown</small>
+                                    <small style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Countdown</small>
                                 </div>
-                                <span class="countdown" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;">
+                                <span class="countdown" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                                     {{ gmdate('H:i:s', $timer['remaining_seconds']) }}
                                 </span>
                             </div>
 
+                            <!-- Divider -->
                             <div style="width:1px;background:#dee2e6;margin:0 4px;"></div>
 
+                            <!-- Elapsed -->
                             <div style="margin-right:10px;text-align:center;min-width:60px;">
                                 <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
                                     <iconify-icon icon="mdi:clock-outline" style="color:#28a745;font-size:14px;"></iconify-icon>
-                                    <small style="color:#6c757d;font-size:10px;">Elapsed</small>
+                                    <small style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Elapsed</small>
                                 </div>
-                                <span class="elapsed" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;">
+                                <span class="elapsed" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                                     {{ gmdate('H:i:s', $timer['elapsed_seconds']) }}
                                 </span>
                             </div>
 
-                            <!-- Dynamic Buttons -->
+                            <!-- Control Buttons -->
                             <div class="seniorcontrolButtons" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                @php
-                                    $actions = [
-                                        'resumebreak' => ['label' => 'Resume', 'color' => '#28a745', 'bg' => '#d4edda', 'icon' => 'mdi:play'],
-                                        'lunch' => ['label' => 'Lunch', 'color' => '#ffc107', 'bg' => '#f8f9fa', 'icon' => 'mdi:food'],
-                                        'tea' => ['label' => 'Tea', 'color' => '#8b4513', 'bg' => '#f8f9fa', 'icon' => 'mdi:coffee'],
-                                        'break' => ['label' => 'Break', 'color' => '#007bff', 'bg' => '#f8f9fa', 'icon' => 'mdi:pause']
-                                    ];
-                                @endphp
-                                @foreach($actions as $type => $btn)
-                                <button data-type="{{ $type }}" style="width:65px;height:28px;border-radius:14px;background:{{ $btn['bg'] }};border:1px solid {{ $btn['color'] }};display:flex;align-items:center;justify-content:center;font-size:12px;color:{{ $btn['color'] }};">
-                                    <iconify-icon icon="{{ $btn['icon'] }}" style="margin-right:2px;font-size:14px;"></iconify-icon>{{ $btn['label'] }}
+                                <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
+                                    <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
                                 </button>
-                                @endforeach
+                                <button data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
+                                    <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
+                                </button>
+                                <button data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
+                                    <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
+                                </button>
+                                <button data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
+                                    <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
+                                </button>
                             </div>
                         </div>
-
+                        <!-- Action Buttons -->
                         @if($timer['button_status'] == 0)
-                        <a href="javascript:void(0)" class="enable-junior btn mt-16 w-100" data-user="{{ $timer['user_id'] }}">
+                        <a href="javascript:void(0)"
+                            class="bg-primary-50 text-primary-600 hover-bg-primary-600 hover-text-white p-10 text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center justify-content-center mt-16 fw-medium gap-2 w-100 enable-junior"
+                            data-user="{{ $timer['user_id'] }}">
                             Enable Junior
+                            <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
                         </a>
                         @else
-                        <a href="javascript:void(0)" class="disable-junior btn mt-16 w-100" data-user="{{ $timer['user_id'] }}">
+                        <a href="javascript:void(0)"
+                            class="bg-danger-50 text-danger-600 hover-bg-danger-600 hover-text-white p-10 text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center justify-content-center mt-16 fw-medium gap-2 w-100 disable-junior"
+                            data-user="{{ $timer['user_id'] }}">
                             Disable Junior
+                            <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
                         </a>
                         @endif
+
                     </div>
                 </div>
             </div>
             @endforeach
         </div>
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
+            <span>Showing 1 to 10 of 12 entries</span>
+            <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">
+                        <iconify-icon icon="ep:d-arrow-left" class=""></iconify-icon>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md bg-primary-600 text-white" href="javascript:void(0)">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px" href="javascript:void(0)">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">3</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">4</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">5</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">
+                        <iconify-icon icon="ep:d-arrow-right" class=""></iconify-icon>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
+
+
+
 
 <div id="statusOverlay"></div>
 
 <script>
-    const formatTime = sec => {
+    // Format seconds to HH:MM:SS
+    function formatTime(sec) {
         sec = Math.max(0, Math.floor(sec));
-        const h = Math.floor(sec / 3600), m = Math.floor((sec % 3600) / 60), s = sec % 60;
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        const s = sec % 60;
         return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    };
+    }
 
-    const updateAllTimers = () => {
+    // Fetch all timers from backend every second
+    function updateAllTimers() {
         fetch("{{ route('timer.alljuniors') }}")
-        .then(res => res.json())
-        .then(timers => {
-            if (!Array.isArray(timers)) return console.warn("Invalid timer response:", timers);
-            timers.forEach(data => {
-                const widget = document.querySelector(`.timer-widget[data-user='${data.user_id}']`);
-                if (!widget) return;
-
-                widget.dataset.remaining = data.remaining_seconds;
-                widget.dataset.elapsed = data.elapsed_seconds;
-                widget.dataset.status = data.status;
-
-                widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
-                widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
-
-                if (data.remaining_seconds <= 0 && data.status === 'finished') {
-                    alert(`User ${data.user_id} has finished their 9-hour session.`);
+            .then(res => res.json())
+            .then(timers => {
+                if (!Array.isArray(timers)) {
+                    console.warn("Invalid timer response:", timers);
+                    return;
                 }
-            });
-        }).catch(err => console.error("Timer fetch error:", err));
-    };
 
-    const setupSeniorControls = () => {
-        document.querySelectorAll('.timer-widget').forEach(widget => {
-            const userId = widget.dataset.user;
-            widget.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const action = btn.dataset.type;
-                    fetch("{{ route('timer.update') }}", {
+                timers.forEach(data => {
+                    const widget = document.querySelector(`.timer-widget[data-user='${data.user_id}']`);
+                    if (!widget) return;
+
+                    widget.dataset.remaining = data.remaining_seconds;
+                    widget.dataset.elapsed = data.elapsed_seconds;
+                    widget.dataset.status = data.status;
+
+                    widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
+                    widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
+
+                    if (data.remaining_seconds <= 0 && data.status === 'finished') {
+                        alert(`User ${data.user_id} has finished their 9-hour session.`);
+                    }
+                });
+            })
+            .catch(err => console.error("Timer fetch error:", err));
+    }
+
+    // Setup control buttons for all timer widgets
+    function setupSeniorControlButtons() {
+        document.querySelectorAll('.timer-widget .seniorcontrolButtons button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.getAttribute('data-type');
+                const juniorId = btn.getAttribute('data-user'); // ✅ Correct: button's own data-user
+                console.log(`[Action] User ${juniorId} clicked: ${type}`);
+
+                fetch("{{ route('timer.update') }}", {
                         method: "POST",
                         headers: {
                             "X-CSRF-TOKEN": "{{ csrf_token() }}",
                             "Content-Type": "application/json"
                         },
-                        body: JSON.stringify({ action, user_id: userId })
+                        body: JSON.stringify({
+                            action: type,
+                            user_id: juniorId
+                        })
                     })
                     .then(res => res.json())
                     .then(data => {
-                        if (!data.success && data.notice_status) {
-                            alert(data.message || "Please wait for senior to enable.");
+                        console.log(`[Action] Response for user ${juniorId}:`, data);
+
+                        if (data.success === false && data.notice_status === 1) {
+                            showOverlay(data.message || "Please wait for senior to enable.");
                             return;
                         }
+
+                        // Update widget UI
+                        const widget = document.querySelector(`.timer-widget[data-user='${juniorId}']`);
+                        if (!widget) return;
+
                         widget.dataset.remaining = data.remaining_seconds;
                         widget.dataset.elapsed = data.elapsed_seconds;
                         widget.dataset.status = data.status;
@@ -173,15 +256,16 @@ $subTitle = 'All Junior Timers';
                         widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
                         widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
                     })
-                    .catch(err => console.error(err));
-                });
+                    .catch(err => console.error(`[Action] Failed for user ${juniorId}:`, err));
             });
         });
-    };
+    }
 
-    setupSeniorControls();
-    setInterval(updateAllTimers, 1000);
+    // Initialize everything
+    setupSeniorControlButtons();
+    setInterval(updateAllTimers, 1000); // sync with DB every second
 </script>
+
 
 
 <script>
