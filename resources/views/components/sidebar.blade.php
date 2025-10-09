@@ -48,6 +48,9 @@
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet</a></li>
                     </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.junior.candm') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet C&M</a></li>
+                    </ul>
                 </li>
 
                 <li class="dropdown">
