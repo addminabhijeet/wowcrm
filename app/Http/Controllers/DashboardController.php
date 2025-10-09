@@ -339,6 +339,21 @@ class DashboardController extends Controller
                     'event_time'        => now(),
                 ]);
             }
+
+            $lastPause = UserTimerPause::where('user_id', $user->id)
+                ->latest('id')
+                ->first();
+
+            if ($lastPause && in_array($lastPause->pause_type, ['lunch', 'tea', 'break', 'inactive'])) {
+                UserTimerPause::create([
+                    'user_timer_log_id' => $timer->id,
+                    'user_id'           => $user->id,
+                    'status'            => 'running',
+                    'pause_type'        => 'resume',
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'event_time'        => now(),
+                ]);
+            }
         } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
 
             $pauseLabels = [
