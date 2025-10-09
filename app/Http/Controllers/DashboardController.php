@@ -305,17 +305,19 @@ class DashboardController extends Controller
             $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
         }
 
-        if ($action === 'resume') {
-            // Silently skip resume if paused for break, lunch, or tea
+        if ($action === 'resume' || $action === 'resumebreak') {
+            // If currently paused for break, lunch, or tea
             if ($timer->status === 'paused' && in_array($timer->pause_type, ['break', 'lunch', 'tea'])) {
-                // Just return early without doing anything
-                return;
+                // Allow resume ONLY if action is 'resumebreak'
+                if ($action !== 'resumebreak') {
+                    return; // silently skip if normal resume is triggered
+                }
             }
 
             $timer->status = 'running';
             $timer->pause_type = 'resume';
 
-            // Get latest timer log for the user
+            // Get latest timer log for the user (exclude non-working pauses)
             $latestLog = UserTimerLog::where('user_id', $user->id)
                 ->whereNotIn('pause_type', ['lunch', 'break', 'tea'])
                 ->latest('id')
@@ -355,7 +357,6 @@ class DashboardController extends Controller
 
             if ($latestLog) {
                 $latestLog->update([
-                    'start_time'        => $currentTime,
                     'remaining_seconds' => $timer->remaining_seconds,
                     'status'            => 'paused',
                     'pause_type'        => $action,
@@ -366,7 +367,7 @@ class DashboardController extends Controller
                     'user_id'           => $user->id,
                     'status'            => 'id not found',
                     'pause_type'        => $action,
-                    'remaining_seconds' => $workDaySeconds,
+                    'remaining_seconds' => $timer->remaining_seconds,
                     'event_time'        => now(),
                 ]);
             }
@@ -377,7 +378,7 @@ class DashboardController extends Controller
                 'user_id'           => $user->id,
                 'status'            => 'paused',
                 'pause_type'        => $action,
-                'remaining_seconds' => $workDaySeconds,
+                'remaining_seconds' => $timer->remaining_seconds,
                 'event_time'        => now(),
             ]);
         } elseif ($action !== 'tick') {
