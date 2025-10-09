@@ -316,21 +316,29 @@ class DashboardController extends Controller
 
             if ($latestLog) {
                 $latestLog->update([
-                    'start_time'        => $currentTime,
                     'remaining_seconds' => $timer->remaining_seconds,
                     'status'            => 'running',
                     'pause_type'        => 'resume',
                 ]);
             } else {
-                UserTimerLog::create([
+                UserTimerPause::create([
+                    'user_timer_log_id' => $timer->id,
                     'user_id'           => $user->id,
-                    'login_id'          => $user->id,
-                    'start_time'        => $currentTime,
+                    'status'            => 'id not found',
+                    'pause_type'        => $action,
                     'remaining_seconds' => $timer->remaining_seconds,
-                    'status'            => 'running',
-                    'pause_type'        => 'resume',
+                    'event_time'        => now(),
                 ]);
             }
+
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
+                'user_id'           => $user->id,
+                'status'            => 'running',
+                'pause_type'        => 'resume',
+                'remaining_seconds' => $timer->remaining_seconds,
+                'event_time'        => now(),
+            ]);
         } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
 
             $pauseLabels = [
@@ -355,13 +363,13 @@ class DashboardController extends Controller
                     'pause_type'        => $action,
                 ]);
             } else {
-                UserTimerLog::create([
+                UserTimerPause::create([
+                    'user_timer_log_id' => $timer->id,
                     'user_id'           => $user->id,
-                    'login_id'          => $user->id,
-                    'start_time'        => $currentTime,
-                    'remaining_seconds' => $timer->remaining_seconds,
-                    'status'            => 'paused',
+                    'status'            => 'id not found',
                     'pause_type'        => $action,
+                    'remaining_seconds' => $workDaySeconds,
+                    'event_time'        => now(),
                 ]);
             }
 
@@ -373,7 +381,6 @@ class DashboardController extends Controller
                 'pause_type'        => $action,
                 'remaining_seconds' => $workDaySeconds,
                 'event_time'        => now(),
-                'note'              => $pauseLabels[$action] ?? ucfirst($action),
             ]);
         } elseif ($action !== 'tick') {
             // Default inactive pause (manual stop or idle)
@@ -386,19 +393,18 @@ class DashboardController extends Controller
 
             if ($latestLog) {
                 $latestLog->update([
-                    'start_time'        => $currentTime,
                     'remaining_seconds' => $timer->remaining_seconds,
                     'status'            => 'paused',
                     'pause_type'        => 'inactive',
                 ]);
             } else {
-                UserTimerLog::create([
+                UserTimerPause::create([
+                    'user_timer_log_id' => $timer->id,
                     'user_id'           => $user->id,
-                    'login_id'          => $user->id,
-                    'start_time'        => $currentTime,
-                    'remaining_seconds' => $timer->remaining_seconds,
-                    'status'            => 'paused',
+                    'status'            => 'id not found',
                     'pause_type'        => 'inactive',
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'event_time'        => now(),
                 ]);
             }
 
@@ -407,9 +413,8 @@ class DashboardController extends Controller
                 'user_id'           => $user->id,
                 'status'            => 'paused',
                 'pause_type'        => 'inactive',
-                'remaining_seconds' => $workDaySeconds,
+                'remaining_seconds' => $timer->remaining_seconds,
                 'event_time'        => now(),
-                'note'              => 'Inactive Pause',
             ]);
         }
 
