@@ -344,22 +344,16 @@ class DashboardController extends Controller
                 ]);
             }
 
-            $lastPause = UserTimerLog::where('user_id', $user->id)
-                ->latest('id')
-                ->first();
-
-            if ($lastPause && in_array($lastPause->pause_type, ['lunch', 'tea', 'break', 'inactive'])) {
-                // Create UserTimerPause only when status actually changed from paused → running
-                if ($previousStatus === 'paused' && $timer->status === 'running') {
-                    UserTimerPause::create([
-                        'user_timer_log_id' => $timer->id,
-                        'user_id'           => $user->id,
-                        'status'            => 'running',
-                        'pause_type'        => 'resume',
-                        'remaining_seconds' => $timer->remaining_seconds,
-                        'event_time'        => now(),
-                    ]);
-                }
+            // ✅ Create UserTimerPause entry only if previously paused
+            if ($previousStatus === 'paused') {
+                UserTimerPause::create([
+                    'user_timer_log_id' => $timer->id,
+                    'user_id'           => $user->id,
+                    'status'            => 'running',
+                    'pause_type'        => 'resume',
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'event_time'        => now(),
+                ]);
             }
         } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
 
