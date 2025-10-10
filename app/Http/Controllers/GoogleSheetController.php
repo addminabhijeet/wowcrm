@@ -1481,31 +1481,24 @@ class GoogleSheetController extends Controller
                         'mail.from.name' => $smtp->from_name,
                     ]);
 
-                    // --- Direct Email Content (HTML) ---
+                    // --- Direct Email Content (No Template) ---
                     $subject = "Course Details from {$smtp->from_name}";
-
-                    // Prepare HTML message with placeholders replaced
-                    $messageBody = "
-                        <p>Hello, {$rowData['Name']}<br />
+                    $messageBody = " <p>Hello,<br />
                         <br />
-                        Your course: {$rowData['course']}<br />
-                        Amount: {$rowData['amount']}<br />
+                        Your course: {{course}}<br />
+                        Amount: {{amount}}<br />
                         <br />
                         Thank you for your interest. Best Wishes!!<br />
                         <br />
                         Regards,<br />
-                        {$smtp->from_name}</p>
-                    ";
+                        {{from_name}}</p>";
 
-                    // Send HTML email
-                    Mail::send([], [], function ($message) use ($email, $subject, $smtp, $messageBody) {
+                    Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                         $message->from($smtp->from_address, $smtp->from_name)
                             ->to($email)
-                            ->subject($subject)
-                            ->html($messageBody); // use HTML content
+                            ->subject($subject);
                     });
 
-                    // Confirmation message
                     $mailMessage = "Email sent successfully to {$email}!";
                 }
             } catch (\Exception $e) {
