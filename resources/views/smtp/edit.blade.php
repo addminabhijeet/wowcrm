@@ -172,94 +172,136 @@ $subTitle = 'Settings - SMTP';
         </div>
     </div>
 </div>
-@endsection
 
 @push('scripts')
 <script>
     $(document).ready(function() {
+        try {
+            console.log("[Debug] SMTP page initialized");
 
-        console.log("[Debug] SMTP page initialized"); // <-- use log instead of debug
+            const toggleBtn = $('#togglePassword');
+            const passwordInput = $('#smtpPassword');
+            const eyeIcon = $('#eyeIcon');
+            const copyBtn = $('#copyPassword');
+            const alertContainer = $('#smtpAlertContainer');
+            const testForm = $('#testSmtpForm');
+            const testEmailInput = $('#testEmail');
+            const sendBtn = $('#sendTestBtn');
+            const btnText = $('#btnText');
 
-        const toggleBtn = $('#togglePassword');
-        const passwordInput = $('#smtpPassword');
-        const eyeIcon = $('#eyeIcon');
-        const copyBtn = $('#copyPassword');
-        const alertContainer = $('#smtpAlertContainer');
-        const testForm = $('#testSmtpForm');
-        const testEmailInput = $('#testEmail');
-        const sendBtn = $('#sendTestBtn');
-        const btnText = $('#btnText');
-
-        // --- Toggle password ---
-        toggleBtn.length && passwordInput.length && eyeIcon.length && toggleBtn.on('click', function() {
-            console.log("[Debug] Toggle password clicked"); // debug log
-            if (passwordInput.attr('type') === 'password') {
-                passwordInput.attr('type', 'text');
-                eyeIcon.attr('icon', 'mdi:eye-off-outline');
+            // --- Toggle password ---
+            if (toggleBtn.length && passwordInput.length && eyeIcon.length) {
+                toggleBtn.on('click', function() {
+                    try {
+                        console.log("[Debug] Toggle password clicked");
+                        if (passwordInput.attr('type') === 'password') {
+                            passwordInput.attr('type', 'text');
+                            eyeIcon.attr('icon', 'mdi:eye-off-outline');
+                        } else {
+                            passwordInput.attr('type', 'password');
+                            eyeIcon.attr('icon', 'mdi:eye-outline');
+                        }
+                    } catch (e) {
+                        console.error("[Error] Toggle password failed:", e);
+                    }
+                });
             } else {
-                passwordInput.attr('type', 'password');
-                eyeIcon.attr('icon', 'mdi:eye-outline');
+                console.warn("[Warning] Toggle password elements missing");
             }
-        });
 
-        // --- Copy password ---
-        copyBtn.length && passwordInput.length && copyBtn.on('click', function() {
-            console.log("[Debug] Copy password clicked"); // debug log
-            passwordInput.select();
-            document.execCommand('copy');
-            alert('Password copied to clipboard!');
-        });
-
-        // --- Show alert ---
-        function showSmtpAlert(message, type = 'success') {
-            console.log("[Debug] Show alert:", type, message); // debug log
-            if (alertContainer.length) {
-                const html = `
-                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                    <strong>${type==='success'?'Success!':'Error!'}</strong> ${message}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>`;
-                alertContainer.prepend(html);
-                setTimeout(() => {
-                    $('.alert').alert('close');
-                }, 5000);
+            // --- Copy password ---
+            if (copyBtn.length && passwordInput.length) {
+                copyBtn.on('click', function() {
+                    try {
+                        console.log("[Debug] Copy password clicked");
+                        passwordInput.select();
+                        document.execCommand('copy');
+                        alert('Password copied to clipboard!');
+                    } catch (e) {
+                        console.error("[Error] Copy password failed:", e);
+                    }
+                });
+            } else {
+                console.warn("[Warning] Copy password elements missing");
             }
-        }
 
-        // --- AJAX: Test email ---
-        testForm.length && testForm.on('submit', function(e) {
-            e.preventDefault();
-            const email = testEmailInput.val();
-            console.log("[Debug] Test email submitted:", email); // debug log
-            if (!email) return;
-
-            sendBtn.prop('disabled', true);
-            btnText.text('Sending...');
-
-            $.ajax({
-                url: "{{ route('smtp.test') }}",
-                method: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    test_email: email
-                },
-                success: function(res) {
-                    console.log("[Debug] AJAX success:", res); // debug log
-                    showSmtpAlert(res.message, 'success');
-                },
-                error: function(xhr) {
-                    console.log("[Debug] AJAX error:", xhr); // debug log
-                    let msg = 'Failed to send test email.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
-                    showSmtpAlert(msg, 'danger');
-                },
-                complete: function() {
-                    sendBtn.prop('disabled', false);
-                    btnText.text('Send Test Email');
+            // --- Show alert ---
+            function showSmtpAlert(message, type = 'success') {
+                try {
+                    console.log("[Debug] Show alert:", type, message);
+                    if (alertContainer.length) {
+                        const html = `
+                        <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                            <strong>${type==='success'?'Success!':'Error!'}</strong> ${message}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>`;
+                        alertContainer.prepend(html);
+                        setTimeout(() => {
+                            $('.alert').alert('close');
+                        }, 5000);
+                    } else {
+                        console.warn("[Warning] Alert container not found");
+                    }
+                } catch (e) {
+                    console.error("[Error] showSmtpAlert failed:", e);
                 }
-            });
-        });
+            }
 
+            // --- AJAX: Test email ---
+            if (testForm.length) {
+                testForm.on('submit', function(e) {
+                    e.preventDefault();
+                    try {
+                        const email = testEmailInput.val();
+                        console.log("[Debug] Test email submitted:", email);
+                        if (!email) return;
+
+                        sendBtn.prop('disabled', true);
+                        btnText.text('Sending...');
+
+                        $.ajax({
+                            url: "{{ route('smtp.test') }}",
+                            method: "POST",
+                            data: {
+                                _token: "{{ csrf_token() }}",
+                                test_email: email
+                            },
+                            success: function(res) {
+                                console.log("[Debug] AJAX success:", res);
+                                showSmtpAlert(res.message, 'success');
+                            },
+                            error: function(xhr, status, error) {
+                                console.error("[Debug] AJAX error", {
+                                    status,
+                                    error,
+                                    xhr
+                                });
+                                let msg = 'Failed to send test email.';
+                                if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                                showSmtpAlert(msg, 'danger');
+                            },
+                            complete: function() {
+                                console.log("[Debug] AJAX request completed");
+                                sendBtn.prop('disabled', false);
+                                btnText.text('Send Test Email');
+                            }
+                        });
+                    } catch (e) {
+                        console.error("[Error] Test email submit failed:", e);
+                    }
+                });
+            } else {
+                console.warn("[Warning] Test email form not found");
+            }
+
+            // --- Global JS error catcher ---
+            window.addEventListener('error', function(event) {
+                console.error("[Global Error] ", event.message, event.filename, event.lineno, event.colno, event.error);
+            });
+
+        } catch (e) {
+            console.error("[Error] SMTP page initialization failed:", e);
+        }
     });
 </script>
 @endpush
