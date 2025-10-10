@@ -34,7 +34,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
 </div>
 
 {{-- Load CKEditor --}}
-<script src="https://cdn.ckeditor.com/4.25.1/standard/ckeditor.js"></script>
+<script src="https://cdn.ckeditor.com/4.21.0/standard/ckeditor.js"></script>
 <script>
     CKEDITOR.replace('editor', {
         height: 250,
