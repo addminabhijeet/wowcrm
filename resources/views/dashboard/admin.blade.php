@@ -309,7 +309,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:email-outline"></iconify-icon>
                                         </span>
-                                        <input type="text" name="mailer" class="form-control radius-8" value="{{ old('mailer', $smtp->mailer ?? 'smtp') }}">
+                                        <input type="text" name="mailer" class="form-control radius-8" value="{{ $smtp->mailer ) }}">
                                     </div>
                                 </div>
 
