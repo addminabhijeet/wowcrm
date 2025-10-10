@@ -1490,23 +1490,130 @@ class GoogleSheetController extends Controller
                         $messageBody = $template->body;
                     } else {
                         // Fallback if template not found
-                        $subject = "Course Details from {$smtp->from_name}";
-                        $messageBody = "Dear Candidate,\n\n"
-                            . "Thank you for showing interest in our program.\n"
-                            . "Below are the details:\n\n"
-                            . "Course: {$course}\n"
-                            . "Amount: {$amount}\n\n"
-                            . "For more information, feel free to reach out.\n\n"
-                            . "Best regards,\n"
-                            . "{$smtp->from_name}";
+                        $subject = "Unlock Career Stability with Fortune 500 Projects !";
+                        $messageBody = '
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Course Information</title>
+</head>
+<body style="font-family: Arial, sans-serif; background-color: #f6f8fb; margin: 0; padding: 30px;">
+    <div style="max-width: 720px; margin: 0 auto; background: #ffffff; padding: 30px; border-radius: 12px; box-shadow: 0 2px 6px rgba(0,0,0,0.08); line-height: 1.7; color: #333333;">
+        
+        <p style="font-size: 16px;">Hi <strong>{$name}</strong>,</p>
+
+        <p>I hope this message finds you well.</p>
+
+        <p>My name is <strong>{$smtp->from_name}</strong>, and I’m part of the Talent Acquisition Team at <strong>Synergie Systems INC.</strong>, a respected workforce development and project management firm based in Delaware. 
+        We partner with some of the most renowned Fortune 500 companies across the U.S., delivering not just staffing solutions but long-term career success.</p>
+
+        <p>After reviewing your profile, I believe you could be a strong fit for several exciting opportunities we currently have available. 
+        And more importantly, I believe we can offer you not just a job, but a career pathway built on stability, support, and growth.</p>
+
+        <h3 style="color: #007bff; margin-top: 25px;">What Makes Synergie Different?</h3>
+
+        <p>At Synergie, we understand that a fulfilling career is built on trust, purpose, and progress. That\'s why we go beyond recruitment—we invest in you. 
+        Our commitment is simple: to help you grow, thrive, and achieve your highest potential.</p>
+
+        <ul>
+            <li>Direct Project Placements with Fortune 500 and Tier 1 clients</li>
+            <li>Full-time employment with Synergie—never just a short-term contract</li>
+            <li>Real-world project experience with today’s most in-demand tools and technologies</li>
+            <li>Dedicated support from day one: resume branding, interview prep, and onboarding guidance</li>
+            <li>Zero Bond Policy—because your freedom and career choices matter</li>
+            <li>Support for OPT, CPT, STEM OPT, H1B & Green Card sponsorships</li>
+        </ul>
+
+        <h3 style="color: #007bff; margin-top: 25px;">More Than a Paycheck — A Path to Prosperity</h3>
+
+        <p>We believe that when you bring value, you deserve to be valued. That\'s why we offer a transparent, competitive compensation structure designed to reward your dedication and drive.</p>
+
+        <ul>
+            <li>Full-Time Roles: $40–$50/hr</li>
+            <li>Part-Time Roles: $15–$25/hr</li>
+            <li>Paid Internships available</li>
+            <li>15% Salary Raise every 6 months based on performance</li>
+            <li>12 Days Paid Vacation annually</li>
+            <li>Relocation Assistance for client deployments</li>
+        </ul>
+
+        <h3 style="color: #007bff; margin-top: 25px;">Comprehensive Benefits That Put You First</h3>
+
+        <ul>
+            <li>Health, Dental & Vision Insurance</li>
+            <li>Short- & Long-Term Disability Insurance</li>
+            <li>Life Insurance & 401(k) Retirement Plan</li>
+            <li>Legal & Immigration Support</li>
+            <li>Tax Assistance & Transparent Payroll</li>
+            <li>Workers’ Compensation—your safety is our priority</li>
+        </ul>
+
+        <h3 style="color: #007bff; margin-top: 25px;">Support Tailored for International Talent</h3>
+
+        <ul>
+            <li>Offer Letters, Client Confirmations & Employer Letters</li>
+            <li>Full STEM Extension & OPT/CPT Support</li>
+            <li>H1B Sponsorship after project onboarding</li>
+            <li>Relocation & Immigration Documentation</li>
+            <li>Ongoing Green Card Processing Assistance</li>
+        </ul>
+
+        <h3 style="color: #007bff; margin-top: 25px;">Not Quite Job-Ready? We’ll Bridge That Gap</h3>
+
+        <p>Sometimes, all it takes is one last push to unlock your dream opportunity. 
+        That\'s why we offer a 4-week industry-focused workshop, designed by experts with over a decade of experience to prepare you for real-world success.</p>
+
+        <p><strong>What You’ll Gain:</strong></p>
+        <ul>
+            <li>Live Zoom sessions & recorded expert sessions</li>
+            <li>Real-time project simulations & hands-on assignments</li>
+            <li>One-on-one resume branding & mock interviews</li>
+            <li>Global Certificate of Completion & recruiter access</li>
+            <li>100% Fee Refund with your first project paycheck (Only <strong>{$amount}</strong> — one-time, fully refundable)</li>
+        </ul>
+
+        <h3 style="color: #007bff; margin-top: 25px;">Let’s Take the First Step Together</h3>
+
+        <p>If you’re seeking more than just another role—if you’re looking for a career that recognizes your potential, offers true support, and opens doors to the future you deserve—then Synergie is here for you.</p>
+
+        <p>This is your opportunity to move forward with confidence, backed by a team that believes in you and works tirelessly to help you succeed.</p>
+
+        <p>Please feel free to reply to this email or reach me directly over the phone if you’d like to learn more or take the next step.</p>
+
+        <p>Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.</p>
+
+        <p style="margin-top: 30px; text-align: center;">
+            <a href="https://www.synergiesystems.com/" target="_blank" 
+               style="display: inline-block; background-color: #007bff; color: #fff; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+                Visit Our Website 🌐
+            </a>
+        </p>
+
+        <p style="margin-top: 30px;">Best Regards,<br><strong>{$smtp->from_name}</strong><br>Talent Acquisition Team<br>Synergie Systems INC.</p>
+    </div>
+</body>
+</html>';
                     }
 
-                    // --- Send Email (No Template Logic Changed) ---
-                    Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
-                        $message->from($smtp->from_address, $smtp->from_name)
-                            ->to($email)
-                            ->subject($subject);
-                    });
+                    // --- Determine if body contains HTML ---
+                    $isHtml = Str::contains($messageBody, ['<html', '<body', '<p', '<br', '<div', '<h']);
+
+                    // --- Send email accordingly ---
+                    if ($isHtml) {
+                        Mail::send([], [], function ($message) use ($email, $subject, $smtp, $messageBody) {
+                            $message->from($smtp->from_address, $smtp->from_name)
+                                ->to($email)
+                                ->subject($subject)
+                                ->setBody($messageBody, 'text/html'); // send as HTML
+                        });
+                    } else {
+                        Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
+                            $message->from($smtp->from_address, $smtp->from_name)
+                                ->to($email)
+                                ->subject($subject); // send as plain text
+                        });
+                    }
 
                     $mailMessage = "Email sent successfully to {$email}!";
                 }
