@@ -208,7 +208,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
     }
@@ -326,7 +326,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
 
@@ -762,7 +762,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
     }
@@ -888,7 +888,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
 
@@ -1193,7 +1193,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
     }
@@ -1324,7 +1324,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
 
@@ -1648,7 +1648,7 @@ Regards,
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
     }
@@ -1746,7 +1746,7 @@ Regards,
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
 
@@ -2033,7 +2033,7 @@ Regards,
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
     }
@@ -2131,7 +2131,7 @@ Regards,
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
 
