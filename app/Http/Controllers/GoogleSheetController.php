@@ -1414,7 +1414,7 @@ class GoogleSheetController extends Controller
             }
 
             if ($column === 'Exe_Remarks') {
-                $exeRemarksValue = $val; // capture Exe_Remarks for condition check
+                $exeRemarksValue = $val;
             }
 
             $record->$column = $val;
@@ -1427,11 +1427,10 @@ class GoogleSheetController extends Controller
             $record->created_by = $user->id . '|junior';
         }
 
-        // Handle resume file upload - Save actual file content
+        // Handle resume file upload
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Validate it's a PDF
             if ($file->getMimeType() !== 'application/pdf') {
                 return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
             }
@@ -1470,7 +1469,7 @@ class GoogleSheetController extends Controller
                         'message' => 'No SMTP settings found.'
                     ]);
                 } else {
-                    // Temporarily configure mailer (same as test() method)
+                    // Configure mailer dynamically (same as test() method)
                     config([
                         'mail.mailers.smtp.transport' => $smtp->mailer,
                         'mail.mailers.smtp.host' => $smtp->host,
@@ -1482,22 +1481,22 @@ class GoogleSheetController extends Controller
                         'mail.from.name' => $smtp->from_name,
                     ]);
 
-                    $mailTemplate = new EmailTemplateController();
-                    $mailData = $mailTemplate->renderTemplate('Called_Mailed', [
-                        'course' => $course,
-                        'amount' => $amount,
-                        'from_name' => $smtp->from_name
-                    ]);
+                    // --- Direct Email Content (No Template) ---
+                    $subject = "Course Details from {$smtp->from_name}";
+                    $messageBody = "Dear Candidate,\n\n"
+                        . "Thank you for showing interest in our program.\n"
+                        . "Below are the details:\n\n"
+                        . "Course: {$course}\n"
+                        . "Amount: {$amount}\n\n"
+                        . "For more information, feel free to reach out.\n\n"
+                        . "Best regards,\n"
+                        . "{$smtp->from_name}";
 
-                    if ($mailData) {
-                        Mail::html($mailData['body'], function ($message) use ($email, $mailData, $smtp) {
-                            $message->from($smtp->from_address, $smtp->from_name)
-                                ->to($email)
-                                ->subject($mailData['subject']);
-                        });
-                    }
-
-
+                    Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
+                        $message->from($smtp->from_address, $smtp->from_name)
+                            ->to($email)
+                            ->subject($subject);
+                    });
 
                     $mailMessage = "Email sent successfully to {$email}!";
                 }
@@ -1515,6 +1514,7 @@ class GoogleSheetController extends Controller
             'resume_path' => !empty($record->resume) ? true : false
         ]);
     }
+
 
 
     // Add a method to serve the PDF files
