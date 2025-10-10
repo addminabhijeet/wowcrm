@@ -467,7 +467,7 @@ class DashboardController extends Controller
     public function edit()
     {
         $smtp = SmtpSetting::first(); // Assume single record
-        return view('dashboard.admin', compact('smtp'));
+        return view('smtp.edit', compact('smtp'));
     }
 
     // Update SMTP settings
