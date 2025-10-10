@@ -1490,11 +1490,13 @@ class GoogleSheetController extends Controller
                     ]);
 
                     if ($mailData) {
-                        Mail::html($mailData['body'], function ($message) use ($email, $mailData) {
-                            $message->to($email)
+                        Mail::html($mailData['body'], function ($message) use ($email, $mailData, $smtp) {
+                            $message->from($smtp->from_address, $smtp->from_name)
+                                ->to($email)
                                 ->subject($mailData['subject']);
                         });
                     }
+
 
 
                     $mailMessage = "Email sent successfully to {$email}!";
