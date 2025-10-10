@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\EmailTemplate;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\View;
 
 class EmailTemplateController extends Controller
 {
@@ -30,5 +31,25 @@ class EmailTemplateController extends Controller
         $template->update($request->only('subject', 'body'));
 
         return redirect()->back()->with('success', 'Template updated successfully!');
+    }
+
+    // --- Get rendered body dynamically ---
+    public function renderTemplate($slug, $data = [])
+    {
+        $template = EmailTemplate::where('slug', $slug)->first();
+        if (!$template) {
+            return null;
+        }
+
+        // Render variables inside the body
+        $renderedBody = View::make('emails.dynamic_template', [
+            'content' => $template->body,
+            'data' => $data
+        ])->render();
+
+        return [
+            'subject' => $template->subject,
+            'body' => $renderedBody
+        ];
     }
 }

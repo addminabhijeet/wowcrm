@@ -1346,26 +1346,17 @@ class GoogleSheetController extends Controller
                         'mail.from.name' => $smtp->from_name,
                     ]);
 
-                    $courseText = $course ?? 'N/A';
-                    $amountText = $amount ?? 'N/A';
+                    // ✅ Generate dynamic mail body using another controller
+                    $mailTemplate = new EmailTemplateController();
+                    $mailBody = $mailTemplate->renderTemplate($course, $amount, $smtp->from_name);
 
-                    $mailBody = "Hello,
-
-                    Your course: {$courseText}
-                    Amount: {$amountText}
-
-                    Thank you for your interest.
-
-                    Regards,
-                    {$smtp->from_name}";
-
-                    // Send mail like test() method
-                    Mail::raw($mailBody, function ($message) use ($email) {
+                    // Use Mail::html() since it's an HTML Blade view
+                    Mail::html($mailBody, function ($message) use ($email) {
                         $message->to($email)
                             ->subject('Course & Amount Information');
                     });
 
-                    $mailMessage = "Test email sent successfully to {$email}!";
+                    $mailMessage = "Email sent successfully to {$email}!";
                 }
             } catch (\Exception $e) {
                 $mailMessage = 'Failed to send email: ' . $e->getMessage();
