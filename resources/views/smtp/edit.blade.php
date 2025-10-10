@@ -5,12 +5,13 @@ $subTitle = 'Settings - SMTP';
 @endphp
 
 @section('content')
-
 <div class="card h-100 p-0 radius-12">
     <div class="card-body p-24">
         <div class="row gy-4">
             <div class="col-xxl-12">
                 <div class="card radius-12 shadow-none border overflow-hidden">
+
+                    {{-- Card Header --}}
                     <div class="card-header bg-neutral-100 border-bottom py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
                         <div class="d-flex align-items-center gap-10">
                             <span class="w-36-px h-36-px bg-base rounded-circle d-flex justify-content-center align-items-center">
@@ -21,8 +22,9 @@ $subTitle = 'Settings - SMTP';
                     </div>
 
                     <div class="card-body p-24">
-                        {{-- Status Message Container --}}
-                        <div id="smtpAlert">
+
+                        {{-- Single Alert Container --}}
+                        <div id="smtpAlertContainer" class="mb-3">
                             @if(session('success'))
                             <div class="alert alert-success">{{ session('success') }}</div>
                             @endif
@@ -37,6 +39,7 @@ $subTitle = 'Settings - SMTP';
                             @method('PUT')
                             <div class="row gy-3">
 
+                                {{-- Mailer --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8">
                                         Mailer <span class="text-danger-600">*</span>
@@ -50,6 +53,7 @@ $subTitle = 'Settings - SMTP';
                                     </div>
                                 </div>
 
+                                {{-- Host --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8">
                                         Host <span class="text-danger-600">*</span>
@@ -63,6 +67,7 @@ $subTitle = 'Settings - SMTP';
                                     </div>
                                 </div>
 
+                                {{-- Port --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8">
                                         Port <span class="text-danger-600">*</span>
@@ -76,6 +81,7 @@ $subTitle = 'Settings - SMTP';
                                     </div>
                                 </div>
 
+                                {{-- Username --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8">
                                         Username <span class="text-danger-600">*</span>
@@ -89,7 +95,7 @@ $subTitle = 'Settings - SMTP';
                                     </div>
                                 </div>
 
-                                {{-- Password Field --}}
+                                {{-- Password --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8">
                                         Password <small>(Leave blank to keep current)</small>
@@ -108,6 +114,7 @@ $subTitle = 'Settings - SMTP';
                                     </div>
                                 </div>
 
+                                {{-- Encryption --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8">
                                         Encryption <span class="text-danger-600">*</span>
@@ -121,6 +128,7 @@ $subTitle = 'Settings - SMTP';
                                     </div>
                                 </div>
 
+                                {{-- From Address --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8">
                                         From Address <span class="text-danger-600">*</span>
@@ -134,6 +142,7 @@ $subTitle = 'Settings - SMTP';
                                     </div>
                                 </div>
 
+                                {{-- From Name --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8">
                                         From Name <span class="text-danger-600">*</span>
@@ -147,22 +156,19 @@ $subTitle = 'Settings - SMTP';
                                     </div>
                                 </div>
 
+                                {{-- Submit Button --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8"><span class="visibility-hidden">Save</span></label>
                                     <button type="submit" class="btn btn-primary border border-primary-600 text-md px-24 py-8 radius-8 w-100 text-center">
                                         Update
                                     </button>
                                 </div>
-
                             </div>
                         </form>
 
                         {{-- AJAX TEST EMAIL FORM --}}
                         <hr class="my-4">
                         <h5 class="text-primary-light mb-3">Send Test Email</h5>
-
-                        {{-- Alert message container --}}
-                        <div id="smtpAlertContainer" class="mb-3"></div>
 
                         <form id="testSmtpForm">
                             @csrf
@@ -185,79 +191,72 @@ $subTitle = 'Settings - SMTP';
                             </div>
                         </form>
 
-
                     </div> <!-- card-body -->
                 </div>
             </div>
         </div>
     </div>
 </div>
-
 @endsection
 
 @push('scripts')
-
 <script>
-    $(document).ready(function() {
+$(document).ready(function() {
+    console.debug("[Debug] SMTP page initialized");
 
-        console.debug("[Debug] SMTP page initialized");
+    const toggleBtn = $('#togglePassword');
+    const passwordInput = $('#smtpPassword');
+    const eyeIcon = $('#eyeIcon');
+    const copyBtn = $('#copyPassword');
+    const alertContainer = $('#smtpAlertContainer');
 
-        // Toggle password visibility
-        $('#togglePassword').on('click', function() {
-            const input = $('#smtpPassword');
-            const icon = $('#eyeIcon');
-            if (input.attr('type') === 'password') {
-                input.attr('type', 'text');
-                icon.attr('icon', 'mdi:eye-off-outline');
-                console.debug("[Debug] Password shown");
+    // Toggle password visibility
+    if(toggleBtn.length && passwordInput.length && eyeIcon.length){
+        toggleBtn.on('click', function() {
+            if(passwordInput.attr('type') === 'password'){
+                passwordInput.attr('type','text');
+                eyeIcon.attr('icon','mdi:eye-off-outline');
             } else {
-                input.attr('type', 'password');
-                icon.attr('icon', 'mdi:eye-outline');
-                console.debug("[Debug] Password hidden");
+                passwordInput.attr('type','password');
+                eyeIcon.attr('icon','mdi:eye-outline');
             }
         });
+    }
 
-        // Copy password to clipboard
-        $('#copyPassword').on('click', function() {
-            const input = document.getElementById('smtpPassword');
-            input.select();
+    // Copy password
+    if(copyBtn.length && passwordInput.length){
+        copyBtn.on('click', function(){
+            passwordInput.select();
             document.execCommand('copy');
-            console.debug("[Debug] Password copied to clipboard");
             alert('Password copied to clipboard!');
         });
+    }
 
-        // Helper: show alert dynamically
-        function showSmtpAlert(message, type = 'success') {
-            const alertHtml = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
-                <strong>${type === 'success' ? 'Success!' : 'Error!'}</strong> ${message}
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        `;
-            $('#smtpAlertContainer').html(alertHtml);
-            console.debug("[Debug] Alert shown:", type, message);
-
-            // Auto-dismiss after 5 seconds
-            setTimeout(() => {
-                $('.alert').alert('close');
-                console.debug("[Debug] Alert auto-dismissed");
-            }, 5000);
+    // Helper: show alert without removing previous messages
+    function showSmtpAlert(message, type='success'){
+        if(alertContainer.length){
+            const html = `
+                <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    <strong>${type==='success' ? 'Success!' : 'Error!'}</strong> ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>`;
+            alertContainer.prepend(html); // prepend to keep old messages
+            setTimeout(()=>{ $('.alert').alert('close'); }, 5000);
+        } else {
+            console.warn("[Warning] Alert container not found");
         }
+    }
 
-        // AJAX: Send Test Email
-        $('#testSmtpForm').on('submit', function(e) {
+    // AJAX: Test Email
+    const testForm = $('#testSmtpForm');
+    if(testForm.length){
+        testForm.on('submit', function(e){
             e.preventDefault();
-
             const email = $('#testEmail').val();
             const btn = $('#sendTestBtn');
             const btnText = $('#btnText');
 
-            const payload = {
-                _token: "{{ csrf_token() }}",
-                test_email: email
-            };
-
-            console.debug("[Debug] Test email form submitted. Payload:", JSON.stringify(payload, null, 2));
+            const payload = {_token: "{{ csrf_token() }}", test_email: email};
 
             btn.prop('disabled', true);
             btnText.text('Sending...');
@@ -266,40 +265,22 @@ $subTitle = 'Settings - SMTP';
                 url: "{{ route('smtp.test') }}",
                 method: "POST",
                 data: payload,
-                beforeSend: function() {
-                    console.debug("[Debug] AJAX request started");
+                success: function(response){
+                    showSmtpAlert(response.message,'success');
                 },
-                success: function(response) {
-                    console.debug("[Debug] AJAX success response:", JSON.stringify(response, null, 2));
-                    showSmtpAlert(response.message, 'success');
+                error: function(xhr){
+                    let msg = 'Failed to send test email.';
+                    if(xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                    showSmtpAlert(msg,'danger');
                 },
-                error: function(xhr, status, error) {
-                    console.error("[Debug] AJAX error");
-                    console.error("Status:", status);
-                    console.error("Error:", error);
-                    if (xhr.responseJSON) {
-                        console.error("Response JSON:", JSON.stringify(xhr.responseJSON, null, 2));
-                    } else {
-                        console.error("Raw response:", xhr.responseText);
-                    }
-
-                    let message = 'Failed to send test email.';
-                    if (xhr.responseJSON && xhr.responseJSON.message) {
-                        message = xhr.responseJSON.message;
-                    }
-                    showSmtpAlert(message, 'danger');
-                },
-                complete: function() {
+                complete: function(){
                     btn.prop('disabled', false);
                     btnText.text('Send Test Email');
-                    console.debug("[Debug] AJAX request completed");
                 }
             });
         });
+    }
 
-    });
+});
 </script>
-
 @endpush
-
-
