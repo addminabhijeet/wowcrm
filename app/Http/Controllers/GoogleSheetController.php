@@ -1321,12 +1321,15 @@ class GoogleSheetController extends Controller
 
         try {
             $record->save();
+            $saveMessage = 'Record saved successfully.';
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
                 'message' => 'Fill Full Detail to Save.'
             ]);
         }
+
+        $mailMessage = null;
 
         // --- Send Email if Exe_Remarks is "Called & Mailed" ---
         if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
@@ -1359,9 +1362,11 @@ Regards,
 {$smtp->from_name}", function ($message) use ($email) {
                         $message->to($email)->subject('Course & Amount Information');
                     });
+                    $mailMessage = 'Email sent successfully.';
                 }
             } catch (\Exception $e) {
-                            }
+                $mailMessage = 'Failed to send email.';
+            }
         }
 
 
@@ -1369,6 +1374,8 @@ Regards,
             'success' => true,
             'id' => $record->id,
             'sheet_row_number' => $record->sheet_row_number,
+            'save_message' => $saveMessage,
+            'mail_message' => $mailMessage,
             'resume_path' => !empty($record->resume) ? true : false
         ]);
     }
