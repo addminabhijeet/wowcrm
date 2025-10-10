@@ -1393,7 +1393,7 @@ class GoogleSheetController extends Controller
         ];
 
         $exeRemarksValue = null;
-        $course = null;
+        $name = null;
         $amount = null;
 
         // Assign values safely
@@ -1410,8 +1410,8 @@ class GoogleSheetController extends Controller
                 $amount = $val;
             }
 
-            if ($column === 'Course') {
-                $course = $val;
+            if ($column === 'Name') {
+                $name = $val;
             }
 
             if ($column === 'Exe_Remarks') {
@@ -1491,34 +1491,82 @@ class GoogleSheetController extends Controller
                     } else {
                         // Fallback if template not found
                         $subject = "Unlock Career Stability with Fortune 500 Projects !";
-                        $messageBody = "Dear Candidate,\n\n"
-                            . "Thank you for showing interest in our program.\n"
-                            . "Below are the details:\n\n"
-                            . "Course: {$course}\n"
-                            . "Amount: {$amount}\n\n"
-                            . "For more information, feel free to reach out.\n\n"
-                            . "Best regards,\n"
-                            . "{$smtp->from_name}";
+                        $messageBody = "Hi {$name},
+
+---
+
+I hope this message finds you well.
+
+My name is {$smtp->from_name}, part of the Talent Acquisition Team at Synergie Systems INC., a respected workforce development and project management firm based in Delaware. 
+We partner with Fortune 500 companies across the U.S., delivering staffing solutions and long-term career success.
+
+After reviewing your profile, I believe you could be a strong fit for several opportunities we have. 
+We aim to offer you not just a job, but a career pathway built on stability, support, and growth.
+
+---
+
+What Makes Synergie Different?
+
+We invest in your growth, trust, and potential. When you join our community, you can expect:
+- Direct Project Placements with Fortune 500 and Tier 1 clients
+- Full-time employment, not short-term contracts
+- Real-world project experience with top tools and technologies
+- Dedicated support: resume branding, interview prep, onboarding guidance
+- Zero Bond Policy and support for OPT, CPT, STEM OPT, H1B & Green Card sponsorships
+
+---
+
+More Than a Paycheck
+
+We provide a transparent, competitive compensation structure:
+- Full-Time: $40–$50/hr | Part-Time: $15–$25/hr
+- Paid Internships available
+- 15% Salary Raise every 6 months based on performance
+- 12 Days Paid Vacation annually
+- Relocation Assistance
+
+---
+
+Benefits & Support
+
+- Health, Dental & Vision Insurance
+- Short- & Long-Term Disability Insurance
+- Life Insurance & 401(k) Retirement Plan
+- Legal & Immigration Support
+- Tax Assistance & Transparent Payroll
+- Workers’ Compensation
+
+---
+
+Not Quite Job-Ready? We’ll Bridge That Gap
+
+We offer a 4-week industry-focused workshop:
+- Live Zoom & recorded expert sessions
+- Hands-on project simulations
+- One-on-one resume & mock interview support
+- Global Certificate & recruiter access
+- 100% Fee Refund with first project paycheck (Only {$amount}, one-time, fully refundable)
+
+---
+
+Let’s Take the First Step Together
+
+Reply to this email or reach me directly if you want to learn more or take the next step.
+
+Visit Our Website: https://www.synergiesystems.com/
+
+Best Regards,
+{$smtp->from_name}
+Talent Acquisition Team
+Synergie Systems INC.";
                     }
 
-                    // --- Determine if body contains HTML ---
-                    $isHtml = Str::contains($messageBody, ['<html', '<body', '<p', '<br', '<div', '<h']);
-
-                    // --- Send email accordingly ---
-                    if ($isHtml) {
-                        Mail::send([], [], function ($message) use ($email, $subject, $smtp, $messageBody) {
-                            $message->from($smtp->from_address, $smtp->from_name)
-                                ->to($email)
-                                ->subject($subject)
-                                ->setBody($messageBody, 'text/html'); // send as HTML
-                        });
-                    } else {
-                        Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
-                            $message->from($smtp->from_address, $smtp->from_name)
-                                ->to($email)
-                                ->subject($subject); // send as plain text
-                        });
-                    }
+                    // --- Send Email (No Template Logic Changed) ---
+                    Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
+                        $message->from($smtp->from_address, $smtp->from_name)
+                            ->to($email)
+                            ->subject($subject);
+                    });
 
                     $mailMessage = "Email sent successfully to {$email}!";
                 }
