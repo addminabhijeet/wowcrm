@@ -752,12 +752,55 @@ class GoogleSheetController extends Controller
         try {
             $row->update($updateData);
 
+            $mailMessage = 'No email sent.';
+            $course = $rowData['Course'] ?? null;
+            $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
+
+            // --- Send email if Exe_Remarks is "Called & Mailed" ---
+            if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed' && !empty($email)) {
+                try {
+                    $smtp = SmtpSetting::first();
+                    if (!$smtp) {
+                        $mailMessage = 'No SMTP settings found.';
+                    } else {
+                        config([
+                            'mail.mailers.smtp.transport' => $smtp->mailer,
+                            'mail.mailers.smtp.host' => $smtp->host,
+                            'mail.mailers.smtp.port' => $smtp->port,
+                            'mail.mailers.smtp.username' => $smtp->username,
+                            'mail.mailers.smtp.password' => decrypt($smtp->password),
+                            'mail.mailers.smtp.encryption' => $smtp->encryption,
+                            'mail.from.address' => $smtp->from_address,
+                            'mail.from.name' => $smtp->from_name,
+                        ]);
+
+                        $mailTemplate = new EmailTemplateController();
+                        $mailData = $mailTemplate->renderTemplate('Called_Mailed', [
+                            'course' => $course,
+                            'amount' => $amount,
+                            'from_name' => $smtp->from_name
+                        ]);
+
+                        if ($mailData) {
+                            Mail::html($mailData['body'], function ($message) use ($email, $mailData) {
+                                $message->to($email)
+                                    ->subject($mailData['subject']);
+                            });
+                            $mailMessage = "Email sent successfully to {$email}!";
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $mailMessage = 'Failed to send email: ' . $e->getMessage();
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => !empty($row->resume) ? true : false
+                'resume_path' => !empty($row->resume) ? true : false,
+                'mail_message' => $mailMessage
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -830,6 +873,10 @@ class GoogleSheetController extends Controller
             'Time Zone' => 'Time_Zone',
         ];
 
+        $exeRemarksValue = null;
+        $course = null;
+        $amount = null;
+
         // Assign values safely
         foreach ($rowData as $key => $val) {
             if (!isset($columnMap[$key])) continue;
@@ -841,6 +888,11 @@ class GoogleSheetController extends Controller
 
             if ($column === 'Amount' && !empty($val)) {
                 $val = $this->parseAmount($val);
+                $amount = $val;
+            }
+
+            if ($column === 'Course') {
+                $course = $val;
             }
 
             if ($column === 'Exe_Remarks') {
@@ -892,11 +944,50 @@ class GoogleSheetController extends Controller
             ]);
         }
 
+        // --- Email logic ---
+        $mailMessage = 'No email sent.';
+        if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
+            try {
+                $smtp = SmtpSetting::first();
+                if ($smtp) {
+                    config([
+                        'mail.mailers.smtp.transport' => $smtp->mailer,
+                        'mail.mailers.smtp.host' => $smtp->host,
+                        'mail.mailers.smtp.port' => $smtp->port,
+                        'mail.mailers.smtp.username' => $smtp->username,
+                        'mail.mailers.smtp.password' => decrypt($smtp->password),
+                        'mail.mailers.smtp.encryption' => $smtp->encryption,
+                        'mail.from.address' => $smtp->from_address,
+                        'mail.from.name' => $smtp->from_name,
+                    ]);
+
+                    $mailTemplate = new EmailTemplateController();
+                    $mailData = $mailTemplate->renderTemplate('Called_Mailed', [
+                        'course' => $course,
+                        'amount' => $amount,
+                        'from_name' => $smtp->from_name
+                    ]);
+
+                    if ($mailData) {
+                        Mail::html($mailData['body'], function ($message) use ($email, $mailData) {
+                            $message->to($email)->subject($mailData['subject']);
+                        });
+                        $mailMessage = "Email sent successfully to {$email}!";
+                    }
+                } else {
+                    $mailMessage = 'No SMTP settings found.';
+                }
+            } catch (\Exception $e) {
+                $mailMessage = 'Failed to send email: ' . $e->getMessage();
+            }
+        }
+
         return response()->json([
             'success' => true,
             'id' => $record->id,
             'sheet_row_number' => $record->sheet_row_number,
-            'resume_path' => !empty($record->resume) ? true : false
+            'resume_path' => !empty($record->resume) ? true : false,
+            'mail_message' => $mailMessage
         ]);
     }
 
@@ -1183,12 +1274,55 @@ class GoogleSheetController extends Controller
         try {
             $row->update($updateData);
 
+            $mailMessage = 'No email sent.';
+            $course = $rowData['Course'] ?? null;
+            $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
+
+            // --- Send email if Exe_Remarks is "Called & Mailed" ---
+            if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed' && !empty($email)) {
+                try {
+                    $smtp = SmtpSetting::first();
+                    if (!$smtp) {
+                        $mailMessage = 'No SMTP settings found.';
+                    } else {
+                        config([
+                            'mail.mailers.smtp.transport' => $smtp->mailer,
+                            'mail.mailers.smtp.host' => $smtp->host,
+                            'mail.mailers.smtp.port' => $smtp->port,
+                            'mail.mailers.smtp.username' => $smtp->username,
+                            'mail.mailers.smtp.password' => decrypt($smtp->password),
+                            'mail.mailers.smtp.encryption' => $smtp->encryption,
+                            'mail.from.address' => $smtp->from_address,
+                            'mail.from.name' => $smtp->from_name,
+                        ]);
+
+                        $mailTemplate = new EmailTemplateController();
+                        $mailData = $mailTemplate->renderTemplate('Called_Mailed', [
+                            'course' => $course,
+                            'amount' => $amount,
+                            'from_name' => $smtp->from_name
+                        ]);
+
+                        if ($mailData) {
+                            Mail::html($mailData['body'], function ($message) use ($email, $mailData) {
+                                $message->to($email)
+                                    ->subject($mailData['subject']);
+                            });
+                            $mailMessage = "Email sent successfully to {$email}!";
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $mailMessage = 'Failed to send email: ' . $e->getMessage();
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => !empty($row->resume) ? true : false
+                'resume_path' => !empty($row->resume) ? true : false,
+                'mail_message' => $mailMessage
             ]);
         } catch (\Exception $e) {
             return response()->json([
