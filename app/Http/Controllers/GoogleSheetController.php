@@ -1490,35 +1490,35 @@ class GoogleSheetController extends Controller
                         $messageBody = $template->body;
                     } else {
                         // Fallback if template not found
-                        $subject = "Course Details from {$smtp->from_name}";
-$messageBody = "Hi {$name},
-
-
-I hope this message finds you well.
-
-My name is {$smtp->from_name}, part of the Talent Acquisition Team at Synergie Systems INC, 
-a respected workforce development and project management firm based in Delaware. 
-We partner with Fortune 500 companies across the U.S., delivering 
-staffing solutions and long-term career success.
-
-After reviewing your profile, 
-I believe you could be a strong fit for several opportunities we have. 
-We aim to offer you not just a job, but a career pathway built on stability, support, and growth.
+                        $subject = "Unlock Career Stability with Fortune 500 Projects !";
+$messageBody = 
+"Hi {$name},
 
 ---
 
-What Makes Synergie Different?
+I hope this message finds you well.
 
-We invest in your growth, trust, and potential. When you join our community, you can expect:
-- Direct Project Placements with Fortune 500 and Tier 1 clients
-- Full-time employment, not short-term contracts
-- Real-world project experience with top tools and technologies
+My name is {$smtp->from_name}, and I’m part of the **TALENT ACQUISITION TEAM AT SYNERGIE SYSTEMS INC**, a respected workforce development and project management firm based in Delaware. 
+We partner with Fortune 500 companies across the U.S., delivering staffing solutions and long-term career success.
+
+After reviewing your profile, I believe you could be a strong fit for several opportunities we have. 
+More importantly, we aim to offer you **NOT JUST A JOB, BUT A CAREER PATHWAY BUILT ON STABILITY, SUPPORT, AND GROWTH**.
+
+---
+
+**WHAT MAKES SYNERGIE DIFFERENT?**
+
+At Synergie, we understand that a fulfilling career is built on **TRUST, PURPOSE, AND PROGRESS**. 
+That's why we go beyond recruitment—we invest in you. When you join our community, you can expect:
+- **DIRECT PROJECT PLACEMENTS** with Fortune 500 and Tier 1 clients
+- **FULL-TIME EMPLOYMENT**, not short-term contracts
+- Real-world project experience with today’s most in-demand tools and technologies
 - Dedicated support: resume branding, interview prep, onboarding guidance
 - Zero Bond Policy and support for OPT, CPT, STEM OPT, H1B & Green Card sponsorships
 
 ---
 
-More Than a Paycheck
+**MORE THAN A PAYCHECK — A PATH TO PROSPERITY**
 
 We provide a transparent, competitive compensation structure:
 - Full-Time: $40–$50/hr | Part-Time: $15–$25/hr
@@ -1529,7 +1529,7 @@ We provide a transparent, competitive compensation structure:
 
 ---
 
-Benefits & Support
+**BENEFITS & SUPPORT**
 
 - Health, Dental & Vision Insurance
 - Short- & Long-Term Disability Insurance
@@ -1540,7 +1540,17 @@ Benefits & Support
 
 ---
 
-Not Quite Job-Ready? We’ll Bridge That Gap
+**SUPPORT TAILORED FOR INTERNATIONAL TALENT**
+
+- Offer Letters, Client Confirmations & Employer Letters
+- Full STEM Extension & OPT/CPT Support
+- H1B Sponsorship after project onboarding
+- Relocation & Immigration Documentation
+- Ongoing Green Card Processing Assistance
+
+---
+
+**NOT QUITE JOB-READY? WE’LL BRIDGE THAT GAP**
 
 We offer a 4-week industry-focused workshop:
 - Live Zoom & recorded expert sessions
@@ -1559,9 +1569,7 @@ Visit Our Website: https://www.synergiesystems.com/
 
 Best Regards,
 {$smtp->from_name}
-Talent Acquisition Team
-Synergie Systems INC.";
-
+**TALENT ACQUISITION TEAM AT SYNERGIE SYSTEMS INC**";
                     }
 
                     // --- Send Email (No Template Logic Changed) ---
