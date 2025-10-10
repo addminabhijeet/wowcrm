@@ -144,6 +144,7 @@ Route::middleware(['auth'])->group(function () {
     Route::match(['get', 'post'], '/timer/update', [DashboardController::class, 'updateTimer'])->name('timer.update');
     Route::get('/dashboard/edit', [DashboardController::class, 'edit'])->name('smtp.edit');
     Route::put('/dashboard/update', [DashboardController::class, 'update'])->name('smtp.update');
+    Route::post('/dashboard/smtp/test', [DashboardController::class, 'test'])->name('smtp.test');
     Route::get('/dashboard/senior/seniortimer', [TimerController::class, 'seniorTimers'])->name('timer.senior');
     Route::get('/timer/all-juniors', [TimerController::class, 'allJuniorTimers'])->name('timer.alljuniors');
     Route::get('/dashboard/junior/juniortimer', [TimerController::class, 'juniorTimers'])->name('timer.junior');

@@ -509,10 +509,9 @@ class DashboardController extends Controller
     {
         $smtp = SmtpSetting::first();
         if (!$smtp) {
-            return redirect()->back()->with('error', 'No SMTP settings found.');
+            return response()->json(['message' => 'No SMTP settings found.'], 400);
         }
 
-        // Temporarily configure mail
         config([
             'mail.mailers.smtp.transport' => $smtp->mailer,
             'mail.mailers.smtp.host' => $smtp->host,
@@ -524,17 +523,16 @@ class DashboardController extends Controller
             'mail.from.name' => $smtp->from_name,
         ]);
 
-        $testEmail = $request->input('test_email') ;
+        $testEmail = $request->input('test_email');
 
         try {
             Mail::raw('This is a test email from Synergie Systems CRM.', function ($message) use ($testEmail) {
-                $message->to($testEmail)
-                    ->subject('SMTP Test Email');
+                $message->to($testEmail)->subject('SMTP Test Email');
             });
 
-            return redirect()->back()->with('success', "Test email sent successfully to {$testEmail}!");
+            return response()->json(['message' => "Test email sent successfully to {$testEmail}!"]);
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'Failed to send test email: ' . $e->getMessage());
+            return response()->json(['message' => 'Failed to send test email: ' . $e->getMessage()], 500);
         }
     }
 }

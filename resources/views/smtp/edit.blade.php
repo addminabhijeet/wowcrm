@@ -19,15 +19,22 @@ $subTitle = 'Settings - SMTP';
                             <span class="text-lg fw-semibold text-primary-light">SMTP Settings</span>
                         </div>
                     </div>
-                    <div class="card-body p-24">
-                        @if(session('success'))
-                        <div class="alert alert-success">{{ session('success') }}</div>
-                        @endif
 
-                        <form action="{{ route('smtp.update') }}" method="POST">
+                    <div class="card-body p-24">
+                        {{-- Status Message Container --}}
+                        <div id="smtpAlertContainer">
+                            @if(session('success'))
+                                <div class="alert alert-success">{{ session('success') }}</div>
+                            @endif
+                            @if(session('error'))
+                                <div class="alert alert-danger">{{ session('error') }}</div>
+                            @endif
+                        </div>
+
+                        {{-- SMTP Update Form --}}
+                        <form action="{{ route('smtp.update') }}" method="POST" class="mb-5">
                             @csrf
                             @method('PUT')
-
                             <div class="row gy-3">
 
                                 <div class="col-sm-6">
@@ -38,7 +45,8 @@ $subTitle = 'Settings - SMTP';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:email-outline"></iconify-icon>
                                         </span>
-                                        <input type="text" name="mailer" class="form-control radius-8" value="{{ old('mailer', $smtp->mailer ?? 'smtp') }}">
+                                        <input type="text" name="mailer" class="form-control radius-8"
+                                            value="{{ old('mailer', $smtp->mailer ?? 'smtp') }}">
                                     </div>
                                 </div>
 
@@ -50,7 +58,8 @@ $subTitle = 'Settings - SMTP';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:server-network"></iconify-icon>
                                         </span>
-                                        <input type="text" name="host" class="form-control radius-8" value="{{ old('host', $smtp->host ?? '') }}">
+                                        <input type="text" name="host" class="form-control radius-8"
+                                            value="{{ old('host', $smtp->host ?? '') }}">
                                     </div>
                                 </div>
 
@@ -62,7 +71,8 @@ $subTitle = 'Settings - SMTP';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:port"></iconify-icon>
                                         </span>
-                                        <input type="number" name="port" class="form-control radius-8" value="{{ old('port', $smtp->port ?? 465) }}">
+                                        <input type="number" name="port" class="form-control radius-8"
+                                            value="{{ old('port', $smtp->port ?? 465) }}">
                                     </div>
                                 </div>
 
@@ -74,11 +84,12 @@ $subTitle = 'Settings - SMTP';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:account-outline"></iconify-icon>
                                         </span>
-                                        <input type="email" name="username" class="form-control radius-8" value="{{ old('username', $smtp->username ?? '') }}">
+                                        <input type="email" name="username" class="form-control radius-8"
+                                            value="{{ old('username', $smtp->username ?? '') }}">
                                     </div>
                                 </div>
 
-                                <!-- Password with show/hide and copy -->
+                                {{-- Password Field --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8">
                                         Password <small>(Leave blank to keep current)</small>
@@ -105,7 +116,8 @@ $subTitle = 'Settings - SMTP';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:shield-outline"></iconify-icon>
                                         </span>
-                                        <input type="text" name="encryption" class="form-control radius-8" value="{{ old('encryption', $smtp->encryption ?? 'ssl') }}">
+                                        <input type="text" name="encryption" class="form-control radius-8"
+                                            value="{{ old('encryption', $smtp->encryption ?? 'ssl') }}">
                                     </div>
                                 </div>
 
@@ -117,7 +129,8 @@ $subTitle = 'Settings - SMTP';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:email-open-outline"></iconify-icon>
                                         </span>
-                                        <input type="email" name="from_address" class="form-control radius-8" value="{{ old('from_address', $smtp->from_address ?? '') }}">
+                                        <input type="email" name="from_address" class="form-control radius-8"
+                                            value="{{ old('from_address', $smtp->from_address ?? '') }}">
                                     </div>
                                 </div>
 
@@ -129,7 +142,8 @@ $subTitle = 'Settings - SMTP';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:account-box-outline"></iconify-icon>
                                         </span>
-                                        <input type="text" name="from_name" class="form-control radius-8" value="{{ old('from_name', $smtp->from_name ?? '') }}">
+                                        <input type="text" name="from_name" class="form-control radius-8"
+                                            value="{{ old('from_name', $smtp->from_name ?? '') }}">
                                     </div>
                                 </div>
 
@@ -143,7 +157,31 @@ $subTitle = 'Settings - SMTP';
                             </div>
                         </form>
 
-                    </div>
+                        {{-- AJAX TEST EMAIL FORM --}}
+                        <hr class="my-4">
+                        <h5 class="text-primary-light mb-3">Send Test Email</h5>
+                        <form id="testSmtpForm">
+                            @csrf
+                            <div class="row gy-3 align-items-end">
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">Recipient Email</label>
+                                    <div class="input-group radius-8">
+                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
+                                            <iconify-icon icon="mdi:email-send-outline"></iconify-icon>
+                                        </span>
+                                        <input type="email" name="test_email" id="testEmail" class="form-control radius-8"
+                                            placeholder="Enter test email address" required>
+                                    </div>
+                                </div>
+                                <div class="col-sm-6">
+                                    <button type="submit" id="sendTestBtn" class="btn btn-success border border-success-600 text-md px-24 py-8 radius-8 w-100 text-center">
+                                        <span id="btnText">Send Test Email</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                    </div> <!-- card-body -->
                 </div>
             </div>
         </div>
@@ -154,28 +192,67 @@ $subTitle = 'Settings - SMTP';
 
 @push('scripts')
 <script>
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('smtpPassword');
-    const eyeIcon = document.getElementById('eyeIcon');
-    const copyPassword = document.getElementById('copyPassword');
+$(document).ready(function() {
 
-    // Toggle show/hide
-    togglePassword.addEventListener('click', () => {
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeIcon.setAttribute('icon', 'mdi:eye-off-outline');
+    // Toggle password visibility
+    $('#togglePassword').on('click', function() {
+        const input = $('#smtpPassword');
+        const icon = $('#eyeIcon');
+        if (input.attr('type') === 'password') {
+            input.attr('type', 'text');
+            icon.attr('icon', 'mdi:eye-off-outline');
         } else {
-            passwordInput.type = 'password';
-            eyeIcon.setAttribute('icon', 'mdi:eye-outline');
+            input.attr('type', 'password');
+            icon.attr('icon', 'mdi:eye-outline');
         }
     });
 
-    // Copy to clipboard
-    copyPassword.addEventListener('click', () => {
-        passwordInput.select();
-        passwordInput.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(passwordInput.value);
+    // Copy password to clipboard
+    $('#copyPassword').on('click', function() {
+        const input = document.getElementById('smtpPassword');
+        input.select();
+        document.execCommand('copy');
         alert('Password copied to clipboard!');
     });
+
+    // AJAX: Send Test Email
+    $('#testSmtpForm').on('submit', function(e) {
+        e.preventDefault();
+
+        const email = $('#testEmail').val();
+        const btn = $('#sendTestBtn');
+        const btnText = $('#btnText');
+
+        btn.prop('disabled', true);
+        btnText.text('Sending...');
+
+        $.ajax({
+            url: "{{ route('smtp.test') }}",
+            method: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                test_email: email
+            },
+            success: function(response) {
+                $('#smtpAlertContainer').html(
+                    `<div class="alert alert-success">${response.message}</div>`
+                );
+            },
+            error: function(xhr) {
+                let message = 'Failed to send test email.';
+                if (xhr.responseJSON && xhr.responseJSON.message) {
+                    message = xhr.responseJSON.message;
+                }
+                $('#smtpAlertContainer').html(
+                    `<div class="alert alert-danger">${message}</div>`
+                );
+            },
+            complete: function() {
+                btn.prop('disabled', false);
+                btnText.text('Send Test Email');
+            }
+        });
+    });
+});
 </script>
 @endpush
