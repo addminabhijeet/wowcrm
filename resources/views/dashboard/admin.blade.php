@@ -420,5 +420,29 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
         </div>
     </div>
 </div>
+<script>
+    const togglePassword = document.getElementById('togglePassword');
+    const passwordInput = document.getElementById('smtpPassword');
+    const eyeIcon = document.getElementById('eyeIcon');
+    const copyPassword = document.getElementById('copyPassword');
 
+    // Toggle show/hide
+    togglePassword.addEventListener('click', () => {
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            eyeIcon.setAttribute('icon', 'mdi:eye-off-outline');
+        } else {
+            passwordInput.type = 'password';
+            eyeIcon.setAttribute('icon', 'mdi:eye-outline');
+        }
+    });
+
+    // Copy to clipboard
+    copyPassword.addEventListener('click', () => {
+        passwordInput.select();
+        passwordInput.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(passwordInput.value);
+        alert('Password copied to clipboard!');
+    });
+</script>
 @endsection
