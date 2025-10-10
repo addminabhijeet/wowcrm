@@ -60,8 +60,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/admin/customer/update/{id}', [UserController::class, 'customerupdate'])->name('users.customer.update');
     Route::get('/dashboard/admin/customer/destroy/{id}', [UserController::class, 'customerdestroy'])->name('users.customer.destroy');
 
-    Route::get('/dashboard/admin/smtp-settings/edit', [SmtpSettingController::class, 'edit'])->name('smtpsettings.edit');
-    Route::put('/dashboard/admin/smtp-settings/update', [SmtpSettingController::class, 'update'])->name('smtp.update');
+
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
     Route::get('/dashboard/junior', [DashboardController::class, 'junior'])->name('dashboard.junior');
@@ -166,3 +165,6 @@ Route::patch('/resumes/{id}/status', [ResumeController::class, 'updateStatus'])-
 Route::patch('/payment/{id}/status', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
 Route::patch('/training/{id}/trastatus', [PaymentController::class, 'traupdateStatus'])->name('training.updateStatus');
 Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('login.history');
+
+Route::get('/dashboard/admin/smtp-settings/edit', [SmtpSettingController::class, 'edit'])->name('smtpsettings.edit');
+Route::put('/dashboard/admin/smtp-settings/update', [SmtpSettingController::class, 'update'])->name('smtp.update');
