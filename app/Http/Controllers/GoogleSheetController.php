@@ -1329,7 +1329,7 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        $mailMessage = null;
+        $mailMessage = 'No email sent.';
 
         // --- Send Email if Exe_Remarks is "Called & Mailed" ---
         if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
@@ -1338,6 +1338,7 @@ class GoogleSheetController extends Controller
                 if ($smtp) {
                     // Configure mailer dynamically
                     config([
+                        'mail.default' => 'smtp',
                         'mail.mailers.smtp.transport' => $smtp->mailer,
                         'mail.mailers.smtp.host' => $smtp->host,
                         'mail.mailers.smtp.port' => $smtp->port,
@@ -1351,7 +1352,7 @@ class GoogleSheetController extends Controller
                     $courseText = $course ?? 'N/A';
                     $amountText = $amount ?? 'N/A';
 
-                    Mail::raw("Hello,
+                    $mailBody = "Hello,
 
 Your course: {$courseText}
 Amount: {$amountText}
@@ -1359,15 +1360,24 @@ Amount: {$amountText}
 Thank you for your interest.
 
 Regards,
-{$smtp->from_name}", function ($message) use ($email) {
-                        $message->to($email)->subject('Course & Amount Information');
-                    });
-                    $mailMessage = 'Email sent successfully.';
-                }
-            } catch (\Exception $e) {
-                $mailMessage = 'Failed to send email.';
+{$smtp->from_name}"; 
+
+// --- Force use of SMTP mailer explicitly ---
+                Mail::mailer('smtp')->raw($mailBody, function ($message) use ($email) {
+                    $message->to($email)->subject('Course & Amount Information');
+                });
+
+                $mailMessage = 'Email sent successfully.';
+                
+            } else {
+                $mailMessage = 'SMTP settings not configured.';
+               
             }
+        } catch (\Exception $e) {
+            $mailMessage = 'Failed to send email.';
+           
         }
+    }
 
 
         return response()->json([
