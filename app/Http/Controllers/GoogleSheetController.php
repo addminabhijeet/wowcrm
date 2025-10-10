@@ -1466,7 +1466,9 @@ class GoogleSheetController extends Controller
             try {
                 $smtp = SmtpSetting::first();
                 if (!$smtp) {
-                    $mailMessage = 'No SMTP settings found.';
+                    return response()->json([
+                        'message' => 'No SMTP settings found.'
+                    ]);
                 } else {
                     // Temporarily configure mailer (same as test() method)
                     config([
