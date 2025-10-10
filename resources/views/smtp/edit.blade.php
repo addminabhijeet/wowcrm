@@ -1,3 +1,12 @@
+@extends('layout.layout')
+
+@php
+$title = 'SMTP';
+$subTitle = 'Settings - SMTP';
+$script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
+@endphp
+
+@section('content')
 
 <div class="card h-100 p-0 radius-12">
     <div class="card-body p-24">
@@ -298,3 +307,4 @@
         }
     });
 </script>
+@endsection
