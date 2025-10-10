@@ -1540,7 +1540,7 @@ $messageBody =
 "                  - Real-time project simulations & hands-on assignments\n" .
 "                  - One-on-one resume branding & mock interviews\n" .
 "                  - Global Certificate of Completion & recruiter access\n" .
-"                  - 100% Fee Refund with your first project paycheck (Only \$469—one-time, fully refundable)\n\n" .
+"                  - 100% Fee Refund with your first project paycheck (Only \${$amount}—one-time, fully refundable)\n\n" .
 "+ Let’s Take the First Step Together\n" .
 "----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
 "If you’re seeking more than just another role—if you’re looking for a career that recognizes your potential, offers true support, and opens doors to the future you deserve—then Synergie is here for you.\n\n" .
