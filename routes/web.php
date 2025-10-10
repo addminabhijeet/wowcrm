@@ -159,8 +159,8 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
 Route::post('/logout-user', [LoginController::class, 'ajaxLogout'])->name('ajax.logout');
 
-Route::get('/email-template', [EmailTemplateController::class, 'index'])->name('email-template.index');
-Route::put('/email-template/{id}', [EmailTemplateController::class, 'update'])->name('email-template.update');
+Route::get('/email-template', [EmailTemplateController::class, 'index'])->name('template.index');
+Route::put('/email-template/{id}', [EmailTemplateController::class, 'update'])->name('template.update');
 
 Route::get('/', [Controller::class, 'index'])->name('home');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
