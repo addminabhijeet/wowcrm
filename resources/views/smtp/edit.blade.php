@@ -1,10 +1,4 @@
-@extends('layout.layout')
-@php
-$title = 'SMTP';
-$subTitle = 'Settings - SMTP';
-@endphp
 
-@section('content')
 <div class="card h-100 p-0 radius-12">
     <div class="card-body p-24">
         <div class="row gy-4">
@@ -172,9 +166,7 @@ $subTitle = 'Settings - SMTP';
         </div>
     </div>
 </div>
-@endsection
 
-@push('scripts')
 <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script>
     $(document).ready(function() {
@@ -306,4 +298,3 @@ $subTitle = 'Settings - SMTP';
         }
     });
 </script>
-@endpush
