@@ -33,23 +33,22 @@ class EmailTemplateController extends Controller
         return redirect()->back()->with('success', 'Template updated successfully!');
     }
 
-    // --- Get rendered body dynamically ---
     public function renderTemplate($slug, $data = [])
     {
-        $template = EmailTemplate::where('slug', $slug)->first();
+        $template = EmailTemplate::where('name', $slug)->first();
         if (!$template) {
             return null;
         }
 
-        // Render variables inside the body
-        $renderedBody = View::make('emails.dynamic_template', [
-            'content' => $template->body,
-            'data' => $data
-        ])->render();
+        // Replace variables directly in the body
+        $body = $template->body;
+        foreach ($data as $key => $value) {
+            $body = str_replace('{{' . $key . '}}', $value, $body);
+        }
 
         return [
             'subject' => $template->subject,
-            'body' => $renderedBody
+            'body' => $body
         ];
     }
 }
