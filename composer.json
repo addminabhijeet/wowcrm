@@ -9,7 +9,6 @@
         "backpack/basset": "*",
         "laravel/framework": "^11.0",
         "laravel/tinker": "^2.9",
-        "mews/purifier": "^3.4",
         "symfony/asset": "^7.1",
         "symfony/asset-mapper": "^7.1"
     },
