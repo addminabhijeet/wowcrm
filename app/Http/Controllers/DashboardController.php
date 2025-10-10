@@ -513,7 +513,7 @@ class DashboardController extends Controller
         }
 
         config([
-            'mail.mailers.smtp.transport' => $smtp->mailer,
+            'mail.mailers.smtp.transport' => 'smtp', // always 'smtp'
             'mail.mailers.smtp.host' => $smtp->host,
             'mail.mailers.smtp.port' => $smtp->port,
             'mail.mailers.smtp.username' => $smtp->username,
@@ -522,6 +522,7 @@ class DashboardController extends Controller
             'mail.from.address' => $smtp->from_address,
             'mail.from.name' => $smtp->from_name,
         ]);
+
 
         $testEmail = $request->input('test_email');
 
