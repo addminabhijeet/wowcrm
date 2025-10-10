@@ -1481,23 +1481,31 @@ class GoogleSheetController extends Controller
                         'mail.from.name' => $smtp->from_name,
                     ]);
 
-                    // --- Direct Email Content (No Template) ---
+                    // --- Direct Email Content (HTML) ---
                     $subject = "Course Details from {$smtp->from_name}";
-                    $messageBody = "Dear Candidate,\n\n"
-                        . "Thank you for showing interest in our program.\n"
-                        . "Below are the details:\n\n"
-                        . "Course: {$course}\n"
-                        . "Amount: {$amount}\n\n"
-                        . "For more information, feel free to reach out.\n\n"
-                        . "Best regards,\n"
-                        . "{$smtp->from_name}";
 
-                    Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
+                    // Prepare HTML message with placeholders replaced
+                    $messageBody = "
+                        <p>Hello, {$rowData['Name']}<br />
+                        <br />
+                        Your course: {$rowData['course']}<br />
+                        Amount: {$rowData['amount']}<br />
+                        <br />
+                        Thank you for your interest. Best Wishes!!<br />
+                        <br />
+                        Regards,<br />
+                        {$smtp->from_name}</p>
+                    ";
+
+                    // Send HTML email
+                    Mail::send([], [], function ($message) use ($email, $subject, $smtp, $messageBody) {
                         $message->from($smtp->from_address, $smtp->from_name)
                             ->to($email)
-                            ->subject($subject);
+                            ->subject($subject)
+                            ->html($messageBody); // use HTML content
                     });
 
+                    // Confirmation message
                     $mailMessage = "Email sent successfully to {$email}!";
                 }
             } catch (\Exception $e) {
