@@ -200,6 +200,8 @@ $subTitle = 'Settings - SMTP';
 <script>
     $(document).ready(function() {
 
+        console.debug("[Debug] SMTP page initialized");
+
         // Toggle password visibility
         $('#togglePassword').on('click', function() {
             const input = $('#smtpPassword');
@@ -207,9 +209,11 @@ $subTitle = 'Settings - SMTP';
             if (input.attr('type') === 'password') {
                 input.attr('type', 'text');
                 icon.attr('icon', 'mdi:eye-off-outline');
+                console.debug("[Debug] Password shown");
             } else {
                 input.attr('type', 'password');
                 icon.attr('icon', 'mdi:eye-outline');
+                console.debug("[Debug] Password hidden");
             }
         });
 
@@ -218,6 +222,7 @@ $subTitle = 'Settings - SMTP';
             const input = document.getElementById('smtpPassword');
             input.select();
             document.execCommand('copy');
+            console.debug("[Debug] Password copied to clipboard");
             alert('Password copied to clipboard!');
         });
 
@@ -230,10 +235,12 @@ $subTitle = 'Settings - SMTP';
             </div>
         `;
             $('#smtpAlertContainer').html(alertHtml);
+            console.debug("[Debug] Alert shown:", type, message);
 
             // Auto-dismiss after 5 seconds
             setTimeout(() => {
                 $('.alert').alert('close');
+                console.debug("[Debug] Alert auto-dismissed");
             }, 5000);
         }
 
@@ -245,20 +252,37 @@ $subTitle = 'Settings - SMTP';
             const btn = $('#sendTestBtn');
             const btnText = $('#btnText');
 
+            const payload = {
+                _token: "{{ csrf_token() }}",
+                test_email: email
+            };
+
+            console.debug("[Debug] Test email form submitted. Payload:", JSON.stringify(payload, null, 2));
+
             btn.prop('disabled', true);
             btnText.text('Sending...');
 
             $.ajax({
                 url: "{{ route('smtp.test') }}",
                 method: "POST",
-                data: {
-                    _token: "{{ csrf_token() }}",
-                    test_email: email
+                data: payload,
+                beforeSend: function() {
+                    console.debug("[Debug] AJAX request started");
                 },
                 success: function(response) {
+                    console.debug("[Debug] AJAX success response:", JSON.stringify(response, null, 2));
                     showSmtpAlert(response.message, 'success');
                 },
-                error: function(xhr) {
+                error: function(xhr, status, error) {
+                    console.error("[Debug] AJAX error");
+                    console.error("Status:", status);
+                    console.error("Error:", error);
+                    if (xhr.responseJSON) {
+                        console.error("Response JSON:", JSON.stringify(xhr.responseJSON, null, 2));
+                    } else {
+                        console.error("Raw response:", xhr.responseText);
+                    }
+
                     let message = 'Failed to send test email.';
                     if (xhr.responseJSON && xhr.responseJSON.message) {
                         message = xhr.responseJSON.message;
@@ -268,6 +292,7 @@ $subTitle = 'Settings - SMTP';
                 complete: function() {
                     btn.prop('disabled', false);
                     btnText.text('Send Test Email');
+                    console.debug("[Debug] AJAX request completed");
                 }
             });
         });
@@ -275,5 +300,6 @@ $subTitle = 'Settings - SMTP';
     });
 </script>
 
-
 @endpush
+
+
