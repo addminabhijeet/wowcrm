@@ -24,10 +24,10 @@ $subTitle = 'Settings - SMTP';
                         {{-- Status Message Container --}}
                         <div id="smtpAlertContainer">
                             @if(session('success'))
-                                <div class="alert alert-success">{{ session('success') }}</div>
+                            <div class="alert alert-success">{{ session('success') }}</div>
                             @endif
                             @if(session('error'))
-                                <div class="alert alert-danger">{{ session('error') }}</div>
+                            <div class="alert alert-danger">{{ session('error') }}</div>
                             @endif
                         </div>
 
@@ -160,6 +160,10 @@ $subTitle = 'Settings - SMTP';
                         {{-- AJAX TEST EMAIL FORM --}}
                         <hr class="my-4">
                         <h5 class="text-primary-light mb-3">Send Test Email</h5>
+
+                        {{-- Alert message container --}}
+                        <div id="smtpAlertContainer" class="mb-3"></div>
+
                         <form id="testSmtpForm">
                             @csrf
                             <div class="row gy-3 align-items-end">
@@ -181,6 +185,7 @@ $subTitle = 'Settings - SMTP';
                             </div>
                         </form>
 
+
                     </div> <!-- card-body -->
                 </div>
             </div>
@@ -191,68 +196,84 @@ $subTitle = 'Settings - SMTP';
 @endsection
 
 @push('scripts')
+
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
 
-    // Toggle password visibility
-    $('#togglePassword').on('click', function() {
-        const input = $('#smtpPassword');
-        const icon = $('#eyeIcon');
-        if (input.attr('type') === 'password') {
-            input.attr('type', 'text');
-            icon.attr('icon', 'mdi:eye-off-outline');
-        } else {
-            input.attr('type', 'password');
-            icon.attr('icon', 'mdi:eye-outline');
-        }
-    });
-
-    // Copy password to clipboard
-    $('#copyPassword').on('click', function() {
-        const input = document.getElementById('smtpPassword');
-        input.select();
-        document.execCommand('copy');
-        alert('Password copied to clipboard!');
-    });
-
-    // AJAX: Send Test Email
-    $('#testSmtpForm').on('submit', function(e) {
-        e.preventDefault();
-
-        const email = $('#testEmail').val();
-        const btn = $('#sendTestBtn');
-        const btnText = $('#btnText');
-
-        btn.prop('disabled', true);
-        btnText.text('Sending...');
-
-        $.ajax({
-            url: "{{ route('smtp.test') }}",
-            method: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                test_email: email
-            },
-            success: function(response) {
-                $('#smtpAlertContainer').html(
-                    `<div class="alert alert-success">${response.message}</div>`
-                );
-            },
-            error: function(xhr) {
-                let message = 'Failed to send test email.';
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    message = xhr.responseJSON.message;
-                }
-                $('#smtpAlertContainer').html(
-                    `<div class="alert alert-danger">${message}</div>`
-                );
-            },
-            complete: function() {
-                btn.prop('disabled', false);
-                btnText.text('Send Test Email');
+        // Toggle password visibility
+        $('#togglePassword').on('click', function() {
+            const input = $('#smtpPassword');
+            const icon = $('#eyeIcon');
+            if (input.attr('type') === 'password') {
+                input.attr('type', 'text');
+                icon.attr('icon', 'mdi:eye-off-outline');
+            } else {
+                input.attr('type', 'password');
+                icon.attr('icon', 'mdi:eye-outline');
             }
         });
+
+        // Copy password to clipboard
+        $('#copyPassword').on('click', function() {
+            const input = document.getElementById('smtpPassword');
+            input.select();
+            document.execCommand('copy');
+            alert('Password copied to clipboard!');
+        });
+
+        // Helper: show alert dynamically
+        function showSmtpAlert(message, type = 'success') {
+            const alertHtml = `
+            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+                <strong>${type === 'success' ? 'Success!' : 'Error!'}</strong> ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        `;
+            $('#smtpAlertContainer').html(alertHtml);
+
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                $('.alert').alert('close');
+            }, 5000);
+        }
+
+        // AJAX: Send Test Email
+        $('#testSmtpForm').on('submit', function(e) {
+            e.preventDefault();
+
+            const email = $('#testEmail').val();
+            const btn = $('#sendTestBtn');
+            const btnText = $('#btnText');
+
+            btn.prop('disabled', true);
+            btnText.text('Sending...');
+
+            $.ajax({
+                url: "{{ route('smtp.test') }}",
+                method: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    test_email: email
+                },
+                success: function(response) {
+                    showSmtpAlert(response.message, 'success');
+                },
+                error: function(xhr) {
+                    let message = 'Failed to send test email.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        message = xhr.responseJSON.message;
+                    }
+                    showSmtpAlert(message, 'danger');
+                },
+                complete: function() {
+                    btn.prop('disabled', false);
+                    btnText.text('Send Test Email');
+                }
+            });
+        });
+
     });
-});
 </script>
+
+
 @endpush
