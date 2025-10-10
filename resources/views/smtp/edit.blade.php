@@ -172,6 +172,7 @@ $subTitle = 'Settings - SMTP';
         </div>
     </div>
 </div>
+@endsection
 
 @push('scripts')
 <script>
