@@ -156,6 +156,8 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
+Route::post('/logout-user', [LoginController::class, 'ajaxLogout'])->name('ajax.logout');
+
 Route::get('/', [Controller::class, 'index'])->name('home');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/registersubmit', [RegisterController::class, 'register'])->name('register.submit');

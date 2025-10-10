@@ -121,7 +121,7 @@ $script = '<script>
                                 <button data-type="logout" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Log Out
                                 </button>
-                                <button data-type="logout" data-user="{{ $timer['user_id'] }}"style="width:65px;height:28px;border-radius:14px;background:#dc3545;border:1px solid #b02a37;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;cursor:pointer;">
+                                <button data-type="logout" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#dc3545;border:1px solid #b02a37;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;cursor:pointer;">
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Log Out
                                 </button>
                             </div>
@@ -495,5 +495,38 @@ $script = '<script>
     setInterval(checkButtonStatus, 1000);
 </script>
 
+<script>
+    $(document).on('click', 'button[data-type="logout"]', function(e) {
+        e.preventDefault();
+        const userId = $(this).data('user'); // fallback ID
+
+        if (!confirm("Are you sure you want to log out this user?")) return;
+
+        $.ajax({
+            url: "{{ route('ajax.logout') }}",
+            method: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                user_id: userId
+            },
+            beforeSend: function() {
+                console.log("[Logout] Request sent for user ID:", userId);
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    // Optionally reload or update UI
+                    $(`#seniorcontrolButtons_${userId}`).find('button').prop('disabled', true);
+                } else {
+                    alert("Error: " + response.message);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert("Something went wrong while logging out.");
+            }
+        });
+    });
+</script>
 
 @endsection

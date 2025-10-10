@@ -173,4 +173,6 @@ class TimerController extends Controller
 
         return response()->json($timers);
     }
+
+    
 }
