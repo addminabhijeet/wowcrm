@@ -21,15 +21,7 @@ $subTitle = 'Settings - SMTP';
                     </div>
 
                     <div class="card-body p-24">
-                        {{-- Status Message Container --}}
-                        <div id="smtpAlertContainer">
-                            @if(session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
-                            @endif
-                            @if(session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
-                            @endif
-                        </div>
+                        
 
                         {{-- SMTP Update Form --}}
                         <form action="{{ route('smtp.update') }}" method="POST" class="mb-5">
