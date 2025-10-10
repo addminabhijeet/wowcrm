@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\GoogleSheetData;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Models\SmtpSetting;
 use Illuminate\Support\Str;
 
 
@@ -1258,6 +1260,8 @@ class GoogleSheetController extends Controller
         ];
 
         $exeRemarksValue = null;
+        $course = null;
+        $amount = null;
 
         // Assign values safely
         foreach ($rowData as $key => $val) {
@@ -1270,6 +1274,11 @@ class GoogleSheetController extends Controller
 
             if ($column === 'Amount' && !empty($val)) {
                 $val = $this->parseAmount($val);
+                $amount = $val;
+            }
+
+            if ($column === 'Course') {
+                $course = $val;
             }
 
             if ($column === 'Exe_Remarks') {
@@ -1318,6 +1327,43 @@ class GoogleSheetController extends Controller
                 'message' => 'Database error: ' . $e->getMessage()
             ]);
         }
+
+        // --- Send Email if Exe_Remarks is "Called & Mailed" ---
+        if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
+            try {
+                $smtp = SmtpSetting::first();
+                if ($smtp) {
+                    // Configure mailer dynamically
+                    config([
+                        'mail.mailers.smtp.transport' => $smtp->mailer,
+                        'mail.mailers.smtp.host' => $smtp->host,
+                        'mail.mailers.smtp.port' => $smtp->port,
+                        'mail.mailers.smtp.username' => $smtp->username,
+                        'mail.mailers.smtp.password' => decrypt($smtp->password),
+                        'mail.mailers.smtp.encryption' => $smtp->encryption,
+                        'mail.from.address' => $smtp->from_address,
+                        'mail.from.name' => $smtp->from_name,
+                    ]);
+
+                    $courseText = $course ?? 'N/A';
+                    $amountText = $amount ?? 'N/A';
+
+                    Mail::raw("Hello,
+
+Your course: {$courseText}
+Amount: {$amountText}
+
+Thank you for your interest.
+
+Regards,
+{$smtp->from_name}", function ($message) use ($email) {
+                        $message->to($email)->subject('Course & Amount Information');
+                    });
+                }
+            } catch (\Exception $e) {
+                            }
+        }
+
 
         return response()->json([
             'success' => true,
