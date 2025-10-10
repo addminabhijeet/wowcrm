@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Payment;
 use App\Models\TimerSetting;
+use Illuminate\Support\Facades\Mail;
+use App\Models\SmtpSetting;
 
 class DashboardController extends Controller
 {
@@ -459,5 +461,80 @@ class DashboardController extends Controller
             'notice_status'     => $timer->notice_status,
             'logout'            => $timer->remaining_seconds <= 0
         ]);
+    }
+
+    // Show the form to edit SMTP settings
+    public function edit()
+    {
+        $smtp = SmtpSetting::first(); // Assume single record
+        return view('smtp_settings.edit', compact('smtp'));
+    }
+
+    // Update SMTP settings
+    public function update(Request $request)
+    {
+        $request->validate([
+            'mailer' => 'required|string',
+            'host' => 'required|string',
+            'port' => 'required|integer',
+            'username' => 'required|email',
+            'password' => 'nullable|string',
+            'encryption' => 'required|string',
+            'from_address' => 'required|email',
+            'from_name' => 'required|string',
+        ]);
+
+        $smtp = SmtpSetting::first();
+        if (!$smtp) {
+            $smtp = new SmtpSetting();
+        }
+
+        $smtp->mailer = $request->mailer;
+        $smtp->host = $request->host;
+        $smtp->port = $request->port;
+        $smtp->username = $request->username;
+        if ($request->filled('password')) {
+            $smtp->password = encrypt($request->password); // encrypt password
+        }
+        $smtp->encryption = $request->encryption;
+        $smtp->from_address = $request->from_address;
+        $smtp->from_name = $request->from_name;
+
+        $smtp->save();
+
+        return redirect()->back()->with('success', 'SMTP settings updated successfully!');
+    }
+
+    public function test(Request $request)
+    {
+        $smtp = SmtpSetting::first();
+        if (!$smtp) {
+            return redirect()->back()->with('error', 'No SMTP settings found.');
+        }
+
+        // Temporarily configure mail
+        config([
+            'mail.mailers.smtp.transport' => $smtp->mailer,
+            'mail.mailers.smtp.host' => $smtp->host,
+            'mail.mailers.smtp.port' => $smtp->port,
+            'mail.mailers.smtp.username' => $smtp->username,
+            'mail.mailers.smtp.password' => decrypt($smtp->password),
+            'mail.mailers.smtp.encryption' => $smtp->encryption,
+            'mail.from.address' => $smtp->from_address,
+            'mail.from.name' => $smtp->from_name,
+        ]);
+
+        $testEmail = $request->input('test_email') ;
+
+        try {
+            Mail::raw('This is a test email from Synergie Systems CRM.', function ($message) use ($testEmail) {
+                $message->to($testEmail)
+                    ->subject('SMTP Test Email');
+            });
+
+            return redirect()->back()->with('success', "Test email sent successfully to {$testEmail}!");
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'Failed to send test email: ' . $e->getMessage());
+        }
     }
 }
