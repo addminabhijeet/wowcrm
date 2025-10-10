@@ -1213,7 +1213,6 @@ class GoogleSheetController extends Controller
         // Check for duplicate Email
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
-
             if ($emailExists) {
                 return response()->json([
                     'success' => false,
@@ -1225,7 +1224,6 @@ class GoogleSheetController extends Controller
         // Check for duplicate Phone
         if (!empty($phone)) {
             $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
-
             if ($phoneExists) {
                 return response()->json([
                     'success' => false,
@@ -1310,11 +1308,9 @@ class GoogleSheetController extends Controller
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
-                $record->resume = $filePath; // Store file path
+                $record->resume = $filePath;
             } catch (\Exception $e) {
-                // Continue without resume if upload fails
                 $record->resume = null;
             }
         }
@@ -1335,10 +1331,11 @@ class GoogleSheetController extends Controller
         if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
             try {
                 $smtp = SmtpSetting::first();
-                if ($smtp) {
-                    // Configure mailer dynamically
+                if (!$smtp) {
+                    $mailMessage = 'No SMTP settings found.';
+                } else {
+                    // Temporarily configure mailer (same as test() method)
                     config([
-                        'mail.default' => 'smtp',
                         'mail.mailers.smtp.transport' => $smtp->mailer,
                         'mail.mailers.smtp.host' => $smtp->host,
                         'mail.mailers.smtp.port' => $smtp->port,
@@ -1354,31 +1351,26 @@ class GoogleSheetController extends Controller
 
                     $mailBody = "Hello,
 
-Your course: {$courseText}
-Amount: {$amountText}
+                    Your course: {$courseText}
+                    Amount: {$amountText}
 
-Thank you for your interest.
+                    Thank you for your interest.
 
-Regards,
-{$smtp->from_name}"; 
+                    Regards,
+                    {$smtp->from_name}";
 
-// --- Force use of SMTP mailer explicitly ---
-                Mail::mailer('smtp')->raw($mailBody, function ($message) use ($email) {
-                    $message->to($email)->subject('Course & Amount Information');
-                });
+                    // Send mail like test() method
+                    Mail::raw($mailBody, function ($message) use ($email) {
+                        $message->to($email)
+                            ->subject('Course & Amount Information');
+                    });
 
-                $mailMessage = 'Email sent successfully.';
-                
-            } else {
-                $mailMessage = 'SMTP settings not configured.';
-               
+                    $mailMessage = "Test email sent successfully to {$email}!";
+                }
+            } catch (\Exception $e) {
+                $mailMessage = 'Failed to send email: ' . $e->getMessage();
             }
-        } catch (\Exception $e) {
-            $mailMessage = 'Failed to send email.';
-           
         }
-    }
-
 
         return response()->json([
             'success' => true,
@@ -1389,6 +1381,7 @@ Regards,
             'resume_path' => !empty($record->resume) ? true : false
         ]);
     }
+
 
     // Add a method to serve the PDF files
     public function viewjuniorResume($id)
