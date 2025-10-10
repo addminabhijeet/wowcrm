@@ -60,7 +60,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/admin/customer/update/{id}', [UserController::class, 'customerupdate'])->name('users.customer.update');
     Route::get('/dashboard/admin/customer/destroy/{id}', [UserController::class, 'customerdestroy'])->name('users.customer.destroy');
 
-    Route::get('/dashboard/admin/smtp-settings/edit', [SmtpSettingController::class, 'edit'])->name('smtp.edit');
+    Route::get('/dashboard/admin/smtp-settings/edit', [SmtpSettingController::class, 'edit'])->name('smtpsettings.edit');
     Route::put('/dashboard/admin/smtp-settings/update', [SmtpSettingController::class, 'update'])->name('smtp.update');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
