@@ -815,4 +815,246 @@ $script ='<script>
         });
     });
 </script>
+
+<style>
+    .scroll-sm {
+        overflow-x: scroll;
+        overflow-y: hidden;
+        /* always show scrollbar */
+        scrollbar-gutter: stable;
+        /* prevent layout shift */
+    }
+
+    /* === Chrome, Edge, Safari === */
+    .scroll-sm::-webkit-scrollbar {
+        height: 36px;
+        /* horizontal scrollbar thickness */
+        width: 0;
+        /* vertical scrollbar thickness */
+    }
+
+    .scroll-sm::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #888, #666);
+        border-radius: 18px;
+        /* rounded ends */
+        border: 6px solid #f1f1f1;
+        /* gives space inside thumb */
+        transition: background 0.3s, border-color 0.3s, height 0.3s;
+    }
+
+    .scroll-sm::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #555, #333);
+        border-color: #e0e0e0;
+    }
+
+    .scroll-sm::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+        border-radius: 18px;
+    }
+
+    /* === Firefox === */
+    .scroll-sm {
+        scrollbar-width: auto;
+        /* thicker style */
+        scrollbar-color: #666 #f1f1f1;
+        /* thumb + track */
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const scrollContainer = document.querySelector('.scroll-sm');
+        const allRows = Array.from(document.querySelectorAll('#sheet-table-body tr'));
+
+        // =========================
+        // Smooth horizontal scroll + mouse-based + drag scroll
+        // =========================
+        if (scrollContainer) {
+            // Auto-scroll interval
+            let autoScrollInterval;
+
+            // Mouse move scroll
+            scrollContainer.addEventListener('mousemove', e => {
+                if (isDragging) return; // skip if dragging
+                const rect = scrollContainer.getBoundingClientRect();
+                const scrollPercent = (e.clientX - rect.left) / rect.width;
+                scrollContainer.scrollLeft = scrollPercent * (scrollContainer.scrollWidth - scrollContainer.clientWidth);
+            });
+
+            // Auto-scroll if mouse leaves
+            scrollContainer.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
+            scrollContainer.addEventListener('mouseleave', () => {
+                autoScrollInterval = setInterval(() => {
+                    scrollContainer.scrollLeft += 1;
+                    if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
+                        scrollContainer.scrollLeft = 0;
+                    }
+                }, 20);
+            });
+
+            // =========================
+            // Mouse-drag scroll
+            // =========================
+            let isDragging = false,
+                startX, scrollLeftStart;
+
+            scrollContainer.addEventListener('mousedown', e => {
+                isDragging = true;
+                scrollContainer.classList.add('dragging');
+                startX = e.pageX - scrollContainer.offsetLeft;
+                scrollLeftStart = scrollContainer.scrollLeft;
+            });
+
+            scrollContainer.addEventListener('mouseup', () => {
+                isDragging = false;
+                scrollContainer.classList.remove('dragging');
+            });
+            scrollContainer.addEventListener('mouseleave', () => {
+                isDragging = false;
+                scrollContainer.classList.remove('dragging');
+            });
+
+            scrollContainer.addEventListener('mousemove', e => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - scrollContainer.offsetLeft;
+                const walk = (x - startX) * 1; // scroll speed multiplier
+                scrollContainer.scrollLeft = scrollLeftStart - walk;
+            });
+        }
+
+        // =========================
+        // Helper functions
+        // =========================
+        const getFields = row => Array.from(row.querySelectorAll('input, select, textarea'))
+            .filter(el => el.offsetParent && !el.disabled && !el.readOnly && el.type !== 'hidden');
+
+        const focusField = el => {
+            el.focus();
+            if (el.tagName === 'INPUT' && el.type === 'text') el.select();
+            el.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+            el.classList.add('focus-highlight');
+            setTimeout(() => el.classList.remove('focus-highlight'), 500);
+        };
+
+        const moveFocus = (field, forward = true) => {
+            const row = field.closest('tr');
+            const idx = allRows.indexOf(row);
+            const fields = getFields(row);
+            const saveBtn = row.querySelector('.save-btn');
+            const fIdx = fields.indexOf(field);
+            let target = forward ? fields[fIdx + 1] : fields[fIdx - 1];
+
+            if (!target) {
+                if (forward && saveBtn) {
+                    focusField(saveBtn);
+                    return;
+                }
+                const nextRow = allRows[forward ? idx + 1 : idx - 1] || allRows[forward ? 0 : allRows.length - 1];
+                const nextFields = getFields(nextRow);
+                if (nextFields.length) target = forward ? nextFields[0] : nextFields[nextFields.length - 1];
+            }
+            if (target) focusField(target);
+        };
+
+        // =========================
+        // Navigation & Save handling
+        // =========================
+        allRows.forEach(row => {
+            const fields = getFields(row);
+            const saveBtn = row.querySelector('.save-btn');
+
+            fields.forEach(field => {
+                field.addEventListener('keydown', e => {
+                    const forward = (e.key === 'Enter' && !e.shiftKey) || (e.key === 'Tab' && !e.shiftKey);
+                    const backward = (e.key === 'Enter' && e.shiftKey) || (e.key === 'Tab' && e.shiftKey);
+                    if (forward) {
+                        e.preventDefault();
+                        const last = fields.indexOf(field) === fields.length - 1;
+                        last && saveBtn ? focusField(saveBtn) : moveFocus(field, true);
+                    } else if (backward) {
+                        e.preventDefault();
+                        moveFocus(field, false);
+                    }
+                });
+            });
+
+            if (saveBtn) {
+                saveBtn.addEventListener('keydown', e => {
+                    const forward = (e.key === 'Enter' || e.key === 'Tab') && !e.shiftKey;
+                    const backward = (e.key === 'Enter' || e.key === 'Tab') && e.shiftKey;
+                    if (forward) {
+                        e.preventDefault();
+                        const nextRow = allRows[allRows.indexOf(row) + 1] || allRows[0];
+                        const nf = getFields(nextRow);
+                        nf.length && focusField(nf[0]);
+                    }
+                    if (backward) {
+                        e.preventDefault();
+                        const prevRow = allRows[allRows.indexOf(row) - 1] || allRows[allRows.length - 1];
+                        const pf = getFields(prevRow);
+                        pf.length && focusField(pf[pf.length - 1]);
+                    }
+                });
+            }
+        });
+
+        // =========================
+        // Custom shortcuts: Alt+S/U/V
+        // =========================
+        document.addEventListener('keydown', e => {
+            if (!e.altKey) return;
+            const key = e.key.toLowerCase();
+            const row = document.activeElement.closest('tr');
+            if (!row) return;
+
+            if (key === 's') { // Save
+                const btn = row.querySelector('.save-btn');
+                if (btn) btn.click();
+                e.preventDefault();
+            }
+            if (key === 'u') { // Upload
+                const fileInput = row.querySelector('.resume-input');
+                if (fileInput) fileInput.click();
+                e.preventDefault();
+            }
+            if (key === 'v') { // View
+                const viewBtn = row.querySelector('.view-btn');
+                if (viewBtn && !viewBtn.classList.contains('d-none')) viewBtn.click();
+                e.preventDefault();
+            }
+        });
+    });
+</script>
+
+<style>
+    /* Highlight focused field briefly */
+    .focus-highlight {
+        animation: highlightFlash 0.5s ease-in-out;
+    }
+
+    @keyframes highlightFlash {
+        0% {
+            background-color: #fff3b0;
+        }
+
+        50% {
+            background-color: #fff59d;
+        }
+
+        100% {
+            background-color: transparent;
+        }
+    }
+
+    /* Mouse-drag cursor */
+    .scroll-sm.dragging {
+        cursor: grabbing;
+        cursor: -webkit-grabbing;
+    }
+</style>
 @endsection
