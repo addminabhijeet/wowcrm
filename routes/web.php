@@ -166,5 +166,5 @@ Route::patch('/payment/{id}/status', [PaymentController::class, 'updateStatus'])
 Route::patch('/training/{id}/trastatus', [PaymentController::class, 'traupdateStatus'])->name('training.updateStatus');
 Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('login.history');
 
-Route::get('/dashboard/admin/smtp-settings/edit', [SmtpSettingController::class, 'edit'])->name('smtpsettings.edit');
+Route::get('/dashboard/admin/smtp-settings/edit', [SmtpSettingController::class, 'edit'])->name('smtp.edit');
 Route::put('/dashboard/admin/smtp-settings/update', [SmtpSettingController::class, 'update'])->name('smtp.update');
