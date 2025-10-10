@@ -15,7 +15,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
         <div class="alert alert-success">{{ session('success') }}</div>
     @endif
 
-    <form method="POST" action="{{ route('email-template.update', $template->id) }}">
+    <form method="POST" action="{{ route('template.update', $template->id) }}">
         @csrf
         @method('PUT')
 
