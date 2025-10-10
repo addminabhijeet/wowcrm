@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\SmtpSetting;
 use Illuminate\Support\Str;
+use App\Models\EmailTemplate;
 
 
 class GoogleSheetController extends Controller
@@ -1481,18 +1482,26 @@ class GoogleSheetController extends Controller
                         'mail.from.name' => $smtp->from_name,
                     ]);
 
-                    // --- Direct Email Content (No Template) ---
-                    $subject = "Course Details from {$smtp->from_name}";
-                    $messageBody = " <p>Hello,<br />
-                        <br />
-                        Your course: {{course}}<br />
-                        Amount: {{amount}}<br />
-                        <br />
-                        Thank you for your interest. Best Wishes!!<br />
-                        <br />
-                        Regards,<br />
-                        {{from_name}}</p>";
+                    // --- Fetch Email Template from Database ---
+                    $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
+                    if ($template) {
+                        $subject = $template->subject;
+                        $messageBody = $template->body;
+                    } else {
+                        // Fallback if template not found
+                        $subject = "Course Details from {$smtp->from_name}";
+                        $messageBody = "Dear Candidate,\n\n"
+                            . "Thank you for showing interest in our program.\n"
+                            . "Below are the details:\n\n"
+                            . "Course: {$course}\n"
+                            . "Amount: {$amount}\n\n"
+                            . "For more information, feel free to reach out.\n\n"
+                            . "Best regards,\n"
+                            . "{$smtp->from_name}";
+                    }
+
+                    // --- Send Email (No Template Logic Changed) ---
                     Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                         $message->from($smtp->from_address, $smtp->from_name)
                             ->to($email)
