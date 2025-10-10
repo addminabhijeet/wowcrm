@@ -1490,8 +1490,8 @@ class GoogleSheetController extends Controller
                         $messageBody = $template->body;
                     } else {
                         // Fallback if template not found
-                        $subject = "Unlock Career Stability with Fortune 500 Projects !";
-                        $messageBody = "Hi {$name},
+                        $subject = "Course Details from {$smtp->from_name}";
+$messageBody = "Hi {$name},
 
 ---
 
@@ -1559,6 +1559,7 @@ Best Regards,
 {$smtp->from_name}
 Talent Acquisition Team
 Synergie Systems INC.";
+
                     }
 
                     // --- Send Email (No Template Logic Changed) ---
