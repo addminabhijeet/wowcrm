@@ -309,7 +309,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:email-outline"></iconify-icon>
                                         </span>
-                                        <input type="text" name="mailer" class="form-control radius-8" value="{{ $smtp->mailer ) }}">
+                                        <input type="text" name="mailer" class="form-control radius-8" value="{{ $smtp->mailer }}">
                                     </div>
                                 </div>
 
@@ -321,7 +321,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:server-network"></iconify-icon>
                                         </span>
-                                        <input type="text" name="host" class="form-control radius-8" value="{{ old('host', $smtp->host ?? '') }}">
+                                        <input type="text" name="host" class="form-control radius-8" value="{{ $smtp->host }}">
                                     </div>
                                 </div>
 
@@ -333,7 +333,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:port"></iconify-icon>
                                         </span>
-                                        <input type="number" name="port" class="form-control radius-8" value="{{ old('port', $smtp->port ?? 465) }}">
+                                        <input type="number" name="port" class="form-control radius-8" value="{{ $smtp->port }}">
                                     </div>
                                 </div>
 
@@ -345,7 +345,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:account-outline"></iconify-icon>
                                         </span>
-                                        <input type="email" name="username" class="form-control radius-8" value="{{ old('username', $smtp->username ?? '') }}">
+                                        <input type="email" name="username" class="form-control radius-8" value="{{ $smtp->username }}">
                                     </div>
                                 </div>
 
@@ -376,7 +376,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:shield-outline"></iconify-icon>
                                         </span>
-                                        <input type="text" name="encryption" class="form-control radius-8" value="{{ old('encryption', $smtp->encryption ?? 'ssl') }}">
+                                        <input type="text" name="encryption" class="form-control radius-8" value="{{ $smtp->encryption }}">
                                     </div>
                                 </div>
 
@@ -388,7 +388,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:email-open-outline"></iconify-icon>
                                         </span>
-                                        <input type="email" name="from_address" class="form-control radius-8" value="{{ old('from_address', $smtp->from_address ?? '') }}">
+                                        <input type="email" name="from_address" class="form-control radius-8" value="{{ $smtp->from_address }}">
                                     </div>
                                 </div>
 
@@ -400,7 +400,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:account-box-outline"></iconify-icon>
                                         </span>
-                                        <input type="text" name="from_name" class="form-control radius-8" value="{{ old('from_name', $smtp->from_name ?? '') }}">
+                                        <input type="text" name="from_name" class="form-control radius-8" value="{{ $smtp->from_name }}">
                                     </div>
                                 </div>
 
