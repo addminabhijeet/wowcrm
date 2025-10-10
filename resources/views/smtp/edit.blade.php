@@ -26,10 +26,10 @@ $subTitle = 'Settings - SMTP';
                         {{-- Single Alert Container --}}
                         <div id="smtpAlertContainer" class="mb-3">
                             @if(session('success'))
-                                <div class="alert alert-success">{{ session('success') }}</div>
+                            <div class="alert alert-success">{{ session('success') }}</div>
                             @endif
                             @if(session('error'))
-                                <div class="alert alert-danger">{{ session('error') }}</div>
+                            <div class="alert alert-danger">{{ session('error') }}</div>
                             @endif
                         </div>
 
@@ -176,79 +176,90 @@ $subTitle = 'Settings - SMTP';
 
 @push('scripts')
 <script>
-$(document).ready(function() {
+    $(document).ready(function() {
 
-    console.debug("[Debug] SMTP page initialized");
+        console.log("[Debug] SMTP page initialized"); // <-- use log instead of debug
 
-    const toggleBtn = $('#togglePassword');
-    const passwordInput = $('#smtpPassword');
-    const eyeIcon = $('#eyeIcon');
-    const copyBtn = $('#copyPassword');
-    const alertContainer = $('#smtpAlertContainer');
-    const testForm = $('#testSmtpForm');
-    const testEmailInput = $('#testEmail');
-    const sendBtn = $('#sendTestBtn');
-    const btnText = $('#btnText');
+        const toggleBtn = $('#togglePassword');
+        const passwordInput = $('#smtpPassword');
+        const eyeIcon = $('#eyeIcon');
+        const copyBtn = $('#copyPassword');
+        const alertContainer = $('#smtpAlertContainer');
+        const testForm = $('#testSmtpForm');
+        const testEmailInput = $('#testEmail');
+        const sendBtn = $('#sendTestBtn');
+        const btnText = $('#btnText');
 
-    // --- Toggle password ---
-    toggleBtn.length && passwordInput.length && eyeIcon.length && toggleBtn.on('click', function() {
-        if(passwordInput.attr('type') === 'password'){
-            passwordInput.attr('type','text');
-            eyeIcon.attr('icon','mdi:eye-off-outline');
-        } else {
-            passwordInput.attr('type','password');
-            eyeIcon.attr('icon','mdi:eye-outline');
-        }
-    });
+        // --- Toggle password ---
+        toggleBtn.length && passwordInput.length && eyeIcon.length && toggleBtn.on('click', function() {
+            console.log("[Debug] Toggle password clicked"); // debug log
+            if (passwordInput.attr('type') === 'password') {
+                passwordInput.attr('type', 'text');
+                eyeIcon.attr('icon', 'mdi:eye-off-outline');
+            } else {
+                passwordInput.attr('type', 'password');
+                eyeIcon.attr('icon', 'mdi:eye-outline');
+            }
+        });
 
-    // --- Copy password ---
-    copyBtn.length && passwordInput.length && copyBtn.on('click', function(){
-        passwordInput.select();
-        document.execCommand('copy');
-        alert('Password copied to clipboard!');
-    });
+        // --- Copy password ---
+        copyBtn.length && passwordInput.length && copyBtn.on('click', function() {
+            console.log("[Debug] Copy password clicked"); // debug log
+            passwordInput.select();
+            document.execCommand('copy');
+            alert('Password copied to clipboard!');
+        });
 
-    // --- Show alert ---
-    function showSmtpAlert(message,type='success'){
-        if(alertContainer.length){
-            const html = `
+        // --- Show alert ---
+        function showSmtpAlert(message, type = 'success') {
+            console.log("[Debug] Show alert:", type, message); // debug log
+            if (alertContainer.length) {
+                const html = `
                 <div class="alert alert-${type} alert-dismissible fade show" role="alert">
                     <strong>${type==='success'?'Success!':'Error!'}</strong> ${message}
                     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                 </div>`;
-            alertContainer.prepend(html);
-            setTimeout(()=>{$('.alert').alert('close');},5000);
-        }
-    }
-
-    // --- AJAX: Test email ---
-    testForm.length && testForm.on('submit', function(e){
-        e.preventDefault();
-        const email = testEmailInput.val();
-        if(!email) return;
-
-        sendBtn.prop('disabled', true);
-        btnText.text('Sending...');
-
-        $.ajax({
-            url: "{{ route('smtp.test') }}",
-            method: "POST",
-            data: {_token: "{{ csrf_token() }}", test_email: email},
-            success: function(res){
-                showSmtpAlert(res.message,'success');
-            },
-            error: function(xhr){
-                let msg = 'Failed to send test email.';
-                if(xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
-                showSmtpAlert(msg,'danger');
-            },
-            complete: function(){
-                sendBtn.prop('disabled', false);
-                btnText.text('Send Test Email');
+                alertContainer.prepend(html);
+                setTimeout(() => {
+                    $('.alert').alert('close');
+                }, 5000);
             }
-        });
-    });
+        }
 
-});
+        // --- AJAX: Test email ---
+        testForm.length && testForm.on('submit', function(e) {
+            e.preventDefault();
+            const email = testEmailInput.val();
+            console.log("[Debug] Test email submitted:", email); // debug log
+            if (!email) return;
+
+            sendBtn.prop('disabled', true);
+            btnText.text('Sending...');
+
+            $.ajax({
+                url: "{{ route('smtp.test') }}",
+                method: "POST",
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    test_email: email
+                },
+                success: function(res) {
+                    console.log("[Debug] AJAX success:", res); // debug log
+                    showSmtpAlert(res.message, 'success');
+                },
+                error: function(xhr) {
+                    console.log("[Debug] AJAX error:", xhr); // debug log
+                    let msg = 'Failed to send test email.';
+                    if (xhr.responseJSON && xhr.responseJSON.message) msg = xhr.responseJSON.message;
+                    showSmtpAlert(msg, 'danger');
+                },
+                complete: function() {
+                    sendBtn.prop('disabled', false);
+                    btnText.text('Send Test Email');
+                }
+            });
+        });
+
+    });
 </script>
 @endpush
