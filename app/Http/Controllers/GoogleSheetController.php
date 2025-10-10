@@ -1493,14 +1493,16 @@ class GoogleSheetController extends Controller
                         $subject = "Course Details from {$smtp->from_name}";
 $messageBody = "Hi {$name},
 
----
 
 I hope this message finds you well.
 
-My name is {$smtp->from_name}, part of the Talent Acquisition Team at Synergie Systems INC., a respected workforce development and project management firm based in Delaware. 
-We partner with Fortune 500 companies across the U.S., delivering staffing solutions and long-term career success.
+My name is {$smtp->from_name}, part of the Talent Acquisition Team at Synergie Systems INC, 
+a respected workforce development and project management firm based in Delaware. 
+We partner with Fortune 500 companies across the U.S., delivering 
+staffing solutions and long-term career success.
 
-After reviewing your profile, I believe you could be a strong fit for several opportunities we have. 
+After reviewing your profile, 
+I believe you could be a strong fit for several opportunities we have. 
 We aim to offer you not just a job, but a career pathway built on stability, support, and growth.
 
 ---
