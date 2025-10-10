@@ -16,7 +16,7 @@ class EmailTemplateController extends Controller
                 'body' => "Hello,<br><br>Your course: {{course}}<br>Amount: {{amount}}<br><br>Thank you for your interest.<br><br>Regards,<br>{{from_name}}"
             ]
         );
-        return view('email_template.edit', compact('template'));
+        return view('smtp.edittemplate', compact('template'));
     }
 
     public function update(Request $request, $id)
