@@ -1496,18 +1496,18 @@ $messageBody =
 "I hope this message finds you well.\n\n" .
 "My name is {$smtp->from_name}, and I’m part of the Talent Acquisition Team at Synergie Systems INC., a respected workforce development and project management firm based in Delaware. We partner with some of the most renowned Fortune 500 companies across the U.S., delivering not just staffing solutions but long-term career success.\n\n" .
 "After reviewing your profile, I believe you could be a strong fit for several exciting opportunities we currently have available. And more importantly, I believe we can offer you not just a job, but a career pathway built on stability, support, and growth.\n\n" .
-"+ What Makes Synergie Different?\n" .
-"------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+"What Makes Synergie Different?\n" .
+"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
 "At Synergie, we understand that a fulfilling career is built on trust, purpose, and progress. That's why we go beyond recruitment—we invest in you. Our commitment is simple: to help you grow, thrive, and achieve your highest potential.\n\n" .
-"           Here’s what you can expect when you join our community:\n\n" .
+"Here’s what you can expect when you join our community:\n\n" .
 "                  - Direct Project Placements with Fortune 500 and Tier 1 clients\n" .
 "                  - Full-time employment with Synergie—never just a short-term contract\n" .
 "                  - Real-world project experience with today’s most in-demand tools and technologies\n" .
 "                  - Dedicated support from day one: resume branding, interview prep, and onboarding guidance\n" .
 "                  - Zero Bond Policy—because your freedom and career choices matter\n" .
 "                  - Support for OPT, CPT, STEM OPT, H1B & Green Card sponsorships\n\n" .
-"+ More Than a Paycheck — A Path to Prosperity\n" .
-"---------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+"More Than a Paycheck — A Path to Prosperity\n" .
+"-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
 "We believe that when you bring value, you deserve to be valued. That’s why we offer a transparent, competitive compensation structure designed to reward your dedication and drive.\n\n" .
 "                  - Full-Time Roles: \$40–\$50/hr\n" .
 "                  - Part-Time Roles: \$15–\$25/hr\n" .
@@ -1515,8 +1515,8 @@ $messageBody =
 "                  - 15% Salary Raise every 6 months based on performance\n" .
 "                  - 12 Days Paid Vacation annually\n" .
 "                  - Relocation Assistance for client deployments\n\n" .
-"+ Comprehensive Benefits That Put You First\n" .
-"----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+"Comprehensive Benefits That Put You First\n" .
+"--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
 "At Synergie, we care for your career—and your well-being. We provide:\n\n" .
 "                  - Health, Dental & Vision Insurance\n" .
 "                  - Short- & Long-Term Disability Insurance\n" .
@@ -1524,16 +1524,16 @@ $messageBody =
 "                  - Legal & Immigration Support\n" .
 "                  - Tax Assistance & Transparent Payroll\n" .
 "                  - Workers’ Compensation—your safety is our priority\n\n" .
-"+ Support Tailored for International Talent\n" .
-"------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+"Support Tailored for International Talent\n" .
+"----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
 "We take pride in guiding hundreds of F1/OPT/CPT/STEM OPT professionals every year toward long-term success in the U.S.:\n\n" .
 "                  - Offer Letters, Client Confirmations & Employer Letters\n" .
 "                  - Full STEM Extension & OPT/CPT Support\n" .
 "                  - H1B Sponsorship after project onboarding\n" .
 "                  - Relocation & Immigration Documentation\n" .
 "                  - Ongoing Green Card Processing Assistance\n\n" .
-"+ Not Quite Job-Ready? We’ll Bridge That Gap\n" .
-"-------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+"Not Quite Job-Ready? We’ll Bridge That Gap\n" .
+"-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
 "Sometimes, all it takes is one last push to unlock your dream opportunity. That’s why we offer a 4-week industry-focused workshop, designed by experts with over a decade of experience to prepare you for real-world success.\n\n" .
 "What You’ll Gain:\n\n" .
 "                  - Live Zoom sessions & recorded expert sessions\n" .
@@ -1541,13 +1541,13 @@ $messageBody =
 "                  - One-on-one resume branding & mock interviews\n" .
 "                  - Global Certificate of Completion & recruiter access\n" .
 "                  - 100% Fee Refund with your first project paycheck (Only \${$amount}—one-time, fully refundable)\n\n" .
-"+ Let’s Take the First Step Together\n" .
-"----------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+"Let’s Take the First Step Together\n" .
+"--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
 "If you’re seeking more than just another role—if you’re looking for a career that recognizes your potential, offers true support, and opens doors to the future you deserve—then Synergie is here for you.\n\n" .
 "This is your opportunity to move forward with confidence, backed by a team that believes in you and works tirelessly to help you succeed.\n\n" .
 "Please feel free to reply to this email or reach me directly over the phone if you’d like to learn more or take the next step.\n\n" .
-"                  Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.\n\n" .
-"                             Visit Our Website: https://www.synergiesystems.com/";
+"Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.\n\n" .
+"                    Visit Our Website: https://www.synergiesystems.com/";
 
                     }
 
