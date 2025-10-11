@@ -440,13 +440,17 @@ class GoogleSheetController extends Controller
         $search = $request->input('search');
         $rowId = $request->input('row_id');
 
-        // New SUBSTRING_INDEX-based filter (like juniorcandm)
+        // SUBSTRING_INDEX-based filter with second part check
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
             $seniorPart = $authUser->id . '|senior';
+
             $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart])
-                ->where(function ($q) {
-                    $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
-                });
+                ->whereRaw("
+              -- Ensure there is a second part and it ends with |senior
+              LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) >= 1
+              AND
+              SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'
+          ");
         });
 
         if ($rowId) {
@@ -492,6 +496,7 @@ class GoogleSheetController extends Controller
 
         return view('database.seniorcandm', compact('data'));
     }
+
 
     public function seniorpaid(Request $request)
     {
