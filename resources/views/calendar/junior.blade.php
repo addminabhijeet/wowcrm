@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const calendar = new FullCalendar.Calendar(calendarEl, {
         initialView: 'dayGridMonth',
         selectable: true,
-        events: '/your-route-to-fetch-events',
+        events: "{{ route('calendar.juniorEvents') }}",
 
         dateClick: function(info) {
             modalDate.textContent = info.dateStr;
