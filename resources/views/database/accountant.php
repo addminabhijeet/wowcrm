@@ -6,12 +6,11 @@ $script ='<script>
     $(".remove-item-btn").on("click", function() {
         $(this).closest("tr").addClass("d-none")
     });
-</script>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
+</script>';
 @endphp
 
 @section('content')
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+
 <div class="card h-100 p-0 radius-12">
     <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
         <div class="d-flex align-items-center flex-wrap gap-3">
@@ -19,10 +18,14 @@ $script ='<script>
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>10</option>
             </select>
-            <form class="navbar-search">
-                <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
+
+            <!-- Search Input -->
+            <form class="navbar-search position-relative" autocomplete="off">
+                <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control" placeholder="Search Name, Email, Phone">
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+                <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
+
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>Status</option>
                 <option>Active</option>
@@ -30,7 +33,8 @@ $script ='<script>
             </select>
         </div>
     </div>
-    <div class="card-body p-24">
+
+    <div class="card-body p-24" id="senior-table-wrapper">
         <div class="table-responsive scroll-sm">
             @if($data->isEmpty())
             <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
@@ -53,6 +57,7 @@ $script ='<script>
                         <th scope="col">Exe Remarks</th>
                         <th scope="col">1st Follow Up Remarks</th>
                         <th scope="col">Time Zone</th>
+                        <th scope="col">Forwarded By</th>
                         <th scope="col">View</th>
                         <th scope="col" class="text-center">Actions</th>
                     </tr>
@@ -144,18 +149,26 @@ $script ='<script>
                                 value="{{ $row->Amount !== null ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount">
                         </td>
 
-
-
-
                         {{-- Qualification --}}
                         <td>
-                            <input type="text" class="form-control qualification-input" data-key="Qualification"
-                                value="{{ $row->Qualification ?? '' }}" placeholder="Qualification">
+                            @php
+                            $qualificationOptions = [
+                            'Masters','Master of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.'];
+                            @endphp
+
+                            <select class="form-select dynamic-dropdown" data-key="Qualification">
+                                <option value="">-- Select --</option>
+                                @foreach($qualificationOptions as $option)
+                                <option value="{{ $option }}" {{ $row->Qualification === $option ? 'selected' : '' }}>
+                                    {{ $option }}
+                                </option>
+                                @endforeach
+                            </select>
                         </td>
 
                         {{-- Exe Remarks --}}
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Not Interested','Others','N/A','VM','Busy']; @endphp
+                            @php $exeOptions = ['Called & Mailed','Ready To Paid','Not Interested','Others','N/A','VM','Busy']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                 <option value="">-- Select --</option>
                                 @foreach($exeOptions as $option)
@@ -179,6 +192,8 @@ $script ='<script>
                             </select>
                         </td>
 
+
+
                         {{-- Time Zone --}}
                         <td>
                             @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
@@ -192,6 +207,12 @@ $script ='<script>
                             </select>
                         </td>
 
+                        {{-- Forwarded By --}}
+                        <td>
+                            <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
+                                value="{{ $row->created_by ?? '' }}" placeholder="Forwarded By" readonly>
+                        </td>
+
                         {{-- View (Resume) --}}
                         <td>
                             <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
@@ -200,8 +221,8 @@ $script ='<script>
                             </button>
 
                             @if(!empty($row->resume))
-                            <a href="{{ url('dashboard/accountant/google-sheet/view-resume/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
-                            <a href="{{ url('dashboard/accountant/google-sheet/download-resume/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/view-resume/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/download-resume/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download</a>
                             @else
                             <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
                             <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
@@ -283,6 +304,7 @@ $script ='<script>
 
         const exeColors = {
             'Called & Mailed': '#d4edda',
+            'Ready To Paid': '#d4edda',
             'Not Interested': '#f8d7da',
             'Others': '#d1ecf1',
             'N/A': '#e2e3e5',
@@ -323,6 +345,19 @@ $script ='<script>
             'MST': '#cce5ff',
             'PST': '#fff3cd'
         };
+        const qualificationColors = {
+            'Masters': '#e2f0d9',
+            'Master of Science': '#cce5ff',
+            'Bachelors': '#e2f0d9',
+            'PG': '#cce5ff',
+            'MBA': '#e2f0d9',
+            'PG Diploma': '#e2f0d9',
+            'M.Tech': '#cce5ff',
+            'B.Tech': '#e2f0d9',
+            'MA': '#e2f0d9',
+            'Associate Degree': '#cce5ff',
+            'Aerospace Proj. Manag.': '#e2f0d9',
+        };
         const dateColor = "#e0f7fa";
         const amountColors = "#e0f7fa";
 
@@ -336,6 +371,7 @@ $script ='<script>
             else if (key === '1st Follow Up Remarks') color = followColors[val] || color;
             else if (key === 'Course') color = courseColors[val] || color;
             else if (key === 'Time Zone') color = timezoneColors[val] || color;
+            else if (key === 'Qualification') color = qualificationColors[val] || color;
             select.style.backgroundColor = color;
         }
 
@@ -385,22 +421,6 @@ $script ='<script>
         function validateNameInput(inp) {
             const v = inp.value;
             const ok = /^[a-zA-Z\s]+$/.test(v) && v.length > 0;
-            if (ok) {
-                inp.classList.remove('invalid');
-                inp.classList.add('valid');
-            } else if (v.length === 0) {
-                inp.classList.remove('invalid');
-                inp.classList.remove('valid');
-                inp.classList.add('neutral');
-            } else {
-                inp.classList.add('invalid');
-                inp.classList.remove('valid');
-            }
-        }
-
-        function validateQualificationInput(inp) {
-            const v = inp.value;
-            const ok = /^[A-Z\s]+$/.test(v) && v.length > 0;
             if (ok) {
                 inp.classList.remove('invalid');
                 inp.classList.add('valid');
@@ -574,13 +594,7 @@ $script ='<script>
                     validateNameInput(i);
                 });
             });
-            context.querySelectorAll('input.qualification-input').forEach(i => {
-                validateQualificationInput(i);
-                i.addEventListener('input', () => {
-                    i.value = i.value.toUpperCase().replace(/[^A-Z\s]/g, '');
-                    validateQualificationInput(i);
-                });
-            });
+
         }
 
         function addBlankRow() {
@@ -595,9 +609,10 @@ $script ='<script>
             let cells = `<td>—</td>`;
 
             colKeys.forEach(k => {
-                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone'].includes(k)) {
+                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
                     let opts = [];
-                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
+                    if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
+                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Ready To Paid', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
                     if (k === 'Immigration') opts = ['Dependent Visa', 'Global Visa', 'Graduate Visa', 'Student Visa', 'Citizen', 'Permanent Residence(ILR)'];
                     if (k === 'Relocation') opts = ['YES', 'NO'];
                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
@@ -616,8 +631,8 @@ $script ='<script>
                     cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
                 } else if (k === 'Name') {
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                } else if (k === 'Qualification') {
-                    cells += `<td><input type="text" class="form-control qualification-input" data-key="${k}" placeholder="Qualification"><span class="small-hint"></span></td>`;
+                }else if (k === 'forwardedBy') {
+                    cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
                 } else if (k === 'View') {
                     cells += `<td>
                     <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
@@ -685,10 +700,10 @@ $script ='<script>
                 // Determine URL and method
                 let url, method;
                 if (id === "new") {
-                    url = "{{ route('accountantstore') }}";
+                    url = "{{ route('seniorstore') }}";
                     method = "POST";
                 } else {
-                    url = "{{ route('accountantupdate') }}";
+                    url = "{{ route('seniorupdate') }}";
                     method = "POST";
                     formData.append("id", id);
                 }
@@ -721,12 +736,12 @@ $script ='<script>
                                 const downloadBtn = row.querySelector('.download-btn');
 
                                 if (viewBtn && data.resume_path) {
-                                    viewBtn.href = `/dashboard/accountant/google-sheet/view-resume/${data.id}`;
+                                    viewBtn.href = `/dashboard/senior/google-sheet/view-resume/${data.id}`;
                                     viewBtn.classList.remove('d-none');
                                 }
 
                                 if (downloadBtn && data.resume_path) {
-                                    downloadBtn.href = `/dashboard/accountant/google-sheet/download-resume/${data.id}`;
+                                    downloadBtn.href = `/dashboard/senior/google-sheet/download-resume/${data.id}`;
                                     downloadBtn.classList.remove('d-none');
                                 }
 
@@ -813,11 +828,404 @@ $script ='<script>
                 e.target.value = v;
                 validateNameInput(e.target);
             }
-            if (e.target.matches('input.qualification-input')) {
-                e.target.value = e.target.value.toUpperCase().replace(/[^A-Z\s]/g, '');
-                validateQualificationInput(e.target);
+        });
+    });
+</script>
+
+<style>
+    .input-hint {
+        font-size: .85rem;
+        color: #6c757d;
+    }
+
+    select.dynamic-dropdown {
+        min-width: 160px;
+    }
+
+    input.valid {
+        background-color: #d4edda;
+    }
+
+    input.invalid {
+        background-color: #f8d7da;
+    }
+
+    input.neutral {
+        background-color: #ffffff;
+    }
+
+    select.neutral {
+        background-color: #ffffff;
+    }
+
+    select.valid {
+        background-color: #d4edda;
+    }
+
+    .phone-hint,
+    .small-hint {
+        font-size: .8rem;
+        color: #6c757d;
+        display: block;
+        margin-top: 2px;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<!-- AJAX Search + Suggestions + Pagination -->
+<script>
+    $(document).ready(function() {
+
+        // -----------------------------
+        // Helper: Debounce
+        // -----------------------------
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this,
+                    args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
+
+        // -----------------------------
+        // Fetch Table Data via AJAX
+        // -----------------------------
+        function fetchTable(search = '', page = 1) {
+            $.ajax({
+                url: "{{ route('google.sheet.senior') }}",
+                type: 'GET',
+                data: {
+                    search,
+                    page
+                },
+                success: function(res) {
+                    $('#senior-table-wrapper').html(res);
+                },
+                error: function(err) {
+                    console.error(err);
+                }
+            });
+        }
+
+        // -----------------------------
+        // Live Search Suggestions
+        // -----------------------------
+        const showSuggestions = debounce(function() {
+            const query = $('#senior-search').val().trim();
+            if (query.length < 3) {
+                $('#search-suggestions').empty().hide();
+                fetchTable(''); // reset table
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('senior.suggestions') }}",
+                type: 'GET',
+                data: {
+                    query
+                },
+                success: function(res) {
+                    let suggestions = '';
+                    if (res.length) {
+                        res.forEach(item => {
+                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
+                        });
+                    } else {
+                        suggestions = '<span class="list-group-item">No results found</span>';
+                    }
+                    $('#search-suggestions').html(suggestions).show();
+                }
+            });
+        }, 300);
+
+        $('#senior-search').on('input', showSuggestions);
+
+        // Click suggestion
+        $(document).on('click', '#search-suggestions a', function(e) {
+            e.preventDefault();
+            const rowId = $(this).data('id'); // get the row ID
+            $('#senior-search').val($(this).text());
+            $('#search-suggestions').empty().hide();
+
+            // Fetch only this row
+            $.ajax({
+                url: "{{ route('google.sheet.senior') }}",
+                type: 'GET',
+                data: {
+                    row_id: rowId
+                },
+                success: function(res) {
+                    $('#senior-table-wrapper').html(res);
+                },
+                error: function(err) {
+                    console.error(err);
+                }
+            });
+        });
+
+
+        // Pagination click
+        $(document).on('click', '.pagination a', function(e) {
+            e.preventDefault();
+            const page = $(this).attr('href').split('page=')[1];
+            const search = $('#senior-search').val();
+            fetchTable(search, page);
+        });
+
+        // Click outside suggestions
+        $(document).click(function(e) {
+            if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
+                $('#search-suggestions').empty().hide();
+            }
+        });
+
+    });
+</script>
+
+<style>
+    .scroll-sm {
+        overflow-x: scroll;
+        overflow-y: hidden;
+        /* always show scrollbar */
+        scrollbar-gutter: stable;
+        /* prevent layout shift */
+    }
+
+    /* === Chrome, Edge, Safari === */
+    .scroll-sm::-webkit-scrollbar {
+        height: 36px;
+        /* horizontal scrollbar thickness */
+        width: 0;
+        /* vertical scrollbar thickness */
+    }
+
+    .scroll-sm::-webkit-scrollbar-thumb {
+        background: linear-gradient(135deg, #888, #666);
+        border-radius: 18px;
+        /* rounded ends */
+        border: 6px solid #f1f1f1;
+        /* gives space inside thumb */
+        transition: background 0.3s, border-color 0.3s, height 0.3s;
+    }
+
+    .scroll-sm::-webkit-scrollbar-thumb:hover {
+        background: linear-gradient(135deg, #555, #333);
+        border-color: #e0e0e0;
+    }
+
+    .scroll-sm::-webkit-scrollbar-track {
+        background-color: #f1f1f1;
+        border-radius: 18px;
+    }
+
+    /* === Firefox === */
+    .scroll-sm {
+        scrollbar-width: auto;
+        /* thicker style */
+        scrollbar-color: #666 #f1f1f1;
+        /* thumb + track */
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const scrollContainer = document.querySelector('.scroll-sm');
+        const allRows = Array.from(document.querySelectorAll('#sheet-table-body tr'));
+
+        // =========================
+        // Smooth horizontal scroll + mouse-based + drag scroll
+        // =========================
+        if (scrollContainer) {
+            // Auto-scroll interval
+            let autoScrollInterval;
+
+            // Mouse move scroll
+            scrollContainer.addEventListener('mousemove', e => {
+                if (isDragging) return; // skip if dragging
+                const rect = scrollContainer.getBoundingClientRect();
+                const scrollPercent = (e.clientX - rect.left) / rect.width;
+                scrollContainer.scrollLeft = scrollPercent * (scrollContainer.scrollWidth - scrollContainer.clientWidth);
+            });
+
+            // Auto-scroll if mouse leaves
+            scrollContainer.addEventListener('mouseenter', () => clearInterval(autoScrollInterval));
+            scrollContainer.addEventListener('mouseleave', () => {
+                autoScrollInterval = setInterval(() => {
+                    scrollContainer.scrollLeft += 1;
+                    if (scrollContainer.scrollLeft >= scrollContainer.scrollWidth - scrollContainer.clientWidth) {
+                        scrollContainer.scrollLeft = 0;
+                    }
+                }, 20);
+            });
+
+            // =========================
+            // Mouse-drag scroll
+            // =========================
+            let isDragging = false,
+                startX, scrollLeftStart;
+
+            scrollContainer.addEventListener('mousedown', e => {
+                isDragging = true;
+                scrollContainer.classList.add('dragging');
+                startX = e.pageX - scrollContainer.offsetLeft;
+                scrollLeftStart = scrollContainer.scrollLeft;
+            });
+
+            scrollContainer.addEventListener('mouseup', () => {
+                isDragging = false;
+                scrollContainer.classList.remove('dragging');
+            });
+            scrollContainer.addEventListener('mouseleave', () => {
+                isDragging = false;
+                scrollContainer.classList.remove('dragging');
+            });
+
+            scrollContainer.addEventListener('mousemove', e => {
+                if (!isDragging) return;
+                e.preventDefault();
+                const x = e.pageX - scrollContainer.offsetLeft;
+                const walk = (x - startX) * 1; // scroll speed multiplier
+                scrollContainer.scrollLeft = scrollLeftStart - walk;
+            });
+        }
+
+        // =========================
+        // Helper functions
+        // =========================
+        const getFields = row => Array.from(row.querySelectorAll('input, select, textarea'))
+            .filter(el => el.offsetParent && !el.disabled && !el.readOnly && el.type !== 'hidden');
+
+        const focusField = el => {
+            el.focus();
+            if (el.tagName === 'INPUT' && el.type === 'text') el.select();
+            el.scrollIntoView({
+                behavior: 'smooth',
+                block: 'nearest',
+                inline: 'center'
+            });
+            el.classList.add('focus-highlight');
+            setTimeout(() => el.classList.remove('focus-highlight'), 500);
+        };
+
+        const moveFocus = (field, forward = true) => {
+            const row = field.closest('tr');
+            const idx = allRows.indexOf(row);
+            const fields = getFields(row);
+            const saveBtn = row.querySelector('.save-btn');
+            const fIdx = fields.indexOf(field);
+            let target = forward ? fields[fIdx + 1] : fields[fIdx - 1];
+
+            if (!target) {
+                if (forward && saveBtn) {
+                    focusField(saveBtn);
+                    return;
+                }
+                const nextRow = allRows[forward ? idx + 1 : idx - 1] || allRows[forward ? 0 : allRows.length - 1];
+                const nextFields = getFields(nextRow);
+                if (nextFields.length) target = forward ? nextFields[0] : nextFields[nextFields.length - 1];
+            }
+            if (target) focusField(target);
+        };
+
+        // =========================
+        // Navigation & Save handling
+        // =========================
+        allRows.forEach(row => {
+            const fields = getFields(row);
+            const saveBtn = row.querySelector('.save-btn');
+
+            fields.forEach(field => {
+                field.addEventListener('keydown', e => {
+                    const forward = (e.key === 'Enter' && !e.shiftKey) || (e.key === 'Tab' && !e.shiftKey);
+                    const backward = (e.key === 'Enter' && e.shiftKey) || (e.key === 'Tab' && e.shiftKey);
+                    if (forward) {
+                        e.preventDefault();
+                        const last = fields.indexOf(field) === fields.length - 1;
+                        last && saveBtn ? focusField(saveBtn) : moveFocus(field, true);
+                    } else if (backward) {
+                        e.preventDefault();
+                        moveFocus(field, false);
+                    }
+                });
+            });
+
+            if (saveBtn) {
+                saveBtn.addEventListener('keydown', e => {
+                    const forward = (e.key === 'Enter' || e.key === 'Tab') && !e.shiftKey;
+                    const backward = (e.key === 'Enter' || e.key === 'Tab') && e.shiftKey;
+                    if (forward) {
+                        e.preventDefault();
+                        const nextRow = allRows[allRows.indexOf(row) + 1] || allRows[0];
+                        const nf = getFields(nextRow);
+                        nf.length && focusField(nf[0]);
+                    }
+                    if (backward) {
+                        e.preventDefault();
+                        const prevRow = allRows[allRows.indexOf(row) - 1] || allRows[allRows.length - 1];
+                        const pf = getFields(prevRow);
+                        pf.length && focusField(pf[pf.length - 1]);
+                    }
+                });
+            }
+        });
+
+        // =========================
+        // Custom shortcuts: Alt+S/U/V
+        // =========================
+        document.addEventListener('keydown', e => {
+            if (!e.altKey) return;
+            const key = e.key.toLowerCase();
+            const row = document.activeElement.closest('tr');
+            if (!row) return;
+
+            if (key === 's') { // Save
+                const btn = row.querySelector('.save-btn');
+                if (btn) btn.click();
+                e.preventDefault();
+            }
+            if (key === 'u') { // Upload
+                const fileInput = row.querySelector('.resume-input');
+                if (fileInput) fileInput.click();
+                e.preventDefault();
+            }
+            if (key === 'v') { // View
+                const viewBtn = row.querySelector('.view-btn');
+                if (viewBtn && !viewBtn.classList.contains('d-none')) viewBtn.click();
+                e.preventDefault();
             }
         });
     });
 </script>
+
+<style>
+    /* Highlight focused field briefly */
+    .focus-highlight {
+        animation: highlightFlash 0.5s ease-in-out;
+    }
+
+    @keyframes highlightFlash {
+        0% {
+            background-color: #fff3b0;
+        }
+
+        50% {
+            background-color: #fff59d;
+        }
+
+        100% {
+            background-color: transparent;
+        }
+    }
+
+    /* Mouse-drag cursor */
+    .scroll-sm.dragging {
+        cursor: grabbing;
+        cursor: -webkit-grabbing;
+    }
+</style>
+
 @endsection
