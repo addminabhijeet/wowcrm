@@ -10,6 +10,20 @@ $subTitle = 'Calendar';
     <div class="col-12">
         <div class="card h-100 p-0">
             <div class="card-body p-24">
+
+                <!-- Legend -->
+                <div class="calendar-legend d-flex align-items-center mb-3">
+                    <div class="legend-item d-flex align-items-center me-3">
+                        <div class="legend-color" style="background-color: rgba(220,50,50,0.3); width: 20px; height: 20px; border-radius: 4px; margin-right: 6px;"></div>
+                        <span>Less than 8h Work</span>
+                    </div>
+                    <div class="legend-item d-flex align-items-center">
+                        <div class="legend-color" style="background-color: rgba(0,123,255,0.08); width: 20px; height: 20px; border-radius: 4px; margin-right: 6px;"></div>
+                        <span>Completed ≥8h</span>
+                    </div>
+                </div>
+
+                <!-- Calendar -->
                 <div id="calendar"></div>
             </div>
         </div>
@@ -58,22 +72,13 @@ document.addEventListener('DOMContentLoaded', function() {
         events: "{{ route('calendar.juniorEvents') }}",
         displayEventTime: false,
         displayEventEnd: false,
-
-        eventContent: function() {
-            return { domNodes: [] }; // hide default events
-        },
-
+        eventContent: function() { return { domNodes: [] }; },
         eventDidMount: function(info) {
-            info.el.remove(); // hide default event element
+            info.el.remove();
             const cell = info.el.closest('.fc-daygrid-day');
             if (cell) cell.classList.add('has-event');
         },
-
-        datesSet: function() {
-            // After calendar renders, color-code days < 8h
-            highlightUnderworkedDays(calendar);
-        },
-
+        datesSet: function() { highlightUnderworkedDays(calendar); },
         dateClick: function(info) {
             modalDate.textContent = info.dateStr;
             modalBody.innerHTML = '';
@@ -145,11 +150,9 @@ document.addEventListener('DOMContentLoaded', function() {
 
     calendar.render();
 
-    // ✅ Color-code calendar cells for days < 8h work
     function highlightUnderworkedDays(calendar){
         const allEvents = calendar.getEvents();
         const grouped = {};
-
         allEvents.forEach(ev=>{
             const dateKey = new Date(ev.start).toISOString().split('T')[0];
             if(!grouped[dateKey]) grouped[dateKey]=[];
@@ -177,16 +180,12 @@ document.addEventListener('DOMContentLoaded', function() {
 
             const cell = calendarEl.querySelector(`.fc-daygrid-day[data-date='${dateStr}']`);
             if(cell){
-                if(totalWorkSec < 8*3600){
-                    cell.style.backgroundColor = 'rgba(220,50,50,0.3)'; // Red highlight
-                } else {
-                    cell.style.backgroundColor = 'rgba(0,123,255,0.08)'; // Normal has-event color
-                }
+                if(totalWorkSec < 8*3600) cell.style.backgroundColor = 'rgba(220,50,50,0.3)';
+                else cell.style.backgroundColor = 'rgba(0,123,255,0.08)';
             }
         });
     }
 
-    // --- Existing PDF functions (generateDailyPDF, generateMonthlyPDF) remain exactly the same ---
     function generateDailyPDF(events, dateStr){ /* ... keep previous code ... */ }
     function generateMonthlyPDF(events){ /* ... keep previous code ... */ }
 
@@ -194,10 +193,9 @@ document.addEventListener('DOMContentLoaded', function() {
 </script>
 
 <style>
+.calendar-legend { font-size: 14px; }
 .fc-event, .fc-daygrid-event, .fc-event-dot, .fc-event-main,
-.fc-daygrid-day-events, .fc-daygrid-event-harness, .fc-daygrid-event-harness-abs {
-    display:none !important;
-}
+.fc-daygrid-day-events, .fc-daygrid-event-harness, .fc-daygrid-event-harness-abs { display:none !important; }
 .fc-daygrid-day-frame { min-height:60px; padding:4px; display:block !important; }
 .fc-day-today { background-color: rgba(0,123,255,0.1) !important; }
 .fc-theme-standard td, .fc-theme-standard th { border:1px solid #e5e5e5 !important; }
