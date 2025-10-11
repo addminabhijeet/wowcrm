@@ -504,11 +504,17 @@ class GoogleSheetController extends Controller
         $search = $request->input('search');
         $rowId = $request->input('row_id');
 
-        // Modified SUBSTRING_INDEX-based filter
+        // SUBSTRING_INDEX-based filter with second part check
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
-            $seniorPart = $authUser->id . '|senior';
+            $seniorPart = $authUser->id . '|accountant';
+
             $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart])
-                ->whereRaw("created_by REGEXP '[0-9]+\\|accountant'"); // must have accountant part
+                ->whereRaw("
+              -- Ensure there is a second part and it ends with |accountant
+              LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) >= 1
+              AND
+              SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|accountant'
+          ");
         });
 
         if ($rowId) {
@@ -548,12 +554,11 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        if ($request->ajax()) {
+            return view('database.partials.senior_table', compact('data'))->render();
+        }
         return view('database.seniorpaid', compact('data'));
     }
-
-
-
-
 
     // -----------------------------
     // AJAX Search Suggestions
