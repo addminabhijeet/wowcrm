@@ -35,37 +35,40 @@ $subTitle = 'Calendar';
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const calendarEl = document.getElementById('calendar');
+document.addEventListener('DOMContentLoaded', function() {
+    const calendarEl = document.getElementById('calendar');
+    const modalEl = document.getElementById('eventModal');
+    const modal = new bootstrap.Modal(modalEl);
+    const modalBody = document.getElementById('modalBody');
+    const modalDate = document.getElementById('modalDate');
 
-        const calendar = new FullCalendar.Calendar(calendarEl, {
-            initialView: 'dayGridMonth',
-            selectable: true,
-            events: '/your-route-to-fetch-events', // your backend route
+    function formatTime(sec) {
+        const h = Math.floor(sec / 3600);
+        const m = Math.floor((sec % 3600) / 60);
+        return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
+    }
 
-            dateClick: function(info) {
-                const events = calendar.getEvents();
-                const modal = new bootstrap.Modal(document.getElementById('eventModal'));
-                const modalBody = document.getElementById('eventModalBody');
+    const calendar = new FullCalendar.Calendar(calendarEl, {
+        initialView: 'dayGridMonth',
+        selectable: true,
+        events: '/your-route-to-fetch-events',
 
-                const eventsOnDate = events.filter(event => {
-                    const eventDate = new Date(event.start).toISOString().split('T')[0];
-                    return eventDate === info.dateStr;
-                });
+        dateClick: function(info) {
+            modalDate.textContent = info.dateStr;
+            modalBody.innerHTML = '';
 
-                // Helper: Convert seconds → HH:MM
-                function formatTime(sec) {
-                    const h = Math.floor(sec / 3600);
-                    const m = Math.floor((sec % 3600) / 60);
-                    return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}`;
-                }
+            const events = calendar.getEvents();
+            const eventsOnDate = events.filter(event => {
+                const eventDate = new Date(event.start).toISOString().split('T')[0];
+                return eventDate === info.dateStr;
+            });
 
-                if (eventsOnDate.length > 0) {
-                    let totalBreakSec = 0;
-                    let totalWorkSec = 0;
-                    let lastPauseTime = null;
+            if (eventsOnDate.length > 0) {
+                let totalBreakSec = 0;
+                let lastPauseTime = null;
 
-                    modalBody.innerHTML = `
+                // Top controls: PDF & Theme
+                modalBody.innerHTML = `
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <button class="btn btn-sm btn-outline-primary" id="downloadPDFBtn">Download PDF Report</button>
                         <select class="form-select form-select-sm w-auto" id="themeSelector">
@@ -75,11 +78,11 @@ $subTitle = 'Calendar';
                     </div>
                 `;
 
-                    eventsOnDate.forEach((event, index) => {
-                        const eTime = new Date(event.start);
-                        const pauseType = (event.extendedProps.pause_type || '').toLowerCase();
+                eventsOnDate.forEach(event => {
+                    const eTime = new Date(event.start);
+                    const pauseType = (event.extendedProps.pause_type || '').toLowerCase();
 
-                        modalBody.innerHTML += `
+                    modalBody.innerHTML += `
                         <div class="event-item p-3 mb-3 border rounded bg-light shadow-sm">
                             <h5 class="fw-semibold mb-2 text-primary">${event.title}</h5>
                             <p><strong>Status:</strong> ${event.extendedProps.status}</p>
@@ -89,26 +92,21 @@ $subTitle = 'Calendar';
                         </div>
                     `;
 
-                        // Same break-time logic
-                        if (pauseType === 'inactive') {
-                            lastPauseTime = eTime;
-                        } else if (pauseType === 'resume' && lastPauseTime) {
-                            const diffSec = (eTime - lastPauseTime) / 1000;
-                            totalBreakSec += diffSec;
-                            lastPauseTime = null;
-                        }
-                    });
+                    if (pauseType === 'inactive') {
+                        lastPauseTime = eTime;
+                    } else if (pauseType === 'resume' && lastPauseTime) {
+                        totalBreakSec += (eTime - lastPauseTime) / 1000;
+                        lastPauseTime = null;
+                    }
+                });
 
-                    // Total work calculation
-                    const startTime = new Date(eventsOnDate[0].start);
-                    const endTime = new Date(eventsOnDate[eventsOnDate.length - 1].start);
-                    const totalDaySec = (endTime - startTime) / 1000;
-                    totalWorkSec = totalDaySec - totalBreakSec;
+                const startTime = new Date(eventsOnDate[0].start);
+                const endTime = new Date(eventsOnDate[eventsOnDate.length - 1].start);
+                const totalDaySec = (endTime - startTime) / 1000;
+                const totalWorkSec = totalDaySec - totalBreakSec;
+                const completed = totalWorkSec >= 8 * 3600 ? "✅ Yes" : "❌ No";
 
-                    const requiredWorkSec = 8 * 3600;
-                    const completed = totalWorkSec >= requiredWorkSec ? "✅ Yes" : "❌ No";
-
-                    modalBody.innerHTML += `
+                modalBody.innerHTML += `
                     <div class="summary border-top pt-3 mt-4">
                         <h5 class="fw-semibold text-success">Summary</h5>
                         <p><strong>Total Time Logged:</strong> ${formatTime(totalDaySec)}</p>
@@ -118,39 +116,29 @@ $subTitle = 'Calendar';
                     </div>
                 `;
 
-                    // 🧾 Generate PDF Report
-                    document.getElementById('downloadPDFBtn').addEventListener('click', function() {
-                        const {
-                            jsPDF
-                        } = window.jspdf;
+                // Optimized PDF listener
+                const downloadBtn = modalBody.querySelector('#downloadPDFBtn');
+                if (downloadBtn) {
+                    downloadBtn.onclick = () => {
+                        const { jsPDF } = window.jspdf;
                         const doc = new jsPDF('p', 'mm', 'a4');
 
-                        // 🎨 Theme colors
-                        const theme = document.getElementById('themeSelector').value;
+                        const theme = modalBody.querySelector('#themeSelector').value;
                         const colors = {
-                            blue: {
-                                primary: [40, 60, 130],
-                                light: [230, 240, 255]
-                            },
-                            green: {
-                                primary: [22, 90, 50],
-                                light: [225, 245, 230]
-                            }
+                            blue: { primary: [40, 60, 130], light: [230, 240, 255] },
+                            green: { primary: [22, 90, 50], light: [225, 245, 230] }
                         };
                         const selected = colors[theme];
 
-                        // 🖼️ Company Logo (Base64 Placeholder)
                         const logoBase64 = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAMgAAADICAYAAACtWK6eAAAACXBIWXMAAAsTAAALEwEAmpwYAAABpElEQVR4nO3QsQ2AIBAEwXvV/Tswo3aCscUlA1T+MQAAAAAAAAAAAAAAAAAAAOAq1F5zxt9K8c5O5R9Td3Pm+U+Se3L7f7t9y0hJAAAAAAAAAAAAAAAAAADg9+9BGgAAAAAAAAAAAAAAAM7fF2kAAAAAAAAAAAAAAAAAgIu0AQAAAAAAAAAAAAAAAAAAu0AaAAAAAAAAAAAAAAAAAIDLtAEAAAAAAAAAAAAAAAAAALtAGgAAAAAAAAAAAAAAAAAAi7QBAAAAAAAAAAAAAAAAAAC7QBqAAAAAAAAAAAAAAAAAAIi0AQAAAAAAAAAAAAAAAAAAu0AaAAAAAAAAAAAAAAAAAIDLtAEAAAAAAAAAAAAAAAAAALtAGgAAAAAAAAAAAAAAAAAAi7QBAAAAAAAAAAAAAAAAAAC7QBqAAAAAAAAAAAAAAAAAAIi0AQAAAAAAAAAAAAAAAAAAu0AaAAAAAAAAAAAAAAAAAIDLtAEAAAAAAAAAAAAAAAAAALtAGgAAAAAAAAAAAAAAAAAAi7QBAAAAAAAAAAAAAAAAAAC7QBqAAAAAAAAAAAAAAAAAAIi0AQAAAAAAAAAAAAAAAAAAu0AaAAAAAAAAAAAAAAAAAIDLtAEAAAAAAAAAAAAAAAAAALtAGgAAAAAAAAAAAAAAAAAAi7QBAAAAAAAAAAAAAAAAAPB8A6ZrJ3eA+jlNAAAAAElFTkSuQmCC';
 
-                        // 🧾 Header Section
+                        // Header
                         doc.setFillColor(...selected.light);
                         doc.rect(0, 0, 210, 25, 'F');
                         doc.addImage(logoBase64, 'PNG', 10, 4, 20, 18);
                         doc.setTextColor(...selected.primary);
                         doc.setFontSize(18);
-                        doc.text("Employee Daily Work Report", 105, 15, {
-                            align: "center"
-                        });
+                        doc.text("Employee Daily Work Report", 105, 15, { align: "center" });
 
                         doc.setFontSize(12);
                         doc.setTextColor(0, 0, 0);
@@ -159,13 +147,12 @@ $subTitle = 'Calendar';
                         let y = 45;
                         doc.setFontSize(11);
 
-                        // 🔹 Event Details
                         doc.setTextColor(...selected.primary);
                         doc.text("Event Details", 10, y);
                         doc.setTextColor(0, 0, 0);
                         y += 8;
 
-                        eventsOnDate.forEach((event, index) => {
+                        eventsOnDate.forEach(event => {
                             const eTime = new Date(event.start);
                             const pauseType = (event.extendedProps.pause_type || '').toLowerCase();
 
@@ -191,7 +178,6 @@ $subTitle = 'Calendar';
                             }
                         });
 
-                        // 🧮 Summary Section
                         doc.setFontSize(13);
                         doc.setTextColor(...selected.primary);
                         doc.text("Summary", 10, y);
@@ -209,68 +195,64 @@ $subTitle = 'Calendar';
                         doc.text(`Effective Work Time: ${formatTime(totalWorkSec)}`, 14, y + 20);
                         doc.text(`8 Hours Completed: ${completed}`, 14, y + 28);
 
-                        // 🏁 Footer
                         doc.setFontSize(10);
                         doc.setTextColor(120, 120, 120);
-                        doc.text("Generated by Work Tracker System © 2025", 105, 290, {
-                            align: "center"
-                        });
+                        doc.text("Generated by Work Tracker System © 2025", 105, 290, { align: "center" });
 
                         doc.save(`work_report_${info.dateStr}_${theme}.pdf`);
-                    });
+                    };
+                };
 
-                } else {
-                    modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
-                }
-
-                modal.show();
+            } else {
+                modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
             }
-        });
 
-        calendar.render();
+            modal.show();
+        }
     });
+
+    calendar.render();
+});
 </script>
 
-
-
 <style>
-    .fc-event,
-    .fc-daygrid-event,
-    .fc-event-dot,
-    .fc-event-main,
-    .fc-daygrid-day-events,
-    .fc-daygrid-event-harness,
-    .fc-daygrid-event-harness-abs {
-        display: none !important;
-    }
+.fc-event,
+.fc-daygrid-event,
+.fc-event-dot,
+.fc-event-main,
+.fc-daygrid-day-events,
+.fc-daygrid-event-harness,
+.fc-daygrid-event-harness-abs {
+    display: none !important;
+}
 
-    .fc-daygrid-day-frame {
-        min-height: 60px;
-        padding: 4px;
-        display: block !important;
-    }
+.fc-daygrid-day-frame {
+    min-height: 60px;
+    padding: 4px;
+    display: block !important;
+}
 
-    .fc-day-today {
-        background-color: rgba(0, 123, 255, 0.1) !important;
-    }
+.fc-day-today {
+    background-color: rgba(0, 123, 255, 0.1) !important;
+}
 
-    .fc-theme-standard td,
-    .fc-theme-standard th {
-        border: 1px solid #e5e5e5 !important;
-    }
+.fc-theme-standard td,
+.fc-theme-standard th {
+    border: 1px solid #e5e5e5 !important;
+}
 
-    .fc-daygrid-day.has-event {
-        background-color: rgba(0, 123, 255, 0.08);
-        transition: background-color 0.2s ease;
-    }
+.fc-daygrid-day.has-event {
+    background-color: rgba(0, 123, 255, 0.08);
+    transition: background-color 0.2s ease;
+}
 
-    .fc-daygrid-day.has-event:hover {
-        background-color: rgba(0, 123, 255, 0.15);
-    }
+.fc-daygrid-day.has-event:hover {
+    background-color: rgba(0, 123, 255, 0.15);
+}
 
-    .fc-daygrid-day:hover {
-        cursor: pointer;
-        background-color: rgba(0, 0, 0, 0.02);
-    }
+.fc-daygrid-day:hover {
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0.02);
+}
 </style>
 @endsection
