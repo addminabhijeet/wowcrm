@@ -493,6 +493,62 @@ class GoogleSheetController extends Controller
         return view('database.seniorcandm', compact('data'));
     }
 
+    public function seniorpaid(Request $request)
+    {
+        $authUser = Auth::user();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+
+        $userPattern = "%:" . $authUser->id . "|senior";
+        $zeroPattern = "%:0|senior";
+
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+            $q->where('created_by', $authUser->id . '|senior')
+                ->orWhere('created_by', '0|senior')
+                ->orWhere('created_by', 'LIKE', $userPattern)
+                ->orWhere('created_by', 'LIKE', $zeroPattern);
+        });
+
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $data = $query->orderBy('id', 'desc')->paginate(10);
+
+        // Map forwarded_by dynamically
+        $data->getCollection()->transform(function ($item) use ($authUser) {
+            $parts = explode('|', $item->created_by ?? '');
+            $userId = $parts[0] ?? null;
+            $role   = $parts[1] ?? 'unknown';
+
+            if ($userId == $authUser->id) {
+                $forwardedBy = "SELF ({$userId}) ({$role})";
+            } elseif ($userId == 0) {
+                $forwardedBy = "SYSTEM (0) ({$role})";
+            } else {
+                $user = \App\Models\User::find($userId);
+                $name = $user ? $user->name : 'Unknown';
+                $forwardedBy = "{$name} ({$userId}) ({$role})";
+            }
+
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        if ($request->ajax()) {
+            return view('database.partials.senior_table', compact('data'))->render();
+        }
+
+        return view('database.seniorpaid', compact('data'));
+    }
+
+
 
     // -----------------------------
     // AJAX Search Suggestions
