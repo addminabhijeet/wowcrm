@@ -499,14 +499,14 @@ class GoogleSheetController extends Controller
         $search = $request->input('search');
         $rowId = $request->input('row_id');
 
-        $userPattern = "%:" . $authUser->id . "|senior";
-        $zeroPattern = "%:0|senior";
-
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            $q->where('created_by', $authUser->id . '|senior')
-                ->orWhere('created_by', '0|senior')
-                ->orWhere('created_by', 'LIKE', $userPattern)
-                ->orWhere('created_by', 'LIKE', $zeroPattern);
+        // New SUBSTRING_INDEX-based filter (like juniorcandm)
+        $query = GoogleSheetData::where(function ($q) use ($authUser) {
+            $seniorPart = $authUser->id . '|senior';
+            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart])
+                ->where(function ($q) {
+                    // 🔹 Modified: match any numeric ID followed by |accountant (e.g. 0|accountant, 2|accountant)
+                    $q->whereRaw("created_by REGEXP '[0-9]+\\|accountant'");
+                });
         });
 
         if ($rowId) {
@@ -521,23 +521,28 @@ class GoogleSheetController extends Controller
 
         $data = $query->orderBy('id', 'desc')->paginate(10);
 
-        // Map forwarded_by dynamically
+        // Map forwarded_by dynamically for multiple creators
         $data->getCollection()->transform(function ($item) use ($authUser) {
-            $parts = explode('|', $item->created_by ?? '');
-            $userId = $parts[0] ?? null;
-            $role   = $parts[1] ?? 'unknown';
+            $creators = explode(':', $item->created_by ?? '');
+            $forwardedByParts = [];
 
-            if ($userId == $authUser->id) {
-                $forwardedBy = "SELF ({$userId}) ({$role})";
-            } elseif ($userId == 0) {
-                $forwardedBy = "SYSTEM (0) ({$role})";
-            } else {
-                $user = \App\Models\User::find($userId);
-                $name = $user ? $user->name : 'Unknown';
-                $forwardedBy = "{$name} ({$userId}) ({$role})";
+            foreach ($creators as $creator) {
+                $parts = explode('|', $creator);
+                $userId = $parts[0] ?? null;
+                $role   = $parts[1] ?? 'unknown';
+
+                if ($userId == $authUser->id) {
+                    $forwardedByParts[] = "SELF ({$userId}) ({$role})";
+                } elseif ($userId == 0) {
+                    $forwardedByParts[] = "SYSTEM (0) ({$role})";
+                } else {
+                    $user = \App\Models\User::find($userId);
+                    $name = $user ? $user->name : 'Unknown';
+                    $forwardedByParts[] = "{$name} ({$userId}) ({$role})";
+                }
             }
 
-            $item->forwarded_by = $forwardedBy;
+            $item->forwarded_by = implode(', ', $forwardedByParts);
             return $item;
         });
 
@@ -545,8 +550,9 @@ class GoogleSheetController extends Controller
             return view('database.partials.senior_table', compact('data'))->render();
         }
 
-        return view('database.senior', compact('data'));
+        return view('database.seniorpaid', compact('data'));
     }
+
 
 
 
