@@ -15,7 +15,7 @@
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                 <div>
                                     <p class="fw-medium text-primary-light mb-1">Total Resumes</p>
-                                    <h6 class="mb-0">{{ $resumes->count() }}</h6>
+                                    <h6 class="mb-0"></h6>
                                 </div>
                                 <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
                                     <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>
@@ -36,7 +36,7 @@
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                 <div>
                                     <p class="fw-medium text-primary-light mb-1">Total Pending Resumes</p>
-                                    <h6 class="mb-0">{{ $resumes->where('status', 'pending')->count() }}</h6>
+                                    <h6 class="mb-0"></h6>
                                 </div>
                                 <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
                                     <iconify-icon icon="fa-solid:award" class="text-white text-2xl mb-0"></iconify-icon>
@@ -57,7 +57,7 @@
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                 <div>
                                     <p class="fw-medium text-primary-light mb-1">Total Inreview Resumes</p>
-                                    <h6 class="mb-0">{{ $resumes->where('status', 'in_review')->count() }}</h6>
+                                    <h6 class="mb-0"></h6>
                                 </div>
                                 <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
                                     <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
@@ -78,7 +78,7 @@
                             <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                                 <div>
                                     <p class="fw-medium text-primary-light mb-1">Total Completed Resumes</p>
-                                    <h6 class="mb-0">{{ $resumes->where('status', 'completed')->count() }}</h6>
+                                    <h6 class="mb-0"></h6>
                                 </div>
                                 <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
                                     <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl mb-0"></iconify-icon>
@@ -121,187 +121,7 @@
                                 </a> -->
                             </div>
 
-                            <div class="tab-content" id="pills-tabContent">
-                                <div class="tab-pane fade show active" id="pills-to-do-list" role="tabpanel" aria-labelledby="pills-to-do-list-tab" tabindex="0">
-                                    <div class="table-responsive scroll-sm">
-                                        <table class="table bordered-table sm-table mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">ID</th>
-                                                    <th scope="col">Candidate</th>
-                                                    <th scope="col">Status</th>
-                                                    <th scope="col">File</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                @foreach($resumes as $resume)
-                                                <tr>
-                                                    <!-- Candidate -->
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('assets/images/users/user1.png') }}" 
-                                                                alt="{{ $resume->candidate_name }}" 
-                                                                class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
-                                                            <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">{{ $resume->candidate_name }}</h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">ID: {{ $resume->id }}</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-
-                                                    <!-- Status -->
-                                                    <td class="text-center">
-                                                        <form action="{{ route('resumes.updateStatus', $resume->id) }}" method="POST">
-                                                            @csrf
-                                                            @method('PATCH')
-                                                            <select name="status" onchange="this.form.submit()" 
-                                                                    class="form-select form-select-sm w-auto px-24 py-6 rounded-pill fw-medium text-sm 
-                                                                        {{ $resume->status }}">
-                                                                @php
-                                                                    $statuses = [
-                                                                        'pending_review' => 'Pending Review',
-                                                                        'forwarded_to_senior' => 'Forwarded to Senior',
-                                                                        'customer_confirmation' => 'Customer Confirmation',
-                                                                    ];
-                                                                @endphp
-                                                                @foreach($statuses as $key => $label)
-                                                                    <option value="{{ $key }}" {{ $resume->status === $key ? 'selected' : '' }}>
-                                                                        {{ $label }}
-                                                                    </option>
-                                                                @endforeach
-                                                            </select>
-                                                        </form>
-                                                    </td>
-
-                                                    <!-- File -->
-                                                    <td>
-                                                        <div class="d-flex gap-3">
-                                                            <!-- Download button -->
-                                                            <a href="{{ asset('storage/resumes/' . $resume->resume_file) }}" 
-                                                            class="btn btn-sm btn-outline-primary d-flex align-items-center gap-2"
-                                                            download="{{ $resume->candidate_name }}_resume.pdf" 
-                                                            rel="noopener noreferrer">
-                                                                <i class="fas fa-download"></i> Download
-                                                            </a>
-                                                            <!-- View button -->
-                                                            <a href="{{ asset('storage/resumes/' . $resume->resume_file) }}" 
-                                                            class="btn btn-sm btn-outline-secondary d-flex align-items-center gap-2"
-                                                            target="_blank" 
-                                                            rel="noopener noreferrer">
-                                                                <i class="fas fa-eye"></i> View
-                                                            </a>
-                                                        </div>
-                                                    </td>
-
-                                                    <!-- Updated at -->
-                                                    <td>
-                                                        <span class="text-sm text-secondary-light fw-medium">
-                                                            {{ $resume->updated_at->format('d M Y') }}
-                                                        </span>
-                                                    </td>
-                                                </tr>
-                                                @endforeach
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <!-- <div class="tab-pane fade" id="pills-recent-leads" role="tabpanel" aria-labelledby="pills-recent-leads-tab" tabindex="0">
-                                    <div class="table-responsive scroll-sm">
-                                        <table class="table bordered-table sm-table mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Users </th>
-                                                    <th scope="col">Registered On</th>
-                                                    <th scope="col">Plan</th>
-                                                    <th scope="col" class="text-center">Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('assets/images/users/user1.png') }}" alt="" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
-                                                            <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">Dianne Russell</h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">redaniel@gmail.com</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>27 Mar 2024</td>
-                                                    <td>Free</td>
-                                                    <td class="text-center">
-                                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('assets/images/users/user2.png') }}" alt="" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
-                                                            <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">Wade Warren</h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">xterris@gmail.com</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>27 Mar 2024</td>
-                                                    <td>Basic</td>
-                                                    <td class="text-center">
-                                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('assets/images/users/user3.png') }}" alt="" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
-                                                            <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">Albert Flores</h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">seannand@mail.ru</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>27 Mar 2024</td>
-                                                    <td>Standard</td>
-                                                    <td class="text-center">
-                                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('assets/images/users/user4.png') }}" alt="" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
-                                                            <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">Bessie Cooper </h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">igerrin@gmail.com</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>27 Mar 2024</td>
-                                                    <td>Business</td>
-                                                    <td class="text-center">
-                                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('assets/images/users/user5.png') }}" alt="" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
-                                                            <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">Arlene McCoy</h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">fellora@mail.ru</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>27 Mar 2024</td>
-                                                    <td>Enterprise </td>
-                                                    <td class="text-center">
-                                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div> -->
-                            </div>
+                            
                         </div>
                     </div>
                 </div>
