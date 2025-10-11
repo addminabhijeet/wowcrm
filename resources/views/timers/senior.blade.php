@@ -118,9 +118,6 @@ $script = '<script>
                                 <button data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
-                                <button data-type="logout" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#dc3545;border:1px solid #b02a37;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;cursor:pointer;">
-                                    <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Log Out
-                                </button>
                             </div>
                         </div>
                         <!-- Action Buttons -->
@@ -139,6 +136,27 @@ $script = '<script>
                             <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
                         </a>
                         @endif
+
+                        <!-- Login/Logout Button -->
+                        @if($juniors['status'] == 0)
+                        <button
+                            data-type="login"
+                            data-user="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #0b5ed7; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
+                            Log In
+                        </button>
+                        @else
+                        <button
+                            data-type="logout"
+                            data-user="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #b02a37; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
+                            Log Out
+                        </button>
+                        @endif
+
+
 
                     </div>
                 </div>
