@@ -545,52 +545,7 @@ class GoogleSheetController extends Controller
             return view('database.partials.senior_table', compact('data'))->render();
         }
 
-        return view('database.seniorpaid', compact('data'));
-
-        $authUser = Auth::user();
-
-        // Build patterns for LIKE match
-        $userPattern = "%:" . $authUser->id . "|accountant";
-        $zeroPattern = "%:0|accountant";
-
-        $data = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            // Direct match with "id|accountant"
-            $q->where('created_by', $authUser->id . '|accountant')
-                // Direct match with "0|accountant"
-                ->orWhere('created_by', '0|accountant')
-                // Matches if last part is ":id|accountant"
-                ->orWhere('created_by', 'LIKE', $userPattern)
-                // Matches if last part is ":0|accountant"
-                ->orWhere('created_by', 'LIKE', $zeroPattern);
-        })
-            // Ensure it's truly the LAST part of created_by
-            ->where(function ($q) use ($authUser) {
-                $q->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|accountant', $authUser->id . '|accountant'])
-                    ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|accountant', '0|accountant']);
-            })
-            ->paginate(10);
-
-        // Map forwarded_by dynamically
-        $data->getCollection()->transform(function ($item) use ($authUser) {
-            $parts = explode('|', $item->created_by ?? '');
-            $userId = $parts[0] ?? null;
-            $role   = $parts[1] ?? 'unknown';
-
-            if ($userId == $authUser->id) {
-                $forwardedBy = "SELF ({$userId}) ({$role})";
-            } elseif ($userId == 0) {
-                $forwardedBy = "SYSTEM (0) ({$role})";
-            } else {
-                $user = \App\Models\User::find($userId);
-                $name = $user ? $user->name : 'Unknown';
-                $forwardedBy = "{$name} ({$userId}) ({$role})";
-            }
-
-            $item->forwarded_by = $forwardedBy;
-            return $item;
-        });
-
-        return view('database.accountant', compact('data'));
+        return view('database.senior', compact('data'));
     }
 
 
@@ -1726,34 +1681,30 @@ class GoogleSheetController extends Controller
     }
 
 
-
-    public function accountant(Request $request)
+    public function accountant()
     {
         $authUser = Auth::user();
-        $search = $request->input('search');
-        $rowId = $request->input('row_id');
 
-        $userPattern = "%:" . $authUser->id . "|senior";
-        $zeroPattern = "%:0|senior";
+        // Build patterns for LIKE match
+        $userPattern = "%:" . $authUser->id . "|accountant";
+        $zeroPattern = "%:0|accountant";
 
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            $q->where('created_by', $authUser->id . '|senior')
-                ->orWhere('created_by', '0|senior')
+        $data = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+            // Direct match with "id|accountant"
+            $q->where('created_by', $authUser->id . '|accountant')
+                // Direct match with "0|accountant"
+                ->orWhere('created_by', '0|accountant')
+                // Matches if last part is ":id|accountant"
                 ->orWhere('created_by', 'LIKE', $userPattern)
+                // Matches if last part is ":0|accountant"
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
-        });
-
-        if ($rowId) {
-            $query->where('id', $rowId);
-        } elseif ($search && strlen($search) >= 3) {
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'LIKE', "%{$search}%")
-                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
-                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
-            });
-        }
-
-        $data = $query->orderBy('id', 'desc')->paginate(10);
+        })
+            // Ensure it's truly the LAST part of created_by
+            ->where(function ($q) use ($authUser) {
+                $q->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|accountant', $authUser->id . '|accountant'])
+                    ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|accountant', '0|accountant']);
+            })
+            ->paginate(10);
 
         // Map forwarded_by dynamically
         $data->getCollection()->transform(function ($item) use ($authUser) {
@@ -1774,10 +1725,6 @@ class GoogleSheetController extends Controller
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
-
-        if ($request->ajax()) {
-            return view('database.partials.senior_table', compact('data'))->render();
-        }
 
         return view('database.accountant', compact('data'));
     }
