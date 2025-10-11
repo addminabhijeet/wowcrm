@@ -108,6 +108,7 @@ class LoginController extends Controller
             // --- Stop login (mark as inactive) ---
             $user->status = 0;
             $user->save();
+            $user->refresh(); // optional
 
             // --- Record pause for timer logs ---
             $latestTimer = UserTimerLog::where('user_id', $user->id)->latest()->first();
