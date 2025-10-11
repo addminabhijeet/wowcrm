@@ -500,21 +500,18 @@ class GoogleSheetController extends Controller
 
     public function seniorpaid(Request $request)
     {
-        $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
 
-        $query = GoogleSheetData::where(function ($q) use ($authUser) {
-            $seniorPart = $authUser->id . '|senior';
-
-            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart])
-                ->where(function ($q2) {
-                    // Ensure 0|accountant exists as a separate part
-                    $q2->whereRaw("created_by = '0|accountant'")
-                        ->orWhereRaw("created_by LIKE '0|accountant:%'")
-                        ->orWhereRaw("created_by LIKE '%:0|accountant'")
-                        ->orWhereRaw("created_by LIKE '%:0|accountant:%'");
-                });
+        $query = GoogleSheetData::where(function ($q) {
+            // Removed user_id|senior check
+            // Only keep the accountant part filter
+            $q->where(function ($q2) {
+                $q2->whereRaw("created_by = '0|accountant'")
+                    ->orWhereRaw("created_by LIKE '0|accountant:%'")
+                    ->orWhereRaw("created_by LIKE '%:0|accountant'")
+                    ->orWhereRaw("created_by LIKE '%:0|accountant:%'");
+            });
         });
 
         if ($rowId) {
@@ -530,7 +527,7 @@ class GoogleSheetController extends Controller
         $data = $query->orderBy('id', 'desc')->paginate(10);
 
         // Map forwarded_by dynamically for multiple creators
-        $data->getCollection()->transform(function ($item) use ($authUser) {
+        $data->getCollection()->transform(function ($item) {
             $creators = explode(':', $item->created_by ?? '');
             $forwardedByParts = [];
 
@@ -539,9 +536,7 @@ class GoogleSheetController extends Controller
                 $userId = $parts[0] ?? null;
                 $role   = $parts[1] ?? 'unknown';
 
-                if ($userId == $authUser->id) {
-                    $forwardedByParts[] = "SELF ({$userId}) ({$role})";
-                } elseif ($userId == 0) {
+                if ($userId == 0) {
                     $forwardedByParts[] = "SYSTEM (0) ({$role})";
                 } else {
                     $user = \App\Models\User::find($userId);
@@ -554,12 +549,13 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        if ($request->ajax()) {
+        if (request()->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
         }
 
         return view('database.seniorpaid', compact('data'));
     }
+
 
     // -----------------------------
     // AJAX Search Suggestions
