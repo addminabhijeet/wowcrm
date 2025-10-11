@@ -138,7 +138,7 @@ $script = '<script>
                         @endif
 
                         <!-- Login/Logout Button -->
-                        @if($juniors['status'] == 0)
+                        @if($timer['button_status'] == 0)
                         <button
                             data-type="login"
                             data-user="{{ $timer['user_id'] }}"
