@@ -548,10 +548,6 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        if ($request->ajax()) {
-            return view('database.partials.senior_table', compact('data'))->render();
-        }
-
         return view('database.seniorpaid', compact('data'));
     }
 
