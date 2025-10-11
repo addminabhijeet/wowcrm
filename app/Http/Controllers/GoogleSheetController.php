@@ -504,11 +504,17 @@ class GoogleSheetController extends Controller
         $search = $request->input('search');
         $rowId = $request->input('row_id');
 
-        // Modified filter: first part must be user's senior, AND must contain 0|accountant
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
             $seniorPart = $authUser->id . '|senior';
+
             $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart])
-                ->whereRaw("created_by REGEXP '0\\|accountant'"); // 0|accountant must exist
+                ->where(function ($q2) {
+                    // Ensure 0|accountant exists as a separate part
+                    $q2->whereRaw("created_by = '0|accountant'")
+                        ->orWhereRaw("created_by LIKE '0|accountant:%'")
+                        ->orWhereRaw("created_by LIKE '%:0|accountant'")
+                        ->orWhereRaw("created_by LIKE '%:0|accountant:%'");
+                });
         });
 
         if ($rowId) {
@@ -554,8 +560,6 @@ class GoogleSheetController extends Controller
 
         return view('database.seniorpaid', compact('data'));
     }
-
-
 
     // -----------------------------
     // AJAX Search Suggestions
