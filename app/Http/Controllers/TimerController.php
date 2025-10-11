@@ -84,7 +84,7 @@ class TimerController extends Controller
             ];
         });
 
-        return view('timers.senior', compact('timers'));
+        return view('timers.senior', compact('timers','juniors'));
     }
 
 
