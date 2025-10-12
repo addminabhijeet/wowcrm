@@ -515,6 +515,16 @@ class DashboardController extends Controller
         return view('smtp.add', compact('users'));
     }
 
+    // Show the form to edit SMTP settings
+    public function edit($userId)
+    {
+        $smtp = SmtpSetting::where('user_id', $userId)->first(); // Get SMTP for specific user
+        $users = User::all(); // Keep for dropdown or selection if needed
+
+        return view('smtp.edit', compact('smtp', 'users'));
+    }
+
+
 
     // Update SMTP settings
     public function update(Request $request)
