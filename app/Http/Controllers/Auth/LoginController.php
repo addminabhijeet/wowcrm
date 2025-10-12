@@ -37,7 +37,7 @@ class LoginController extends Controller
 
         if ($user->status != 1) {
             return back()->withErrors([
-                'email' => 'Your account is inactive. Please contact the administrator.'
+                'email' => 'Your account is inactive. Please contact the Admin.'
             ])->onlyInput('email');
         }
 
