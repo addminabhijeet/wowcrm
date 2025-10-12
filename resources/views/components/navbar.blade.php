@@ -430,42 +430,45 @@
 </script>
 
 <script>
-    function checkButtonStatus() {
-        fetch("{{ route('button.status') }}")
-            .then(response => {
-                if (!response.ok) throw new Error("Network response was not ok");
-                return response.json();
-            })
-            .then(data => {
-                const controlButtons = document.getElementById('controlButtons');
-                const startButtonContainer = document.getElementById('startButtonContainer');
+    document.addEventListener("DOMContentLoaded", function() {
+        const controlButtons = document.getElementById('controlButtons');
+        const startButtonContainer = document.getElementById('startButtonContainer');
 
-                if (!controlButtons || !startButtonContainer) {
-                    console.warn("[Status Check] Required elements not found in DOM.");
-                    return;
-                }
+        if (!controlButtons || !startButtonContainer) {
+            console.error("[Init Error] Elements #controlButtons or #startButtonContainer are missing.");
+            return;
+        }
 
-                const status = parseInt(data.button_status ?? 0);
+        function checkButtonStatus() {
+            fetch("{{ route('button.status') }}")
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.json();
+                })
+                .then(data => {
+                    const status = parseInt(data.button_status ?? 0);
 
-                if (status === 1) {
-                    // Show control buttons (enabled)
-                    controlButtons.style.display = 'flex';
-                    startButtonContainer.style.display = 'none';
-                    console.log("[Button Status] Control buttons visible (status=1)");
-                } else {
-                    // Hide control buttons (disabled)
-                    controlButtons.style.display = 'none';
-                    startButtonContainer.style.display = 'flex';
-                    console.log("[Button Status] Control buttons hidden (status=0)");
-                }
-            })
-            .catch(err => console.error("[Status Check] Error fetching button status:", err));
-    }
+                    if (status === 1) {
+                        // Show control buttons, hide start button
+                        controlButtons.style.display = 'flex';
+                        startButtonContainer.style.display = 'none';
+                        console.log("[Button Status] Control buttons visible (status=1)");
+                    } else {
+                        // Hide control buttons, show start button
+                        controlButtons.style.display = 'none';
+                        startButtonContainer.style.display = 'flex';
+                        console.log("[Button Status] Control buttons hidden (status=0)");
+                    }
+                })
+                .catch(err => console.error("[Status Check] Error fetching button status:", err));
+        }
 
-    // Initial check + periodic refresh
-    checkButtonStatus();
-    setInterval(checkButtonStatus, 2000);
+        // Initial check + periodic refresh
+        checkButtonStatus();
+        setInterval(checkButtonStatus, 2000);
+    });
 </script>
+
 
 
 <script>
