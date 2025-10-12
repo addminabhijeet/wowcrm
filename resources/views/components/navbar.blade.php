@@ -368,13 +368,13 @@
             console.warn("[Inactivity] User inactive! Pausing timer...");
             showOverlay("You were inactive! Timer stopped.");
             wasInactive = true;
-            // --- Hide all buttons except Resume ---
+            // --- Hide Lunch, Tea, and Break buttons ---
             const controlButtons = document.querySelectorAll("#controlButtons button");
             controlButtons.forEach(btn => {
-                if (btn.dataset.type !== "resumebreak") {
+                if (["lunch", "tea", "break"].includes(btn.dataset.type)) {
                     btn.style.display = "none";
                 } else {
-                    btn.style.display = "flex"; // ensure Resume stays visible
+                    btn.style.display = "flex"; // Resume stays visible
                 }
             });
             fetch("{{ route('timer.update') }}", {
