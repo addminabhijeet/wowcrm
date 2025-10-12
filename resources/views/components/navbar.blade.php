@@ -368,14 +368,10 @@
             console.warn("[Inactivity] User inactive! Pausing timer...");
             showOverlay("You were inactive! Timer stopped.");
             wasInactive = true;
-            // --- Hide Lunch, Tea, and Break buttons ---
-            const controlButtons = document.querySelectorAll("#controlButtons button");
-            controlButtons.forEach(btn => {
-                if (["lunch", "tea", "break"].includes(btn.dataset.type)) {
-                    btn.style.display = "none";
-                } else {
-                    btn.style.display = "flex"; // Resume stays visible
-                }
+            // --- Optional: show other buttons again ---
+            const otherButtons = document.querySelectorAll('#controlButtons button');
+            otherButtons.forEach(btn => {
+                if (btn.dataset.type !== "resumebreak") btn.style.display = "none";
             });
             fetch("{{ route('timer.update') }}", {
                 method: "POST",
@@ -420,11 +416,6 @@
                     const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
                     if (resumeBtn) resumeBtn.style.display = "none";
 
-                    // --- Optional: show other buttons again ---
-                    const otherButtons = document.querySelectorAll('#controlButtons button');
-                    otherButtons.forEach(btn => {
-                        if (btn.dataset.type !== "resumebreak") btn.style.display = "flex";
-                    });
                 }
             })
             .catch(err => console.error("[Active] Resume request failed:", err));
