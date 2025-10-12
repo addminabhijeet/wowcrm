@@ -269,6 +269,9 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('smtp.edit') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>SMTP Settings</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
+                    <li><a href="{{ route('smtp.editall') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All User SMTP</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
                     <li><a href="{{ route('template.index') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Email Template</a></li>
                 </ul>
             </li>

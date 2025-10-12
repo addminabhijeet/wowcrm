@@ -495,6 +495,11 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function editall()
+    {
+        $juniorUsers = User::where('role', 'junior')->get();
+        return view('smtp.editall', compact('juniorUsers'));
+    }
     // Show the form to edit SMTP settings
     public function edit()
     {
