@@ -595,3 +595,54 @@
         setInterval(checkTimerStatus, 1000);
     });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+
+    function updatePauseButtons() {
+        fetch('{{ route("timer.checkPauseButtons") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(res => res.json())
+        .then(data => {
+            const buttonsToHide = document.querySelectorAll(
+                '#controlButtons button[data-type="lunch"], ' +
+                '#controlButtons button[data-type="tea"], ' +
+                '#controlButtons button[data-type="break"]'
+            );
+
+            const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
+
+            if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
+                // Hide lunch/tea/break buttons
+                buttonsToHide.forEach(btn => {
+                    if (btn) btn.style.display = 'none';
+                });
+
+                // Show resume button
+                if (resumeBtn) resumeBtn.style.display = 'flex';
+            } else {
+                // Show all pause buttons
+                buttonsToHide.forEach(btn => {
+                    if (btn) btn.style.display = 'flex';
+                });
+
+                // Hide resume button
+                if (resumeBtn) resumeBtn.style.display = 'none';
+            }
+        })
+        .catch(err => console.error('❌ Error checking pause buttons:', err));
+    }
+
+    // Initial check
+    updatePauseButtons();
+
+    // Check every 2 seconds
+    setInterval(updatePauseButtons, 2000);
+});
+</script>

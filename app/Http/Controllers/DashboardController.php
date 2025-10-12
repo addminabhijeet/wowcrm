@@ -178,6 +178,33 @@ class DashboardController extends Controller
         }
     }
 
+    public function checkPauseButtons(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if (!$user) {
+                return response()->json(['error' => 'Not authenticated'], 401);
+            }
+
+            // Get the latest timer log for today
+            $latestLog = UserTimerLog::where('user_id', $user->id)
+                ->whereDate('created_at', now()->startOfDay())
+                ->latest('created_at')
+                ->first();
+
+            return response()->json([
+                'pause_type' => $latestLog->pause_type ?? null,
+                'status'     => $latestLog->status ?? null
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'error'   => true,
+                'message' => $e->getMessage(),
+                'trace'   => $e->getTraceAsString(),
+            ], 500);
+        }
+    }
+
 
 
     public function senior()
