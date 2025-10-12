@@ -508,9 +508,12 @@ class DashboardController extends Controller
     // Show the form to edit SMTP settings
     public function edit()
     {
-        $smtp = SmtpSetting::first(); // Assume single record
-        return view('smtp.edit', compact('smtp'));
+        $smtp = SmtpSetting::first(); // Single record
+        $users = User::all(); // Get all users
+
+        return view('smtp.edit', compact('smtp', 'users'));
     }
+
 
     // Update SMTP settings
     public function update(Request $request)

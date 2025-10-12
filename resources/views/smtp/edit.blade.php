@@ -136,6 +136,28 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                                     </div>
                                 </div>
 
+                                {{-- From Name --}}
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">
+                                        USER <span class="text-danger-600">*</span>
+                                    </label>
+                                    <div class="input-group radius-8">
+                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
+                                            <iconify-icon icon="mdi:account-box-outline"></iconify-icon>
+                                        </span>
+                                        <select name="user_id" class="form-control radius-8">
+                                            <option value="">Select User</option>
+                                            @foreach($users as $user)
+                                            <option value="{{ $user->id }}"
+                                                {{ old('user_id', $smtp->user_id ?? '') == $user->id ? 'selected' : '' }}>
+                                                {{ $user->name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
+                                    </div>
+                                </div>
+
+
                                 {{-- Submit Button --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8"><span class="visibility-hidden">Save</span></label>
