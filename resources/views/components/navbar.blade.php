@@ -354,49 +354,68 @@
         let wasInactive = false;
 
         function resetInactiveTimer() {
-            clearTimeout(inactiveTimeout);
-            console.log("[Inactivity] Timer reset.");
+            try {
+                clearTimeout(inactiveTimeout);
+                console.log("[Inactivity] Timer reset.");
 
-            inactiveTimeout = setTimeout(() => {
-                console.warn("[Inactivity] User inactive! Pausing timer...");
-                showOverlay("You were inactive! Timer stopped.");
-                wasInactive = true;
+                inactiveTimeout = setTimeout(() => {
+                    try {
+                        console.warn("[Inactivity] User inactive! Pausing timer...");
+                        showOverlay("You were inactive! Timer stopped.");
+                        wasInactive = true;
 
-                // ✅ Debug: Find buttons to hide
-                const buttons = document.querySelectorAll(
-                    '#controlButtons button[data-type="lunch"], ' +
-                    '#controlButtons button[data-type="tea"], ' +
-                    '#controlButtons button[data-type="break"]'
-                );
-                console.log("[Inactivity] Buttons found:", buttons);
+                        // ✅ Debug: Find buttons to hide
+                        const buttons = document.querySelectorAll(
+                            '#controlButtons button[data-type="lunch"], ' +
+                            '#controlButtons button[data-type="tea"], ' +
+                            '#controlButtons button[data-type="break"]'
+                        );
 
-                buttons.forEach((btn, index) => {
-                    if (btn) {
-                        console.log(`[Inactivity] Hiding button #${index}:`, btn);
-                        btn.style.display = "none";
-                        // Force reflow for reliability
-                        void btn.offsetHeight;
-                        console.log(`[Inactivity] Button #${index} hidden.`);
-                    } else {
-                        console.warn(`[Inactivity] Button #${index} not found.`);
+                        console.log("[Inactivity] Buttons NodeList:", buttons);
+                        if (!buttons || buttons.length === 0) {
+                            console.error("[Inactivity] No control buttons found! Check your selector.");
+                        }
+
+                        buttons.forEach((btn, index) => {
+                            try {
+                                if (btn) {
+                                    console.log(`[Inactivity] Hiding button #${index}:`, btn, "Current display:", btn.style.display);
+                                    btn.style.display = "none";
+                                    // Force reflow for reliability
+                                    void btn.offsetHeight;
+                                    console.log(`[Inactivity] Button #${index} hidden successfully.`);
+                                } else {
+                                    console.warn(`[Inactivity] Button #${index} is null or undefined.`);
+                                }
+                            } catch (btnError) {
+                                console.error(`[Inactivity] Error hiding button #${index}:`, btnError);
+                            }
+                        });
+
+                        // Pause request
+                        fetch("{{ route('timer.update') }}", {
+                                method: "POST",
+                                headers: {
+                                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    action: "pause"
+                                })
+                            })
+                            .then(() => console.log("[Inactivity] Pause request sent successfully."))
+                            .catch(fetchErr => console.error("[Inactivity] Pause request failed:", fetchErr));
+
+                    } catch (innerError) {
+                        console.error("[Inactivity] Error inside timeout function:", innerError);
                     }
-                });
+                }, INACTIVE_LIMIT);
 
-                fetch("{{ route('timer.update') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        action: "pause"
-                    })
-                }).then(() => {
-                    console.log("[Inactivity] Pause request sent successfully.");
-                }).catch(err => console.error("[Inactivity] Pause request failed:", err));
-
-            }, INACTIVE_LIMIT);
+            } catch (outerError) {
+                console.error("[Inactivity] Error resetting timer:", outerError);
+            }
         }
+
 
 
         function handleActiveState() {
