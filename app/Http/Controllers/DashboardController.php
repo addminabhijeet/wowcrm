@@ -500,6 +500,11 @@ class DashboardController extends Controller
         $juniorUsers = User::all();
         return view('smtp.editall', compact('juniorUsers'));
     }
+
+    public function add()
+    {
+        return view('smtp.add');
+    }
     // Show the form to edit SMTP settings
     public function edit()
     {
