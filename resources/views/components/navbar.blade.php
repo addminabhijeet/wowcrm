@@ -468,6 +468,62 @@
     });
 </script>
 
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        
+        const startButton = document.getElementById('startButton');
+
+
+        // Check if today's timer already exists
+        fetch('{{ route("timer.start") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    check: true
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+            })
+            .catch(err => console.error('❌ Error checking timer existence:', err));
+
+        // On Start button click
+        startButton.addEventListener('click', function() {
+
+
+            fetch('{{ route("timer.start") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({}) // No check parameter here
+                })
+                .then(res => res.json())
+                .then(data => {
+
+
+                    if (data.success || data.exists || data.timer) {
+                        alert('⏱ Timer is running for today!');
+                    } else {
+                        console.error('⚠️ Unexpected response while starting timer:', data);
+                        alert('⚠️ Something went wrong starting the timer.');
+                    }
+                })
+                .catch(err => {
+                    console.error('❌ Error starting timer:', err);
+                });
+        });
+    });
+</script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const startButtonContainer = document.getElementById('startButtonContainer');
