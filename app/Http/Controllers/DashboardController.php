@@ -497,7 +497,7 @@ class DashboardController extends Controller
 
     public function editall()
     {
-        $juniorUsers = User::all();
+        $juniorUsers = SmtpSetting::all();
         return view('smtp.editall', compact('juniorUsers'));
     }
 
