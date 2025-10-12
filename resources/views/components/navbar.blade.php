@@ -643,6 +643,6 @@ document.addEventListener('DOMContentLoaded', function() {
     updatePauseButtons();
 
     // Check every 2 seconds
-    setInterval(updatePauseButtons, 2000);
+    setInterval(updatePauseButtons, 1000);
 });
 </script>
