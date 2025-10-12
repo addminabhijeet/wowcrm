@@ -67,16 +67,34 @@ class DashboardController extends Controller
 
     public function getButtonStatus()
     {
-        $user = Auth::user();
+        $authUser = Auth::user();
 
-        $latestLog = UserTimerLog::where('user_id', $user->id)
+        // If admin, return all users' statuses
+        if ($authUser->role === 'admin') {
+            $latestLogs = UserTimerLog::select('user_id', 'button_status')
+                ->whereIn('id', function ($query) {
+                    $query->selectRaw('MAX(id)')
+                        ->from('user_timer_logs')
+                        ->groupBy('user_id');
+                })
+                ->get();
+
+            return response()->json($latestLogs);
+        }
+
+        // Otherwise, return only this user's status
+        $latestLog = UserTimerLog::where('user_id', $authUser->id)
             ->orderBy('id', 'desc')
             ->first();
 
         return response()->json([
-            'button_status' => $latestLog->button_status ?? 0
+            [
+                'user_id' => $authUser->id,
+                'button_status' => $latestLog->button_status ?? 0
+            ]
         ]);
     }
+
 
 
     public function startTimer(Request $request)
