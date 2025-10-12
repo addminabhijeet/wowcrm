@@ -360,6 +360,21 @@
                 showOverlay("You were inactive! Timer stopped.");
                 wasInactive = true;
 
+                // Hide buttons immediately on pause
+                const buttonsToHide = document.querySelectorAll(
+                    '#controlButtons button[data-type="lunch"], ' +
+                    '#controlButtons button[data-type="tea"], ' +
+                    '#controlButtons button[data-type="break"]'
+                );
+                buttonsToHide.forEach(btn => {
+                    if (btn) btn.style.display = "none";
+                });
+
+                // Show the resume button
+                const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
+                if (resumeBtn) resumeBtn.style.display = "flex";
+
+                // Pause request to backend
                 fetch("{{ route('timer.update') }}", {
                         method: "POST",
                         headers: {
@@ -376,24 +391,11 @@
                             remainingSeconds = data.remaining_seconds;
                             elapsedSeconds = data.elapsed_seconds;
                             status = data.status;
-                            if (showActiveOverlay) showOverlay("You are inactive now! Timer stopped.");
                             updateUI();
-
-                            const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
-                            if (resumeBtn) resumeBtn.style.display = "flex";
-
-                            // ✅ Hide Lunch, Tea, Break buttons safely
-                            const buttons = document.querySelectorAll('#controlButtons button[data-type="lunch"], #controlButtons button[data-type="tea"], #controlButtons button[data-type="break"]');
-                            buttons.forEach(btn => {
-                                if (btn) {
-                                    btn.style.display = "none";
-                                    // force reflow for reliability
-                                    void btn.offsetHeight;
-                                }
-                            });
                         }
                     })
                     .catch(err => console.error("[Inactivity] Pause request failed:", err));
+
             }, INACTIVE_LIMIT);
         }
 
@@ -420,15 +422,18 @@
                         if (showActiveOverlay) showOverlay("You are active now! Timer running.");
                         updateUI();
 
+                        // Hide resume button again
                         const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
                         if (resumeBtn) resumeBtn.style.display = "none";
 
-                        // ✅ Restore hidden buttons on activity
-                        const hiddenButtons = document.querySelectorAll('#controlButtons button[data-type="lunch"], #controlButtons button[data-type="tea"], #controlButtons button[data-type="break"]');
+                        // Restore hidden buttons on activity
+                        const hiddenButtons = document.querySelectorAll(
+                            '#controlButtons button[data-type="lunch"], ' +
+                            '#controlButtons button[data-type="tea"], ' +
+                            '#controlButtons button[data-type="break"]'
+                        );
                         hiddenButtons.forEach(btn => {
-                            if (btn) {
-                                btn.style.display = "flex";
-                            }
+                            if (btn) btn.style.display = "flex";
                         });
                     }
                 })
@@ -436,6 +441,7 @@
 
             resetInactiveTimer();
         }
+
 
         // Detect real user activity
         ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
