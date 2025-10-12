@@ -53,7 +53,7 @@
                         </button>
                     </div>
 
-                    <div id="startHideButtonContainer" style="display:none;align-items:center;gap:4px;flex-wrap:wrap;margin-left:4px;">
+                    <div id="startButtonContainer" style="display:none;align-items:center;gap:4px;flex-wrap:wrap;margin-left:4px;">
                         <button id="startButton"
                             style="width:65px;height:28px;border-radius:14px;background:#28a745;border:1px solid #1e7e34;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">
                             <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Start
@@ -575,7 +575,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        const startHideButtonContainer = document.getElementById('startHideButtonContainer');
+        const startButtonContainer = document.getElementById('startButtonContainer');
 
         // Check if timer already exists
         fetch('{{ route("timer.starthide") }}', {
@@ -596,10 +596,10 @@
 
                 if (!data.exists) {
                     // Show start button only if timer doesn't exist
-                    startHideButtonContainer.style.display = 'flex';
+                    startButtonContainer.style.display = 'flex';
                 } else {
                     // Timer exists, hide start button
-                    startHideButtonContainer.style.display = 'none';
+                    startButtonContainer.style.display = 'none';
 
                 }
             })
