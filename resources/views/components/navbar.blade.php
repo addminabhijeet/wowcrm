@@ -369,10 +369,12 @@
             showOverlay("You were inactive! Timer stopped.");
             wasInactive = true;
             // --- Optional: show other buttons again ---
-            const otherButtons = document.querySelectorAll('#controlButtons button');
-            otherButtons.forEach(btn => {
-                if (btn.dataset.type !== "resumebreak") btn.style.display = "none";
-            });
+            const lunchBtn = document.querySelector('#controlButtons button[data-type="lunch"]');
+            const teaBtn = document.querySelector('#controlButtons button[data-type="tea"]');
+            const breakBtn = document.querySelector('#controlButtons button[data-type="break"]');
+            if (lunchBtn) resumeBtn.style.display = "none";
+            if (teaBtn) resumeBtn.style.display = "none";
+            if (breakBtn) resumeBtn.style.display = "none";
             fetch("{{ route('timer.update') }}", {
                 method: "POST",
                 headers: {
