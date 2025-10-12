@@ -139,7 +139,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                                 {{-- From Name --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8">
-                                        USER <span class="text-danger-600">*</span>
+                                        From Name <span class="text-danger-600">*</span>
                                     </label>
                                     <div class="input-group radius-8">
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
@@ -156,6 +156,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                                         </select>
                                     </div>
                                 </div>
+
 
 
                                 {{-- Submit Button --}}
