@@ -363,18 +363,20 @@
     function resetInactiveTimer() {
         clearTimeout(inactiveTimeout);
 
-
         inactiveTimeout = setTimeout(() => {
             console.warn("[Inactivity] User inactive! Pausing timer...");
             showOverlay("You were inactive! Timer stopped.");
             wasInactive = true;
-            // --- Optional: show other buttons again ---
+
+            // --- Hide Lunch, Tea, and Break buttons ---
             const lunchBtn = document.querySelector('#controlButtons button[data-type="lunch"]');
             const teaBtn = document.querySelector('#controlButtons button[data-type="tea"]');
             const breakBtn = document.querySelector('#controlButtons button[data-type="break"]');
+
             if (lunchBtn) lunchBtn.style.display = "none";
             if (teaBtn) teaBtn.style.display = "none";
             if (breakBtn) breakBtn.style.display = "none";
+
             fetch("{{ route('timer.update') }}", {
                 method: "POST",
                 headers: {
@@ -387,6 +389,7 @@
             }).catch(err => console.error("[Inactivity] Pause request failed:", err));
         }, INACTIVE_LIMIT);
     }
+
 
     function handleActiveState() {
 
