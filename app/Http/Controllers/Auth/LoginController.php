@@ -26,6 +26,22 @@ class LoginController extends Controller
             'password' => ['required']
         ]);
 
+        // 🔍 Check if the user exists and is active
+        $user = \App\Models\User::where('email', $credentials['email'])->first();
+
+        if (!$user) {
+            return back()->withErrors([
+                'email' => 'No account found with this email address.'
+            ])->onlyInput('email');
+        }
+
+        if ($user->status != 1) {
+            return back()->withErrors([
+                'email' => 'Your account is inactive. Please contact the administrator.'
+            ])->onlyInput('email');
+        }
+
+        // ✅ Proceed with authentication
         if (Auth::attempt($credentials)) {
             $request->session()->regenerate();
 
@@ -47,9 +63,7 @@ class LoginController extends Controller
             // =============================================
 
             // Redirect based on user role
-            $role = Auth::user()->role;
-
-            switch ($role) {
+            switch ($user->role) {
                 case 'junior':
                     return redirect()->route('dashboard.junior');
                 case 'senior':
@@ -71,6 +85,7 @@ class LoginController extends Controller
             'email' => 'The provided credentials do not match our records.'
         ])->onlyInput('email');
     }
+
 
 
     public function logout(Request $request)
