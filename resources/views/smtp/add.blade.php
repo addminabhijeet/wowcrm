@@ -49,7 +49,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:email-outline"></iconify-icon>
                                         </span>
-                                        <input type="text" name="mailer" class="form-control radius-8" >
+                                        <input type="text" name="mailer" class="form-control radius-8">
                                     </div>
                                 </div>
 
@@ -60,7 +60,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:server-network"></iconify-icon>
                                         </span>
-                                        <input type="text" name="host" class="form-control radius-8" >
+                                        <input type="text" name="host" class="form-control radius-8">
                                     </div>
                                 </div>
 
@@ -71,7 +71,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:port"></iconify-icon>
                                         </span>
-                                        <input type="number" name="port" class="form-control radius-8" >
+                                        <input type="number" name="port" class="form-control radius-8">
                                     </div>
                                 </div>
 
@@ -82,7 +82,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:account-outline"></iconify-icon>
                                         </span>
-                                        <input type="email" name="username" class="form-control radius-8" >
+                                        <input type="email" name="username" class="form-control radius-8">
                                     </div>
                                 </div>
 
@@ -110,7 +110,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:shield-outline"></iconify-icon>
                                         </span>
-                                        <input type="text" name="encryption" class="form-control radius-8" >
+                                        <input type="text" name="encryption" class="form-control radius-8">
                                     </div>
                                 </div>
 
@@ -121,7 +121,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:email-open-outline"></iconify-icon>
                                         </span>
-                                        <input type="email" name="from_address" class="form-control radius-8" >
+                                        <input type="email" name="from_address" class="form-control radius-8">
                                     </div>
                                 </div>
 
@@ -132,7 +132,28 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                                         <span class="input-group-text bg-neutral-100 border-neutral-300">
                                             <iconify-icon icon="mdi:account-box-outline"></iconify-icon>
                                         </span>
-                                        <input type="text" name="from_name" class="form-control radius-8" >
+                                        <input type="text" name="from_name" class="form-control radius-8">
+                                    </div>
+                                </div>
+
+                                {{-- From Name --}}
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">
+                                        User Name <span class="text-danger-600">*</span>
+                                    </label>
+                                    <div class="input-group radius-8">
+                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
+                                            <iconify-icon icon="mdi:account-box-outline"></iconify-icon>
+                                        </span>
+                                        <select name="user_id" class="form-control radius-8" disabled>
+                                            <option value="">Select User</option>
+                                            @foreach($users as $user)
+                                            <option value="{{ $user->id }}"
+                                                {{ old('user_id', $smtp->user_id ?? '') == $user->id ? 'selected' : '' }}>
+                                                {{ $user->name }}
+                                            </option>
+                                            @endforeach
+                                        </select>
                                     </div>
                                 </div>
 
