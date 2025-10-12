@@ -472,43 +472,44 @@
 
 
 <script>
-    // ===============================
-    // Button Status Check
-    // ===============================
-    function checkButtonStatus() {
+    document.addEventListener("DOMContentLoaded", function() {
+        // ===============================
+        // Button Status Check
+        // ===============================
+        function checkButtonStatus() {
+            fetch("{{ route('button.status') }}")
+                .then(response => {
+                    if (!response.ok) throw new Error("Network response was not ok");
+                    return response.json();
+                })
+                .then(data => {
+                    const controlButtons = document.getElementById('controlButtons');
+                    const startButtonContainer = document.getElementById('startButtonContainer');
 
-        fetch("{{ route('button.status') }}")
-            .then(response => {
-                if (!response.ok) throw new Error("Network response was not ok");
-                return response.json();
-            })
-            .then(data => {
+                    if (!controlButtons || !startButtonContainer) {
+                        console.warn("[Status Check] Required elements not found in DOM.");
+                        return;
+                    }
 
+                    if (parseInt(data.button_status) === 1) {
+                        controlButtons.style.display = 'flex';
+                        startButtonContainer.style.display = 'none';
+                    } else {
+                        controlButtons.style.display = 'none';
+                        startButtonContainer.style.display = 'flex';
+                    }
+                })
+                .catch(err => console.error("[Status Check] Error fetching button status:", err));
+        }
 
-                const controlButtons = document.getElementById('controlButtons');
-                const startButtonContainer = document.getElementById('startButtonContainer');
+        // Run once when page loads
+        checkButtonStatus();
 
-                if (!controlButtons || !startButtonContainer) {
-                    console.warn("[Status Check] Required elements not found in DOM.");
-                    return;
-                }
-
-                if (data.button_status == 1) {
-                    controlButtons.style.display = 'flex';
-                    startButtonContainer.style.display = 'none';
-
-                } else {
-                    controlButtons.style.display = 'none';
-                    startButtonContainer.style.display = 'flex';
-
-                }
-            })
-            .catch(err => console.error("[Status Check] Error fetching button status:", err));
-    }
-
-    checkButtonStatus();
-    setInterval(checkButtonStatus, 1000);
+        // Refresh every 1 second
+        setInterval(checkButtonStatus, 1000);
+    });
 </script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
