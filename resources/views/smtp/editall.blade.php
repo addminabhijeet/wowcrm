@@ -70,7 +70,7 @@ $script = '<script>
                         <td>{{ $user->role }}</td>
 
                         <td class="text-center">
-                            <a href="{{ route('calendar.alljuniorUser', $user->id) }}" class="btn btn-sm btn-primary">
+                            <a href="{{ route('smtp.edit', $user->id) }}" class="btn btn-sm btn-primary">
                                 View
                             </a>
                         </td>

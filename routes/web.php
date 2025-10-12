@@ -146,7 +146,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::match(['get', 'post'], '/timer/update', [DashboardController::class, 'updateTimer'])->name('timer.update');
     Route::get('/dashboard/smtp/add', [DashboardController::class, 'add'])->name('smtp.add');
-    Route::get('/dashboard/smtp/edit', [DashboardController::class, 'edit'])->name('smtp.edit');
+    Route::get('/dashboard/smtp/edit/{user}', [DashboardController::class, 'edit'])->name('smtp.edit');
     Route::get('/dashboard/smtp/editall', [DashboardController::class, 'editall'])->name('smtp.editall');
     Route::put('/dashboard/smtp/update', [DashboardController::class, 'update'])->name('smtp.update');
     Route::post('/dashboard/smtp/test', [DashboardController::class, 'test'])->name('smtp.test');
