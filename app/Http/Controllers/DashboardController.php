@@ -504,6 +504,26 @@ class DashboardController extends Controller
     }
 
 
+    public function add()
+    {
+        // Get all user IDs that already have SMTP settings
+        $smtpUserIds = SmtpSetting::pluck('user_id')->toArray();
+
+        // Get users who do not have SMTP settings
+        $users = User::whereNotIn('id', $smtpUserIds)->get();
+
+        return view('smtp.add', compact('users'));
+    }
+
+    // Show the form to edit SMTP settings
+    public function edit($userId)
+    {
+        $smtp = SmtpSetting::where('user_id', $userId)->first(); // Get SMTP for specific user
+        $users = User::all(); // Keep for dropdown or selection if needed
+
+        return view('smtp.edit', compact('smtp', 'users'));
+    }
+
     public function addupdate(Request $request)
     {
         $request->validate([
@@ -568,6 +588,7 @@ class DashboardController extends Controller
 
         return redirect()->back()->with('success', 'SMTP settings updated successfully!');
     }
+
 
     public function test(Request $request)
     {
