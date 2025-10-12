@@ -230,102 +230,155 @@
 <div id="statusOverlay"></div>
 
 <script>
-    // ===============================
-    // Timer Variables
-    // ===============================
-    let backendSyncInterval;
-    let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
-    let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
-    let status = "{{ $status ?? 'running' }}";
+    document.addEventListener('DOMContentLoaded', function() {
 
-    let inactiveTimeout;
-    const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes inactivity
-    let overlayTimeout;
+        // ===============================
+        // Timer Variables
+        // ===============================
+        let backendSyncInterval;
+        let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
+        let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
+        let status = "{{ $status ?? 'running' }}";
 
-    // ===============================
-    // Helper Functions
-    // ===============================
-    function formatTime(sec) {
-        sec = Math.floor(sec);
-        const h = Math.floor(sec / 3600);
-        const m = Math.floor((sec % 3600) / 60);
-        const s = sec % 60;
-        return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-    }
+        let inactiveTimeout;
+        const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes inactivity
+        let overlayTimeout;
 
-    function updateUI() {
+        // ===============================
+        // Helper Functions
+        // ===============================
+        function formatTime(sec) {
+            sec = Math.floor(sec);
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = sec % 60;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
 
-        const countdownElem = document.getElementById('countdown');
-        const elapsedElem = document.getElementById('elapsed');
+        function updateUI() {
+            const countdownElem = document.getElementById('countdown');
+            const elapsedElem = document.getElementById('elapsed');
+            if (countdownElem) countdownElem.innerText = formatTime(remainingSeconds);
+            if (elapsedElem) elapsedElem.innerText = formatTime(elapsedSeconds);
+        }
 
-        if (countdownElem) countdownElem.innerText = formatTime(remainingSeconds);
-        if (elapsedElem) elapsedElem.innerText = formatTime(elapsedSeconds);
-    }
+        function showOverlay(message) {
+            const overlay = document.getElementById('statusOverlay');
+            if (!overlay) return;
+            overlay.innerText = message;
+            overlay.classList.add('show');
+            clearTimeout(overlayTimeout);
+            overlayTimeout = setTimeout(() => {
+                overlay.classList.remove('show');
+            }, 3000);
+        }
 
-    function showOverlay(message) {
-
-        const overlay = document.getElementById('statusOverlay');
-        if (!overlay) return;
-
-        overlay.innerText = message;
-        overlay.classList.add('show');
-
-        clearTimeout(overlayTimeout);
-        overlayTimeout = setTimeout(() => {
-            overlay.classList.remove('show');
-        }, 3000);
-    }
-
-    // ===============================
-    // Backend Sync
-    // ===============================
-    function syncWithBackend() {
-
-        fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    action: 'tick'
+        // ===============================
+        // Backend Sync
+        // ===============================
+        function syncWithBackend() {
+            fetch("{{ route('timer.update') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        action: 'tick'
+                    })
                 })
-            })
-            .then(res => res.json())
-            .then(data => {
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) {
+                        console.warn("[Sync] No success response");
+                        return;
+                    }
 
+                    if (data.notice_status === 1 && data.message) {
+                        showOverlay(data.message);
+                    }
 
-                if (!data.success) {
-                    console.warn("[Sync] No success response");
-                    return;
-                }
+                    remainingSeconds = data.remaining_seconds;
+                    elapsedSeconds = data.elapsed_seconds;
+                    status = data.status;
+                    updateUI();
 
-                if (data.notice_status === 1 && data.message) {
-                    showOverlay(data.message);
-                }
+                    if (data.logout) {
+                        console.warn("[Sync] Work session ended. Logging out...");
+                        clearInterval(backendSyncInterval);
+                        alert("Your 9-hour work session has ended.");
+                        // forceLogout();
+                    }
+                })
+                .catch(err => console.error("[Sync] Timer sync failed:", err));
+        }
 
-                remainingSeconds = data.remaining_seconds;
-                elapsedSeconds = data.elapsed_seconds;
-                status = data.status;
-                updateUI();
+        // ===============================
+        // Control Buttons (Pause/Resume/etc)
+        // ===============================
+        const controlButtonsContainer = document.getElementById('controlButtons');
+        if (controlButtonsContainer) {
+            controlButtonsContainer.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const type = btn.getAttribute('data-type');
+                    fetch("{{ route('timer.update') }}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                action: type
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success === false && data.notice_status === 1) {
+                                showOverlay(data.message || "Please wait for senior to enable.");
+                                return;
+                            }
 
-                if (data.logout) {
-                    console.warn("[Sync] Work session ended. Logging out...");
-                    clearInterval(backendSyncInterval);
-                    alert("Your 9-hour work session has ended.");
-                    // forceLogout();
-                }
-            })
-            .catch(err => console.error("[Sync] Timer sync failed:", err));
-    }
+                            remainingSeconds = data.remaining_seconds;
+                            elapsedSeconds = data.elapsed_seconds;
+                            status = data.status;
+                            updateUI();
+                        })
+                        .catch(err => console.error("[Action] Failed to send:", err));
+                });
+            });
+        }
 
-    // ===============================
-    // Control Buttons (Pause/Resume/etc)
-    // ===============================
-    document.querySelectorAll('#controlButtons button').forEach(btn => {
-        btn.addEventListener('click', () => {
-            const type = btn.getAttribute('data-type');
+        // ===============================
+        // Inactivity Handling
+        // ===============================
+        let wasInactive = false;
 
+        function resetInactiveTimer() {
+            clearTimeout(inactiveTimeout);
+            inactiveTimeout = setTimeout(() => {
+                console.warn("[Inactivity] User inactive! Pausing timer...");
+                showOverlay("You were inactive! Timer stopped.");
+                wasInactive = true;
+
+                const buttons = document.querySelectorAll('#controlButtons button[data-type="lunch"], #controlButtons button[data-type="tea"], #controlButtons button[data-type="break"]');
+                buttons.forEach(btn => btn.style.display = "none");
+
+                fetch("{{ route('timer.update') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        action: "pause"
+                    })
+                }).catch(err => console.error("[Inactivity] Pause request failed:", err));
+            }, INACTIVE_LIMIT);
+        }
+
+        function handleActiveState() {
+            const showActiveOverlay = wasInactive;
+            wasInactive = false;
 
             fetch("{{ route('timer.update') }}", {
                     method: "POST",
@@ -334,114 +387,42 @@
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        action: type
+                        action: "resume"
                     })
                 })
                 .then(res => res.json())
                 .then(data => {
+                    if (data.success) {
+                        remainingSeconds = data.remaining_seconds;
+                        elapsedSeconds = data.elapsed_seconds;
+                        status = data.status;
+                        if (showActiveOverlay) showOverlay("You are active now! Timer running.");
+                        updateUI();
 
-
-                    if (data.success === false && data.notice_status === 1) {
-                        showOverlay(data.message || "Please wait for senior to enable.");
-                        return;
+                        const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
+                        if (resumeBtn) resumeBtn.style.display = "none";
                     }
-
-                    remainingSeconds = data.remaining_seconds;
-                    elapsedSeconds = data.elapsed_seconds;
-                    status = data.status;
-                    updateUI();
                 })
-                .catch(err => console.error("[Action] Failed to send:", err));
+                .catch(err => console.error("[Active] Resume request failed:", err));
+
+            resetInactiveTimer();
+        }
+
+        // Detect real user activity
+        ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
+            window.addEventListener(evt, handleActiveState);
         });
-    });
 
-    // ===============================
-    // Inactivity Handling
-    // ===============================
-    let wasInactive = false;
-
-    function resetInactiveTimer() {
-        clearTimeout(inactiveTimeout);
-
-        inactiveTimeout = setTimeout(() => {
-            console.warn("[Inactivity] User inactive! Pausing timer...");
-            showOverlay("You were inactive! Timer stopped.");
-            wasInactive = true;
-
-            // --- Hide Lunch, Tea, and Break buttons ---
-            const lunchBtn = document.querySelector('#controlButtons button[data-type="lunch"]');
-            const teaBtn = document.querySelector('#controlButtons button[data-type="tea"]');
-            const breakBtn = document.querySelector('#controlButtons button[data-type="break"]');
-
-            if (lunchBtn) lunchBtn.style.display = "none";
-            if (teaBtn) teaBtn.style.display = "none";
-            if (breakBtn) breakBtn.style.display = "none";
-
-            fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    action: "pause"
-                })
-            }).catch(err => console.error("[Inactivity] Pause request failed:", err));
-        }, INACTIVE_LIMIT);
-    }
-
-
-    function handleActiveState() {
-
-        // Only show overlay if previously inactive
-        const showActiveOverlay = wasInactive;
-        wasInactive = false; // reset inactivity flag
-        fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    action: "resume"
-                })
-            })
-            .then(res => res.json())
-            .then(data => {
-
-                if (data.success) {
-                    remainingSeconds = data.remaining_seconds;
-                    elapsedSeconds = data.elapsed_seconds;
-                    status = data.status;
-                    if (showActiveOverlay) {
-                        showOverlay("You were active now! Timer running.");
-                    }
-                    updateUI();
-                    // --- Hide Resume button after resuming ---
-                    const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
-                    if (resumeBtn) resumeBtn.style.display = "none";
-
-                }
-            })
-            .catch(err => console.error("[Active] Resume request failed:", err));
-
+        // ===============================
+        // Initialize Timer
+        // ===============================
+        updateUI();
         resetInactiveTimer();
-    }
+        backendSyncInterval = setInterval(syncWithBackend, 1000);
 
-    // Only detect real user activity: mouse moves, clicks, and keyboard input
-    ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
-        window.addEventListener(evt, handleActiveState);
     });
-
-    // ===============================
-    // Initialize Timer
-    // ===============================
-
-    updateUI();
-    resetInactiveTimer();
-
-    backendSyncInterval = setInterval(syncWithBackend, 1000);
 </script>
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
