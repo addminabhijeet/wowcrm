@@ -497,9 +497,12 @@ class DashboardController extends Controller
 
     public function editall()
     {
-        $juniorUsers = User::all();
+        // Get only users that have SMTP settings
+        $juniorUsers = User::whereHas('smtpSetting')->get();
+
         return view('smtp.editall', compact('juniorUsers'));
     }
+
 
     public function add()
     {
