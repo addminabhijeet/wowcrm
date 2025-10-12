@@ -217,53 +217,40 @@ class CalendarController extends Controller
                 break;
         }
 
-        // Fetch attendance for the logged-in user within the selected range
-        $attendances = Attendance::where('user_id', Auth::id())
-            ->whereBetween('date', [$start, $end])
-            ->get()
-            ->keyBy(function ($item) {
-                return Carbon::parse($item->date)->format('Y-m-d');
-            });
-
-        // Optional: Build array of all dates in range (useful for calendar)
-        $dates = [];
-        $period = Carbon::parse($start)->daysUntil($end);
-        foreach ($period as $day) {
-            $dates[] = $day->copy();
-        }
-
-        return view('calendar.senior', compact('dates', 'attendances', 'view', 'date'));
+        return view('calendar.senior', compact('view', 'date'));
     }
 
     public function getSeniorEvents(Request $request)
     {
         $userId = Auth::id();
 
-        // Fetch all attendance records for the user
-        $attendances = Attendance::where('user_id', $userId)
-            ->orderBy('date', 'asc')
+        $events = UserTimerPause::where('user_id', $userId)
+            ->orderBy('event_time', 'asc')
             ->get();
 
-        // Define dynamic colors based on attendance status
-        $statusColors = [
-            'login'  => '#007bff',
+        // Define color mapping for clarity
+        $labelColors = [
+            'start'  => '#007bff',
             'resume' => '#28a745',
             'pause'  => '#ffc107',
+            'stop'   => '#dc3545',
             'other'  => '#6c757d'
         ];
 
-        $eventsData = $attendances->map(function ($attendance) use ($statusColors) {
-            $status = $attendance->status ?? 'other';
+        $eventsData = $events->map(function ($event) use ($labelColors) {
+            $type = strtolower($event->pause_type ?? 'other');
+
             return [
-                'id' => $attendance->id,
-                'title' => ucfirst(str_replace('_', ' ', $status)),
-                'start' => $attendance->date,
-                'end'   => $attendance->date, // same-day events
+                'id'    => $event->id,
+                'title' => ucfirst($type),
+                'start' => $event->event_time,
+                'allDay' => false,
                 'extendedProps' => [
-                    'status' => $status,
-                    'label_color' => $statusColors[$status] ?? $statusColors['other'],
-                    'remarks' => $attendance->remarks ?? '',
-                ],
+                    'status'            => $event->status ?? 'N/A',
+                    'pause_type'        => $type,
+                    'remaining_seconds' => $event->remaining_seconds ?? 0,
+                    'label_color'       => $labelColors[$type] ?? $labelColors['other'],
+                ]
             ];
         });
 

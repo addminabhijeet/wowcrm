@@ -102,18 +102,20 @@ $script = '<script>
                                 </span>
                             </div>
 
+
+
                             <!-- Control Buttons -->
-                            <div class="controlButtons" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                <button data-type="resume" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
+                            <div class="seniorcontrolButtons" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                                <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
                                     <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
                                 </button>
-                                <button data-type="lunch" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
+                                <button data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
                                     <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
                                 </button>
-                                <button data-type="tea" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
+                                <button data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
                                     <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
                                 </button>
-                                <button data-type="break" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
+                                <button data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
                             </div>
@@ -134,6 +136,27 @@ $script = '<script>
                             <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
                         </a>
                         @endif
+
+                        <!-- Login/Logout Button -->
+                        @if($timer['button_status'] == 0)
+                        <button
+                            data-type="login"
+                            data-user="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #0b5ed7; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
+                            Log In
+                        </button>
+                        @else
+                        <button
+                            data-type="logout"
+                            data-user="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #b02a37; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
+                            Log Out
+                        </button>
+                        @endif
+
+
 
                     </div>
                 </div>
@@ -179,6 +202,7 @@ $script = '<script>
 <div id="statusOverlay"></div>
 
 <script>
+    // Format seconds to HH:MM:SS
     function formatTime(sec) {
         sec = Math.max(0, Math.floor(sec));
         const h = Math.floor(sec / 3600);
@@ -216,45 +240,63 @@ $script = '<script>
             })
             .catch(err => console.error("Timer fetch error:", err));
     }
+    setInterval(updateAllTimers, 1000); // sync with DB every second
+</script>
 
+<script>
+    // Setup control buttons for all timer widgets
+    function setupseniorControlButtons() {
+        document.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const type = btn.getAttribute('data-type');
+                const userId = btn.getAttribute('data-user');
 
-    function setupControlButtons() {
-        document.querySelectorAll('.timer-widget').forEach(widget => {
-            const userId = widget.dataset.user;
+                console.log(`[Action] Button clicked: ${type} (User ID: ${userId})`);
 
-            widget.querySelectorAll('button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const action = btn.dataset.type;
-
-                    fetch("{{ route('timer.update') }}", {
-                            method: "POST",
-                            headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                user_id: userId,
-                                action
-                            })
+                fetch("{{ route('timer.update') }}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            action: type,
+                            user_id: userId
                         })
-                        .then(res => res.json())
-                        .then(data => {
-                            widget.dataset.remaining = data.remaining_seconds;
-                            widget.dataset.elapsed = data.elapsed_seconds;
-                            widget.dataset.status = data.status;
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        console.log("[Action] Response:", data);
 
-                            widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
-                            widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
-                        });
-                });
+                        if (data.success === false && data.notice_status === 1) {
+                            showOverlay(data.message || "Please wait for senior to enable.");
+                            return;
+                        }
+
+                        // Update individual timer UI for this user only
+                        const timerWidget = document.querySelector(`.timer-widget[data-user='${userId}']`);
+                        if (timerWidget) {
+                            timerWidget.dataset.status = data.status;
+                            timerWidget.dataset.remainingSeconds = data.remaining_seconds;
+                            timerWidget.dataset.elapsedSeconds = data.elapsed_seconds;
+                            updateUI(userId, data); // assume updateUI handles per-user updates
+                        }
+                    })
+                    .catch(err => console.error("[Action] Failed to send:", err));
             });
         });
+
     }
 
-    // 🚀 Initialize
-    setupControlButtons();
-    setInterval(updateAllTimers, 1000); // sync with DB every 10s
+    // Initialize once DOM is ready
+    document.addEventListener("DOMContentLoaded", () => {
+        console.debug("[Debug] DOM fully loaded. Setting up senior control buttons...");
+        setupseniorControlButtons();
+    });
 </script>
+
+
+
 
 <script>
     // Toggle single junior enable/disable
@@ -468,5 +510,38 @@ $script = '<script>
     setInterval(checkButtonStatus, 1000);
 </script>
 
+<script>
+    $(document).on('click', 'button[data-type="logout"]', function(e) {
+        e.preventDefault();
+        const userId = $(this).data('user'); // fallback ID
+
+        if (!confirm("Are you sure you want to log out this user?")) return;
+
+        $.ajax({
+            url: "{{ route('ajax.logout') }}",
+            method: "POST",
+            data: {
+                _token: "{{ csrf_token() }}",
+                user_id: userId
+            },
+            beforeSend: function() {
+                console.log("[Logout] Request sent for user ID:", userId);
+            },
+            success: function(response) {
+                if (response.success) {
+                    alert(response.message);
+                    // Optionally reload or update UI
+                    $(`#seniorcontrolButtons_${userId}`).find('button').prop('disabled', true);
+                } else {
+                    alert("Error: " + response.message);
+                }
+            },
+            error: function(xhr) {
+                console.error(xhr.responseText);
+                alert("Something went wrong while logging out.");
+            }
+        });
+    });
+</script>
 
 @endsection

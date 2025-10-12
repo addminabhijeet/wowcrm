@@ -6,7 +6,10 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\GoogleSheetData;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
+use App\Models\SmtpSetting;
 use Illuminate\Support\Str;
+use App\Models\EmailTemplate;
 
 
 class GoogleSheetController extends Controller
@@ -206,7 +209,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
     }
@@ -324,7 +327,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
 
@@ -430,6 +433,129 @@ class GoogleSheetController extends Controller
 
         return view('database.senior', compact('data'));
     }
+
+    public function seniorcandm(Request $request)
+    {
+        $authUser = Auth::user();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+
+        // SUBSTRING_INDEX-based filter with second part check
+        $query = GoogleSheetData::where(function ($q) use ($authUser) {
+            $seniorPart = $authUser->id . '|senior';
+
+            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart])
+                ->whereRaw("
+              -- Ensure there is a second part and it ends with |senior
+              LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) >= 1
+              AND
+              SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'
+          ");
+        });
+
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $data = $query->orderBy('id', 'desc')->paginate(10);
+
+        // Map forwarded_by dynamically for multiple creators
+        $data->getCollection()->transform(function ($item) use ($authUser) {
+            $creators = explode(':', $item->created_by ?? '');
+            $forwardedByParts = [];
+
+            foreach ($creators as $creator) {
+                $parts = explode('|', $creator);
+                $userId = $parts[0] ?? null;
+                $role   = $parts[1] ?? 'unknown';
+
+                if ($userId == $authUser->id) {
+                    $forwardedByParts[] = "SELF ({$userId}) ({$role})";
+                } elseif ($userId == 0) {
+                    $forwardedByParts[] = "SYSTEM (0) ({$role})";
+                } else {
+                    $user = \App\Models\User::find($userId);
+                    $name = $user ? $user->name : 'Unknown';
+                    $forwardedByParts[] = "{$name} ({$userId}) ({$role})";
+                }
+            }
+
+            $item->forwarded_by = implode(', ', $forwardedByParts);
+            return $item;
+        });
+
+        if ($request->ajax()) {
+            return view('database.partials.senior_table', compact('data'))->render();
+        }
+
+        return view('database.seniorcandm', compact('data'));
+    }
+
+
+    public function seniorpaid(Request $request)
+    {
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+
+        $query = GoogleSheetData::where(function ($q) {
+            // Removed user_id|senior check
+            // Only keep the accountant part filter
+            $q->where(function ($q2) {
+                $q2->whereRaw("created_by = '0|accountant'")
+                    ->orWhereRaw("created_by LIKE '0|accountant:%'")
+                    ->orWhereRaw("created_by LIKE '%:0|accountant'")
+                    ->orWhereRaw("created_by LIKE '%:0|accountant:%'");
+            });
+        });
+
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $data = $query->orderBy('id', 'desc')->paginate(10);
+
+        // Map forwarded_by dynamically for multiple creators
+        $data->getCollection()->transform(function ($item) {
+            $creators = explode(':', $item->created_by ?? '');
+            $forwardedByParts = [];
+
+            foreach ($creators as $creator) {
+                $parts = explode('|', $creator);
+                $userId = $parts[0] ?? null;
+                $role   = $parts[1] ?? 'unknown';
+
+                if ($userId == 0) {
+                    $forwardedByParts[] = "SYSTEM (0) ({$role})";
+                } else {
+                    $user = \App\Models\User::find($userId);
+                    $name = $user ? $user->name : 'Unknown';
+                    $forwardedByParts[] = "{$name} ({$userId}) ({$role})";
+                }
+            }
+
+            $item->forwarded_by = implode(', ', $forwardedByParts);
+            return $item;
+        });
+
+        if (request()->ajax()) {
+            return view('database.partials.senior_table', compact('data'))->render();
+        }
+
+        return view('database.seniorpaid', compact('data'));
+    }
+
 
     // -----------------------------
     // AJAX Search Suggestions
@@ -695,17 +821,60 @@ class GoogleSheetController extends Controller
         try {
             $row->update($updateData);
 
+            $mailMessage = 'No email sent.';
+            $course = $rowData['Course'] ?? null;
+            $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
+
+            // --- Send email if Exe_Remarks is "Called & Mailed" ---
+            if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed' && !empty($email)) {
+                try {
+                    $smtp = SmtpSetting::first();
+                    if (!$smtp) {
+                        $mailMessage = 'No SMTP settings found.';
+                    } else {
+                        config([
+                            'mail.mailers.smtp.transport' => $smtp->mailer,
+                            'mail.mailers.smtp.host' => $smtp->host,
+                            'mail.mailers.smtp.port' => $smtp->port,
+                            'mail.mailers.smtp.username' => $smtp->username,
+                            'mail.mailers.smtp.password' => decrypt($smtp->password),
+                            'mail.mailers.smtp.encryption' => $smtp->encryption,
+                            'mail.from.address' => $smtp->from_address,
+                            'mail.from.name' => $smtp->from_name,
+                        ]);
+
+                        $mailTemplate = new EmailTemplateController();
+                        $mailData = $mailTemplate->renderTemplate('Called_Mailed', [
+                            'course' => $course,
+                            'amount' => $amount,
+                            'from_name' => $smtp->from_name
+                        ]);
+
+                        if ($mailData) {
+                            Mail::html($mailData['body'], function ($message) use ($email, $mailData) {
+                                $message->to($email)
+                                    ->subject($mailData['subject']);
+                            });
+                            $mailMessage = "Email sent successfully to {$email}!";
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $mailMessage = 'Failed to send email: ' . $e->getMessage();
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => !empty($row->resume) ? true : false
+                'resume_path' => !empty($row->resume) ? true : false,
+                'mail_message' => $mailMessage
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
     }
@@ -773,6 +942,10 @@ class GoogleSheetController extends Controller
             'Time Zone' => 'Time_Zone',
         ];
 
+        $exeRemarksValue = null;
+        $course = null;
+        $amount = null;
+
         // Assign values safely
         foreach ($rowData as $key => $val) {
             if (!isset($columnMap[$key])) continue;
@@ -784,6 +957,11 @@ class GoogleSheetController extends Controller
 
             if ($column === 'Amount' && !empty($val)) {
                 $val = $this->parseAmount($val);
+                $amount = $val;
+            }
+
+            if ($column === 'Course') {
+                $course = $val;
             }
 
             if ($column === 'Exe_Remarks') {
@@ -831,15 +1009,54 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
+        }
+
+        // --- Email logic ---
+        $mailMessage = 'No email sent.';
+        if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
+            try {
+                $smtp = SmtpSetting::first();
+                if ($smtp) {
+                    config([
+                        'mail.mailers.smtp.transport' => $smtp->mailer,
+                        'mail.mailers.smtp.host' => $smtp->host,
+                        'mail.mailers.smtp.port' => $smtp->port,
+                        'mail.mailers.smtp.username' => $smtp->username,
+                        'mail.mailers.smtp.password' => decrypt($smtp->password),
+                        'mail.mailers.smtp.encryption' => $smtp->encryption,
+                        'mail.from.address' => $smtp->from_address,
+                        'mail.from.name' => $smtp->from_name,
+                    ]);
+
+                    $mailTemplate = new EmailTemplateController();
+                    $mailData = $mailTemplate->renderTemplate('Called_Mailed', [
+                        'course' => $course,
+                        'amount' => $amount,
+                        'from_name' => $smtp->from_name
+                    ]);
+
+                    if ($mailData) {
+                        Mail::html($mailData['body'], function ($message) use ($email, $mailData) {
+                            $message->to($email)->subject($mailData['subject']);
+                        });
+                        $mailMessage = "Email sent successfully to {$email}!";
+                    }
+                } else {
+                    $mailMessage = 'No SMTP settings found.';
+                }
+            } catch (\Exception $e) {
+                $mailMessage = 'Failed to send email: ' . $e->getMessage();
+            }
         }
 
         return response()->json([
             'success' => true,
             'id' => $record->id,
             'sheet_row_number' => $record->sheet_row_number,
-            'resume_path' => !empty($record->resume) ? true : false
+            'resume_path' => !empty($record->resume) ? true : false,
+            'mail_message' => $mailMessage
         ]);
     }
 
@@ -921,6 +1138,25 @@ class GoogleSheetController extends Controller
 
         return view('database.junior', compact('data'));
     }
+
+    public function juniorcandm()
+    {
+        $authUser = Auth::user();
+        $juniorPart = $authUser->id . '|junior';
+
+        $data = GoogleSheetData::where(function ($q) use ($juniorPart) {
+            // Check first segment is junior
+            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$juniorPart]);
+        })
+            ->where(function ($q) {
+                // Check second segment is senior (any ID or 0)
+                $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
+            })
+            ->paginate(10);
+
+        return view('database.juniorcandm', compact('data'));
+    }
+
 
 
     public function juniorfetch(Request $request)
@@ -1111,17 +1347,60 @@ class GoogleSheetController extends Controller
         try {
             $row->update($updateData);
 
+            $mailMessage = 'No email sent.';
+            $course = $rowData['Course'] ?? null;
+            $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
+
+            // --- Send email if Exe_Remarks is "Called & Mailed" ---
+            if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed' && !empty($email)) {
+                try {
+                    $smtp = SmtpSetting::first();
+                    if (!$smtp) {
+                        $mailMessage = 'No SMTP settings found.';
+                    } else {
+                        config([
+                            'mail.mailers.smtp.transport' => $smtp->mailer,
+                            'mail.mailers.smtp.host' => $smtp->host,
+                            'mail.mailers.smtp.port' => $smtp->port,
+                            'mail.mailers.smtp.username' => $smtp->username,
+                            'mail.mailers.smtp.password' => decrypt($smtp->password),
+                            'mail.mailers.smtp.encryption' => $smtp->encryption,
+                            'mail.from.address' => $smtp->from_address,
+                            'mail.from.name' => $smtp->from_name,
+                        ]);
+
+                        $mailTemplate = new EmailTemplateController();
+                        $mailData = $mailTemplate->renderTemplate('Called_Mailed', [
+                            'course' => $course,
+                            'amount' => $amount,
+                            'from_name' => $smtp->from_name
+                        ]);
+
+                        if ($mailData) {
+                            Mail::html($mailData['body'], function ($message) use ($email, $mailData) {
+                                $message->to($email)
+                                    ->subject($mailData['subject']);
+                            });
+                            $mailMessage = "Email sent successfully to {$email}!";
+                        }
+                    }
+                } catch (\Exception $e) {
+                    $mailMessage = 'Failed to send email: ' . $e->getMessage();
+                }
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => !empty($row->resume) ? true : false
+                'resume_path' => !empty($row->resume) ? true : false,
+                'mail_message' => $mailMessage
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
     }
@@ -1141,7 +1420,6 @@ class GoogleSheetController extends Controller
         // Check for duplicate Email
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
-
             if ($emailExists) {
                 return response()->json([
                     'success' => false,
@@ -1153,7 +1431,6 @@ class GoogleSheetController extends Controller
         // Check for duplicate Phone
         if (!empty($phone)) {
             $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
-
             if ($phoneExists) {
                 return response()->json([
                     'success' => false,
@@ -1188,6 +1465,8 @@ class GoogleSheetController extends Controller
         ];
 
         $exeRemarksValue = null;
+        $name = null;
+        $amount = null;
 
         // Assign values safely
         foreach ($rowData as $key => $val) {
@@ -1200,10 +1479,15 @@ class GoogleSheetController extends Controller
 
             if ($column === 'Amount' && !empty($val)) {
                 $val = $this->parseAmount($val);
+                $amount = $val;
+            }
+
+            if ($column === 'Name') {
+                $name = $val;
             }
 
             if ($column === 'Exe_Remarks') {
-                $exeRemarksValue = $val; // capture Exe_Remarks for condition check
+                $exeRemarksValue = $val;
             }
 
             $record->$column = $val;
@@ -1216,11 +1500,10 @@ class GoogleSheetController extends Controller
             $record->created_by = $user->id . '|junior';
         }
 
-        // Handle resume file upload - Save actual file content
+        // Handle resume file upload
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Validate it's a PDF
             if ($file->getMimeType() !== 'application/pdf') {
                 return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
             }
@@ -1231,31 +1514,139 @@ class GoogleSheetController extends Controller
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
-                $record->resume = $filePath; // Store file path
+                $record->resume = $filePath;
             } catch (\Exception $e) {
-                // Continue without resume if upload fails
                 $record->resume = null;
             }
         }
 
         try {
             $record->save();
+            $saveMessage = 'Record saved successfully.';
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
+        }
+
+        $mailMessage = 'No email sent.';
+
+        // --- Send Email if Exe_Remarks is "Called & Mailed" ---
+        if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
+            try {
+                $smtp = SmtpSetting::first();
+                if (!$smtp) {
+                    return response()->json([
+                        'message' => 'No SMTP settings found.'
+                    ]);
+                } else {
+                    // Configure mailer dynamically (same as test() method)
+                    config([
+                        'mail.mailers.smtp.transport' => $smtp->mailer,
+                        'mail.mailers.smtp.host' => $smtp->host,
+                        'mail.mailers.smtp.port' => $smtp->port,
+                        'mail.mailers.smtp.username' => $smtp->username,
+                        'mail.mailers.smtp.password' => decrypt($smtp->password),
+                        'mail.mailers.smtp.encryption' => $smtp->encryption,
+                        'mail.from.address' => $smtp->from_address,
+                        'mail.from.name' => $smtp->from_name,
+                    ]);
+
+                    // --- Fetch Email Template from Database ---
+                    $template = EmailTemplate::where('name', 'Called_Mailed')->first();
+
+                    if ($template) {
+                        $subject = $template->subject;
+                        $messageBody = $template->body;
+                    } else {
+                        // Fallback if template not found
+                        $subject = "Unlock Career Stability with Fortune 500 Projects !";
+                        $messageBody =
+                            "Hi {$name},\n\n" .
+                            "I hope this message finds you well.\n\n" .
+                            "My name is {$smtp->from_name}, and I’m part of the Talent Acquisition Team at Synergie Systems INC., a respected workforce development and project management firm based in Delaware. We partner with some of the most renowned Fortune 500 companies across the U.S., delivering not just staffing solutions but long-term career success.\n\n" .
+                            "After reviewing your profile, I believe you could be a strong fit for several exciting opportunities we currently have available. And more importantly, I believe we can offer you not just a job, but a career pathway built on stability, support, and growth.\n\n" .
+                            "What Makes Synergie Different?\n" .
+                            "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                            "At Synergie, we understand that a fulfilling career is built on trust, purpose, and progress. That's why we go beyond recruitment—we invest in you. Our commitment is simple: to help you grow, thrive, and achieve your highest potential.\n\n" .
+                            "Here’s what you can expect when you join our community:\n\n" .
+                            "                  - Direct Project Placements with Fortune 500 and Tier 1 clients\n" .
+                            "                  - Full-time employment with Synergie—never just a short-term contract\n" .
+                            "                  - Real-world project experience with today’s most in-demand tools and technologies\n" .
+                            "                  - Dedicated support from day one: resume branding, interview prep, and onboarding guidance\n" .
+                            "                  - Zero Bond Policy—because your freedom and career choices matter\n" .
+                            "                  - Support for OPT, CPT, STEM OPT, H1B & Green Card sponsorships\n\n" .
+                            "More Than a Paycheck — A Path to Prosperity\n" .
+                            "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                            "We believe that when you bring value, you deserve to be valued. That’s why we offer a transparent, competitive compensation structure designed to reward your dedication and drive.\n\n" .
+                            "                  - Full-Time Roles: \$40–\$50/hr\n" .
+                            "                  - Part-Time Roles: \$15–\$25/hr\n" .
+                            "                  - Paid Internships available\n" .
+                            "                  - 15% Salary Raise every 6 months based on performance\n" .
+                            "                  - 12 Days Paid Vacation annually\n" .
+                            "                  - Relocation Assistance for client deployments\n\n" .
+                            "Comprehensive Benefits That Put You First\n" .
+                            "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                            "At Synergie, we care for your career—and your well-being. We provide:\n\n" .
+                            "                  - Health, Dental & Vision Insurance\n" .
+                            "                  - Short- & Long-Term Disability Insurance\n" .
+                            "                  - Life Insurance & 401(k) Retirement Plan\n" .
+                            "                  - Legal & Immigration Support\n" .
+                            "                  - Tax Assistance & Transparent Payroll\n" .
+                            "                  - Workers’ Compensation—your safety is our priority\n\n" .
+                            "Support Tailored for International Talent\n" .
+                            "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                            "We take pride in guiding hundreds of F1/OPT/CPT/STEM OPT professionals every year toward long-term success in the U.S.:\n\n" .
+                            "                  - Offer Letters, Client Confirmations & Employer Letters\n" .
+                            "                  - Full STEM Extension & OPT/CPT Support\n" .
+                            "                  - H1B Sponsorship after project onboarding\n" .
+                            "                  - Relocation & Immigration Documentation\n" .
+                            "                  - Ongoing Green Card Processing Assistance\n\n" .
+                            "Not Quite Job-Ready? We’ll Bridge That Gap\n" .
+                            "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                            "Sometimes, all it takes is one last push to unlock your dream opportunity. That’s why we offer a 4-week industry-focused workshop, designed by experts with over a decade of experience to prepare you for real-world success.\n\n" .
+                            "What You’ll Gain:\n\n" .
+                            "                  - Live Zoom sessions & recorded expert sessions\n" .
+                            "                  - Real-time project simulations & hands-on assignments\n" .
+                            "                  - One-on-one resume branding & mock interviews\n" .
+                            "                  - Global Certificate of Completion & recruiter access\n" .
+                            "                  - 100% Fee Refund with your first project paycheck (Only \${$amount}—one-time, fully refundable)\n\n" .
+                            "Let’s Take the First Step Together\n" .
+                            "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                            "If you’re seeking more than just another role—if you’re looking for a career that recognizes your potential, offers true support, and opens doors to the future you deserve—then Synergie is here for you.\n\n" .
+                            "This is your opportunity to move forward with confidence, backed by a team that believes in you and works tirelessly to help you succeed.\n\n" .
+                            "Please feel free to reply to this email or reach me directly over the phone if you’d like to learn more or take the next step.\n\n" .
+                            "Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.\n\n" .
+                            "Visit Our Website: https://www.synergiesystems.com/";
+                    }
+
+                    // --- Send Email (No Template Logic Changed) ---
+                    Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
+                        $message->from($smtp->from_address, $smtp->from_name)
+                            ->to($email)
+                            ->subject($subject);
+                    });
+
+                    $mailMessage = "Email sent successfully to {$email}!";
+                }
+            } catch (\Exception $e) {
+                $mailMessage = 'Failed to send email: ' . $e->getMessage();
+            }
         }
 
         return response()->json([
             'success' => true,
             'id' => $record->id,
             'sheet_row_number' => $record->sheet_row_number,
+            'save_message' => $saveMessage,
+            'mail_message' => $mailMessage,
             'resume_path' => !empty($record->resume) ? true : false
         ]);
     }
+
+
 
     // Add a method to serve the PDF files
     public function viewjuniorResume($id)
@@ -1532,7 +1923,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
     }
@@ -1630,7 +2021,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
 
@@ -1917,7 +2308,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
     }
@@ -2015,7 +2406,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Database error: ' . $e->getMessage()
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
 

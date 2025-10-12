@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
-use App\Models\Login;
+use App\Models\User;
 use App\Models\UserTimerLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -108,5 +108,39 @@ class LoginController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
         return redirect('login');
+    }
+
+    public function ajaxLogout(Request $request)
+    {
+        try {
+            $userId = $request->input('user_id');
+            $user = User::find($userId);
+
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'User not found.']);
+            }
+
+            // --- Stop login (mark as inactive) ---
+            $user->status = 0;
+            $user->save();
+            $user->refresh(); // optional
+
+            // --- Record pause for timer logs ---
+            $latestTimer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+            if ($latestTimer) {
+                UserTimerPause::create([
+                    'user_timer_log_id' => $latestTimer->id,
+                    'user_id' => $user->id,
+                    'status' => 'paused',
+                    'pause_type' => 'logout by senior',
+                    'remaining_seconds' => $latestTimer->remaining_seconds,
+                    'event_time' => now(),
+                ]);
+            }
+
+            return response()->json(['success' => true, 'message' => 'Junior logged out successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
     }
 }

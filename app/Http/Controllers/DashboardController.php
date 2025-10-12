@@ -10,6 +10,8 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Payment;
 use App\Models\TimerSetting;
+use Illuminate\Support\Facades\Mail;
+use App\Models\SmtpSetting;
 
 class DashboardController extends Controller
 {
@@ -279,7 +281,8 @@ class DashboardController extends Controller
 
     public function updateTimer(Request $request)
     {
-        $user   = Auth::user();
+        $userId = $request->input('user_id');
+        $user = $userId ? User::find($userId) : Auth::user();
         $action = $request->input('action');
 
         // Get the latest timer log for the user
@@ -305,39 +308,141 @@ class DashboardController extends Controller
             $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
         }
 
-        // 🧭 Handle actions
-        if ($action === 'resume') {
+        // Store previous status before any change
+        $previousStatus = $timer->status;
+        $previousPauseType = $timer->pause_type;
+
+        if ($action === 'resume' || $action === 'resumebreak') {
+            // If currently paused for break, lunch, or tea
+            if ($timer->status === 'paused' && in_array($timer->pause_type, ['break', 'lunch', 'tea'])) {
+                // Allow resume ONLY if action is 'resumebreak'
+                if ($action !== 'resumebreak') {
+                    return; // silently skip if normal resume is triggered
+                }
+            }
+
             $timer->status = 'running';
             $timer->pause_type = 'resume';
 
-            UserTimerLog::create([
-                'user_id'           => $user->id,
-                'login_id'          => $user->id,
-                'start_time'        => $currentTime,
-                'remaining_seconds' => $timer->remaining_seconds,
-                'status'            => 'running',
-                'pause_type'        => 'resume',
-            ]);
-        } elseif ($action !== 'tick') {
+            // Get latest timer log for the user (exclude non-working pauses)
+            $latestLog = UserTimerLog::where('user_id', $user->id)
+                ->whereNotIn('pause_type', ['lunch', 'break', 'tea'])
+                ->latest('id')
+                ->first();
+
+            if ($latestLog) {
+                $latestLog->update([
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'status'            => 'running',
+                    'pause_type'        => 'resume',
+                ]);
+            } else {
+                UserTimerPause::create([
+                    'user_timer_log_id' => $timer->id,
+                    'user_id'           => $user->id,
+                    'status'            => 'running',
+                    'pause_type'        => $action,
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'event_time'        => now(),
+                ]);
+            }
+
+            // ✅ Create UserTimerPause entry only if previously paused
+            if ($previousStatus === 'paused') {
+                UserTimerPause::create([
+                    'user_timer_log_id' => $timer->id,
+                    'user_id'           => $user->id,
+                    'status'            => 'running',
+                    'pause_type'        => 'resume',
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'event_time'        => now(),
+                ]);
+            }
+        } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
+
+            $pauseLabels = [
+                'lunch' => 'Lunch Break',
+                'tea'   => 'Tea Break',
+                'break' => 'Short Break',
+            ];
+
             $timer->status = 'paused';
-            $timer->pause_type = 'inactive';
-            UserTimerLog::create([
-                'user_id'           => $user->id,
-                'login_id'          => $user->id,
-                'start_time'        => $currentTime,
-                'remaining_seconds' => $timer->remaining_seconds,
-                'status'            => 'paused',
-                'pause_type'        => 'inactive',
-            ]);
+            $timer->pause_type = $action;
+
+            // Get latest timer log for the user
+            $latestLog = UserTimerLog::where('user_id', $user->id)
+                ->latest('id')
+                ->first();
+
+            if ($latestLog) {
+                $latestLog->update([
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'status'            => 'paused',
+                    'pause_type'        => $action,
+                ]);
+            } else {
+                UserTimerPause::create([
+                    'user_timer_log_id' => $timer->id,
+                    'user_id'           => $user->id,
+                    'status'            => 'paused',
+                    'pause_type'        => $action,
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'event_time'        => now(),
+                ]);
+            }
+
+            // Log the pause in UserTimerPause
             UserTimerPause::create([
                 'user_timer_log_id' => $timer->id,
                 'user_id'           => $user->id,
                 'status'            => 'paused',
-                'pause_type'        => 'inactive',
-                'remaining_seconds' => $workDaySeconds,
+                'pause_type'        => $action,
+                'remaining_seconds' => $timer->remaining_seconds,
                 'event_time'        => now(),
             ]);
+        } elseif ($action !== 'tick') {
+            // Default inactive pause (manual stop or idle)
+            $timer->status = 'paused';
+            $timer->pause_type = 'inactive';
+
+            $latestLog = UserTimerLog::where('user_id', $user->id)
+                ->latest('id')
+                ->first();
+
+            if ($latestLog) {
+                // Check if already paused for lunch/tea/break
+                if (!in_array($latestLog->pause_type, ['lunch', 'tea', 'break'])) {
+                    // Update only if not in lunch/tea/break
+                    $latestLog->update([
+                        'remaining_seconds' => $timer->remaining_seconds,
+                        'status'            => 'paused',
+                        'pause_type'        => 'inactive',
+                    ]);
+
+                    // Log pause event for audit only when updated
+                    UserTimerPause::create([
+                        'user_timer_log_id' => $timer->id,
+                        'user_id'           => $user->id,
+                        'status'            => 'paused',
+                        'pause_type'        => 'inactive',
+                        'remaining_seconds' => $timer->remaining_seconds,
+                        'event_time'        => now(),
+                    ]);
+                }
+            } else {
+                // Create fallback log if none found
+                UserTimerPause::create([
+                    'user_timer_log_id' => $timer->id,
+                    'user_id'           => $user->id,
+                    'status'            => 'paused',
+                    'pause_type'        => 'inactive',
+                    'remaining_seconds' => $timer->remaining_seconds,
+                    'event_time'        => now(),
+                ]);
+            }
         }
+
+
 
         // 🕓 Update timestamp and save
         $timer->updated_at = $currentTime;
@@ -356,5 +461,79 @@ class DashboardController extends Controller
             'notice_status'     => $timer->notice_status,
             'logout'            => $timer->remaining_seconds <= 0
         ]);
+    }
+
+    // Show the form to edit SMTP settings
+    public function edit()
+    {
+        $smtp = SmtpSetting::first(); // Assume single record
+        return view('smtp.edit', compact('smtp'));
+    }
+
+    // Update SMTP settings
+    public function update(Request $request)
+    {
+        $request->validate([
+            'mailer' => 'required|string',
+            'host' => 'required|string',
+            'port' => 'required|integer',
+            'username' => 'required|email',
+            'password' => 'nullable|string',
+            'encryption' => 'required|string',
+            'from_address' => 'required|email',
+            'from_name' => 'required|string',
+        ]);
+
+        $smtp = SmtpSetting::first();
+        if (!$smtp) {
+            $smtp = new SmtpSetting();
+        }
+
+        $smtp->mailer = $request->mailer;
+        $smtp->host = $request->host;
+        $smtp->port = $request->port;
+        $smtp->username = $request->username;
+        if ($request->filled('password')) {
+            $smtp->password = encrypt($request->password); // encrypt password
+        }
+        $smtp->encryption = $request->encryption;
+        $smtp->from_address = $request->from_address;
+        $smtp->from_name = $request->from_name;
+
+        $smtp->save();
+
+        return redirect()->back()->with('success', 'SMTP settings updated successfully!');
+    }
+
+    public function test(Request $request)
+    {
+        $smtp = SmtpSetting::first();
+        if (!$smtp) {
+            return response()->json(['message' => 'No SMTP settings found.'], 400);
+        }
+
+        config([
+            'mail.mailers.smtp.transport' => 'smtp', // always 'smtp'
+            'mail.mailers.smtp.host' => $smtp->host,
+            'mail.mailers.smtp.port' => $smtp->port,
+            'mail.mailers.smtp.username' => $smtp->username,
+            'mail.mailers.smtp.password' => decrypt($smtp->password),
+            'mail.mailers.smtp.encryption' => $smtp->encryption,
+            'mail.from.address' => $smtp->from_address,
+            'mail.from.name' => $smtp->from_name,
+        ]);
+
+
+        $testEmail = $request->input('test_email');
+
+        try {
+            Mail::raw('This is a test email from Synergie Systems CRM.', function ($message) use ($testEmail) {
+                $message->to($testEmail)->subject('SMTP Test Email');
+            });
+
+            return response()->json(['message' => "Test email sent successfully to {$testEmail}!"]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => 'Failed to send test email: ' . $e->getMessage()], 500);
+        }
     }
 }

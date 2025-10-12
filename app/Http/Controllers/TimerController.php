@@ -84,7 +84,7 @@ class TimerController extends Controller
             ];
         });
 
-        return view('timers.senior', compact('timers'));
+        return view('timers.senior', compact('timers','juniors'));
     }
 
 
@@ -140,28 +140,39 @@ class TimerController extends Controller
 
     public function allJuniorTimers()
     {
+        // Fetch work day duration from settings
         $timerSetting = TimerSetting::first();
         $workDaySeconds = $timerSetting ? $timerSetting->work_day_seconds : 9 * 60 * 60;
 
+        // Fetch all juniors
         $juniors = User::where('role', 'junior')->get();
 
         $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
             $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
 
+            // Default to full workday if no timer exists
+            $remaining_seconds = $workDaySeconds;
+            $status = 'running';
+            $pause_type = null;
+
             if ($timer) {
-                $remaining_seconds = $timer ? $timer->remaining_seconds : $workDaySeconds;
+                $remaining_seconds = $timer->remaining_seconds ?? $workDaySeconds;
+                $status = $timer->status ?? 'running';
+                $pause_type = $timer->pause_type ?? null;
             }
 
             return [
                 'user_id'          => $junior->id,
                 'remaining_seconds' => $remaining_seconds,
                 'elapsed_seconds'  => $workDaySeconds - $remaining_seconds,
-                'status'           => $timer ? $timer->status : 'running',
-                'pause_type'       => $timer ? $timer->pause_type : null,
+                'status'           => $status,
+                'pause_type'       => $pause_type,
                 'logout'           => $remaining_seconds <= 0,
             ];
         });
 
         return response()->json($timers);
     }
+
+    
 }

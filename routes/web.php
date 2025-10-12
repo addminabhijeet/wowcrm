@@ -12,9 +12,56 @@ use App\Http\Controllers\GoogleSheetController;
 use App\Http\Controllers\CallReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TimerController;
+use App\Http\Controllers\UserController;
+use App\Http\Controllers\SmtpSettingController;
+use App\Http\Controllers\EmailTemplateController;
 
 
 Route::middleware(['auth'])->group(function () {
+
+    Route::get('/dashboard/admin/index', [UserController::class, 'index'])->name('users.admin');
+    Route::get('/dashboard/admin/create', [UserController::class, 'admincreate'])->name('users.admin.create');
+    Route::post('/dashboard/admin/store', [UserController::class, 'adminstore'])->name('users.admin.store');
+    Route::get('/dashboard/admin/{id}/edit', [UserController::class, 'adminedit'])->name('users.admin.edit');
+    Route::put('/dashboard/admin/update/{id}', [UserController::class, 'adminupdate'])->name('users.admin.update');
+    Route::get('/dashboard/admin/destroy/{id}', [UserController::class, 'admindestroy'])->name('users.admin.destroy');
+
+    Route::get('/dashboard/admin/junior', [UserController::class, 'junior'])->name('users.junior');
+    Route::get('/dashboard/admin/junior/create', [UserController::class, 'juniorcreate'])->name('users.junior.create');
+    Route::post('/dashboard/admin/junior/store', [UserController::class, 'juniorstore'])->name('users.junior.store');
+    Route::get('/dashboard/admin/junior/{id}/edit', [UserController::class, 'junioredit'])->name('users.junior.edit');
+    Route::put('/dashboard/admin/junior/update/{id}', [UserController::class, 'juniorupdate'])->name('users.junior.update');
+    Route::get('/dashboard/admin/junior/destroy/{id}', [UserController::class, 'juniordestroy'])->name('users.junior.destroy');
+
+    Route::get('/dashboard/admin/senior', [UserController::class, 'senior'])->name('users.senior');
+    Route::get('/dashboard/admin/senior/create', [UserController::class, 'seniorcreate'])->name('users.senior.create');
+    Route::post('/dashboard/admin/senior/store', [UserController::class, 'seniorstore'])->name('users.senior.store');
+    Route::get('/dashboard/admin/senior/{id}/edit', [UserController::class, 'senioredit'])->name('users.senior.edit');
+    Route::put('/dashboard/admin/senior/update/{id}', [UserController::class, 'seniorupdate'])->name('users.senior.update');
+    Route::get('/dashboard/admin/senior/destroy/{id}', [UserController::class, 'seniordestroy'])->name('users.senior.destroy');
+
+    Route::get('/dashboard/admin/trainer', [UserController::class, 'trainer'])->name('users.trainer');
+    Route::get('/dashboard/admin/trainer/create', [UserController::class, 'trainercreate'])->name('users.trainer.create');
+    Route::post('/dashboard/admin/trainer/store', [UserController::class, 'trainerstore'])->name('users.trainer.store');
+    Route::get('/dashboard/admin/trainer/{id}/edit', [UserController::class, 'traineredit'])->name('users.trainer.edit');
+    Route::put('/dashboard/admin/trainer/update/{id}', [UserController::class, 'trainerupdate'])->name('users.trainer.update');
+    Route::get('/dashboard/admin/trainer/update/{id}', [UserController::class, 'trainerdestroy'])->name('users.trainer.destroy');
+
+    Route::get('/dashboard/admin/accountant', [UserController::class, 'accountant'])->name('users.accountant');
+    Route::get('/dashboard/admin/accountant/create', [UserController::class, 'accountantcreate'])->name('users.accountant.create');
+    Route::post('/dashboard/admin/accountant/store', [UserController::class, 'accountantstore'])->name('users.accountant.store');
+    Route::get('/dashboard/admin/accountant/{id}/edit', [UserController::class, 'accountantedit'])->name('users.accountant.edit');
+    Route::put('/dashboard/admin/accountant/update/{id}', [UserController::class, 'accountantupdate'])->name('users.accountant.update');
+    Route::get('/dashboard/admin/accountant/update/{id}', [UserController::class, 'accountantdestroy'])->name('users.accountant.destroy');
+
+    Route::get('/dashboard/admin/customer', [UserController::class, 'customer'])->name('users.customer');
+    Route::get('/dashboard/admin/customer/create', [UserController::class, 'customercreate'])->name('users.customer.create');
+    Route::post('/dashboard/admin/customer/store', [UserController::class, 'customerstore'])->name('users.customer.store');
+    Route::get('/dashboard/admin/customer/{id}/edit', [UserController::class, 'customeredit'])->name('users.customer.edit');
+    Route::put('/dashboard/admin/customer/update/{id}', [UserController::class, 'customerupdate'])->name('users.customer.update');
+    Route::get('/dashboard/admin/customer/destroy/{id}', [UserController::class, 'customerdestroy'])->name('users.customer.destroy');
+
+
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
     Route::get('/dashboard/junior', [DashboardController::class, 'junior'])->name('dashboard.junior');
@@ -25,7 +72,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/button/status', [DashboardController::class, 'getButtonStatus'])->name('button.status');
     Route::post('/dashboard/start-timer', [DashboardController::class, 'startTimer'])->name('timer.start');
     Route::post('/dashboard/start-timer-hide', [DashboardController::class, 'startTimerHide'])->name('timer.starthide');
-
 
     Route::get('/dashboard/admin/calendar/{month?}/{year?}', [CalendarController::class, 'index'])->name('calendar.index');
     Route::get('/dashboard/accountant/calendar/{month?}/{year?}', [CalendarController::class, 'accountantUser'])->name('calendar.accountantUser');
@@ -49,6 +95,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/admin/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadadminResume'])->name('download.admin.resume');
 
     Route::get('/dashboard/senior/google-sheet', [GoogleSheetController::class, 'senior'])->name('google.sheet.senior');
+    Route::get('/dashboard/senior/google-sheet-candm', [GoogleSheetController::class, 'seniorcandm'])->name('google.sheet.seniorcandm');
+    Route::get('/dashboard/senior/google-sheet-paid', [GoogleSheetController::class, 'seniorpaid'])->name('google.sheet.seniorpaid');
     Route::post('/dashboard/senior/google-sheet/fetch', [GoogleSheetController::class, 'seniorfetch'])->name('google.sheet.seniorfetch');
     Route::patch('/dashboard/senior/google-sheet/pdfupdate/{id}', [GoogleSheetController::class, 'seniorpdfupdate'])->name('google.sheet.seniorpdfupdate');
     Route::post('/dashboard/senior/google-sheet/pdfstore', [GoogleSheetController::class, 'seniorpdfstore'])->name('google.sheet.seniorpdfstore');
@@ -59,6 +107,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/google-sheet/search', [GoogleSheetController::class, 'seniorSuggestions'])->name('senior.suggestions');
 
     Route::get('/dashboard/junior/google-sheet', [GoogleSheetController::class, 'junior'])->name('google.sheet.junior');
+    Route::get('/dashboard/junior/google-sheet-candm', [GoogleSheetController::class, 'juniorcandm'])->name('google.sheet.junior.candm');
     Route::post('/dashboard/junior/google-sheet/fetch', [GoogleSheetController::class, 'juniorfetch'])->name('google.sheet.juniorfetch');
     Route::patch('/dashboard/junior/google-sheet/pdfupdate/{id}', [GoogleSheetController::class, 'juniorpdfupdate'])->name('google.sheet.juniorpdfupdate');
     Route::post('/dashboard/junior/google-sheet/pdfstore', [GoogleSheetController::class, 'juniorpdfstore'])->name('google.sheet.juniorpdfstore');
@@ -94,8 +143,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/alljuniormonthly/call-reports/{userId}', [CallReportController::class, 'alljuniormonthly'])->name('call.reports.alljuniormonthly');
     Route::get('/dashboard/alljuniordaily/call-reports/{userId}', [CallReportController::class, 'alljuniordaily'])->name('call.reports.alljuniordaily');
 
-
     Route::match(['get', 'post'], '/timer/update', [DashboardController::class, 'updateTimer'])->name('timer.update');
+    Route::get('/dashboard/edit', [DashboardController::class, 'edit'])->name('smtp.edit');
+    Route::put('/dashboard/update', [DashboardController::class, 'update'])->name('smtp.update');
+    Route::post('/dashboard/smtp/test', [DashboardController::class, 'test'])->name('smtp.test');
     Route::get('/dashboard/senior/seniortimer', [TimerController::class, 'seniorTimers'])->name('timer.senior');
     Route::get('/timer/all-juniors', [TimerController::class, 'allJuniorTimers'])->name('timer.alljuniors');
     Route::get('/dashboard/junior/juniortimer', [TimerController::class, 'juniorTimers'])->name('timer.junior');
@@ -107,6 +158,11 @@ Route::middleware(['auth'])->group(function () {
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
+Route::post('/logout-user', [LoginController::class, 'ajaxLogout'])->name('ajax.logout');
+
+Route::get('/email-template', [EmailTemplateController::class, 'index'])->name('template.index');
+Route::put('/email-template/{id}', [EmailTemplateController::class, 'update'])->name('template.update');
+
 Route::get('/', [Controller::class, 'index'])->name('home');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/registersubmit', [RegisterController::class, 'register'])->name('register.submit');
