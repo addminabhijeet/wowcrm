@@ -27,11 +27,7 @@ $script = '<script>
                 <option>9</option>
                 <option>10</option>
             </select>
-            <a href="{{ route('smtp.add') }}"
-                class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
-                <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                All SMTP Users
-            </a>
+
 
             <form class="navbar-search">
                 <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
@@ -42,6 +38,11 @@ $script = '<script>
                 <option>Active</option>
                 <option>Inactive</option>
             </select>
+            <a href="{{ route('smtp.add') }}"
+                class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+                <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                All SMTP Users
+            </a>
         </div>
     </div>
 
