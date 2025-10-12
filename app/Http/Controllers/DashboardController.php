@@ -67,16 +67,17 @@ class DashboardController extends Controller
 
     public function getButtonStatus()
     {
-        $user  = Auth::user();
+        $user = Auth::user();
 
-        $button_status = UserTimerLog::where('user_id', $user->id)
-            ->latest()
-            ->value('button_status') ?? 0;
+        $latestLog = UserTimerLog::where('user_id', $user->id)
+            ->orderBy('id', 'desc')
+            ->first();
 
         return response()->json([
-            'button_status' => $button_status
+            'button_status' => $latestLog->button_status ?? 0
         ]);
     }
+
 
     public function startTimer(Request $request)
     {
