@@ -368,6 +368,15 @@
             console.warn("[Inactivity] User inactive! Pausing timer...");
             showOverlay("You were inactive! Timer stopped.");
             wasInactive = true;
+            // --- Hide all buttons except Resume ---
+            const controlButtons = document.querySelectorAll("#controlButtons button");
+            controlButtons.forEach(btn => {
+                if (btn.dataset.type !== "resumebreak") {
+                    btn.style.display = "none";
+                } else {
+                    btn.style.display = "flex"; // ensure Resume stays visible
+                }
+            });
             fetch("{{ route('timer.update') }}", {
                 method: "POST",
                 headers: {
@@ -407,6 +416,15 @@
                         showOverlay("You were active now! Timer running.");
                     }
                     updateUI();
+                    // --- Hide Resume button after resuming ---
+                    const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
+                    if (resumeBtn) resumeBtn.style.display = "none";
+
+                    // --- Optional: show other buttons again ---
+                    const otherButtons = document.querySelectorAll('#controlButtons button');
+                    otherButtons.forEach(btn => {
+                        if (btn.dataset.type !== "resumebreak") btn.style.display = "flex";
+                    });
                 }
             })
             .catch(err => console.error("[Active] Resume request failed:", err));
@@ -450,12 +468,12 @@
                     if (status === 1) {
                         // Show control buttons, hide start button
                         controlButtons.style.display = 'flex';
-                        
+
                         console.log("[Button Status] Control buttons visible (status=1)");
                     } else {
                         // Hide control buttons, show start button
                         controlButtons.style.display = 'none';
-                       
+
                         console.log("[Button Status] Control buttons hidden (status=0)");
                     }
                 })
@@ -474,7 +492,7 @@
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        
+
         const startButton = document.getElementById('startButton');
 
 
@@ -490,8 +508,7 @@
                 })
             })
             .then(res => res.json())
-            .then(data => {
-            })
+            .then(data => {})
             .catch(err => console.error('❌ Error checking timer existence:', err));
 
         // On Start button click
@@ -536,7 +553,9 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ check: true }) // Only check, don't start
+                    body: JSON.stringify({
+                        check: true
+                    }) // Only check, don't start
                 })
                 .then(response => response.json())
                 .then(data => {
