@@ -37,7 +37,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                         </div>
 
                         {{-- SMTP Update Form --}}
-                        <form action="{{ route('smtp.update') }}" method="POST" class="mb-5">
+                        <form action="{{ route('smtp.addupdate') }}" method="POST" class="mb-5">
                             @csrf
                             @method('PUT')
                             <div class="row gy-3">

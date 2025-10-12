@@ -504,30 +504,41 @@ class DashboardController extends Controller
     }
 
 
-    public function add()
+    public function addupdate(Request $request)
     {
-        // Get all user IDs that already have SMTP settings
-        $smtpUserIds = SmtpSetting::pluck('user_id')->toArray();
+        $request->validate([
+            'user_id' => 'required|exists:users,id',
+            'mailer' => 'required|string',
+            'host' => 'required|string',
+            'port' => 'required|integer',
+            'username' => 'required|email',
+            'password' => 'nullable|string',
+            'encryption' => 'required|string',
+            'from_address' => 'required|email',
+            'from_name' => 'required|string',
+        ]);
 
-        // Get users who do not have SMTP settings
-        $users = User::whereNotIn('id', $smtpUserIds)->get();
+        // Find existing SMTP setting for this user or create new
+        $smtp = SmtpSetting::firstOrNew(['user_id' => $request->user_id]);
 
-        return view('smtp.add', compact('users'));
+        $smtp->user_id = $request->user_id;
+        $smtp->mailer = $request->mailer;
+        $smtp->host = $request->host;
+        $smtp->port = $request->port;
+        $smtp->username = $request->username;
+        if ($request->filled('password')) {
+            $smtp->password = encrypt($request->password); // encrypt password
+        }
+        $smtp->encryption = $request->encryption;
+        $smtp->from_address = $request->from_address;
+        $smtp->from_name = $request->from_name;
+
+        $smtp->save();
+
+        return redirect()->back()->with('success', 'SMTP settings saved successfully!');
     }
 
-    // Show the form to edit SMTP settings
-    public function edit($userId)
-    {
-        $smtp = SmtpSetting::where('user_id', $userId)->first(); // Get SMTP for specific user
-        $users = User::all(); // Keep for dropdown or selection if needed
-
-        return view('smtp.edit', compact('smtp', 'users'));
-    }
-
-
-
-    // Update SMTP settings
-    public function update(Request $request)
+    public function update(Request $request, $userId)
     {
         $request->validate([
             'mailer' => 'required|string',
@@ -540,10 +551,7 @@ class DashboardController extends Controller
             'from_name' => 'required|string',
         ]);
 
-        $smtp = SmtpSetting::first();
-        if (!$smtp) {
-            $smtp = new SmtpSetting();
-        }
+        $smtp = SmtpSetting::where('user_id', $userId)->firstOrFail();
 
         $smtp->mailer = $request->mailer;
         $smtp->host = $request->host;
