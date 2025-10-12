@@ -254,7 +254,7 @@
     }
 
     function updateUI() {
-       
+
         const countdownElem = document.getElementById('countdown');
         const elapsedElem = document.getElementById('elapsed');
 
@@ -263,7 +263,7 @@
     }
 
     function showOverlay(message) {
-        
+
         const overlay = document.getElementById('statusOverlay');
         if (!overlay) return;
 
@@ -280,7 +280,7 @@
     // Backend Sync
     // ===============================
     function syncWithBackend() {
-      
+
         fetch("{{ route('timer.update') }}", {
                 method: "POST",
                 headers: {
@@ -293,7 +293,7 @@
             })
             .then(res => res.json())
             .then(data => {
-               
+
 
                 if (!data.success) {
                     console.warn("[Sync] No success response");
@@ -325,7 +325,7 @@
     document.querySelectorAll('#controlButtons button').forEach(btn => {
         btn.addEventListener('click', () => {
             const type = btn.getAttribute('data-type');
-           
+
 
             fetch("{{ route('timer.update') }}", {
                     method: "POST",
@@ -339,7 +339,7 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                    
+
 
                     if (data.success === false && data.notice_status === 1) {
                         showOverlay(data.message || "Please wait for senior to enable.");
@@ -359,14 +359,15 @@
     // Inactivity Handling
     // ===============================
     let wasInactive = false;
+
     function resetInactiveTimer() {
         clearTimeout(inactiveTimeout);
-   
+
 
         inactiveTimeout = setTimeout(() => {
             console.warn("[Inactivity] User inactive! Pausing timer...");
             showOverlay("You were inactive! Timer stopped.");
-            wasInactive = true; 
+            wasInactive = true;
             fetch("{{ route('timer.update') }}", {
                 method: "POST",
                 headers: {
@@ -381,7 +382,7 @@
     }
 
     function handleActiveState() {
-        
+
         // Only show overlay if previously inactive
         const showActiveOverlay = wasInactive;
         wasInactive = false; // reset inactivity flag
@@ -397,7 +398,7 @@
             })
             .then(res => res.json())
             .then(data => {
-                
+
                 if (data.success) {
                     remainingSeconds = data.remaining_seconds;
                     elapsedSeconds = data.elapsed_seconds;
@@ -421,28 +422,21 @@
     // ===============================
     // Initialize Timer
     // ===============================
-    
+
     updateUI();
     resetInactiveTimer();
 
     backendSyncInterval = setInterval(syncWithBackend, 1000);
-
 </script>
 
 <script>
-    // ===============================
-    // Button Status Check
-    // ===============================
     function checkButtonStatus() {
-
         fetch("{{ route('button.status') }}")
             .then(response => {
                 if (!response.ok) throw new Error("Network response was not ok");
                 return response.json();
             })
             .then(data => {
-              
-
                 const controlButtons = document.getElementById('controlButtons');
                 const startButtonContainer = document.getElementById('startButtonContainer');
 
@@ -451,21 +445,26 @@
                     return;
                 }
 
-                if (data.button_status == 1) {
+                const status = parseInt(data.button_status ?? 0);
+
+                if (status === 1) {
+                    // Show control buttons (enabled)
                     controlButtons.style.display = 'flex';
                     startButtonContainer.style.display = 'none';
-                  
+                    console.log("[Button Status] Control buttons visible (status=1)");
                 } else {
+                    // Hide control buttons (disabled)
                     controlButtons.style.display = 'none';
                     startButtonContainer.style.display = 'flex';
-                    
+                    console.log("[Button Status] Control buttons hidden (status=0)");
                 }
             })
             .catch(err => console.error("[Status Check] Error fetching button status:", err));
     }
 
+    // Initial check + periodic refresh
     checkButtonStatus();
-    setInterval(checkButtonStatus, 1000);
+    setInterval(checkButtonStatus, 2000);
 </script>
 
 
@@ -474,14 +473,14 @@
     // Button Status Check
     // ===============================
     function checkButtonStatus() {
-     
+
         fetch("{{ route('button.status') }}")
             .then(response => {
                 if (!response.ok) throw new Error("Network response was not ok");
                 return response.json();
             })
             .then(data => {
-              
+
 
                 const controlButtons = document.getElementById('controlButtons');
                 const startButtonContainer = document.getElementById('startButtonContainer');
@@ -494,11 +493,11 @@
                 if (data.button_status == 1) {
                     controlButtons.style.display = 'flex';
                     startButtonContainer.style.display = 'none';
-                  
+
                 } else {
                     controlButtons.style.display = 'none';
                     startButtonContainer.style.display = 'flex';
-               
+
                 }
             })
             .catch(err => console.error("[Status Check] Error fetching button status:", err));
@@ -513,7 +512,7 @@
         const startButtonContainer = document.getElementById('startButtonContainer');
         const startButton = document.getElementById('startButton');
 
-     
+
         // Check if today's timer already exists
         fetch('{{ route("timer.start") }}', {
                 method: 'POST',
@@ -527,11 +526,11 @@
             })
             .then(res => res.json())
             .then(data => {
-              
+
 
                 // Hide start button if timer exists
                 if (data.exists || data.timer) {
-                   
+
                     startButtonContainer.style.display = 'none';
                 }
             })
@@ -539,7 +538,7 @@
 
         // On Start button click
         startButton.addEventListener('click', function() {
-          
+
 
             fetch('{{ route("timer.start") }}', {
                     method: 'POST',
@@ -551,10 +550,10 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                  
+
 
                     if (data.success || data.exists || data.timer) {
-                  
+
                         startButtonContainer.style.display = 'none'; // always hide
                         alert('⏱ Timer is running for today!');
                         location.reload();
@@ -586,18 +585,18 @@
                 }) // Only check, don't start
             })
             .then(response => {
-       
+
                 return response.json();
             })
             .then(data => {
-             
+
                 if (!data.exists) {
                     // Show start button only if timer doesn't exist
                     startHideButtonContainer.style.display = 'flex';
                 } else {
                     // Timer exists, hide start button
                     startHideButtonContainer.style.display = 'none';
-                  
+
                 }
             })
             .catch(err => {

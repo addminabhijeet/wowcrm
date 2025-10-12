@@ -73,10 +73,14 @@ class DashboardController extends Controller
             ->orderBy('id', 'desc')
             ->first();
 
+        // Default to 0 (disabled) if no log found or field missing
+        $buttonStatus = $latestLog ? (int)$latestLog->button_status : 0;
+
         return response()->json([
-            'button_status' => $latestLog->button_status ?? 0
+            'button_status' => $buttonStatus
         ]);
     }
+
 
 
     public function startTimer(Request $request)
