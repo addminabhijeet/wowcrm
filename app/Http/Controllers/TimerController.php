@@ -75,6 +75,7 @@ class TimerController extends Controller
             return [
                 'user_id'          => $junior->id,
                 'name'             => $junior->name,
+                'image'             => $junior->image,
                 'email'            => $junior->email,
                 'remaining_seconds' => $remaining_seconds,
                 'elapsed_seconds'  => $elapsed_seconds,
