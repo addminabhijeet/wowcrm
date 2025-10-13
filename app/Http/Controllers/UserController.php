@@ -92,7 +92,7 @@ class UserController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
 
-            // Generate unique, clean filename
+            // Generate unique filename
             $timestamp = now()->format('Ymd_His');
             $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
@@ -101,7 +101,14 @@ class UserController extends Controller
             try {
                 // Move file directly to public/user_images
                 $file->move(public_path('user_images'), $newName);
-                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+
+                // Delete old image if exists
+                if ($user->image && file_exists(public_path($user->image))) {
+                    unlink(public_path($user->image));
+                }
+
+                // Store relative path for asset()
+                $validated['image'] = 'user_images/' . $newName;
             } catch (\Exception $e) {
                 return back()->with('error', 'Image upload failed: ' . $e->getMessage());
             }
