@@ -144,7 +144,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
-        $SReadyToPaidCalls = (clone $query)
+        $SreadyToPaidCalls = (clone $query)
             ->where('Exe_Remarks', 'Ready To Paid')
             ->count();
 
