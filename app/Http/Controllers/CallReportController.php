@@ -111,6 +111,11 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
+        // Total "Called & Mailed" calls for this senior
+        $ReadyToPaidCalls = GoogleSheetData::where('created_by', $createdByKey)
+            ->where('Exe_Remarks', 'Ready To Paid')
+            ->count();
+
         // Total other calls for this senior
         $otherCalls = GoogleSheetData::where('created_by', $createdByKey)
             ->whereNotNull('Exe_Remarks')
@@ -139,6 +144,10 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
+        $ReadyToPaidCalls = (clone $query)
+            ->where('Exe_Remarks', 'Ready To Paid')
+            ->count();
+
         $SotherCalls = (clone $query)
             ->whereNotNull('Exe_Remarks')
             ->where('Exe_Remarks', '<>', 'Called & Mailed')
@@ -149,6 +158,15 @@ class CallReportController extends Controller
             ->where('created_by', $createdByKey)
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Hour-wise "Called & Mailed" counts
+        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', $createdByKey)
+            ->whereDate('updated_at', $selectedDate)
+            ->where('Exe_Remarks', 'Ready To Paid')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -209,6 +227,10 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
+        $MreadyToPaidCalls = (clone $query)
+            ->where('Exe_Remarks', 'Ready To Paid')
+            ->count();
+
         $MotherCalls = (clone $query)
             ->whereNotNull('Exe_Remarks')
             ->where('Exe_Remarks', '<>', 'Called & Mailed')
@@ -220,6 +242,16 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Hour-wise "Called & Mailed" counts
+        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', $createdByKey)
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Ready To Paid')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
