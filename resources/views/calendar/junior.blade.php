@@ -85,7 +85,6 @@ $subTitle = 'Calendar';
             datesSet: function() {
                 highlightUnderworkedDays(calendar);
             },
-            // Helper: format seconds as hh:mm
 
 
             dateClick: function(info) {
@@ -140,6 +139,11 @@ $subTitle = 'Calendar';
             `;
                     }
 
+                    // Calculate elapsed and remaining hours
+                    const targetSec = 8 * 3600; // 8 hours target
+                    const elapsedSec = totalWorkSec;
+                    const remainingSec = Math.max(targetSec - totalWorkSec, 0);
+
                     // Add total row
                     tableRows += `
             <tr class="fw-bold text-success">
@@ -148,9 +152,14 @@ $subTitle = 'Calendar';
                 <td>${formatTime(totalBreakSec)}</td>
                 <td></td>
             </tr>
+            <tr class="fw-bold text-primary">
+                <td colspan="2" class="text-end">Elapsed / Remaining</td>
+                <td colspan="2">${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</td>
+                <td></td>
+            </tr>
         `;
 
-                    const completed = totalWorkSec >= 8 * 3600 ? "✅ Yes" : "❌ No";
+                    const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
                     modalBody.innerHTML = `
             <div class="summary border-bottom pb-3 mb-3">
@@ -179,7 +188,6 @@ $subTitle = 'Calendar';
 
                 modal.show();
             }
-
 
 
         });
