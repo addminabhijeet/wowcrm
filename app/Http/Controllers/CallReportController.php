@@ -349,7 +349,7 @@ class CallReportController extends Controller
         $createdByKey = "{$juniorUser->id}|junior";
 
         // Total calls
-        $totalCalls = GoogleSheetData::count();
+        $totalCalls = GoogleSheetData::where('created_by', $createdByKey)->count();
 
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::where('Exe_Remarks', 'Called & Mailed')->count();
