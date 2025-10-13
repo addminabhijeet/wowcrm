@@ -398,6 +398,104 @@ $script = '<script>
 
     var chart = new ApexCharts(document.querySelector("#dailyIconBarChart"), options);
     chart.render();
+
+    var options = {
+        series: [{
+            name: "Sales",
+            data: [{
+                x: "Mon",
+                y: 20,
+            }, {
+                x: "Tue",
+                y: 40,
+            }, {
+                x: "Wed",
+                y: 20,
+            }, {
+                x: "Thur",
+                y: 30,
+            }, {
+                x: "Fri",
+                y: 40,
+            }, {
+                x: "Sat",
+                y: 35,
+            }]
+        }],
+        chart: {
+            type: "bar",
+            width: 164,
+            height: 80,
+            sparkline: {
+                enabled: true
+            },
+            toolbar: {
+                show: false
+            }
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 6,
+                horizontal: false,
+                columnWidth: 14,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        states: {
+            hover: {
+                filter: {
+                    type: "none"
+                }
+            }
+        },
+        fill: {
+            type: "gradient",
+            colors: ["#E3E6E9"],
+            gradient: {
+                shade: "light",
+                type: "vertical",
+                shadeIntensity: 0.5,
+                gradientToColors: ["#E3E6E9"],
+                inverseColors: false,
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 100],
+            },
+        },
+        grid: {
+            show: false,
+            borderColor: "#D1D5DB",
+            strokeDashArray: 1,
+            position: "back",
+        },
+        xaxis: {
+            labels: {
+                show: false
+            },
+            type: "category",
+            categories: ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat"]
+        },
+        yaxis: {
+            labels: {
+                show: false,
+                formatter: function(value) {
+                    return (value / 1000).toFixed(0) + "k";
+                }
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(value) {
+                    return value / 1000 + "k";
+                }
+            }
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#dailyIconBar"), options);
+    chart.render();
 </script>';
 @endphp
 
@@ -581,7 +679,7 @@ $script = '<script>
                             <span class="text-secondary-light fw-normal mb-12 text-xl">Ready To Paid Calls (C&MC)</span>
                             <h5 class="fw-semibold mb-0">{{ $readyToPaidCalls }}</h5>
                         </div>
-                        <div id="dailyIconBarChart"></div>
+                        <div id="dailyIconBar"></div>
                     </div>
                 </div>
             </div>
