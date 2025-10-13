@@ -207,9 +207,11 @@ $script ='<script>
                             </select>
                         </td>
 
-                        <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
-                            value="{{ $row->forwarded_by ?? '' }}" placeholder="Forwarded By" readonly>
-
+                        {{-- Forwarded By --}}
+                        <td>
+                            <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
+                                value="{{ $row->forwarded_by ?? '' }}" placeholder="Forwarded By" readonly>
+                        </td>
 
                         {{-- View (Resume) --}}
                         <td>
