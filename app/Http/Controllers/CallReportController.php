@@ -440,6 +440,7 @@ class CallReportController extends Controller
 
         $MtotalCalls = $query->count();
         $McalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
+        $McalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
         $MotherCalls = (clone $query)
             ->whereNotNull('Exe_Remarks')
             ->where('Exe_Remarks', '<>', 'Called & Mailed')
