@@ -96,18 +96,33 @@ $subTitle = 'Calendar';
                 eventsOnDate.sort((a, b) => new Date(b.start) - new Date(a.start));
 
                 if (eventsOnDate.length > 0) {
-                    // ✅ Correct total work seconds calculation using remaining_seconds
-                    let totalWorkSec = eventsOnDate.reduce((sum, ev) => {
-                        return sum + (parseInt(ev.extendedProps.remaining_seconds) || 0);
-                    }, 0);
+                    let totalBreakSec = 0,
+                        lastPauseTime = null;
 
+                    // Calculate summary
+                    eventsOnDate.forEach(event => {
+                        const eTime = new Date(event.start);
+                        const pauseType = (event.extendedProps.pause_type || '').toLowerCase();
+                        if (pauseType === 'inactive') lastPauseTime = eTime;
+                        else if (pauseType === 'resume' && lastPauseTime) {
+                            totalBreakSec += (eTime - lastPauseTime) / 1000;
+                            lastPauseTime = null;
+                        }
+                    });
+
+                    const startTime = new Date(eventsOnDate[eventsOnDate.length - 1].start); // earliest
+                    const endTime = new Date(eventsOnDate[0].start); // latest
+                    const totalDaySec = (endTime - startTime) / 1000;
+                    const totalWorkSec = totalDaySec - totalBreakSec;
                     const completed = totalWorkSec >= 8 * 3600 ? "✅ Yes" : "❌ No";
 
                     // Show summary at top
                     modalBody.innerHTML = `
             <div class="summary border-bottom pb-3 mb-3">
                 <h5 class="fw-semibold text-success">Summary</h5>
-                <p><strong>Total Effective Work Time:</strong> ${formatTime(totalWorkSec)}</p>
+                <p><strong>Total Time Logged:</strong> ${formatTime(totalDaySec)}</p>
+                <p><strong>Total Break Time:</strong> ${formatTime(totalBreakSec)}</p>
+                <p><strong>Effective Work Time:</strong> ${formatTime(totalWorkSec)}</p>
                 <p><strong>8 Hours Completed:</strong> ${completed}</p>
             </div>
 
@@ -147,7 +162,6 @@ $subTitle = 'Calendar';
                 modal.show();
             }
 
-
         });
 
         calendar.render();
@@ -155,39 +169,33 @@ $subTitle = 'Calendar';
         function highlightUnderworkedDays(calendar) {
             const allEvents = calendar.getEvents();
             const grouped = {};
+
+            // Group events by date
             allEvents.forEach(ev => {
-                const dateKey = new Date(ev.start).toISOString().split('T')[0];
+                const dateKey = ev.startStr.slice(0, 10); // YYYY-MM-DD
                 if (!grouped[dateKey]) grouped[dateKey] = [];
                 grouped[dateKey].push(ev);
             });
 
             Object.keys(grouped).forEach(dateStr => {
                 const dayEvents = grouped[dateStr];
-                let totalBreakSec = 0,
-                    lastPauseTime = null;
 
-                dayEvents.forEach(ev => {
-                    const eTime = new Date(ev.start);
-                    const pauseType = (ev.extendedProps.pause_type || '').toLowerCase();
-                    if (pauseType === 'inactive') lastPauseTime = eTime;
-                    else if (pauseType === 'resume' && lastPauseTime) {
-                        totalBreakSec += (eTime - lastPauseTime) / 1000;
-                        lastPauseTime = null;
-                    }
-                });
-
-                const startTime = new Date(dayEvents[0].start);
-                const endTime = new Date(dayEvents[dayEvents.length - 1].start);
-                const totalDaySec = (endTime - startTime) / 1000;
-                const totalWorkSec = totalDaySec - totalBreakSec;
+                // ✅ Sum remaining_seconds for the day
+                const totalWorkSec = dayEvents.reduce((sum, ev) => {
+                    return sum + (parseInt(ev.extendedProps.remaining_seconds) || 0);
+                }, 0);
 
                 const cell = calendarEl.querySelector(`.fc-daygrid-day[data-date='${dateStr}']`);
                 if (cell) {
-                    if (totalWorkSec < 8 * 3600) cell.style.backgroundColor = 'rgba(220,50,50,0.3)';
-                    else cell.style.backgroundColor = 'rgba(0,123,255,0.08)';
+                    if (totalWorkSec < 8 * 3600) {
+                        cell.style.backgroundColor = 'rgba(220,50,50,0.3)'; // Less than 8h
+                    } else {
+                        cell.style.backgroundColor = 'rgba(0,123,255,0.08)'; // Completed ≥8h
+                    }
                 }
             });
         }
+
 
         function generateDailyPDF(events, dateStr) {
             const {
