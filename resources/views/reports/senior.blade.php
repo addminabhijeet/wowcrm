@@ -476,55 +476,67 @@ $script = '<script>
                 <!-- Table Section -->
                 <div class="table-responsive">
                     <table class="table table-hover table-bordered align-middle mb-0">
-                        <thead class="table-primary">
+                        <thead class="table-primary text-center">
                             <tr>
                                 <th class="fw-semibold">⏰ Time Range</th>
-                                <th class="fw-semibold text-center">📊 Called & Mailed Count</th>
+                                <th class="fw-semibold">💰 Ready To Paid Calls Count</th>
+                                <th class="fw-semibold">📊 Called & Mailed Count</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
                                 <td>8 PM - 9 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t8to9pm }}</span></td>
+                                <td><span class="badge bg-info fs-6">{{ $t8po9pm }}</span></td>
+                                <td><span class="badge bg-success fs-6">{{ $t8to9pm }}</span></td>
                             </tr>
                             <tr>
                                 <td>9 PM - 10 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t9to10pm }}</span></td>
+                                <td><span class="badge bg-info fs-6">{{ $t9po10pm }}</span></td>
+                                <td><span class="badge bg-success fs-6">{{ $t9to10pm }}</span></td>
                             </tr>
                             <tr>
                                 <td>10 PM - 11 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t10to11pm }}</span></td>
+                                <td><span class="badge bg-info fs-6">{{ $t10po11pm }}</span></td>
+                                <td><span class="badge bg-success fs-6">{{ $t10to11pm }}</span></td>
                             </tr>
                             <tr>
                                 <td>11 PM - 12 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span></td>
+                                <td><span class="badge bg-info fs-6">{{ $t11po12pm }}</span></td>
+                                <td><span class="badge bg-success fs-6">{{ $t11to12pm }}</span></td>
                             </tr>
                             <tr>
                                 <td>12 AM - 1 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t12to1am }}</span></td>
+                                <td><span class="badge bg-info fs-6">{{ $t12po1am }}</span></td>
+                                <td><span class="badge bg-success fs-6">{{ $t12to1am }}</span></td>
                             </tr>
                             <tr>
                                 <td>1 AM - 2 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t1to2am }}</span></td>
+                                <td><span class="badge bg-info fs-6">{{ $t1po2am }}</span></td>
+                                <td><span class="badge bg-success fs-6">{{ $t1to2am }}</span></td>
                             </tr>
                             <tr>
                                 <td>2 AM - 3 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t2to3am }}</span></td>
+                                <td><span class="badge bg-info fs-6">{{ $t2po3am }}</span></td>
+                                <td><span class="badge bg-success fs-6">{{ $t2to3am }}</span></td>
                             </tr>
                             <tr>
                                 <td>3 AM - 4 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t3to4am }}</span></td>
+                                <td><span class="badge bg-info fs-6">{{ $t3po4am }}</span></td>
+                                <td><span class="badge bg-success fs-6">{{ $t3to4am }}</span></td>
                             </tr>
                             <tr>
                                 <td>4 AM - 5 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t4to5am }}</span></td>
+                                <td><span class="badge bg-info fs-6">{{ $t4po5am }}</span></td>
+                                <td><span class="badge bg-success fs-6">{{ $t4to5am }}</span></td>
                             </tr>
                             <tr>
                                 <td>5 AM - 6 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t5to6am }}</span></td>
+                                <td><span class="badge bg-info fs-6">{{ $t5po6am }}</span></td>
+                                <td><span class="badge bg-success fs-6">{{ $t5to6am }}</span></td>
                             </tr>
                         </tbody>
                     </table>
+
                 </div>
             </div>
         </div>
@@ -561,6 +573,13 @@ $script = '<script>
                         <div>
                             <span class="text-secondary-light fw-normal mb-12 text-xl">Called & Mailed Calls (C&MC)</span>
                             <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
+                        </div>
+                        <div id="dailyIconBarChart"></div>
+                    </div>
+                    <div class="d-flex align-items-center gap-1 justify-content-between">
+                        <div>
+                            <span class="text-secondary-light fw-normal mb-12 text-xl">Ready To Paid Calls (C&MC)</span>
+                            <h5 class="fw-semibold mb-0">{{ $readyToPaidCalls }}</h5>
                         </div>
                         <div id="dailyIconBarChart"></div>
                     </div>
