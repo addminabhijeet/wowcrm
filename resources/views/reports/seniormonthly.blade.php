@@ -498,22 +498,22 @@ $script = '<script>
                                 <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t8to9pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>9 PM - 10 PM</td>
+                                <td>9 PM - 10PM</td>
                                 <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t9po10pm }}</span></td>
                                 <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t9to10pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>10 PM - 11 PM</td>
+                                <td>10 PM - 11PM</td>
                                 <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t10po11pm }}</span></td>
                                 <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t10to11pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>11 PM - 12 AM</td>
+                                <td>11 PM - 12AM</td>
                                 <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t11po12pm }}</span></td>
                                 <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t11to12pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>12 AM - 1 AM</td>
+                                <td>12 AM - 1AM</td>
                                 <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t12po1am }}</span></td>
                                 <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t12to1am }}</span></td>
                             </tr>
