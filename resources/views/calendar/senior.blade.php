@@ -89,38 +89,19 @@ $subTitle = 'Calendar';
                 modalDate.textContent = info.dateStr;
                 modalBody.innerHTML = '';
 
+                // Filter events for the clicked date
                 const eventsOnDate = calendar.getEvents().filter(e => e.startStr.slice(0, 10) === info.dateStr);
-                eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+                // Sort latest first
+                eventsOnDate.sort((a, b) => new Date(b.start) - new Date(a.start));
 
                 if (eventsOnDate.length > 0) {
                     let totalBreakSec = 0,
                         lastPauseTime = null;
 
-                    modalBody.innerHTML = `
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <div>
-                            <button class="btn btn-sm btn-outline-primary" id="downloadPDFBtn">Download Daily PDF</button>
-                            <button class="btn btn-sm btn-outline-success" id="downloadMonthlyBtn">Download Monthly PDF</button>
-                        </div>
-                        <select class="form-select form-select-sm w-auto" id="themeSelector">
-                            <option value="blue" selected>Blue Theme</option>
-                            <option value="green">Green Theme</option>
-                        </select>
-                    </div>
-                `;
-
+                    // Calculate total break time
                     eventsOnDate.forEach(event => {
                         const eTime = new Date(event.start);
-                        modalBody.innerHTML += `
-                        <div class="event-item p-16 mb-16 border rounded bg-light">
-                            <h5 class="fw-semibold mb-8 text-primary">${event.title}</h5>
-                            <p><strong>Status:</strong> ${event.extendedProps.status}</p>
-                            <p><strong>Time:</strong> ${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p>
-                            <p><strong>Remaining Seconds:</strong> ${event.extendedProps.remaining_seconds}</p>
-                            <p><strong>Pause Type:</strong> ${event.extendedProps.pause_type}</p>
-                        </div>
-                    `;
-
                         const pauseType = (event.extendedProps.pause_type || '').toLowerCase();
                         if (pauseType === 'inactive') lastPauseTime = eTime;
                         else if (pauseType === 'resume' && lastPauseTime) {
@@ -129,30 +110,58 @@ $subTitle = 'Calendar';
                         }
                     });
 
-                    const startTime = new Date(eventsOnDate[0].start);
-                    const endTime = new Date(eventsOnDate[eventsOnDate.length - 1].start);
+                    const startTime = new Date(eventsOnDate[eventsOnDate.length - 1].start); // earliest
+                    const endTime = new Date(eventsOnDate[0].start); // latest
                     const totalDaySec = (endTime - startTime) / 1000;
                     const totalWorkSec = totalDaySec - totalBreakSec;
                     const completed = totalWorkSec >= 8 * 3600 ? "✅ Yes" : "❌ No";
 
-                    modalBody.innerHTML += `
-                    <div class="summary border-top pt-3 mt-4">
-                        <h5 class="fw-semibold text-success">Summary</h5>
-                        <p><strong>Total Time Logged:</strong> ${formatTime(totalDaySec)}</p>
-                        <p><strong>Total Break Time:</strong> ${formatTime(totalBreakSec)}</p>
-                        <p><strong>Effective Work Time:</strong> ${formatTime(totalWorkSec)}</p>
-                        <p><strong>8 Hours Completed:</strong> ${completed}</p>
-                    </div>
-                `;
+                    // Show summary at the top
+                    modalBody.innerHTML = `
+            <div class="summary border-bottom pb-3 mb-3">
+                <h5 class="fw-semibold text-success">Summary</h5>
+                <p><strong>Total Time Logged:</strong> ${formatTime(totalDaySec)}</p>
+                <p><strong>Total Break Time:</strong> ${formatTime(totalBreakSec)}</p>
+                <p><strong>Effective Work Time:</strong> ${formatTime(totalWorkSec)}</p>
+                <p><strong>8 Hours Completed:</strong> ${completed}</p>
+            </div>
+
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <button class="btn btn-sm btn-outline-primary" id="downloadPDFBtn">Download Daily PDF</button>
+                    <button class="btn btn-sm btn-outline-success" id="downloadMonthlyBtn">Download Monthly PDF</button>
+                </div>
+                <select class="form-select form-select-sm w-auto" id="themeSelector">
+                    <option value="blue" selected>Blue Theme</option>
+                    <option value="green">Green Theme</option>
+                </select>
+            </div>
+        `;
+
+                    // Render events below the summary
+                    eventsOnDate.forEach(event => {
+                        const eTime = new Date(event.start);
+                        modalBody.innerHTML += `
+                <div class="event-item p-16 mb-16 border rounded bg-light">
+                    <h5 class="fw-semibold mb-8 text-primary">${event.title}</h5>
+                    <p><strong>Status:</strong> ${event.extendedProps.status}</p>
+                    <p><strong>Time:</strong> ${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p>
+                    <p><strong>Remaining Seconds:</strong> ${event.extendedProps.remaining_seconds}</p>
+                    <p><strong>Pause Type:</strong> ${event.extendedProps.pause_type}</p>
+                </div>
+            `;
+                    });
 
                     document.getElementById('downloadPDFBtn').onclick = () => generateDailyPDF(eventsOnDate, info.dateStr);
                     document.getElementById('downloadMonthlyBtn').onclick = () => generateMonthlyPDF(calendar.getEvents());
+
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
 
                 modal.show();
             }
+
         });
 
         calendar.render();

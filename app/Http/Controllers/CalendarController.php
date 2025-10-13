@@ -66,8 +66,9 @@ class CalendarController extends Controller
     {
         $userId = Auth::id();
 
+        // Fetch events sorted by latest first
         $events = UserTimerPause::where('user_id', $userId)
-            ->orderBy('event_time', 'asc')
+            ->orderBy('event_time', 'desc')  // <-- Latest events first
             ->get();
 
         // Define color mapping for clarity
@@ -224,8 +225,9 @@ class CalendarController extends Controller
     {
         $userId = Auth::id();
 
+        // Fetch events sorted by latest first
         $events = UserTimerPause::where('user_id', $userId)
-            ->orderBy('event_time', 'asc')
+            ->orderBy('event_time', 'desc')  // <-- Latest events first
             ->get();
 
         // Define color mapping for clarity
