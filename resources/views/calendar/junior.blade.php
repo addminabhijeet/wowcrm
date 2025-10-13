@@ -97,64 +97,73 @@ $subTitle = 'Calendar';
 
                 if (eventsOnDate.length > 0) {
                     let totalBreakSec = 0,
-                        lastPauseTime = null;
+                        totalWorkSec = 0,
+                        lastPauseTime = null,
+                        tableRows = '';
 
-                    // Calculate summary
-                    eventsOnDate.forEach(event => {
+                    // Iterate events in chronological order for table
+                    const chronologicalEvents = [...eventsOnDate].reverse(); // earliest first
+
+                    for (let i = 0; i < chronologicalEvents.length; i++) {
+                        const event = chronologicalEvents[i];
                         const eTime = new Date(event.start);
-                        const pauseType = (event.extendedProps.pause_type || '').toLowerCase();
-                        if (pauseType === 'inactive') lastPauseTime = eTime;
-                        else if (pauseType === 'resume' && lastPauseTime) {
-                            totalBreakSec += (eTime - lastPauseTime) / 1000;
+                        const type = (event.extendedProps.pause_type || '').toLowerCase();
+                        let breakTime = 0,
+                            workTime = 0;
+
+                        // Calculate break and work time
+                        if (type === 'inactive') {
+                            lastPauseTime = eTime;
+                        } else if ((type === 'resume' || type === 'running') && lastPauseTime) {
+                            breakTime = (eTime - lastPauseTime) / 1000;
+                            totalBreakSec += breakTime;
                             lastPauseTime = null;
                         }
-                    });
 
-                    const startTime = new Date(eventsOnDate[eventsOnDate.length - 1].start); // earliest
-                    const endTime = new Date(eventsOnDate[0].start); // latest
-                    const totalDaySec = (endTime - startTime) / 1000;
-                    const totalWorkSec = totalDaySec - totalBreakSec;
+                        // Work time is difference from previous event (if any)
+                        if (i > 0) {
+                            workTime = (eTime - new Date(chronologicalEvents[i - 1].start)) / 1000;
+                            if (workTime < 0) workTime = 0; // avoid negative
+                            totalWorkSec += workTime;
+                        }
+
+                        tableRows += `
+                <tr>
+                    <td>${event.title}</td>
+                    <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
+                    <td>${formatTime(workTime)}</td>
+                    <td>${formatTime(breakTime)}</td>
+                    <td>${event.extendedProps.status}</td>
+                </tr>
+            `;
+                    }
+
+                    // Summary
                     const completed = totalWorkSec >= 8 * 3600 ? "✅ Yes" : "❌ No";
 
-                    // Show summary at top
                     modalBody.innerHTML = `
             <div class="summary border-bottom pb-3 mb-3">
                 <h5 class="fw-semibold text-success">Summary</h5>
-                <p><strong>Total Time Logged:</strong> ${formatTime(totalDaySec)}</p>
                 <p><strong>Total Break Time:</strong> ${formatTime(totalBreakSec)}</p>
-                <p><strong>Effective Work Time:</strong> ${formatTime(totalWorkSec)}</p>
+                <p><strong>Total Work Time:</strong> ${formatTime(totalWorkSec)}</p>
                 <p><strong>8 Hours Completed:</strong> ${completed}</p>
             </div>
 
-            <div class="d-flex justify-content-between align-items-center mb-3">
-                <div>
-                    <button class="btn btn-sm btn-outline-primary" id="downloadPDFBtn">Download Daily PDF</button>
-                    <button class="btn btn-sm btn-outline-success" id="downloadMonthlyBtn">Download Monthly PDF</button>
-                </div>
-                <select class="form-select form-select-sm w-auto" id="themeSelector">
-                    <option value="blue" selected>Blue Theme</option>
-                    <option value="green">Green Theme</option>
-                </select>
-            </div>
+            <table class="table table-sm table-bordered">
+                <thead>
+                    <tr>
+                        <th>Event</th>
+                        <th>Time</th>
+                        <th>Work Time</th>
+                        <th>Break Time</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    ${tableRows}
+                </tbody>
+            </table>
         `;
-
-                    // Render events below summary
-                    eventsOnDate.forEach(event => {
-                        const eTime = new Date(event.start);
-                        modalBody.innerHTML += `
-                <div class="event-item p-16 mb-16 border rounded bg-light">
-                    <h5 class="fw-semibold mb-8 text-primary">${event.title}</h5>
-                    <p><strong>Status:</strong> ${event.extendedProps.status}</p>
-                    <p><strong>Time:</strong> ${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</p>
-                    <p><strong>Remaining Seconds:</strong> ${event.extendedProps.remaining_seconds}</p>
-                    <p><strong>Pause Type:</strong> ${event.extendedProps.pause_type}</p>
-                </div>
-            `;
-                    });
-
-                    document.getElementById('downloadPDFBtn').onclick = () => generateDailyPDF(eventsOnDate, info.dateStr);
-                    document.getElementById('downloadMonthlyBtn').onclick = () => generateMonthlyPDF(calendar.getEvents());
-
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
