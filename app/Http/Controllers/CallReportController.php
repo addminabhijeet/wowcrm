@@ -112,7 +112,7 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Called & Mailed" calls for this senior
-        $ReadyToPaidCalls = GoogleSheetData::where('created_by', $createdByKey)
+        $readyToPaidCalls = GoogleSheetData::where('created_by', $createdByKey)
             ->where('Exe_Remarks', 'Ready To Paid')
             ->count();
 
@@ -144,7 +144,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
-        $ReadyToPaidCalls = (clone $query)
+        $SReadyToPaidCalls = (clone $query)
             ->where('Exe_Remarks', 'Ready To Paid')
             ->count();
 
@@ -183,12 +183,26 @@ class CallReportController extends Controller
         $t4to5am   = $hourlyCalledMailed[4] ?? 0;
         $t5to6am   = $hourlyCalledMailed[5] ?? 0;
 
+        // Initialize hour blocks (8 PM - 6 AM)
+        $t8po9pm  = $hourlyReadyToPaid[20] ?? 0;
+        $t9po10pm = $hourlyReadyToPaid[21] ?? 0;
+        $t10po11pm = $hourlyReadyToPaid[22] ?? 0;
+        $t11po12pm = $hourlyReadyToPaid[23] ?? 0;
+        $t12po1am  = $hourlyReadyToPaid[0] ?? 0;
+        $t1po2am   = $hourlyReadyToPaid[1] ?? 0;
+        $t2po3am   = $hourlyReadyToPaid[2] ?? 0;
+        $t3po4am   = $hourlyReadyToPaid[3] ?? 0;
+        $t4po5am   = $hourlyReadyToPaid[4] ?? 0;
+        $t5po6am   = $hourlyReadyToPaid[5] ?? 0;
+
         return view('reports.senior', compact(
             'totalCalls',
             'calledAndMailedCalls',
+            'readyToPaidCalls',
             'otherCalls',
             'StotalCalls',
             'ScalledAndMailedCalls',
+            'SreadyToPaidCalls',
             'SotherCalls',
             'selectedDate',
             't8to9pm',
@@ -200,7 +214,17 @@ class CallReportController extends Controller
             't2to3am',
             't3to4am',
             't4to5am',
-            't5to6am'
+            't5to6am',
+            't8po9pm',
+            't9po10pm',
+            't10po11pm',
+            't11po12pm',
+            't12po1am',
+            't1po2am',
+            't2po3am',
+            't3po4am',
+            't4po5am',
+            't5po6am'
         ));
     }
 
@@ -268,6 +292,18 @@ class CallReportController extends Controller
         $t4to5am   = $hourlyCalledMailed[4] ?? 0;
         $t5to6am   = $hourlyCalledMailed[5] ?? 0;
 
+        // Initialize hour variables (20 = 8 PM, etc.)
+        $t8po9pm  = $hourlyReadyToPaid[20] ?? 0;
+        $t9po10pm = $hourlyReadyToPaid[21] ?? 0;
+        $t10po11pm = $hourlyReadyToPaid[22] ?? 0;
+        $t11po12pm = $hourlyReadyToPaid[23] ?? 0;
+        $t12po1am  = $hourlyReadyToPaid[0] ?? 0;
+        $t1po2am   = $hourlyReadyToPaid[1] ?? 0;
+        $t2po3am   = $hourlyReadyToPaid[2] ?? 0;
+        $t3po4am   = $hourlyReadyToPaid[3] ?? 0;
+        $t4po5am   = $hourlyReadyToPaid[4] ?? 0;
+        $t5po6am   = $hourlyReadyToPaid[5] ?? 0;
+
         return view('reports.seniormonthly', compact(
             'MtotalCalls',
             'McalledAndMailedCalls',
@@ -282,7 +318,17 @@ class CallReportController extends Controller
             't2to3am',
             't3to4am',
             't4to5am',
-            't5to6am'
+            't5to6am',
+            't8po9pm',
+            't9po10pm',
+            't10po11pm',
+            't11po12pm',
+            't12po1am',
+            't1po2am',
+            't2po3am',
+            't3po4am',
+            't4po5am',
+            't5po6am'
         ));
     }
 
