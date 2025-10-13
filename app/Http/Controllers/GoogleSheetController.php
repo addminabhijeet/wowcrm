@@ -409,23 +409,40 @@ class GoogleSheetController extends Controller
 
         // Map forwarded_by dynamically
         $data->getCollection()->transform(function ($item) use ($authUser) {
-            $parts = explode('|', $item->created_by ?? '');
-            $userId = $parts[0] ?? null;
-            $role   = $parts[1] ?? 'unknown';
 
-            if ($userId == $authUser->id) {
-                $forwardedBy = "SELF ({$authUser->name}) ({$role})";
-            } elseif ($userId == 0) {
-                $forwardedBy = "SYSTEM (System) ({$role})";
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                // Split by ':' to handle multiple forwarded entries
+                $entries = explode(':', $item->created_by);
+
+                $names = [];
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                // Join all names for forwarded chain
+                $forwardedBy = implode(' → ', $names);
             } else {
-                $user = \App\Models\User::find($userId);
-                $name = $user ? $user->name : 'Unknown';
-                $forwardedBy = "{$name} ({$role})";
+                $forwardedBy = 'N/A';
             }
 
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
+
 
         if ($request->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
