@@ -307,6 +307,7 @@ class CallReportController extends Controller
         return view('reports.seniormonthly', compact(
             'MtotalCalls',
             'McalledAndMailedCalls',
+            'MreadyToPaidCalls',
             'MotherCalls',
             'selectedMonth',
             't8to9pm',
