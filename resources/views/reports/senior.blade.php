@@ -427,7 +427,7 @@ $script = '<script>
 
                 <!-- Stats Section -->
                 <div class="row g-3 mb-4">
-                    <div class="col-md-4">
+                    <div class="col-sm-6 col-md-3">
                         <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                             <div class="icon mb-2 text-primary fs-2">
                                 <i class="bi bi-telephone-fill"></i>
@@ -438,7 +438,7 @@ $script = '<script>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-sm-6 col-md-3">
                         <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                             <div class="icon mb-2 text-success fs-2">
                                 <i class="bi bi-bar-chart-fill"></i>
@@ -449,7 +449,7 @@ $script = '<script>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-sm-6 col-md-3">
                         <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                             <div class="icon mb-2 text-warning fs-2">
                                 <i class="bi bi-envelope-paper-fill"></i>
@@ -457,6 +457,17 @@ $script = '<script>
                             <div>
                                 <small class="text-muted d-block">Called & Mailed (C&MC)</small>
                                 <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-3">
+                        <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                            <div class="icon mb-2 text-warning fs-2">
+                                <i class="bi bi-envelope-paper-fill"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Ready To Paid Calls (R2P)</small>
+                                <h4 class="fw-bold text-dark mb-0">{{ $SreadyToPaidCalls }}</h4>
                             </div>
                         </div>
                     </div>
