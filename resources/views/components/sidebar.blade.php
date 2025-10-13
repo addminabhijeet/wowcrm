@@ -118,9 +118,7 @@ $role = Auth::user()->role;
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('call.reports.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Personal Report</a></li>
                 </ul>
-                <ul class="sidebar-submenu">
-                    <li><a href="{{ route('call.reports.seniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
-                </ul>
+
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('call.reports.alljuniorlist', ['userId' => Auth::id()]) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Team Report</a></li>
                 </ul>
