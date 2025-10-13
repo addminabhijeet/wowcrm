@@ -138,14 +138,22 @@ $subTitle = 'Calendar';
             `;
                     }
 
+                    // Add total row at the end
+                    tableRows += `
+            <tr class="fw-bold text-success">
+                <td colspan="2" class="text-end">Total</td>
+                <td>${formatTime(totalWorkSec)}</td>
+                <td>${formatTime(totalBreakSec)}</td>
+                <td></td>
+            </tr>
+        `;
+
                     // Summary
                     const completed = totalWorkSec >= 8 * 3600 ? "✅ Yes" : "❌ No";
 
                     modalBody.innerHTML = `
             <div class="summary border-bottom pb-3 mb-3">
                 <h5 class="fw-semibold text-success">Summary</h5>
-                <p><strong>Total Break Time:</strong> ${formatTime(totalBreakSec)}</p>
-                <p><strong>Total Work Time:</strong> ${formatTime(totalWorkSec)}</p>
                 <p><strong>8 Hours Completed:</strong> ${completed}</p>
             </div>
 
@@ -170,6 +178,7 @@ $subTitle = 'Calendar';
 
                 modal.show();
             }
+
 
         });
 
