@@ -474,7 +474,7 @@ $script = '<script>
                             </div>
                             <div>
                                 <small class="text-muted d-block">Ready To Paid (R2P)</small>
-                                <h4 class="fw-bold text-dark mb-0">{{ $MreadyToPaidCalls }}</h4>
+                                <h4 class="fw-bold text-dark mb-0">0</h4>
                             </div>
                         </div>
                     </div>
@@ -592,7 +592,7 @@ $script = '<script>
                     <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 shadow-sm bg-white">
                         <div>
                             <span class="text-secondary fw-normal d-block mb-1">Ready To Paid Calls (R2P)</span>
-                            <h5 class="fw-semibold mb-0">{{ $MreadyToPaidCalls }}</h5>
+                            <h5 class="fw-semibold mb-0">0</h5>
                         </div>
                         <div id="iconBarChartR2p" class="p-2"></div>
                     </div>
