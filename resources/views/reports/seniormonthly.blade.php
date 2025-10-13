@@ -427,7 +427,8 @@ $script = '<script>
 
                 <!-- Stats Section -->
                 <div class="row g-3 mb-4">
-                    <div class="col-md-4">
+                    <!-- Total Calls -->
+                    <div class="col-md-3 col-sm-6">
                         <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                             <div class="icon mb-2 text-primary fs-2">
                                 <i class="bi bi-telephone-fill"></i>
@@ -438,7 +439,9 @@ $script = '<script>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+
+                    <!-- Other Calls -->
+                    <div class="col-md-3 col-sm-6">
                         <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                             <div class="icon mb-2 text-success fs-2">
                                 <i class="bi bi-bar-chart-fill"></i>
@@ -449,9 +452,11 @@ $script = '<script>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
+
+                    <!-- Called & Mailed -->
+                    <div class="col-md-3 col-sm-6">
                         <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                            <div class="icon mb-2 text-warning fs-2">
+                            <div class="icon mb-2 text-info fs-2">
                                 <i class="bi bi-envelope-paper-fill"></i>
                             </div>
                             <div>
@@ -460,60 +465,66 @@ $script = '<script>
                             </div>
                         </div>
                     </div>
+
+                    <!-- Ready To Paid -->
+                    <div class="col-md-3 col-sm-6">
+                        <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                            <div class="icon mb-2 text-warning fs-2">
+                                <i class="bi bi-cash-stack"></i>
+                            </div>
+                            <div>
+                                <small class="text-muted d-block">Ready To Paid (R2P)</small>
+                                <h4 class="fw-bold text-dark mb-0">{{ $MreadyToPaidCalls }}</h4>
+                            </div>
+                        </div>
+                    </div>
                 </div>
+
 
                 <!-- Table Section -->
                 <div class="table-responsive">
-                    <table class="table table-hover table-bordered align-middle mb-0">
-                        <thead class="table-primary">
-                            <tr>
-                                <th class="fw-semibold">⏰ Time Range</th>
-                                <th class="fw-semibold text-center">📊 Called & Mailed Count</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>8 PM - 9 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t8to9pm }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>9 PM - 10 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t9to10pm }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>10 PM - 11 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t10to11pm }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>11 PM - 12 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>12 AM - 1 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t12to1am }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>1 AM - 2 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t1to2am }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>2 AM - 3 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t2to3am }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>3 AM - 4 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t3to4am }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>4 AM - 5 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t4to5am }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>5 AM - 6 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t5to6am }}</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div class="mt-4">
+                        <!-- Total Calls -->
+                        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
+                            <div>
+                                <span class="text-secondary fw-normal d-block text-sm">Total Calls (TC)</span>
+                                <h4 class="fw-semibold mb-0 text-dark">{{ $MtotalCalls }}</h4>
+                            </div>
+                            <div class="position-relative">
+                                <div id="semiCircleGauge" class="chart-container"></div>
+                                <span class="w-36-px h-36-px rounded-circle bg-light d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0">
+                                    <i class="bi bi-emoji-smile text-primary fs-5"></i>
+                                </span>
+                            </div>
+                        </div>
+
+                        <!-- Other Calls -->
+                        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
+                            <div>
+                                <span class="text-secondary fw-normal d-block text-sm">Other Calls (OC)</span>
+                                <h4 class="fw-semibold mb-0 text-dark">{{ $MotherCalls }}</h4>
+                            </div>
+                            <div id="areaChart" class="chart-container"></div>
+                        </div>
+
+                        <!-- Called & Mailed Calls -->
+                        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
+                            <div>
+                                <span class="text-secondary fw-normal d-block text-sm">Called & Mailed (C&MC)</span>
+                                <h4 class="fw-semibold mb-0 text-dark">{{ $McalledAndMailedCalls }}</h4>
+                            </div>
+                            <div id="calledMailedChart" class="chart-container"></div>
+                        </div>
+
+                        <!-- Ready To Paid Calls -->
+                        <div class="d-flex align-items-center justify-content-between flex-wrap">
+                            <div>
+                                <span class="text-secondary fw-normal d-block text-sm">Ready To Paid (R2P)</span>
+                                <h4 class="fw-semibold mb-0 text-dark">{{ $MreadyToPaidCalls }}</h4>
+                            </div>
+                            <div id="readyToPaidChart" class="chart-container"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -524,39 +535,52 @@ $script = '<script>
             <div class="card-body p-24">
                 <h6 class="mb-2 fw-bold text-lg">Statistic</h6>
 
-                <div class="mt-24">
-                    <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                <div class="mt-4">
+                    <!-- Total Calls -->
+                    <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                         <div>
-                            <span class="text-secondary-light fw-normal mb-12 text-xl">Total Calls (TC)</span>
+                            <span class="text-secondary fw-normal d-block mb-1">Total Calls (TC)</span>
                             <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
                         </div>
                         <div class="position-relative">
                             <div id="semiCircleGauge"></div>
-                            <span class="w-36-px h-36-px rounded-circle bg-neutral-100 d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0">
-                                <iconify-icon icon="mdi:emoji" class="text-primary-600 text-md mb-0"></iconify-icon>
+                            <span class="rounded-circle bg-light d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0 p-2">
+                                <iconify-icon icon="mdi:emoji" class="text-primary fs-5"></iconify-icon>
                             </span>
                         </div>
                     </div>
 
-                    <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                    <!-- Other Calls -->
+                    <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                         <div>
-                            <span class="text-secondary-light fw-normal mb-12 text-xl">Other Calls (OC)</span>
+                            <span class="text-secondary fw-normal d-block mb-1">Other Calls (OC)</span>
                             <h5 class="fw-semibold mb-0">{{ $MotherCalls }}</h5>
                         </div>
-                        <div id="areaChart"></div>
+                        <div id="areaChart" class="p-2"></div>
                     </div>
 
-                    <div class="d-flex align-items-center gap-1 justify-content-between">
+                    <!-- Called & Mailed Calls -->
+                    <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                         <div>
-                            <span class="text-secondary-light fw-normal mb-12 text-xl">Called & Mailed Calls (C&MC)</span>
+                            <span class="text-secondary fw-normal d-block mb-1">Called & Mailed Calls (C&MC)</span>
                             <h5 class="fw-semibold mb-0">{{ $McalledAndMailedCalls }}</h5>
                         </div>
-                        <div id="dailyIconBarChart"></div>
+                        <div id="iconBarChartCmc" class="p-2"></div>
+                    </div>
+
+                    <!-- Ready To Paid Calls -->
+                    <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 shadow-sm bg-white">
+                        <div>
+                            <span class="text-secondary fw-normal d-block mb-1">Ready To Paid Calls (R2P)</span>
+                            <h5 class="fw-semibold mb-0">{{ $MreadyToPaidCalls }}</h5>
+                        </div>
+                        <div id="iconBarChartR2p" class="p-2"></div>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
 </div>
 
-    @endsection
+@endsection
