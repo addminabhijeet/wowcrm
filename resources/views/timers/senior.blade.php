@@ -47,7 +47,7 @@ $script = '<script>
     <div class="card-body p-24">
         <div class="row gy-4">
             @foreach($timers as $timer)
-            <div class="col-xxl-3 col-md-6 user-grid-card">
+            <div class="col-xxl-3 col-md-6 user-grid-card"style="{{ $timer['status'] === 'paused' ? 'background-color:#fff3cd;' : ($timer['status'] === 'running' ? 'background-color:#d4edda;' : '') }}">
                 <div class="position-relative border radius-16 overflow-hidden" style="padding-top: 30px;">
                     <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
 
@@ -102,8 +102,6 @@ $script = '<script>
                                 </span>
                             </div>
 
-
-
                             <!-- Control Buttons -->
                             <div class="seniorcontrolButtons" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
                                 <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
@@ -120,6 +118,7 @@ $script = '<script>
                                 </button>
                             </div>
                         </div>
+
                         <!-- Action Buttons -->
                         @if($timer['button_status'] == 0)
                         <a href="javascript:void(0)"
@@ -155,8 +154,6 @@ $script = '<script>
                             Log Out
                         </button>
                         @endif
-
-
 
                     </div>
                 </div>
@@ -280,6 +277,18 @@ $script = '<script>
                             timerWidget.dataset.remainingSeconds = data.remaining_seconds;
                             timerWidget.dataset.elapsedSeconds = data.elapsed_seconds;
                             updateUI(userId, data); // assume updateUI handles per-user updates
+
+                            // 🔹 Update card background based on status
+                            const card = timerWidget.closest('.user-grid-card');
+                            if (card) {
+                                if (data.status === 'paused') {
+                                    card.style.backgroundColor = '#fff3cd'; // yellow
+                                } else if (data.status === 'running') {
+                                    card.style.backgroundColor = '#d4edda'; // green
+                                } else {
+                                    card.style.backgroundColor = ''; // default
+                                }
+                            }
                         }
                     })
                     .catch(err => console.error("[Action] Failed to send:", err));
@@ -544,54 +553,5 @@ $script = '<script>
     });
 </script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
 
-        function updatePauseButtons() {
-            fetch('{{ route("timer.checkPauseButtons") }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({})
-                })
-                .then(res => res.json())
-                .then(data => {
-                    const buttonsToHide = document.querySelectorAll(
-                        '#controlButtons button[data-type="lunch"], ' +
-                        '#controlButtons button[data-type="tea"], ' +
-                        '#controlButtons button[data-type="break"]'
-                    );
-
-                    const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
-
-                    if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
-                        // Hide lunch/tea/break buttons
-                        buttonsToHide.forEach(btn => {
-                            if (btn) btn.style.display = 'none';
-                        });
-
-                        // Show resume button
-                        if (resumeBtn) resumeBtn.style.display = 'flex';
-                    } else {
-                        // Show all pause buttons
-                        buttonsToHide.forEach(btn => {
-                            if (btn) btn.style.display = 'flex';
-                        });
-
-                        // Hide resume button
-                        if (resumeBtn) resumeBtn.style.display = 'none';
-                    }
-                })
-                .catch(err => console.error('❌ Error checking pause buttons:', err));
-        }
-
-        // Initial check
-        updatePauseButtons();
-
-        // Check every 2 seconds
-        setInterval(updatePauseButtons, 1000);
-    });
-</script>
 @endsection
