@@ -555,7 +555,7 @@ class DashboardController extends Controller
 
         $smtp->save();
 
-        return redirect()->back()->with('success', 'SMTP settings saved successfully!');
+        return redirect()->route('smtp.editall')->with('success', 'SMTP settings saved successfully!');
     }
 
     public function update(Request $request, $userId)
