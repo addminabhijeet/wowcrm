@@ -119,7 +119,7 @@ $script ='<script>
 
                         {{-- Immigration --}}
                         <td>
-                            @php $immOptions = ['Dependent Visa','Global Visa','Graduate Visa','Student Visa','Citizen','Permanent Residence(ILR)']; @endphp
+                            @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','HIB','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Immigration">
                                 <option value="">-- Select --</option>
                                 @foreach($immOptions as $option)
@@ -314,13 +314,18 @@ $script ='<script>
             'Busy': '#cce5ff'
         };
         const immColors = {
-            'Dependent Visa': '#d1ecf1',
-            'Global Visa': '#cce5ff',
-            'Graduate Visa': '#d4edda',
-            'Student Visa': '#fff3cd',
-            'Citizen': '#e2e3e5',
-            'Permanent Residence(ILR)': '#f8d7da'
+            'F1 CPT': '#d1ecf1',
+            'F1 OPT': '#cce5ff',
+            'STEM OPT': '#d4edda',
+            'HIB': '#fff3cd',
+            'B2': '#e2e3e5',
+            'B1': '#f8d7da',
+            'H4': '#ffe5b4',
+            'H4 EAD': '#e6ccff',
+            'GC/PR': '#d0f0c0',
+            'USC': '#f5c6cb'
         };
+
         const relColors = {
             'YES': '#d4edda',
             'NO': '#f8d7da'
@@ -615,7 +620,7 @@ $script ='<script>
                     let opts = [];
                     if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
                     if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'];
-                    if (k === 'Immigration') opts = ['Dependent Visa', 'Global Visa', 'Graduate Visa', 'Student Visa', 'Citizen', 'Permanent Residence(ILR)'];
+                    if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'HIB', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC'];
                     if (k === 'Relocation') opts = ['YES', 'NO'];
                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
                     if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
