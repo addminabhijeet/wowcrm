@@ -97,29 +97,35 @@ class DashboardController extends Controller
             }
 
             $workDaySeconds = $settings->work_day_seconds;
-            $today = now()->startOfDay();
 
-            // Check if timer already exists for today
-            $existingTimer = UserTimerLog::where('user_id', $user->id)
-                ->whereDate('created_at', $today)
+            // Fetch the latest timer for this user (any date)
+            $lastTimer = UserTimerLog::where('user_id', $user->id)
+                ->orderByDesc('created_at')
                 ->first();
 
             // Handle "check only" requests
             if ($request->input('check')) {
                 return response()->json([
-                    'exists' => $existingTimer ? true : false
+                    'exists' => $lastTimer ? true : false,
+                    'timer' => $lastTimer
                 ]);
             }
 
-            // If timer exists, respond accordingly
-            if ($existingTimer) {
-                return response()->json([
-                    'exists' => true,
-                    'timer' => $existingTimer
-                ]);
+            // If there is a previous timer, check time difference
+            if ($lastTimer) {
+                $hoursSinceLast = now()->diffInHours($lastTimer->created_at);
+
+                if ($hoursSinceLast < 10) {
+                    // Less than 10 hours since last timer — don’t create a new one
+                    return response()->json([
+                        'exists' => true,
+                        'timer' => $lastTimer,
+                        'message' => "New timer allowed after 10 hours."
+                    ]);
+                }
             }
 
-            // Create a new timer
+            // Create a new timer if more than 10 hours passed OR no previous timer exists
             $timer = UserTimerLog::create([
                 'user_id'           => $user->id,
                 'login_id'          => $user->id,
