@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 
 class UserController extends Controller
@@ -121,7 +122,6 @@ class UserController extends Controller
     {
         return view('user.juniorcreate');
     }
-
     public function juniorstore(Request $request)
     {
         $validated = $request->validate([
@@ -135,20 +135,36 @@ class UserController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Handle Image Upload
+        // ✅ Handle Image Upload (Consistent Path + Naming)
         if ($request->hasFile('image')) {
-            $imageName = time() . '_' . $request->image->getClientOriginalName();
-            $request->image->storeAs('public/user_images', $imageName);
-            $validated['image'] = $imageName;
+            $file = $request->file('image');
+
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Store file inside 'public/user_images'
+                $filePath = $file->storeAs('user_images', $newName, 'public');
+                $validated['image'] = $filePath; // Store relative path (not just filename)
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
+        // ✅ Hash the password before saving
         $validated['password'] = Hash::make($validated['password']);
 
+        // ✅ Create user record
         User::create($validated);
 
-        return redirect()->route("users.junior")
+        return redirect()
+            ->route('users.junior')
             ->with('success', 'Junior user added successfully!');
     }
+
 
     // ======================
     // EDIT / UPDATE
@@ -175,22 +191,40 @@ class UserController extends Controller
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
+        // ✅ Handle Image Upload (Corrected Path)
         if ($request->hasFile('image')) {
-            if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
-                Storage::delete('public/user_images/' . $user->image);
-            }
+            $file = $request->file('image');
 
-            $filename = time() . '.' . $request->image->extension();
-            $request->image->storeAs('public/user_images', $filename);
-            $validated['image'] = $filename;
+            // Generate unique filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Store new file
+                $filePath = $file->storeAs('user_images', $newName, 'public');
+
+                // Delete old image if exists
+                if ($user->image && Storage::disk('public')->exists($user->image)) {
+                    Storage::disk('public')->delete($user->image);
+                }
+
+                // Store only relative path
+                $validated['image'] = $filePath;
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
+        // ✅ Handle Password
         if (!empty($request->password)) {
             $validated['password'] = Hash::make($request->password);
         } else {
             unset($validated['password']);
         }
 
+        // ✅ Update User
         $user->update($validated);
 
         return redirect()
