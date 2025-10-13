@@ -414,13 +414,13 @@ class GoogleSheetController extends Controller
             $role   = $parts[1] ?? 'unknown';
 
             if ($userId == $authUser->id) {
-                $forwardedBy = "SELF ({$userId}) ({$role})";
+                $forwardedBy = "SELF ({$authUser->name}) ({$role})";
             } elseif ($userId == 0) {
-                $forwardedBy = "SYSTEM (0) ({$role})";
+                $forwardedBy = "SYSTEM (System) ({$role})";
             } else {
                 $user = \App\Models\User::find($userId);
                 $name = $user ? $user->name : 'Unknown';
-                $forwardedBy = "{$name} ({$userId}) ({$role})";
+                $forwardedBy = "{$name} ({$role})";
             }
 
             $item->forwarded_by = $forwardedBy;
