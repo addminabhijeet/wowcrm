@@ -278,7 +278,7 @@ $script = '<script>
                             timerWidget.dataset.elapsedSeconds = data.elapsed_seconds;
                             updateUI(userId, data); // assume updateUI handles per-user updates
 
-                            // Update card background based on status
+                            // 🔹 Update card background based on status
                             const card = timerWidget.closest('.user-grid-card');
                             if (card) {
                                 if (data.status === 'paused') {
@@ -294,42 +294,16 @@ $script = '<script>
                     .catch(err => console.error("[Action] Failed to send:", err));
             });
         });
-    }
 
-    // Function to update timers every second
-    function startTimerIntervals() {
-        setInterval(() => {
-            document.querySelectorAll('.timer-widget').forEach(timerWidget => {
-                let remaining = parseInt(timerWidget.dataset.remainingSeconds || 0);
-                let elapsed = parseInt(timerWidget.dataset.elapsedSeconds || 0);
-                const status = timerWidget.dataset.status;
-
-                if (status === 'running') {
-                    remaining = Math.max(0, remaining - 1);
-                    elapsed += 1;
-
-                    timerWidget.dataset.remainingSeconds = remaining;
-                    timerWidget.dataset.elapsedSeconds = elapsed;
-
-                    // Update the per-user UI
-                    updateUI(timerWidget.dataset.user, {
-                        remaining_seconds: remaining,
-                        elapsed_seconds: elapsed,
-                        status: status
-                    });
-                }
-            });
-        }, 1000); // 🔹 runs every 1 second
     }
 
     // Initialize once DOM is ready
     document.addEventListener("DOMContentLoaded", () => {
         console.debug("[Debug] DOM fully loaded. Setting up senior control buttons...");
         setupseniorControlButtons();
-        startTimerIntervals(); // start per-second updates
     });
+        setInterval(setupseniorControlButtons, 1000);
 </script>
-
 
 
 
