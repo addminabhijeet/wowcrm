@@ -210,7 +210,7 @@ $script ='<script>
                         {{-- Forwarded By --}}
                         <td>
                             <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
-                                value="{{ $row->created_by ?? '' }}" placeholder="Forwarded By" readonly>
+                                value="{{ $row->forwarded_by ?? '' }}" placeholder="Forwarded By" readonly>
                         </td>
 
                         {{-- View (Resume) --}}
@@ -598,7 +598,7 @@ $script ='<script>
 
         }
 
-        
+
 
         // Check if we need to add a blank row on page load
         // Only add if there are no existing "new" rows

@@ -484,28 +484,40 @@ class GoogleSheetController extends Controller
 
         // Map forwarded_by dynamically for multiple creators
         $data->getCollection()->transform(function ($item) use ($authUser) {
-            $creators = explode(':', $item->created_by ?? '');
-            $forwardedByParts = [];
 
-            foreach ($creators as $creator) {
-                $parts = explode('|', $creator);
-                $userId = $parts[0] ?? null;
-                $role   = $parts[1] ?? 'unknown';
+            $forwardedBy = '';
 
-                if ($userId == $authUser->id) {
-                    $forwardedByParts[] = "SELF ({$userId}) ({$role})";
-                } elseif ($userId == 0) {
-                    $forwardedByParts[] = "SYSTEM (0) ({$role})";
-                } else {
-                    $user = \App\Models\User::find($userId);
-                    $name = $user ? $user->name : 'Unknown';
-                    $forwardedByParts[] = "{$name} ({$userId}) ({$role})";
+            if (!empty($item->created_by)) {
+                // Split by ':' to handle multiple forwarded entries
+                $entries = explode(':', $item->created_by);
+
+                $names = [];
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
                 }
+
+                // Join all names for forwarded chain
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
             }
 
-            $item->forwarded_by = implode(', ', $forwardedByParts);
+            $item->forwarded_by = $forwardedBy;
             return $item;
         });
+
 
         if ($request->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
@@ -517,6 +529,7 @@ class GoogleSheetController extends Controller
 
     public function seniorpaid(Request $request)
     {
+        $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
 
@@ -543,28 +556,41 @@ class GoogleSheetController extends Controller
 
         $data = $query->orderBy('id', 'desc')->paginate(10);
 
-        // Map forwarded_by dynamically for multiple creators
-        $data->getCollection()->transform(function ($item) {
-            $creators = explode(':', $item->created_by ?? '');
-            $forwardedByParts = [];
+        $data->getCollection()->transform(function ($item) use ($authUser) {
 
-            foreach ($creators as $creator) {
-                $parts = explode('|', $creator);
-                $userId = $parts[0] ?? null;
-                $role   = $parts[1] ?? 'unknown';
+            $forwardedBy = '';
 
-                if ($userId == 0) {
-                    $forwardedByParts[] = "SYSTEM (0) ({$role})";
-                } else {
-                    $user = \App\Models\User::find($userId);
-                    $name = $user ? $user->name : 'Unknown';
-                    $forwardedByParts[] = "{$name} ({$userId}) ({$role})";
+            if (!empty($item->created_by)) {
+                // Split by ':' to handle multiple forwarded entries
+                $entries = explode(':', $item->created_by);
+
+                $names = [];
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
                 }
+
+                // Join all names for forwarded chain
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
             }
 
-            $item->forwarded_by = implode(', ', $forwardedByParts);
+            $item->forwarded_by = $forwardedBy;
             return $item;
         });
+
 
         if (request()->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
