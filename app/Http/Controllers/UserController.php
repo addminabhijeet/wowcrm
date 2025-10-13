@@ -36,11 +36,23 @@ class UserController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Handle Image Upload
+        // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
-            $imageName = time() . '_' . $request->image->getClientOriginalName();
-            $request->image->storeAs('public/user_images', $imageName);
-            $validated['image'] = $imageName;
+            $file = $request->file('image');
+
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         $validated['password'] = Hash::make($validated['password']);
@@ -76,14 +88,23 @@ class UserController extends Controller
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
+        // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
-            if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
-                Storage::delete('public/user_images/' . $user->image);
-            }
+            $file = $request->file('image');
 
-            $filename = time() . '.' . $request->image->extension();
-            $request->image->storeAs('public/user_images', $filename);
-            $validated['image'] = $filename;
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         if (!empty($request->password)) {
@@ -397,11 +418,23 @@ class UserController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Handle Image Upload
+        // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
-            $imageName = time() . '_' . $request->image->getClientOriginalName();
-            $request->image->storeAs('public/user_images', $imageName);
-            $validated['image'] = $imageName;
+            $file = $request->file('image');
+
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         $validated['password'] = Hash::make($validated['password']);
@@ -437,14 +470,23 @@ class UserController extends Controller
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
+        // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
-            if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
-                Storage::delete('public/user_images/' . $user->image);
-            }
+            $file = $request->file('image');
 
-            $filename = time() . '.' . $request->image->extension();
-            $request->image->storeAs('public/user_images', $filename);
-            $validated['image'] = $filename;
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         if (!empty($request->password)) {
@@ -496,11 +538,23 @@ class UserController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Handle Image Upload
+        // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
-            $imageName = time() . '_' . $request->image->getClientOriginalName();
-            $request->image->storeAs('public/user_images', $imageName);
-            $validated['image'] = $imageName;
+            $file = $request->file('image');
+
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         $validated['password'] = Hash::make($validated['password']);
@@ -536,14 +590,23 @@ class UserController extends Controller
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
+        // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
-            if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
-                Storage::delete('public/user_images/' . $user->image);
-            }
+            $file = $request->file('image');
 
-            $filename = time() . '.' . $request->image->extension();
-            $request->image->storeAs('public/user_images', $filename);
-            $validated['image'] = $filename;
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         if (!empty($request->password)) {
@@ -595,11 +658,23 @@ class UserController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // Handle Image Upload
+        // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
-            $imageName = time() . '_' . $request->image->getClientOriginalName();
-            $request->image->storeAs('public/user_images', $imageName);
-            $validated['image'] = $imageName;
+            $file = $request->file('image');
+
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         $validated['password'] = Hash::make($validated['password']);
@@ -637,14 +712,23 @@ class UserController extends Controller
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
+        // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
-            if ($user->image && Storage::exists('public/user_images/' . $user->image)) {
-                Storage::delete('public/user_images/' . $user->image);
-            }
+            $file = $request->file('image');
 
-            $filename = time() . '.' . $request->image->extension();
-            $request->image->storeAs('public/user_images', $filename);
-            $validated['image'] = $filename;
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
         }
 
         if (!empty($request->password)) {
