@@ -135,7 +135,7 @@ class UserController extends Controller
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
         ]);
 
-        // ✅ Handle Image Upload (Consistent Path + Naming)
+        // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
             $file = $request->file('image');
 
@@ -146,24 +146,25 @@ class UserController extends Controller
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store file inside 'public/user_images'
-                $filePath = $file->storeAs('user_images', $newName, 'public');
-                $validated['image'] = $filePath; // Store relative path (not just filename)
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
             } catch (\Exception $e) {
                 return back()->with('error', 'Image upload failed: ' . $e->getMessage());
             }
         }
 
-        // ✅ Hash the password before saving
+        // Hash the password before saving
         $validated['password'] = Hash::make($validated['password']);
 
-        // ✅ Create user record
+        // Create user record
         User::create($validated);
 
         return redirect()
             ->route('users.junior')
             ->with('success', 'Junior user added successfully!');
     }
+
 
 
     // ======================
@@ -191,7 +192,7 @@ class UserController extends Controller
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
-        // ✅ Handle Image Upload (Corrected Path)
+        // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
             $file = $request->file('image');
 
@@ -202,29 +203,29 @@ class UserController extends Controller
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store new file
-                $filePath = $file->storeAs('user_images', $newName, 'public');
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
 
                 // Delete old image if exists
-                if ($user->image && Storage::disk('public')->exists($user->image)) {
-                    Storage::disk('public')->delete($user->image);
+                if ($user->image && file_exists(public_path($user->image))) {
+                    unlink(public_path($user->image));
                 }
 
-                // Store only relative path
-                $validated['image'] = $filePath;
+                // Store relative path for asset()
+                $validated['image'] = 'user_images/' . $newName;
             } catch (\Exception $e) {
                 return back()->with('error', 'Image upload failed: ' . $e->getMessage());
             }
         }
 
-        // ✅ Handle Password
+        // Handle password
         if (!empty($request->password)) {
             $validated['password'] = Hash::make($request->password);
         } else {
             unset($validated['password']);
         }
 
-        // ✅ Update User
+        // Update user
         $user->update($validated);
 
         return redirect()
