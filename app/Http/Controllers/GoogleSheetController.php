@@ -383,13 +383,11 @@ class GoogleSheetController extends Controller
     {
         $authUser = Auth::user();
         $search = $request->input('search');
-        $rowId  = $request->input('row_id');
+        $rowId = $request->input('row_id');
 
-        // Patterns for "created_by" field
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
-        // Build the base query
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
             $q->where('created_by', $authUser->id . '|senior')
                 ->orWhere('created_by', '0|senior')
@@ -397,12 +395,9 @@ class GoogleSheetController extends Controller
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
         });
 
-        // Filter by specific row if provided
         if ($rowId) {
             $query->where('id', $rowId);
-        }
-        // Search filter for 3+ characters
-        elseif ($search && strlen($search) >= 3) {
+        } elseif ($search && strlen($search) >= 3) {
             $query->where(function ($q) use ($search) {
                 $q->where('Name', 'LIKE', "%{$search}%")
                     ->orWhere('Email_Address', 'LIKE', "%{$search}%")
@@ -410,11 +405,10 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // Get all matching data (no pagination)
-        $data = $query->orderBy('id', 'desc')->get();
+        $data = $query->orderBy('id', 'desc')->paginate(10);
 
         // Map forwarded_by dynamically
-        $data->transform(function ($item) use ($authUser) {
+        $data->getCollection()->transform(function ($item) use ($authUser) {
             $parts = explode('|', $item->created_by ?? '');
             $userId = $parts[0] ?? null;
             $role   = $parts[1] ?? 'unknown';
@@ -433,12 +427,10 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // Return AJAX partial if requested
         if ($request->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
         }
 
-        // Return full page view
         return view('database.senior', compact('data'));
     }
 
