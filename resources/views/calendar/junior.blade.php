@@ -85,23 +85,24 @@ $subTitle = 'Calendar';
             datesSet: function() {
                 highlightUnderworkedDays(calendar);
             },
+            // Helper: format seconds as hh:mm
+
+
             dateClick: function(info) {
                 modalDate.textContent = info.dateStr;
                 modalBody.innerHTML = '';
 
-                // Filter events for the clicked date
                 const eventsOnDate = calendar.getEvents().filter(e => e.startStr.slice(0, 10) === info.dateStr);
 
                 // Sort latest first
                 eventsOnDate.sort((a, b) => new Date(b.start) - new Date(a.start));
 
                 if (eventsOnDate.length > 0) {
-                    let totalBreakSec = 0,
-                        totalWorkSec = 0,
-                        lastPauseTime = null,
-                        tableRows = '';
+                    let totalBreakSec = 0;
+                    let totalWorkSec = 0;
+                    let lastPauseTime = null;
+                    let tableRows = '';
 
-                    // Iterate events in chronological order for table
                     const chronologicalEvents = [...eventsOnDate].reverse(); // earliest first
 
                     for (let i = 0; i < chronologicalEvents.length; i++) {
@@ -111,19 +112,20 @@ $subTitle = 'Calendar';
                         let breakTime = 0,
                             workTime = 0;
 
-                        // Calculate break and work time
                         if (type === 'inactive') {
                             lastPauseTime = eTime;
                         } else if ((type === 'resume' || type === 'running') && lastPauseTime) {
-                            breakTime = (eTime - lastPauseTime) / 1000;
+                            // Calculate break
+                            breakTime = (eTime - lastPauseTime) / 1000; // seconds
                             totalBreakSec += breakTime;
                             lastPauseTime = null;
                         }
 
-                        // Work time is difference from previous event (if any)
+                        // Work time = difference to previous event minus break
                         if (i > 0) {
-                            workTime = (eTime - new Date(chronologicalEvents[i - 1].start)) / 1000;
-                            if (workTime < 0) workTime = 0; // avoid negative
+                            let prevTime = new Date(chronologicalEvents[i - 1].start);
+                            workTime = (eTime - prevTime) / 1000; // seconds
+                            if (workTime < 0) workTime = 0;
                             totalWorkSec += workTime;
                         }
 
@@ -138,7 +140,7 @@ $subTitle = 'Calendar';
             `;
                     }
 
-                    // Add total row at the end
+                    // Add total row
                     tableRows += `
             <tr class="fw-bold text-success">
                 <td colspan="2" class="text-end">Total</td>
@@ -148,7 +150,6 @@ $subTitle = 'Calendar';
             </tr>
         `;
 
-                    // Summary
                     const completed = totalWorkSec >= 8 * 3600 ? "✅ Yes" : "❌ No";
 
                     modalBody.innerHTML = `
@@ -178,6 +179,7 @@ $subTitle = 'Calendar';
 
                 modal.show();
             }
+
 
 
         });
