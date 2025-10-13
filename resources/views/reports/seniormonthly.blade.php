@@ -483,48 +483,68 @@ $script = '<script>
 
                 <!-- Table Section -->
                 <div class="table-responsive">
-                    <div class="mt-4">
-                        <!-- Total Calls -->
-                        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
-                            <div>
-                                <span class="text-secondary fw-normal d-block text-sm">Total Calls (TC)</span>
-                                <h4 class="fw-semibold mb-0 text-dark">{{ $MtotalCalls }}</h4>
-                            </div>
-                            <div class="position-relative">
-                                <div id="semiCircleGauge" class="chart-container"></div>
-                                <span class="w-36-px h-36-px rounded-circle bg-light d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0">
-                                    <i class="bi bi-emoji-smile text-primary fs-5"></i>
-                                </span>
-                            </div>
-                        </div>
+                    <table class="table table-hover table-bordered align-middle mb-0">
+                        <thead class="table-primary text-center">
+                            <tr>
+                                <th class="fw-semibold text-start">⏰ Time Range</th>
+                                <th class="fw-semibold">💰 Ready To Paid (R2P) Count</th>
+                                <th class="fw-semibold">📧 Called & Mailed (C&MC) Count</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-light">
+                            <tr>
+                                <td>8 PM - 9 PM</td>
+                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t8po9_r2p }}</span></td>
+                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t8to9_cmc }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>9 PM - 10 PM</td>
+                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t9po10_r2p }}</span></td>
+                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t9to10_cmc }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>10 PM - 11 PM</td>
+                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t10po11_r2p }}</span></td>
+                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t10to11_cmc }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>11 PM - 12 AM</td>
+                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t11po12_r2p }}</span></td>
+                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t11to12_cmc }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>12 AM - 1 AM</td>
+                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t12po1_r2p }}</span></td>
+                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t12to1_cmc }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>1 AM - 2 AM</td>
+                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t1po2_r2p }}</span></td>
+                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t1to2_cmc }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>2 AM - 3 AM</td>
+                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t2po3_r2p }}</span></td>
+                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t2to3_cmc }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>3 AM - 4 AM</td>
+                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t3po4_r2p }}</span></td>
+                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t3to4_cmc }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>4 AM - 5 AM</td>
+                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t4po5_r2p }}</span></td>
+                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t4to5_cmc }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>5 AM - 6 AM</td>
+                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t5po6_r2p }}</span></td>
+                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t5to6_cmc }}</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
 
-                        <!-- Other Calls -->
-                        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
-                            <div>
-                                <span class="text-secondary fw-normal d-block text-sm">Other Calls (OC)</span>
-                                <h4 class="fw-semibold mb-0 text-dark">{{ $MotherCalls }}</h4>
-                            </div>
-                            <div id="areaChart" class="chart-container"></div>
-                        </div>
-
-                        <!-- Called & Mailed Calls -->
-                        <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap">
-                            <div>
-                                <span class="text-secondary fw-normal d-block text-sm">Called & Mailed (C&MC)</span>
-                                <h4 class="fw-semibold mb-0 text-dark">{{ $McalledAndMailedCalls }}</h4>
-                            </div>
-                            <div id="calledMailedChart" class="chart-container"></div>
-                        </div>
-
-                        <!-- Ready To Paid Calls -->
-                        <div class="d-flex align-items-center justify-content-between flex-wrap">
-                            <div>
-                                <span class="text-secondary fw-normal d-block text-sm">Ready To Paid (R2P)</span>
-                                <h4 class="fw-semibold mb-0 text-dark">{{ $MreadyToPaidCalls }}</h4>
-                            </div>
-                            <div id="readyToPaidChart" class="chart-container"></div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
