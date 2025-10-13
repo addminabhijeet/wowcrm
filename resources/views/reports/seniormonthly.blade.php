@@ -503,17 +503,17 @@ $script = '<script>
                                 <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t9to10pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>10 PM - 11PM</td>
+                                <td>10PM - 11PM</td>
                                 <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t10po11pm }}</span></td>
                                 <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t10to11pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>11 PM - 12AM</td>
+                                <td>11PM - 12AM</td>
                                 <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t11po12pm }}</span></td>
                                 <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t11to12pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>12 AM - 1AM</td>
+                                <td>12AM - 1AM</td>
                                 <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t12po1am }}</span></td>
                                 <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t12to1am }}</span></td>
                             </tr>
