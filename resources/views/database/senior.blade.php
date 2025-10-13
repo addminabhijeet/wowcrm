@@ -207,11 +207,9 @@ $script ='<script>
                             </select>
                         </td>
 
-                        {{-- Forwarded By --}}
-                        <td>
-                            <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
-                                value="{{ $row->created_by ?? '' }}" placeholder="Forwarded By" readonly>
-                        </td>
+                        <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
+                            value="{{ $row->forwarded_by ?? '' }}" placeholder="Forwarded By" readonly>
+
 
                         {{-- View (Resume) --}}
                         <td>
@@ -631,7 +629,7 @@ $script ='<script>
                     cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
                 } else if (k === 'Name') {
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                }else if (k === 'forwardedBy') {
+                } else if (k === 'forwardedBy') {
                     cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
                 } else if (k === 'View') {
                     cells += `<td>
