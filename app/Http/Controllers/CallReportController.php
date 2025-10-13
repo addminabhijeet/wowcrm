@@ -370,7 +370,8 @@ class CallReportController extends Controller
         $selectedDate = $request->input('selected_date', date('Y-m-d'));
 
         // Base query filtered by date
-        $query = GoogleSheetData::whereDate('updated_at', $selectedDate);
+        $query = GoogleSheetData::where('created_by', $createdByKey)
+            ->whereDate('updated_at', $selectedDate);
 
         // Selected date totals
         $StotalCalls = $query->count();
