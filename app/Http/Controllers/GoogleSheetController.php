@@ -405,9 +405,10 @@ class GoogleSheetController extends Controller
             });
         }
 
+        // Use simplePaginate for AJAX-friendly pagination or paginate for full
         $data = $query->orderBy('id', 'desc')->paginate(10);
 
-        // Map forwarded_by dynamically
+        // Transform collection **safely** after pagination
         $data->getCollection()->transform(function ($item) use ($authUser) {
             $parts = explode('|', $item->created_by ?? '');
             $userId = $parts[0] ?? null;
@@ -428,6 +429,8 @@ class GoogleSheetController extends Controller
         });
 
         if ($request->ajax()) {
+            // Make sure to append query parameters for AJAX pagination links
+            $data->appends($request->all());
             return view('database.partials.senior_table', compact('data'))->render();
         }
 
