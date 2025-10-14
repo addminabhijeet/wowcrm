@@ -554,6 +554,16 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
+        $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate)
+            ->whereNotNull('Exe_Remarks')
+            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+
         // Initialize hour blocks (8 PM - 6 AM)
         $t8to9pm  = $hourlyCalledMailed[20] ?? 0;
         $t9to10pm = $hourlyCalledMailed[21] ?? 0;

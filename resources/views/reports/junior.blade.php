@@ -434,7 +434,7 @@ $script = '<script>
                             </div>
                             <div>
                                 <small class="text-muted d-block">Total Calls (TC)</small>
-                                <h4 class="fw-bold text-dark mb-0">{{ $totalCalls }}</h4>
+                                <h4 class="fw-bold text-dark mb-0">{{ $StotalCalls }}</h4>
                             </div>
                         </div>
                     </div>
