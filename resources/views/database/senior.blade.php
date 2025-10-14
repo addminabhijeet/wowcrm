@@ -481,6 +481,8 @@ $script ='<script>
 
 
         function initDatePickers(context = document) {
+            const laravelToday = "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
+
             context.querySelectorAll('input.date-picker').forEach(input => {
                 const key = input.dataset.key;
                 const opts = {
@@ -493,9 +495,13 @@ $script ='<script>
                         if (input.value) input.style.backgroundColor = dateColor;
                     }
                 };
-                if (key === "Graduation Date") opts.maxDate = "today";
-                if (key === "Date") opts.minDate = "today";
+
+                // ✅ Use Laravel's timezone-based today
+                if (key === "Graduation Date") opts.maxDate = laravelToday;
+                if (key === "Date") opts.minDate = laravelToday;
+
                 flatpickr(input, opts);
+
                 input.addEventListener('blur', function() {
                     if (input.value && !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(input.value)) {
                         input.style.backgroundColor = '#fff';
@@ -503,6 +509,7 @@ $script ='<script>
                 });
             });
         }
+
 
         function initLocationAutocomplete(context = document) {
             $(context).find('input.location-autocomplete').each(function() {
