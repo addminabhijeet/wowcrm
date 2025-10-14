@@ -305,16 +305,24 @@ class CallReportController extends Controller
         // Total calls for this junior (including hierarchical keys)
         $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
 
-        // Total "Called & Mailed" calls
+        // Total "Called & Mailed" calls for this junior
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
-        // Total other calls (excluding Called & Mailed)
+        // Total other calls for this junior
         $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereNotNull('Exe_Remarks')
             ->where('Exe_Remarks', '<>', 'Called & Mailed')
             ->count();
+
+        // Group data by hour of updated_at (for this junior)
+        $hourlyCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->groupBy('hour')
+            ->orderBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
 
         // Selected date (default today)
         $selectedDate = $request->input('selected_date', date('Y-m-d'));
@@ -323,10 +331,15 @@ class CallReportController extends Controller
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate);
 
-        // Selected date totals
+        // Selected date totals for this junior
         $StotalCalls = $query->count();
-        $ScalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
-        $SotherCalls = (clone $query)->whereNotNull('Exe_Remarks')
+
+        $ScalledAndMailedCalls = (clone $query)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->count();
+
+        $SotherCalls = (clone $query)
+            ->whereNotNull('Exe_Remarks')
             ->where('Exe_Remarks', '<>', 'Called & Mailed')
             ->count();
 
@@ -339,7 +352,6 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Hour-wise other calls
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
@@ -348,6 +360,7 @@ class CallReportController extends Controller
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
