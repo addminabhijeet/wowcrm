@@ -241,7 +241,7 @@
         let status = "{{ $status ?? 'running' }}";
 
         let inactiveTimeout;
-        const INACTIVE_LIMIT = 2 * 60 * 1000; // 2 minutes inactivity
+        const INACTIVE_LIMIT = 8 * 60 * 60 * 1000; // 2 minutes inactivity
         let overlayTimeout;
 
         // ===============================
