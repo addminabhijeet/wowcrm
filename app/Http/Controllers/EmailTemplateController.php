@@ -28,4 +28,21 @@ class EmailTemplateController extends Controller
         return redirect()->back()->with('success', 'Template updated successfully!');
     }
 
+    public function renderTemplate($slug, $data = [])
+    {
+        $template = EmailTemplate::where('name', $slug)->first();
+        if (!$template) {
+            return null;
+        }
+
+        $body = $template->body;
+        foreach ($data as $key => $value) {
+            $body = str_replace('{{' . $key . '}}', $value, $body);
+        }
+
+        return [
+            'subject' => $template->subject,
+            'body' => $body
+        ];
+    }
 }
