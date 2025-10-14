@@ -157,7 +157,7 @@
 
                 <div class="dropdown">
                     <button class="d-flex justify-content-center align-items-center rounded-circle" type="button" data-bs-toggle="dropdown">
-                        <img src="{{ Auth::user()->image ? asset('assets/images/user-grid/' . Auth::user()->image) : asset('assets/images/users/user1.png') }}" alt="image" class="w-40-px h-40-px object-fit-cover rounded-circle">
+                        <img src="{{ asset('assets/images/user.png') }}" alt="image" class="w-40-px h-40-px object-fit-cover rounded-circle">
                     </button>
                     <div class="dropdown-menu to-top dropdown-menu-sm">
                         <div class="py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
@@ -597,52 +597,52 @@
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function() {
 
-        function updatePauseButtons() {
-            fetch('{{ route("timer.checkPauseButtons") }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({})
-                })
-                .then(res => res.json())
-                .then(data => {
-                    const buttonsToHide = document.querySelectorAll(
-                        '#controlButtons button[data-type="lunch"], ' +
-                        '#controlButtons button[data-type="tea"], ' +
-                        '#controlButtons button[data-type="break"]'
-                    );
+    function updatePauseButtons() {
+        fetch('{{ route("timer.checkPauseButtons") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({})
+        })
+        .then(res => res.json())
+        .then(data => {
+            const buttonsToHide = document.querySelectorAll(
+                '#controlButtons button[data-type="lunch"], ' +
+                '#controlButtons button[data-type="tea"], ' +
+                '#controlButtons button[data-type="break"]'
+            );
 
-                    const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
+            const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
 
-                    if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
-                        // Hide lunch/tea/break buttons
-                        buttonsToHide.forEach(btn => {
-                            if (btn) btn.style.display = 'none';
-                        });
+            if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
+                // Hide lunch/tea/break buttons
+                buttonsToHide.forEach(btn => {
+                    if (btn) btn.style.display = 'none';
+                });
 
-                        // Show resume button
-                        if (resumeBtn) resumeBtn.style.display = 'flex';
-                    } else {
-                        // Show all pause buttons
-                        buttonsToHide.forEach(btn => {
-                            if (btn) btn.style.display = 'flex';
-                        });
+                // Show resume button
+                if (resumeBtn) resumeBtn.style.display = 'flex';
+            } else {
+                // Show all pause buttons
+                buttonsToHide.forEach(btn => {
+                    if (btn) btn.style.display = 'flex';
+                });
 
-                        // Hide resume button
-                        if (resumeBtn) resumeBtn.style.display = 'none';
-                    }
-                })
-                .catch(err => console.error('❌ Error checking pause buttons:', err));
-        }
+                // Hide resume button
+                if (resumeBtn) resumeBtn.style.display = 'none';
+            }
+        })
+        .catch(err => console.error('❌ Error checking pause buttons:', err));
+    }
 
-        // Initial check
-        updatePauseButtons();
+    // Initial check
+    updatePauseButtons();
 
-        // Check every 2 seconds
-        setInterval(updatePauseButtons, 1000);
-    });
+    // Check every 2 seconds
+    setInterval(updatePauseButtons, 1000);
+});
 </script>
