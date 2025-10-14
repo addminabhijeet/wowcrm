@@ -565,16 +565,27 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (8 PM - 6 AM)
-        $t8to9pm  = $hourlyCalledMailed[20] ?? 0;
-        $t9to10pm = $hourlyCalledMailed[21] ?? 0;
-        $t10to11pm = $hourlyCalledMailed[22] ?? 0;
-        $t11to12pm = $hourlyCalledMailed[23] ?? 0;
-        $t12to1am  = $hourlyCalledMailed[0] ?? 0;
-        $t1to2am   = $hourlyCalledMailed[1] ?? 0;
-        $t2to3am   = $hourlyCalledMailed[2] ?? 0;
-        $t3to4am   = $hourlyCalledMailed[3] ?? 0;
-        $t4to5am   = $hourlyCalledMailed[4] ?? 0;
-        $t5to6am   = $hourlyCalledMailed[5] ?? 0;
+        $t10to11am = $hourlyCalledMailed[10] ?? 0;
+        $t11to12pm = $hourlyCalledMailed[11] ?? 0;
+        $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
+        $t1to2pm   = $hourlyCalledMailed[13] ?? 0;
+        $t2to3pm   = $hourlyCalledMailed[14] ?? 0;
+        $t3to4pm   = $hourlyCalledMailed[15] ?? 0;
+        $t4to5pm   = $hourlyCalledMailed[16] ?? 0;
+        $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
+        $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
+        $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+
+        $o10to11am = $hourlyOtherCalls[10] ?? 0;
+        $o11to12pm = $hourlyOtherCalls[11] ?? 0;
+        $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
+        $o1to2pm   = $hourlyOtherCalls[13] ?? 0;
+        $o2to3pm   = $hourlyOtherCalls[14] ?? 0;
+        $o3to4pm   = $hourlyOtherCalls[15] ?? 0;
+        $o4to5pm   = $hourlyOtherCalls[16] ?? 0;
+        $o5to6pm   = $hourlyOtherCalls[17] ?? 0;
+        $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
+        $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
         return view('reports.junior', compact(
             'totalCalls',
@@ -584,16 +595,27 @@ class CallReportController extends Controller
             'ScalledAndMailedCalls',
             'SotherCalls',
             'selectedDate',
-            't8to9pm',
-            't9to10pm',
-            't10to11pm',
+            't10to11am',
             't11to12pm',
-            't12to1am',
-            't1to2am',
-            't2to3am',
-            't3to4am',
-            't4to5am',
-            't5to6am'
+            't12to1pm',
+            't1to2pm',
+            't2to3pm',
+            't3to4pm',
+            't4to5pm',
+            't5to6pm',
+            't6to7pm',
+            't7to8pm',
+            'o10to11am',
+            'o11to12pm',
+            'o12to1pm',
+            'o1to2pm',
+            'o2to3pm',
+            'o3to4pm',
+            'o4to5pm',
+            'o5to6pm',
+            'o6to7pm',
+            'o7to8pm'
+
         ));
     }
 

@@ -473,44 +473,44 @@ $script = '<script>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>8 PM - 9 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t8to9pm }}</span></td>
+                                <td>10.00AM-11.00AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t10to11am }}</span></td>
                             </tr>
                             <tr>
-                                <td>9 PM - 10 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t9to10pm }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>10 PM - 11 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t10to11pm }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>11 PM - 12 AM</td>
+                                <td>11.00AM-12.00PM</td>
                                 <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>12 AM - 1 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t12to1am }}</span></td>
+                                <td>12.00PM-01.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t12to1pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>1 AM - 2 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t1to2am }}</span></td>
+                                <td>01:00PM-02.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t1to2pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>2 AM - 3 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t2to3am }}</span></td>
+                                <td>02:00PM-03.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t2to3pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>3 AM - 4 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t3to4am }}</span></td>
+                                <td>03.00PM-04.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t3to4pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>4 AM - 5 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t4to5am }}</span></td>
+                                <td>04.00PM-05.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t4to5pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>5 AM - 6 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t5to6am }}</span></td>
+                                <td>05.00PM-06.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t5to6pm }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>06.00PM-07.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t6to7pm }}</span></td>
+                            </tr>
+                            <tr>
+                                <td>07.00PM-08.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t7to8pm }}</span></td>
                             </tr>
                         </tbody>
                     </table>
