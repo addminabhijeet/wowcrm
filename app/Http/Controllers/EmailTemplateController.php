@@ -4,13 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\EmailTemplate;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\View;
 
 class EmailTemplateController extends Controller
 {
     public function index()
     {
-        // Fetch the template if it exists, no auto-creation
+        // Fetch the template if it exists, but do not auto-fill
         $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
         return view('smtp.edittemplate', compact('template'));
@@ -36,7 +35,6 @@ class EmailTemplateController extends Controller
             return null;
         }
 
-        // Replace variables directly in the body
         $body = $template->body;
         foreach ($data as $key => $value) {
             $body = str_replace('{{' . $key . '}}', $value, $body);
