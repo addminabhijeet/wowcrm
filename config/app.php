@@ -65,7 +65,9 @@ return [
     |
     */
 
-    'timezone' => env('APP_TIMEZONE', 'Asia/Kolkata'),
+    // config/app.php
+    'timezone' => env('APP_TIMEZONE', 'America/New_York'),
+
 
     /*
     |--------------------------------------------------------------------------
