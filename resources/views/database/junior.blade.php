@@ -83,7 +83,7 @@ $script ='<script>
                         {{-- Phone Number --}}
                         <td>
                             <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                maxlength="12" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
+                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
                         </td>
 
                         {{-- Location --}}

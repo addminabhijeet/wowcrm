@@ -1054,29 +1054,33 @@ class GoogleSheetController extends Controller
         $name = null;
         $amount = null;
 
-        // Assign values safely
-        foreach ($rowData as $key => $val) {
-            if (!isset($columnMap[$key])) continue;
-            $column = $columnMap[$key];
+        // Assign values safely, save null for empty non-number/email fields
+        foreach ($columnMap as $frontendKey => $dbColumn) {
+            $val = $rowData[$frontendKey] ?? null;
 
-            if (in_array($column, ['Date', 'Graduation_Date']) && !empty($val)) {
+            if (in_array($dbColumn, ['Date', 'Graduation_Date']) && !empty($val)) {
                 $val = $this->parseDate($val);
             }
 
-            if ($column === 'Amount' && !empty($val)) {
+            if ($dbColumn === 'Amount' && !empty($val)) {
                 $val = $this->parseAmount($val);
                 $amount = $val;
             }
 
-            if ($column === 'Name') {
+            if ($dbColumn === 'Name') {
                 $name = $val;
             }
 
-            if ($column === 'Exe_Remarks') {
-                $exeRemarksValue = $val; // capture Exe_Remarks for condition check
+            if ($dbColumn === 'Exe_Remarks') {
+                $exeRemarksValue = $val;
             }
 
-            $record->$column = $val;
+            // Save null for empty fields except Email and Phone/Amount
+            if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number', 'Amount'])) {
+                $val = null;
+            }
+
+            $record->$dbColumn = $val;
         }
 
         // Set created_by conditionally based on Exe_Remarks
@@ -1710,29 +1714,33 @@ class GoogleSheetController extends Controller
         $name = null;
         $amount = null;
 
-        // Assign values safely
-        foreach ($rowData as $key => $val) {
-            if (!isset($columnMap[$key])) continue;
-            $column = $columnMap[$key];
+        // Assign values safely, save null for empty non-number/email fields
+        foreach ($columnMap as $frontendKey => $dbColumn) {
+            $val = $rowData[$frontendKey] ?? null;
 
-            if (in_array($column, ['Date', 'Graduation_Date']) && !empty($val)) {
+            if (in_array($dbColumn, ['Date', 'Graduation_Date']) && !empty($val)) {
                 $val = $this->parseDate($val);
             }
 
-            if ($column === 'Amount' && !empty($val)) {
+            if ($dbColumn === 'Amount' && !empty($val)) {
                 $val = $this->parseAmount($val);
                 $amount = $val;
             }
 
-            if ($column === 'Name') {
+            if ($dbColumn === 'Name') {
                 $name = $val;
             }
 
-            if ($column === 'Exe_Remarks') {
+            if ($dbColumn === 'Exe_Remarks') {
                 $exeRemarksValue = $val;
             }
 
-            $record->$column = $val;
+            // Save null for empty fields except Email and Phone/Amount
+            if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number', 'Amount'])) {
+                $val = null;
+            }
+
+            $record->$dbColumn = $val;
         }
 
         // Set created_by conditionally
