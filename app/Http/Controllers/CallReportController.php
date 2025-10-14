@@ -316,61 +316,54 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Initialize hour blocks (10 AM - 8 PM) for all categories
-        $hours = range(10, 19); // 10 to 19 => 10AM-8PM
-        $tCalled = [];
-        $tReady = [];
-        $tOther  = [];
+        // Initialize hour blocks (10 AM - 8 PM)
+        $t10to11am = $hourlyCalledMailed[10] ?? 0;
+        $t11to12pm = $hourlyCalledMailed[11] ?? 0;
+        $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
+        $t1to2pm   = $hourlyCalledMailed[13] ?? 0;
+        $t2to3pm   = $hourlyCalledMailed[14] ?? 0;
+        $t3to4pm   = $hourlyCalledMailed[15] ?? 0;
+        $t4to5pm   = $hourlyCalledMailed[16] ?? 0;
+        $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
+        $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
+        $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
-        foreach ($hours as $h) {
-            $tCalled[$h] = $hourlyCalledMailed[$h] ?? 0;
-            $tReady[$h]  = $hourlyReadyToPaid[$h] ?? 0;
-            $tOther[$h]  = $hourlyOtherCalls[$h] ?? 0;
-        }
+        $o10to11am = $hourlyOtherCalls[10] ?? 0;
+        $o11to12pm = $hourlyOtherCalls[11] ?? 0;
+        $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
+        $o1to2pm   = $hourlyOtherCalls[13] ?? 0;
+        $o2to3pm   = $hourlyOtherCalls[14] ?? 0;
+        $o3to4pm   = $hourlyOtherCalls[15] ?? 0;
+        $o4to5pm   = $hourlyOtherCalls[16] ?? 0;
+        $o5to6pm   = $hourlyOtherCalls[17] ?? 0;
+        $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
+        $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
-        return view('reports.seniormonthly', array_merge(
-            [
-                'MtotalCalls',
-                'McalledAndMailedCalls',
-                'MreadyToPaidCalls',
-                'MotherCalls',
-                'selectedMonth'
-            ],
-            // Flatten hour variables to individual names for view
-            [
-                't10to11am' => $tCalled[10],
-                't11to12pm' => $tCalled[11],
-                't12to1pm'  => $tCalled[12],
-                't1to2pm'   => $tCalled[13],
-                't2to3pm'   => $tCalled[14],
-                't3to4pm'   => $tCalled[15],
-                't4to5pm'   => $tCalled[16],
-                't5to6pm'   => $tCalled[17],
-                't6to7pm'   => $tCalled[18],
-                't7to8pm'   => $tCalled[19],
-
-                'r10to11am' => $tReady[10],
-                'r11to12pm' => $tReady[11],
-                'r12to1pm'  => $tReady[12],
-                'r1to2pm'   => $tReady[13],
-                'r2to3pm'   => $tReady[14],
-                'r3to4pm'   => $tReady[15],
-                'r4to5pm'   => $tReady[16],
-                'r5to6pm'   => $tReady[17],
-                'r6to7pm'   => $tReady[18],
-                'r7to8pm'   => $tReady[19],
-
-                'o10to11am' => $tOther[10],
-                'o11to12pm' => $tOther[11],
-                'o12to1pm'  => $tOther[12],
-                'o1to2pm'   => $tOther[13],
-                'o2to3pm'   => $tOther[14],
-                'o3to4pm'   => $tOther[15],
-                'o4to5pm'   => $tOther[16],
-                'o5to6pm'   => $tOther[17],
-                'o6to7pm'   => $tOther[18],
-                'o7to8pm'   => $tOther[19]
-            ]
+        return view('reports.seniormonthly', compact(
+            'MtotalCalls',
+            'McalledAndMailedCalls',
+            'MotherCalls',
+            'selectedMonth',
+            't10to11am',
+            't11to12pm',
+            't12to1pm',
+            't1to2pm',
+            't2to3pm',
+            't3to4pm',
+            't4to5pm',
+            't5to6pm',
+            't6to7pm',
+            't7to8pm',
+            'o10to11am',
+            'o11to12pm',
+            'o12to1pm',
+            'o1to2pm',
+            'o2to3pm',
+            'o3to4pm',
+            'o4to5pm',
+            'o5to6pm',
+            'o6to7pm',
+            'o7to8pm'
         ));
     }
 
