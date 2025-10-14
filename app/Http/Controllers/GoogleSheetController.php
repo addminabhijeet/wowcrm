@@ -1482,22 +1482,18 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Prepare update data
+        // --- Prepare update data with null for empty fields ---
         $updateData = [
-            'Date' => isset($rowData['Date']) && !empty($rowData['Date']) ?
-                $this->parseDate($rowData['Date']) : null,
+            'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
-            'Email_Address' => $email,
-            'Phone_Number' => $phone,
+            'Email_Address' => $email, // keep provided email
+            'Phone_Number' => $phone,  // keep provided phone
             'Location' => $rowData['Location'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
-            'Graduation_Date' => isset($rowData['Graduation Date']) && !empty($rowData['Graduation Date']) ?
-                $this->parseDate($rowData['Graduation Date']) : null,
+            'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
-            'Amount' => isset($rowData['Amount']) ?
-                $this->parseAmount($rowData['Amount'])
-                : $row->Amount ?? null,
+            'Amount' => isset($rowData['Amount']) && $rowData['Amount'] !== '' ? $this->parseAmount($rowData['Amount']) : null,
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
