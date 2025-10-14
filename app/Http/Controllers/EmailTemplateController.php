@@ -10,13 +10,9 @@ class EmailTemplateController extends Controller
 {
     public function index()
     {
-        $template = EmailTemplate::firstOrCreate(
-            ['name' => 'Called_Mailed'],
-            [
-                'subject' => 'Course & Amount Information',
-                'body' => "Hello,<br><br>Your course: {{course}}<br>Amount: {{amount}}<br><br>Thank you for your interest.<br><br>Regards,<br>{{from_name}}"
-            ]
-        );
+        // Fetch the template if it exists, no auto-creation
+        $template = EmailTemplate::where('name', 'Called_Mailed')->first();
+
         return view('smtp.edittemplate', compact('template'));
     }
 
