@@ -717,8 +717,9 @@ class GoogleSheetController extends Controller
         }
 
         // --- Extract Email & Phone for uniqueness check ---
-        $email = $rowData['Email Address'] ?? null;
-        $phone = $rowData['Phone Number'] ?? null;
+        $email = $rowData['Email Address'] ?? $row->Email_Address;
+        $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
+
 
         // Check for duplicate Email (ignore current record)
         if (!empty($email)) {
@@ -1420,8 +1421,9 @@ class GoogleSheetController extends Controller
         }
 
         // --- Extract Email & Phone for uniqueness check ---
-        $email = $rowData['Email Address'] ?? null;
-        $phone = $rowData['Phone Number'] ?? null;
+        $email = $rowData['Email Address'] ?? $row->Email_Address;
+        $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
+
 
         // Check for duplicate Email (ignore current record)
         if (!empty($email)) {
