@@ -131,12 +131,20 @@ class CalendarController extends Controller
                 break;
         }
 
+        // ✅ Fetch the junior user details
+        $junior = User::find($user_id);
+
+        if (!$junior) {
+            abort(404, 'Junior not found');
+        }
+
         $events = UserTimerPause::where('user_id', $user_id)
             ->whereBetween('event_time', [$start, $end])
             ->orderBy('event_time', 'asc')
             ->get();
 
-        return view('calendar.alljunior', compact('events', 'view', 'date'));
+        // ✅ Pass $junior to view
+        return view('calendar.alljunior', compact('events', 'view', 'date', 'junior'));
     }
 
 
