@@ -9,11 +9,15 @@ class EmailTemplateController extends Controller
 {
     public function index()
     {
-        // Fetch the template if it exists, but do not auto-fill
         $template = EmailTemplate::where('name', 'Called_Mailed')->first();
+
+        if (!$template) {
+            abort(404, 'Email template not found');
+        }
 
         return view('smtp.edittemplate', compact('template'));
     }
+
 
     public function update(Request $request, $id)
     {
