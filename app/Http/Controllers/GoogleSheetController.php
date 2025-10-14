@@ -1075,8 +1075,8 @@ class GoogleSheetController extends Controller
                 $exeRemarksValue = $val;
             }
 
-            // Save null for empty fields except Email and Phone/Amount
-            if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number', 'Amount'])) {
+            // Save null for empty fields, including Amount
+            if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number'])) {
                 $val = null;
             }
 
@@ -1735,8 +1735,8 @@ class GoogleSheetController extends Controller
                 $exeRemarksValue = $val;
             }
 
-            // Save null for empty fields except Email and Phone/Amount
-            if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number', 'Amount'])) {
+            // Save null for empty fields, including Amount
+            if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number'])) {
                 $val = null;
             }
 
