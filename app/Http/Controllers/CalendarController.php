@@ -136,43 +136,48 @@ class CalendarController extends Controller
             ->orderBy('event_time', 'asc')
             ->get();
 
-        return view('calendar.junior', compact('events', 'view', 'date'));
+        return view('calendar.alljunior', compact('events', 'view', 'date'));
     }
 
 
-    public function getAllJuniorEvents(Request $request)
+    public function getAllJuniorEvents(Request $request, $userId)
     {
         // Fetch all juniors
-        $juniorUsers = User::where('role', 'junior')->get()->keyBy('id');
+        $juniorUsers = User::where('id', $userId)
+            ->where('role', 'junior')
+            ->first();
 
-        // Fetch all UserTimerPause events for these junior users
-        $events = UserTimerPause::whereIn('user_id', $juniorUsers->keys())
-            ->orderBy('event_time', 'asc')
+        if (!$juniorUsers) {
+            return response()->json(['error' => 'Junior user not found'], 404);
+        }
+
+        // Fetch events sorted by latest first
+        $events = UserTimerPause::where('user_id', $juniorUsers)
+            ->orderBy('event_time', 'desc')  // <-- Latest events first
             ->get();
 
-        // Dynamic colors based on pause_type or label
+        // Define color mapping for clarity
         $labelColors = [
-            'login'  => '#007bff',
+            'start'  => '#007bff',
             'resume' => '#28a745',
             'pause'  => '#ffc107',
+            'stop'   => '#dc3545',
             'other'  => '#6c757d'
         ];
 
-        $eventsData = $events->map(function ($event) use ($labelColors, $juniorUsers) {
-            $userName = $juniorUsers[$event->user_id]->name ?? 'Junior User';
+        $eventsData = $events->map(function ($event) use ($labelColors) {
+            $type = strtolower($event->pause_type ?? 'other');
+
             return [
-                'id' => $event->id,
-                'title' => $userName . ': ' . ucfirst($event->pause_type),
+                'id'    => $event->id,
+                'title' => ucfirst($type),
                 'start' => $event->event_time,
-                'end'   => $event->event_time, // adjust if you have duration
+                'allDay' => false,
                 'extendedProps' => [
-                    'user_id' => $event->user_id,
-                    'user_name' => $userName,
-                    'status'  => $event->status,
-                    'pause_type' => $event->pause_type,
-                    'remaining_seconds' => $event->remaining_seconds,
-                    'label' => $event->pause_type,
-                    'label_color' => $labelColors[$event->pause_type] ?? $labelColors['other'],
+                    'status'            => $event->status ?? 'N/A',
+                    'pause_type'        => $type,
+                    'remaining_seconds' => $event->remaining_seconds ?? 0,
+                    'label_color'       => $labelColors[$type] ?? $labelColors['other'],
                 ]
             ];
         });
