@@ -351,102 +351,101 @@
         // ===============================
         // Inactivity Handling
         // ===============================
-        let wasInactive = false;
 
-        function resetInactiveTimer() {
-            clearTimeout(inactiveTimeout);
-            inactiveTimeout = setTimeout(() => {
-                console.warn("[Inactivity] User inactive! Pausing timer...");
-                showOverlay("You were inactive! Timer stopped.");
-                wasInactive = true;
+        // let wasInactive = false;
 
-                // Hide buttons immediately on pause
-                const buttonsToHide = document.querySelectorAll(
-                    '#controlButtons button[data-type="lunch"], ' +
-                    '#controlButtons button[data-type="tea"], ' +
-                    '#controlButtons button[data-type="break"]'
-                );
-                buttonsToHide.forEach(btn => {
-                    if (btn) btn.style.display = "none";
-                });
+        // function resetInactiveTimer() {
+        //     clearTimeout(inactiveTimeout);
+        //     inactiveTimeout = setTimeout(() => {
+        //         console.warn("[Inactivity] User inactive! Pausing timer...");
+        //         showOverlay("You were inactive! Timer stopped.");
+        //         wasInactive = true;
 
-                // Show the resume button
-                const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
-                if (resumeBtn) resumeBtn.style.display = "flex";
+       
+        //         const buttonsToHide = document.querySelectorAll(
+        //             '#controlButtons button[data-type="lunch"], ' +
+        //             '#controlButtons button[data-type="tea"], ' +
+        //             '#controlButtons button[data-type="break"]'
+        //         );
+        //         buttonsToHide.forEach(btn => {
+        //             if (btn) btn.style.display = "none";
+        //         });
 
-                // Pause request to backend
-                fetch("{{ route('timer.update') }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            action: "pause"
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            remainingSeconds = data.remaining_seconds;
-                            elapsedSeconds = data.elapsed_seconds;
-                            status = data.status;
-                            updateUI();
-                        }
-                    })
-                    .catch(err => console.error("[Inactivity] Pause request failed:", err));
+        //         const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
+        //         if (resumeBtn) resumeBtn.style.display = "flex";
 
-            }, INACTIVE_LIMIT);
-        }
+         
+        //         fetch("{{ route('timer.update') }}", {
+        //                 method: "POST",
+        //                 headers: {
+        //                     "X-CSRF-TOKEN": "{{ csrf_token() }}",
+        //                     "Content-Type": "application/json"
+        //                 },
+        //                 body: JSON.stringify({
+        //                     action: "pause"
+        //                 })
+        //             })
+        //             .then(res => res.json())
+        //             .then(data => {
+        //                 if (data.success) {
+        //                     remainingSeconds = data.remaining_seconds;
+        //                     elapsedSeconds = data.elapsed_seconds;
+        //                     status = data.status;
+        //                     updateUI();
+        //                 }
+        //             })
+        //             .catch(err => console.error("[Inactivity] Pause request failed:", err));
 
-        function handleActiveState() {
-            const showActiveOverlay = wasInactive;
-            wasInactive = false;
+        //     }, INACTIVE_LIMIT);
+        // }
 
-            fetch("{{ route('timer.update') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        action: "resume"
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        remainingSeconds = data.remaining_seconds;
-                        elapsedSeconds = data.elapsed_seconds;
-                        status = data.status;
-                        if (showActiveOverlay) showOverlay("You are active now! Timer running.");
-                        updateUI();
+        // function handleActiveState() {
+        //     const showActiveOverlay = wasInactive;
+        //     wasInactive = false;
 
-                        // Hide resume button again
-                        const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
-                        if (resumeBtn) resumeBtn.style.display = "none";
+        //     fetch("{{ route('timer.update') }}", {
+        //             method: "POST",
+        //             headers: {
+        //                 "X-CSRF-TOKEN": "{{ csrf_token() }}",
+        //                 "Content-Type": "application/json"
+        //             },
+        //             body: JSON.stringify({
+        //                 action: "resume"
+        //             })
+        //         })
+        //         .then(res => res.json())
+        //         .then(data => {
+        //             if (data.success) {
+        //                 remainingSeconds = data.remaining_seconds;
+        //                 elapsedSeconds = data.elapsed_seconds;
+        //                 status = data.status;
+        //                 if (showActiveOverlay) showOverlay("You are active now! Timer running.");
+        //                 updateUI();
 
-                        // Restore hidden buttons on activity
-                        const hiddenButtons = document.querySelectorAll(
-                            '#controlButtons button[data-type="lunch"], ' +
-                            '#controlButtons button[data-type="tea"], ' +
-                            '#controlButtons button[data-type="break"]'
-                        );
-                        hiddenButtons.forEach(btn => {
-                            if (btn) btn.style.display = "flex";
-                        });
-                    }
-                })
-                .catch(err => console.error("[Active] Resume request failed:", err));
+                
+        //                 const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
+        //                 if (resumeBtn) resumeBtn.style.display = "none";
 
-            resetInactiveTimer();
-        }
+         
+        //                 const hiddenButtons = document.querySelectorAll(
+        //                     '#controlButtons button[data-type="lunch"], ' +
+        //                     '#controlButtons button[data-type="tea"], ' +
+        //                     '#controlButtons button[data-type="break"]'
+        //                 );
+        //                 hiddenButtons.forEach(btn => {
+        //                     if (btn) btn.style.display = "flex";
+        //                 });
+        //             }
+        //         })
+        //         .catch(err => console.error("[Active] Resume request failed:", err));
+
+        //     resetInactiveTimer();
+        // }
 
 
-        // Detect real user activity
-        ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
-            window.addEventListener(evt, handleActiveState);
-        });
+        // ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
+        //     window.addEventListener(evt, handleActiveState);
+        // });
 
         // ===============================
         // Initialize Timer
