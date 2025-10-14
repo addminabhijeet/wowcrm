@@ -352,106 +352,106 @@
         // Inactivity Handling
         // ===============================
 
-        // let wasInactive = false;
+        let wasInactive = false;
 
-        // function resetInactiveTimer() {
-        //     clearTimeout(inactiveTimeout);
-        //     inactiveTimeout = setTimeout(() => {
-        //         console.warn("[Inactivity] User inactive! Pausing timer...");
-        //         showOverlay("You were inactive! Timer stopped.");
-        //         wasInactive = true;
+        function resetInactiveTimer() {
+            clearTimeout(inactiveTimeout);
+            inactiveTimeout = setTimeout(() => {
+                console.warn("[Inactivity] User inactive! Pausing timer...");
+                showOverlay("You were inactive! Timer stopped.");
+                wasInactive = true;
 
        
-        //         const buttonsToHide = document.querySelectorAll(
-        //             '#controlButtons button[data-type="lunch"], ' +
-        //             '#controlButtons button[data-type="tea"], ' +
-        //             '#controlButtons button[data-type="break"]'
-        //         );
-        //         buttonsToHide.forEach(btn => {
-        //             if (btn) btn.style.display = "none";
-        //         });
+                const buttonsToHide = document.querySelectorAll(
+                    '#controlButtons button[data-type="lunch"], ' +
+                    '#controlButtons button[data-type="tea"], ' +
+                    '#controlButtons button[data-type="break"]'
+                );
+                buttonsToHide.forEach(btn => {
+                    if (btn) btn.style.display = "none";
+                });
 
-        //         const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
-        //         if (resumeBtn) resumeBtn.style.display = "flex";
+                const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
+                if (resumeBtn) resumeBtn.style.display = "flex";
 
          
-        //         fetch("{{ route('timer.update') }}", {
-        //                 method: "POST",
-        //                 headers: {
-        //                     "X-CSRF-TOKEN": "{{ csrf_token() }}",
-        //                     "Content-Type": "application/json"
-        //                 },
-        //                 body: JSON.stringify({
-        //                     action: "pause"
-        //                 })
-        //             })
-        //             .then(res => res.json())
-        //             .then(data => {
-        //                 if (data.success) {
-        //                     remainingSeconds = data.remaining_seconds;
-        //                     elapsedSeconds = data.elapsed_seconds;
-        //                     status = data.status;
-        //                     updateUI();
-        //                 }
-        //             })
-        //             .catch(err => console.error("[Inactivity] Pause request failed:", err));
+                fetch("{{ route('timer.update') }}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            action: "pause"
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.success) {
+                            remainingSeconds = data.remaining_seconds;
+                            elapsedSeconds = data.elapsed_seconds;
+                            status = data.status;
+                            updateUI();
+                        }
+                    })
+                    .catch(err => console.error("[Inactivity] Pause request failed:", err));
 
-        //     }, INACTIVE_LIMIT);
-        // }
+            }, INACTIVE_LIMIT);
+        }
 
-        // function handleActiveState() {
-        //     const showActiveOverlay = wasInactive;
-        //     wasInactive = false;
+        function handleActiveState() {
+            const showActiveOverlay = wasInactive;
+            wasInactive = false;
 
-        //     fetch("{{ route('timer.update') }}", {
-        //             method: "POST",
-        //             headers: {
-        //                 "X-CSRF-TOKEN": "{{ csrf_token() }}",
-        //                 "Content-Type": "application/json"
-        //             },
-        //             body: JSON.stringify({
-        //                 action: "resume"
-        //             })
-        //         })
-        //         .then(res => res.json())
-        //         .then(data => {
-        //             if (data.success) {
-        //                 remainingSeconds = data.remaining_seconds;
-        //                 elapsedSeconds = data.elapsed_seconds;
-        //                 status = data.status;
-        //                 if (showActiveOverlay) showOverlay("You are active now! Timer running.");
-        //                 updateUI();
+            fetch("{{ route('timer.update') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        action: "resume"
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success) {
+                        remainingSeconds = data.remaining_seconds;
+                        elapsedSeconds = data.elapsed_seconds;
+                        status = data.status;
+                        if (showActiveOverlay) showOverlay("You are active now! Timer running.");
+                        updateUI();
 
                 
-        //                 const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
-        //                 if (resumeBtn) resumeBtn.style.display = "none";
+                        const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
+                        if (resumeBtn) resumeBtn.style.display = "none";
 
          
-        //                 const hiddenButtons = document.querySelectorAll(
-        //                     '#controlButtons button[data-type="lunch"], ' +
-        //                     '#controlButtons button[data-type="tea"], ' +
-        //                     '#controlButtons button[data-type="break"]'
-        //                 );
-        //                 hiddenButtons.forEach(btn => {
-        //                     if (btn) btn.style.display = "flex";
-        //                 });
-        //             }
-        //         })
-        //         .catch(err => console.error("[Active] Resume request failed:", err));
+                        const hiddenButtons = document.querySelectorAll(
+                            '#controlButtons button[data-type="lunch"], ' +
+                            '#controlButtons button[data-type="tea"], ' +
+                            '#controlButtons button[data-type="break"]'
+                        );
+                        hiddenButtons.forEach(btn => {
+                            if (btn) btn.style.display = "flex";
+                        });
+                    }
+                })
+                .catch(err => console.error("[Active] Resume request failed:", err));
 
-        //     resetInactiveTimer();
-        // }
+            resetInactiveTimer();
+        }
 
 
-        // ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
-        //     window.addEventListener(evt, handleActiveState);
-        // });
+        ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
+            window.addEventListener(evt, handleActiveState);
+        });
 
         // ===============================
         // Initialize Timer
         // ===============================
         updateUI();
-        // resetInactiveTimer();
+        resetInactiveTimer();
         backendSyncInterval = setInterval(syncWithBackend, 1000);
 
     });
