@@ -859,6 +859,12 @@ class GoogleSheetController extends Controller
             }
         }
 
+        foreach ($updateData as $key => $value) {
+            if ($value === '' && !in_array($key, ['Email_Address', 'Amount'])) {
+                $updateData[$key] = null;
+            }
+        }
+
         try {
             $row->update($updateData);
             $user = Auth::user();
@@ -1518,6 +1524,12 @@ class GoogleSheetController extends Controller
             }
         } else {
             $updateData['created_by'] = $row->created_by;
+        }
+
+        foreach ($updateData as $key => $value) {
+            if ($value === '' && !in_array($key, ['Email_Address', 'Amount'])) {
+                $updateData[$key] = null;
+            }
         }
 
         try {
