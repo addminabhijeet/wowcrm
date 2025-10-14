@@ -150,21 +150,21 @@ class CalendarController extends Controller
 
     public function getAllJuniorEvents(Request $request, $userId)
     {
-        // Fetch all juniors
-        $juniorUsers = User::where('id', $userId)
+        // ✅ Fetch the junior user
+        $junior = User::where('id', $userId)
             ->where('role', 'junior')
             ->first();
 
-        if (!$juniorUsers) {
+        if (!$junior) {
             return response()->json(['error' => 'Junior user not found'], 404);
         }
 
-        // Fetch events sorted by latest first
-        $events = UserTimerPause::where('user_id', $juniorUsers)
-            ->orderBy('event_time', 'desc')  // <-- Latest events first
+        // ✅ Fetch all events for this junior (latest first)
+        $events = UserTimerPause::where('user_id', $junior->id)
+            ->orderBy('event_time', 'desc')
             ->get();
 
-        // Define color mapping for clarity
+        // ✅ Define color mapping for clarity
         $labelColors = [
             'start'  => '#007bff',
             'resume' => '#28a745',
@@ -173,6 +173,7 @@ class CalendarController extends Controller
             'other'  => '#6c757d'
         ];
 
+        // ✅ Format event data for FullCalendar
         $eventsData = $events->map(function ($event) use ($labelColors) {
             $type = strtolower($event->pause_type ?? 'other');
 
