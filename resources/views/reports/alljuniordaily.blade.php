@@ -414,7 +414,7 @@ $script = '<script>
                         <h5 class="fw-bold mb-1">📞 Calls Statistic</h5>
                         <span class="text-muted small">Yearly Calls Overview</span>
                     </div>
-                    <form method="GET" action="{{ route('call.reports.alljuniordaily') }}" class="d-flex align-items-center gap-2">
+                    <form method="GET" action="{{ route('call.reports.alljuniordaily', ['userId' => request()->route('userId')]) }}" class="d-flex align-items-center gap-2">
                         <label for="selected_date" class="form-label mb-0 fw-semibold small">Select Date:</label>
                         <input type="date"
                             name="selected_date"
@@ -423,6 +423,7 @@ $script = '<script>
                             class="form-control form-control-sm"
                             onchange="this.form.submit()">
                     </form>
+
                 </div>
 
                 <!-- Stats Section -->
