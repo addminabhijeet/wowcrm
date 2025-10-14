@@ -469,51 +469,63 @@ $script = '<script>
                             <tr>
                                 <th class="fw-semibold">⏰ Time Range</th>
                                 <th class="fw-semibold text-center">📊 Called & Mailed Count</th>
+                                <th class="fw-semibold text-center">📊 Other Call Count</th>
                             </tr>
                         </thead>
                         <tbody>
                             <tr>
-                                <td>8 PM - 9 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t8to9pm }}</span></td>
+                                <td style="white-space: nowrap;">10.00AM-11.00AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t10to11am }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o10to11am }}</span></td>
                             </tr>
                             <tr>
-                                <td>9 PM - 10 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t9to10pm }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>10 PM - 11 PM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t10to11pm }}</span></td>
-                            </tr>
-                            <tr>
-                                <td>11 PM - 12 AM</td>
+                                <td style="white-space: nowrap;">11.00AM-12.00PM</td>
                                 <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o11to12pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>12 AM - 1 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t12to1am }}</span></td>
+                                <td style="white-space: nowrap;">12.00PM-01.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t12to1pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o12to1pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>1 AM - 2 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t1to2am }}</span></td>
+                                <td style="white-space: nowrap;">01.00PM-02.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t1to2pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o1to2pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>2 AM - 3 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t2to3am }}</span></td>
+                                <td style="white-space: nowrap;">02.00PM-03.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t2to3pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o2to3pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>3 AM - 4 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t3to4am }}</span></td>
+                                <td style="white-space: nowrap;">03.00PM-04.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t3to4pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o3to4pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>4 AM - 5 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t4to5am }}</span></td>
+                                <td style="white-space: nowrap;">04.00PM-05.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t4to5pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o4to5pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>5 AM - 6 AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t5to6am }}</span></td>
+                                <td style="white-space: nowrap;">05.00PM-06.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t5to6pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o5to6pm }}</span></td>
+                            </tr>
+                            <tr>
+                                <td style="white-space: nowrap;">06.00PM-07.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t6to7pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o6to7pm }}</span></td>
+                            </tr>
+                            <tr>
+                                <td style="white-space: nowrap;">07.00PM-08.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t7to8pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o7to8pm }}</span></td>
                             </tr>
                         </tbody>
                     </table>
+
                 </div>
             </div>
         </div>
@@ -560,7 +572,7 @@ $script = '<script>
 </div>
 
 
-    
 
 
-    @endsection
+
+@endsection

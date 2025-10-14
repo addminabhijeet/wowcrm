@@ -626,23 +626,25 @@ class CallReportController extends Controller
         $user = Auth::user();
         $createdByKey = "{$user->id}|junior";
 
-        // Selected month (default current month in YYYY-MM format)
+        // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
-
-        // Extract year and month for filtering
         [$year, $month] = explode('-', $selectedMonth);
 
-        // Base query filtered by selected month and junior
-        $query = GoogleSheetData::where('created_by', $createdByKey)
+        // Total calls for this junior in the selected month (including hierarchical keys)
+        $MtotalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month);
+            ->whereMonth('updated_at', $month)
+            ->count();
 
-        // Selected month totals
-        $MtotalCalls = $query->count();
-        $McalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
+        // Total "Called & Mailed" calls
+        $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->count();
 
-        // Other calls (excluding Called & Mailed)
-        $MotherCalls = GoogleSheetData::where('created_by', $createdByKey)
+        // Total other calls (not "Called & Mailed")
+        $MotherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->whereNotNull('Exe_Remarks')
@@ -651,7 +653,7 @@ class CallReportController extends Controller
 
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', $createdByKey)
+            ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -659,33 +661,65 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Initialize hour variables (20 = 8 PM, etc.)
-        $t8to9pm = $hourlyCalledMailed[20] ?? 0;
-        $t9to10pm = $hourlyCalledMailed[21] ?? 0;
-        $t10to11pm = $hourlyCalledMailed[22] ?? 0;
-        $t11to12pm = $hourlyCalledMailed[23] ?? 0;
-        $t12to1am = $hourlyCalledMailed[0] ?? 0;
-        $t1to2am = $hourlyCalledMailed[1] ?? 0;
-        $t2to3am = $hourlyCalledMailed[2] ?? 0;
-        $t3to4am = $hourlyCalledMailed[3] ?? 0;
-        $t4to5am = $hourlyCalledMailed[4] ?? 0;
-        $t5to6am = $hourlyCalledMailed[5] ?? 0;
+        // Hour-wise "Other Calls" counts
+        $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->whereNotNull('Exe_Remarks')
+            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Initialize hour blocks (10 AM - 8 PM)
+        $t10to11am = $hourlyCalledMailed[10] ?? 0;
+        $t11to12pm = $hourlyCalledMailed[11] ?? 0;
+        $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
+        $t1to2pm   = $hourlyCalledMailed[13] ?? 0;
+        $t2to3pm   = $hourlyCalledMailed[14] ?? 0;
+        $t3to4pm   = $hourlyCalledMailed[15] ?? 0;
+        $t4to5pm   = $hourlyCalledMailed[16] ?? 0;
+        $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
+        $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
+        $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+
+        $o10to11am = $hourlyOtherCalls[10] ?? 0;
+        $o11to12pm = $hourlyOtherCalls[11] ?? 0;
+        $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
+        $o1to2pm   = $hourlyOtherCalls[13] ?? 0;
+        $o2to3pm   = $hourlyOtherCalls[14] ?? 0;
+        $o3to4pm   = $hourlyOtherCalls[15] ?? 0;
+        $o4to5pm   = $hourlyOtherCalls[16] ?? 0;
+        $o5to6pm   = $hourlyOtherCalls[17] ?? 0;
+        $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
+        $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
         return view('reports.juniormonthly', compact(
             'MtotalCalls',
             'McalledAndMailedCalls',
             'MotherCalls',
             'selectedMonth',
-            't8to9pm',
-            't9to10pm',
-            't10to11pm',
+            't10to11am',
             't11to12pm',
-            't12to1am',
-            't1to2am',
-            't2to3am',
-            't3to4am',
-            't4to5am',
-            't5to6am'
+            't12to1pm',
+            't1to2pm',
+            't2to3pm',
+            't3to4pm',
+            't4to5pm',
+            't5to6pm',
+            't6to7pm',
+            't7to8pm',
+            'o10to11am',
+            'o11to12pm',
+            'o12to1pm',
+            'o1to2pm',
+            'o2to3pm',
+            'o3to4pm',
+            'o4to5pm',
+            'o5to6pm',
+            'o6to7pm',
+            'o7to8pm'
         ));
     }
 }
