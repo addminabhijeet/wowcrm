@@ -451,7 +451,7 @@
         // Initialize Timer
         // ===============================
         updateUI();
-        resetInactiveTimer();
+        // resetInactiveTimer();
         backendSyncInterval = setInterval(syncWithBackend, 1000);
 
     });
