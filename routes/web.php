@@ -164,7 +164,7 @@ Route::middleware(['auth'])->group(function () {
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
 Route::post('/logout-user', [LoginController::class, 'ajaxLogout'])->name('ajax.logout');
 
-Route::get('/email-template', [EmailTemplateController::class, 'index'])->name('template.index');
+Route::get('/template/{id}/edit', [EmailTemplateController::class, 'edit'])->name('template.edit');
 Route::put('/email-template/{id}', [EmailTemplateController::class, 'update'])->name('template.update');
 
 Route::get('/', [Controller::class, 'index'])->name('home');

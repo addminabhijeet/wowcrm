@@ -7,13 +7,17 @@ use Illuminate\Http\Request;
 
 class EmailTemplateController extends Controller
 {
-    public function index()
+    public function edit($id)
     {
-        // Fetch the template if it exists, but do not auto-fill
-        $template = EmailTemplate::where('name', 'Called_Mailed')->first();
+        $template = EmailTemplate::find($id);
+
+        if (!$template) {
+            return redirect()->back()->with('error', 'Template not found');
+        }
 
         return view('smtp.edittemplate', compact('template'));
     }
+
 
     public function update(Request $request, $id)
     {
