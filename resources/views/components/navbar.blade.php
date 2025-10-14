@@ -1,7 +1,7 @@
 @php
-    $userImage = Auth::user()->image 
-        ? asset('assets/images/user-grid/' . Auth::user()->image) 
-        : asset('assets/images/users/user1.png');
+$userImage = Auth::user()->image
+? asset('assets/images/user-grid/' . Auth::user()->image)
+: asset('assets/images/users/user1.png');
 @endphp
 
 <div class="navbar-header">
@@ -246,8 +246,6 @@
         let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
         let status = "{{ $status ?? 'running' }}";
 
-        let inactiveTimeout;
-        const INACTIVE_LIMIT = 8 * 60 * 60 * 1000; // 2 minutes inactivity
         let overlayTimeout;
 
         // ===============================
@@ -355,113 +353,14 @@
         }
 
         // ===============================
-        // Inactivity Handling
-        // ===============================
-
-        let wasInactive = false;
-
-        function resetInactiveTimer() {
-            clearTimeout(inactiveTimeout);
-            inactiveTimeout = setTimeout(() => {
-                console.warn("[Inactivity] User inactive! Pausing timer...");
-                showOverlay("You were inactive! Timer stopped.");
-                wasInactive = true;
-
-       
-                const buttonsToHide = document.querySelectorAll(
-                    '#controlButtons button[data-type="lunch"], ' +
-                    '#controlButtons button[data-type="tea"], ' +
-                    '#controlButtons button[data-type="break"]'
-                );
-                buttonsToHide.forEach(btn => {
-                    if (btn) btn.style.display = "none";
-                });
-
-                const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
-                if (resumeBtn) resumeBtn.style.display = "flex";
-
-         
-                fetch("{{ route('timer.update') }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            action: "pause"
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.success) {
-                            remainingSeconds = data.remaining_seconds;
-                            elapsedSeconds = data.elapsed_seconds;
-                            status = data.status;
-                            updateUI();
-                        }
-                    })
-                    .catch(err => console.error("[Inactivity] Pause request failed:", err));
-
-            }, INACTIVE_LIMIT);
-        }
-
-        function handleActiveState() {
-            const showActiveOverlay = wasInactive;
-            wasInactive = false;
-
-            fetch("{{ route('timer.update') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        action: "resume"
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (data.success) {
-                        remainingSeconds = data.remaining_seconds;
-                        elapsedSeconds = data.elapsed_seconds;
-                        status = data.status;
-                        if (showActiveOverlay) showOverlay("You are active now! Timer running.");
-                        updateUI();
-
-                
-                        const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
-                        if (resumeBtn) resumeBtn.style.display = "none";
-
-         
-                        const hiddenButtons = document.querySelectorAll(
-                            '#controlButtons button[data-type="lunch"], ' +
-                            '#controlButtons button[data-type="tea"], ' +
-                            '#controlButtons button[data-type="break"]'
-                        );
-                        hiddenButtons.forEach(btn => {
-                            if (btn) btn.style.display = "flex";
-                        });
-                    }
-                })
-                .catch(err => console.error("[Active] Resume request failed:", err));
-
-            resetInactiveTimer();
-        }
-
-
-        ['mousemove', 'keydown', 'click', 'scroll'].forEach(evt => {
-            window.addEventListener(evt, handleActiveState);
-        });
-
-        // ===============================
         // Initialize Timer
         // ===============================
         updateUI();
-        resetInactiveTimer();
         backendSyncInterval = setInterval(syncWithBackend, 1000);
 
     });
 </script>
+
 
 
 
@@ -602,52 +501,52 @@
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function() {
 
-    function updatePauseButtons() {
-        fetch('{{ route("timer.checkPauseButtons") }}', {
-            method: 'POST',
-            headers: {
-                'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({})
-        })
-        .then(res => res.json())
-        .then(data => {
-            const buttonsToHide = document.querySelectorAll(
-                '#controlButtons button[data-type="lunch"], ' +
-                '#controlButtons button[data-type="tea"], ' +
-                '#controlButtons button[data-type="break"]'
-            );
+        function updatePauseButtons() {
+            fetch('{{ route("timer.checkPauseButtons") }}', {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const buttonsToHide = document.querySelectorAll(
+                        '#controlButtons button[data-type="lunch"], ' +
+                        '#controlButtons button[data-type="tea"], ' +
+                        '#controlButtons button[data-type="break"]'
+                    );
 
-            const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
+                    const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
 
-            if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
-                // Hide lunch/tea/break buttons
-                buttonsToHide.forEach(btn => {
-                    if (btn) btn.style.display = 'none';
-                });
+                    if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
+                        // Hide lunch/tea/break buttons
+                        buttonsToHide.forEach(btn => {
+                            if (btn) btn.style.display = 'none';
+                        });
 
-                // Show resume button
-                if (resumeBtn) resumeBtn.style.display = 'flex';
-            } else {
-                // Show all pause buttons
-                buttonsToHide.forEach(btn => {
-                    if (btn) btn.style.display = 'flex';
-                });
+                        // Show resume button
+                        if (resumeBtn) resumeBtn.style.display = 'flex';
+                    } else {
+                        // Show all pause buttons
+                        buttonsToHide.forEach(btn => {
+                            if (btn) btn.style.display = 'flex';
+                        });
 
-                // Hide resume button
-                if (resumeBtn) resumeBtn.style.display = 'none';
-            }
-        })
-        .catch(err => console.error('❌ Error checking pause buttons:', err));
-    }
+                        // Hide resume button
+                        if (resumeBtn) resumeBtn.style.display = 'none';
+                    }
+                })
+                .catch(err => console.error('❌ Error checking pause buttons:', err));
+        }
 
-    // Initial check
-    updatePauseButtons();
+        // Initial check
+        updatePauseButtons();
 
-    // Check every 2 seconds
-    setInterval(updatePauseButtons, 1000);
-});
+        // Check every 2 seconds
+        setInterval(updatePauseButtons, 1000);
+    });
 </script>
