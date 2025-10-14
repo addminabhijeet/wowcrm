@@ -793,7 +793,7 @@ class GoogleSheetController extends Controller
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
             'Amount' => isset($rowData['Amount']) ?
-                $this->parseAmount($rowData['Amount']) : $row->Amount,
+                $this->parseAmount($rowData['Amount']) : $row->Amount ?? null,
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
@@ -1496,7 +1496,7 @@ class GoogleSheetController extends Controller
             'Course' => $rowData['Course'] ?? null,
             'Amount' => isset($rowData['Amount']) ?
                 $this->parseAmount($rowData['Amount'])
-                : $row->Amount,
+                : $row->Amount ?? null,
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
