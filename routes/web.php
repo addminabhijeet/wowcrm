@@ -163,7 +163,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/timers/base-time', [TimerController::class, 'updateBaseTime'])->name('timer.updateBaseTime');
 
 
-    Route::get('api/timer/update', [TimerApiController::class, 'update']);
+   
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
@@ -186,3 +186,4 @@ Route::patch('/training/{id}/trastatus', [PaymentController::class, 'traupdateSt
 Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('login.history');
 
 
+ Route::get('api/timer/update', [TimerApiController::class, 'update']);
