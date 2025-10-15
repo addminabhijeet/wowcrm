@@ -13539,6 +13539,7 @@ table.fc-header, #calendar {
   border-color: var(--primary-50) !important;
   background-color: var(--primary-50) !important;
   color: var(--primary-600) !important;
+  padding:0.2em 0.65em;
 }
 
 .fc-button.fc-button-today.fc-state-disabled {
