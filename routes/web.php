@@ -15,6 +15,8 @@ use App\Http\Controllers\TimerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SmtpSettingController;
 use App\Http\Controllers\EmailTemplateController;
+use App\Http\Controllers\Api\TimerApiController;
+
 
 
 Route::middleware(['auth'])->group(function () {
@@ -179,3 +181,7 @@ Route::patch('/resumes/{id}/status', [ResumeController::class, 'updateStatus'])-
 Route::patch('/payment/{id}/status', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
 Route::patch('/training/{id}/trastatus', [PaymentController::class, 'traupdateStatus'])->name('training.updateStatus');
 Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('login.history');
+
+Route::post('api/timer/update', [TimerApiController::class, 'update']);
+
+
