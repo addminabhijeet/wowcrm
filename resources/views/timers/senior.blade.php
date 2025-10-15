@@ -53,32 +53,32 @@ $script = '<script>
 
                     <!-- Label instead of Dropdown -->
                     <div class="position-absolute top-0 end-0 me-16 mt-16">
-                    @php
+                        @php
                         $pauseType = $timer['pause_type'] ?? null;
-                    @endphp
+                        @endphp
 
-                    @if($pauseType === 'tea')
+                        @if($pauseType === 'tea')
                         <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
                             style="font-size:12px; min-width:100px; text-align:center;">
                             Tea Break
                         </span>
-                    @elseif($pauseType === 'lunch')
+                        @elseif($pauseType === 'lunch')
                         <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
                             style="font-size:12px; min-width:100px; text-align:center;">
                             Lunch Break
                         </span>
-                    @elseif($pauseType === 'break')
+                        @elseif($pauseType === 'break')
                         <span class="badge bg-info text-white px-3 py-2 radius-8 shadow-sm"
                             style="font-size:12px; min-width:100px; text-align:center;">
                             Short Break
                         </span>
-                    @elseif($pauseType === 'resume')
+                        @elseif($pauseType === 'resume')
                         <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
                             style="font-size:12px; min-width:100px; text-align:center;">
                             Resumed
                         </span>
-                    @endif
-                </div>
+                        @endif
+                    </div>
 
 
                     <div class="ps-16 pb-16 pe-16 text-center mt--50">
@@ -155,7 +155,38 @@ $script = '<script>
 
                         <!-- Label instead of Dropdown -->
                         <div class="position-absolute top-0 end-0 me-16 mt-16">
-                            @if($timer['button_status'] == 0)
+                            @php
+                            // Safely fetch values
+                            $pauseType = $timer['pause_type'] ?? null;
+                            $buttonStatus = $timer['button_status'] ?? null;
+                            @endphp
+
+                            {{-- Pause Type Badge --}}
+                            @if($pauseType === 'tea')
+                            <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">
+                                Tea Break
+                            </span>
+                            @elseif($pauseType === 'lunch')
+                            <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">
+                                Lunch Break
+                            </span>
+                            @elseif($pauseType === 'break')
+                            <span class="badge bg-info text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">
+                                Short Break
+                            </span>
+                            @elseif($pauseType === 'resume')
+                            <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">
+                                Resumed
+                            </span>
+                            @endif
+
+                            {{-- Button Status Badge (displayed if pause_type is null) --}}
+                            @if(!$pauseType)
+                            @if($buttonStatus === 0)
                             <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">
                                 New Offer
@@ -166,7 +197,9 @@ $script = '<script>
                                 New Arrival
                             </span>
                             @endif
+                            @endif
                         </div>
+
 
                     </div>
                 </div>
