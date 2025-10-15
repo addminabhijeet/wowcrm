@@ -183,5 +183,6 @@ Route::patch('/training/{id}/trastatus', [PaymentController::class, 'traupdateSt
 Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('login.history');
 
 Route::post('api/timer/update', [TimerApiController::class, 'update']);
+Route::get('api/timer/update', [TimerApiController::class, 'update']);
 
 
