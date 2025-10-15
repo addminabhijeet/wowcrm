@@ -1,17 +1,23 @@
 #!/bin/bash
 
-# ===== Configuration =====
+# Absolute Laravel project path (current directory)
 PROJECT_PATH="/home/u235777426/public_html"
+
+# Check PHP binary (run `which php` to confirm)
 PHP_PATH="/usr/bin/php"
-LOG_FILE="$PROJECT_PATH/storage/logs/timer_decrement.log"
 
-# ===== Infinite Loop =====
+# Ensure logs folder exists
+mkdir -p "$PROJECT_PATH/storage/logs"
+
+# Infinite loop to keep timers running
 while true; do
-    echo "[$(date)] Starting timers:decrement process..." | tee -a $LOG_FILE
+    echo "[$(date)] Starting timers:decrement process..." | tee -a "$PROJECT_PATH/storage/logs/timer_decrement.log"
 
-    cd $PROJECT_PATH || exit
-    $PHP_PATH artisan timers:decrement >> $LOG_FILE 2>&1
+    cd "$PROJECT_PATH" || { echo "Failed to cd into $PROJECT_PATH"; exit 1; }
 
-    echo "[$(date)] Process stopped or crashed. Restarting in 5 seconds..." | tee -a $LOG_FILE
+    # Run the artisan command and capture output
+    $PHP_PATH artisan timers:decrement >> "$PROJECT_PATH/storage/logs/timer_decrement.log" 2>&1
+
+    echo "[$(date)] Process crashed or stopped. Restarting in 5 seconds..." | tee -a "$PROJECT_PATH/storage/logs/timer_decrement.log"
     sleep 5
 done
