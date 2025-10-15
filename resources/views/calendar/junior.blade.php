@@ -130,12 +130,13 @@ $subTitle = 'Calendar';
 
                         tableRows += `
                 <tr>
-                    <td>${event.title}</td>
-                    <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
-                    <td>${formatTime(workTime)}</td>
-                    <td>${formatTime(breakTime)}</td>
-                    <td>${event.extendedProps.status}</td>
-                </tr>
+    <td>${event.title}</td>
+    <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
+    <td>
+        Work: ${formatTime(workTime)}
+        ${breakTime > 0 ? ` / Break: ${formatTime(breakTime)}` : ''}
+    </td>
+</tr>
             `;
                     }
 
@@ -163,24 +164,22 @@ $subTitle = 'Calendar';
 
                     modalBody.innerHTML = `
             <div class="summary border-bottom pb-3 mb-3">
-        <h5 class="fw-semibold text-success">Summary</h5>
-        <p><strong>8 Hours Completed:</strong> ${completed}</p>
-    </div>
+    <h5 class="fw-semibold text-success">Summary</h5>
+    <p><strong>8 Hours Completed:</strong> ${completed}</p>
+</div>
 
-    <table class="table table-sm table-bordered">
-        <thead>
-            <tr>
-                <th>Event</th>
-                <th>Time</th>
-                <th>Work Time</th>
-                <th>Break Time</th>
-                <th>Status</th>
-            </tr>
-        </thead>
-        <tbody>
-            ${tableRows}
-        </tbody>
-    </table>
+<table class="table table-sm table-bordered">
+    <thead>
+        <tr>
+            <th>Event</th>
+            <th>Time</th>
+            <th>Duration</th> <!-- Combined Work + Break -->
+        </tr>
+    </thead>
+    <tbody>
+        ${tableRows}
+    </tbody>
+</table>
         `;
 
                     // ✅ Hide rows with same data as previous row
