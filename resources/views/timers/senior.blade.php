@@ -136,24 +136,20 @@ $script = '<script>
                         </a>
                         @endif
 
-                        <!-- Login/Logout Button -->
-                        @if($timer['button_status'] == 0)
-                        <button
-                            data-type="login"
-                            data-user="{{ $timer['user_id'] }}"
-                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #0b5ed7; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
-                            <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
-                            Log In
-                        </button>
-                        @else
-                        <button
-                            data-type="logout"
-                            data-user="{{ $timer['user_id'] }}"
-                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #b02a37; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
-                            <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
-                            Log Out
-                        </button>
-                        @endif
+                        <!-- Label instead of Dropdown -->
+                        <div class="position-absolute top-0 end-0 me-16 mt-16">
+                            @if($timer['button_status'] == 0)
+                            <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">
+                                🆕 New Offer
+                            </span>
+                            @else
+                            <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">
+                                ✨ New Arrival
+                            </span>
+                            @endif
+                        </div>
 
                     </div>
                 </div>
