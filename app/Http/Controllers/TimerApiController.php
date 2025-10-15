@@ -5,26 +5,40 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\UserTimerLog;
+use Carbon\Carbon;
 
 class TimerApiController extends Controller
 {
-    public function update(Request $request)
+    public function getAllTimers()
     {
-        $userId = $request->input('user_id');
+        // Get the latest timer entry for each user
+        $latestTimers = UserTimerLog::select('user_id')
+            ->groupBy('user_id')
+            ->get()
+            ->map(function ($userTimer) {
+                // Get the latest log for each user
+                $latestLog = UserTimerLog::where('user_id', $userTimer->user_id)
+                    ->latest('created_at')
+                    ->first();
 
-        if (!$userId) {
-            return response()->json(['success' => false, 'message' => 'Missing user_id'], 400);
-        }
+                // Calculate elapsed seconds since start_time or created_at
+                $startTime = $latestLog->start_time ? Carbon::parse($latestLog->start_time) : $latestLog->created_at;
+                $elapsed = $startTime->diffInSeconds(Carbon::now());
 
-        // Get latest timer for that user
-        $timer = UserTimerLog::where('user_id', $userId)->latest()->first();
-
-        $elapsedSeconds = now()->diffInSeconds($timer->created_at);
+                return [
+                    'user_id' => $latestLog->user_id,
+                    'status' => $latestLog->status,
+                    'remaining_seconds' => $latestLog->remaining_seconds,
+                    'elapsed_seconds' => $elapsed,
+                    'start_time' => $startTime->toDateTimeString(),
+                    'updated_at' => $latestLog->updated_at->toDateTimeString(),
+                ];
+            });
 
         return response()->json([
             'success' => true,
-            'user_id' => $userId,
-            'elapsed_seconds' => $elapsedSeconds
+            'total_users' => $latestTimers->count(),
+            'data' => $latestTimers
         ]);
     }
 }
