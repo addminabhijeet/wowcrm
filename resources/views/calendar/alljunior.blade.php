@@ -134,7 +134,7 @@ $subTitle = 'Calendar';
     <td>${event.title}</td>
     <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
     <td>
-        Work: ${formatTime(workTime)}
+        ${formatTime(workTime)}
         ${breakTime > 0 ? ` / Break: ${formatTime(breakTime)}` : ''}
     </td>
 </tr>
