@@ -53,28 +53,33 @@ $script = '<script>
 
                     <!-- Label instead of Dropdown -->
                     <div class="position-absolute top-0 end-0 me-16 mt-16">
-                        @if($timer['pause_type'] == 'tea')
+                        @php
+                        $pauseType = $timer['pause_type'] ?? null;
+                        @endphp
+
+                        @if($pauseType === 'tea')
                         <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
                             style="font-size:12px; min-width:100px; text-align:center;">
                             Tea Break
                         </span>
-                        @elseif($timer['pause_type'] == 'lunch')
+                        @elseif($pauseType === 'lunch')
                         <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
                             style="font-size:12px; min-width:100px; text-align:center;">
                             Lunch Break
                         </span>
-                        @elseif($timer['pause_type'] == 'break')
+                        @elseif($pauseType === 'break')
                         <span class="badge bg-info text-white px-3 py-2 radius-8 shadow-sm"
                             style="font-size:12px; min-width:100px; text-align:center;">
                             Short Break
                         </span>
-                        @elseif($timer['pause_type'] == 'resume')
+                        @elseif($pauseType === 'resume')
                         <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
                             style="font-size:12px; min-width:100px; text-align:center;">
                             Resumed
                         </span>
                         @endif
                     </div>
+
 
 
                     <div class="ps-16 pb-16 pe-16 text-center mt--50">
