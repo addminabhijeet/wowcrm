@@ -444,6 +444,16 @@ class DashboardController extends Controller
             }
         }
 
+        if ($timer->status === 'running' && $timer->pause_type === 'resume') {
+            $lastDecrement = $timer->last_decrement ?? $timer->updated_at;
+            $secondsSinceLastDecrement = $currentTime->diffInSeconds($lastDecrement);
+
+            if ($secondsSinceLastDecrement >= 3) {
+                $timer->remaining_seconds = max(0, $timer->remaining_seconds - 3);
+                $timer->last_decrement = $currentTime;
+            }
+        }
+
         // Update timestamp and save
         $timer->updated_at = $currentTime;
         $timer->save();
