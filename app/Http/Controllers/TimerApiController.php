@@ -8,28 +8,28 @@ use App\Models\UserTimerLog;
 
 class TimerApiController extends Controller
 {
-    public function update(Request $request)
+    public function getAllTimers()
     {
-        // Get latest timer entry for each user
-        $latestTimers = UserTimerLog::select('user_id')
-            ->groupBy('user_id')
-            ->get()
-            ->map(function ($entry) {
-                $latest = UserTimerLog::where('user_id', $entry->user_id)
-                    ->latest()
-                    ->first();
+        // Get all distinct user_ids
+        $userIds = UserTimerLog::select('user_id')->distinct()->pluck('user_id');
 
-                $elapsedSeconds = now()->diffInSeconds($latest->created_at);
+        $data = $userIds->map(function ($userId) {
+            // For each user, get their latest log
+            $latestLog = UserTimerLog::where('user_id', $userId)
+                ->latest('id')
+                ->first();
 
-                return [
-                    'user_id' => $entry->user_id,
-                    'elapsed_seconds' => $elapsedSeconds,
-                ];
-            });
+            return [
+                'user_id' => $latestLog->user_id,
+                'remaining_seconds' => (int) $latestLog->remaining_seconds,
+                'status' => $latestLog->status,
+                'pause_type' => $latestLog->pause_type
+            ];
+        });
 
         return response()->json([
             'success' => true,
-            'data' => $latestTimers,
+            'data' => $data
         ]);
     }
 }
