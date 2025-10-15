@@ -719,8 +719,22 @@ class GoogleSheetController extends Controller
         // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? $row->Email_Address;
         $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
+        $name  = $rowData['Name'] ?? $row->Name;
+        $date  = $rowData['Date'] ?? $row->Date;
 
+        if (empty($name)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Name is required.'
+            ]);
+        }
 
+        if (empty($date)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Date is required.'
+            ]);
+        }
         // Check for duplicate Email (ignore current record)
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)
@@ -787,6 +801,7 @@ class GoogleSheetController extends Controller
             'Email_Address' => $email, // keep original email
             'Phone_Number' => $phone,  // keep original phone
             'Location' => $rowData['Location'] ?? null,
+            'Remark' => $rowData['Remark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
@@ -860,7 +875,7 @@ class GoogleSheetController extends Controller
         }
 
         foreach ($updateData as $key => $value) {
-            if ($value === '' && !in_array($key, ['Email_Address', 'Amount'])) {
+            if ($value === '' && !in_array($key, ['Email_Address','Name','Date', 'Amount'])) {
                 $updateData[$key] = null;
             }
         }
@@ -1003,6 +1018,23 @@ class GoogleSheetController extends Controller
         // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? null;
         $phone = $rowData['Phone Number'] ?? null;
+        $name  = $rowData['Name'] ?? null;
+        $date  = $rowData['Date'] ?? null;
+
+        // --- Check required fields ---
+        if (empty($name)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Name is required.'
+            ]);
+        }
+
+        if (empty($date)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Date is required.'
+            ]);
+        }
 
         // Check for duplicate Email
         if (!empty($email)) {
@@ -1043,6 +1075,7 @@ class GoogleSheetController extends Controller
             'Email Address' => 'Email_Address',
             'Phone Number' => 'Phone_Number',
             'Location' => 'Location',
+            'Remark' => 'Remark',
             'Relocation' => 'Relocation',
             'Graduation Date' => 'Graduation_Date',
             'Immigration' => 'Immigration',
@@ -1497,6 +1530,7 @@ class GoogleSheetController extends Controller
             'Email_Address' => $email, // keep provided email
             'Phone_Number' => $phone,  // keep provided phone
             'Location' => $rowData['Location'] ?? null,
+            'Remark' => $rowData['Remark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
@@ -1669,6 +1703,23 @@ class GoogleSheetController extends Controller
         // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? null;
         $phone = $rowData['Phone Number'] ?? null;
+        $name = $rowData['Name'] ?? null;
+        $date = $rowData['Date'] ?? null;
+
+        // --- Check required fields ---
+        if (empty($name)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Name is required.'
+            ]);
+        }
+
+        if (empty($date)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Date is required.'
+            ]);
+        }
 
         // Check for duplicate Email
         if (!empty($email)) {
@@ -1706,6 +1757,7 @@ class GoogleSheetController extends Controller
             'Email Address' => 'Email_Address',
             'Phone Number' => 'Phone_Number',
             'Location' => 'Location',
+            'Remark' => 'Remark',
             'Relocation' => 'Relocation',
             'Graduation Date' => 'Graduation_Date',
             'Immigration' => 'Immigration',
