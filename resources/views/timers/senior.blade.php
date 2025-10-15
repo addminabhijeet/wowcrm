@@ -55,7 +55,7 @@ $script = '<script>
                     <div class="dropdown position-absolute top-0 end-0 me-16 mt-16">
                         @if($timer['button_status'] == 0)
                         <button type="button" class="bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white" disabled>
-                            <iconify-icon icon="entypo:dots-three-vertical" class="icon"></iconify-icon>
+                            <iconify-icon icon="entypo:dots-three-vertical" class="icon">New Offer</iconify-icon>
                         </button>
                         @else
                         <button type="button" class="bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white" disabled>
