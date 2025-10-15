@@ -47,7 +47,7 @@ $script = '<script>
     <div class="card-body p-24">
         <div class="row gy-4">
             @foreach($timers as $timer)
-            <div class="col-xxl-3 col-md-6 user-grid-card"style="{{ $timer['status'] === 'paused' ? 'background-color:#fff3cd;' : ($timer['status'] === 'running' ? 'background-color:#d4edda;' : '') }}">
+            <div class="col-xxl-3 col-md-6 user-grid-card"style="{{ $timer['status'] === 'paused' ? 'background-color:#fff3cd;' : ($timer['status'] === 'running' ? 'background-color:#ffffff;' : '') }}">
                 <div class="position-relative border radius-16 overflow-hidden" style="padding-top: 30px;">
                     <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
 
