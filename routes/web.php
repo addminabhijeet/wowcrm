@@ -187,3 +187,4 @@ Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('lo
 
 
 Route::get('api/timer/update', [TimerApiController::class, 'update']);
+Route::post('api/timer/update', [TimerApiController::class, 'update']);
