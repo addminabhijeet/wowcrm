@@ -330,7 +330,7 @@ $subTitle = 'Calendar';
     }
 
     .fc .fc-button {
-        padding: 0.2em 0.6em !important;
+        padding: 0.2em 0.65em !important;
     }
 </style>
 @endsection
