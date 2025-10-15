@@ -51,37 +51,6 @@ $script = '<script>
                 <div class="position-relative border radius-16 overflow-hidden" style="padding-top: 30px;">
                     <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
 
-                    <!-- Label instead of Dropdown -->
-                    <div class="position-absolute top-0 end-0 me-16 mt-16">
-                        @php
-                        $pauseType = $timer['pause_type'] ?? null;
-                        @endphp
-
-                        @if($pauseType === 'tea')
-                        <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
-                            style="font-size:12px; min-width:100px; text-align:center;">
-                            Tea Break
-                        </span>
-                        @elseif($pauseType === 'lunch')
-                        <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
-                            style="font-size:12px; min-width:100px; text-align:center;">
-                            Lunch Break
-                        </span>
-                        @elseif($pauseType === 'break')
-                        <span class="badge bg-info text-white px-3 py-2 radius-8 shadow-sm"
-                            style="font-size:12px; min-width:100px; text-align:center;">
-                            Short Break
-                        </span>
-                        @elseif($pauseType === 'resume')
-                        <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
-                            style="font-size:12px; min-width:100px; text-align:center;">
-                            Resumed
-                        </span>
-                        @endif
-                    </div>
-
-
-
                     <div class="ps-16 pb-16 pe-16 text-center mt--50">
                         <img src="{{ $timer['image'] ? asset('assets/images/user-grid/' . $timer['image']) : asset('assets/images/user-grid/user-grid-bg1.png') }}" class="border br-white border-width-2-px w-100-px h-100-px rounded-circle object-fit-cover" alt="">
                         <h6 class="text-lg mb-0 mt-4">{{ $timer['name'] }}</h6>
@@ -154,21 +123,33 @@ $script = '<script>
                         </a>
                         @endif
 
+                        @php
+                        $pauseType = $timer['pause_type'] ?? null;
+                        @endphp
                         <!-- Label instead of Dropdown -->
                         <div class="position-absolute top-0 end-0 me-16 mt-16">
-                            @if($timer['button_status'] == 0)
+                            @if($pauseType === 'tea')
                             <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">
-                                🆕 New Offer
+                                Tea Break
                             </span>
-                            @else
+                            @elseif($pauseType === 'lunch')
                             <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">
-                                ✨ New Arrival
+                                Lunch Break
+                            </span>
+                            @elseif($pauseType === 'break')
+                            <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">
+                                Lunch Break
+                            </span>
+                            @elseif($pauseType === 'resume')
+                            <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">
+
                             </span>
                             @endif
                         </div>
-
                     </div>
                 </div>
             </div>
