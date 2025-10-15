@@ -75,7 +75,7 @@ $script = '<script>
                             data-remaining="{{ $timer['remaining_seconds'] }}"
                             data-elapsed="{{ $timer['elapsed_seconds'] }}"
                             data-status="{{ $timer['status'] }}"
-                            style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
+                            style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:5px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
 
                             <!-- Countdown -->
                             <div style="margin-right:10px;text-align:center;min-width:60px;">
