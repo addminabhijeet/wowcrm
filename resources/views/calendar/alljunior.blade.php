@@ -179,17 +179,18 @@ $subTitle = 'Calendar';
     </tbody>
 </table>
         `;
-                    // ✅ Hide only consecutive duplicate rows
+
                     const rows = modalBody.querySelectorAll('tbody tr');
                     for (let i = 1; i < rows.length - 2; i++) { // skip first and last total rows
-                        const currCells = Array.from(rows[i].cells).map(td => td.textContent.trim());
-                        const prevCells = Array.from(rows[i - 1].cells).map(td => td.textContent.trim());
+                        const currCells = Array.from(rows[i].cells).slice(0, 2).map(td => td.textContent.trim());
+                        const prevCells = Array.from(rows[i - 1].cells).slice(0, 2).map(td => td.textContent.trim());
 
-                        // Only hide if exactly same as previous row
+                        // Hide if Event and Time are exactly the same as previous row
                         if (JSON.stringify(currCells) === JSON.stringify(prevCells)) {
                             rows[i].style.display = 'none';
                         }
                     }
+
 
 
                 } else {
