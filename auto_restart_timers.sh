@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Absolute Laravel project path (current directory)
-PROJECT_PATH="/home/u235777426/public_html"
+# Correct Laravel project path
+PROJECT_PATH="/home/u235777426/domains/admin.pdfreducer.com/public_html"
 
-# Check PHP binary (run `which php` to confirm)
+# Full PHP binary path (verify with `which php`)
 PHP_PATH="/usr/bin/php"
 
 # Ensure logs folder exists
@@ -15,7 +15,7 @@ while true; do
 
     cd "$PROJECT_PATH" || { echo "Failed to cd into $PROJECT_PATH"; exit 1; }
 
-    # Run the artisan command and capture output
+    # Run the artisan command
     $PHP_PATH artisan timers:decrement >> "$PROJECT_PATH/storage/logs/timer_decrement.log" 2>&1
 
     echo "[$(date)] Process crashed or stopped. Restarting in 5 seconds..." | tee -a "$PROJECT_PATH/storage/logs/timer_decrement.log"
