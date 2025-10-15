@@ -875,7 +875,7 @@ class GoogleSheetController extends Controller
         }
 
         foreach ($updateData as $key => $value) {
-            if ($value === '' && !in_array($key, ['Email_Address','Name','Date', 'Amount'])) {
+            if ($value === '' && !in_array($key, ['Email_Address', 'Name', 'Date', 'Amount'])) {
                 $updateData[$key] = null;
             }
         }
@@ -1462,9 +1462,22 @@ class GoogleSheetController extends Controller
         // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? $row->Email_Address;
         $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
+        $name  = $rowData['Name'] ?? $row->Name;
+        $date  = $rowData['Date'] ?? $row->Date;
 
+        if (empty($name)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Name is required.'
+            ]);
+        }
 
-        // Check for duplicate Email (ignore current record)
+        if (empty($date)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Date is required.'
+            ]);
+        }
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)
                 ->where('id', '!=', $id)
@@ -1561,7 +1574,7 @@ class GoogleSheetController extends Controller
         }
 
         foreach ($updateData as $key => $value) {
-            if ($value === '' && !in_array($key, ['Email_Address', 'Amount'])) {
+            if ($value === '' && !in_array($key, ['Email_Address','Remark','Name','Amount'])) {
                 $updateData[$key] = null;
             }
         }
