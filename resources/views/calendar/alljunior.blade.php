@@ -183,12 +183,16 @@ $subTitle = 'Calendar';
         </tbody>
     </table>
         `;
-                    modalBody.querySelectorAll('tbody tr').forEach(row => {
-                        const workTimeCell = row.cells[2]; // 3rd column = Work Time
-                        if (workTimeCell && workTimeCell.textContent.trim() === '00:00') {
-                            row.style.display = 'none';
+                    // ✅ Hide rows with same data as previous row
+                    const rows = modalBody.querySelectorAll('tbody tr');
+                    for (let i = 1; i < rows.length - 2; i++) { // skip first and last total rows
+                        const currCells = Array.from(rows[i].cells).map(td => td.textContent.trim());
+                        const prevCells = Array.from(rows[i - 1].cells).map(td => td.textContent.trim());
+                        if (JSON.stringify(currCells) === JSON.stringify(prevCells)) {
+                            rows[i].style.display = 'none';
                         }
-                    });
+                    }
+
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
