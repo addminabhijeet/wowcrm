@@ -161,6 +161,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/admin/timer-settings', [TimerController::class, 'index'])->name('timer.admin');
     Route::post('/timers/work-day', [TimerController::class, 'updateWorkDay'])->name('timer.updateWorkDay');
     Route::post('/timers/base-time', [TimerController::class, 'updateBaseTime'])->name('timer.updateBaseTime');
+
+    Route::post('api/timer/update', [TimerApiController::class, 'update']);
+    Route::get('api/timer/update', [TimerApiController::class, 'update']);
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
@@ -184,5 +187,3 @@ Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('lo
 
 Route::post('api/timer/update', [TimerApiController::class, 'update']);
 Route::get('api/timer/update', [TimerApiController::class, 'update']);
-
-
