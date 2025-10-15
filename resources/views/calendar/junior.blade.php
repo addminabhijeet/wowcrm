@@ -328,5 +328,9 @@ $subTitle = 'Calendar';
         cursor: pointer;
         background-color: rgba(0, 0, 0, 0.02);
     }
+
+    .fc .fc-button {
+        padding: 0.2em 0.6em !important;
+    }
 </style>
 @endsection
