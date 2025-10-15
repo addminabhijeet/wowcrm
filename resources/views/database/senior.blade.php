@@ -48,6 +48,7 @@ $script ='<script>
                         <th scope="col">Email Address</th>
                         <th scope="col">Phone Number</th>
                         <th scope="col">Location</th>
+                        <th scope="col">Remark</th>
                         <th scope="col">Relocation</th>
                         <th scope="col">Graduation Date</th>
                         <th scope="col">Immigration</th>
@@ -96,6 +97,12 @@ $script ='<script>
                         <td>
                             <input type="text" class="form-control location-autocomplete" data-key="Location"
                                 value="{{ $row->Location ?? '' }}" placeholder="Type location">
+                        </td>
+
+                        {{-- Remark --}}
+                        <td>
+                            <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                         </td>
 
                         {{-- Relocation --}}
@@ -637,6 +644,8 @@ $script ='<script>
                     cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount"></td>`;
                 } else if (k === 'Location') {
                     cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
+                } else if (k === 'Remark') {
+                    cells += `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
                 } else if (k === 'Date' || k === 'Graduation Date') {
                     cells += `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
                 } else if (k === 'Phone Number') {
