@@ -151,12 +151,13 @@ $subTitle = 'Calendar';
             <tr class="fw-bold text-success">
                 <td colspan="2" class="text-end">Total</td>
                 <td>${formatTime(totalWorkSec)}</td>
-                <td>${formatTime(totalBreakSec)}</td>
+                
                 <td></td>
             </tr>
             <tr class="fw-bold text-primary">
                 <td colspan="2" class="text-end">Elapsed / Remaining</td>
-                                <td></td>
+                <td colspan="2">${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</td>
+                <td></td>
             </tr>
         `;
 
