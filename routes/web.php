@@ -162,7 +162,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/timers/work-day', [TimerController::class, 'updateWorkDay'])->name('timer.updateWorkDay');
     Route::post('/timers/base-time', [TimerController::class, 'updateBaseTime'])->name('timer.updateBaseTime');
 
-    Route::post('api/timer/update', [TimerApiController::class, 'update']);
+
     Route::get('api/timer/update', [TimerApiController::class, 'update']);
 });
 
@@ -185,5 +185,4 @@ Route::patch('/payment/{id}/status', [PaymentController::class, 'updateStatus'])
 Route::patch('/training/{id}/trastatus', [PaymentController::class, 'traupdateStatus'])->name('training.updateStatus');
 Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('login.history');
 
-Route::post('api/timer/update', [TimerApiController::class, 'update']);
-Route::get('api/timer/update', [TimerApiController::class, 'update']);
+
