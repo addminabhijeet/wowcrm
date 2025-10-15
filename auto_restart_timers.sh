@@ -1,21 +1,17 @@
 #!/bin/bash
 
-# Path to your Laravel project
+# ===== Configuration =====
 PROJECT_PATH="/home/u235777426/public_html"
-
-# Full PHP path from hosting
 PHP_PATH="/usr/bin/php"
+LOG_FILE="$PROJECT_PATH/storage/logs/timer_decrement.log"
 
-# Infinite loop to auto-restart the command if it fails
+# ===== Infinite Loop =====
 while true; do
-    echo "[$(date)] Starting timers:decrement process..."
-    
-    # Go to Laravel directory
+    echo "[$(date)] Starting timers:decrement process..." | tee -a $LOG_FILE
+
     cd $PROJECT_PATH || exit
+    $PHP_PATH artisan timers:decrement >> $LOG_FILE 2>&1
 
-    # Run the artisan command
-    $PHP_PATH artisan timers:decrement
-
-    echo "[$(date)] Process crashed or stopped. Restarting in 5 seconds..."
+    echo "[$(date)] Process stopped or crashed. Restarting in 5 seconds..." | tee -a $LOG_FILE
     sleep 5
 done
