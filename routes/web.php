@@ -15,7 +15,7 @@ use App\Http\Controllers\TimerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\SmtpSettingController;
 use App\Http\Controllers\EmailTemplateController;
-use App\Http\Controllers\Api\TimerApiController;
+use App\Http\Controllers\TimerApiController;
 
 
 
