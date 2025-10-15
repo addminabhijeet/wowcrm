@@ -163,25 +163,32 @@ $subTitle = 'Calendar';
 
                     modalBody.innerHTML = `
             <div class="summary border-bottom pb-3 mb-3">
-                <h5 class="fw-semibold text-success">Summary</h5>
-                <p><strong>8 Hours Completed:</strong> ${completed}</p>
-            </div>
+        <h5 class="fw-semibold text-success">Summary</h5>
+        <p><strong>8 Hours Completed:</strong> ${completed}</p>
+    </div>
 
-            <table class="table table-sm table-bordered">
-                <thead>
-                    <tr>
-                        <th>Event</th>
-                        <th>Time</th>
-                        <th>Work Time</th>
-                        <th>Break Time</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${tableRows}
-                </tbody>
-            </table>
+    <table class="table table-sm table-bordered">
+        <thead>
+            <tr>
+                <th>Event</th>
+                <th>Time</th>
+                <th>Work Time</th>
+                <th>Break Time</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${tableRows}
+        </tbody>
+    </table>
         `;
+
+                    modalBody.querySelectorAll('tbody tr').forEach(row => {
+                        const workTimeCell = row.cells[2]; // 3rd column = Work Time
+                        if (workTimeCell && workTimeCell.textContent.trim() === '00:00') {
+                            row.style.display = 'none';
+                        }
+                    });
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
