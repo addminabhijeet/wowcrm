@@ -8,19 +8,21 @@ use App\Models\UserTimerLog;
 
 class TimerApiController extends Controller
 {
-    public function update(Request $request)
+    public function update()
     {
-        $userId = $request->input('user_id');
-        $user = \App\Models\User::find($userId);
+        // Get the latest timer (no user required)
+        $timer = UserTimerLog::latest()->first();
 
-        if (!$user) {
-            return response()->json(['success' => false, 'message' => 'User not found'], 404);
+        // If no timer exists, create one starting now
+        if (!$timer) {
+            $timer = UserTimerLog::create([
+                'remaining_seconds' => 0, // optional
+                'created_at' => now(),
+                'updated_at' => now()
+            ]);
         }
 
-        // Just return current elapsed seconds (or keep counting)
-        $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
-
-        $elapsedSeconds = $timer ? now()->diffInSeconds($timer->created_at) : 0;
+        $elapsedSeconds = now()->diffInSeconds($timer->created_at);
 
         return response()->json([
             'success' => true,
