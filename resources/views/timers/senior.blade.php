@@ -550,6 +550,7 @@ $script = '<script>
     $(document).ready(function() {
 
         function updateButton(button, status) {
+            console.log("Updating button for user:", button.data('user-id'), "Status:", status); // debug
             if (status == 0) {
                 button
                     .data('type', 'login')
@@ -577,6 +578,8 @@ $script = '<script>
             var actionType = button.data('type'); // login or logout
             var url = actionType === 'logout' ? "{{ route('ajax.logout') }}" : "{{ route('ajax.login') }}";
 
+            console.log("Button clicked for user:", userId, "Action:", actionType, "URL:", url); // debug
+
             $.ajax({
                 url: url,
                 method: 'POST',
@@ -585,9 +588,11 @@ $script = '<script>
                     _token: '{{ csrf_token() }}'
                 },
                 beforeSend: function() {
+                    console.log("Sending AJAX request..."); // debug
                     button.prop('disabled', true).text(actionType === 'logout' ? 'Logging out...' : 'Logging in...');
                 },
                 success: function(res) {
+                    console.log("AJAX response:", res); // debug
                     if (res.success) {
                         // Update button UI
                         updateButton(button, actionType === 'logout' ? 0 : 1);
@@ -596,9 +601,11 @@ $script = '<script>
                     }
                 },
                 error: function(xhr) {
+                    console.log("AJAX error:", xhr); // debug
                     alert('Something went wrong!');
                 },
                 complete: function() {
+                    console.log("AJAX request completed"); // debug
                     button.prop('disabled', false);
                 }
             });
@@ -607,16 +614,21 @@ $script = '<script>
         // Function to check status of all users and update buttons
         function checkButtonStatus() {
             $.ajax({
-                url: "{{ route('ajax.logincheckStatus') }}", // create this route to return user status
+                url: "{{ route('ajax.logincheckStatus') }}",
                 method: 'GET',
                 success: function(res) {
+                    console.log("Status check response:", res); // debug
                     if (res.success) {
                         // res.data should be array of {user_id: status}
                         res.data.forEach(function(user) {
                             var button = $('.user-action-btn[data-user-id="' + user.user_id + '"]');
+                            console.log("Updating button for user from status check:", user.user_id, "Status:", user.status); // debug
                             updateButton(button, user.status);
                         });
                     }
+                },
+                error: function(xhr) {
+                    console.log("Status check AJAX error:", xhr); // debug
                 }
             });
         }
@@ -626,6 +638,7 @@ $script = '<script>
 
     });
 </script>
+
 
 
 @endsection
