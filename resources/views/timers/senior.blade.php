@@ -335,106 +335,98 @@ $script = '<script>
 
 
 <script>
-    // Toggle single junior enable/disable
-    function toggleButtonStatus(userId, action) {
-        console.log(`Toggling user ${userId} to ${action}...`);
+    document.addEventListener("DOMContentLoaded", function() {
 
-        fetch("{{ route('timer.toggleButtonStatus') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    user_id: userId,
-                    action: action
+        // Handle enable/disable click
+        function toggleButtonStatus(button) {
+            const userId = button.getAttribute("data-user");
+            const type = button.getAttribute("data-type"); // login or logout
+            const action = type === "login" ? "enable" : "disable";
+
+            console.log(`Toggling user ${userId} to ${action}...`);
+
+            fetch("{{ route('timer.toggleButtonStatus') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        action: action
+                    })
                 })
-            })
-            .then(res => res.json())
-            .then(data => {
-                console.log(`Response for user ${userId}:`, data);
+                .then(res => res.json())
+                .then(data => {
+                    console.log(`Response for user ${userId}:`, data);
 
-                if (!data.success) {
-                    console.error(`Failed to toggle user ${userId}:`, data.message);
-                    return;
-                }
+                    if (!data.success) {
+                        console.error(`Failed to toggle user ${userId}:`, data.message);
+                        return;
+                    }
 
-                updateUserCard(userId, data.button_status);
-            })
-            .catch(err => console.error(`Fetch error for user ${userId}:`, err));
-    }
-
-    // Update UI for a given user card
-    function updateUserCard(userId, buttonStatus) {
-        const card = document.querySelector(`.user-grid-card[data-user-id='${userId}']`);
-        if (!card) {
-            console.warn(`Card not found for user_id ${userId}`);
-            return;
+                    // Update button instantly based on response
+                    updateButton(button, data.button_status);
+                })
+                .catch(err => console.error(`Fetch error for user ${userId}:`, err));
         }
 
-        const dropdown = card.querySelector('.dropdown button');
-        const btnContainer = card.querySelector('.ps-16');
-
-        // Update dropdown style
-        if (dropdown) {
-            dropdown.className = buttonStatus == 0 ?
-                'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white' :
-                'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
-        }
-
-        // Update action button
-        if (btnContainer) {
-            btnContainer.innerHTML = buttonStatus == 0 ?
-                `
-                <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
-                    <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+        // Update individual button appearance
+        function updateButton(button, status) {
+            if (status == 0) {
+                // Change to Enable
+                button.setAttribute("data-type", "login");
+                button.style.background = "#0d6efd";
+                button.style.border = "1px solid #b0c6e6ff";
+                button.innerHTML = `
+                    <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
                     Enable Junior
-                </a>` :
-                `
-                <a href="javascript:void(0)" class="btn btn-danger disable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
-                    <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
+                `;
+            } else {
+                // Change to Disable
+                button.setAttribute("data-type", "logout");
+                button.style.background = "#dc3545";
+                button.style.border = "1px solid #d8adb1ff";
+                button.innerHTML = `
+                    <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
                     Disable Junior
-                </a>`;
+                `;
+            }
         }
 
-        // Re-bind events after DOM change
-        setupStatusButtons();
-    }
+        // Periodic button status check
+        function checkButtonStatus() {
+            fetch("{{ route('button.status') }}")
+                .then(response => response.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        data.forEach(user => {
+                            const button = document.querySelector(`button[data-user='${user.user_id}']`);
+                            if (button) {
+                                updateButton(button, user.button_status);
+                            }
+                        });
+                    } else {
+                        console.warn("Unexpected data format:", data);
+                    }
+                })
+                .catch(err => console.error("Polling error:", err));
+        }
 
-    // Bind all existing buttons
-    function setupStatusButtons() {
-        document.querySelectorAll('.enable-junior').forEach(btn => {
-            btn.onclick = () => toggleButtonStatus(btn.dataset.user, 'enable');
+        // Attach click listener to all buttons (delegated)
+        document.body.addEventListener("click", function(e) {
+            if (e.target.closest("button[data-user]")) {
+                const btn = e.target.closest("button[data-user]");
+                toggleButtonStatus(btn);
+            }
         });
-        document.querySelectorAll('.disable-junior').forEach(btn => {
-            btn.onclick = () => toggleButtonStatus(btn.dataset.user, 'disable');
-        });
-    }
 
-    // Auto update button status every second
-    function checkButtonStatus() {
-        fetch("{{ route('button.status') }}")
-            .then(response => response.json())
-            .then(data => {
-                // Expecting format: [{user_id: 1, button_status: 1}, {user_id: 2, button_status: 0}, ...]
-                if (Array.isArray(data)) {
-                    data.forEach(user => {
-                        updateUserCard(user.user_id, user.button_status);
-                    });
-                } else {
-                    console.warn("Unexpected data format:", data);
-                }
-            })
-            .catch(err => console.error("Polling error:", err));
-    }
-
-    // Initial setup
-    setupStatusButtons();
-    checkButtonStatus();
-
-    // Poll every 1 second
-    setInterval(checkButtonStatus, 1000);
+        // Initial check and polling
+        checkButtonStatus();
+        setInterval(checkButtonStatus, 1000);
+    });
 </script>
+
 
 
 <script>
