@@ -128,12 +128,13 @@ $subTitle = 'Calendar';
 
                         tableRows += `
                 <tr>
-                    <td>${event.title}</td>
-                    <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
-                    <td>${formatTime(workTime)}</td>
-                    <td>${formatTime(breakTime)}</td>
-                    <td>${event.extendedProps.status}</td>
-                </tr>
+    <td>${event.title}</td>
+    <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
+    <td>
+        ${formatTime(workTime)}
+        ${breakTime > 0 ? ` / Break: ${formatTime(breakTime)}` : ''}
+    </td>
+</tr>
             `;
                     }
 
@@ -147,7 +148,6 @@ $subTitle = 'Calendar';
             <tr class="fw-bold text-success">
                 <td colspan="2" class="text-end">Total</td>
                 <td>${formatTime(totalWorkSec)}</td>
-                <td>${formatTime(totalBreakSec)}</td>
             </tr>
             <tr class="fw-bold text-primary">
                 <td colspan="2" class="text-end">Elapsed / Remaining</td>
@@ -158,23 +158,23 @@ $subTitle = 'Calendar';
                     const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
                     modalBody.innerHTML = `
-            <div class="summary border-bottom pb-3 mb-3">
-                <h5 class="fw-semibold text-success">Summary</h5>
-                <p><strong>8 Hours Completed:</strong> ${completed}</p>
-            </div>
+<div class="summary border-bottom pb-3 mb-3">
+    <h5 class="fw-semibold text-success">Summary</h5>
+    <p><strong>8 Hours Completed:</strong> ${completed}</p>
+</div>
 
-            <table class="table table-sm table-bordered">
-                <thead>
-                    <tr>
-                        <th>Event</th>
-                        <th>Time</th>
-                        <th>Duration</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${tableRows}
-                </tbody>
-            </table>
+<table class="table table-sm table-bordered">
+    <thead>
+        <tr>
+            <th>Event</th>
+            <th>Time</th>
+            <th>Duration</th>
+        </tr>
+    </thead>
+    <tbody>
+        ${tableRows}
+    </tbody>
+</table>
         `;
 
                     const rows = modalBody.querySelectorAll('tbody tr');
