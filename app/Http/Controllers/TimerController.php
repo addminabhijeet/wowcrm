@@ -54,7 +54,7 @@ class TimerController extends Controller
         $workDaySeconds = $timerSetting ? $timerSetting->work_day_seconds : 8 * 60 * 60;
 
         $juniors = User::where('role', 'junior')->get();
-
+        $login_user = User::where('status')->get();
         $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
             $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
 
@@ -88,7 +88,7 @@ class TimerController extends Controller
             ];
         });
 
-        return view('timers.senior', compact('timers','juniors'));
+        return view('timers.senior', compact('timers', 'juniors', 'login_user'));
     }
 
 
@@ -177,6 +177,4 @@ class TimerController extends Controller
 
         return response()->json($timers);
     }
-
-    
 }
