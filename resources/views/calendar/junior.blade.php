@@ -129,14 +129,14 @@ $subTitle = 'Calendar';
                         }
 
                         tableRows += `
-                <tr>
-    <td>${event.title}</td>
-    <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
-    <td>
-        Work: ${formatTime(workTime)}
-        ${breakTime > 0 ? ` / Break: ${formatTime(breakTime)}` : ''}
-    </td>
-</tr>
+            <tr class="fw-bold text-success">
+                <td colspan="2" class="text-end">Total</td>
+                <td>${formatTime(totalWorkSec)}</td>
+            </tr>
+            <tr class="fw-bold text-primary">
+                <td colspan="2" class="text-end">Elapsed / Remaining</td>
+                <td colspan="2">${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</td>
+            </tr>
             `;
                     }
 
@@ -173,7 +173,7 @@ $subTitle = 'Calendar';
         <tr>
             <th>Event</th>
             <th>Time</th>
-            <th>Duration</th> <!-- Combined Work + Break -->
+            <th>Duration</th>
         </tr>
     </thead>
     <tbody>
