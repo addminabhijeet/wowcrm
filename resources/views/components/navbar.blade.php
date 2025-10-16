@@ -17,7 +17,7 @@ $userImage = Auth::user()->image
                     <iconify-icon icon="heroicons:bars-3-solid" class="icon"></iconify-icon>
                 </button>
 
-
+                @unless(auth()->user()->role === 'admin')
                 <div style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
 
 
@@ -68,6 +68,7 @@ $userImage = Auth::user()->image
 
 
                 </div>
+                @endunless
             </div>
         </div>
 
