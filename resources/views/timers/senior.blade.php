@@ -16,34 +16,26 @@ $script = '<script>
         <div class="d-flex align-items-center flex-wrap gap-3">
             <span class="text-md fw-medium text-secondary-light mb-0">Show</span>
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-                <option>6</option>
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
+                @for($i=1;$i<=10;$i++)
+                    <option>{{ $i }}</option>
+                    @endfor
             </select>
             <form class="navbar-search">
                 <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
             </form>
         </div>
-        <a href="javascript:void(0)" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
-            id="enableAll">
+        <a href="javascript:void(0)" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" id="enableAll">
             <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
             Enable All Junior
         </a>
 
-        <a href="javascript:void(0)" class="btn btn-danger text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
-            id="disableAll">
+        <a href="javascript:void(0)" class="btn btn-danger text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" id="disableAll">
             <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
             Disable All Junior
         </a>
     </div>
+
     <div class="card-body p-24">
         <div class="row gy-4">
             @foreach($timers as $timer)
@@ -68,9 +60,9 @@ $script = '<script>
                             <div style="margin-right:10px;text-align:center;min-width:60px;">
                                 <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
                                     <iconify-icon icon="mdi:timer-outline" style="color:#dc3545;font-size:14px;"></iconify-icon>
-                                    <small style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Countdown</small>
+                                    <small style="color:#6c757d;font-size:10px;">Countdown</small>
                                 </div>
-                                <span class="countdown" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                <span class="countdown" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;">
                                     {{ gmdate('H:i:s', $timer['remaining_seconds']) }}
                                 </span>
                             </div>
@@ -82,133 +74,94 @@ $script = '<script>
                             <div style="margin-right:10px;text-align:center;min-width:60px;">
                                 <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
                                     <iconify-icon icon="mdi:clock-outline" style="color:#28a745;font-size:14px;"></iconify-icon>
-                                    <small style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Elapsed</small>
+                                    <small style="color:#6c757d;font-size:10px;">Elapsed</small>
                                 </div>
-                                <span class="elapsed" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                <span class="elapsed" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;">
                                     {{ gmdate('H:i:s', $timer['elapsed_seconds']) }}
                                 </span>
                             </div>
 
                             <!-- Control Buttons -->
-                            <div class="seniorcontrolButtons" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
+                            <div class="senior-control-buttons" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                                <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" class="btn-resume">
                                     <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
                                 </button>
-                                <button data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
+                                <button data-type="lunch" data-user="{{ $timer['user_id'] }}" class="btn-lunch">
                                     <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
                                 </button>
-                                <button data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
+                                <button data-type="tea" data-user="{{ $timer['user_id'] }}" class="btn-tea">
                                     <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
                                 </button>
-                                <button data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
+                                <button data-type="break" data-user="{{ $timer['user_id'] }}" class="btn-break">
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Action Buttons -->
-                        <!-- Login/Logout Button -->
+                        <!-- Enable/Disable Button -->
                         @if($timer['button_status'] == 0)
                         <button
-                            data-type="login"
+                            data-type="enable-junior"
                             data-user="{{ $timer['user_id'] }}"
-                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            class="btn-enable-junior"
+                            style="width:100%;height:40px;border-radius:14px;background:#0d6efd;border:1px solid #b0c6e6ff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;gap:6px;margin-top:16px;cursor:pointer;">
                             <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
                             Enable Junior
                         </button>
                         @else
                         <button
-                            data-type="logout"
+                            data-type="disable-junior"
                             data-user="{{ $timer['user_id'] }}"
-                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            class="btn-disable-junior"
+                            style="width:100%;height:40px;border-radius:14px;background:#dc3545;border:1px solid #d8adb1ff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;gap:6px;margin-top:16px;cursor:pointer;">
                             <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
                             Disable Junior
                         </button>
                         @endif
 
-                        <!-- Login/Logout Button -->
+                        <!-- Login/Logout -->
                         @if($timer['status'] == 0)
-                        <!-- Login Button -->
-                        <button class="user-action-btn"
-                            data-type="login"
-                            data-user-id="{{ $timer['user_id'] }}"
-                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                        <button class="btn-login" data-type="login" data-user-id="{{ $timer['user_id'] }}">
                             <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
                             Log In
                         </button>
                         @else
-                        <!-- Logout Button -->
-                        <button class="user-action-btn"
-                            data-type="logout"
-                            data-user-id="{{ $timer['user_id'] }}"
-                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                        <button class="btn-logout" data-type="logout" data-user-id="{{ $timer['user_id'] }}">
                             <iconify-icon icon="mdi:stop" style="font-size:16px;"></iconify-icon>
                             Log Out
                         </button>
                         @endif
 
-
-
+                        <!-- Badge -->
                         <div class="position-absolute top-0 end-0 me-16 mt-16" id="badgeContainer_{{ $timer['user_id'] }}">
                             @if(!empty($timer['pause_type']))
-                            @if($timer['pause_type'] == 'lunch')
-                            <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">Lunch Break</span>
-                            @elseif($timer['pause_type'] == 'tea')
-                            <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">Tea Break</span>
-                            @elseif($timer['pause_type'] == 'break')
-                            <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">Short Break</span>
-                            @elseif($timer['pause_type'] == 'resume')
-                            <span class="badge bg-primary text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">Resumed</span>
-                            @else
-                            <span class="badge bg-secondary text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">Unknown</span>
-                            @endif
+                            @switch($timer['pause_type'])
+                            @case('lunch')
+                            <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Lunch Break</span>
+                            @break
+                            @case('tea')
+                            <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Tea Break</span>
+                            @break
+                            @case('break')
+                            <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Short Break</span>
+                            @break
+                            @case('resume')
+                            <span class="badge bg-primary text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Resumed</span>
+                            @break
+                            @default
+                            <span class="badge bg-secondary text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Unknown</span>
+                            @endswitch
                             @endif
                         </div>
-
-
 
                     </div>
                 </div>
             </div>
             @endforeach
         </div>
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
-            <span>Showing 1 to 10 of 12 entries</span>
-            <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
-                <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">
-                        <iconify-icon icon="ep:d-arrow-left" class=""></iconify-icon>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md bg-primary-600 text-white" href="javascript:void(0)">1</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px" href="javascript:void(0)">2</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">3</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">4</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">5</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">
-                        <iconify-icon icon="ep:d-arrow-right" class=""></iconify-icon>
-                    </a>
-                </li>
-            </ul>
-        </div>
     </div>
 </div>
+
 
 
 
@@ -420,6 +373,114 @@ $script = '<script>
 
 
 
+<script>
+    // Bulk enable/disable all juniors
+    function toggleAllStatus(action) {
+        console.log(`Attempting to ${action} all juniors...`);
+        fetch("{{ route('timer.toggleAllStatus') }}", {
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    action: action
+                })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) {
+                    console.error('Bulk toggle failed:', data);
+                    return;
+                }
+
+                console.log('Bulk toggle response:', data);
+
+                // Update all user cards after bulk action
+                if (Array.isArray(data.updated)) {
+                    data.updated.forEach(user => {
+                        updateUserCard(user.user_id, user.button_status);
+                    });
+                }
+
+                // Re-bind events
+                setupStatusButtons();
+            })
+            .catch(err => console.error('Bulk toggle fetch error:', err));
+    }
+
+    // Update UI for a given user card
+    function updateUserCard(userId, buttonStatus) {
+        const card = document.querySelector(`.user-grid-card[data-user-id='${userId}']`);
+        if (!card) return;
+
+        const btnContainer = card.querySelector('.ps-16');
+        const dropdown = card.querySelector('.dropdown button');
+
+        // Update dropdown style
+        if (dropdown) {
+            dropdown.className = buttonStatus ?
+                'bg-white-gradient-light w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white' :
+                'bg-danger w-32-px h-32-px radius-8 border d-flex justify-content-center align-items-center text-white';
+        }
+
+        // Update action button
+        if (btnContainer) {
+            btnContainer.innerHTML = buttonStatus ?
+                `
+                <a href="javascript:void(0)" class="btn btn-danger disable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
+                    <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
+                    Disable Junior
+                </a>` :
+                `
+                <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
+                    <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                    Enable Junior
+                </a>`;
+        }
+    }
+
+    // Bind enable/disable events
+    function setupStatusButtons() {
+        document.querySelectorAll('.enable-junior').forEach(btn => {
+            btn.onclick = () => toggleButtonStatus(btn.dataset.user, 'enable');
+        });
+        document.querySelectorAll('.disable-junior').forEach(btn => {
+            btn.onclick = () => toggleButtonStatus(btn.dataset.user, 'disable');
+        });
+    }
+
+    // Auto update button status for all juniors
+    function checkButtonStatus() {
+        fetch("{{ route('button.status') }}")
+            .then(response => response.json())
+            .then(data => {
+                // Expecting format: [{user_id: 1, button_status: 1}, {user_id: 2, button_status: 0}, ...]
+                if (Array.isArray(data)) {
+                    data.forEach(user => {
+                        updateUserCard(user.user_id, user.button_status);
+                    });
+                    setupStatusButtons();
+                } else {
+                    console.warn("Unexpected response:", data);
+                }
+            })
+            .catch(err => console.error("Polling error:", err));
+    }
+
+    // Bind top buttons
+    const enableAllBtn = document.getElementById('enableAll');
+    const disableAllBtn = document.getElementById('disableAll');
+
+    if (enableAllBtn) enableAllBtn.onclick = () => toggleAllStatus('enable');
+    if (disableAllBtn) disableAllBtn.onclick = () => toggleAllStatus('disable');
+
+    // Run once immediately
+    checkButtonStatus();
+
+    // Poll every 1 second
+    setInterval(checkButtonStatus, 1000);
+</script>
 
 <script>
     $(document).ready(function() {
