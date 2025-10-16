@@ -413,7 +413,7 @@ class GoogleSheetController extends Controller
         }
 
 
-        $data = $query->orderBy('id', 'desc')->paginate(10);
+        $data = $query->orderBy('Date', 'desc')->paginate(10);
 
         // Map forwarded_by dynamically
         $data->getCollection()->transform(function ($item) use ($authUser) {
@@ -492,7 +492,7 @@ class GoogleSheetController extends Controller
             });
         }
 
-        $data = $query->orderBy('id', 'desc')->paginate(10);
+        $data = $query->orderBy('Date', 'desc')->paginate(10);
 
         // Map forwarded_by dynamically for multiple creators
         $data->getCollection()->transform(function ($item) use ($authUser) {
@@ -566,7 +566,7 @@ class GoogleSheetController extends Controller
             });
         }
 
-        $data = $query->orderBy('id', 'desc')->paginate(10);
+        $data = $query->orderBy('Date', 'desc')->paginate(10);
 
         $data->getCollection()->transform(function ($item) use ($authUser) {
 
@@ -1364,10 +1364,12 @@ class GoogleSheetController extends Controller
                 ->orWhere('created_by', 'LIKE', $pattern);       // ends with :id|junior
         })
             ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']) // ensures it's last part
+            ->orderBy('Date', 'desc') // ✅ sort by Date descending (latest first)
             ->paginate(10);
 
         return view('database.junior', compact('data'));
     }
+
 
     public function juniorcandm()
     {
@@ -1382,10 +1384,12 @@ class GoogleSheetController extends Controller
                 // Check second segment is senior (any ID or 0)
                 $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
             })
+            ->orderBy('Date', 'desc') // ✅ sort by Date descending
             ->paginate(10);
 
         return view('database.juniorcandm', compact('data'));
     }
+
 
 
 
