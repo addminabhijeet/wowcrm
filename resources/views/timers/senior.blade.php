@@ -701,23 +701,17 @@ $script = '<script>
                 })
                 .then(res => res.json())
                 .then(data => {
-                    // Loop through all senior control buttons per user
                     document.querySelectorAll('.seniorcontrolButtons').forEach(container => {
-                        const userId = container.querySelector('button').getAttribute('data-user');
                         const resumeBtn = container.querySelector('button[data-type="resumebreak"]');
                         const pauseBtns = container.querySelectorAll('button[data-type="lunch"], button[data-type="tea"], button[data-type="break"]');
 
                         if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
-                            // Hide all pause buttons
+                            // ✅ User is on pause → show Resume, hide pause buttons
                             pauseBtns.forEach(btn => btn.style.display = 'none');
-
-                            // Show resume button
                             if (resumeBtn) resumeBtn.style.display = 'flex';
                         } else {
-                            // Show all pause buttons
+                            // ✅ User is not on pause → hide Resume, show pause buttons
                             pauseBtns.forEach(btn => btn.style.display = 'flex');
-
-                            // Hide resume button
                             if (resumeBtn) resumeBtn.style.display = 'none';
                         }
                     });
@@ -728,9 +722,10 @@ $script = '<script>
         // Initial check
         updatePauseButtons();
 
-        // Check every 1 second
+        // Check every second
         setInterval(updatePauseButtons, 1000);
     });
 </script>
+
 
 @endsection
