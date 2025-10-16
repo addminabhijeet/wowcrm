@@ -152,6 +152,7 @@ class DashboardController extends Controller
                 'start_time'        => now(),
                 'remaining_seconds' => $workDaySeconds,
                 'status'            => 'running',
+                'pause_type'        => 'resume',
             ]);
 
             UserTimerPause::create([
