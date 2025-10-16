@@ -607,7 +607,7 @@ $script = '<script>
         // Function to check status of all users and update buttons
         function checkButtonStatus() {
             $.ajax({
-                url: "{{ route('ajax.checkStatus') }}", // create this route to return user status
+                url: "{{ route('ajax.logincheckStatus') }}", // create this route to return user status
                 method: 'GET',
                 success: function(res) {
                     if (res.success) {
