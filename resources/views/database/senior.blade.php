@@ -1262,7 +1262,7 @@ $script ='<script>
         let juniorId = this.value;
         let search = document.getElementById('senior-search').value;
 
-        fetch("{{ route('dashboard.senior') }}?junior_user=" + juniorId + "&search=" + search, {
+        fetch("{{ route('google.sheet.senior') }}?junior_user=" + juniorId + "&search=" + search, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
