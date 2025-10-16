@@ -175,4 +175,13 @@ class LoginController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+    public function ajaxCheckStatus()
+    {
+        $users = User::select('id', 'status')->get();
+        return response()->json([
+            'success' => true,
+            'data' => $users
+        ]);
+    }
 }

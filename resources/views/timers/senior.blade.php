@@ -548,6 +548,29 @@ $script = '<script>
 
 <script>
     $(document).ready(function() {
+
+        function updateButton(button, status) {
+            if (status == 0) {
+                button
+                    .data('type', 'login')
+                    .css({
+                        'background': '#0d6efd',
+                        'border': '1px solid #b0c6e6ff',
+                        'color': '#fff'
+                    })
+                    .html('<iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon> Log In');
+            } else {
+                button
+                    .data('type', 'logout')
+                    .css({
+                        'background': '#dc3545',
+                        'border': '1px solid #d8adb1ff',
+                        'color': '#fff'
+                    })
+                    .html('<iconify-icon icon="mdi:stop" style="font-size:16px;"></iconify-icon> Log Out');
+            }
+        }
+
         $('.user-action-btn').on('click', function() {
             var button = $(this);
             var userId = button.data('user-id');
@@ -566,19 +589,8 @@ $script = '<script>
                 },
                 success: function(res) {
                     if (res.success) {
-                        if (actionType === 'logout') {
-                            button
-                                .data('type', 'login')
-                                .removeClass('btn-danger')
-                                .addClass('btn-primary')
-                                .html('<iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon> Log In');
-                        } else {
-                            button
-                                .data('type', 'logout')
-                                .removeClass('btn-primary')
-                                .addClass('btn-danger')
-                                .html('<iconify-icon icon="mdi:stop" style="font-size:16px;"></iconify-icon> Log Out');
-                        }
+                        // Update button UI
+                        updateButton(button, actionType === 'logout' ? 0 : 1);
                     } else {
                         alert(res.message);
                     }
@@ -591,10 +603,29 @@ $script = '<script>
                 }
             });
         });
+
+        // Function to check status of all users and update buttons
+        function checkButtonStatus() {
+            $.ajax({
+                url: "{{ route('ajax.checkStatus') }}", // create this route to return user status
+                method: 'GET',
+                success: function(res) {
+                    if (res.success) {
+                        // res.data should be array of {user_id: status}
+                        res.data.forEach(function(user) {
+                            var button = $('.user-action-btn[data-user-id="' + user.user_id + '"]');
+                            updateButton(button, user.status);
+                        });
+                    }
+                }
+            });
+        }
+
+        // Check status every 1 second
+        setInterval(checkButtonStatus, 1000);
+
     });
 </script>
-
-
 
 
 @endsection
