@@ -107,20 +107,42 @@ $script = '<script>
                         </div>
 
                         <!-- Action Buttons -->
+                         <!-- Login/Logout Button -->
                         @if($timer['button_status'] == 0)
-                        <a href="javascript:void(0)"
-                            class="bg-primary-50 text-primary-600 hover-bg-primary-600 hover-text-white p-10 text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center justify-content-center mt-16 fw-medium gap-2 w-100 enable-junior"
-                            data-user="{{ $timer['user_id'] }}">
+                        <button
+                            data-type="login"
+                            data-user="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #0b5ed7; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
                             Enable Junior
-                            <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                        </a>
+                        </button>
                         @else
-                        <a href="javascript:void(0)"
-                            class="bg-danger-50 text-danger-600 hover-bg-danger-600 hover-text-white p-10 text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center justify-content-center mt-16 fw-medium gap-2 w-100 disable-junior"
-                            data-user="{{ $timer['user_id'] }}">
+                        <button
+                            data-type="logout"
+                            data-user="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #b02a37; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
                             Disable Junior
-                            <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
-                        </a>
+                        </button>
+                        @endif
+
+                        <!-- Login/Logout Button -->
+                        @if($timer['button_status'] == 0)
+                        <button
+                            data-type="login"
+                            data-user="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #0b5ed7; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
+                            Log In
+                        </button>
+                        @else
+                        <button
+                            data-type="logout"
+                            data-user="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #b02a37; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
+                            Log Out
+                        </button>
                         @endif
 
                         <div class="position-absolute top-0 end-0 me-16 mt-16">
