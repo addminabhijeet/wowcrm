@@ -231,16 +231,23 @@ class DashboardController extends Controller
         }
     }
 
-        public function checkPauseButtonsSenior(Request $request)
+    public function checkPauseButtonsSenior(Request $request)
     {
         try {
-            $user = Auth::user();
-            if (!$user) {
-                return response()->json(['error' => 'Not authenticated'], 401);
+            $userId = $request->input('user_id');
+
+            // Optional: fallback to logged-in user
+            if (!$userId) {
+                $user = Auth::user();
+                $userId = $user->id ?? null;
+            }
+
+            if (!$userId) {
+                return response()->json(['error' => 'User not found'], 401);
             }
 
             // Get the latest timer log for today
-            $latestLog = UserTimerLog::where('user_id', $user->id)
+            $latestLog = UserTimerLog::where('user_id', $userId)
                 ->whereDate('created_at', now()->startOfDay())
                 ->latest('created_at')
                 ->first();
@@ -257,6 +264,7 @@ class DashboardController extends Controller
             ], 500);
         }
     }
+
 
 
 

@@ -690,40 +690,44 @@ $script = '<script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        function updatePauseButtons() {
-            fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({})
-                })
-                .then(res => res.json())
-                .then(data => {
-                    document.querySelectorAll('.seniorcontrolButtons').forEach(container => {
+        function updatePauseButtonsPerUser() {
+            document.querySelectorAll('.seniorcontrolButtons').forEach(container => {
+                const userId = container.querySelector('button').getAttribute('data-user');
+
+                fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            user_id: userId
+                        }) // send user ID to backend
+                    })
+                    .then(res => res.json())
+                    .then(data => {
                         const resumeBtn = container.querySelector('button[data-type="resumebreak"]');
                         const pauseBtns = container.querySelectorAll('button[data-type="lunch"], button[data-type="tea"], button[data-type="break"]');
 
                         if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
-                            // ✅ User is on pause → show Resume, hide pause buttons
+                            // User is on pause → show Resume, hide pause buttons
                             pauseBtns.forEach(btn => btn.style.display = 'none');
                             if (resumeBtn) resumeBtn.style.display = 'flex';
                         } else {
-                            // ✅ User is not on pause → hide Resume, show pause buttons
+                            // User is not on pause → hide Resume, show pause buttons
                             pauseBtns.forEach(btn => btn.style.display = 'flex');
                             if (resumeBtn) resumeBtn.style.display = 'none';
                         }
-                    });
-                })
-                .catch(err => console.error('❌ Error checking pause buttons:', err));
+                    })
+                    .catch(err => console.error('❌ Error fetching pause state for user', userId, err));
+            });
         }
 
         // Initial check
-        updatePauseButtons();
+        updatePauseButtonsPerUser();
 
         // Check every second
-        setInterval(updatePauseButtons, 1000);
+        setInterval(updatePauseButtonsPerUser, 1000);
     });
 </script>
 
