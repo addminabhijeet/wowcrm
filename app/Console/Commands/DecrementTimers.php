@@ -17,8 +17,14 @@ class DecrementTimers extends Command
 
         while (true) {
             try {
+                // ✅ Only target the latest timer per user (by start_time)
                 $affected = DB::table('user_timer_logs')
-                    ->where('status', 'running')
+                    ->whereIn('id', function ($sub) {
+                        $sub->select(DB::raw('MAX(id)'))
+                            ->from('user_timer_logs')
+                            ->where('status', 'running')
+                            ->groupBy('user_id');
+                    })
                     ->where('pause_type', 'resume')
                     ->where(function ($query) {
                         $query->whereNull('last_decrement')
@@ -31,7 +37,7 @@ class DecrementTimers extends Command
                     ]);
 
                 if ($affected > 0) {
-                    $this->line(now() . " → Updated $affected timers.");
+                    $this->line(now() . " → Updated $affected latest timers.");
                 }
 
                 sleep(3); // wait before next cycle
