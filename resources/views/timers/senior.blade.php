@@ -127,26 +127,10 @@ $script = '<script>
                         @endif
 
                         <!-- Login/Logout Button -->
-                        @if($login_user['status'] == 0)
-                        <button
-                            data-type="login"
-                            data-user="{{ $login_user['status'] }}"
-                            data-user-id="{{ $login_user['id'] }}"
-                            class="user-action-btn"
-                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #0c182bff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
-                            <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
-                            Log In
-                        </button>
+                        @if($timer['status'] == 0)
+                        <button data-type="login" data-user-id="{{ $timer['user_id'] }}">Log In</button>
                         @else
-                        <button
-                            data-type="logout"
-                            data-user="{{ $login_user['status'] }}"
-                            data-user-id="{{ $login_user['id'] }}"
-                            class="user-action-btn"
-                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #441216ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
-                            <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
-                            Log Out
-                        </button>
+                        <button data-type="logout" data-user-id="{{ $timer['user_id'] }}">Log Out</button>
                         @endif
 
 
