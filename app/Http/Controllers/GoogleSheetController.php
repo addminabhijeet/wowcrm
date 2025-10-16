@@ -443,12 +443,16 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        $juniorUsers = \App\Models\User::where('role', 'junior')
+            ->where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'email', 'phone', 'designation']);
 
         if ($request->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
         }
 
-        return view('database.senior', compact('data'));
+        return view('database.senior', compact('data', 'juniorUsers'));
     }
 
     public function seniorcandm(Request $request)
@@ -1574,7 +1578,7 @@ class GoogleSheetController extends Controller
         }
 
         foreach ($updateData as $key => $value) {
-            if ($value === '' && !in_array($key, ['Email_Address','Remark','Name','Amount'])) {
+            if ($value === '' && !in_array($key, ['Email_Address', 'Remark', 'Name', 'Amount'])) {
                 $updateData[$key] = null;
             }
         }
