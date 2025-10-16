@@ -73,13 +73,13 @@ class DashboardController extends Controller
             ->orderBy('id', 'desc')
             ->first();
 
-        // Default to 0 (disabled) if no log found or field missing
         $buttonStatus = $latestLog ? (int)$latestLog->button_status : 0;
 
         return response()->json([
-            'button_status' => $buttonStatus
+            ['user_id' => $user->id, 'button_status' => $buttonStatus] // wrap in array
         ]);
     }
+
 
 
 
@@ -443,7 +443,7 @@ class DashboardController extends Controller
                 $createPauseIfChanged('paused', 'inactive', $timer->remaining_seconds);
             }
         }
-        
+
 
         // Update timestamp and save
         $timer->updated_at = $currentTime;
