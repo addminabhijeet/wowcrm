@@ -23,6 +23,13 @@ $subTitle = 'Calendar';
                     </div>
                 </div>
 
+                <!-- Monthly Report Button -->
+                <div class="d-flex justify-content-end mb-3">
+                    <button id="downloadMonthlyReport" class="btn btn-sm btn-primary">
+                        <i class="bi bi-file-earmark-arrow-down"></i> Download Monthly Report
+                    </button>
+                </div>
+
                 <!-- Calendar -->
                 <div id="calendar"></div>
             </div>
@@ -38,6 +45,9 @@ $subTitle = 'Calendar';
                 <h1 class="modal-title fs-5" id="eventModalLabel">
                     Events on <span id="modalDate"></span>
                 </h1>
+                <button id="downloadDailyReport" class="btn btn-sm btn-outline-primary me-2">
+                    <i class="bi bi-download"></i> Download Daily Report
+                </button>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-24" id="modalBody"></div>
