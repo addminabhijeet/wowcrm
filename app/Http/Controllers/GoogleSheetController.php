@@ -16,10 +16,11 @@ class GoogleSheetController extends Controller
 {
     public function index()
     {
-        $data = GoogleSheetData::paginate(10);
+        $data = GoogleSheetData::orderBy('Date', 'desc')->paginate(10);
 
         return view('database.admin', compact('data'));
     }
+
 
     public function adminfetch(Request $request)
     {
