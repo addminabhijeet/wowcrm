@@ -182,12 +182,15 @@ $subTitle = 'Calendar';
 </table>
         `;
 
-                    // ✅ Hide rows with same data as previous row
                     const rows = modalBody.querySelectorAll('tbody tr');
                     for (let i = 1; i < rows.length - 2; i++) { // skip first and last total rows
-                        const currCells = Array.from(rows[i].cells).map(td => td.textContent.trim());
-                        const prevCells = Array.from(rows[i - 1].cells).map(td => td.textContent.trim());
-                        if (JSON.stringify(currCells) === JSON.stringify(prevCells)) {
+                        const currEvent = rows[i].cells[0].textContent.trim();
+                        const currTime = rows[i].cells[1].textContent.trim();
+                        const prevEvent = rows[i - 1].cells[0].textContent.trim();
+                        const prevTime = rows[i - 1].cells[1].textContent.trim();
+
+                        // Hide if either Event or Time matches the previous row
+                        if (currEvent === prevEvent || currTime === prevTime) {
                             rows[i].style.display = 'none';
                         }
                     }
