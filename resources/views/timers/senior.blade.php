@@ -107,7 +107,7 @@ $script = '<script>
                         </div>
 
                         <!-- Action Buttons -->
-                         <!-- Login/Logout Button -->
+                        <!-- Login/Logout Button -->
                         @if($timer['button_status'] == 0)
                         <button
                             data-type="login"
@@ -127,10 +127,12 @@ $script = '<script>
                         @endif
 
                         <!-- Login/Logout Button -->
-                        @if($timer['button_status'] == 0)
+                        @if($login_user['status'] == 0)
                         <button
                             data-type="login"
-                            data-user="{{ $timer['user_id'] }}"
+                            data-user="{{ $login_user['status'] }}"
+                            data-user-id="{{ $login_user['id'] }}"
+                            class="user-action-btn"
                             style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #0c182bff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
                             <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
                             Log In
@@ -138,12 +140,15 @@ $script = '<script>
                         @else
                         <button
                             data-type="logout"
-                            data-user="{{ $timer['user_id'] }}"
+                            data-user="{{ $login_user['status'] }}"
+                            data-user-id="{{ $login_user['id'] }}"
+                            class="user-action-btn"
                             style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #441216ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
                             <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
                             Log Out
                         </button>
                         @endif
+
 
                         <div class="position-absolute top-0 end-0 me-16 mt-16">
                             @if(!empty($timer['pause_type']))
@@ -543,38 +548,51 @@ $script = '<script>
 </script>
 
 <script>
-    $(document).on('click', 'button[data-type="logout"]', function(e) {
-        e.preventDefault();
-        const userId = $(this).data('user'); // fallback ID
+    $(document).ready(function() {
+        $('.user-action-btn').on('click', function() {
+            var button = $(this);
+            var userId = button.data('user-id');
+            var actionType = button.data('type'); // login or logout
 
-        if (!confirm("Are you sure you want to log out this user?")) return;
-
-        $.ajax({
-            url: "{{ route('ajax.logout') }}",
-            method: "POST",
-            data: {
-                _token: "{{ csrf_token() }}",
-                user_id: userId
-            },
-            beforeSend: function() {
-                console.log("[Logout] Request sent for user ID:", userId);
-            },
-            success: function(response) {
-                if (response.success) {
-                    alert(response.message);
-                    // Optionally reload or update UI
-                    $(`#seniorcontrolButtons_${userId}`).find('button').prop('disabled', true);
-                } else {
-                    alert("Error: " + response.message);
-                }
-            },
-            error: function(xhr) {
-                console.error(xhr.responseText);
-                alert("Something went wrong while logging out.");
+            if (actionType === 'logout') {
+                $.ajax({
+                    url: "{{ route('ajax.logout') }}", // Your Laravel route
+                    method: 'POST',
+                    data: {
+                        user_id: userId,
+                        _token: '{{ csrf_token() }}'
+                    },
+                    beforeSend: function() {
+                        button.prop('disabled', true).text('Logging out...');
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            // Update button UI
+                            button
+                                .data('type', 'login')
+                                .css({
+                                    'background': '#0d6efd',
+                                    'border': '1px solid #0c182bff'
+                                })
+                                .html('<iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon> Log In');
+                        } else {
+                            alert(res.message);
+                        }
+                    },
+                    error: function(xhr) {
+                        alert('Something went wrong!');
+                    },
+                    complete: function() {
+                        button.prop('disabled', false);
+                    }
+                });
             }
+
+            // Optional: handle login logic similarly
         });
     });
 </script>
+
 
 
 @endsection
