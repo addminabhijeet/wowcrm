@@ -129,14 +129,14 @@ $subTitle = 'Calendar';
                         }
 
                         tableRows += `
-            <tr class="fw-bold text-success">
-                <td colspan="2" class="text-end">Total</td>
-                <td>${formatTime(totalWorkSec)}</td>
-            </tr>
-            <tr class="fw-bold text-primary">
-                <td colspan="2" class="text-end">Elapsed / Remaining</td>
-                <td colspan="2">${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</td>
-            </tr>
+<tr>
+    <td>${event.title}</td>
+    <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
+    <td>
+        ${formatTime(workTime)}
+        ${breakTime > 0 ? ` / Break: ${formatTime(breakTime)}` : ''}
+    </td>
+</tr>
             `;
                     }
 
@@ -150,20 +150,17 @@ $subTitle = 'Calendar';
             <tr class="fw-bold text-success">
                 <td colspan="2" class="text-end">Total</td>
                 <td>${formatTime(totalWorkSec)}</td>
-                <td>${formatTime(totalBreakSec)}</td>
-                <td></td>
             </tr>
             <tr class="fw-bold text-primary">
                 <td colspan="2" class="text-end">Elapsed / Remaining</td>
                 <td colspan="2">${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</td>
-                <td></td>
             </tr>
         `;
 
                     const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
                     modalBody.innerHTML = `
-            <div class="summary border-bottom pb-3 mb-3">
+<div class="summary border-bottom pb-3 mb-3">
     <h5 class="fw-semibold text-success">Summary</h5>
     <p><strong>8 Hours Completed:</strong> ${completed}</p>
 </div>
@@ -210,29 +207,36 @@ $subTitle = 'Calendar';
         function highlightUnderworkedDays(calendar) {
             const allEvents = calendar.getEvents();
             const grouped = {};
-
-            // Group events by date
             allEvents.forEach(ev => {
-                const dateKey = ev.startStr.slice(0, 10); // YYYY-MM-DD
+                const dateKey = new Date(ev.start).toISOString().split('T')[0];
                 if (!grouped[dateKey]) grouped[dateKey] = [];
                 grouped[dateKey].push(ev);
             });
 
             Object.keys(grouped).forEach(dateStr => {
                 const dayEvents = grouped[dateStr];
+                let totalBreakSec = 0,
+                    lastPauseTime = null;
 
-                // ✅ Sum remaining_seconds for the day
-                const totalWorkSec = dayEvents.reduce((sum, ev) => {
-                    return sum + (parseInt(ev.extendedProps.remaining_seconds) || 0);
-                }, 0);
+                dayEvents.forEach(ev => {
+                    const eTime = new Date(ev.start);
+                    const pauseType = (ev.extendedProps.pause_type || '').toLowerCase();
+                    if (pauseType === 'inactive') lastPauseTime = eTime;
+                    else if (pauseType === 'resume' && lastPauseTime) {
+                        totalBreakSec += (eTime - lastPauseTime) / 1000;
+                        lastPauseTime = null;
+                    }
+                });
+
+                const startTime = new Date(dayEvents[0].start);
+                const endTime = new Date(dayEvents[dayEvents.length - 1].start);
+                const totalDaySec = (endTime - startTime) / 1000;
+                const totalWorkSec = totalDaySec - totalBreakSec;
 
                 const cell = calendarEl.querySelector(`.fc-daygrid-day[data-date='${dateStr}']`);
                 if (cell) {
-                    if (totalWorkSec < 8 * 3600) {
-                        cell.style.backgroundColor = 'rgba(220,50,50,0.3)'; // Less than 8h
-                    } else {
-                        cell.style.backgroundColor = 'rgba(0,123,255,0.08)'; // Completed ≥8h
-                    }
+                    if (totalWorkSec < 8 * 3600) cell.style.backgroundColor = 'rgba(220,50,50,0.3)';
+                    else cell.style.backgroundColor = 'rgba(0,123,255,0.08)';
                 }
             });
         }
