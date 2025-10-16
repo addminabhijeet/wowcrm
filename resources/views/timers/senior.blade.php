@@ -156,12 +156,12 @@ $script = '<script>
 
                         <!-- Label instead of Dropdown -->
                         <div class="position-absolute top-0 end-0 me-16 mt-16">
-                            @if($timer['button_status'] == 0)
+                            @if($timer['pause_type'] == lunch)
                             <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">
                                 New
                             </span>
-                            @else
+                            @elseif($timer['pause_type'] == 'tea')
                             <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">
                                 New Arrival
