@@ -161,7 +161,7 @@ $script = '<script>
             </div>
         </div>
     </div>
-    @endforeach
+    
 </div>
 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
     <span>Showing 1 to 10 of 12 entries</span>
