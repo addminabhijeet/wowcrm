@@ -38,9 +38,12 @@ class CallReportController extends Controller
 
         // Total other calls (excluding Called & Mailed)
         $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->count();
+
 
         // Selected date (default today)
         $selectedDate = $request->input('selected_date', date('Y-m-d'));
@@ -53,9 +56,13 @@ class CallReportController extends Controller
         $StotalCalls = $query->count();
         $ScalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
         $SreadyToPaidCalls = (clone $query)->where('Exe_Remarks', 'Ready To Paid')->count();
-        $SotherCalls = (clone $query)->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+        $SotherCalls = (clone $query)
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->count();
+
 
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
@@ -312,9 +319,12 @@ class CallReportController extends Controller
 
         // Total other calls for this junior
         $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->count();
+
 
         // Group data by hour of updated_at (for this junior)
         $hourlyCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
@@ -339,9 +349,12 @@ class CallReportController extends Controller
             ->count();
 
         $SotherCalls = (clone $query)
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->count();
+
 
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
@@ -543,9 +556,12 @@ class CallReportController extends Controller
 
         // Total other calls for this junior
         $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->count();
+
 
         // Group data by hour of updated_at (for this junior)
         $hourlyCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
@@ -570,9 +586,12 @@ class CallReportController extends Controller
             ->count();
 
         $SotherCalls = (clone $query)
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->count();
+
 
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
