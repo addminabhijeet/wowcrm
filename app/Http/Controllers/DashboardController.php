@@ -69,16 +69,24 @@ class DashboardController extends Controller
     {
         $user = Auth::user();
 
+        if (!$user) {
+            return response()->json(['error' => 'Unauthenticated'], 401);
+        }
+
+        // Fetch the latest timer record by start_time (not ID)
         $latestLog = UserTimerLog::where('user_id', $user->id)
-            ->orderBy('id', 'desc')
+            ->orderBy('start_time', 'desc')
             ->first();
 
-        $buttonStatus = $latestLog ? (int)$latestLog->button_status : 0;
+        // Default to 0 if no record exists
+        $buttonStatus = $latestLog ? (int) $latestLog->button_status : 0;
 
         return response()->json([
-            ['user_id' => $user->id, 'button_status' => $buttonStatus] // wrap in array
+            'user_id' => $user->id,
+            'button_status' => $buttonStatus
         ]);
     }
+
 
 
 
