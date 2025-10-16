@@ -142,4 +142,37 @@ class LoginController extends Controller
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }
     }
+
+    public function ajaxLogin(Request $request)
+    {
+        try {
+            $userId = $request->input('user_id');
+            $user = User::find($userId);
+
+            if (!$user) {
+                return response()->json(['success' => false, 'message' => 'User not found.']);
+            }
+
+            // --- Mark user as active ---
+            $user->status = 1;
+            $user->save();
+
+            // --- Record pause for timer logs ---
+            $latestTimer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+            if ($latestTimer) {
+                UserTimerPause::create([
+                    'user_timer_log_id' => $latestTimer->id,
+                    'user_id' => $user->id,
+                    'status' => 'paused',
+                    'pause_type' => 'login by senior',
+                    'remaining_seconds' => $latestTimer->remaining_seconds,
+                    'event_time' => now(),
+                ]);
+            }
+
+            return response()->json(['success' => true, 'message' => 'User logged in successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => $e->getMessage()]);
+        }
+    }
 }

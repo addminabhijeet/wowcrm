@@ -168,6 +168,7 @@ Route::middleware(['auth'])->group(function () {
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
 Route::post('/logout-user', [LoginController::class, 'ajaxLogout'])->name('ajax.logout');
+Route::post('/login-user', [LoginController::class, 'ajaxLogin'])->name('ajax.login');
 
 Route::get('/template/{id}/edit', [EmailTemplateController::class, 'edit'])->name('template.edit');
 Route::put('/email-template/{id}', [EmailTemplateController::class, 'update'])->name('template.update');
