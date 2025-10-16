@@ -26,11 +26,16 @@ $script ='<script>
                 <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
 
-            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
-                <option>Status</option>
-                <option>Active</option>
-                <option>Inactive</option>
+            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user">
+                <option value="">Select Junior</option>
+                @foreach ($juniorUsers as $junior)
+                <option value="{{ $junior->id }}">
+                    {{ $junior->name }}
+                    @if($junior->designation) ({{ $junior->designation }}) @endif
+                </option>
+                @endforeach
             </select>
+
         </div>
     </div>
 
