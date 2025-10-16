@@ -120,12 +120,11 @@ class LoginController extends Controller
                 return response()->json(['success' => false, 'message' => 'User not found.']);
             }
 
-            // --- Stop login (mark as inactive) ---
+            // Mark user as inactive
             $user->status = 0;
             $user->save();
-            $user->refresh(); // optional
 
-            // --- Record pause for timer logs ---
+            // Record pause in timer logs
             $latestTimer = UserTimerLog::where('user_id', $user->id)->latest()->first();
             if ($latestTimer) {
                 UserTimerPause::create([
@@ -138,7 +137,7 @@ class LoginController extends Controller
                 ]);
             }
 
-            return response()->json(['success' => true, 'message' => 'Junior logged out successfully.']);
+            return response()->json(['success' => true, 'message' => 'User logged out successfully.']);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()]);
         }

@@ -128,9 +128,13 @@ $script = '<script>
 
                         <!-- Login/Logout Button -->
                         @if($timer['status'] == 0)
-                        <button data-type="login" data-user-id="{{ $timer['user_id'] }}">Log In</button>
+                        <button class="user-action-btn btn btn-primary" data-type="login" data-user-id="{{ $timer['user_id'] }}">
+                            <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon> Log In
+                        </button>
                         @else
-                        <button data-type="logout" data-user-id="{{ $timer['user_id'] }}">Log Out</button>
+                        <button class="user-action-btn btn btn-danger" data-type="logout" data-user-id="{{ $timer['user_id'] }}">
+                            <iconify-icon icon="mdi:stop" style="font-size:16px;"></iconify-icon> Log Out
+                        </button>
                         @endif
 
 
@@ -537,45 +541,48 @@ $script = '<script>
             var button = $(this);
             var userId = button.data('user-id');
             var actionType = button.data('type'); // login or logout
+            var url = actionType === 'logout' ? "{{ route('ajax.logout') }}" : "{{ route('ajax.login') }}";
 
-            if (actionType === 'logout') {
-                $.ajax({
-                    url: "{{ route('ajax.logout') }}", // Your Laravel route
-                    method: 'POST',
-                    data: {
-                        user_id: userId,
-                        _token: '{{ csrf_token() }}'
-                    },
-                    beforeSend: function() {
-                        button.prop('disabled', true).text('Logging out...');
-                    },
-                    success: function(res) {
-                        if (res.success) {
-                            // Update button UI
+            $.ajax({
+                url: url,
+                method: 'POST',
+                data: {
+                    user_id: userId,
+                    _token: '{{ csrf_token() }}'
+                },
+                beforeSend: function() {
+                    button.prop('disabled', true).text(actionType === 'logout' ? 'Logging out...' : 'Logging in...');
+                },
+                success: function(res) {
+                    if (res.success) {
+                        if (actionType === 'logout') {
                             button
                                 .data('type', 'login')
-                                .css({
-                                    'background': '#0d6efd',
-                                    'border': '1px solid #0c182bff'
-                                })
+                                .removeClass('btn-danger')
+                                .addClass('btn-primary')
                                 .html('<iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon> Log In');
                         } else {
-                            alert(res.message);
+                            button
+                                .data('type', 'logout')
+                                .removeClass('btn-primary')
+                                .addClass('btn-danger')
+                                .html('<iconify-icon icon="mdi:stop" style="font-size:16px;"></iconify-icon> Log Out');
                         }
-                    },
-                    error: function(xhr) {
-                        alert('Something went wrong!');
-                    },
-                    complete: function() {
-                        button.prop('disabled', false);
+                    } else {
+                        alert(res.message);
                     }
-                });
-            }
-
-            // Optional: handle login logic similarly
+                },
+                error: function(xhr) {
+                    alert('Something went wrong!');
+                },
+                complete: function() {
+                    button.prop('disabled', false);
+                }
+            });
         });
     });
 </script>
+
 
 
 
