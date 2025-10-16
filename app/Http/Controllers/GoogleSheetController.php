@@ -818,7 +818,7 @@ class GoogleSheetController extends Controller
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
-            'Amount' => isset($rowData['Amount']) && $rowData['Amount'] !== '' ? $this->parseAmount($rowData['Amount']) : null,
+            'Amount' => isset($rowData['Amount']) && $rowData['Amount'] !== '' ? $this->parseAmount($rowData['Amount']) : 469, // ✅ default 469
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
@@ -1560,7 +1560,7 @@ class GoogleSheetController extends Controller
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
-            'Amount' => isset($rowData['Amount']) && $rowData['Amount'] !== '' ? $this->parseAmount($rowData['Amount']) : null,
+            'Amount' => isset($rowData['Amount']) && $rowData['Amount'] !== '' ? $this->parseAmount($rowData['Amount']) : 469, // ✅ default 469
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
@@ -1833,6 +1833,12 @@ class GoogleSheetController extends Controller
         } else {
             $record->created_by = $user->id . '|junior';
         }
+
+        if (is_null($record->Amount)) {
+            $record->Amount = 469; // ✅ default amount
+            $amount = 469;         // ensures email shows correct amount
+        }
+
 
         // Handle resume file upload
         if ($request->hasFile('resume')) {
