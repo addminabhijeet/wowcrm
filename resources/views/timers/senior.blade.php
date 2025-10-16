@@ -701,31 +701,26 @@ $script = '<script>
                 })
                 .then(res => res.json())
                 .then(data => {
-                    const buttonsToHide = document.querySelectorAll(
-                        '#controlButtons button[data-type="lunch"], ' +
-                        '#controlButtons button[data-type="tea"], ' +
-                        '#controlButtons button[data-type="break"]'
-                    );
+                    // Loop through all senior control buttons per user
+                    document.querySelectorAll('.seniorcontrolButtons').forEach(container => {
+                        const userId = container.querySelector('button').getAttribute('data-user');
+                        const resumeBtn = container.querySelector('button[data-type="resumebreak"]');
+                        const pauseBtns = container.querySelectorAll('button[data-type="lunch"], button[data-type="tea"], button[data-type="break"]');
 
-                    const resumeBtn = document.querySelector('#controlButtons button[data-type="resumebreak"]');
+                        if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
+                            // Hide all pause buttons
+                            pauseBtns.forEach(btn => btn.style.display = 'none');
 
-                    if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
-                        // Hide lunch/tea/break buttons
-                        buttonsToHide.forEach(btn => {
-                            if (btn) btn.style.display = 'none';
-                        });
+                            // Show resume button
+                            if (resumeBtn) resumeBtn.style.display = 'flex';
+                        } else {
+                            // Show all pause buttons
+                            pauseBtns.forEach(btn => btn.style.display = 'flex');
 
-                        // Show resume button
-                        if (resumeBtn) resumeBtn.style.display = 'flex';
-                    } else {
-                        // Show all pause buttons
-                        buttonsToHide.forEach(btn => {
-                            if (btn) btn.style.display = 'flex';
-                        });
-
-                        // Hide resume button
-                        if (resumeBtn) resumeBtn.style.display = 'none';
-                    }
+                            // Hide resume button
+                            if (resumeBtn) resumeBtn.style.display = 'none';
+                        }
+                    });
                 })
                 .catch(err => console.error('❌ Error checking pause buttons:', err));
         }
@@ -733,7 +728,7 @@ $script = '<script>
         // Initial check
         updatePauseButtons();
 
-        // Check every 2 seconds
+        // Check every 1 second
         setInterval(updatePauseButtons, 1000);
     });
 </script>
