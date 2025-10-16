@@ -26,15 +26,16 @@ $script ='<script>
                 <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
 
-            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user">
+            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user" id="junior-filter">
                 <option value="">Select Junior</option>
                 @foreach ($juniorUsers as $junior)
                 <option value="{{ $junior->id }}">
                     {{ $junior->name }}
-                    @if($junior->designation) @endif
+                    @if($junior->designation) ({{ $junior->designation }}) @endif
                 </option>
                 @endforeach
             </select>
+
 
         </div>
     </div>
@@ -1255,5 +1256,23 @@ $script ='<script>
         cursor: -webkit-grabbing;
     }
 </style>
+
+<script>
+    document.getElementById('junior-filter').addEventListener('change', function() {
+        let juniorId = this.value;
+        let search = document.getElementById('senior-search').value;
+
+        fetch("{{ route('dashboard.senior') }}?junior_user=" + juniorId + "&search=" + search, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('senior-table-wrapper').innerHTML = html;
+            });
+    });
+</script>
+
 
 @endsection

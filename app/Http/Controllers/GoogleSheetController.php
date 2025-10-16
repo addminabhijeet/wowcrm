@@ -388,12 +388,19 @@ class GoogleSheetController extends Controller
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
+        $juniorUserId = $request->input('junior_user'); // dropdown value
+
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
             $q->where('created_by', $authUser->id . '|senior')
                 ->orWhere('created_by', '0|senior')
                 ->orWhere('created_by', 'LIKE', $userPattern)
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
         });
+
+        // Filter by selected junior
+        if ($juniorUserId) {
+            $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
+        }
 
         if ($rowId) {
             $query->where('id', $rowId);
@@ -404,6 +411,7 @@ class GoogleSheetController extends Controller
                     ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
             });
         }
+
 
         $data = $query->orderBy('id', 'desc')->paginate(10);
 
