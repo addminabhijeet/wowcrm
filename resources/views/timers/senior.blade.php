@@ -631,6 +631,60 @@ $script = '<script>
     });
 </script>
 
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+
+        function updatePauseBadges() {
+            fetch("{{ route('timers.latestPauseTypes') }}")
+                .then(response => response.json())
+                .then(data => {
+                    data.forEach(item => {
+                        const badge = document.querySelector(`.pause-badge[data-user="${item.user_id}"]`);
+                        if (!badge) return;
+
+                        const type = item.pause_type || 'unknown';
+                        badge.textContent = formatPauseText(type);
+                        badge.className = `badge pause-badge ${getBadgeClass(type)}`;
+                    });
+                })
+                .catch(err => console.error("[Pause Update] Error:", err));
+        }
+
+        function formatPauseText(type) {
+            switch (type) {
+                case 'lunch':
+                    return 'Lunch Break';
+                case 'tea':
+                    return 'Tea Break';
+                case 'break':
+                    return 'Short Break';
+                case 'resume':
+                    return 'Resumed';
+                default:
+                    return 'Unknown';
+            }
+        }
+
+        function getBadgeClass(type) {
+            switch (type) {
+                case 'lunch':
+                    return 'bg-danger text-white';
+                case 'tea':
+                    return 'bg-success text-white';
+                case 'break':
+                    return 'bg-warning text-white';
+                case 'resume':
+                    return 'bg-primary text-white';
+                default:
+                    return 'bg-secondary text-white';
+            }
+        }
+
+        // Run immediately and then every second
+        updatePauseBadges();
+        setInterval(updatePauseBadges, 1000);
+    });
+</script>
 
 
 @endsection

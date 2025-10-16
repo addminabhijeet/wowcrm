@@ -87,6 +87,24 @@ class DashboardController extends Controller
         ]);
     }
 
+    public function getLatestPauseTypes()
+    {
+        $users = User::where('role', 'junior')->get();
+
+        $data = $users->map(function ($user) {
+            $latestLog = UserTimerLog::where('user_id', $user->id)
+                ->orderBy('start_time', 'desc')
+                ->first();
+
+            return [
+                'user_id' => $user->id,
+                'pause_type' => $latestLog ? $latestLog->pause_type : null,
+            ];
+        });
+
+        return response()->json($data);
+    }
+
 
 
 
