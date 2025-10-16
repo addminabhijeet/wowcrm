@@ -64,12 +64,14 @@ class TimerController extends Controller
                 $status = $timer->status;
                 $button_status = $timer->button_status;
                 $notice_status = $timer->notice_status;
+                $pause_type        = $timer->pause_type;
             } else {
                 $remaining_seconds = $workDaySeconds;
                 $elapsed_seconds = 0;
                 $status = 'running';
                 $button_status = 1;
                 $notice_status = 0;
+                $pause_type        = null;
             }
 
             return [
@@ -82,6 +84,7 @@ class TimerController extends Controller
                 'status'           => $status,
                 'button_status'    => $button_status,
                 'notice_status'    => $notice_status,
+                'pause_type'        => $pause_type,
             ];
         });
 
