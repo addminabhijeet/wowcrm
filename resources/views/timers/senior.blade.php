@@ -16,26 +16,34 @@ $script = '<script>
         <div class="d-flex align-items-center flex-wrap gap-3">
             <span class="text-md fw-medium text-secondary-light mb-0">Show</span>
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
-                @for($i=1;$i<=10;$i++)
-                    <option>{{ $i }}</option>
-                    @endfor
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+                <option>10</option>
             </select>
             <form class="navbar-search">
                 <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
             </form>
         </div>
-        <a href="javascript:void(0)" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" id="enableAll">
+        <a href="javascript:void(0)" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
+            id="enableAll">
             <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
             Enable All Junior
         </a>
 
-        <a href="javascript:void(0)" class="btn btn-danger text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" id="disableAll">
+        <a href="javascript:void(0)" class="btn btn-danger text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
+            id="disableAll">
             <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
             Disable All Junior
         </a>
     </div>
-
     <div class="card-body p-24">
         <div class="row gy-4">
             @foreach($timers as $timer)
@@ -60,9 +68,9 @@ $script = '<script>
                             <div style="margin-right:10px;text-align:center;min-width:60px;">
                                 <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
                                     <iconify-icon icon="mdi:timer-outline" style="color:#dc3545;font-size:14px;"></iconify-icon>
-                                    <small style="color:#6c757d;font-size:10px;">Countdown</small>
+                                    <small style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Countdown</small>
                                 </div>
-                                <span class="countdown" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;">
+                                <span class="countdown" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                                     {{ gmdate('H:i:s', $timer['remaining_seconds']) }}
                                 </span>
                             </div>
@@ -74,94 +82,133 @@ $script = '<script>
                             <div style="margin-right:10px;text-align:center;min-width:60px;">
                                 <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
                                     <iconify-icon icon="mdi:clock-outline" style="color:#28a745;font-size:14px;"></iconify-icon>
-                                    <small style="color:#6c757d;font-size:10px;">Elapsed</small>
+                                    <small style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Elapsed</small>
                                 </div>
-                                <span class="elapsed" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;">
+                                <span class="elapsed" style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
                                     {{ gmdate('H:i:s', $timer['elapsed_seconds']) }}
                                 </span>
                             </div>
 
                             <!-- Control Buttons -->
-                            <div class="senior-control-buttons" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" class="btn-resume">
+                            <div class="seniorcontrolButtons" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                                <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
                                     <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
                                 </button>
-                                <button data-type="lunch" data-user="{{ $timer['user_id'] }}" class="btn-lunch">
+                                <button data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
                                     <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
                                 </button>
-                                <button data-type="tea" data-user="{{ $timer['user_id'] }}" class="btn-tea">
+                                <button data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
                                     <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
                                 </button>
-                                <button data-type="break" data-user="{{ $timer['user_id'] }}" class="btn-break">
+                                <button data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
                             </div>
                         </div>
 
-                        <!-- Enable/Disable Button -->
+                        <!-- Action Buttons -->
+                        <!-- Login/Logout Button -->
                         @if($timer['button_status'] == 0)
                         <button
-                            data-type="enable-junior"
+                            data-type="login"
                             data-user="{{ $timer['user_id'] }}"
-                            class="btn-enable-junior"
-                            style="width:100%;height:40px;border-radius:14px;background:#0d6efd;border:1px solid #b0c6e6ff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;gap:6px;margin-top:16px;cursor:pointer;">
+                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
                             <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
                             Enable Junior
                         </button>
                         @else
                         <button
-                            data-type="disable-junior"
+                            data-type="logout"
                             data-user="{{ $timer['user_id'] }}"
-                            class="btn-disable-junior"
-                            style="width:100%;height:40px;border-radius:14px;background:#dc3545;border:1px solid #d8adb1ff;color:#fff;display:flex;align-items:center;justify-content:center;font-size:14px;gap:6px;margin-top:16px;cursor:pointer;">
+                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
                             <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
                             Disable Junior
                         </button>
                         @endif
 
-                        <!-- Login/Logout -->
+                        <!-- Login/Logout Button -->
                         @if($timer['status'] == 0)
-                        <button class="btn-login" data-type="login" data-user-id="{{ $timer['user_id'] }}">
+                        <!-- Login Button -->
+                        <button class="user-action-btn"
+                            data-type="login"
+                            data-user-id="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
                             <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
                             Log In
                         </button>
                         @else
-                        <button class="btn-logout" data-type="logout" data-user-id="{{ $timer['user_id'] }}">
+                        <!-- Logout Button -->
+                        <button class="user-action-btn"
+                            data-type="logout"
+                            data-user-id="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
                             <iconify-icon icon="mdi:stop" style="font-size:16px;"></iconify-icon>
                             Log Out
                         </button>
                         @endif
 
-                        <!-- Badge -->
+
+
                         <div class="position-absolute top-0 end-0 me-16 mt-16" id="badgeContainer_{{ $timer['user_id'] }}">
                             @if(!empty($timer['pause_type']))
-                            @switch($timer['pause_type'])
-                            @case('lunch')
-                            <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Lunch Break</span>
-                            @break
-                            @case('tea')
-                            <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Tea Break</span>
-                            @break
-                            @case('break')
-                            <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Short Break</span>
-                            @break
-                            @case('resume')
-                            <span class="badge bg-primary text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Resumed</span>
-                            @break
-                            @default
-                            <span class="badge bg-secondary text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Unknown</span>
-                            @endswitch
+                            @if($timer['pause_type'] == 'lunch')
+                            <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">Lunch Break</span>
+                            @elseif($timer['pause_type'] == 'tea')
+                            <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">Tea Break</span>
+                            @elseif($timer['pause_type'] == 'break')
+                            <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">Short Break</span>
+                            @elseif($timer['pause_type'] == 'resume')
+                            <span class="badge bg-primary text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">Resumed</span>
+                            @else
+                            <span class="badge bg-secondary text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">Unknown</span>
+                            @endif
                             @endif
                         </div>
+
+
 
                     </div>
                 </div>
             </div>
             @endforeach
         </div>
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
+            <span>Showing 1 to 10 of 12 entries</span>
+            <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">
+                        <iconify-icon icon="ep:d-arrow-left" class=""></iconify-icon>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md bg-primary-600 text-white" href="javascript:void(0)">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px" href="javascript:void(0)">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">3</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">4</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">5</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">
+                        <iconify-icon icon="ep:d-arrow-right" class=""></iconify-icon>
+                    </a>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
-
 
 
 
