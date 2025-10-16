@@ -56,25 +56,31 @@ $script = '<script>
                         @if($timer['button_status'] == 0)
                         <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
                             style="font-size:12px; min-width:100px; text-align:center;">
-                            No
+                            Paused
                         </span>
-                        @else
+                        @elseif($timer['button_status'] == 1)
                         <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
                             style="font-size:12px; min-width:100px; text-align:center;">
-                            No
+                            Running
+                        </span>
+                        @elseif($timer['button_status'] == 2)
+                        <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
+                            style="font-size:12px; min-width:100px; text-align:center;">
+                            Break
+                        </span>
+                        @elseif($timer['button_status'] == 3)
+                        <span class="badge bg-info text-white px-3 py-2 radius-8 shadow-sm"
+                            style="font-size:12px; min-width:100px; text-align:center;">
+                            Completed
                         </span>
                         @else
-                        <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
+                        <span class="badge bg-secondary text-white px-3 py-2 radius-8 shadow-sm"
                             style="font-size:12px; min-width:100px; text-align:center;">
-                            No
-                        </span>
-                        @else
-                        <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
-                            style="font-size:12px; min-width:100px; text-align:center;">
-                            No
+                            Unknown
                         </span>
                         @endif
                     </div>
+
 
                     <div class="ps-16 pb-16 pe-16 text-center mt--50">
                         <img src="{{ $timer['image'] ? asset('assets/images/user-grid/' . $timer['image']) : asset('assets/images/user-grid/user-grid-bg1.png') }}" class="border br-white border-width-2-px w-100-px h-100-px rounded-circle object-fit-cover" alt="">
