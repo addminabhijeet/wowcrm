@@ -123,20 +123,37 @@ $script = '<script>
                         </a>
                         @endif
 
-                        <!-- Label instead of Dropdown -->
                         <div class="position-absolute top-0 end-0 me-16 mt-16">
-                            @if($timer['pause_type'] == lunch)
+                            @if(!empty($timer['pause_type']))
+                            @if($timer['pause_type'] == 'lunch')
                             <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">
-                                New
+                                Lunch Break
                             </span>
-                            @else($timer['pause_type'] == tea)
+                            @elseif($timer['pause_type'] == 'tea')
                             <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">
-                                New Arrival
+                                Tea Break
+                            </span>
+                            @elseif($timer['pause_type'] == 'break')
+                            <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">
+                                Short Break
+                            </span>
+                            @elseif($timer['pause_type'] == 'resume')
+                            <span class="badge bg-primary text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">
+                                Resumed
+                            </span>
+                            @else
+                            <span class="badge bg-secondary text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">
+                                Unknown
                             </span>
                             @endif
+                            @endif
                         </div>
+
 
                     </div>
                 </div>
