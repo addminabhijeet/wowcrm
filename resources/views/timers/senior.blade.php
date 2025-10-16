@@ -371,7 +371,7 @@ $script = '<script>
                 button.style.border = "1px solid #b0c6e6ff";
                 button.innerHTML = `
                     <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
-                    
+                    Enable Junior
                 `;
             } else {
                 // Change to Disable
@@ -482,7 +482,7 @@ $script = '<script>
                 `
                 <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
                     <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                    
+                    Enable Junior
                 </a>`;
         }
     }
