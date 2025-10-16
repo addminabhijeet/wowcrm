@@ -170,9 +170,7 @@ $subTitle = 'Calendar';
                     <tr>
                         <th>Event</th>
                         <th>Time</th>
-                        <th>Work Time</th>
-                        <th>Break Time</th>
-                        <th>Status</th>
+                        <th>Duration</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -180,6 +178,19 @@ $subTitle = 'Calendar';
                 </tbody>
             </table>
         `;
+
+                    const rows = modalBody.querySelectorAll('tbody tr');
+                    for (let i = 1; i < rows.length - 2; i++) { // skip first and last total rows
+                        const currEvent = rows[i].cells[0].textContent.trim();
+                        const currTime = rows[i].cells[1].textContent.trim();
+                        const prevEvent = rows[i - 1].cells[0].textContent.trim();
+                        const prevTime = rows[i - 1].cells[1].textContent.trim();
+
+                        // Hide if either Event or Time matches the previous row
+                        if (currEvent === prevEvent || currTime === prevTime) {
+                            rows[i].style.display = 'none';
+                        }
+                    }
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }

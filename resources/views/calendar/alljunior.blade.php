@@ -161,7 +161,7 @@ $subTitle = 'Calendar';
                     const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
                     modalBody.innerHTML = `
-            <div class="summary border-bottom pb-3 mb-3">
+<div class="summary border-bottom pb-3 mb-3">
     <h5 class="fw-semibold text-success">Summary</h5>
     <p><strong>8 Hours Completed:</strong> ${completed}</p>
 </div>
@@ -171,7 +171,7 @@ $subTitle = 'Calendar';
         <tr>
             <th>Event</th>
             <th>Time</th>
-            <th>Duration</th> <!-- Combined Work + Break -->
+            <th>Duration</th>
         </tr>
     </thead>
     <tbody>
@@ -193,10 +193,6 @@ $subTitle = 'Calendar';
                             rows[i].style.display = 'none';
                         }
                     }
-
-
-
-
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
