@@ -149,36 +149,27 @@ $script = '<script>
 
 
 
-                        <div class="position-absolute top-0 end-0 me-16 mt-16">
+                        <div class="position-absolute top-0 end-0 me-16 mt-16" id="badgeContainer_{{ $timer['user_id'] }}">
                             @if(!empty($timer['pause_type']))
                             @if($timer['pause_type'] == 'lunch')
                             <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">
-                                Lunch Break
-                            </span>
+                                style="font-size:12px; min-width:100px; text-align:center;">Lunch Break</span>
                             @elseif($timer['pause_type'] == 'tea')
                             <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">
-                                Tea Break
-                            </span>
+                                style="font-size:12px; min-width:100px; text-align:center;">Tea Break</span>
                             @elseif($timer['pause_type'] == 'break')
                             <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">
-                                Short Break
-                            </span>
+                                style="font-size:12px; min-width:100px; text-align:center;">Short Break</span>
                             @elseif($timer['pause_type'] == 'resume')
                             <span class="badge bg-primary text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">
-                                Resumed
-                            </span>
+                                style="font-size:12px; min-width:100px; text-align:center;">Resumed</span>
                             @else
                             <span class="badge bg-secondary text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">
-                                Unknown
-                            </span>
+                                style="font-size:12px; min-width:100px; text-align:center;">Unknown</span>
                             @endif
                             @endif
                         </div>
+
 
 
                     </div>
@@ -685,6 +676,67 @@ $script = '<script>
         setInterval(updatePauseBadges, 1000);
     });
 </script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        function updatePauseButtonsPerUser() {
+            document.querySelectorAll('.seniorcontrolButtons').forEach(container => {
+                const userId = container.querySelector('button').getAttribute('data-user');
+
+                fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
+                        method: 'POST',
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            user_id: userId
+                        }) // send user ID to backend
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        const resumeBtn = container.querySelector('button[data-type="resumebreak"]');
+                        const pauseBtns = container.querySelectorAll('button[data-type="lunch"], button[data-type="tea"], button[data-type="break"]');
+
+                        // ✅ Existing logic untouched
+                        if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
+                            pauseBtns.forEach(btn => btn.style.display = 'none');
+                            if (resumeBtn) resumeBtn.style.display = 'flex';
+                        } else {
+                            pauseBtns.forEach(btn => btn.style.display = 'flex');
+                            if (resumeBtn) resumeBtn.style.display = 'none';
+                        }
+
+                        // ✅ NEW: Update the badge simultaneously
+                        const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
+                        if (badgeContainer) {
+                            if (data.pause_type === 'lunch') {
+                                badgeContainer.innerHTML = `<span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Lunch Break</span>`;
+                            } else if (data.pause_type === 'tea') {
+                                badgeContainer.innerHTML = `<span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Tea Break</span>`;
+                            } else if (data.pause_type === 'break') {
+                                badgeContainer.innerHTML = `<span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Short Break</span>`;
+                            } else if (data.pause_type === 'resume') {
+                                badgeContainer.innerHTML = `<span class="badge bg-primary text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Resumed</span>`;
+                            } else {
+                                badgeContainer.innerHTML = `<span class="badge bg-primary text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Resumed</span>`;
+                            }
+                        }
+                    })
+                    .catch(err => console.error('❌ Error fetching pause state for user', userId, err));
+            });
+        }
+
+        // Initial check
+        updatePauseButtonsPerUser();
+
+        // Check every second
+        setInterval(updatePauseButtonsPerUser, 1000);
+    });
+</script>
+
 
 
 @endsection
