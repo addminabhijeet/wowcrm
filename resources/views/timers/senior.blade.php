@@ -154,6 +154,7 @@ $script = '<script>
         const s = sec % 60;
         return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
+
     function updateAllTimers() {
         fetch("{{ route('timer.alljuniors') }}")
             .then(res => res.json())
@@ -180,44 +181,49 @@ $script = '<script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         function setupSeniorControlButtons() {
-            document.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
-                if (btn.dataset.listenerAttached) return; // prevent double attachment
-                btn.dataset.listenerAttached = true;
-                btn.addEventListener('click', () => {
-                    const type = btn.getAttribute('data-type');
-                    const userId = btn.getAttribute('data-user');
-                    fetch("{{ route('timer.update') }}", {
-                            method: "POST",
-                            headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                action: type,
-                                user_id: userId
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            const timerWidget = document.querySelector(`.timer-widget[data-user='${userId}']`);
-                            if (timerWidget) {
-                                timerWidget.dataset.status = data.status;
-                                timerWidget.dataset.remainingSeconds = data.remaining_seconds;
-                                timerWidget.dataset.elapsedSeconds = data.elapsed_seconds;
-                                updateUI(userId, data);
+            document.querySelectorAll('[id^="seniorcontrolButtons_"]').forEach(container => {
+                container.querySelectorAll('button').forEach(btn => {
+                    if (btn.dataset.listenerAttached) return; // prevent double attachment
+                    btn.dataset.listenerAttached = true;
 
-                                const card = timerWidget.closest('.user-grid-card');
-                                if (card) {
-                                    if (data.status === 'paused') card.style.backgroundColor = '#fff3cd';
-                                    else if (data.status === 'running') card.style.backgroundColor = '#d4edda';
-                                    else card.style.backgroundColor = '';
+                    btn.addEventListener('click', () => {
+                        const type = btn.getAttribute('data-type');
+                        const userId = btn.getAttribute('data-user');
+
+                        fetch("{{ route('timer.update') }}", {
+                                method: "POST",
+                                headers: {
+                                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                    "Content-Type": "application/json"
+                                },
+                                body: JSON.stringify({
+                                    action: type,
+                                    user_id: userId
+                                })
+                            })
+                            .then(res => res.json())
+                            .then(data => {
+                                const timerWidget = document.querySelector(`.timer-widget[data-user='${userId}']`);
+                                if (timerWidget) {
+                                    timerWidget.dataset.status = data.status;
+                                    timerWidget.dataset.remainingSeconds = data.remaining_seconds;
+                                    timerWidget.dataset.elapsedSeconds = data.elapsed_seconds;
+                                    updateUI(userId, data);
+
+                                    const card = timerWidget.closest('.user-grid-card');
+                                    if (card) {
+                                        if (data.status === 'paused') card.style.backgroundColor = '#fff3cd';
+                                        else if (data.status === 'running') card.style.backgroundColor = '#d4edda';
+                                        else card.style.backgroundColor = '';
+                                    }
                                 }
-                            }
-                        })
-                        .catch(err => console.error("[Action] Failed to send:", err));
+                            })
+                            .catch(err => console.error("[Action] Failed to send:", err));
+                    });
                 });
             });
         }
+
         setupSeniorControlButtons();
         setInterval(setupSeniorControlButtons, 1000);
     });
@@ -247,6 +253,7 @@ $script = '<script>
                 })
                 .catch(err => console.error(err));
         }
+
         function updateButton(button, status) {
             if (status == 0) {
                 button.setAttribute("data-type", "login");
@@ -264,6 +271,7 @@ $script = '<script>
             const btn = e.target.closest("button[data-user]");
             if (btn) toggleButtonStatus(btn);
         });
+
         function checkButtonStatus() {
             fetch("{{ route('button.status') }}")
                 .then(res => res.json())
@@ -298,6 +306,7 @@ $script = '<script>
                 })
                 .catch(err => console.error(err));
         }
+
         function formatPauseText(type) {
             switch (type) {
                 case 'lunch':
@@ -312,6 +321,7 @@ $script = '<script>
                     return 'Unknown';
             }
         }
+
         function getBadgeClass(type) {
             switch (type) {
                 case 'lunch':
@@ -334,8 +344,9 @@ $script = '<script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         function updatePauseButtonsPerUser() {
-            document.querySelectorAll('.seniorcontrolButtons').forEach(container => {
+            document.querySelectorAll('[id^="seniorcontrolButtons_"]').forEach(container => {
                 const userId = container.querySelector('button').getAttribute('data-user');
+
                 fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
                         method: 'POST',
                         headers: {
@@ -358,6 +369,7 @@ $script = '<script>
                             pauseBtns.forEach(btn => btn.style.display = 'flex');
                             if (resumeBtn) resumeBtn.style.display = 'none';
                         }
+
                         const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
                         if (badgeContainer) {
                             const badge = badgeContainer.querySelector('.pause-badge');
@@ -371,6 +383,7 @@ $script = '<script>
                     .catch(err => console.error('Error fetching pause state for user', userId, err));
             });
         }
+
         updatePauseButtonsPerUser();
         setInterval(updatePauseButtonsPerUser, 1000);
     });
