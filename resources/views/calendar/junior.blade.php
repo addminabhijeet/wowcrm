@@ -38,7 +38,7 @@ $subTitle = 'Calendar';
                 <h1 class="modal-title fs-5" id="eventModalLabel">
                     Events on <span id="modalDate"></span>
                 </h1>
-                
+
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-24" id="modalBody"></div>
@@ -163,22 +163,41 @@ $subTitle = 'Calendar';
                     modalBody.innerHTML = `
 <div class="summary border-bottom pb-3 mb-3">
     <h5 class="fw-semibold text-success">Summary</h5>
-    <p><strong>8 Hours Completed:</strong> ${completed}</p>
+    <div class="d-flex justify-content-between align-items-center">
+        <span><strong>8 Hours Completed:</strong></span>
+        <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
+            ${completed}
+        </span>
+    </div>
 </div>
 
-<table class="table table-sm table-bordered">
-    <thead>
-        <tr>
-            <th>Event</th>
-            <th>Time</th>
-            <th>Duration</th>
-        </tr>
-    </thead>
-    <tbody>
-        ${tableRows}
-    </tbody>
-</table>
-        `;
+<div class="table-responsive">
+    <table class="table table-sm table-striped table-hover align-middle">
+        <thead class="table-dark">
+            <tr>
+                <th>Event</th>
+                <th>Time</th>
+                <th>Duration</th>
+            </tr>
+        </thead>
+        <tbody>
+            ${tableRows}
+        </tbody>
+    </table>
+</div>
+
+<div class="totals mt-3">
+    <div class="d-flex justify-content-between fw-bold text-success">
+        <span>Total Work Time:</span>
+        <span>${formatTime(totalWorkSec)}</span>
+    </div>
+    <div class="d-flex justify-content-between fw-bold text-primary">
+        <span>Elapsed / Remaining:</span>
+        <span>${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</span>
+    </div>
+</div>
+`;
+
 
                     const rows = modalBody.querySelectorAll('tbody tr');
                     for (let i = 1; i < rows.length - 2; i++) { // skip first and last total rows
