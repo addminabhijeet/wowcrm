@@ -86,11 +86,14 @@ class CallReportController extends Controller
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
@@ -203,9 +206,12 @@ class CallReportController extends Controller
         $MotherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->whereNotNull('Exe_Remarks')
-            ->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+            ->where(function ($q) {
+                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->count();
+
 
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
@@ -232,11 +238,14 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->whereNotNull('Exe_Remarks')
-            ->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+            ->where(function ($q) {
+                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
@@ -368,11 +377,14 @@ class CallReportController extends Controller
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
 
         // Initialize hour blocks (10 AM - 8 PM)
@@ -480,11 +492,14 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
@@ -608,11 +623,14 @@ class CallReportController extends Controller
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
 
         // Initialize hour blocks (8 PM - 6 AM)
@@ -698,9 +716,12 @@ class CallReportController extends Controller
         $MotherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->count();
+
 
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
@@ -717,11 +738,14 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->whereNull('Exe_Remarks')
+                    ->orWhere('Exe_Remarks', '<>', 'Called & Mailed');
+            })
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
