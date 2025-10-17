@@ -90,6 +90,9 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('calendar.seniorUser') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Personal Calendar</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.seniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
                     <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Junior Calendar</a></li>
                 </ul>
             </li>
