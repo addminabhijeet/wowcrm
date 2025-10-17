@@ -89,9 +89,7 @@ $role = Auth::user()->role;
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('calendar.seniorUser') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Personal Calendar</a></li>
                 </ul>
-                <ul class="sidebar-submenu">
-                    <li><a href="{{ route('call.reports.seniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
-                </ul>
+
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Junior Calendar</a></li>
                 </ul>
@@ -121,7 +119,9 @@ $role = Auth::user()->role;
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('call.reports.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Personal Report</a></li>
                 </ul>
-
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.seniormonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
+                </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('call.reports.alljuniorlist', ['userId' => Auth::id()]) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Team Report</a></li>
                 </ul>
@@ -266,7 +266,7 @@ $role = Auth::user()->role;
                     <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
                     <span>SMTP</span>
                 </a>
-                
+
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('smtp.editall') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All User SMTP</a></li>
                 </ul>
