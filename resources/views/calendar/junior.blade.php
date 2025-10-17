@@ -89,55 +89,61 @@ $subTitle = 'Calendar';
 
 
             dateClick: function(info) {
-    modalDate.textContent = info.dateStr;
-    modalBody.innerHTML = '';
+                modalDate.textContent = info.dateStr;
+                modalBody.innerHTML = '';
 
-    const eventsOnDate = calendar.getEvents().filter(e => e.startStr.slice(0, 10) === info.dateStr);
+                const eventsOnDate = calendar.getEvents().filter(e => e.startStr.slice(0, 10) === info.dateStr);
 
-    // Sort earliest first
-    eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
+                // Sort earliest first
+                eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
 
-    if (eventsOnDate.length > 0) {
-        let totalBreakSec = 0;
-        let totalWorkSec = 0;
-        let lastPauseTime = null;
-        let tableRows = '';
+                if (eventsOnDate.length > 0) {
+                    let totalBreakSec = 0;
+                    let totalWorkSec = 0;
+                    let lastPauseTime = null;
+                    let tableRows = '';
 
-        const chronologicalEvents = [...eventsOnDate]; // earliest first
+                    const chronologicalEvents = [...eventsOnDate]; // earliest first
 
-        // Set start and end times
-        const startTime = chronologicalEvents[0].start 
-            ? new Date(chronologicalEvents[0].start).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) 
-            : 'null';
-        const endTime = chronologicalEvents[chronologicalEvents.length - 1].end 
-            ? new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) 
-            : 'null';
+                    // Set start and end times
+                    const startTime = chronologicalEvents[0].start ?
+                        new Date(chronologicalEvents[0].start).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) :
+                        'null';
+                    const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ?
+                        new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) :
+                        'null';
 
-        for (let i = 0; i < chronologicalEvents.length; i++) {
-            const event = chronologicalEvents[i];
-            const eTime = new Date(event.start);
-            const type = (event.extendedProps.pause_type || '').toLowerCase();
-            let breakTime = 0,
-                workTime = 0;
+                    for (let i = 0; i < chronologicalEvents.length; i++) {
+                        const event = chronologicalEvents[i];
+                        const eTime = new Date(event.start);
+                        const type = (event.extendedProps.pause_type || '').toLowerCase();
+                        let breakTime = 0,
+                            workTime = 0;
 
-            if (type === 'inactive') {
-                lastPauseTime = eTime;
-            } else if ((type === 'resume' || type === 'running') && lastPauseTime) {
-                // Calculate break
-                breakTime = (eTime - lastPauseTime) / 1000; // seconds
-                totalBreakSec += breakTime;
-                lastPauseTime = null;
-            }
+                        if (type === 'inactive') {
+                            lastPauseTime = eTime;
+                        } else if ((type === 'resume' || type === 'running') && lastPauseTime) {
+                            // Calculate break
+                            breakTime = (eTime - lastPauseTime) / 1000; // seconds
+                            totalBreakSec += breakTime;
+                            lastPauseTime = null;
+                        }
 
-            // Work time = difference to previous event minus break
-            if (i > 0) {
-                let prevTime = new Date(chronologicalEvents[i - 1].start);
-                workTime = (eTime - prevTime) / 1000; // seconds
-                if (workTime < 0) workTime = 0;
-                totalWorkSec += workTime;
-            }
+                        // Work time = difference to previous event minus break
+                        if (i > 0) {
+                            let prevTime = new Date(chronologicalEvents[i - 1].start);
+                            workTime = (eTime - prevTime) / 1000; // seconds
+                            if (workTime < 0) workTime = 0;
+                            totalWorkSec += workTime;
+                        }
 
-            tableRows += `
+                        tableRows += `
 <tr>
     <td>${event.title}</td>
     <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
@@ -147,15 +153,15 @@ $subTitle = 'Calendar';
     </td>
 </tr>
             `;
-        }
+                    }
 
-        const targetSec = 8 * 3600;
-        const elapsedSec = totalWorkSec;
-        const remainingSec = Math.max(targetSec - totalWorkSec, 0);
-        const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
+                    const targetSec = 8 * 3600;
+                    const elapsedSec = totalWorkSec;
+                    const remainingSec = Math.max(targetSec - totalWorkSec, 0);
+                    const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
-        // Add total row
-        tableRows += `
+                    // Add total row
+                    tableRows += `
 <tr class="fw-bold text-success">
     <td colspan="2" class="text-end">Total</td>
     <td>${formatTime(totalWorkSec)}</td>
@@ -166,7 +172,7 @@ $subTitle = 'Calendar';
 </tr>
         `;
 
-        modalBody.innerHTML = `
+                    modalBody.innerHTML = `
 <div class="summary border-bottom pb-3 mb-3">
     <h5 class="fw-semibold text-success">Summary</h5>
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
@@ -217,11 +223,23 @@ $subTitle = 'Calendar';
     </div>
 </div>
 `;
+                    const rows = modalBody.querySelectorAll('tbody tr');
+                    for (let i = 1; i < rows.length - 2; i++) { // skip first and last total rows
+                        const currEvent = rows[i].cells[0].textContent.trim();
+                        const currTime = rows[i].cells[1].textContent.trim();
+                        const prevEvent = rows[i - 1].cells[0].textContent.trim();
+                        const prevTime = rows[i - 1].cells[1].textContent.trim();
 
-        modal.show();
-    } else {
-        modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
-    }}
+                        // Hide if either Event or Time matches the previous row
+                        if (currEvent === prevEvent || currTime === prevTime) {
+                            rows[i].style.display = 'none';
+                        }
+                    }
+                    modal.show();
+                } else {
+                    modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
+                }
+            }
 
 
         });
