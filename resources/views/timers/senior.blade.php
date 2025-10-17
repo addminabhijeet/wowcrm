@@ -154,7 +154,6 @@ $script = '<script>
         const s = sec % 60;
         return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
-
     function updateAllTimers() {
         fetch("{{ route('timer.alljuniors') }}")
             .then(res => res.json())
@@ -248,7 +247,6 @@ $script = '<script>
                 })
                 .catch(err => console.error(err));
         }
-
         function updateButton(button, status) {
             if (status == 0) {
                 button.setAttribute("data-type", "login");
@@ -266,7 +264,6 @@ $script = '<script>
             const btn = e.target.closest("button[data-user]");
             if (btn) toggleButtonStatus(btn);
         });
-
         function checkButtonStatus() {
             fetch("{{ route('button.status') }}")
                 .then(res => res.json())
@@ -301,7 +298,6 @@ $script = '<script>
                 })
                 .catch(err => console.error(err));
         }
-
         function formatPauseText(type) {
             switch (type) {
                 case 'lunch':
@@ -316,7 +312,6 @@ $script = '<script>
                     return 'Unknown';
             }
         }
-
         function getBadgeClass(type) {
             switch (type) {
                 case 'lunch':
@@ -338,54 +333,53 @@ $script = '<script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        function updatePauseButtonsPerUser() {
-            document.querySelectorAll('[id^="seniorcontrolButtons_"]').forEach(container => {
-                const userId = container.querySelector('button').dataset.user;
+    function updatePauseButtonsPerUser() {
+        document.querySelectorAll('[id^="seniorcontrolButtons_"]').forEach(container => {
+            const userId = container.querySelector('button').dataset.user;
 
-                fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            user_id: userId
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        const resumeBtn = container.querySelector(`#resumebreak_${userId}`);
-                        const pauseBtns = [
-                            container.querySelector(`#lunch_${userId}`),
-                            container.querySelector(`#tea_${userId}`),
-                            container.querySelector(`#break_${userId}`)
-                        ].filter(Boolean);
+            fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: userId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const resumeBtn = container.querySelector(`#resumebreak_${userId}`);
+                const pauseBtns = [
+                    container.querySelector(`#lunch_${userId}`),
+                    container.querySelector(`#tea_${userId}`),
+                    container.querySelector(`#break_${userId}`)
+                ].filter(Boolean);
 
-                        if (['lunch', 'tea', 'break'].includes(data.pause_type)) {
-                            pauseBtns.forEach(btn => btn.style.display = 'none');
-                            if (resumeBtn) resumeBtn.style.display = 'flex';
-                        } else {
-                            pauseBtns.forEach(btn => btn.style.display = 'flex');
-                            if (resumeBtn) resumeBtn.style.display = 'none';
-                        }
+                if(['lunch','tea','break'].includes(data.pause_type)){
+                    pauseBtns.forEach(btn => btn.style.display = 'none');
+                    if(resumeBtn) resumeBtn.style.display = 'flex';
+                } else {
+                    pauseBtns.forEach(btn => btn.style.display = 'flex');
+                    if(resumeBtn) resumeBtn.style.display = 'none';
+                }
 
-                        const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
-                        if (badgeContainer) {
-                            const badge = badgeContainer.querySelector(`.pause-badge_${userId}`);
-                            if (badge) {
-                                const type = data.pause_type || 'resume';
-                                badge.textContent = formatPauseText(type);
-                                badge.className = `pause-badge pause-badge_${userId} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
-                            }
-                        }
-                    })
-                    .catch(err => console.error('Error fetching pause state for user', userId, err));
-            });
-        }
+                const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
+                if(badgeContainer){
+                    const badge = badgeContainer.querySelector(`.pause-badge_${userId}`);
+                    if(badge){
+                        const type = data.pause_type || 'resume';
+                        badge.textContent = formatPauseText(type);
+                        badge.className = `pause-badge pause-badge_${userId} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
+                    }
+                }
+            })
+            .catch(err => console.error('Error fetching pause state for user', userId, err));
+        });
+    }
 
-        updatePauseButtonsPerUser();
-        setInterval(updatePauseButtonsPerUser, 1000);
-    });
+    updatePauseButtonsPerUser();
+    setInterval(updatePauseButtonsPerUser, 1000);
+});
+
 </script>
 
 
