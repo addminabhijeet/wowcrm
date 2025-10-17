@@ -91,37 +91,35 @@ $script = '<script>
 
                             <!-- Control Buttons -->
                             <div class="seniorcontrolButtons" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                <button id="resumebreakBtn_{{ $timer['user_id'] }}" data-type="resumebreak" data-user="{{ $timer['user_id'] }}"
-                                    style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
+                                <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
                                     <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
                                 </button>
-
-                                <button id="lunchBtn_{{ $timer['user_id'] }}" data-type="lunch" data-user="{{ $timer['user_id'] }}"
-                                    style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
+                                <button data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
                                     <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
                                 </button>
-
-                                <button id="teaBtn_{{ $timer['user_id'] }}" data-type="tea" data-user="{{ $timer['user_id'] }}"
-                                    style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
+                                <button data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
                                     <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
                                 </button>
-
-                                <button id="breakBtn_{{ $timer['user_id'] }}" data-type="break" data-user="{{ $timer['user_id'] }}"
-                                    style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
+                                <button data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
                             </div>
                         </div>
 
                         <!-- Action Buttons -->
+                        <!-- Login/Logout Button -->
                         @if($timer['button_status'] == 0)
-                        <button id="toggleBtn_{{ $timer['user_id'] }}" data-type="login" data-user="{{ $timer['user_id'] }}"
+                        <button
+                            data-type="login"
+                            data-user="{{ $timer['user_id'] }}"
                             style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
                             <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
                             Enable Junior
                         </button>
                         @else
-                        <button id="toggleBtn_{{ $timer['user_id'] }}" data-type="logout" data-user="{{ $timer['user_id'] }}"
+                        <button
+                            data-type="logout"
+                            data-user="{{ $timer['user_id'] }}"
                             style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
                             <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
                             Disable Junior
