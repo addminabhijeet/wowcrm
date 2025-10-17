@@ -374,10 +374,6 @@ class DashboardController extends Controller
         return view('dashboard.customer', compact('payments'));
     }
 
-    // At the top of your controller class
-    protected $lastRemaining = []; // Stores last remaining_seconds per user
-    protected $lastCheckTime = []; // Stores last check time per user
-
     public function updateTimer(Request $request)
     {
         $userId = $request->input('user_id');
@@ -400,29 +396,6 @@ class DashboardController extends Controller
         }
 
         $workDaySeconds = $timerSetting->work_day_seconds;
-
-        // -----------------------------
-        // Automatic decrement logic
-        // -----------------------------
-        $userKey = $user->id;
-
-        // Store last check time
-        $lastCheck = $this->lastCheckTime[$userKey] ?? $currentTime;
-        $secondsSinceLastCheck = $currentTime->diffInSeconds($lastCheck);
-
-        // Only apply decrement if >= 3 seconds have passed
-        if ($secondsSinceLastCheck >= 3 && $timer->status === 'running' && $timer->pause_type === 'resume') {
-            $lastRemaining = $this->lastRemaining[$userKey] ?? $timer->remaining_seconds;
-
-            // Decrement only if remaining_seconds unchanged since last check
-            if ($lastRemaining === $timer->remaining_seconds) {
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds - 3);
-            }
-
-            // Update in-memory stores
-            $this->lastRemaining[$userKey] = $timer->remaining_seconds;
-            $this->lastCheckTime[$userKey] = $currentTime;
-        }
 
         // Update remaining seconds if timer is running
         if ($timer->status === 'running') {
@@ -549,6 +522,7 @@ class DashboardController extends Controller
     }
 
 
+
     public function editall()
     {
         // Get only users that have SMTP settings
@@ -643,62 +617,61 @@ class DashboardController extends Controller
         return redirect()->back()->with('success', 'SMTP settings updated successfully!');
     }
 
-public function test(Request $request)
-{
-    $request->validate([
-        'test_email' => 'required|email',
-    ]);
-
-    $smtp = SmtpSetting::first();
-    if (!$smtp) {
-        return response()->json(['message' => 'No SMTP settings found.'], 400);
-    }
-
-    // Determine encryption
-    $encryption = strtolower($smtp->encryption);
-    if ($encryption === 'ssl/tls') $encryption = 'ssl';
-    if (!in_array($encryption, ['ssl', 'tls'])) {
-        $encryption = null;
-    }
-
-    $testEmail = $request->test_email;
-
-    try {
-        // Configure and use mailer directly
-        config([
-            'mail.mailers.custom_smtp' => [
-                'transport' => 'smtp',
-                'host' => $smtp->host,
-                'port' => $smtp->port,
-                'encryption' => $encryption,
-                'username' => $smtp->username,
-                'password' => decrypt($smtp->password),
-                'timeout' => 30,
-                'auth_mode' => 'login',
-            ]
+    public function test(Request $request)
+    {
+        $request->validate([
+            'test_email' => 'required|email',
         ]);
 
-        // Use the custom mailer
-        Mail::mailer('custom_smtp')->send([], [], function ($message) use ($testEmail, $smtp) {
-            $message->from($smtp->from_address, $smtp->from_name)
-                   ->to($testEmail)
-                   ->subject('SMTP Test Email - Synergie Systems CRM')
-                   ->setBody('This is a test email from Synergie Systems CRM.');
-        });
+        $smtp = SmtpSetting::first();
+        if (!$smtp) {
+            return response()->json(['message' => 'No SMTP settings found.'], 400);
+        }
 
-        return response()->json([
-            'message' => "Test email sent successfully to {$testEmail}!"
-        ]);
+        // Determine encryption
+        $encryption = strtolower($smtp->encryption);
+        if ($encryption === 'ssl/tls') $encryption = 'ssl';
+        if (!in_array($encryption, ['ssl', 'tls'])) {
+            $encryption = null;
+        }
 
-    } catch (TransportExceptionInterface $e) {
-        return response()->json([
-            'message' => 'SMTP Transport Error: ' . $e->getMessage(),
-        ], 500);
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'Failed to send test email.',
-            'error' => $e->getMessage()
-        ], 500);
+        $testEmail = $request->test_email;
+
+        try {
+            // Configure and use mailer directly
+            config([
+                'mail.mailers.custom_smtp' => [
+                    'transport' => 'smtp',
+                    'host' => $smtp->host,
+                    'port' => $smtp->port,
+                    'encryption' => $encryption,
+                    'username' => $smtp->username,
+                    'password' => decrypt($smtp->password),
+                    'timeout' => 30,
+                    'auth_mode' => 'login',
+                ]
+            ]);
+
+            // Use the custom mailer
+            Mail::mailer('custom_smtp')->send([], [], function ($message) use ($testEmail, $smtp) {
+                $message->from($smtp->from_address, $smtp->from_name)
+                    ->to($testEmail)
+                    ->subject('SMTP Test Email - Synergie Systems CRM')
+                    ->setBody('This is a test email from Synergie Systems CRM.');
+            });
+
+            return response()->json([
+                'message' => "Test email sent successfully to {$testEmail}!"
+            ]);
+        } catch (TransportExceptionInterface $e) {
+            return response()->json([
+                'message' => 'SMTP Transport Error: ' . $e->getMessage(),
+            ], 500);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to send test email.',
+                'error' => $e->getMessage()
+            ], 500);
+        }
     }
-}
 }
