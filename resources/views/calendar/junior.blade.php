@@ -163,21 +163,28 @@ $subTitle = 'Calendar';
                     modalBody.innerHTML = `
 <div class="summary border-bottom pb-3 mb-3">
     <h5 class="fw-semibold text-success">Summary</h5>
-    <div class="d-flex justify-content-between align-items-center">
-        <span><strong>8 Hours Completed:</strong></span>
-        <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
-            ${completed}
-        </span>
-        <span><strong>Start Time:</strong></span>
-        <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
-            ${completed}
-        </span>
-        <span><strong>End Time:</strong></span>
-        <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
-            ${completed}
-        </span>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <strong>8 Hours Completed:</strong>
+            <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
+                ${completed}
+            </span>
+        </div>
+        <div>
+            <strong>Start Time:</strong>
+            <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
+                ${startTime}
+            </span>
+        </div>
+        <div>
+            <strong>End Time:</strong>
+            <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
+                ${endTime}
+            </span>
+        </div>
     </div>
 </div>
+
 
 <div class="table-responsive">
     <table class="table table-sm table-striped table-hover align-middle">
