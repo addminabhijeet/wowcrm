@@ -59,28 +59,36 @@ $script = '<script>
                                     {{ gmdate('H:i:s', $timer['elapsed_seconds']) }}
                                 </span>
                             </div>
-                            <div class="seniorcontrolButtons_{{ $timer['user_id'] }}" id="seniorcontrolButtons_{{ $timer['user_id'] }}_container" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                <button id="resumebreak_{{ $timer['user_id'] }}" class="senior-btn resumebreak_{{ $timer['user_id'] }}" data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
+                            <div class="seniorcontrolButtons_{{ $timer['user_id'] }}" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                                <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
                                     <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
                                 </button>
-                                <button id="lunch_{{ $timer['user_id'] }}" class="senior-btn lunch_{{ $timer['user_id'] }}" data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
+                                <button data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
                                     <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
                                 </button>
-                                <button id="tea_{{ $timer['user_id'] }}" class="senior-btn tea_{{ $timer['user_id'] }}" data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
+                                <button data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
                                     <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
                                 </button>
-                                <button id="break_{{ $timer['user_id'] }}" class="senior-btn break_{{ $timer['user_id'] }}" data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
+                                <button data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
                             </div>
                         </div>
                         @if($timer['button_status'] == 0)
-                        <button id="loginBtn_{{ $timer['user_id'] }}" class="senior-btn loginBtn_{{ $timer['user_id'] }}" data-type="login" data-user="{{ $timer['user_id'] }}" style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
-                            <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>Enable Junior
+                        <button
+                            data-type="login"
+                            data-user="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
+                            Enable Junior
                         </button>
                         @else
-                        <button id="logoutBtn_{{ $timer['user_id'] }}" class="senior-btn logoutBtn_{{ $timer['user_id'] }}" data-type="logout" data-user="{{ $timer['user_id'] }}" style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
-                            <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>Disable Junior
+                        <button
+                            data-type="logout"
+                            data-user="{{ $timer['user_id'] }}"
+                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
+                            Disable Junior
                         </button>
                         @endif
                         <div class="position-absolute top-0 end-0 me-16 mt-16" id="badgeContainer_{{ $timer['user_id'] }}">
@@ -105,7 +113,6 @@ $script = '<script>
             </div>
             @endforeach
         </div>
-
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
             <span>Showing 1 to 10 of 12 entries</span>
             <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
@@ -139,7 +146,6 @@ $script = '<script>
     </div>
 </div>
 <div id="statusOverlay"></div>
-
 <script>
     function formatTime(sec) {
         sec = Math.max(0, Math.floor(sec));
@@ -173,190 +179,215 @@ $script = '<script>
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    function setupSeniorControlButtons() {
-        document.querySelectorAll('[id^="seniorcontrolButtons_"]').forEach(container => {
-            container.querySelectorAll('button').forEach(btn => {
-                if (btn.dataset.listenerAttached) return;
+    document.addEventListener('DOMContentLoaded', function() {
+        function setupSeniorControlButtons() {
+            document.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
+                if (btn.dataset.listenerAttached) return; // prevent double attachment
                 btn.dataset.listenerAttached = true;
                 btn.addEventListener('click', () => {
-                    const type = btn.dataset.type;
-                    const userId = btn.dataset.user;
+                    const type = btn.getAttribute('data-type');
+                    const userId = btn.getAttribute('data-user');
                     fetch("{{ route('timer.update') }}", {
-                        method: "POST",
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                action: type,
+                                user_id: userId
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            const timerWidget = document.querySelector(`.timer-widget[data-user='${userId}']`);
+                            if (timerWidget) {
+                                timerWidget.dataset.status = data.status;
+                                timerWidget.dataset.remainingSeconds = data.remaining_seconds;
+                                timerWidget.dataset.elapsedSeconds = data.elapsed_seconds;
+                                updateUI(userId, data);
+
+                                const card = timerWidget.closest('.user-grid-card');
+                                if (card) {
+                                    if (data.status === 'paused') card.style.backgroundColor = '#fff3cd';
+                                    else if (data.status === 'running') card.style.backgroundColor = '#d4edda';
+                                    else card.style.backgroundColor = '';
+                                }
+                            }
+                        })
+                        .catch(err => console.error("[Action] Failed to send:", err));
+                });
+            });
+        }
+        setupSeniorControlButtons();
+        setInterval(setupSeniorControlButtons, 1000);
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function toggleButtonStatus(button) {
+            const userId = button.getAttribute("data-user");
+            const type = button.getAttribute("data-type");
+            const action = type === "login" ? "enable" : "disable";
+            fetch("{{ route('timer.toggleButtonStatus') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        user_id: userId,
+                        action: action
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (!data.success) return;
+                    updateButton(button, data.button_status);
+                })
+                .catch(err => console.error(err));
+        }
+
+        function updateButton(button, status) {
+            if (status == 0) {
+                button.setAttribute("data-type", "login");
+                button.style.background = "#0d6efd";
+                button.style.border = "1px solid #b0c6e6ff";
+                button.innerHTML = `<iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>Enable Junior`;
+            } else {
+                button.setAttribute("data-type", "logout");
+                button.style.background = "#dc3545";
+                button.style.border = "1px solid #d8adb1ff";
+                button.innerHTML = `<iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>Disable Junior`;
+            }
+        }
+        document.body.addEventListener("click", function(e) {
+            const btn = e.target.closest("button[data-user]");
+            if (btn) toggleButtonStatus(btn);
+        });
+
+        function checkButtonStatus() {
+            fetch("{{ route('button.status') }}")
+                .then(res => res.json())
+                .then(data => {
+                    if (Array.isArray(data)) {
+                        data.forEach(user => {
+                            const button = document.querySelector(`button[data-user='${user.user_id}']`);
+                            if (button) updateButton(button, user.button_status);
+                        });
+                    }
+                })
+                .catch(err => console.error("Polling error:", err));
+        }
+        checkButtonStatus();
+        setInterval(checkButtonStatus, 1000);
+    });
+</script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        function updatePauseBadges() {
+            fetch("{{ route('timers.latestPauseTypes') }}")
+                .then(res => res.json())
+                .then(data => {
+                    data.forEach(item => {
+                        const badge = document.querySelector(`.pause-badge[data-user="${item.user_id}"]`);
+                        if (!badge) return;
+                        const type = item.pause_type || 'unknown';
+                        badge.textContent = formatPauseText(type);
+                        badge.className = `pause-badge ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
+                    });
+                })
+                .catch(err => console.error(err));
+        }
+
+        function formatPauseText(type) {
+            switch (type) {
+                case 'lunch':
+                    return 'Lunch Break';
+                case 'tea':
+                    return 'Tea Break';
+                case 'break':
+                    return 'Short Break';
+                case 'resume':
+                    return 'Resumed';
+                default:
+                    return 'Unknown';
+            }
+        }
+
+        function getBadgeClass(type) {
+            switch (type) {
+                case 'lunch':
+                    return 'bg-danger text-white';
+                case 'tea':
+                    return 'bg-success text-white';
+                case 'break':
+                    return 'bg-warning text-white';
+                case 'resume':
+                    return 'bg-primary text-white';
+                default:
+                    return 'bg-secondary text-white';
+            }
+        }
+        updatePauseBadges();
+        setInterval(updatePauseBadges, 1000);
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        function updatePauseButtonsPerUser() {
+            document.querySelectorAll('[id^="seniorcontrolButtons_"]').forEach(container => {
+                const userId = container.querySelector('button').dataset.user;
+
+                fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
+                        method: 'POST',
                         headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Content-Type": "application/json"
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                            'Content-Type': 'application/json'
                         },
-                        body: JSON.stringify({ action: type, user_id: userId })
+                        body: JSON.stringify({
+                            user_id: userId
+                        })
                     })
                     .then(res => res.json())
                     .then(data => {
-                        const timerWidget = document.querySelector(`.timer-widget[data-user='${userId}']`);
-                        if(timerWidget){
-                            timerWidget.dataset.status = data.status;
-                            timerWidget.dataset.remainingSeconds = data.remaining_seconds;
-                            timerWidget.dataset.elapsedSeconds = data.elapsed_seconds;
-                            timerWidget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
-                            timerWidget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
+                        const resumeBtn = container.querySelector(`#resumebreak_${userId}`);
+                        const pauseBtns = [
+                            container.querySelector(`#lunch_${userId}`),
+                            container.querySelector(`#tea_${userId}`),
+                            container.querySelector(`#break_${userId}`)
+                        ].filter(Boolean);
 
-                            const card = timerWidget.closest('.user-grid-card');
-                            if(card){
-                                card.style.backgroundColor = data.status === 'paused' ? '#fff3cd' : data.status === 'running' ? '#d4edda' : '';
+                        if (['lunch', 'tea', 'break'].includes(data.pause_type)) {
+                            pauseBtns.forEach(btn => btn.style.display = 'none');
+                            if (resumeBtn) resumeBtn.style.display = 'flex';
+                        } else {
+                            pauseBtns.forEach(btn => btn.style.display = 'flex');
+                            if (resumeBtn) resumeBtn.style.display = 'none';
+                        }
+
+                        const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
+                        if (badgeContainer) {
+                            const badge = badgeContainer.querySelector(`.pause-badge_${userId}`);
+                            if (badge) {
+                                const type = data.pause_type || 'resume';
+                                badge.textContent = formatPauseText(type);
+                                badge.className = `pause-badge pause-badge_${userId} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
                             }
                         }
                     })
-                    .catch(err => console.error("[Action] Failed to send:", err));
-                });
+                    .catch(err => console.error('Error fetching pause state for user', userId, err));
             });
-        });
-    }
-    setupSeniorControlButtons();
-    setInterval(setupSeniorControlButtons, 1000);
-});
-</script>
-
-<script>
-document.addEventListener("DOMContentLoaded", function() {
-    function toggleButtonStatus(button) {
-        const userId = button.dataset.user;
-        const type = button.dataset.type;
-        const action = type === "login" ? "enable" : "disable";
-        fetch("{{ route('timer.toggleButtonStatus') }}", {
-            method: "POST",
-            headers: {
-                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ user_id: userId, action: action })
-        })
-        .then(res => res.json())
-        .then(data => { if(data.success) updateButton(button, data.button_status, userId); })
-        .catch(err => console.error(err));
-    }
-
-    function updateButton(button, status, userId){
-        const loginBtn = document.querySelector(`#loginBtn_${userId}`);
-        const logoutBtn = document.querySelector(`#logoutBtn_${userId}`);
-        if(status == 0 && loginBtn){
-            loginBtn.dataset.type="login";
-            loginBtn.style.background="#0d6efd";
-            loginBtn.style.border="1px solid #b0c6e6ff";
-            loginBtn.innerHTML=`<iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>Enable Junior`;
-        } else if(logoutBtn){
-            logoutBtn.dataset.type="logout";
-            logoutBtn.style.background="#dc3545";
-            logoutBtn.style.border="1px solid #d8adb1ff";
-            logoutBtn.innerHTML=`<iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>Disable Junior`;
         }
-    }
 
-    document.body.addEventListener("click", function(e){
-        const btn = e.target.closest("button[data-user]");
-        if(btn) toggleButtonStatus(btn);
+        updatePauseButtonsPerUser();
+        setInterval(updatePauseButtonsPerUser, 1000);
     });
-
-    function checkButtonStatus(){
-        fetch("{{ route('button.status') }}")
-            .then(res => res.json())
-            .then(data => {
-                if(Array.isArray(data)){
-                    data.forEach(user=>{
-                        const button = document.querySelector(`button[data-user='${user.user_id}']`);
-                        if(button) updateButton(button, user.button_status, user.user_id);
-                    });
-                }
-            })
-            .catch(err=>console.error("Polling error:", err));
-    }
-    checkButtonStatus();
-    setInterval(checkButtonStatus, 1000);
-});
 </script>
 
-<script>
-document.addEventListener("DOMContentLoaded", function(){
-    function updatePauseBadges(){
-        fetch("{{ route('timers.latestPauseTypes') }}")
-            .then(res=>res.json())
-            .then(data=>{
-                data.forEach(item=>{
-                    const badge = document.querySelector(`#badgeContainer_${item.user_id} .pause-badge[data-user='${item.user_id}']`);
-                    if(!badge) return;
-                    const type = item.pause_type || 'unknown';
-                    badge.textContent = formatPauseText(type);
-                    badge.className = `pause-badge pause-badge_${item.user_id} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
-                });
-            }).catch(err=>console.error(err));
-    }
 
-    function formatPauseText(type){
-        switch(type){
-            case 'lunch': return 'Lunch Break';
-            case 'tea': return 'Tea Break';
-            case 'break': return 'Short Break';
-            case 'resume': return 'Resumed';
-            default: return 'Unknown';
-        }
-    }
-    function getBadgeClass(type){
-        switch(type){
-            case 'lunch': return 'bg-danger text-white';
-            case 'tea': return 'bg-success text-white';
-            case 'break': return 'bg-warning text-white';
-            case 'resume': return 'bg-primary text-white';
-            default: return 'bg-secondary text-white';
-        }
-    }
 
-    updatePauseBadges();
-    setInterval(updatePauseBadges, 1000);
-});
-</script>
-
-<script>
-document.addEventListener('DOMContentLoaded', function(){
-    function updatePauseButtonsAllUsers(){
-        document.querySelectorAll('[id^="seniorcontrolButtons_"]').forEach(container=>{
-            const userId = container.querySelector('button').dataset.user;
-            fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
-                method:'POST',
-                headers:{
-                    'X-CSRF-TOKEN':'{{ csrf_token() }}',
-                    'Content-Type':'application/json'
-                },
-                body:JSON.stringify({ user_id: userId })
-            }).then(res=>res.json()).then(data=>{
-                const resumeBtn = container.querySelector(`#resumebreak_${userId}`);
-                const pauseBtns = [
-                    container.querySelector(`#lunch_${userId}`),
-                    container.querySelector(`#tea_${userId}`),
-                    container.querySelector(`#break_${userId}`)
-                ].filter(Boolean);
-
-                if(['lunch','tea','break'].includes(data.pause_type)){
-                    pauseBtns.forEach(btn=>btn.style.display='none');
-                    if(resumeBtn) resumeBtn.style.display='flex';
-                } else {
-                    pauseBtns.forEach(btn=>btn.style.display='flex');
-                    if(resumeBtn) resumeBtn.style.display='none';
-                }
-
-                const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
-                if(badgeContainer){
-                    const badge = badgeContainer.querySelector(`.pause-badge_${userId}`);
-                    if(badge){
-                        const type = data.pause_type || 'resume';
-                        badge.textContent = formatPauseText(type);
-                        badge.className = `pause-badge_${userId} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
-                    }
-                }
-            }).catch(err=>console.error('Error fetching pause state for user', userId, err));
-        });
-    }
-
-    updatePauseButtonsAllUsers();
-    setInterval(updatePauseButtonsAllUsers, 1000);
-});
-</script>
 @endsection
