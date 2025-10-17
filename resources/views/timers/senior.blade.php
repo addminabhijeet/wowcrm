@@ -111,6 +111,7 @@ $script = '<script>
                         <!-- Login/Logout Button -->
                         @if($timer['button_status'] == 0)
                         <button
+                            id="enableJunior_{{ $timer['user_id'] }}"
                             data-type="login"
                             data-user="{{ $timer['user_id'] }}"
                             style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
@@ -119,6 +120,7 @@ $script = '<script>
                         </button>
                         @else
                         <button
+                            id="disableJunior_{{ $timer['user_id'] }}"
                             data-type="logout"
                             data-user="{{ $timer['user_id'] }}"
                             style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
@@ -126,6 +128,7 @@ $script = '<script>
                             Disable Junior
                         </button>
                         @endif
+
 
                         <!-- Login/Logout Button -->
                         @if($timer['status'] == 0)
