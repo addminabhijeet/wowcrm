@@ -168,6 +168,14 @@ $subTitle = 'Calendar';
         <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
             ${completed}
         </span>
+        <span><strong>Start Time:</strong></span>
+        <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
+            ${completed}
+        </span>
+        <span><strong>End Time:</strong></span>
+        <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
+            ${completed}
+        </span>
     </div>
 </div>
 
