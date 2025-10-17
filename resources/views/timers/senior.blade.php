@@ -32,17 +32,7 @@ $script = '<script>
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
             </form>
         </div>
-        <a href="javascript:void(0)" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
-            id="enableAll">
-            <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-            Enable All Junior
-        </a>
 
-        <a href="javascript:void(0)" class="btn btn-danger text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
-            id="disableAll">
-            <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
-            Disable All Junior
-        </a>
     </div>
     <div class="card-body p-24">
         <div class="row gy-4">
