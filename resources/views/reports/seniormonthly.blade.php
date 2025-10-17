@@ -484,67 +484,66 @@ $script = '<script>
                 <!-- Table Section -->
                 <div class="table-responsive">
                     <table class="table table-hover table-bordered align-middle mb-0">
-                        <thead class="table-primary text-center">
+                        <thead class="table-primary">
                             <tr>
-                                <th class="fw-semibold text-start">⏰ Time Range</th>
-                                <th class="fw-semibold">💰 Ready To Paid (R2P) Count</th>
-                                <th class="fw-semibold">📧 Called & Mailed (C&MC) Count</th>
+                                <th class="fw-semibold">⏰ Time Range</th>
+                                <th class="fw-semibold text-center">📊 Called & Mailed Count</th>
+                                <th class="fw-semibold text-center">📊 Other Call Count</th>
                             </tr>
                         </thead>
-                        <tbody class="table-light">
+                        <tbody>
                             <tr>
-                                <td>8 PM - 9 PM</td>
-                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t8po9pm }}</span></td>
-                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t8to9pm }}</span></td>
+                                <td style="white-space: nowrap;">10.00AM-11.00AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t10to11am }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o10to11am }}</span></td>
                             </tr>
                             <tr>
-                                <td>9 PM - 10PM</td>
-                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t9po10pm }}</span></td>
-                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t9to10pm }}</span></td>
+                                <td style="white-space: nowrap;">11.00AM-12.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o11to12pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>10PM - 11PM</td>
-                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t10po11pm }}</span></td>
-                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t10to11pm }}</span></td>
+                                <td style="white-space: nowrap;">12.00PM-01.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t12to1pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o12to1pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>11PM - 12AM</td>
-                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t11po12pm }}</span></td>
-                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t11to12pm }}</span></td>
+                                <td style="white-space: nowrap;">01.00PM-02.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t1to2pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o1to2pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>12AM - 1AM</td>
-                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t12po1am }}</span></td>
-                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t12to1am }}</span></td>
+                                <td style="white-space: nowrap;">02.00PM-03.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t2to3pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o2to3pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>1 AM - 2 AM</td>
-                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t1po2am }}</span></td>
-                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t1to2am }}</span></td>
+                                <td style="white-space: nowrap;">03.00PM-04.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t3to4pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o3to4pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>2 AM - 3 AM</td>
-                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t2po3am }}</span></td>
-                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t2to3am }}</span></td>
+                                <td style="white-space: nowrap;">04.00PM-05.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t4to5pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o4to5pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>3 AM - 4 AM</td>
-                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t3po4am }}</span></td>
-                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t3to4am }}</span></td>
+                                <td style="white-space: nowrap;">05.00PM-06.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t5to6pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o5to6pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>4 AM - 5 AM</td>
-                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t4po5am }}</span></td>
-                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t4to5am }}</span></td>
+                                <td style="white-space: nowrap;">06.00PM-07.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t6to7pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o6to7pm }}</span></td>
                             </tr>
                             <tr>
-                                <td>5 AM - 6 AM</td>
-                                <td><span class="badge bg-success fs-6 px-3 py-2">{{ $t5po6am }}</span></td>
-                                <td><span class="badge bg-info fs-6 px-3 py-2">{{ $t5to6am }}</span></td>
+                                <td style="white-space: nowrap;">07.00PM-08.00PM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t7to8pm }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o7to8pm }}</span></td>
                             </tr>
                         </tbody>
                     </table>
-
                 </div>
             </div>
         </div>
