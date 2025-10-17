@@ -1274,5 +1274,11 @@ $script ='<script>
     });
 </script>
 
+<script>
+$.ajax({
+    success: r => r.success && location.reload()
+});
+</script>
+
 
 @endsection

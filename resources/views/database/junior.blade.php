@@ -1079,4 +1079,10 @@ $script ='<script>
         cursor: -webkit-grabbing;
     }
 </style>
+
+<script>
+$.ajax({
+    success: r => r.success && location.reload()
+});
+</script>
 @endsection
