@@ -643,47 +643,49 @@ $script = '<script>
     <div class="col-xxl-4 col-lg-6">
         <div class="card h-100 radius-8 border-0">
             <div class="card-body p-24">
-                <h6 class="mb-4 fw-bold text-lg">Statistics</h6>
+                <h6 class="mb-2 fw-bold text-lg">Statistic</h6>
 
-                <!-- Total Calls -->
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <div>
-                        <span class="text-secondary-light fw-normal mb-1 d-block text-xl">Total Calls (TC)</span>
-                        <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
+                <div class="mt-4">
+                    <!-- Total Calls -->
+                    <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
+                        <div>
+                            <span class="text-secondary fw-normal d-block mb-1">Total Calls (TC)</span>
+                            <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
+                        </div>
+                        <div class="position-relative">
+                            <div id="semiCircleGauge"></div>
+                            <span class="rounded-circle bg-light d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0 p-2">
+                                <iconify-icon icon="mdi:emoji" class="text-primary fs-5"></iconify-icon>
+                            </span>
+                        </div>
                     </div>
-                    <div class="position-relative">
-                        <div id="semiCircleGauge" style="width:60px; height:60px;"></div>
-                        <span class="w-36 h-36 rounded-circle bg-neutral-100 d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0">
-                            <iconify-icon icon="mdi:emoji" class="text-primary-600 text-md"></iconify-icon>
-                        </span>
-                    </div>
-                </div>
 
-                <!-- Other Calls -->
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <div>
-                        <span class="text-secondary-light fw-normal mb-1 d-block text-xl">Other Calls (OC)</span>
-                        <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
+                    <!-- Other Calls -->
+                    <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
+                        <div>
+                            <span class="text-secondary fw-normal d-block mb-1">Other Calls (OC)</span>
+                            <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
+                        </div>
+                        <div id="areaChart" class="p-2"></div>
                     </div>
-                    <div id="areaChart" style="width:60px; height:60px;"></div>
-                </div>
 
-                <!-- Called & Mailed Calls -->
-                <div class="d-flex align-items-center justify-content-between mb-4">
-                    <div>
-                        <span class="text-secondary-light fw-normal mb-1 d-block text-xl">Called & Mailed Calls (C&MC)</span>
-                        <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
+                    <!-- Called & Mailed Calls -->
+                    <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
+                        <div>
+                            <span class="text-secondary fw-normal d-block mb-1">Called & Mailed Calls (C&MC)</span>
+                            <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
+                        </div>
+                        <div id="iconBarChartCmc" class="p-2"></div>
                     </div>
-                    <div id="dailyIconBarChart" style="width:60px; height:60px;"></div>
-                </div>
 
-                <!-- Ready To Paid Calls -->
-                <div class="d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-secondary-light fw-normal mb-1 d-block text-xl">Ready To Paid Calls (RTP)</span>
-                        <h5 class="fw-semibold mb-0">{{ $readyToPaidCalls }}</h5>
+                    <!-- Ready To Paid Calls -->
+                    <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 shadow-sm bg-white">
+                        <div>
+                            <span class="text-secondary fw-normal d-block mb-1">Ready To Paid Calls (R2P)</span>
+                            <h5 class="fw-semibold mb-0">{{ $readyToPaidCalls }}</h5>
+                        </div>
+                        <div id="iconBarChartR2p" class="p-2"></div>
                     </div>
-                    <div id="dailyIconBar" style="width:60px; height:60px;"></div>
                 </div>
 
             </div>
