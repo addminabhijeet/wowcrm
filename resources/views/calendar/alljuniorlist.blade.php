@@ -63,8 +63,12 @@ $script = '<script>
                         <td>{{ $user->role }}</td>
 
                         <td class="text-center">
-                            <a href="{{ route('calendar.alljuniorUser', $user->id) }}" class="btn btn-sm btn-primary">
-                                View 
+                            <a href="{{ route('call.reports.alljuniormonthly', $user->id) }}" class="btn btn-sm btn-primary">
+                                View Monthly
+                            </a>
+
+                            <a href="{{ route('call.reports.alljuniordaily', $user->id) }}" class="btn btn-sm btn-success">
+                                View Daily
                             </a>
                         </td>
 
