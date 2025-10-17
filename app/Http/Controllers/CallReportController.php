@@ -458,9 +458,12 @@ class CallReportController extends Controller
         $MotherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->whereNotNull('Exe_Remarks')
-            ->where('Exe_Remarks', '<>', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->count();
+
 
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
