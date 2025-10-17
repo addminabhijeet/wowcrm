@@ -413,11 +413,18 @@ class GoogleSheetController extends Controller
             });
         }
 
+        // Apply ordering
+        $query->orderBy('Date', 'desc');
 
-        $data = $query->orderBy('Date', 'desc')->paginate(10);
+        // Remove pagination if filtering by junior dropdown
+        $data = $juniorUserId ? $query->get() : $query->paginate(10);
 
         // Map forwarded_by dynamically
-        $data->getCollection()->transform(function ($item) use ($authUser) {
+        $collection = $data instanceof \Illuminate\Pagination\LengthAwarePaginator
+            ? $data->getCollection()
+            : $data;
+
+        $collection->transform(function ($item) use ($authUser) {
 
             $forwardedBy = '';
 
@@ -451,6 +458,13 @@ class GoogleSheetController extends Controller
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
+
+        // If paginated, set transformed collection back
+        if ($data instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            $data->setCollection($collection);
+        } else {
+            $data = $collection;
+        }
 
         $juniorUsers = \App\Models\User::where('role', 'junior')
             ->where('status', 1)
