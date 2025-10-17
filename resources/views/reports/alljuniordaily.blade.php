@@ -411,8 +411,8 @@ $script = '<script>
                 <!-- Header -->
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
                     <div>
-                        <h5 class="fw-bold mb-1">📞 Calls Statistic</h5>
-                        <span class="text-muted small">Yearly Calls Overview</span>
+                        <h5 class="fw-bold mb-1">📞 Call Report</h5>
+                        
                     </div>
                     <form method="GET" action="{{ route('call.reports.alljuniordaily', ['userId' => request()->route('userId')]) }}" class="d-flex align-items-center gap-2">
                         <label for="selected_date" class="form-label mb-0 fw-semibold small">Select Date:</label>
