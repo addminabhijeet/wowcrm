@@ -337,7 +337,7 @@ $script = '<script>
     document.addEventListener('DOMContentLoaded', function() {
         function updatePauseButtonsPerUser() {
             document.querySelectorAll('[id^="seniorcontrolButtons_"]').forEach(container => {
-                const userId = container.querySelector('button').dataset.user;
+                const userId = container.dataset.user || container.querySelector('button').dataset.user;
 
                 fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
                         method: 'POST',
@@ -351,13 +351,15 @@ $script = '<script>
                     })
                     .then(res => res.json())
                     .then(data => {
-                        const resumeBtn = container.querySelector(`#resumebreak_${userId}`);
+                        // Get buttons scoped to this container
+                        const resumeBtn = container.querySelector(`.resumebreak_${userId}`);
                         const pauseBtns = [
-                            container.querySelector(`#lunch_${userId}`),
-                            container.querySelector(`#tea_${userId}`),
-                            container.querySelector(`#break_${userId}`)
+                            container.querySelector(`.lunch_${userId}`),
+                            container.querySelector(`.tea_${userId}`),
+                            container.querySelector(`.break_${userId}`)
                         ].filter(Boolean);
 
+                        // Toggle buttons
                         if (['lunch', 'tea', 'break'].includes(data.pause_type)) {
                             pauseBtns.forEach(btn => btn.style.display = 'none');
                             if (resumeBtn) resumeBtn.style.display = 'flex';
@@ -366,14 +368,19 @@ $script = '<script>
                             if (resumeBtn) resumeBtn.style.display = 'none';
                         }
 
+                        // Update badge
                         const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
                         if (badgeContainer) {
-                            const badge = badgeContainer.querySelector(`.pause-badge_${userId}`);
-                            if (badge) {
-                                const type = data.pause_type || 'resume';
-                                badge.textContent = formatPauseText(type);
-                                badge.className = `pause-badge pause-badge_${userId} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
+                            let badge = badgeContainer.querySelector(`.pause-badge_${userId}`);
+                            if (!badge) {
+                                badge = document.createElement('span');
+                                badge.className = `pause-badge pause-badge_${userId} px-3 py-2 radius-8 shadow-sm`;
+                                badge.dataset.user = userId;
+                                badgeContainer.appendChild(badge);
                             }
+                            const type = data.pause_type || 'resume';
+                            badge.textContent = formatPauseText(type);
+                            badge.className = `pause-badge pause-badge_${userId} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
                         }
                     })
                     .catch(err => console.error('Error fetching pause state for user', userId, err));
@@ -382,6 +389,37 @@ $script = '<script>
 
         updatePauseButtonsPerUser();
         setInterval(updatePauseButtonsPerUser, 1000);
+
+        // Utility functions
+        function formatPauseText(type) {
+            switch (type) {
+                case 'lunch':
+                    return 'Lunch Break';
+                case 'tea':
+                    return 'Tea Break';
+                case 'break':
+                    return 'Short Break';
+                case 'resume':
+                    return 'Resumed';
+                default:
+                    return 'Unknown';
+            }
+        }
+
+        function getBadgeClass(type) {
+            switch (type) {
+                case 'lunch':
+                    return 'bg-danger text-white';
+                case 'tea':
+                    return 'bg-success text-white';
+                case 'break':
+                    return 'bg-warning text-white';
+                case 'resume':
+                    return 'bg-primary text-white';
+                default:
+                    return 'bg-secondary text-white';
+            }
+        }
     });
 </script>
 @endsection
