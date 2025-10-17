@@ -91,27 +91,25 @@ $script = '<script>
 
                             <!-- Control Buttons -->
                             <div class="seniorcontrolButtons" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                <button id="resumebreak_{{ $timer['user_id'] }}" data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
+                                <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
                                     <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
                                 </button>
-                                <button id="lunch_{{ $timer['user_id'] }}" data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
+                                <button data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
                                     <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
                                 </button>
-                                <button id="tea_{{ $timer['user_id'] }}" data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
+                                <button data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
                                     <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
                                 </button>
-                                <button id="break_{{ $timer['user_id'] }}" data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
+                                <button data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
                             </div>
-
                         </div>
 
                         <!-- Action Buttons -->
                         <!-- Login/Logout Button -->
                         @if($timer['button_status'] == 0)
                         <button
-                            id="enableJunior_{{ $timer['user_id'] }}"
                             data-type="login"
                             data-user="{{ $timer['user_id'] }}"
                             style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
@@ -120,7 +118,6 @@ $script = '<script>
                         </button>
                         @else
                         <button
-                            id="disableJunior_{{ $timer['user_id'] }}"
                             data-type="logout"
                             data-user="{{ $timer['user_id'] }}"
                             style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
@@ -128,7 +125,6 @@ $script = '<script>
                             Disable Junior
                         </button>
                         @endif
-
 
                         <!-- Login/Logout Button -->
                         @if($timer['status'] == 0)
@@ -366,13 +362,10 @@ $script = '<script>
                 .catch(err => console.error(`Fetch error for user ${userId}:`, err));
         }
 
-        // Update individual button appearance + id
+        // Update individual button appearance
         function updateButton(button, status) {
-            const userId = button.getAttribute("data-user");
-
             if (status == 0) {
                 // Change to Enable
-                button.id = `enableJunior_${userId}`;
                 button.setAttribute("data-type", "login");
                 button.style.background = "#0d6efd";
                 button.style.border = "1px solid #b0c6e6ff";
@@ -382,7 +375,6 @@ $script = '<script>
                 `;
             } else {
                 // Change to Disable
-                button.id = `disableJunior_${userId}`;
                 button.setAttribute("data-type", "logout");
                 button.style.background = "#dc3545";
                 button.style.border = "1px solid #d8adb1ff";
@@ -400,9 +392,7 @@ $script = '<script>
                 .then(data => {
                     if (Array.isArray(data)) {
                         data.forEach(user => {
-                            const enableBtn = document.getElementById(`enableJunior_${user.user_id}`);
-                            const disableBtn = document.getElementById(`disableJunior_${user.user_id}`);
-                            const button = enableBtn || disableBtn;
+                            const button = document.querySelector(`button[data-user='${user.user_id}']`);
                             if (button) {
                                 updateButton(button, user.button_status);
                             }
@@ -414,7 +404,7 @@ $script = '<script>
                 .catch(err => console.error("Polling error:", err));
         }
 
-        // Attach click listener (delegated)
+        // Attach click listener to all buttons (delegated)
         document.body.addEventListener("click", function(e) {
             if (e.target.closest("button[data-user]")) {
                 const btn = e.target.closest("button[data-user]");
@@ -687,6 +677,7 @@ $script = '<script>
     });
 </script>
 
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -706,28 +697,19 @@ $script = '<script>
                     })
                     .then(res => res.json())
                     .then(data => {
-                        // ✅ Select buttons by their unique IDs
-                        const resumeBtn = document.getElementById(`resumebreak_${userId}`);
-                        const lunchBtn = document.getElementById(`lunch_${userId}`);
-                        const teaBtn = document.getElementById(`tea_${userId}`);
-                        const breakBtn = document.getElementById(`break_${userId}`);
+                        const resumeBtn = container.querySelector('button[data-type="resumebreak"]');
+                        const pauseBtns = container.querySelectorAll('button[data-type="lunch"], button[data-type="tea"], button[data-type="break"]');
 
-                        const pauseBtns = [lunchBtn, teaBtn, breakBtn];
-
-                        // ✅ Logic: Hide/show pause/resume buttons
+                        // ✅ Existing logic untouched
                         if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
-                            pauseBtns.forEach(btn => {
-                                if (btn) btn.style.display = 'none';
-                            });
+                            pauseBtns.forEach(btn => btn.style.display = 'none');
                             if (resumeBtn) resumeBtn.style.display = 'flex';
                         } else {
-                            pauseBtns.forEach(btn => {
-                                if (btn) btn.style.display = 'flex';
-                            });
+                            pauseBtns.forEach(btn => btn.style.display = 'flex');
                             if (resumeBtn) resumeBtn.style.display = 'none';
                         }
 
-                        // ✅ Update the badge
+                        // ✅ NEW: Update the badge simultaneously
                         const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
                         if (badgeContainer) {
                             if (data.pause_type === 'lunch') {
@@ -754,7 +736,6 @@ $script = '<script>
         setInterval(updatePauseButtonsPerUser, 1000);
     });
 </script>
-
 
 
 
