@@ -12,6 +12,7 @@ use App\Models\Payment;
 use App\Models\TimerSetting;
 use Illuminate\Support\Facades\Mail;
 use App\Models\SmtpSetting;
+use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class DashboardController extends Controller
 {
@@ -642,36 +643,62 @@ class DashboardController extends Controller
         return redirect()->back()->with('success', 'SMTP settings updated successfully!');
     }
 
+public function test(Request $request)
+{
+    $request->validate([
+        'test_email' => 'required|email',
+    ]);
 
-    public function test(Request $request)
-    {
-        $smtp = SmtpSetting::first();
-        if (!$smtp) {
-            return response()->json(['message' => 'No SMTP settings found.'], 400);
-        }
+    $smtp = SmtpSetting::first();
+    if (!$smtp) {
+        return response()->json(['message' => 'No SMTP settings found.'], 400);
+    }
 
+    // Determine encryption
+    $encryption = strtolower($smtp->encryption);
+    if ($encryption === 'ssl/tls') $encryption = 'ssl';
+    if (!in_array($encryption, ['ssl', 'tls'])) {
+        $encryption = null;
+    }
+
+    $testEmail = $request->test_email;
+
+    try {
+        // Configure and use mailer directly
         config([
-            'mail.mailers.smtp.transport' => 'smtp', // always 'smtp'
-            'mail.mailers.smtp.host' => $smtp->host,
-            'mail.mailers.smtp.port' => $smtp->port,
-            'mail.mailers.smtp.username' => $smtp->username,
-            'mail.mailers.smtp.password' => decrypt($smtp->password),
-            'mail.mailers.smtp.encryption' => $smtp->encryption,
-            'mail.from.address' => $smtp->from_address,
-            'mail.from.name' => $smtp->from_name,
+            'mail.mailers.custom_smtp' => [
+                'transport' => 'smtp',
+                'host' => $smtp->host,
+                'port' => $smtp->port,
+                'encryption' => $encryption,
+                'username' => $smtp->username,
+                'password' => decrypt($smtp->password),
+                'timeout' => 30,
+                'auth_mode' => 'login',
+            ]
         ]);
 
+        // Use the custom mailer
+        Mail::mailer('custom_smtp')->send([], [], function ($message) use ($testEmail, $smtp) {
+            $message->from($smtp->from_address, $smtp->from_name)
+                   ->to($testEmail)
+                   ->subject('SMTP Test Email - Synergie Systems CRM')
+                   ->setBody('This is a test email from Synergie Systems CRM.');
+        });
 
-        $testEmail = $request->input('test_email');
+        return response()->json([
+            'message' => "Test email sent successfully to {$testEmail}!"
+        ]);
 
-        try {
-            Mail::raw('This is a test email from Synergie Systems CRM.', function ($message) use ($testEmail) {
-                $message->to($testEmail)->subject('SMTP Test Email');
-            });
-
-            return response()->json(['message' => "Test email sent successfully to {$testEmail}!"]);
-        } catch (\Exception $e) {
-            return response()->json(['message' => 'Failed to send test email: ' . $e->getMessage()], 500);
-        }
+    } catch (TransportExceptionInterface $e) {
+        return response()->json([
+            'message' => 'SMTP Transport Error: ' . $e->getMessage(),
+        ], 500);
+    } catch (\Exception $e) {
+        return response()->json([
+            'message' => 'Failed to send test email.',
+            'error' => $e->getMessage()
+        ], 500);
     }
+}
 }
