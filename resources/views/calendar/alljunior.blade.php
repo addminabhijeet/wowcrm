@@ -94,8 +94,8 @@ $subTitle = 'Calendar';
 
                 const eventsOnDate = calendar.getEvents().filter(e => e.startStr.slice(0, 10) === info.dateStr);
 
-                // Sort latest first
-                eventsOnDate.sort((a, b) => new Date(b.start) - new Date(a.start));
+                // Sort earliest first
+                eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
 
                 if (eventsOnDate.length > 0) {
                     let totalBreakSec = 0;
@@ -103,7 +103,21 @@ $subTitle = 'Calendar';
                     let lastPauseTime = null;
                     let tableRows = '';
 
-                    const chronologicalEvents = [...eventsOnDate].reverse(); // earliest first
+                    const chronologicalEvents = [...eventsOnDate]; // earliest first
+
+                    // Set start and end times
+                    const startTime = chronologicalEvents[0].start ?
+                        new Date(chronologicalEvents[0].start).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) :
+                        'null';
+                    const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ?
+                        new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        }) :
+                        'null';
 
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
@@ -130,7 +144,7 @@ $subTitle = 'Calendar';
                         }
 
                         tableRows += `
-                <tr>
+<tr>
     <td>${event.title}</td>
     <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
     <td>
@@ -141,33 +155,45 @@ $subTitle = 'Calendar';
             `;
                     }
 
-                    // Calculate elapsed and remaining hours
-                    const targetSec = 8 * 3600; // 8 hours target
+                    const targetSec = 8 * 3600;
                     const elapsedSec = totalWorkSec;
                     const remainingSec = Math.max(targetSec - totalWorkSec, 0);
+                    const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
                     // Add total row
                     tableRows += `
-            <tr class="fw-bold text-success">
-                <td colspan="2" class="text-end">Total</td>
-                <td>${formatTime(totalWorkSec)}</td>
-            </tr>
-            <tr class="fw-bold text-primary">
-                <td colspan="2" class="text-end">Elapsed / Remaining</td>
-                <td colspan="2">${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</td>
-            </tr>
+<tr class="fw-bold text-success">
+    <td colspan="2" class="text-end">Total</td>
+    <td>${formatTime(totalWorkSec)}</td>
+</tr>
+<tr class="fw-bold text-primary">
+    <td colspan="2" class="text-end">Elapsed / Remaining</td>
+    <td colspan="2">${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</td>
+</tr>
         `;
-
-                    const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
                     modalBody.innerHTML = `
 <div class="summary border-bottom pb-3 mb-3">
     <h5 class="fw-semibold text-success">Summary</h5>
-    <div class="d-flex justify-content-between align-items-center">
-        <span><strong>8 Hours Completed:</strong></span>
-        <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
-            ${completed}
-        </span>
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+        <div>
+            <strong>8 Hours Completed:</strong>
+            <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
+                ${completed}
+            </span>
+        </div>
+        <div>
+            <strong>Start Time:</strong>
+            <span class="badge fs-6 bg-danger">
+                ${startTime}
+            </span>
+        </div>
+        <div>
+            <strong>End Time:</strong>
+            <span class="badge fs-6 bg-danger">
+                ${endTime}
+            </span>
+        </div>
     </div>
 </div>
 
@@ -198,24 +224,10 @@ $subTitle = 'Calendar';
 </div>
 `;
 
-                    // ✅ Hide consecutive rows with same Event or same Time
-                    const rows = modalBody.querySelectorAll('tbody tr');
-                    for (let i = 1; i < rows.length - 2; i++) { // skip first and last total rows
-                        const currEvent = rows[i].cells[0].textContent.trim();
-                        const currTime = rows[i].cells[1].textContent.trim();
-                        const prevEvent = rows[i - 1].cells[0].textContent.trim();
-                        const prevTime = rows[i - 1].cells[1].textContent.trim();
-
-                        // Hide if either Event or Time matches the previous row
-                        if (currEvent === prevEvent || currTime === prevTime) {
-                            rows[i].style.display = 'none';
-                        }
-                    }
+                    modal.show();
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
-
-                modal.show();
             }
 
 
