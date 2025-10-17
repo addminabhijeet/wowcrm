@@ -366,10 +366,13 @@ $script = '<script>
                 .catch(err => console.error(`Fetch error for user ${userId}:`, err));
         }
 
-        // Update individual button appearance
+        // Update individual button appearance + id
         function updateButton(button, status) {
+            const userId = button.getAttribute("data-user");
+
             if (status == 0) {
                 // Change to Enable
+                button.id = `enableJunior_${userId}`;
                 button.setAttribute("data-type", "login");
                 button.style.background = "#0d6efd";
                 button.style.border = "1px solid #b0c6e6ff";
@@ -379,6 +382,7 @@ $script = '<script>
                 `;
             } else {
                 // Change to Disable
+                button.id = `disableJunior_${userId}`;
                 button.setAttribute("data-type", "logout");
                 button.style.background = "#dc3545";
                 button.style.border = "1px solid #d8adb1ff";
@@ -396,7 +400,9 @@ $script = '<script>
                 .then(data => {
                     if (Array.isArray(data)) {
                         data.forEach(user => {
-                            const button = document.querySelector(`button[data-user='${user.user_id}']`);
+                            const enableBtn = document.getElementById(`enableJunior_${user.user_id}`);
+                            const disableBtn = document.getElementById(`disableJunior_${user.user_id}`);
+                            const button = enableBtn || disableBtn;
                             if (button) {
                                 updateButton(button, user.button_status);
                             }
@@ -408,7 +414,7 @@ $script = '<script>
                 .catch(err => console.error("Polling error:", err));
         }
 
-        // Attach click listener to all buttons (delegated)
+        // Attach click listener (delegated)
         document.body.addEventListener("click", function(e) {
             if (e.target.closest("button[data-user]")) {
                 const btn = e.target.closest("button[data-user]");
