@@ -332,56 +332,73 @@ $script = '<script>
         setInterval(updatePauseBadges, 1000);
     });
 </script>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        function updatePauseButtonsPerUser() {
-            document.querySelectorAll('[id^="seniorcontrolButtons_"]').forEach(container => {
-                const userId = container.querySelector('button').dataset.user;
-
-                fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            user_id: userId
-                        })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        const resumeBtn = container.querySelector(`#resumebreak_${userId}`);
-                        const pauseBtns = [
-                            container.querySelector(`#lunch_${userId}`),
-                            container.querySelector(`#tea_${userId}`),
-                            container.querySelector(`#break_${userId}`)
-                        ].filter(Boolean);
-
-                        if (['lunch', 'tea', 'break'].includes(data.pause_type)) {
-                            pauseBtns.forEach(btn => btn.style.display = 'none');
-                            if (resumeBtn) resumeBtn.style.display = 'flex';
-                        } else {
-                            pauseBtns.forEach(btn => btn.style.display = 'flex');
-                            if (resumeBtn) resumeBtn.style.display = 'none';
-                        }
-
-                        const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
-                        if (badgeContainer) {
-                            const badge = badgeContainer.querySelector(`.pause-badge_${userId}`);
-                            if (badge) {
-                                const type = data.pause_type || 'resume';
-                                badge.textContent = formatPauseText(type);
-                                badge.className = `pause-badge pause-badge_${userId} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
-                            }
-                        }
-                    })
-                    .catch(err => console.error('Error fetching pause state for user', userId, err));
-            });
+document.addEventListener('DOMContentLoaded', function() {
+    // Hide break buttons for all users except the first one
+    const containers = document.querySelectorAll('[id^="seniorcontrolButtons_"]');
+    containers.forEach((container, index) => {
+        const breakBtn = container.querySelector('button[id^="break_"]');
+        if (breakBtn && index > 0) {
+            breakBtn.style.display = 'none';
         }
-
-        updatePauseButtonsPerUser();
-        setInterval(updatePauseButtonsPerUser, 1000);
     });
+
+    // Existing updatePauseButtonsPerUser logic
+    function updatePauseButtonsPerUser() {
+        containers.forEach(container => {
+            const userId = container.querySelector('button').dataset.user;
+
+            fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ user_id: userId })
+            })
+            .then(res => res.json())
+            .then(data => {
+                const resumeBtn = container.querySelector(`#resumebreak_${userId}`);
+                const pauseBtns = [
+                    container.querySelector(`#lunch_${userId}`),
+                    container.querySelector(`#tea_${userId}`),
+                    container.querySelector(`#break_${userId}`)
+                ].filter(Boolean);
+
+                // Show/hide buttons based on pause type
+                if (['lunch', 'tea', 'break'].includes(data.pause_type)) {
+                    pauseBtns.forEach(btn => btn.style.display = 'none');
+                    if (resumeBtn) resumeBtn.style.display = 'flex';
+                } else {
+                    pauseBtns.forEach(btn => {
+                        // Keep break hidden for all except first container
+                        if (btn.id.startsWith('break_') && container !== containers[0]) {
+                            btn.style.display = 'none';
+                        } else {
+                            btn.style.display = 'flex';
+                        }
+                    });
+                    if (resumeBtn) resumeBtn.style.display = 'none';
+                }
+
+                // Update pause badge
+                const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
+                if (badgeContainer) {
+                    const badge = badgeContainer.querySelector(`.pause-badge_${userId}`);
+                    if (badge) {
+                        const type = data.pause_type || 'resume';
+                        badge.textContent = formatPauseText(type);
+                        badge.className = `pause-badge pause-badge_${userId} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
+                    }
+                }
+            })
+            .catch(err => console.error('Error fetching pause state for user', userId, err));
+        });
+    }
+
+    updatePauseButtonsPerUser();
+    setInterval(updatePauseButtonsPerUser, 1000);
+});
 </script>
+
 @endsection
