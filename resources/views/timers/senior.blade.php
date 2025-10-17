@@ -200,10 +200,7 @@ $script = '<script>
         fetch("{{ route('timer.alljuniors') }}")
             .then(res => res.json())
             .then(timers => {
-                if (!Array.isArray(timers)) {
-                    console.warn("Invalid timer response:", timers);
-                    return;
-                }
+                if (!Array.isArray(timers)) return;
 
                 timers.forEach(data => {
                     const widget = document.querySelector(`.timer-widget[data-user='${data.user_id}']`);
@@ -216,7 +213,6 @@ $script = '<script>
                     widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
                     widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
 
-                    // Optional: notify when timer hits 0
                     if (data.remaining_seconds <= 0 && data.status === 'finished') {
                         alert(`User ${data.user_id} has finished their 9-hour session.`);
                     }
@@ -224,221 +220,150 @@ $script = '<script>
             })
             .catch(err => console.error("Timer fetch error:", err));
     }
-    setInterval(updateAllTimers, 1000); // sync with DB every second
+    setInterval(updateAllTimers, 1000);
 </script>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-        // Setup control buttons for all timer widgets
-        function setupseniorControlButtons() {
+        function setupSeniorControlButtons() {
             document.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
+                if(btn.dataset.listenerAttached) return; // prevent double attachment
+                btn.dataset.listenerAttached = true;
+
                 btn.addEventListener('click', () => {
                     const type = btn.getAttribute('data-type');
                     const userId = btn.getAttribute('data-user');
 
-                    console.log(`[Action] Button clicked: ${type} (User ID: ${userId})`);
-
                     fetch("{{ route('timer.update') }}", {
-                            method: "POST",
-                            headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                action: type,
-                                user_id: userId
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            console.log("[Action] Response:", data);
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({ action: type, user_id: userId })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        const timerWidget = document.querySelector(`.timer-widget[data-user='${userId}']`);
+                        if (timerWidget) {
+                            timerWidget.dataset.status = data.status;
+                            timerWidget.dataset.remainingSeconds = data.remaining_seconds;
+                            timerWidget.dataset.elapsedSeconds = data.elapsed_seconds;
+                            updateUI(userId, data);
 
-                            if (data.success === false && data.notice_status === 1) {
-                                showOverlay(data.message || "Please wait for senior to enable.");
-                                return;
+                            const card = timerWidget.closest('.user-grid-card');
+                            if (card) {
+                                if (data.status === 'paused') card.style.backgroundColor = '#fff3cd';
+                                else if (data.status === 'running') card.style.backgroundColor = '#d4edda';
+                                else card.style.backgroundColor = '';
                             }
-
-                            // Update individual timer UI for this user only
-                            const timerWidget = document.querySelector(`.timer-widget[data-user='${userId}']`);
-                            if (timerWidget) {
-                                timerWidget.dataset.status = data.status;
-                                timerWidget.dataset.remainingSeconds = data.remaining_seconds;
-                                timerWidget.dataset.elapsedSeconds = data.elapsed_seconds;
-                                updateUI(userId, data); // assume updateUI handles per-user updates
-
-                                // 🔹 Update card background based on status
-                                const card = timerWidget.closest('.user-grid-card');
-                                if (card) {
-                                    if (data.status === 'paused') {
-                                        card.style.backgroundColor = '#fff3cd'; // yellow
-                                    } else if (data.status === 'running') {
-                                        card.style.backgroundColor = '#d4edda'; // green
-                                    } else {
-                                        card.style.backgroundColor = ''; // default
-                                    }
-                                }
-                            }
-                        })
-                        .catch(err => console.error("[Action] Failed to send:", err));
+                        }
+                    })
+                    .catch(err => console.error("[Action] Failed to send:", err));
                 });
             });
-
         }
 
-
-        setupseniorControlButtons();
-
-        setInterval(setupseniorControlButtons, 1000);
+        setupSeniorControlButtons();
+        setInterval(setupSeniorControlButtons, 1000);
     });
 </script>
 
-
-
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-
-        // Handle enable/disable click
         function toggleButtonStatus(button) {
             const userId = button.getAttribute("data-user");
-            const type = button.getAttribute("data-type"); // login or logout
+            const type = button.getAttribute("data-type");
             const action = type === "login" ? "enable" : "disable";
 
-            console.log(`Toggling user ${userId} to ${action}...`);
-
             fetch("{{ route('timer.toggleButtonStatus') }}", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        user_id: userId,
-                        action: action
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    console.log(`Response for user ${userId}:`, data);
-
-                    if (!data.success) {
-                        console.error(`Failed to toggle user ${userId}:`, data.message);
-                        return;
-                    }
-
-                    // Update button instantly based on response
-                    updateButton(button, data.button_status);
-                })
-                .catch(err => console.error(`Fetch error for user ${userId}:`, err));
+                method: "POST",
+                headers: {
+                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ user_id: userId, action: action })
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (!data.success) return;
+                updateButton(button, data.button_status);
+            })
+            .catch(err => console.error(err));
         }
 
-        // Update individual button appearance
         function updateButton(button, status) {
             if (status == 0) {
-                // Change to Enable
                 button.setAttribute("data-type", "login");
                 button.style.background = "#0d6efd";
                 button.style.border = "1px solid #b0c6e6ff";
-                button.innerHTML = `
-                    <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
-                    Enable Junior
-                `;
+                button.innerHTML = `<iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>Enable Junior`;
             } else {
-                // Change to Disable
                 button.setAttribute("data-type", "logout");
                 button.style.background = "#dc3545";
                 button.style.border = "1px solid #d8adb1ff";
-                button.innerHTML = `
-                    <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
-                    Disable Junior
-                `;
+                button.innerHTML = `<iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>Disable Junior`;
             }
         }
 
-        // Periodic button status check
+        document.body.addEventListener("click", function(e) {
+            const btn = e.target.closest("button[data-user]");
+            if(btn) toggleButtonStatus(btn);
+        });
+
         function checkButtonStatus() {
             fetch("{{ route('button.status') }}")
-                .then(response => response.json())
+                .then(res => res.json())
                 .then(data => {
                     if (Array.isArray(data)) {
                         data.forEach(user => {
                             const button = document.querySelector(`button[data-user='${user.user_id}']`);
-                            if (button) {
-                                updateButton(button, user.button_status);
-                            }
+                            if (button) updateButton(button, user.button_status);
                         });
-                    } else {
-                        console.warn("Unexpected data format:", data);
                     }
                 })
                 .catch(err => console.error("Polling error:", err));
         }
 
-        // Attach click listener to all buttons (delegated)
-        document.body.addEventListener("click", function(e) {
-            if (e.target.closest("button[data-user]")) {
-                const btn = e.target.closest("button[data-user]");
-                toggleButtonStatus(btn);
-            }
-        });
-
-        // Initial check and polling
         checkButtonStatus();
         setInterval(checkButtonStatus, 1000);
     });
 </script>
 
-
-
-
-
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
-
         function updatePauseBadges() {
             fetch("{{ route('timers.latestPauseTypes') }}")
-                .then(response => response.json())
+                .then(res => res.json())
                 .then(data => {
                     data.forEach(item => {
                         const badge = document.querySelector(`.pause-badge[data-user="${item.user_id}"]`);
-                        if (!badge) return;
-
+                        if(!badge) return;
                         const type = item.pause_type || 'unknown';
                         badge.textContent = formatPauseText(type);
                         badge.className = `pause-badge ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
                     });
                 })
-                .catch(err => console.error("[Pause Update] Error:", err));
+                .catch(err => console.error(err));
         }
 
         function formatPauseText(type) {
-            switch (type) {
-                case 'lunch':
-                    return 'Lunch Break';
-                case 'tea':
-                    return 'Tea Break';
-                case 'break':
-                    return 'Short Break';
-                case 'resume':
-                    return 'Resumed';
-                default:
-                    return 'Unknown';
+            switch(type) {
+                case 'lunch': return 'Lunch Break';
+                case 'tea': return 'Tea Break';
+                case 'break': return 'Short Break';
+                case 'resume': return 'Resumed';
+                default: return 'Unknown';
             }
         }
 
         function getBadgeClass(type) {
-            switch (type) {
-                case 'lunch':
-                    return 'bg-danger text-white';
-                case 'tea':
-                    return 'bg-success text-white';
-                case 'break':
-                    return 'bg-warning text-white';
-                case 'resume':
-                    return 'bg-primary text-white';
-                default:
-                    return 'bg-secondary text-white';
+            switch(type) {
+                case 'lunch': return 'bg-danger text-white';
+                case 'tea': return 'bg-success text-white';
+                case 'break': return 'bg-warning text-white';
+                case 'resume': return 'bg-primary text-white';
+                default: return 'bg-secondary text-white';
             }
         }
 
@@ -447,57 +372,48 @@ $script = '<script>
     });
 </script>
 
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
-
         function updatePauseButtonsPerUser() {
             document.querySelectorAll('.seniorcontrolButtons').forEach(container => {
                 const userId = container.querySelector('button').getAttribute('data-user');
 
                 fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}',
-                            'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                            user_id: userId
-                        }) // send user ID to backend
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        const resumeBtn = container.querySelector('button[data-type="resumebreak"]');
-                        const pauseBtns = container.querySelectorAll('button[data-type="lunch"], button[data-type="tea"], button[data-type="break"]');
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ user_id: userId })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    const resumeBtn = container.querySelector('button[data-type="resumebreak"]');
+                    const pauseBtns = container.querySelectorAll('button[data-type="lunch"], button[data-type="tea"], button[data-type="break"]');
 
-                        // ✅ Existing logic untouched
-                        if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
-                            pauseBtns.forEach(btn => btn.style.display = 'none');
-                            if (resumeBtn) resumeBtn.style.display = 'flex';
-                        } else {
-                            pauseBtns.forEach(btn => btn.style.display = 'flex');
-                            if (resumeBtn) resumeBtn.style.display = 'none';
+                    if (['lunch','tea','break'].includes(data.pause_type)) {
+                        pauseBtns.forEach(btn => btn.style.display='none');
+                        if(resumeBtn) resumeBtn.style.display='flex';
+                    } else {
+                        pauseBtns.forEach(btn => btn.style.display='flex');
+                        if(resumeBtn) resumeBtn.style.display='none';
+                    }
+
+                    const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
+                    if(badgeContainer) {
+                        const badge = badgeContainer.querySelector('.pause-badge');
+                        if(badge) {
+                            const type = data.pause_type || 'resume';
+                            badge.textContent = formatPauseText(type);
+                            badge.className = `pause-badge ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
                         }
-
-                        const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
-                        if (badgeContainer) {
-                            const badge = badgeContainer.querySelector('.pause-badge');
-                            if (badge) {
-                                const type = data.pause_type || 'resume';
-                                badge.textContent = formatPauseText(type);
-                                badge.className = `pause-badge ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
-                            }
-                        }
-
-                    })
-                    .catch(err => console.error('❌ Error fetching pause state for user', userId, err));
+                    }
+                })
+                .catch(err => console.error('Error fetching pause state for user', userId, err));
             });
         }
 
-        // Initial check
         updatePauseButtonsPerUser();
-
-        // Check every second
         setInterval(updatePauseButtonsPerUser, 1000);
     });
 </script>
