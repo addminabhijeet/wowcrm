@@ -17,22 +17,12 @@ $script = '<script>
             <span class="text-md fw-medium text-secondary-light mb-0">Show</span>
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-                <option>6</option>
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
             </select>
             <form class="navbar-search">
                 <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
             </form>
         </div>
-
     </div>
     <div class="card-body p-24">
         <div class="row gy-4">
@@ -40,21 +30,16 @@ $script = '<script>
             <div class="col-xxl-3 col-md-6 user-grid-card">
                 <div class="position-relative border radius-16 overflow-hidden" style="padding-top: 30px;">
                     <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}" class="w-100 object-fit-cover" alt="">
-
                     <div class="ps-16 pb-16 pe-16 text-center mt--50">
                         <img src="{{ $timer['image'] ? asset('assets/images/user-grid/' . $timer['image']) : asset('assets/images/user-grid/user-grid-bg1.png') }}" class="border br-white border-width-2-px w-100-px h-100-px rounded-circle object-fit-cover" alt="">
                         <h6 class="text-lg mb-0 mt-4">{{ $timer['name'] }}</h6>
                         <span class="text-secondary-light mb-16">{{ $timer['email'] }}</span>
-
-                        <!-- Timer Widget -->
                         <div class="timer-widget"
                             data-user="{{ $timer['user_id'] }}"
                             data-remaining="{{ $timer['remaining_seconds'] }}"
                             data-elapsed="{{ $timer['elapsed_seconds'] }}"
                             data-status="{{ $timer['status'] }}"
                             style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:5px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
-
-                            <!-- Countdown -->
                             <div style="margin-right:10px;text-align:center;min-width:60px;">
                                 <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
                                     <iconify-icon icon="mdi:timer-outline" style="color:#dc3545;font-size:14px;"></iconify-icon>
@@ -64,11 +49,7 @@ $script = '<script>
                                     {{ gmdate('H:i:s', $timer['remaining_seconds']) }}
                                 </span>
                             </div>
-
-                            <!-- Divider -->
                             <div style="width:1px;background:#dee2e6;margin:0 4px;"></div>
-
-                            <!-- Elapsed -->
                             <div style="margin-right:10px;text-align:center;min-width:60px;">
                                 <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
                                     <iconify-icon icon="mdi:clock-outline" style="color:#28a745;font-size:14px;"></iconify-icon>
@@ -78,7 +59,6 @@ $script = '<script>
                                     {{ gmdate('H:i:s', $timer['elapsed_seconds']) }}
                                 </span>
                             </div>
-
                             <div class="seniorcontrolButtons_{{ $timer['user_id'] }}" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
                                 <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
                                     <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
@@ -93,9 +73,7 @@ $script = '<script>
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
                             </div>
-
                         </div>
-
                         @if($timer['button_status'] == 0)
                         <button
                             data-type="login"
@@ -113,7 +91,6 @@ $script = '<script>
                             Disable Junior
                         </button>
                         @endif
-
                         <div class="position-absolute top-0 end-0 me-16 mt-16" id="badgeContainer_{{ $timer['user_id'] }}">
                             <span class="pause-badge px-3 py-2 radius-8 shadow-sm" data-user="{{ $timer['user_id'] }}">
                                 @if(!empty($timer['pause_type']))
@@ -131,7 +108,6 @@ $script = '<script>
                                 @endif
                             </span>
                         </div>
-
                     </div>
                 </div>
             </div>
@@ -169,14 +145,8 @@ $script = '<script>
         </div>
     </div>
 </div>
-
-
-
-
 <div id="statusOverlay"></div>
-
 <script>
-    // Format seconds to HH:MM:SS
     function formatTime(sec) {
         sec = Math.max(0, Math.floor(sec));
         const h = Math.floor(sec / 3600);
@@ -184,25 +154,19 @@ $script = '<script>
         const s = sec % 60;
         return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
     }
-
-    // Fetch all timers from backend every second
     function updateAllTimers() {
         fetch("{{ route('timer.alljuniors') }}")
             .then(res => res.json())
             .then(timers => {
                 if (!Array.isArray(timers)) return;
-
                 timers.forEach(data => {
                     const widget = document.querySelector(`.timer-widget[data-user='${data.user_id}']`);
                     if (!widget) return;
-
                     widget.dataset.remaining = data.remaining_seconds;
                     widget.dataset.elapsed = data.elapsed_seconds;
                     widget.dataset.status = data.status;
-
                     widget.querySelector('.countdown').innerText = formatTime(data.remaining_seconds);
                     widget.querySelector('.elapsed').innerText = formatTime(data.elapsed_seconds);
-
                     if (data.remaining_seconds <= 0 && data.status === 'finished') {
                         alert(`User ${data.user_id} has finished their 9-hour session.`);
                     }
@@ -219,11 +183,9 @@ $script = '<script>
             document.querySelectorAll('.seniorcontrolButtons button').forEach(btn => {
                 if (btn.dataset.listenerAttached) return; // prevent double attachment
                 btn.dataset.listenerAttached = true;
-
                 btn.addEventListener('click', () => {
                     const type = btn.getAttribute('data-type');
                     const userId = btn.getAttribute('data-user');
-
                     fetch("{{ route('timer.update') }}", {
                             method: "POST",
                             headers: {
@@ -256,7 +218,6 @@ $script = '<script>
                 });
             });
         }
-
         setupSeniorControlButtons();
         setInterval(setupSeniorControlButtons, 1000);
     });
@@ -268,7 +229,6 @@ $script = '<script>
             const userId = button.getAttribute("data-user");
             const type = button.getAttribute("data-type");
             const action = type === "login" ? "enable" : "disable";
-
             fetch("{{ route('timer.toggleButtonStatus') }}", {
                     method: "POST",
                     headers: {
@@ -287,7 +247,6 @@ $script = '<script>
                 })
                 .catch(err => console.error(err));
         }
-
         function updateButton(button, status) {
             if (status == 0) {
                 button.setAttribute("data-type", "login");
@@ -301,12 +260,10 @@ $script = '<script>
                 button.innerHTML = `<iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>Disable Junior`;
             }
         }
-
         document.body.addEventListener("click", function(e) {
             const btn = e.target.closest("button[data-user]");
             if (btn) toggleButtonStatus(btn);
         });
-
         function checkButtonStatus() {
             fetch("{{ route('button.status') }}")
                 .then(res => res.json())
@@ -320,7 +277,6 @@ $script = '<script>
                 })
                 .catch(err => console.error("Polling error:", err));
         }
-
         checkButtonStatus();
         setInterval(checkButtonStatus, 1000);
     });
@@ -342,7 +298,6 @@ $script = '<script>
                 })
                 .catch(err => console.error(err));
         }
-
         function formatPauseText(type) {
             switch (type) {
                 case 'lunch':
@@ -357,7 +312,6 @@ $script = '<script>
                     return 'Unknown';
             }
         }
-
         function getBadgeClass(type) {
             switch (type) {
                 case 'lunch':
@@ -372,7 +326,6 @@ $script = '<script>
                     return 'bg-secondary text-white';
             }
         }
-
         updatePauseBadges();
         setInterval(updatePauseBadges, 1000);
     });
@@ -383,7 +336,6 @@ $script = '<script>
         function updatePauseButtonsPerUser() {
             document.querySelectorAll('.seniorcontrolButtons').forEach(container => {
                 const userId = container.querySelector('button').getAttribute('data-user');
-
                 fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
                         method: 'POST',
                         headers: {
@@ -406,7 +358,6 @@ $script = '<script>
                             pauseBtns.forEach(btn => btn.style.display = 'flex');
                             if (resumeBtn) resumeBtn.style.display = 'none';
                         }
-
                         const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
                         if (badgeContainer) {
                             const badge = badgeContainer.querySelector('.pause-badge');
@@ -420,12 +371,9 @@ $script = '<script>
                     .catch(err => console.error('Error fetching pause state for user', userId, err));
             });
         }
-
         updatePauseButtonsPerUser();
         setInterval(updatePauseButtonsPerUser, 1000);
     });
 </script>
-
-
 
 @endsection
