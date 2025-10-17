@@ -58,10 +58,14 @@ class CallReportController extends Controller
         $SreadyToPaidCalls = (clone $query)->where('Exe_Remarks', 'Ready To Paid')->count();
         $SotherCalls = (clone $query)
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                $q->where(function ($q2) {
+                    $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->where('Exe_Remarks', '<>', 'Ready To Paid');
+                })
                     ->orWhereNull('Exe_Remarks');
             })
             ->count();
+
 
 
         // Hour-wise "Called & Mailed" counts
@@ -87,12 +91,16 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                $q->where(function ($q2) {
+                    $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->where('Exe_Remarks', '<>', 'Ready To Paid');
+                })
                     ->orWhereNull('Exe_Remarks');
             })
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
 
         // Initialize hour blocks (10 AM - 8 PM)
@@ -308,7 +316,16 @@ class CallReportController extends Controller
             'o5to6pm',
             'o6to7pm',
             'o7to8pm',
-            'r10to11am','r11to12pm','r12to1pm','r1to2pm','r2to3pm','r3to4pm','r4to5pm','r5to6pm','r6to7pm','r7to8pm'
+            'r10to11am',
+            'r11to12pm',
+            'r12to1pm',
+            'r1to2pm',
+            'r2to3pm',
+            'r3to4pm',
+            'r4to5pm',
+            'r5to6pm',
+            'r6to7pm',
+            'r7to8pm'
 
         ));
     }
