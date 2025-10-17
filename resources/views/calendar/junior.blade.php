@@ -178,13 +178,13 @@ $subTitle = 'Calendar';
         </div>
         <div>
             <strong>Start Time:</strong>
-            <span class="badge fs-6">
+            <span class="badge fs-6 bg-danger">
                 ${startTime}
             </span>
         </div>
         <div>
             <strong>End Time:</strong>
-            <span class="badge fs-6">
+            <span class="badge fs-6 bg-danger">
                 ${endTime}
             </span>
         </div>
