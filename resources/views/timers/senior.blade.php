@@ -59,36 +59,28 @@ $script = '<script>
                                     {{ gmdate('H:i:s', $timer['elapsed_seconds']) }}
                                 </span>
                             </div>
-                            <div class="seniorcontrolButtons_{{ $timer['user_id'] }}" id="seniorcontrolButtons_{{ $timer['user_id'] }}" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                                <button data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
+                            <div class="seniorcontrolButtons_{{ $timer['user_id'] }}" id="seniorcontrolButtons_{{ $timer['user_id'] }}_container" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                                <button id="resumebreak_{{ $timer['user_id'] }}" class="senior-btn resumebreak_{{ $timer['user_id'] }}" data-type="resumebreak" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
                                     <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
                                 </button>
-                                <button data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
+                                <button id="lunch_{{ $timer['user_id'] }}" class="senior-btn lunch_{{ $timer['user_id'] }}" data-type="lunch" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
                                     <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
                                 </button>
-                                <button data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
+                                <button id="tea_{{ $timer['user_id'] }}" class="senior-btn tea_{{ $timer['user_id'] }}" data-type="tea" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
                                     <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
                                 </button>
-                                <button data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
+                                <button id="break_{{ $timer['user_id'] }}" class="senior-btn break_{{ $timer['user_id'] }}" data-type="break" data-user="{{ $timer['user_id'] }}" style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
                                     <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
                                 </button>
                             </div>
                         </div>
                         @if($timer['button_status'] == 0)
-                        <button
-                            data-type="login"
-                            data-user="{{ $timer['user_id'] }}"
-                            style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
-                            <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
-                            Enable Junior
+                        <button id="loginBtn_{{ $timer['user_id'] }}" class="senior-btn loginBtn_{{ $timer['user_id'] }}" data-type="login" data-user="{{ $timer['user_id'] }}" style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>Enable Junior
                         </button>
                         @else
-                        <button
-                            data-type="logout"
-                            data-user="{{ $timer['user_id'] }}"
-                            style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
-                            <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
-                            Disable Junior
+                        <button id="logoutBtn_{{ $timer['user_id'] }}" class="senior-btn logoutBtn_{{ $timer['user_id'] }}" data-type="logout" data-user="{{ $timer['user_id'] }}" style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
+                            <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>Disable Junior
                         </button>
                         @endif
                         <div class="position-absolute top-0 end-0 me-16 mt-16" id="badgeContainer_{{ $timer['user_id'] }}">
@@ -249,24 +241,31 @@ $script = '<script>
                 .then(res => res.json())
                 .then(data => {
                     if (!data.success) return;
-                    updateButton(button, data.button_status);
+                    updateButton(button, data.button_status, userId);
                 })
                 .catch(err => console.error(err));
         }
 
-        function updateButton(button, status) {
+        function updateButton(button, status, userId) {
+            const loginBtn = document.querySelector(`#loginBtn_${userId}`);
+            const logoutBtn = document.querySelector(`#logoutBtn_${userId}`);
             if (status == 0) {
-                button.setAttribute("data-type", "login");
-                button.style.background = "#0d6efd";
-                button.style.border = "1px solid #b0c6e6ff";
-                button.innerHTML = `<iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>Enable Junior`;
+                if (loginBtn) {
+                    loginBtn.setAttribute("data-type", "login");
+                    loginBtn.style.background = "#0d6efd";
+                    loginBtn.style.border = "1px solid #b0c6e6ff";
+                    loginBtn.innerHTML = `<iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>Enable Junior`;
+                }
             } else {
-                button.setAttribute("data-type", "logout");
-                button.style.background = "#dc3545";
-                button.style.border = "1px solid #d8adb1ff";
-                button.innerHTML = `<iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>Disable Junior`;
+                if (logoutBtn) {
+                    logoutBtn.setAttribute("data-type", "logout");
+                    logoutBtn.style.background = "#dc3545";
+                    logoutBtn.style.border = "1px solid #d8adb1ff";
+                    logoutBtn.innerHTML = `<iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>Disable Junior`;
+                }
             }
         }
+
         document.body.addEventListener("click", function(e) {
             const btn = e.target.closest("button[data-user]");
             if (btn) toggleButtonStatus(btn);
@@ -279,7 +278,7 @@ $script = '<script>
                     if (Array.isArray(data)) {
                         data.forEach(user => {
                             const button = document.querySelector(`button[data-user='${user.user_id}']`);
-                            if (button) updateButton(button, user.button_status);
+                            if (button) updateButton(button, user.button_status, user.user_id);
                         });
                     }
                 })
@@ -297,11 +296,11 @@ $script = '<script>
                 .then(res => res.json())
                 .then(data => {
                     data.forEach(item => {
-                        const badge = document.querySelector(`.pause-badge[data-user="${item.user_id}"]`);
+                        const badge = document.querySelector(`.pause-badge_${item.user_id}`);
                         if (!badge) return;
                         const type = item.pause_type || 'unknown';
                         badge.textContent = formatPauseText(type);
-                        badge.className = `pause-badge ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
+                        badge.className = `pause-badge_${item.user_id} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
                     });
                 })
                 .catch(err => console.error(err));
@@ -336,6 +335,7 @@ $script = '<script>
                     return 'bg-secondary text-white';
             }
         }
+
         updatePauseBadges();
         setInterval(updatePauseBadges, 1000);
     });
@@ -346,7 +346,6 @@ $script = '<script>
         function updatePauseButtonsPerUser() {
             document.querySelectorAll('[id^="seniorcontrolButtons_"]').forEach(container => {
                 const userId = container.querySelector('button').getAttribute('data-user');
-
                 fetch('{{ route("timer.checkPauseButtonsSenior") }}', {
                         method: 'POST',
                         headers: {
@@ -359,8 +358,12 @@ $script = '<script>
                     })
                     .then(res => res.json())
                     .then(data => {
-                        const resumeBtn = container.querySelector('button[data-type="resumebreak"]');
-                        const pauseBtns = container.querySelectorAll('button[data-type="lunch"], button[data-type="tea"], button[data-type="break"]');
+                        const resumeBtn = container.querySelector(`#resumebreak_${userId}`);
+                        const pauseBtns = [
+                            container.querySelector(`#lunch_${userId}`),
+                            container.querySelector(`#tea_${userId}`),
+                            container.querySelector(`#break_${userId}`)
+                        ].filter(Boolean);
 
                         if (['lunch', 'tea', 'break'].includes(data.pause_type)) {
                             pauseBtns.forEach(btn => btn.style.display = 'none');
@@ -372,11 +375,11 @@ $script = '<script>
 
                         const badgeContainer = document.querySelector(`#badgeContainer_${userId}`);
                         if (badgeContainer) {
-                            const badge = badgeContainer.querySelector('.pause-badge');
+                            const badge = badgeContainer.querySelector(`.pause-badge_${userId}`);
                             if (badge) {
                                 const type = data.pause_type || 'resume';
                                 badge.textContent = formatPauseText(type);
-                                badge.className = `pause-badge ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
+                                badge.className = `pause-badge_${userId} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
                             }
                         }
                     })
@@ -388,5 +391,4 @@ $script = '<script>
         setInterval(updatePauseButtonsPerUser, 1000);
     });
 </script>
-
 @endsection
