@@ -296,11 +296,12 @@ $script = '<script>
                 .then(res => res.json())
                 .then(data => {
                     data.forEach(item => {
-                        const badge = document.querySelector(`.pause-badge_${item.user_id}`);
+                        // Updated to select the span inside badgeContainer by data-user
+                        const badge = document.querySelector(`#badgeContainer_${item.user_id} .pause-badge[data-user="${item.user_id}"]`);
                         if (!badge) return;
                         const type = item.pause_type || 'unknown';
                         badge.textContent = formatPauseText(type);
-                        badge.className = `pause-badge_${item.user_id} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
+                        badge.className = `pause-badge pause-badge_${item.user_id} ${getBadgeClass(type)} px-3 py-2 radius-8 shadow-sm`;
                     });
                 })
                 .catch(err => console.error(err));
@@ -340,6 +341,7 @@ $script = '<script>
         setInterval(updatePauseBadges, 1000);
     });
 </script>
+
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
