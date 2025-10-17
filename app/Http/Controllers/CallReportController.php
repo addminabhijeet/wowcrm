@@ -270,6 +270,18 @@ class CallReportController extends Controller
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
+        $r10to11am = $hourlyReadyToPaid[10] ?? 0;
+        $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
+        $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
+        $r1to2pm   = $hourlyReadyToPaid[13] ?? 0;
+        $r2to3pm   = $hourlyReadyToPaid[14] ?? 0;
+        $r3to4pm   = $hourlyReadyToPaid[15] ?? 0;
+        $r4to5pm   = $hourlyReadyToPaid[16] ?? 0;
+        $r5to6pm   = $hourlyReadyToPaid[17] ?? 0;
+        $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
+        $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
+
+
         return view('reports.seniormonthly', compact(
             'MtotalCalls',
             'McalledAndMailedCalls',
@@ -295,7 +307,9 @@ class CallReportController extends Controller
             'o4to5pm',
             'o5to6pm',
             'o6to7pm',
-            'o7to8pm'
+            'o7to8pm',
+            'r10to11am','r11to12pm','r12to1pm','r1to2pm','r2to3pm','r3to4pm','r4to5pm','r5to6pm','r6to7pm','r7to8pm'
+
         ));
     }
 
