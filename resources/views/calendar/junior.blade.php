@@ -45,7 +45,7 @@ $subTitle = 'Calendar';
                 <h1 class="modal-title fs-5" id="eventModalLabel">
                     Events on <span id="modalDate"></span>
                 </h1>
-                <button id="downloadDailyReport" class="btn btn-sm btn-outline-primary me-2">
+                <button id="downloadDailyReport" class="btn btn-sm btn-outline-primary justify-content-end me-2">
                     <i class="bi bi-download"></i> Download Daily Report
                 </button>
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
