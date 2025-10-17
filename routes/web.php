@@ -152,7 +152,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/smtp/edit/{user}', [DashboardController::class, 'edit'])->name('smtp.edit');
     Route::get('/dashboard/smtp/editall', [DashboardController::class, 'editall'])->name('smtp.editall');
     Route::put('/dashboard/smtp/allupdate', [DashboardController::class, 'addupdate'])->name('smtp.addupdate');
-    Route::put('/dashboard/smtp/update', [DashboardController::class, 'update'])->name('smtp.update');
+    Route::put('/dashboard/smtp/update/{user}', [DashboardController::class, 'update'])->name('smtp.update');
     Route::post('/dashboard/smtp/test', [DashboardController::class, 'test'])->name('smtp.test');
     Route::get('/dashboard/senior/seniortimer', [TimerController::class, 'seniorTimers'])->name('timer.senior');
     Route::get('/timer/all-juniors', [TimerController::class, 'allJuniorTimers'])->name('timer.alljuniors');
