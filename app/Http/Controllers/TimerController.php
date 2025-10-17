@@ -115,31 +115,7 @@ class TimerController extends Controller
         ]);
     }
 
-    public function toggleAllStatus(Request $request)
-    {
-        $request->validate(['action' => 'required|string|in:enable,disable']);
 
-        $status = $request->action == 'enable' ? 1 : 0;
-
-
-        $juniors = User::where('role', 'junior')->get();
-        $updated = [];
-
-        foreach ($juniors as $junior) {
-            $timerLog = UserTimerLog::where('user_id', $junior->id)->latest()->first();
-            if ($timerLog) {
-                $timerLog->button_status = $status;
-                $timerLog->save();
-
-                $updated[] = [
-                    'user_id' => $junior->id,
-                    'button_status' => $timerLog->button_status
-                ];
-            }
-        }
-
-        return response()->json(['success' => true, 'updated' => $updated]);
-    }
 
 
     public function allJuniorTimers()
