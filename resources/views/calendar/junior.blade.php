@@ -211,18 +211,25 @@ $subTitle = 'Calendar';
         <span>${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</span>
     </div>
 </div>`;
-                    // Hide duplicate event/time rows (existing logic)
-                    const rows = modalBody.querySelectorAll('tbody tr');
-                    for (let i = 1; i < rows.length - 2; i++) { // skip first and last total rows
-                        const currEvent = rows[i].cells[0].textContent.trim();
-                        const currTime = rows[i].cells[1].textContent.trim();
-                        const prevEvent = rows[i - 1].cells[0].textContent.trim();
-                        const prevTime = rows[i - 1].cells[1].textContent.trim();
+                    // --- HIDE EXACT CONSECUTIVE DUPLICATES AFTER MERGE ---
+                    const finalRows = tbody.querySelectorAll('tr');
+                    let prevEvent = '';
+                    let prevTime = '';
 
-                        if (currEvent === prevEvent || currTime === prevTime) {
-                            rows[i].style.display = 'none';
+                    finalRows.forEach(row => {
+                        if (row.classList.contains('fw-bold')) return; // skip total/summary rows
+
+                        const event = row.cells[0]?.textContent.trim();
+                        const time = row.cells[1]?.textContent.trim();
+
+                        if (event === prevEvent && time === prevTime) {
+                            row.style.display = 'none'; // hide duplicate
+                        } else {
+                            prevEvent = event;
+                            prevTime = time;
                         }
-                    }
+                    });
+
 
                     // --- UNIVERSAL MERGE SECTION (any consecutive pair like Start–Tea, Login–Logout, etc.) ---
                     const tbody = modalBody.querySelector('tbody');
