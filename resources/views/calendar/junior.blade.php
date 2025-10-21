@@ -246,7 +246,7 @@ $subTitle = 'Calendar';
                             const mergedRow = document.createElement('tr');
                             mergedRow.innerHTML = `
 <td>${currEvent}</td>
-<td>${currTime}${currEvent !== nextEvent ? '' : ' - ' + nextTime}</td>
+<td>${currTime} - ${nextTime}</td>
 <td>${currDuration}</td>`;
                             mergedRows.push(mergedRow);
                             if (currEvent === nextEvent) i++; // skip next if merged
