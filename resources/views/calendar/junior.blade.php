@@ -250,7 +250,7 @@ $subTitle = 'Calendar';
                             mergedRow.innerHTML = `
 <td>${currEvent} - ${nextEvent}</td>
 <td>${currTime} - ${nextTime}</td>
-<td>${currDuration} - ${nextDuration}</td>`;
+<td>${nextDuration}</td>`;
                             mergedRows.push(mergedRow);
                             i++; // skip next
                         } else {
