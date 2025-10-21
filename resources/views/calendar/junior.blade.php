@@ -211,24 +211,7 @@ $subTitle = 'Calendar';
         <span>${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</span>
     </div>
 </div>`;
-                    // --- HIDE EXACT CONSECUTIVE DUPLICATES AFTER MERGE ---
-                    const finalRows = tbody.querySelectorAll('tr');
-                    let prevEvent = '';
-                    let prevTime = '';
 
-                    finalRows.forEach(row => {
-                        if (row.classList.contains('fw-bold')) return; // skip total/summary rows
-
-                        const event = row.cells[0]?.textContent.trim();
-                        const time = row.cells[1]?.textContent.trim();
-
-                        if (event === prevEvent && time === prevTime) {
-                            row.style.display = 'none'; // hide duplicate
-                        } else {
-                            prevEvent = event;
-                            prevTime = time;
-                        }
-                    });
 
 
                     // --- UNIVERSAL MERGE SECTION (any consecutive pair like Start–Tea, Login–Logout, etc.) ---
@@ -240,8 +223,7 @@ $subTitle = 'Calendar';
                         const curr = allRows[i];
                         const next = allRows[i + 1];
 
-                        // Skip total or summary rows
-                        if (!curr || curr.classList.contains('fw-bold')) continue;
+                        if (!curr || curr.classList.contains('fw-bold')) continue; // skip total/summary rows
 
                         const currEvent = curr.cells[0]?.textContent.trim();
                         const currTime = curr.cells[1]?.textContent.trim();
@@ -274,6 +256,25 @@ $subTitle = 'Calendar';
                     // Clear & append merged
                     tbody.innerHTML = '';
                     mergedRows.forEach(r => tbody.appendChild(r));
+
+                    // --- HIDE EXACT CONSECUTIVE DUPLICATES AFTER MERGE ---
+                    const finalRows = tbody.querySelectorAll('tr');
+                    let prevEvent = '';
+                    let prevTime = '';
+
+                    finalRows.forEach(row => {
+                        if (row.classList.contains('fw-bold')) return; // skip total/summary rows
+
+                        const event = row.cells[0]?.textContent.trim();
+                        const time = row.cells[1]?.textContent.trim();
+
+                        if (event === prevEvent && time === prevTime) {
+                            row.style.display = 'none'; // hide duplicate
+                        } else {
+                            prevEvent = event;
+                            prevTime = time;
+                        }
+                    });
 
                     modal.show();
                 } else {
