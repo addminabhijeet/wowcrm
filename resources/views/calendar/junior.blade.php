@@ -257,24 +257,22 @@ $subTitle = 'Calendar';
                     tbody.innerHTML = '';
                     mergedRows.forEach(r => tbody.appendChild(r));
 
-                    // --- HIDE EXACT CONSECUTIVE DUPLICATES AFTER MERGE ---
+                    // --- HIDE CONSECUTIVE DUPLICATE EVENTS AFTER MERGE ---
                     const finalRows = tbody.querySelectorAll('tr');
-                    let prevEvent = '';
-                    let prevTime = '';
+                    let prevEventName = '';
 
                     finalRows.forEach(row => {
                         if (row.classList.contains('fw-bold')) return; // skip total/summary rows
 
-                        const event = row.cells[0]?.textContent.trim();
-                        const time = row.cells[1]?.textContent.trim();
+                        const eventName = row.cells[0]?.textContent.trim();
 
-                        if (event === prevEvent && time === prevTime) {
+                        if (eventName === prevEventName) {
                             row.style.display = 'none'; // hide duplicate
                         } else {
-                            prevEvent = event;
-                            prevTime = time;
+                            prevEventName = eventName;
                         }
                     });
+
 
                     modal.show();
                 } else {
