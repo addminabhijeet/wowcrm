@@ -230,6 +230,7 @@ $subTitle = 'Calendar';
 
                         // Skip row if same as previous consecutive event
                         if (currEvent === prevEventName) continue;
+                        if (currEvent === 'Resumebreak') continue;
 
                         const next = allRows[i + 1];
                         if (next && !next.classList.contains('fw-bold')) {
