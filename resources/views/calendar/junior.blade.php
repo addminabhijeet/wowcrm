@@ -162,10 +162,39 @@ $subTitle = 'Calendar';
 </tr>`;
                     }
 
+                    // --- Calculate 8-hour completion from first 'Start' event only ---
+                    let startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'start');
+                    let workSecFromStart = 0;
+
+                    if (startIndex !== -1) {
+                        let lastPauseTimeFromStart = null;
+
+                        for (let i = startIndex; i < chronologicalEvents.length; i++) {
+                            const event = chronologicalEvents[i];
+                            const eTime = new Date(event.start);
+                            const type = (event.extendedProps.pause_type || '').toLowerCase();
+
+                            // Handle inactive/resume for break calculation
+                            if (type === 'inactive') lastPauseTimeFromStart = eTime;
+                            else if ((type === 'resume' || type === 'running') && lastPauseTimeFromStart) {
+                                workSecFromStart += (eTime - lastPauseTimeFromStart) / 1000; // add break time
+                                lastPauseTimeFromStart = null;
+                            }
+
+                            // Work time = difference to previous event (after 'Start')
+                            if (i > startIndex) {
+                                const prevTime = new Date(chronologicalEvents[i - 1].start);
+                                let sec = (eTime - prevTime) / 1000;
+                                if (sec < 0) sec = 0;
+                                workSecFromStart += sec;
+                            }
+                        }
+                    }
+
                     const targetSec = 8 * 3600;
-                    const elapsedSec = totalWorkSec;
-                    const remainingSec = Math.max(targetSec - totalWorkSec, 0);
-                    const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
+                    const elapsedSec = workSecFromStart;
+                    const remainingSec = Math.max(targetSec - workSecFromStart, 0);
+                    const completed = workSecFromStart >= targetSec ? "✅ Yes" : "❌ No";
 
                     tableRows += `
 <tr class="fw-bold text-success">
