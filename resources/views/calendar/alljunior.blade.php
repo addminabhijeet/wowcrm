@@ -105,8 +105,11 @@ $subTitle = 'Calendar';
 
                     const chronologicalEvents = [...eventsOnDate];
 
-                    const startTime = chronologicalEvents[0].start ?
-                        new Date(chronologicalEvents[0].start).toLocaleTimeString([], {
+                    // Find the event titled 'start' (case-insensitive)
+                    const startEvent = chronologicalEvents.find(ev => ev.title.toLowerCase() === 'start');
+
+                    const startTime = startEvent && startEvent.start ?
+                        new Date(startEvent.start).toLocaleTimeString([], {
                             hour: '2-digit',
                             minute: '2-digit',
                             second: '2-digit'
