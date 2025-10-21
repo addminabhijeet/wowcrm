@@ -65,8 +65,24 @@ $script ='<script>
 
                         {{-- Date --}}
                         <td>
-                            <input type="text" class="form-control date-picker" data-key="Date"
-                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
+                            @php
+                            $dateValue = '';
+                            if (!empty($row->Date) && \Carbon\Carbon::hasFormat($row->Date, 'Y-m-d')) {
+                            $dateValue = \Carbon\Carbon::parse($row->Date)->format('m/d/Y');
+                            } elseif (!empty($row->Date)) {
+                            // Try to safely parse unknown format
+                            try {
+                            $dateValue = \Carbon\Carbon::parse($row->Date)->format('m/d/Y');
+                            } catch (\Exception $e) {
+                            $dateValue = '';
+                            }
+                            }
+                            @endphp
+
+                            <input type="text"
+                                class="form-control date-picker"
+                                data-key="Date"
+                                value="{{ $dateValue }}">
                         </td>
 
                         {{-- Name --}}
@@ -115,8 +131,21 @@ $script ='<script>
 
                         {{-- Graduation Date --}}
                         <td>
-                            <input type="text" class="form-control date-picker" data-key="Graduation Date"
-                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
+                            @php
+                            $gradDateValue = '';
+                            if (!empty($row->Graduation_Date)) {
+                            try {
+                            $gradDateValue = \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y');
+                            } catch (\Exception $e) {
+                            $gradDateValue = '';
+                            }
+                            }
+                            @endphp
+
+                            <input type="text"
+                                class="form-control date-picker"
+                                data-key="Graduation_Date"
+                                value="{{ $gradDateValue }}">
                         </td>
 
                         {{-- Immigration --}}
