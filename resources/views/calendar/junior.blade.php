@@ -248,7 +248,7 @@ $subTitle = 'Calendar';
                             // Merge consecutive events
                             const mergedRow = document.createElement('tr');
                             mergedRow.innerHTML = `
-<td>${currEvent} - ${nextEvent}</td>
+<td>${currEvent}</td>
 <td>${currTime} - ${nextTime}</td>
 <td>${nextDuration}</td>`;
                             mergedRows.push(mergedRow);
