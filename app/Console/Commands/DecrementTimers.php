@@ -10,7 +10,7 @@ use Carbon\Carbon;
 class DecrementTimers extends Command
 {
     protected $signature = 'timers:decrement';
-    protected $description = 'Decrement running/resumed timers every 3 seconds within the current minute';
+    protected $description = 'Decrement running/resumed timers every 4 seconds within the current minute';
 
     // Array to store last seen remaining_seconds per user
     protected $lastRemaining = [];
@@ -45,17 +45,17 @@ class DecrementTimers extends Command
 
                     // Check if remaining_seconds has changed since last cycle
                     if (!isset($this->lastRemaining[$userId]) || $this->lastRemaining[$userId] === $currentRemaining) {
-                        // ✅ Decrement by 3
+                        // ✅ Decrement by 4
                         DB::table('user_timer_logs')
                             ->where('id', $timer->id)
                             ->update([
-                                'remaining_seconds' => max($currentRemaining - 3, 0),
+                                'remaining_seconds' => max($currentRemaining - 4, 0),
                                 'updated_at' => now(),
                             ]);
 
                         $affected++;
                         // Update in-memory value
-                        $this->lastRemaining[$userId] = $currentRemaining - 3;
+                        $this->lastRemaining[$userId] = $currentRemaining - 4;
                     } else {
                         // Update in-memory value to current for next comparison
                         $this->lastRemaining[$userId] = $currentRemaining;
@@ -66,12 +66,12 @@ class DecrementTimers extends Command
                     $this->line(now() . " → Updated $affected latest timers.");
                 }
 
-                // Wait 3 seconds before next cycle
-                sleep(3);
+                // Wait 4 seconds before next cycle
+                sleep(4);
 
             } catch (Throwable $e) {
                 $this->error("❌ Error: " . $e->getMessage());
-                sleep(3); // retry after short delay
+                sleep(4); // retry after short delay
             }
         }
 
