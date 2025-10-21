@@ -147,10 +147,7 @@ $subTitle = 'Calendar';
 <tr>
     <td>${event.title}</td>
     <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
-    <td>
-        ${formatTime(workTime)}
-        ${breakTime > 0 ? ` / Break: ${formatTime(breakTime)}` : ''}
-    </td>
+    <td>${formatTime(workTime)}</td>
 </tr>
             `;
                     }
@@ -236,7 +233,7 @@ $subTitle = 'Calendar';
                         }
                     }
 
-                    // --- NEW SECTION: Merge consecutive related events like Login-Logout, Login-Start ---
+                    // --- NEW SECTION: strict merge (Login–Logout, Login–Start) ---
                     const tbody = modalBody.querySelector('tbody');
                     const allRows = Array.from(tbody.querySelectorAll('tr'));
                     let mergedRows = [];
@@ -245,37 +242,38 @@ $subTitle = 'Calendar';
                         const curr = allRows[i];
                         const next = allRows[i + 1];
 
-                        if (!next) {
-                            mergedRows.push(curr);
-                            continue;
-                        }
+                        // Skip total rows
+                        if (!curr || curr.classList.contains('fw-bold')) continue;
 
                         const currEvent = curr.cells[0]?.textContent.trim();
                         const currTime = curr.cells[1]?.textContent.trim();
                         const currDuration = curr.cells[2]?.textContent.trim();
 
-                        const nextEvent = next.cells[0]?.textContent.trim();
-                        const nextTime = next.cells[1]?.textContent.trim();
-                        const nextDuration = next.cells[2]?.textContent.trim();
+                        if (next && !next.classList.contains('fw-bold')) {
+                            const nextEvent = next.cells[0]?.textContent.trim();
+                            const nextTime = next.cells[1]?.textContent.trim();
+                            const nextDuration = next.cells[2]?.textContent.trim();
 
-                        // Match patterns like Login → Logout or Login → Start
-                        if (currEvent.toLowerCase() === 'login' &&
-                            (nextEvent.toLowerCase() === 'logout' || nextEvent.toLowerCase() === 'start')) {
+                            if (currEvent.toLowerCase() === 'login' &&
+                                (nextEvent.toLowerCase() === 'logout' || nextEvent.toLowerCase() === 'start')) {
 
-                            const mergedRow = document.createElement('tr');
-                            mergedRow.innerHTML = `
-                    <td>${currEvent} - ${nextEvent}</td>
-                    <td>${currTime} - ${nextTime}</td>
-                    <td>${currDuration} - ${nextDuration}</td>
-                `;
-                            mergedRows.push(mergedRow);
-                            i++; // skip next one, already merged
-                        } else {
-                            mergedRows.push(curr);
+                                const mergedRow = document.createElement('tr');
+                                mergedRow.innerHTML = `
+                        <td>${currEvent} - ${nextEvent}</td>
+                        <td>${currTime} - ${nextTime}</td>
+                        <td>${currDuration} - ${nextDuration}</td>
+                    `;
+                                mergedRows.push(mergedRow);
+                                i++; // Skip next row
+                                continue;
+                            }
                         }
+
+                        // Push single row if not merged
+                        mergedRows.push(curr.cloneNode(true));
                     }
 
-                    // Replace tbody content with merged rows
+                    // Clear body and append merged
                     tbody.innerHTML = '';
                     mergedRows.forEach(r => tbody.appendChild(r));
 
