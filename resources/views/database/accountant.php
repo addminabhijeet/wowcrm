@@ -1,9 +1,19 @@
 @extends('layout.layout')
-@php
-$title='Users Grid';
-$subTitle = 'Database';
 
+@php
+$title = 'Users Grid';
+$subTitle = 'Database';
+$script = '
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(function() {
+        $(".remove-item-btn").on("click", function() {
+            $(this).closest("tr").addClass("d-none");
+        });
+    });
+</script>';
 @endphp
+
 
 @section('content')
 
