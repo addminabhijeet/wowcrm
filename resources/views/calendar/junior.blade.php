@@ -214,36 +214,49 @@ $subTitle = 'Calendar';
 
 
 
-                    // --- UNIVERSAL MERGE SECTION (any consecutive pair like Start–Tea, Login–Logout, etc.) ---
+                    // --- MERGE & HIDE CONSECUTIVE DUPLICATE EVENTS ---
                     const tbody = modalBody.querySelector('tbody');
                     const allRows = Array.from(tbody.querySelectorAll('tr'));
                     let mergedRows = [];
+                    let prevEventName = '';
 
                     for (let i = 0; i < allRows.length; i++) {
                         const curr = allRows[i];
-                        const next = allRows[i + 1];
-
-                        if (!curr || curr.classList.contains('fw-bold')) continue; // skip total/summary rows
+                        if (!curr || curr.classList.contains('fw-bold')) continue; // skip totals
 
                         const currEvent = curr.cells[0]?.textContent.trim();
                         const currTime = curr.cells[1]?.textContent.trim();
                         const currDuration = curr.cells[2]?.textContent.trim();
 
+                        // Skip row if same as previous consecutive event
+                        if (currEvent === prevEventName) continue;
+
+                        const next = allRows[i + 1];
                         if (next && !next.classList.contains('fw-bold')) {
                             const nextEvent = next.cells[0]?.textContent.trim();
                             const nextTime = next.cells[1]?.textContent.trim();
                             const nextDuration = next.cells[2]?.textContent.trim();
 
-                            // Merge consecutive events
-                            const mergedRow = document.createElement('tr');
-                            mergedRow.innerHTML = `
+                            // Merge only if different event names
+                            if (currEvent !== nextEvent) {
+                                const mergedRow = document.createElement('tr');
+                                mergedRow.innerHTML = `
 <td>${currEvent}</td>
 <td>${currTime} - ${nextTime}</td>
-<td>${nextDuration}</td>`;
-                            mergedRows.push(mergedRow);
-                            i++; // skip next
+<td>${currDuration}</td>`;
+                                mergedRows.push(mergedRow);
+                            } else {
+                                // If same as next, merge times
+                                const mergedRow = document.createElement('tr');
+                                mergedRow.innerHTML = `
+<td>${currEvent}</td>
+<td>${currTime} - ${nextTime}</td>
+<td>${currDuration}</td>`;
+                                mergedRows.push(mergedRow);
+                                i++; // skip next as it's merged
+                            }
                         } else {
-                            // Single event (no pair)
+                            // Single event
                             const singleRow = document.createElement('tr');
                             singleRow.innerHTML = `
 <td>${currEvent}</td>
@@ -251,27 +264,14 @@ $subTitle = 'Calendar';
 <td>${currDuration}</td>`;
                             mergedRows.push(singleRow);
                         }
+
+                        prevEventName = currEvent; // update previous
                     }
 
                     // Clear & append merged
                     tbody.innerHTML = '';
                     mergedRows.forEach(r => tbody.appendChild(r));
 
-                    // --- HIDE CONSECUTIVE DUPLICATE EVENTS AFTER MERGE ---
-                    const finalRows = tbody.querySelectorAll('tr');
-                    let prevEventName = '';
-
-                    finalRows.forEach(row => {
-                        if (row.classList.contains('fw-bold')) return; // skip total/summary rows
-
-                        const eventName = row.cells[0]?.textContent.trim();
-
-                        if (eventName === prevEventName) {
-                            row.style.display = 'none'; // hide duplicate
-                        } else {
-                            prevEventName = eventName;
-                        }
-                    });
 
 
                     modal.show();
