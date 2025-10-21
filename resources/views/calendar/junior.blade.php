@@ -163,7 +163,7 @@ $subTitle = 'Calendar';
                     }
 
                     // --- Calculate 8-hour completion from first 'Start' event only ---
-                    let startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'start');
+                    let startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'Start');
                     let workSecFromStart = 0;
 
                     if (startIndex !== -1) {
