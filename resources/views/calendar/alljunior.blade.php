@@ -155,7 +155,7 @@ $subTitle = 'Calendar';
 <tr>
     <td>${event.title}</td>
     <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}${i < chronologicalEvents.length - 1 ? ' - ' + new Date(chronologicalEvents[i + 1].start).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : ''}</td>
-    <td>${formatTime(durationSec)}</td>
+    <td>${formatTime(durationSec)}:00</td>
 </tr>`;
                     }
 
@@ -238,11 +238,11 @@ $subTitle = 'Calendar';
 <div class="totals mt-3">
     <div class="d-flex justify-content-between fw-bold text-success">
         <span>Total Work Time:</span>
-        <span>${formatTime(elapsedSec)}</span>
+        <span>${formatTime(elapsedSec)}:00</span>
     </div>
     <div class="d-flex justify-content-between fw-bold text-primary">
         <span>Elapsed / Remaining:</span>
-        <span>${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</span>
+        <span>${formatTime(elapsedSec)}:00 / ${formatTime(remainingSec)}:00</span>
     </div>
 </div>`;
 
