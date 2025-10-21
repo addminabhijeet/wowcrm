@@ -1083,18 +1083,18 @@ $script ='<script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-$('#seniorUpdateForm').on('submit', e => {
-    e.preventDefault();
-    $.ajax({
-        url: e.target.action,         // uses form's action attribute
-        type: e.target.method,        // uses form's method attribute (POST/GET)
-        data: new FormData(e.target),
-        contentType: false,
-        processData: false,
-        success: r => r.success && location.reload(),
-        error: () => alert("Error while saving.")
+    $('#seniorUpdateForm').on('submit', e => {
+        e.preventDefault();
+        $.ajax({
+            url: e.target.action, // uses form's action attribute
+            type: e.target.method, // uses form's method attribute (POST/GET)
+            data: new FormData(e.target),
+            contentType: false,
+            processData: false,
+            success: r => r.success && location.reload(),
+            error: () => alert("Error while saving.")
+        });
     });
-});
 </script>
 
 @endsection
