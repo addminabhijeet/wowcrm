@@ -223,6 +223,7 @@ $subTitle = 'Calendar';
     </div>
 </div>
 `;
+                    // Hide duplicate event/time rows (existing logic)
                     const rows = modalBody.querySelectorAll('tbody tr');
                     for (let i = 1; i < rows.length - 2; i++) { // skip first and last total rows
                         const currEvent = rows[i].cells[0].textContent.trim();
@@ -230,11 +231,54 @@ $subTitle = 'Calendar';
                         const prevEvent = rows[i - 1].cells[0].textContent.trim();
                         const prevTime = rows[i - 1].cells[1].textContent.trim();
 
-                        // Hide if either Event or Time matches the previous row
                         if (currEvent === prevEvent || currTime === prevTime) {
                             rows[i].style.display = 'none';
                         }
                     }
+
+                    // --- NEW SECTION: Merge consecutive related events like Login-Logout, Login-Start ---
+                    const tbody = modalBody.querySelector('tbody');
+                    const allRows = Array.from(tbody.querySelectorAll('tr'));
+                    let mergedRows = [];
+
+                    for (let i = 0; i < allRows.length; i++) {
+                        const curr = allRows[i];
+                        const next = allRows[i + 1];
+
+                        if (!next) {
+                            mergedRows.push(curr);
+                            continue;
+                        }
+
+                        const currEvent = curr.cells[0]?.textContent.trim();
+                        const currTime = curr.cells[1]?.textContent.trim();
+                        const currDuration = curr.cells[2]?.textContent.trim();
+
+                        const nextEvent = next.cells[0]?.textContent.trim();
+                        const nextTime = next.cells[1]?.textContent.trim();
+                        const nextDuration = next.cells[2]?.textContent.trim();
+
+                        // Match patterns like Login → Logout or Login → Start
+                        if (currEvent.toLowerCase() === 'login' &&
+                            (nextEvent.toLowerCase() === 'logout' || nextEvent.toLowerCase() === 'start')) {
+
+                            const mergedRow = document.createElement('tr');
+                            mergedRow.innerHTML = `
+                    <td>${currEvent} - ${nextEvent}</td>
+                    <td>${currTime} - ${nextTime}</td>
+                    <td>${currDuration} - ${nextDuration}</td>
+                `;
+                            mergedRows.push(mergedRow);
+                            i++; // skip next one, already merged
+                        } else {
+                            mergedRows.push(curr);
+                        }
+                    }
+
+                    // Replace tbody content with merged rows
+                    tbody.innerHTML = '';
+                    mergedRows.forEach(r => tbody.appendChild(r));
+
                     modal.show();
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
