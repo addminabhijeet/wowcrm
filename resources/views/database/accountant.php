@@ -1,19 +1,13 @@
 @extends('layout.layout')
-
 @php
-$title = 'Users Grid';
+$title='Users Grid';
 $subTitle = 'Database';
-$script = '
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script>
-    $(function() {
-        $(".remove-item-btn").on("click", function() {
-            $(this).closest("tr").addClass("d-none");
-        });
+$script ='<script>
+    $(".remove-item-btn").on("click", function() {
+        $(this).closest("tr").addClass("d-none")
     });
 </script>';
 @endphp
-
 
 @section('content')
 
@@ -24,14 +18,10 @@ $script = '
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>10</option>
             </select>
-
-            <!-- Search Input -->
-            <form class="navbar-search position-relative" autocomplete="off">
-                <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control" placeholder="Search Name, Email, Phone">
+            <form class="navbar-search">
+                <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
-                <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
-
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>Status</option>
                 <option>Active</option>
@@ -39,8 +29,7 @@ $script = '
             </select>
         </div>
     </div>
-
-    <div class="card-body p-24" id="senior-table-wrapper">
+    <div class="card-body p-24">
         <div class="table-responsive scroll-sm">
             @if($data->isEmpty())
             <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
@@ -54,6 +43,7 @@ $script = '
                         <th scope="col">Email Address</th>
                         <th scope="col">Phone Number</th>
                         <th scope="col">Location</th>
+                        <th scope="col">Remark</th>
                         <th scope="col">Relocation</th>
                         <th scope="col">Graduation Date</th>
                         <th scope="col">Immigration</th>
@@ -63,7 +53,6 @@ $script = '
                         <th scope="col">Exe Remarks</th>
                         <th scope="col">1st Follow Up Remarks</th>
                         <th scope="col">Time Zone</th>
-                        <th scope="col">Forwarded By</th>
                         <th scope="col">View</th>
                         <th scope="col" class="text-center">Actions</th>
                     </tr>
@@ -76,8 +65,24 @@ $script = '
 
                         {{-- Date --}}
                         <td>
-                            <input type="text" class="form-control date-picker" data-key="Date"
-                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
+                            @php
+                            $dateValue = '';
+                            if (!empty($row->Date) && \Carbon\Carbon::hasFormat($row->Date, 'Y-m-d')) {
+                            $dateValue = \Carbon\Carbon::parse($row->Date)->format('m/d/Y');
+                            } elseif (!empty($row->Date)) {
+                            // Try to safely parse unknown format
+                            try {
+                            $dateValue = \Carbon\Carbon::parse($row->Date)->format('m/d/Y');
+                            } catch (\Exception $e) {
+                            $dateValue = '';
+                            }
+                            }
+                            @endphp
+
+                            <input type="text"
+                                class="form-control date-picker"
+                                data-key="Date"
+                                value="{{ $dateValue }}">
                         </td>
 
                         {{-- Name --}}
@@ -95,7 +100,7 @@ $script = '
                         {{-- Phone Number --}}
                         <td>
                             <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                maxlength="12" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
+                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
                         </td>
 
                         {{-- Location --}}
@@ -103,6 +108,13 @@ $script = '
                             <input type="text" class="form-control location-autocomplete" data-key="Location"
                                 value="{{ $row->Location ?? '' }}" placeholder="Type location">
                         </td>
+
+                        {{-- Remark --}}
+                        <td>
+                            <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                        </td>
+
 
                         {{-- Relocation --}}
                         <td>
@@ -119,13 +131,26 @@ $script = '
 
                         {{-- Graduation Date --}}
                         <td>
-                            <input type="text" class="form-control date-picker" data-key="Graduation Date"
-                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
+                            @php
+                            $gradDateValue = '';
+                            if (!empty($row->Graduation_Date)) {
+                            try {
+                            $gradDateValue = \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y');
+                            } catch (\Exception $e) {
+                            $gradDateValue = '';
+                            }
+                            }
+                            @endphp
+
+                            <input type="text"
+                                class="form-control date-picker"
+                                data-key="Graduation_Date"
+                                value="{{ $gradDateValue }}">
                         </td>
 
                         {{-- Immigration --}}
                         <td>
-                            @php $immOptions = ['Dependent Visa','Global Visa','Graduate Visa','Student Visa','Citizen','Permanent Residence(ILR)']; @endphp
+                            @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','HIB','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Immigration">
                                 <option value="">-- Select --</option>
                                 @foreach($immOptions as $option)
@@ -152,7 +177,7 @@ $script = '
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount !== null ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount">
+                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount(469)">
                         </td>
 
                         {{-- Qualification --}}
@@ -172,9 +197,10 @@ $script = '
                             </select>
                         </td>
 
+
                         {{-- Exe Remarks --}}
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Ready To Paid','Not Interested','Others','N/A','VM','Busy']; @endphp
+                            @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Connect','Others','N/A','VM','Busy']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                 <option value="">-- Select --</option>
                                 @foreach($exeOptions as $option)
@@ -198,8 +224,6 @@ $script = '
                             </select>
                         </td>
 
-
-
                         {{-- Time Zone --}}
                         <td>
                             @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
@@ -213,12 +237,6 @@ $script = '
                             </select>
                         </td>
 
-                        {{-- Forwarded By --}}
-                        <td>
-                            <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
-                                value="{{ $row->created_by ?? '' }}" placeholder="Forwarded By" readonly>
-                        </td>
-
                         {{-- View (Resume) --}}
                         <td>
                             <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
@@ -227,8 +245,8 @@ $script = '
                             </button>
 
                             @if(!empty($row->resume))
-                            <a href="{{ url('dashboard/senior/google-sheet/view-resume/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
-                            <a href="{{ url('dashboard/senior/google-sheet/download-resume/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download</a>
+                            <a href="{{ url('dashboard/junior/google-sheet/view-resume/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
+                            <a href="{{ url('dashboard/junior/google-sheet/download-resume/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download</a>
                             @else
                             <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
                             <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
@@ -308,9 +326,12 @@ $script = '
     document.addEventListener("DOMContentLoaded", function() {
         const tableBody = document.getElementById("sheet-table-body");
 
+
         const exeColors = {
             'Called & Mailed': '#d4edda',
             'Ready To Paid': '#d4edda',
+            'Not Connected': '#f8d7da',
+            'Did Not Pickup': '#d4edda',
             'Not Interested': '#f8d7da',
             'Others': '#d1ecf1',
             'N/A': '#e2e3e5',
@@ -318,13 +339,18 @@ $script = '
             'Busy': '#cce5ff'
         };
         const immColors = {
-            'Dependent Visa': '#d1ecf1',
-            'Global Visa': '#cce5ff',
-            'Graduate Visa': '#d4edda',
-            'Student Visa': '#fff3cd',
-            'Citizen': '#e2e3e5',
-            'Permanent Residence(ILR)': '#f8d7da'
+            'F1 CPT': '#d1ecf1',
+            'F1 OPT': '#cce5ff',
+            'STEM OPT': '#d4edda',
+            'HIB': '#fff3cd',
+            'B2': '#e2e3e5',
+            'B1': '#f8d7da',
+            'H4': '#ffe5b4',
+            'H4 EAD': '#e6ccff',
+            'GC/PR': '#d0f0c0',
+            'USC': '#f5c6cb'
         };
+
         const relColors = {
             'YES': '#d4edda',
             'NO': '#f8d7da'
@@ -476,10 +502,9 @@ $script = '
             }
         }
 
-
-
-
         function initDatePickers(context = document) {
+            const laravelToday = "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
+
             context.querySelectorAll('input.date-picker').forEach(input => {
                 const key = input.dataset.key;
                 const opts = {
@@ -492,9 +517,13 @@ $script = '
                         if (input.value) input.style.backgroundColor = dateColor;
                     }
                 };
-                if (key === "Graduation Date") opts.maxDate = "today";
-                if (key === "Date") opts.minDate = "today";
+
+                // ✅ Use Laravel's timezone-based today
+                if (key === "Graduation Date") opts.maxDate = laravelToday;
+                if (key === "Date") opts.minDate = laravelToday;
+
                 flatpickr(input, opts);
+
                 input.addEventListener('blur', function() {
                     if (input.value && !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(input.value)) {
                         input.style.backgroundColor = '#fff';
@@ -502,6 +531,7 @@ $script = '
                 });
             });
         }
+
 
         function initLocationAutocomplete(context = document) {
             $(context).find('input.location-autocomplete').each(function() {
@@ -600,7 +630,6 @@ $script = '
                     validateNameInput(i);
                 });
             });
-
         }
 
         function addBlankRow() {
@@ -618,17 +647,19 @@ $script = '
                 if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
                     let opts = [];
                     if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
-                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Ready To Paid', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
-                    if (k === 'Immigration') opts = ['Dependent Visa', 'Global Visa', 'Graduate Visa', 'Student Visa', 'Citizen', 'Permanent Residence(ILR)'];
+                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'];
+                    if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'HIB', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC'];
                     if (k === 'Relocation') opts = ['YES', 'NO'];
                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
                     if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
                     if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
                     cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
                 } else if (k === 'Amount') {
-                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount"></td>`;
+                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount(469)"></td>`;
                 } else if (k === 'Location') {
                     cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
+                } else if (k === 'Remark') {
+                    cells += `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
                 } else if (k === 'Date' || k === 'Graduation Date') {
                     cells += `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
                 } else if (k === 'Phone Number') {
@@ -637,8 +668,6 @@ $script = '
                     cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
                 } else if (k === 'Name') {
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                }else if (k === 'forwardedBy') {
-                    cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
                 } else if (k === 'View') {
                     cells += `<td>
                     <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
@@ -706,10 +735,10 @@ $script = '
                 // Determine URL and method
                 let url, method;
                 if (id === "new") {
-                    url = "{{ route('seniorstore') }}";
+                    url = "{{ route('juniorstore') }}";
                     method = "POST";
                 } else {
-                    url = "{{ route('seniorupdate') }}";
+                    url = "{{ route('juniorupdate') }}";
                     method = "POST";
                     formData.append("id", id);
                 }
@@ -742,12 +771,12 @@ $script = '
                                 const downloadBtn = row.querySelector('.download-btn');
 
                                 if (viewBtn && data.resume_path) {
-                                    viewBtn.href = `/dashboard/senior/google-sheet/view-resume/${data.id}`;
+                                    viewBtn.href = `/dashboard/junior/google-sheet/view-resume/${data.id}`;
                                     viewBtn.classList.remove('d-none');
                                 }
 
                                 if (downloadBtn && data.resume_path) {
-                                    downloadBtn.href = `/dashboard/senior/google-sheet/download-resume/${data.id}`;
+                                    downloadBtn.href = `/dashboard/junior/google-sheet/download-resume/${data.id}`;
                                     downloadBtn.classList.remove('d-none');
                                 }
 
@@ -835,161 +864,6 @@ $script = '
                 validateNameInput(e.target);
             }
         });
-    });
-</script>
-
-<style>
-    .input-hint {
-        font-size: .85rem;
-        color: #6c757d;
-    }
-
-    select.dynamic-dropdown {
-        min-width: 160px;
-    }
-
-    input.valid {
-        background-color: #d4edda;
-    }
-
-    input.invalid {
-        background-color: #f8d7da;
-    }
-
-    input.neutral {
-        background-color: #ffffff;
-    }
-
-    select.neutral {
-        background-color: #ffffff;
-    }
-
-    select.valid {
-        background-color: #d4edda;
-    }
-
-    .phone-hint,
-    .small-hint {
-        font-size: .8rem;
-        color: #6c757d;
-        display: block;
-        margin-top: 2px;
-    }
-</style>
-
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-<!-- AJAX Search + Suggestions + Pagination -->
-<script>
-    $(document).ready(function() {
-
-        // -----------------------------
-        // Helper: Debounce
-        // -----------------------------
-        function debounce(func, wait) {
-            let timeout;
-            return function() {
-                const context = this,
-                    args = arguments;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(context, args), wait);
-            };
-        }
-
-        // -----------------------------
-        // Fetch Table Data via AJAX
-        // -----------------------------
-        function fetchTable(search = '', page = 1) {
-            $.ajax({
-                url: "{{ route('google.sheet.senior') }}",
-                type: 'GET',
-                data: {
-                    search,
-                    page
-                },
-                success: function(res) {
-                    $('#senior-table-wrapper').html(res);
-                },
-                error: function(err) {
-                    console.error(err);
-                }
-            });
-        }
-
-        // -----------------------------
-        // Live Search Suggestions
-        // -----------------------------
-        const showSuggestions = debounce(function() {
-            const query = $('#senior-search').val().trim();
-            if (query.length < 3) {
-                $('#search-suggestions').empty().hide();
-                fetchTable(''); // reset table
-                return;
-            }
-
-            $.ajax({
-                url: "{{ route('senior.suggestions') }}",
-                type: 'GET',
-                data: {
-                    query
-                },
-                success: function(res) {
-                    let suggestions = '';
-                    if (res.length) {
-                        res.forEach(item => {
-                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
-                        });
-                    } else {
-                        suggestions = '<span class="list-group-item">No results found</span>';
-                    }
-                    $('#search-suggestions').html(suggestions).show();
-                }
-            });
-        }, 300);
-
-        $('#senior-search').on('input', showSuggestions);
-
-        // Click suggestion
-        $(document).on('click', '#search-suggestions a', function(e) {
-            e.preventDefault();
-            const rowId = $(this).data('id'); // get the row ID
-            $('#senior-search').val($(this).text());
-            $('#search-suggestions').empty().hide();
-
-            // Fetch only this row
-            $.ajax({
-                url: "{{ route('google.sheet.senior') }}",
-                type: 'GET',
-                data: {
-                    row_id: rowId
-                },
-                success: function(res) {
-                    $('#senior-table-wrapper').html(res);
-                },
-                error: function(err) {
-                    console.error(err);
-                }
-            });
-        });
-
-
-        // Pagination click
-        $(document).on('click', '.pagination a', function(e) {
-            e.preventDefault();
-            const page = $(this).attr('href').split('page=')[1];
-            const search = $('#senior-search').val();
-            fetchTable(search, page);
-        });
-
-        // Click outside suggestions
-        $(document).click(function(e) {
-            if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
-                $('#search-suggestions').empty().hide();
-            }
-        });
-
     });
 </script>
 
@@ -1234,5 +1108,22 @@ $script = '
         cursor: -webkit-grabbing;
     }
 </style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $('#seniorUpdateForm').on('submit', e => {
+        e.preventDefault();
+        $.ajax({
+            url: e.target.action, // uses form's action attribute
+            type: e.target.method, // uses form's method attribute (POST/GET)
+            data: new FormData(e.target),
+            contentType: false,
+            processData: false,
+            success: r => r.success && location.reload(),
+            error: () => alert("Error while saving.")
+        });
+    });
+</script>
 
 @endsection
