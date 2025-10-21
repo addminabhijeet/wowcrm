@@ -2036,16 +2036,47 @@ class GoogleSheetController extends Controller
     public function accountant()
     {
         $authUser = Auth::user();
-        $pattern = "%:" . $authUser->id . "|junior"; // will check last part
 
-        $data = GoogleSheetData::where(function ($q) use ($authUser, $pattern) {
-            $q->where('created_by', $authUser->id . '|junior') // exact match
-                ->orWhere('created_by', 'LIKE', $pattern);       // ends with :id|junior
+        // Build patterns for LIKE match
+        $userPattern = "%:" . $authUser->id . "|accountant";
+        $zeroPattern = "%:0|accountant";
+
+        $data = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+            // Direct match with "id|accountant"
+            $q->where('created_by', $authUser->id . '|accountant')
+                // Direct match with "0|accountant"
+                ->orWhere('created_by', '0|accountant')
+                // Matches if last part is ":id|accountant"
+                ->orWhere('created_by', 'LIKE', $userPattern)
+                // Matches if last part is ":0|accountant"
+                ->orWhere('created_by', 'LIKE', $zeroPattern);
         })
-            ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']) // ensures it's last part
-            ->orderBy('Date', 'desc') // ✅ sort by Date descending (latest first)
+            // Ensure it's truly the LAST part of created_by
+            ->where(function ($q) use ($authUser) {
+                $q->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|accountant', $authUser->id . '|accountant'])
+                    ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|accountant', '0|accountant']);
+            })
             ->paginate(10);
 
+        // Map forwarded_by dynamically
+        $data->getCollection()->transform(function ($item) use ($authUser) {
+            $parts = explode('|', $item->created_by ?? '');
+            $userId = $parts[0] ?? null;
+            $role   = $parts[1] ?? 'unknown';
+
+            if ($userId == $authUser->id) {
+                $forwardedBy = "SELF ({$userId}) ({$role})";
+            } elseif ($userId == 0) {
+                $forwardedBy = "SYSTEM (0) ({$role})";
+            } else {
+                $user = \App\Models\User::find($userId);
+                $name = $user ? $user->name : 'Unknown';
+                $forwardedBy = "{$name} ({$userId}) ({$role})";
+            }
+
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
 
         return view('database.accountant', compact('data'));
     }
