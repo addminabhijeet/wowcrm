@@ -233,7 +233,7 @@ $subTitle = 'Calendar';
                         }
                     }
 
-                    // --- NEW SECTION: strict merge (Login–Logout, Login–Start) ---
+                    // --- UNIVERSAL MERGE SECTION (any consecutive pair like Start–Tea, Login–Logout, etc.) ---
                     const tbody = modalBody.querySelector('tbody');
                     const allRows = Array.from(tbody.querySelectorAll('tr'));
                     let mergedRows = [];
@@ -242,7 +242,7 @@ $subTitle = 'Calendar';
                         const curr = allRows[i];
                         const next = allRows[i + 1];
 
-                        // Skip total rows
+                        // Skip total or summary rows
                         if (!curr || curr.classList.contains('fw-bold')) continue;
 
                         const currEvent = curr.cells[0]?.textContent.trim();
@@ -254,24 +254,27 @@ $subTitle = 'Calendar';
                             const nextTime = next.cells[1]?.textContent.trim();
                             const nextDuration = next.cells[2]?.textContent.trim();
 
-                            if (currEvent.toLowerCase() === 'login' &&
-                                (nextEvent.toLowerCase() === 'logout' || nextEvent.toLowerCase() === 'start')) {
-
-                                const mergedRow = document.createElement('tr');
-                                mergedRow.innerHTML = `
-                        <td>${currEvent} - ${nextEvent}</td>
-                        <td>${currTime} - ${nextTime}</td>
-                        <td>${currDuration} - ${nextDuration}</td>
-                    `;
-                                mergedRows.push(mergedRow);
-                                i++; // Skip next row
-                                continue;
-                            }
+                            // Merge ANY two consecutive events, except if next is a total row
+                            const mergedRow = document.createElement('tr');
+                            mergedRow.innerHTML = `
+            <td>${currEvent} - ${nextEvent}</td>
+            <td>${currTime} - ${nextTime}</td>
+            <td>${currDuration} - ${nextDuration}</td>
+        `;
+                            mergedRows.push(mergedRow);
+                            i++; // skip next row, already merged
+                        } else {
+                            // Last or unpaired event (no next)
+                            const singleRow = document.createElement('tr');
+                            singleRow.innerHTML = `
+            <td>${currEvent}</td>
+            <td>${currTime}</td>
+            <td>${currDuration}</td>
+        `;
+                            mergedRows.push(singleRow);
                         }
-
-                        // Push single row if not merged
-                        mergedRows.push(curr.cloneNode(true));
                     }
+
 
                     // Clear body and append merged
                     tbody.innerHTML = '';
