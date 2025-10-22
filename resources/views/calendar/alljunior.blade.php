@@ -147,9 +147,21 @@ $subTitle = 'Calendar';
                             lastPauseTime = null;
                         }
 
-                        // ✅ Calculate accurate duration until next event or end
                         let durationSec = 0;
                         const nextEvent = chronologicalEvents[i + 1];
+
+                        const currentStart = eTime;
+                        const currentEnd = event.end ? new Date(event.end) : null;
+
+                        if (currentEnd && currentEnd > currentStart) {
+                            durationSec = (currentEnd - currentStart) / 1000;
+                        } else if (nextEvent && nextEvent.start) {
+                            const nextStart = new Date(nextEvent.start);
+                            if (nextStart > currentStart) durationSec = (nextStart - currentStart) / 1000;
+                        } else {
+                            durationSec = 0;
+                        }
+
 
                         if (nextEvent) {
                             // Consider candidate times from the next event (start and end) and choose the earliest one that's after current start
