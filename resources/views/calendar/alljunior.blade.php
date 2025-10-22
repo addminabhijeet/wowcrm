@@ -107,27 +107,15 @@ $subTitle = 'Calendar';
 
                     const chronologicalEvents = [...eventsOnDate];
 
-                    // Find the event titled 'start' (case-insensitive)
                     const startEvent = chronologicalEvents.find(ev => ev.title.toLowerCase() === 'start');
 
                     const startTime = startEvent && startEvent.start ?
-                        (() => {
-                            const d = new Date(startEvent.start);
-                            const pad = (num) => String(num).padStart(2, '0');
-                            return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-                        })() :
+                        new Date(startEvent.start).toISOString().slice(11, 19) :
                         'null';
 
-
-                    const endEvent = chronologicalEvents[chronologicalEvents.length - 1];
-                    const endTime = endEvent && endEvent.end ?
-                        (() => {
-                            const d = new Date(endEvent.end);
-                            const pad = (num) => String(num).padStart(2, '0');
-                            return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
-                        })() :
+                    const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ?
+                        new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toISOString().slice(11, 19) :
                         'null';
-
 
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
@@ -143,7 +131,6 @@ $subTitle = 'Calendar';
                             lastPauseTime = null;
                         }
 
-                        // Work time = difference to previous event
                         if (i > 0) {
                             let prevTime = new Date(chronologicalEvents[i - 1].start);
                             workTime = (eTime - prevTime) / 1000;
@@ -151,7 +138,6 @@ $subTitle = 'Calendar';
                             totalWorkSec += workTime;
                         }
 
-                        // Calculate duration as difference to next event start if exists, else 0
                         let durationSec = 0;
                         if (i < chronologicalEvents.length - 1) {
                             const nextTime = new Date(chronologicalEvents[i + 1].start);
@@ -163,27 +149,11 @@ $subTitle = 'Calendar';
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${
-        (() => {
-            const pad = (num) => String(num).padStart(2, '0');
-
-            const currentStart = new Date(eTime);
-            let timeStr = `${pad(currentStart.getHours())}:${pad(currentStart.getMinutes())}:${pad(currentStart.getSeconds())}`;
-
-            if (i < chronologicalEvents.length - 1) {
-                const nextStart = new Date(chronologicalEvents[i + 1].start);
-                timeStr += ` - ${pad(nextStart.getHours())}:${pad(nextStart.getMinutes())}:${pad(nextStart.getSeconds())}`;
-            }
-
-            return timeStr;
-        })()
-    }</td>
+    <td>${eTime.toISOString().slice(11, 19)}${i < chronologicalEvents.length - 1 ? ' - ' + new Date(chronologicalEvents[i + 1].start).toISOString().slice(11, 19) : ''}</td>
     <td>${formatTime(durationSec)}</td>
-</tr>
-`;
+</tr>`;
                     }
 
-                    // --- Calculate 8-hour completion from first 'Start' event only ---
                     let startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'start');
                     let workSecFromStart = 0;
 
@@ -195,14 +165,12 @@ $subTitle = 'Calendar';
                             const eTime = new Date(event.start);
                             const type = (event.extendedProps.pause_type || '').toLowerCase();
 
-                            // Handle inactive/resume for break calculation
                             if (type === 'inactive') lastPauseTimeFromStart = eTime;
                             else if ((type === 'resume' || type === 'running') && lastPauseTimeFromStart) {
-                                workSecFromStart += (eTime - lastPauseTimeFromStart) / 1000; // add break time
+                                workSecFromStart += (eTime - lastPauseTimeFromStart) / 1000;
                                 lastPauseTimeFromStart = null;
                             }
 
-                            // Work time = difference to previous event (after 'Start')
                             if (i > startIndex) {
                                 const prevTime = new Date(chronologicalEvents[i - 1].start);
                                 let sec = (eTime - prevTime) / 1000;
@@ -270,7 +238,6 @@ $subTitle = 'Calendar';
     </div>
 </div>`;
 
-                    // --- MERGE & SHOW ONLY FIRST AND LAST TIME FOR CONSECUTIVE DUPLICATE EVENTS ---
                     const tbody = modalBody.querySelector('tbody');
                     const allRows = Array.from(tbody.querySelectorAll('tr'));
                     let mergedRows = [];
@@ -289,7 +256,6 @@ $subTitle = 'Calendar';
                         let firstTime = currTime.split(' - ')[0];
                         let lastTime = currTime.split(' - ').pop();
 
-                        // Check consecutive duplicates
                         let j = i + 1;
                         while (j < allRows.length) {
                             const next = allRows[j];
@@ -300,12 +266,11 @@ $subTitle = 'Calendar';
                             const nextTime = nextTimeRaw.split(' - ').pop();
 
                             if (nextEvent === currEvent) {
-                                lastTime = nextTime; // extend last time
+                                lastTime = nextTime;
                                 j++;
                             } else break;
                         }
 
-                        // Create merged row
                         const mergedRow = document.createElement('tr');
                         mergedRow.innerHTML = `
 <td>${currEvent}</td>
@@ -314,12 +279,11 @@ $subTitle = 'Calendar';
                         mergedRows.push(mergedRow);
 
                         prevEventName = currEvent;
-                        i = j - 1; // skip processed rows
+                        i = j - 1;
                     }
 
                     tbody.innerHTML = '';
                     mergedRows.forEach(r => tbody.appendChild(r));
-
 
                     modal.show();
                 } else {
@@ -328,7 +292,7 @@ $subTitle = 'Calendar';
             }
         });
 
-        calendar.render()
+        calendar.render();
 
         function highlightUnderworkedDays(calendar) {
             const allEvents = calendar.getEvents();
@@ -367,7 +331,6 @@ $subTitle = 'Calendar';
             });
         }
 
-
         function generateDailyPDF(events, dateStr) {
             const {
                 jsPDF
@@ -379,10 +342,7 @@ $subTitle = 'Calendar';
 
             let y = 30;
             events.forEach(ev => {
-                const time = new Date(ev.start).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+                const time = new Date(ev.start).toISOString().slice(11, 19);
                 doc.setFontSize(12);
                 doc.text(`${time} - ${ev.title} (${ev.extendedProps.status})`, 10, y);
                 y += 10;
@@ -402,11 +362,8 @@ $subTitle = 'Calendar';
 
             let y = 30;
             events.forEach(ev => {
-                const date = new Date(ev.start).toLocaleDateString();
-                const time = new Date(ev.start).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+                const date = new Date(ev.start).toISOString().split('T')[0];
+                const time = new Date(ev.start).toISOString().slice(11, 19);
                 doc.setFontSize(12);
                 doc.text(`${date} ${time} - ${ev.title} (${ev.extendedProps.status})`, 10, y);
                 y += 10;
@@ -418,7 +375,6 @@ $subTitle = 'Calendar';
 
             doc.save(`Monthly_Report.pdf`);
         }
-
     });
 </script>
 
