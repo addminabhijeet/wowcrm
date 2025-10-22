@@ -134,7 +134,7 @@ $subTitle = 'Calendar';
                         const type = (event.extendedProps.pause_type || '').toLowerCase();
                         const title = (event.title || '').toLowerCase();
 
-                        if (['start', 'resume', 'running'].includes(title)) {
+                        if (['login', 'logout', 'start', 'resume', 'running'].includes(title)) {
                             // Duration = difference to next event or event.end
                             let durationSec = 0;
                             const eTime = new Date(event.start);
