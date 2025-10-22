@@ -98,7 +98,7 @@ $subTitle = 'Calendar';
                 const eventsOnDate = calendar.getEvents().filter(e => e.startStr.slice(0, 10) === info.dateStr);
 
                 // Sort earliest first
-                eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
+                eventsOnDate.sort((a, b) => a.startStr.localeCompare(b.startStr));
 
                 if (eventsOnDate.length > 0) {
                     let totalBreakSec = 0;
@@ -113,38 +113,38 @@ $subTitle = 'Calendar';
 
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
-                        const eTime = new Date(event.start);
+                        const eTimeStr = event.startStr; // exact DB time string
                         const type = (event.extendedProps.pause_type || '').toLowerCase();
                         let breakTime = 0,
                             workTime = 0;
 
-                        if (type === 'inactive') lastPauseTime = eTime;
+                        if (type === 'inactive') lastPauseTime = eTimeStr;
                         else if ((type === 'resume' || type === 'running') && lastPauseTime) {
-                            breakTime = (eTime - lastPauseTime) / 1000;
+                            // compute break in seconds if needed
+                            breakTime = (new Date(eTimeStr) - new Date(lastPauseTime)) / 1000;
                             totalBreakSec += breakTime;
                             lastPauseTime = null;
                         }
 
                         if (i > 0) {
-                            const prevTime = new Date(chronologicalEvents[i - 1].start);
-                            workTime = (eTime - prevTime) / 1000;
+                            const prevTimeStr = chronologicalEvents[i - 1].startStr;
+                            workTime = (new Date(eTimeStr) - new Date(prevTimeStr)) / 1000;
                             if (workTime < 0) workTime = 0;
                             totalWorkSec += workTime;
                         }
 
                         let durationSec = 0;
                         if (i < chronologicalEvents.length - 1) {
-                            const nextTime = new Date(chronologicalEvents[i + 1].start);
-                            durationSec = Math.max(0, (nextTime - eTime) / 1000);
+                            const nextTimeStr = chronologicalEvents[i + 1].startStr;
+                            durationSec = Math.max(0, (new Date(nextTimeStr) - new Date(eTimeStr)) / 1000);
                         } else if (event.end) {
-                            durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
+                            durationSec = Math.max(0, (new Date(event.end) - new Date(eTimeStr)) / 1000);
                         }
 
-                        // Use raw event.startStr for exact database time
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${event.startStr}</td>
+    <td>${eTimeStr}</td>
     <td>${formatTime(durationSec)}</td>
 </tr>`;
                     }
@@ -158,18 +158,18 @@ $subTitle = 'Calendar';
 
                         for (let i = startIndex; i < chronologicalEvents.length; i++) {
                             const event = chronologicalEvents[i];
-                            const eTime = new Date(event.start);
+                            const eTimeStr = event.startStr;
                             const type = (event.extendedProps.pause_type || '').toLowerCase();
 
-                            if (type === 'inactive') lastPauseTimeFromStart = eTime;
+                            if (type === 'inactive') lastPauseTimeFromStart = eTimeStr;
                             else if ((type === 'resume' || type === 'running') && lastPauseTimeFromStart) {
-                                workSecFromStart += (eTime - lastPauseTimeFromStart) / 1000;
+                                workSecFromStart += (new Date(eTimeStr) - new Date(lastPauseTimeFromStart)) / 1000;
                                 lastPauseTimeFromStart = null;
                             }
 
                             if (i > startIndex) {
-                                const prevTime = new Date(chronologicalEvents[i - 1].start);
-                                let sec = (eTime - prevTime) / 1000;
+                                const prevTimeStr = chronologicalEvents[i - 1].startStr;
+                                let sec = (new Date(eTimeStr) - new Date(prevTimeStr)) / 1000;
                                 if (sec < 0) sec = 0;
                                 workSecFromStart += sec;
                             }
@@ -239,6 +239,7 @@ $subTitle = 'Calendar';
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
             }
+
 
 
 
