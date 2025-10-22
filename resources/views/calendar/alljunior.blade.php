@@ -152,29 +152,34 @@ $subTitle = 'Calendar';
                         const nextEvent = chronologicalEvents[i + 1];
 
                         if (nextEvent) {
-                            // Use next event's *start or end* whichever makes sense
+                            // Consider candidate times from the next event (start and end) and choose the earliest one that's after current start
+                            const candidates = [];
                             const nextStart = nextEvent.start ? new Date(nextEvent.start) : null;
                             const nextEnd = nextEvent.end ? new Date(nextEvent.end) : null;
+                            if (nextStart) candidates.push(nextStart);
+                            if (nextEnd) candidates.push(nextEnd);
 
-                            // Choose whichever is valid and later than current
-                            let nextTime = nextStart && nextStart > eTime ? nextStart : nextEnd;
+                            // Also consider current event's own end as a fallback candidate
+                            const eventEnd = event.end ? new Date(event.end) : null;
+                            if (eventEnd) candidates.push(eventEnd);
 
-                            // If still invalid or same timestamp, skip same-time events
-                            if (nextTime && nextTime > eTime) {
-                                durationSec = (nextTime - eTime) / 1000;
+                            // Filter candidates to those strictly after eTime
+                            const validCandidates = candidates.filter(t => t && t > eTime);
+
+                            if (validCandidates.length > 0) {
+                                // pick the earliest valid candidate
+                                let earliest = validCandidates.reduce((a, b) => (a < b ? a : b));
+                                durationSec = (earliest - eTime) / 1000;
                             } else {
-                                // try fallback to event.end if exists
-                                if (event.end && new Date(event.end) > eTime) {
-                                    durationSec = (new Date(event.end) - eTime) / 1000;
-                                } else {
-                                    durationSec = 0;
-                                }
+                                // No valid candidate after eTime; duration remains 0
+                                durationSec = 0;
                             }
                         } else if (event.end) {
                             // last event with valid end time
-                            durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
+                            const evEnd = new Date(event.end);
+                            if (evEnd > eTime) durationSec = (evEnd - eTime) / 1000;
+                            else durationSec = 0;
                         }
-
 
                         // ✅ Add only active work duration to total work seconds
                         if (
@@ -197,10 +202,20 @@ $subTitle = 'Calendar';
             if (!nextEvent) return '';
             const nextStart = nextEvent.start ? new Date(nextEvent.start) : null;
             const nextEnd = nextEvent.end ? new Date(nextEvent.end) : null;
-            const nextTime = (nextStart && nextStart > eTime) ? nextStart : nextEnd;
-            return nextTime && nextTime > eTime
-                ? ' - ' + nextTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
-                : '';
+            // choose the earliest time from nextStart/nextEnd that is after eTime
+            const candidates = [];
+            if (nextStart) candidates.push(nextStart);
+            if (nextEnd) candidates.push(nextEnd);
+            const valid = candidates.filter(t => t && t > eTime);
+            if (valid.length === 0) {
+                // fallback to current event end if present and after eTime
+                if (event.end && new Date(event.end) > eTime) {
+                    return ' - ' + new Date(event.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                }
+                return '';
+            }
+            const chosen = valid.reduce((a, b) => (a < b ? a : b));
+            return ' - ' + chosen.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
         })()
     }
 </td>
@@ -326,6 +341,7 @@ $subTitle = 'Calendar';
         });
 
         calendar.render()
+
 
         function highlightUnderworkedDays(calendar) {
             const allEvents = calendar.getEvents();
