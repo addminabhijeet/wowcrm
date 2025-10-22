@@ -152,7 +152,7 @@ class CalendarController extends Controller
     {
         // ✅ Fetch the junior user
         $junior = User::where('id', $userId)
-           
+            ->where('role', 'junior')
             ->first();
 
         if (!$junior) {
