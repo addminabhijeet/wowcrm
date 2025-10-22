@@ -117,13 +117,16 @@ $subTitle = 'Calendar';
                             second: '2-digit'
                         }) :
                         'null';
-                    const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ?
-                        new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toLocaleTimeString([], {
+                    // Find the last 'Logout' event
+                    const logoutEvent = [...chronologicalEvents].reverse().find(ev => ev.title.toLowerCase() === 'logout');
+                    const endTime = logoutEvent && logoutEvent.start ?
+                        new Date(logoutEvent.start).toLocaleTimeString([], {
                             hour: '2-digit',
                             minute: '2-digit',
                             second: '2-digit'
                         }) :
                         'null';
+
 
                     // Build table rows with duration calculation
                     for (let i = 0; i < chronologicalEvents.length; i++) {
