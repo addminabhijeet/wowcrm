@@ -108,20 +108,8 @@ $subTitle = 'Calendar';
 
                     const chronologicalEvents = [...eventsOnDate];
 
-                    const startTime = chronologicalEvents[0].start ?
-                        new Date(chronologicalEvents[0].start).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
-                        }) :
-                        'null';
-                    const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ?
-                        new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
-                        }) :
-                        'null';
+                    const startTime = chronologicalEvents[0].startStr || 'null';
+                    const endTime = chronologicalEvents[chronologicalEvents.length - 1].endStr || 'null';
 
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
@@ -137,15 +125,13 @@ $subTitle = 'Calendar';
                             lastPauseTime = null;
                         }
 
-                        // Work time = difference to previous event
                         if (i > 0) {
-                            let prevTime = new Date(chronologicalEvents[i - 1].start);
+                            const prevTime = new Date(chronologicalEvents[i - 1].start);
                             workTime = (eTime - prevTime) / 1000;
                             if (workTime < 0) workTime = 0;
                             totalWorkSec += workTime;
                         }
 
-                        // Calculate duration as difference to next event start if exists, else 0
                         let durationSec = 0;
                         if (i < chronologicalEvents.length - 1) {
                             const nextTime = new Date(chronologicalEvents[i + 1].start);
@@ -154,16 +140,17 @@ $subTitle = 'Calendar';
                             durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
                         }
 
+                        // Use raw event.startStr for exact database time
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}</td>
+    <td>${event.startStr}</td>
     <td>${formatTime(durationSec)}</td>
 </tr>`;
                     }
 
                     // --- Calculate 8-hour completion from first 'Start' event only ---
-                    let startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'start');
+                    const startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'start');
                     let workSecFromStart = 0;
 
                     if (startIndex !== -1) {
@@ -252,6 +239,7 @@ $subTitle = 'Calendar';
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
             }
+
 
 
         });
