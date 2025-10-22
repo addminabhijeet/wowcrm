@@ -38,6 +38,7 @@ $subTitle = 'Calendar';
                 <h1 class="modal-title fs-5" id="eventModalLabel">
                     Events on <span id="modalDate"></span>
                 </h1>
+
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-24" id="modalBody"></div>
@@ -155,6 +156,7 @@ $subTitle = 'Calendar';
                             activeWorkSec += durationSec;
                         }
                     }
+
 
                     // Build table rows (original code)
                     for (let i = 0; i < chronologicalEvents.length; i++) {
@@ -447,6 +449,10 @@ $subTitle = 'Calendar';
     .fc-daygrid-day:hover {
         cursor: pointer;
         background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .fc .fc-button {
+        padding: 0.2em 0.65em !important;
     }
 </style>
 @endsection
