@@ -119,13 +119,15 @@ $subTitle = 'Calendar';
                         'null';
 
 
-                    const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ?
-                        new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
-                        }) :
+                    const endEvent = chronologicalEvents[chronologicalEvents.length - 1];
+                    const endTime = endEvent && endEvent.end ?
+                        (() => {
+                            const d = new Date(endEvent.end);
+                            const pad = (num) => String(num).padStart(2, '0');
+                            return `${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+                        })() :
                         'null';
+
 
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
@@ -161,9 +163,24 @@ $subTitle = 'Calendar';
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}${i < chronologicalEvents.length - 1 ? ' - ' + new Date(chronologicalEvents[i + 1].start).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : ''}</td>
+    <td>${
+        (() => {
+            const pad = (num) => String(num).padStart(2, '0');
+
+            const currentStart = new Date(eTime);
+            let timeStr = `${pad(currentStart.getHours())}:${pad(currentStart.getMinutes())}:${pad(currentStart.getSeconds())}`;
+
+            if (i < chronologicalEvents.length - 1) {
+                const nextStart = new Date(chronologicalEvents[i + 1].start);
+                timeStr += ` - ${pad(nextStart.getHours())}:${pad(nextStart.getMinutes())}:${pad(nextStart.getSeconds())}`;
+            }
+
+            return timeStr;
+        })()
+    }</td>
     <td>${formatTime(durationSec)}</td>
-</tr>`;
+</tr>
+`;
                     }
 
                     // --- Calculate 8-hour completion from first 'Start' event only ---
