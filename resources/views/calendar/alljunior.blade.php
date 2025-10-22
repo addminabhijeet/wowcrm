@@ -95,84 +95,101 @@ $subTitle = 'Calendar';
                 modalDate.textContent = info.dateStr;
                 modalBody.innerHTML = '';
 
-                // filter events that start on this date
                 const eventsOnDate = calendar.getEvents().filter(e => e.startStr.slice(0, 10) === info.dateStr);
 
-                // Sort by actual Date (earliest first)
+                // Sort earliest first
                 eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
 
                 if (eventsOnDate.length > 0) {
+                    let totalBreakSec = 0;
+                    let totalWorkSec = 0;
+                    let lastPauseTime = null;
                     let tableRows = '';
 
                     const chronologicalEvents = [...eventsOnDate];
 
-                    // Compute human-friendly summary start/end (use local time)
-                    const firstEvent = chronologicalEvents[0];
-                    const lastEvent = chronologicalEvents[chronologicalEvents.length - 1];
+                    // Find the first 'Start' event
+                    const startEvent = chronologicalEvents.find(ev => ev.title.toLowerCase() === 'start');
+                    const startTime = startEvent && startEvent.start ?
+                        new Date(startEvent.start).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        }) :
+                        'null';
+                    // Find the last 'Logout' event
+                    const logoutEvent = [...chronologicalEvents].reverse().find(ev => ev.title.toLowerCase() === 'logout');
+                    const endTime = logoutEvent && logoutEvent.start ?
+                        new Date(logoutEvent.start).toLocaleTimeString([], {
+                            hour: '2-digit',
+                            minute: '2-digit',
+                            second: '2-digit'
+                        }) :
+                        'null';
 
-                    const startTime = firstEvent.start ? new Date(firstEvent.start).toLocaleString() : 'null';
-                    // if last event has an end, use it; otherwise fall back to its start
-                    const endTime = (lastEvent.end ? new Date(lastEvent.end) : new Date(lastEvent.start)).toLocaleString();
-
-                    // Helper to format time-of-day HH:MM:SS from an ISO/start value in local timezone
-                    const fmtTimeOfDay = (iso) => {
-                        if (!iso) return '';
-                        return new Date(iso).toLocaleTimeString('en-GB', {
-                            hour12: false
-                        });
-                    };
-
+                    // --- Active work calculation: only Start + Resume/Running, exclude Tea, Break, Lunch ---
+                    let activeWorkSec = 0;
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
-                        const eTimeStr = event.startStr;
-                        let durationSec = 0;
+                        const type = (event.extendedProps.pause_type || '').toLowerCase();
+                        const title = (event.title || '').toLowerCase();
 
+                        if (['start', 'resume', 'running'].includes(title)) {
+                            // Duration = difference to next event or event.end
+                            let durationSec = 0;
+                            const eTime = new Date(event.start);
+                            if (i < chronologicalEvents.length - 1) {
+                                const nextTime = new Date(chronologicalEvents[i + 1].start);
+                                durationSec = Math.max(0, (nextTime - eTime) / 1000);
+                            } else if (event.end) {
+                                durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
+                            }
+                            activeWorkSec += durationSec;
+                        }
+                    }
+
+                    // Build table rows (original code)
+                    for (let i = 0; i < chronologicalEvents.length; i++) {
+                        const event = chronologicalEvents[i];
+                        const eTime = new Date(event.start);
+                        const type = (event.extendedProps.pause_type || '').toLowerCase();
+                        let breakTime = 0,
+                            workTime = 0;
+
+                        if (type === 'inactive') lastPauseTime = eTime;
+                        else if ((type === 'resume' || type === 'running') && lastPauseTime) {
+                            breakTime = (eTime - lastPauseTime) / 1000;
+                            totalBreakSec += breakTime;
+                            lastPauseTime = null;
+                        }
+
+                        if (i > 0) {
+                            let prevTime = new Date(chronologicalEvents[i - 1].start);
+                            workTime = (eTime - prevTime) / 1000;
+                            if (workTime < 0) workTime = 0;
+                            totalWorkSec += workTime;
+                        }
+
+                        let durationSec = 0;
                         if (i < chronologicalEvents.length - 1) {
-                            const nextTimeStr = chronologicalEvents[i + 1].startStr;
-                            durationSec = Math.max(0, (new Date(nextTimeStr) - new Date(eTimeStr)) / 1000);
+                            const nextTime = new Date(chronologicalEvents[i + 1].start);
+                            durationSec = Math.max(0, (nextTime - eTime) / 1000);
                         } else if (event.end) {
-                            durationSec = Math.max(0, (new Date(event.end) - new Date(eTimeStr)) / 1000);
+                            durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
                         }
 
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${fmtTimeOfDay(eTimeStr)}</td>
+    <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}${i < chronologicalEvents.length - 1 ? ' - ' + new Date(chronologicalEvents[i + 1].start).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : ''}</td>
     <td>${formatTime(durationSec)}</td>
 </tr>`;
                     }
 
-                    // --- Calculate 8-hour completion from first 'Start' event only ---
-                    const startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'start');
-                    let workSecFromStart = 0;
-
-                    if (startIndex !== -1) {
-                        let lastPauseTimeFromStart = null;
-
-                        for (let i = startIndex; i < chronologicalEvents.length; i++) {
-                            const event = chronologicalEvents[i];
-                            const eTimeStr = event.startStr;
-                            const type = (event.extendedProps.pause_type || '').toLowerCase();
-
-                            if (type === 'inactive') lastPauseTimeFromStart = eTimeStr;
-                            else if ((type === 'resume' || type === 'running') && lastPauseTimeFromStart) {
-                                workSecFromStart += (new Date(eTimeStr) - new Date(lastPauseTimeFromStart)) / 1000;
-                                lastPauseTimeFromStart = null;
-                            }
-
-                            if (i > startIndex) {
-                                const prevTimeStr = chronologicalEvents[i - 1].startStr;
-                                let sec = (new Date(eTimeStr) - new Date(prevTimeStr)) / 1000;
-                                if (sec < 0) sec = 0;
-                                workSecFromStart += sec;
-                            }
-                        }
-                    }
-
                     const targetSec = 8 * 3600;
-                    const elapsedSec = workSecFromStart;
-                    const remainingSec = Math.max(targetSec - workSecFromStart, 0);
-                    const completed = workSecFromStart >= targetSec ? "✅ Yes" : "❌ No";
+                    const elapsedSec = activeWorkSec; // only active work
+                    const remainingSec = Math.max(targetSec - activeWorkSec, 0);
+                    const completed = activeWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
                     tableRows += `
 <tr class="fw-bold text-success">
@@ -227,13 +244,62 @@ $subTitle = 'Calendar';
     </div>
 </div>`;
 
+                    // --- Merge consecutive duplicates (original code)
+                    const tbody = modalBody.querySelector('tbody');
+                    const allRows = Array.from(tbody.querySelectorAll('tr'));
+                    let mergedRows = [];
+
+                    for (let i = 0; i < allRows.length; i++) {
+                        const curr = allRows[i];
+                        if (!curr || curr.classList.contains('fw-bold')) continue;
+
+                        const currEvent = curr.cells[0]?.textContent.trim();
+                        let currTime = curr.cells[1]?.textContent.trim();
+                        let currDuration = parseTimeToSeconds(curr.cells[2]?.textContent.trim());
+
+                        let firstTime = currTime.split(' - ')[0];
+                        let lastTime = currTime.split(' - ').pop();
+
+                        let j = i + 1;
+                        while (j < allRows.length) {
+                            const next = allRows[j];
+                            if (!next || next.classList.contains('fw-bold')) break;
+
+                            const nextEvent = next.cells[0]?.textContent.trim();
+                            const nextDuration = parseTimeToSeconds(next.cells[2]?.textContent.trim());
+                            const nextTime = next.cells[1]?.textContent.trim().split(' - ').pop();
+
+                            if (nextEvent === currEvent) {
+                                lastTime = nextTime;
+                                currDuration += nextDuration;
+                                j++;
+                            } else break;
+                        }
+
+                        const mergedRow = document.createElement('tr');
+                        mergedRow.innerHTML = `
+<td>${currEvent}</td>
+<td>${firstTime} - ${lastTime}</td>
+<td>${formatTime(currDuration)}</td>`;
+                        mergedRows.push(mergedRow);
+                        i = j - 1;
+                    }
+
+                    tbody.innerHTML = '';
+                    mergedRows.forEach(r => tbody.appendChild(r));
+
                     modal.show();
+
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
+
+                function parseTimeToSeconds(timeStr) {
+                    if (!timeStr) return 0;
+                    const parts = timeStr.split(':').map(Number);
+                    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+                }
             }
-
-
 
 
         });
