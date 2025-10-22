@@ -127,7 +127,28 @@ $subTitle = 'Calendar';
                         }) :
                         'null';
 
-                    // Build table rows with duration calculation
+                    // --- Active work calculation: only Start + Resume/Running, exclude Tea, Break, Lunch ---
+                    let activeWorkSec = 0;
+                    for (let i = 0; i < chronologicalEvents.length; i++) {
+                        const event = chronologicalEvents[i];
+                        const type = (event.extendedProps.pause_type || '').toLowerCase();
+                        const title = (event.title || '').toLowerCase();
+
+                        if (['start', 'resume', 'running'].includes(title)) {
+                            // Duration = difference to next event or event.end
+                            let durationSec = 0;
+                            const eTime = new Date(event.start);
+                            if (i < chronologicalEvents.length - 1) {
+                                const nextTime = new Date(chronologicalEvents[i + 1].start);
+                                durationSec = Math.max(0, (nextTime - eTime) / 1000);
+                            } else if (event.end) {
+                                durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
+                            }
+                            activeWorkSec += durationSec;
+                        }
+                    }
+
+                    // Build table rows (original code)
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
                         const eTime = new Date(event.start);
@@ -142,7 +163,6 @@ $subTitle = 'Calendar';
                             lastPauseTime = null;
                         }
 
-                        // Work time = difference to previous event
                         if (i > 0) {
                             let prevTime = new Date(chronologicalEvents[i - 1].start);
                             workTime = (eTime - prevTime) / 1000;
@@ -150,7 +170,6 @@ $subTitle = 'Calendar';
                             totalWorkSec += workTime;
                         }
 
-                        // Duration = difference to next event start, or event.end
                         let durationSec = 0;
                         if (i < chronologicalEvents.length - 1) {
                             const nextTime = new Date(chronologicalEvents[i + 1].start);
@@ -165,22 +184,6 @@ $subTitle = 'Calendar';
     <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}${i < chronologicalEvents.length - 1 ? ' - ' + new Date(chronologicalEvents[i + 1].start).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : ''}</td>
     <td>${formatTime(durationSec)}</td>
 </tr>`;
-                    }
-
-                    // --- Calculate active work time (Resume / Running only, exclude Start, Tea, Lunch, Break) ---
-                    let activeWorkSec = 0;
-                    for (let i = 0; i < chronologicalEvents.length; i++) {
-                        const event = chronologicalEvents[i];
-                        const type = (event.extendedProps.pause_type || '').toLowerCase();
-                        const title = (event.title || '').toLowerCase();
-
-                        // Only count Resume or Running events
-                        if (type === 'resume' || type === 'running') {
-                            let startTime = new Date(event.start);
-                            let endTime = event.end ? new Date(event.end) : (i < chronologicalEvents.length - 1 ? new Date(chronologicalEvents[i + 1].start) : startTime);
-                            let diffSec = Math.max(0, (endTime - startTime) / 1000);
-                            activeWorkSec += diffSec;
-                        }
                     }
 
                     const targetSec = 8 * 3600;
@@ -241,7 +244,7 @@ $subTitle = 'Calendar';
     </div>
 </div>`;
 
-                    // --- MERGE CONSECUTIVE DUPLICATE EVENTS AND SUM DURATIONS ---
+                    // --- Merge consecutive duplicates (original code)
                     const tbody = modalBody.querySelector('tbody');
                     const allRows = Array.from(tbody.querySelectorAll('tr'));
                     let mergedRows = [];
@@ -257,7 +260,6 @@ $subTitle = 'Calendar';
                         let firstTime = currTime.split(' - ')[0];
                         let lastTime = currTime.split(' - ').pop();
 
-                        // Merge consecutive duplicates
                         let j = i + 1;
                         while (j < allRows.length) {
                             const next = allRows[j];
@@ -269,7 +271,7 @@ $subTitle = 'Calendar';
 
                             if (nextEvent === currEvent) {
                                 lastTime = nextTime;
-                                currDuration += nextDuration; // sum durations
+                                currDuration += nextDuration;
                                 j++;
                             } else break;
                         }
@@ -292,14 +294,12 @@ $subTitle = 'Calendar';
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
 
-                // Helper to convert HH:MM:SS to seconds
                 function parseTimeToSeconds(timeStr) {
                     if (!timeStr) return 0;
                     const parts = timeStr.split(':').map(Number);
                     return parts[0] * 3600 + parts[1] * 60 + parts[2];
                 }
             }
-
 
 
         });
