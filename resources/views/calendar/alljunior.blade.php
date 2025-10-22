@@ -199,7 +199,7 @@ $subTitle = 'Calendar';
                     tableRows += `
 <tr class="fw-bold text-success">
     <td colspan="2" class="text-end">Total</td>
-    <td>${formatTime(elapsedSec)}</td>
+    <td>${formatTime(totalWorkSec)}</td>
 </tr>
 <tr class="fw-bold text-primary">
     <td colspan="2" class="text-end">Elapsed / Remaining</td>
@@ -212,7 +212,7 @@ $subTitle = 'Calendar';
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
             <strong>8 Hours Completed:</strong>
-            <span class="badge ${elapsedSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">${completed}</span>
+            <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">${completed}</span>
         </div>
         <div>
             <strong>Start Time:</strong>
