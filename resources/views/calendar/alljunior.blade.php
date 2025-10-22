@@ -120,7 +120,6 @@ $subTitle = 'Calendar';
 
                         if (type === 'inactive') lastPauseTime = eTimeStr;
                         else if ((type === 'resume' || type === 'running') && lastPauseTime) {
-                            // compute break in seconds if needed
                             breakTime = (new Date(eTimeStr) - new Date(lastPauseTime)) / 1000;
                             totalBreakSec += breakTime;
                             lastPauseTime = null;
@@ -141,13 +140,15 @@ $subTitle = 'Calendar';
                             durationSec = Math.max(0, (new Date(event.end) - new Date(eTimeStr)) / 1000);
                         }
 
+                        // ✅ Show only HH:MM:SS instead of full ISO date
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${eTimeStr}</td>
+    <td>${new Date(eTimeStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</td>
     <td>${formatTime(durationSec)}</td>
 </tr>`;
                     }
+
 
                     // --- Calculate 8-hour completion from first 'Start' event only ---
                     const startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'start');
