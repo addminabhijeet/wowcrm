@@ -137,15 +137,7 @@ $subTitle = 'Calendar';
                             lastPauseTime = null;
                         }
 
-                        // Work time = difference to previous event
-                        if (i > 0) {
-                            let prevTime = new Date(chronologicalEvents[i - 1].start);
-                            workTime = (eTime - prevTime) / 1000;
-                            if (workTime < 0) workTime = 0;
-                            totalWorkSec += workTime;
-                        }
-
-                        // Calculate duration as difference to next event start if exists, else 0
+                        // ✅ Calculate accurate work time until next event (if not a pause)
                         let durationSec = 0;
                         if (i < chronologicalEvents.length - 1) {
                             const nextTime = new Date(chronologicalEvents[i + 1].start);
@@ -154,47 +146,24 @@ $subTitle = 'Calendar';
                             durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
                         }
 
+                        // ✅ Add only active work duration to total work seconds
+                        if (type !== 'inactive' && event.title.toLowerCase() !== 'break' && event.title.toLowerCase() !== 'tea' && event.title.toLowerCase() !== 'lunch') {
+                            totalWorkSec += durationSec;
+                        }
+
                         tableRows += `
 <tr>
     <td>${event.title}</td>
     <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}${i < chronologicalEvents.length - 1 ? ' - ' + new Date(chronologicalEvents[i + 1].start).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : ''}</td>
-    <td>${formatTime(durationSec)}:00</td>
+    <td>${formatTime(durationSec)}</td>
 </tr>`;
                     }
 
-                    // --- Calculate 8-hour completion from first 'Start' event only ---
-                    let startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'Start');
-                    let workSecFromStart = 0;
-
-                    if (startIndex !== -1) {
-                        let lastPauseTimeFromStart = null;
-
-                        for (let i = startIndex; i < chronologicalEvents.length; i++) {
-                            const event = chronologicalEvents[i];
-                            const eTime = new Date(event.start);
-                            const type = (event.extendedProps.pause_type || '').toLowerCase();
-
-                            // Handle inactive/resume for break calculation
-                            if (type === 'inactive') lastPauseTimeFromStart = eTime;
-                            else if ((type === 'resume' || type === 'running') && lastPauseTimeFromStart) {
-                                workSecFromStart += (eTime - lastPauseTimeFromStart) / 1000; // add break time
-                                lastPauseTimeFromStart = null;
-                            }
-
-                            // Work time = difference to previous event (after 'Start')
-                            if (i > startIndex) {
-                                const prevTime = new Date(chronologicalEvents[i - 1].start);
-                                let sec = (eTime - prevTime) / 1000;
-                                if (sec < 0) sec = 0;
-                                workSecFromStart += sec;
-                            }
-                        }
-                    }
-
+                    // ✅ Calculate correct total/elapsed/remaining times
                     const targetSec = 8 * 3600;
-                    const elapsedSec = workSecFromStart;
-                    const remainingSec = Math.max(targetSec - workSecFromStart, 0);
-                    const completed = workSecFromStart >= targetSec ? "✅ Yes" : "❌ No";
+                    const elapsedSec = totalWorkSec;
+                    const remainingSec = Math.max(targetSec - totalWorkSec, 0);
+                    const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
                     tableRows += `
 <tr class="fw-bold text-success">
@@ -241,13 +210,14 @@ $subTitle = 'Calendar';
 <div class="totals mt-3">
     <div class="d-flex justify-content-between fw-bold text-success">
         <span>Total Work Time:</span>
-        <span>${formatTime(elapsedSec)}:00</span>
+        <span>${formatTime(elapsedSec)}</span>
     </div>
     <div class="d-flex justify-content-between fw-bold text-primary">
         <span>Elapsed / Remaining:</span>
-        <span>${formatTime(elapsedSec)}:00 / ${formatTime(remainingSec)}:00</span>
+        <span>${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</span>
     </div>
 </div>`;
+
 
                     // --- MERGE & SHOW ONLY FIRST AND LAST TIME FOR CONSECUTIVE DUPLICATE EVENTS ---
                     const tbody = modalBody.querySelector('tbody');
