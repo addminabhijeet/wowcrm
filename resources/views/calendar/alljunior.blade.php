@@ -110,32 +110,19 @@ $subTitle = 'Calendar';
                     // Find the event titled 'start' (case-insensitive)
                     const startEvent = chronologicalEvents.find(ev => ev.title.toLowerCase() === 'start');
 
-                    const startTime = startEvent && startEvent.start ?
-                        new Date(startEvent.start).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
-                        }) :
-                        'null';
-
-                    const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ?
-                        new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toLocaleTimeString([], {
-                            hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
-                        }) :
-                        'null';
+                    const startTime = startEvent && startEvent.start ? event.start : 'null';
+                    const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ? chronologicalEvents[chronologicalEvents.length - 1].end : 'null';
 
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
-                        const eTime = new Date(event.start);
+                        const eTime = event.start;
                         const type = (event.extendedProps.pause_type || '').toLowerCase();
                         let breakTime = 0,
                             workTime = 0;
 
                         if (type === 'inactive') lastPauseTime = eTime;
                         else if ((type === 'resume' || type === 'running') && lastPauseTime) {
-                            breakTime = (eTime - lastPauseTime) / 1000;
+                            breakTime = (new Date(eTime) - new Date(lastPauseTime)) / 1000;
                             totalBreakSec += breakTime;
                             lastPauseTime = null;
                         }
@@ -143,7 +130,7 @@ $subTitle = 'Calendar';
                         // Work time = difference to previous event
                         if (i > 0) {
                             let prevTime = new Date(chronologicalEvents[i - 1].start);
-                            workTime = (eTime - prevTime) / 1000;
+                            workTime = (new Date(eTime) - prevTime) / 1000;
                             if (workTime < 0) workTime = 0;
                             totalWorkSec += workTime;
                         }
@@ -152,15 +139,15 @@ $subTitle = 'Calendar';
                         let durationSec = 0;
                         if (i < chronologicalEvents.length - 1) {
                             const nextTime = new Date(chronologicalEvents[i + 1].start);
-                            durationSec = Math.max(0, (nextTime - eTime) / 1000);
+                            durationSec = Math.max(0, (nextTime - new Date(eTime)) / 1000);
                         } else if (event.end) {
-                            durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
+                            durationSec = Math.max(0, (new Date(event.end) - new Date(eTime)) / 1000);
                         }
 
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}${i < chronologicalEvents.length - 1 ? ' - ' + new Date(chronologicalEvents[i + 1].start).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : ''}</td>
+    <td>${eTime}${i < chronologicalEvents.length - 1 ? ' - ' + chronologicalEvents[i + 1].start : ''}</td>
     <td>${formatTime(durationSec)}</td>
 </tr>`;
                     }
@@ -256,7 +243,6 @@ $subTitle = 'Calendar';
                     const tbody = modalBody.querySelector('tbody');
                     const allRows = Array.from(tbody.querySelectorAll('tr'));
                     let mergedRows = [];
-                    let prevEventName = '';
 
                     for (let i = 0; i < allRows.length; i++) {
                         const curr = allRows[i];
@@ -282,26 +268,22 @@ $subTitle = 'Calendar';
                             const nextTime = nextTimeRaw.split(' - ').pop();
 
                             if (nextEvent === currEvent) {
-                                lastTime = nextTime; // extend last time
+                                lastTime = nextTime;
                                 j++;
                             } else break;
                         }
 
-                        // Create merged row
                         const mergedRow = document.createElement('tr');
                         mergedRow.innerHTML = `
 <td>${currEvent}</td>
 <td>${firstTime} - ${lastTime}</td>
 <td>${currDuration}</td>`;
                         mergedRows.push(mergedRow);
-
-                        prevEventName = currEvent;
-                        i = j - 1; // skip processed rows
+                        i = j - 1;
                     }
 
                     tbody.innerHTML = '';
                     mergedRows.forEach(r => tbody.appendChild(r));
-
 
                     modal.show();
                 } else {
@@ -310,7 +292,7 @@ $subTitle = 'Calendar';
             }
         });
 
-        calendar.render()
+        calendar.render();
 
         function highlightUnderworkedDays(calendar) {
             const allEvents = calendar.getEvents();
@@ -349,7 +331,6 @@ $subTitle = 'Calendar';
             });
         }
 
-
         function generateDailyPDF(events, dateStr) {
             const {
                 jsPDF
@@ -361,10 +342,7 @@ $subTitle = 'Calendar';
 
             let y = 30;
             events.forEach(ev => {
-                const time = new Date(ev.start).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+                const time = ev.start;
                 doc.setFontSize(12);
                 doc.text(`${time} - ${ev.title} (${ev.extendedProps.status})`, 10, y);
                 y += 10;
@@ -384,11 +362,8 @@ $subTitle = 'Calendar';
 
             let y = 30;
             events.forEach(ev => {
-                const date = new Date(ev.start).toLocaleDateString();
-                const time = new Date(ev.start).toLocaleTimeString([], {
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
+                const date = ev.start.split('T')[0];
+                const time = ev.start;
                 doc.setFontSize(12);
                 doc.text(`${date} ${time} - ${ev.title} (${ev.extendedProps.status})`, 10, y);
                 y += 10;
@@ -403,6 +378,7 @@ $subTitle = 'Calendar';
 
     });
 </script>
+
 
 <style>
     .calendar-legend {
