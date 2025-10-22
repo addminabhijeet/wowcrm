@@ -127,7 +127,6 @@ $subTitle = 'Calendar';
                         }) :
                         'null';
 
-
                     // Build table rows with duration calculation
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
@@ -168,9 +167,9 @@ $subTitle = 'Calendar';
 </tr>`;
                     }
 
-                    // --- Calculate elapsed & remaining work time from first 'Start' ---
+                    // --- Calculate elapsed & remaining work time from first 'Start' excluding its duration ---
                     let startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'start');
-                    let workSecFromStart = 0;
+                    let activeWorkSec = 0;
 
                     if (startIndex !== -1) {
                         let lastPauseTimeFromStart = null;
@@ -181,38 +180,21 @@ $subTitle = 'Calendar';
 
                             if (type === 'inactive') lastPauseTimeFromStart = eTime;
                             else if ((type === 'resume' || type === 'running') && lastPauseTimeFromStart) {
-                                workSecFromStart += (eTime - lastPauseTimeFromStart) / 1000;
+                                activeWorkSec += (eTime - lastPauseTimeFromStart) / 1000;
                                 lastPauseTimeFromStart = null;
                             }
 
-                            if (i > startIndex) {
+                            if (i > startIndex && type !== 'start') { // exclude first Start duration
                                 const prevTime = new Date(chronologicalEvents[i - 1].start);
                                 let sec = (eTime - prevTime) / 1000;
                                 if (sec < 0) sec = 0;
-                                workSecFromStart += sec;
-                            }
-                        }
-                    }
-
-                    // --- Calculate active work time (Start + Resume), ignoring initial login/start gaps ---
-                    let activeWorkSec = 0;
-                    for (let i = 0; i < chronologicalEvents.length; i++) {
-                        const event = chronologicalEvents[i];
-                        const type = (event.extendedProps.pause_type || '').toLowerCase();
-                        const title = event.title.toLowerCase();
-
-                        if (title === 'start' || title === 'resume' || title === 'running') {
-                            let prevTime = i > 0 ? new Date(chronologicalEvents[i - 1].start) : null;
-                            let currTime = new Date(event.start);
-
-                            if (prevTime && currTime > prevTime) {
-                                activeWorkSec += (currTime - prevTime) / 1000;
+                                activeWorkSec += sec;
                             }
                         }
                     }
 
                     const targetSec = 8 * 3600;
-                    const elapsedSec = activeWorkSec;
+                    const elapsedSec = activeWorkSec; // only active work
                     const remainingSec = Math.max(targetSec - activeWorkSec, 0);
                     const completed = activeWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
@@ -327,6 +309,7 @@ $subTitle = 'Calendar';
                     return parts[0] * 3600 + parts[1] * 60 + parts[2];
                 }
             }
+
 
         });
 
