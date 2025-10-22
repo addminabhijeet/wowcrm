@@ -235,23 +235,16 @@ class CalendarController extends Controller
         return view('calendar.senior', compact('view', 'date'));
     }
 
-    public function SeniorEvents(Request $request, $userId)
+    public function SeniorEvents(Request $request)
     {
-        // ✅ Fetch the senior user
-        $senior = User::where('id', $userId)
-            ->where('role', 'senior') // optional, if you want to restrict to senior role
-            ->first();
+        $userId = Auth::id();
 
-        if (!$senior) {
-            return response()->json(['error' => 'Senior user not found'], 404);
-        }
-
-        // ✅ Fetch all events for this senior (latest first)
-        $events = UserTimerPause::where('user_id', $senior->id)
-            ->orderBy('event_time', 'desc')
+        // Fetch events sorted by latest first
+        $events = UserTimerPause::where('user_id', $userId)
+            ->orderBy('event_time', 'desc')  // <-- Latest events first
             ->get();
 
-        // ✅ Define color mapping for clarity
+        // Define color mapping for clarity
         $labelColors = [
             'start'  => '#007bff',
             'resume' => '#28a745',
@@ -260,7 +253,6 @@ class CalendarController extends Controller
             'other'  => '#6c757d'
         ];
 
-        // ✅ Format event data for FullCalendar
         $eventsData = $events->map(function ($event) use ($labelColors) {
             $type = strtolower($event->pause_type ?? 'other');
 
