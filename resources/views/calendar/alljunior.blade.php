@@ -62,11 +62,15 @@ $subTitle = 'Calendar';
             const hrs = Math.floor(seconds / 3600);
             const mins = Math.floor((seconds % 3600) / 60);
             const secs = seconds % 60;
+
+            // Pad with leading zero if needed
             const hh = String(hrs).padStart(2, '0');
             const mm = String(mins).padStart(2, '0');
             const ss = String(secs).padStart(2, '0');
+
             return `${hh}:${mm}:${ss}`;
         }
+
 
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
@@ -91,6 +95,8 @@ $subTitle = 'Calendar';
             datesSet: function() {
                 highlightUnderworkedDays(calendar);
             },
+
+
             dateClick: function(info) {
                 modalDate.textContent = info.dateStr;
                 modalBody.innerHTML = '';
@@ -106,8 +112,9 @@ $subTitle = 'Calendar';
                     let lastPauseTime = null;
                     let tableRows = '';
 
-                    const chronologicalEvents = [...eventsOnDate];
+                    const chronologicalEvents = [...eventsOnDate]; // earliest first
 
+                    // Set start and end times
                     const startTime = chronologicalEvents[0].start ?
                         new Date(chronologicalEvents[0].start).toLocaleTimeString([], {
                             hour: '2-digit',
@@ -130,35 +137,28 @@ $subTitle = 'Calendar';
                         let breakTime = 0,
                             workTime = 0;
 
-                        if (type === 'inactive') lastPauseTime = eTime;
-                        else if ((type === 'resume' || type === 'running') && lastPauseTime) {
-                            breakTime = (eTime - lastPauseTime) / 1000;
+                        if (type === 'inactive') {
+                            lastPauseTime = eTime;
+                        } else if ((type === 'resume' || type === 'running') && lastPauseTime) {
+                            // Calculate break
+                            breakTime = (eTime - lastPauseTime) / 1000; // seconds
                             totalBreakSec += breakTime;
                             lastPauseTime = null;
                         }
 
-                        // Work time = difference to previous event
+                        // Work time = difference to previous event minus break
                         if (i > 0) {
                             let prevTime = new Date(chronologicalEvents[i - 1].start);
-                            workTime = (eTime - prevTime) / 1000;
+                            workTime = (eTime - prevTime) / 1000; // seconds
                             if (workTime < 0) workTime = 0;
                             totalWorkSec += workTime;
-                        }
-
-                        // Calculate duration as difference to next event start if exists, else 0
-                        let durationSec = 0;
-                        if (i < chronologicalEvents.length - 1) {
-                            const nextTime = new Date(chronologicalEvents[i + 1].start);
-                            durationSec = Math.max(0, (nextTime - eTime) / 1000);
-                        } else if (event.end) {
-                            durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
                         }
 
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}${i < chronologicalEvents.length - 1 ? ' - ' + new Date(chronologicalEvents[i + 1].start).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : ''}</td>
-    <td>${formatTime(durationSec)}</td>
+    <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'})}</td>
+    <td>${formatTime(workTime)}</td>
 </tr>`;
                     }
 
@@ -167,6 +167,7 @@ $subTitle = 'Calendar';
                     const remainingSec = Math.max(targetSec - totalWorkSec, 0);
                     const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
+                    // Add total rows
                     tableRows += `
 <tr class="fw-bold text-success">
     <td colspan="2" class="text-end">Total</td>
@@ -220,6 +221,8 @@ $subTitle = 'Calendar';
     </div>
 </div>`;
 
+
+
                     // --- MERGE & HIDE CONSECUTIVE DUPLICATE EVENTS ---
                     const tbody = modalBody.querySelector('tbody');
                     const allRows = Array.from(tbody.querySelectorAll('tr'));
@@ -228,12 +231,13 @@ $subTitle = 'Calendar';
 
                     for (let i = 0; i < allRows.length; i++) {
                         const curr = allRows[i];
-                        if (!curr || curr.classList.contains('fw-bold')) continue;
+                        if (!curr || curr.classList.contains('fw-bold')) continue; // skip totals
 
                         const currEvent = curr.cells[0]?.textContent.trim();
                         const currTime = curr.cells[1]?.textContent.trim();
                         const currDuration = curr.cells[2]?.textContent.trim();
 
+                        // Skip row if same as previous consecutive event
                         if (currEvent === prevEventName) continue;
                         if (currEvent === 'Resumebreak') continue;
 
@@ -243,14 +247,26 @@ $subTitle = 'Calendar';
                             const nextTime = next.cells[1]?.textContent.trim();
                             const nextDuration = next.cells[2]?.textContent.trim();
 
-                            const mergedRow = document.createElement('tr');
-                            mergedRow.innerHTML = `
+                            // Merge only if different event names
+                            if (currEvent !== nextEvent) {
+                                const mergedRow = document.createElement('tr');
+                                mergedRow.innerHTML = `
 <td>${currEvent}</td>
-<td>${currTime}${currEvent !== nextEvent ? '' : ' - ' + nextTime}</td>
+<td>${currTime} - ${nextTime}</td>
 <td>${currDuration}</td>`;
-                            mergedRows.push(mergedRow);
-                            if (currEvent === nextEvent) i++; // skip next if merged
+                                mergedRows.push(mergedRow);
+                            } else {
+                                // If same as next, merge times
+                                const mergedRow = document.createElement('tr');
+                                mergedRow.innerHTML = `
+<td>${currEvent}</td>
+<td>${currTime} - ${nextTime}</td>
+<td>${currDuration}</td>`;
+                                mergedRows.push(mergedRow);
+                                i++; // skip next as it's merged
+                            }
                         } else {
+                            // Single event
                             const singleRow = document.createElement('tr');
                             singleRow.innerHTML = `
 <td>${currEvent}</td>
@@ -259,20 +275,25 @@ $subTitle = 'Calendar';
                             mergedRows.push(singleRow);
                         }
 
-                        prevEventName = currEvent;
+                        prevEventName = currEvent; // update previous
                     }
 
+                    // Clear & append merged
                     tbody.innerHTML = '';
                     mergedRows.forEach(r => tbody.appendChild(r));
+
+
 
                     modal.show();
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
             }
+
+
         });
 
-        calendar.render()
+        calendar.render();
 
         function highlightUnderworkedDays(calendar) {
             const allEvents = calendar.getEvents();
