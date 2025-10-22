@@ -133,6 +133,7 @@ $subTitle = 'Calendar';
                         const type = (event.extendedProps.pause_type || '').toLowerCase();
                         let durationSec = 0;
 
+                        // Track breaks
                         if (type === 'inactive') {
                             lastPauseTime = eTime;
                         } else if ((type === 'resume' || type === 'running') && lastPauseTime) {
@@ -140,38 +141,29 @@ $subTitle = 'Calendar';
                             lastPauseTime = null;
                         }
 
+                        // --- NEW: Simplified duration calculation ---
+                        let endTimeCandidate = event.end ? new Date(event.end) : null;
                         const nextEvent = chronologicalEvents[i + 1];
-                        const candidates = [];
-                        if (nextEvent) {
-                            if (nextEvent.start) candidates.push(new Date(nextEvent.start));
-                            if (nextEvent.end) candidates.push(new Date(nextEvent.end));
+                        if (!endTimeCandidate && nextEvent && nextEvent.start) {
+                            endTimeCandidate = new Date(nextEvent.start);
                         }
-                        if (event.end) candidates.push(new Date(event.end));
-
-                        const validCandidates = candidates.filter(t => t && t > eTime);
-                        if (validCandidates.length > 0) {
-                            const earliest = validCandidates.reduce((a, b) => a < b ? a : b);
-                            durationSec = (earliest - eTime) / 1000;
+                        if (endTimeCandidate && endTimeCandidate > eTime) {
+                            durationSec = (endTimeCandidate - eTime) / 1000;
                         }
+                        // ------------------------------------------
 
                         // Only count active work time
                         if (type !== 'inactive' && !['break', 'tea', 'lunch'].includes(event.title.toLowerCase())) {
                             totalWorkSec += durationSec;
                         }
 
-                        const displayEnd = (() => {
-                            if (validCandidates.length > 0) return ' - ' + new Date(validCandidates[0]).toLocaleTimeString([], {
+                        const displayEnd = endTimeCandidate ?
+                            ' - ' + endTimeCandidate.toLocaleTimeString([], {
                                 hour: '2-digit',
                                 minute: '2-digit',
                                 second: '2-digit'
-                            });
-                            if (event.end) return ' - ' + new Date(event.end).toLocaleTimeString([], {
-                                hour: '2-digit',
-                                minute: '2-digit',
-                                second: '2-digit'
-                            });
-                            return '';
-                        })();
+                            }) :
+                            '';
 
                         tableRows += `
 <tr>
@@ -180,6 +172,7 @@ $subTitle = 'Calendar';
     <td>${formatTimeSeconds(durationSec)}</td>
 </tr>`;
                     }
+
 
                     // Totals
                     const targetSec = 8 * 3600;
