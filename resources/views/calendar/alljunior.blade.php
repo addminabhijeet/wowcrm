@@ -249,62 +249,12 @@ $subTitle = 'Calendar';
     </div>
 </div>`;
 
-                    // --- MERGE & SHOW ONLY FIRST AND LAST TIME FOR CONSECUTIVE DUPLICATE EVENTS ---
-                    const tbody = modalBody.querySelector('tbody');
-                    const allRows = Array.from(tbody.querySelectorAll('tr'));
-                    let mergedRows = [];
-                    let prevEventName = '';
-
-                    for (let i = 0; i < allRows.length; i++) {
-                        const curr = allRows[i];
-                        if (!curr || curr.classList.contains('fw-bold')) continue;
-
-                        const currEvent = curr.cells[0]?.textContent.trim();
-                        const currTime = curr.cells[1]?.textContent.trim();
-                        const currDuration = curr.cells[2]?.textContent.trim();
-
-                        if (currEvent === 'Resumebreak') continue;
-
-                        let firstTime = currTime.split(' - ')[0];
-                        let lastTime = currTime.split(' - ').pop();
-
-                        // Check consecutive duplicates
-                        let j = i + 1;
-                        while (j < allRows.length) {
-                            const next = allRows[j];
-                            if (!next || next.classList.contains('fw-bold')) break;
-
-                            const nextEvent = next.cells[0]?.textContent.trim();
-                            const nextTimeRaw = next.cells[1]?.textContent.trim();
-                            const nextTime = nextTimeRaw.split(' - ').pop();
-
-                            if (nextEvent === currEvent) {
-                                lastTime = nextTime; // extend last time
-                                j++;
-                            } else break;
-                        }
-
-                        // Create merged row
-                        const mergedRow = document.createElement('tr');
-                        mergedRow.innerHTML = `
-<td>${currEvent}</td>
-<td>${firstTime} - ${lastTime}</td>
-<td>${currDuration}</td>`;
-                        mergedRows.push(mergedRow);
-
-                        prevEventName = currEvent;
-                        i = j - 1; // skip processed rows
-                    }
-
-                    tbody.innerHTML = '';
-                    mergedRows.forEach(r => tbody.appendChild(r));
-
-
                     modal.show();
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
             }
+
         });
 
         calendar.render()
