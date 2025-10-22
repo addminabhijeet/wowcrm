@@ -97,6 +97,16 @@ $subTitle = 'Calendar';
                 // Sort earliest first
                 eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
 
+                // ✅ Helper for proper HH:MM:SS formatting
+                function formatTimeSeconds(sec) {
+                    sec = Number(sec) || 0;
+                    sec = Math.max(0, Math.round(sec));
+                    const h = Math.floor(sec / 3600);
+                    const m = Math.floor((sec % 3600) / 60);
+                    const s = sec % 60;
+                    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
+                }
+
                 if (eventsOnDate.length > 0) {
                     let totalBreakSec = 0;
                     let totalWorkSec = 0;
@@ -137,7 +147,7 @@ $subTitle = 'Calendar';
                             lastPauseTime = null;
                         }
 
-                        // ✅ Calculate accurate work time until next event (if not a pause)
+                        // ✅ Calculate accurate duration until next event
                         let durationSec = 0;
                         if (i < chronologicalEvents.length - 1) {
                             const nextTime = new Date(chronologicalEvents[i + 1].start);
@@ -147,7 +157,12 @@ $subTitle = 'Calendar';
                         }
 
                         // ✅ Add only active work duration to total work seconds
-                        if (type !== 'inactive' && event.title.toLowerCase() !== 'break' && event.title.toLowerCase() !== 'tea' && event.title.toLowerCase() !== 'lunch') {
+                        if (
+                            type !== 'inactive' &&
+                            event.title.toLowerCase() !== 'break' &&
+                            event.title.toLowerCase() !== 'tea' &&
+                            event.title.toLowerCase() !== 'lunch'
+                        ) {
                             totalWorkSec += durationSec;
                         }
 
@@ -155,11 +170,11 @@ $subTitle = 'Calendar';
 <tr>
     <td>${event.title}</td>
     <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}${i < chronologicalEvents.length - 1 ? ' - ' + new Date(chronologicalEvents[i + 1].start).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : ''}</td>
-    <td>${formatTime(durationSec)}</td>
+    <td>${formatTimeSeconds(durationSec)}</td>
 </tr>`;
                     }
 
-                    // ✅ Calculate correct total/elapsed/remaining times
+                    // ✅ Calculate total / elapsed / remaining times correctly
                     const targetSec = 8 * 3600;
                     const elapsedSec = totalWorkSec;
                     const remainingSec = Math.max(targetSec - totalWorkSec, 0);
@@ -168,11 +183,11 @@ $subTitle = 'Calendar';
                     tableRows += `
 <tr class="fw-bold text-success">
     <td colspan="2" class="text-end">Total</td>
-    <td>${formatTime(elapsedSec)}</td>
+    <td>${formatTimeSeconds(elapsedSec)}</td>
 </tr>
 <tr class="fw-bold text-primary">
     <td colspan="2" class="text-end">Elapsed / Remaining</td>
-    <td colspan="2">${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</td>
+    <td colspan="2">${formatTimeSeconds(elapsedSec)} / ${formatTimeSeconds(remainingSec)}</td>
 </tr>`;
 
                     modalBody.innerHTML = `
@@ -210,14 +225,13 @@ $subTitle = 'Calendar';
 <div class="totals mt-3">
     <div class="d-flex justify-content-between fw-bold text-success">
         <span>Total Work Time:</span>
-        <span>${formatTime(elapsedSec)}</span>
+        <span>${formatTimeSeconds(elapsedSec)}</span>
     </div>
     <div class="d-flex justify-content-between fw-bold text-primary">
         <span>Elapsed / Remaining:</span>
-        <span>${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</span>
+        <span>${formatTimeSeconds(elapsedSec)} / ${formatTimeSeconds(remainingSec)}</span>
     </div>
 </div>`;
-
 
                     // --- MERGE & SHOW ONLY FIRST AND LAST TIME FOR CONSECUTIVE DUPLICATE EVENTS ---
                     const tbody = modalBody.querySelector('tbody');
@@ -269,12 +283,12 @@ $subTitle = 'Calendar';
                     tbody.innerHTML = '';
                     mergedRows.forEach(r => tbody.appendChild(r));
 
-
                     modal.show();
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
             }
+
         });
 
         calendar.render()
