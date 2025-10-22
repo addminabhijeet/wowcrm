@@ -147,19 +147,19 @@ $subTitle = 'Calendar';
                             lastPauseTime = null;
                         }
 
+                        // ✅ Correct duration calculation
                         let durationSec = 0;
                         const nextEvent = chronologicalEvents[i + 1];
-
                         const currentStart = eTime;
                         const currentEnd = event.end ? new Date(event.end) : null;
 
                         if (currentEnd && currentEnd > currentStart) {
+                            // Use current event's end if exists
                             durationSec = (currentEnd - currentStart) / 1000;
                         } else if (nextEvent && nextEvent.start) {
+                            // fallback to next event's start if end missing
                             const nextStart = new Date(nextEvent.start);
                             if (nextStart > currentStart) durationSec = (nextStart - currentStart) / 1000;
-                        } else {
-                            durationSec = 0;
                         }
 
 
