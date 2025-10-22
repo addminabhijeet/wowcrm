@@ -62,6 +62,15 @@ $subTitle = 'Calendar';
             return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}`;
         }
 
+        function formatTimeSeconds(sec) {
+            sec = Number(sec) || 0;
+            sec = Math.max(0, Math.round(sec));
+            const h = Math.floor(sec / 3600);
+            const m = Math.floor((sec % 3600) / 60);
+            const s = sec % 60;
+            return `${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+        }
+
         const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             headerToolbar: {
@@ -70,14 +79,11 @@ $subTitle = 'Calendar';
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
             events: "{{ route('calendar.allJuniorEvents', ['userId' => $junior->id]) }}",
-
             displayEventTime: false,
             displayEventEnd: false,
-            eventContent: function() {
-                return {
-                    domNodes: []
-                };
-            },
+            eventContent: () => ({
+                domNodes: []
+            }),
             eventDidMount: function(info) {
                 info.el.remove();
                 const cell = info.el.closest('.fc-daygrid-day');
@@ -86,7 +92,6 @@ $subTitle = 'Calendar';
             datesSet: function() {
                 highlightUnderworkedDays(calendar);
             },
-
 
             dateClick: function(info) {
                 modalDate.textContent = info.dateStr;
@@ -97,16 +102,6 @@ $subTitle = 'Calendar';
                 // Sort earliest first
                 eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
 
-                // ✅ Helper for proper HH:MM:SS formatting
-                function formatTimeSeconds(sec) {
-                    sec = Number(sec) || 0;
-                    sec = Math.max(0, Math.round(sec));
-                    const h = Math.floor(sec / 3600);
-                    const m = Math.floor((sec % 3600) / 60);
-                    const s = sec % 60;
-                    return `${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
-                }
-
                 if (eventsOnDate.length > 0) {
                     let totalBreakSec = 0;
                     let totalWorkSec = 0;
@@ -115,9 +110,8 @@ $subTitle = 'Calendar';
 
                     const chronologicalEvents = [...eventsOnDate];
 
-                    // Find the event titled 'start' (case-insensitive)
+                    // Start and End time
                     const startEvent = chronologicalEvents.find(ev => ev.title.toLowerCase() === 'start');
-
                     const startTime = startEvent && startEvent.start ?
                         new Date(startEvent.start).toLocaleTimeString([], {
                             hour: '2-digit',
@@ -137,105 +131,57 @@ $subTitle = 'Calendar';
                         const event = chronologicalEvents[i];
                         const eTime = new Date(event.start);
                         const type = (event.extendedProps.pause_type || '').toLowerCase();
-                        let breakTime = 0,
-                            workTime = 0;
+                        let durationSec = 0;
 
-                        if (type === 'inactive') lastPauseTime = eTime;
-                        else if ((type === 'resume' || type === 'running') && lastPauseTime) {
-                            breakTime = (eTime - lastPauseTime) / 1000;
-                            totalBreakSec += breakTime;
+                        if (type === 'inactive') {
+                            lastPauseTime = eTime;
+                        } else if ((type === 'resume' || type === 'running') && lastPauseTime) {
+                            totalBreakSec += (eTime - lastPauseTime) / 1000;
                             lastPauseTime = null;
                         }
 
-                        // ✅ Correct duration calculation
-                        let durationSec = 0;
                         const nextEvent = chronologicalEvents[i + 1];
-                        const currentStart = eTime;
-                        const currentEnd = event.end ? new Date(event.end) : null;
-
-                        if (currentEnd && currentEnd > currentStart) {
-                            // Use current event's end if exists
-                            durationSec = (currentEnd - currentStart) / 1000;
-                        } else if (nextEvent && nextEvent.start) {
-                            // fallback to next event's start if end missing
-                            const nextStart = new Date(nextEvent.start);
-                            if (nextStart > currentStart) durationSec = (nextStart - currentStart) / 1000;
-                        }
-
-
+                        const candidates = [];
                         if (nextEvent) {
-                            // Consider candidate times from the next event (start and end) and choose the earliest one that's after current start
-                            const candidates = [];
-                            const nextStart = nextEvent.start ? new Date(nextEvent.start) : null;
-                            const nextEnd = nextEvent.end ? new Date(nextEvent.end) : null;
-                            if (nextStart) candidates.push(nextStart);
-                            if (nextEnd) candidates.push(nextEnd);
+                            if (nextEvent.start) candidates.push(new Date(nextEvent.start));
+                            if (nextEvent.end) candidates.push(new Date(nextEvent.end));
+                        }
+                        if (event.end) candidates.push(new Date(event.end));
 
-                            // Also consider current event's own end as a fallback candidate
-                            const eventEnd = event.end ? new Date(event.end) : null;
-                            if (eventEnd) candidates.push(eventEnd);
-
-                            // Filter candidates to those strictly after eTime
-                            const validCandidates = candidates.filter(t => t && t > eTime);
-
-                            if (validCandidates.length > 0) {
-                                // pick the earliest valid candidate
-                                let earliest = validCandidates.reduce((a, b) => (a < b ? a : b));
-                                durationSec = (earliest - eTime) / 1000;
-                            } else {
-                                // No valid candidate after eTime; duration remains 0
-                                durationSec = 0;
-                            }
-                        } else if (event.end) {
-                            // last event with valid end time
-                            const evEnd = new Date(event.end);
-                            if (evEnd > eTime) durationSec = (evEnd - eTime) / 1000;
-                            else durationSec = 0;
+                        const validCandidates = candidates.filter(t => t && t > eTime);
+                        if (validCandidates.length > 0) {
+                            const earliest = validCandidates.reduce((a, b) => a < b ? a : b);
+                            durationSec = (earliest - eTime) / 1000;
                         }
 
-                        // ✅ Add only active work duration to total work seconds
-                        if (
-                            type !== 'inactive' &&
-                            event.title.toLowerCase() !== 'break' &&
-                            event.title.toLowerCase() !== 'tea' &&
-                            event.title.toLowerCase() !== 'lunch'
-                        ) {
+                        // Only count active work time
+                        if (type !== 'inactive' && !['break', 'tea', 'lunch'].includes(event.title.toLowerCase())) {
                             totalWorkSec += durationSec;
                         }
+
+                        const displayEnd = (() => {
+                            if (validCandidates.length > 0) return ' - ' + new Date(validCandidates[0]).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                            });
+                            if (event.end) return ' - ' + new Date(event.end).toLocaleTimeString([], {
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                            });
+                            return '';
+                        })();
 
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>
-    ${eTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
-    ${
-        (() => {
-            const nextEvent = chronologicalEvents[i + 1];
-            if (!nextEvent) return '';
-            const nextStart = nextEvent.start ? new Date(nextEvent.start) : null;
-            const nextEnd = nextEvent.end ? new Date(nextEvent.end) : null;
-            // choose the earliest time from nextStart/nextEnd that is after eTime
-            const candidates = [];
-            if (nextStart) candidates.push(nextStart);
-            if (nextEnd) candidates.push(nextEnd);
-            const valid = candidates.filter(t => t && t > eTime);
-            if (valid.length === 0) {
-                // fallback to current event end if present and after eTime
-                if (event.end && new Date(event.end) > eTime) {
-                    return ' - ' + new Date(event.end).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-                }
-                return '';
-            }
-            const chosen = valid.reduce((a, b) => (a < b ? a : b));
-            return ' - ' + chosen.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
-        })()
-    }
-</td>
+    <td>${eTime.toLocaleTimeString([], { hour: '2-digit', minute:'2-digit', second:'2-digit' })}${displayEnd}</td>
     <td>${formatTimeSeconds(durationSec)}</td>
 </tr>`;
                     }
 
-                    // ✅ Calculate total / elapsed / remaining times correctly
+                    // Totals
                     const targetSec = 8 * 3600;
                     const elapsedSec = totalWorkSec;
                     const remainingSec = Math.max(targetSec - totalWorkSec, 0);
@@ -294,51 +240,33 @@ $subTitle = 'Calendar';
     </div>
 </div>`;
 
-                    // --- MERGE & SHOW ONLY FIRST AND LAST TIME FOR CONSECUTIVE DUPLICATE EVENTS ---
+                    // Merge consecutive duplicate events
                     const tbody = modalBody.querySelector('tbody');
                     const allRows = Array.from(tbody.querySelectorAll('tr'));
                     let mergedRows = [];
-                    let prevEventName = '';
-
                     for (let i = 0; i < allRows.length; i++) {
                         const curr = allRows[i];
                         if (!curr || curr.classList.contains('fw-bold')) continue;
-
                         const currEvent = curr.cells[0]?.textContent.trim();
-                        const currTime = curr.cells[1]?.textContent.trim();
-                        const currDuration = curr.cells[2]?.textContent.trim();
+                        let firstTime = curr.cells[1]?.textContent.split(' - ')[0];
+                        let lastTime = curr.cells[1]?.textContent.split(' - ').pop();
 
-                        if (currEvent === 'Resumebreak') continue;
-
-                        let firstTime = currTime.split(' - ')[0];
-                        let lastTime = currTime.split(' - ').pop();
-
-                        // Check consecutive duplicates
                         let j = i + 1;
                         while (j < allRows.length) {
                             const next = allRows[j];
                             if (!next || next.classList.contains('fw-bold')) break;
-
                             const nextEvent = next.cells[0]?.textContent.trim();
-                            const nextTimeRaw = next.cells[1]?.textContent.trim();
-                            const nextTime = nextTimeRaw.split(' - ').pop();
-
+                            const nextTime = next.cells[1]?.textContent.split(' - ').pop();
                             if (nextEvent === currEvent) {
-                                lastTime = nextTime; // extend last time
+                                lastTime = nextTime;
                                 j++;
                             } else break;
                         }
 
-                        // Create merged row
                         const mergedRow = document.createElement('tr');
-                        mergedRow.innerHTML = `
-<td>${currEvent}</td>
-<td>${firstTime} - ${lastTime}</td>
-<td>${currDuration}</td>`;
+                        mergedRow.innerHTML = `<td>${currEvent}</td><td>${firstTime} - ${lastTime}</td><td>${curr.cells[2]?.textContent}</td>`;
                         mergedRows.push(mergedRow);
-
-                        prevEventName = currEvent;
-                        i = j - 1; // skip processed rows
+                        i = j - 1;
                     }
 
                     tbody.innerHTML = '';
@@ -349,10 +277,9 @@ $subTitle = 'Calendar';
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
             }
-
         });
 
-        calendar.render()
+        calendar.render();
 
 
         function highlightUnderworkedDays(calendar) {
