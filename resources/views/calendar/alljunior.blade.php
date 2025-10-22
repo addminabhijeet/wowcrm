@@ -38,6 +38,7 @@ $subTitle = 'Calendar';
                 <h1 class="modal-title fs-5" id="eventModalLabel">
                     Events on <span id="modalDate"></span>
                 </h1>
+
                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body p-24" id="modalBody"></div>
@@ -107,17 +108,13 @@ $subTitle = 'Calendar';
 
                     const chronologicalEvents = [...eventsOnDate];
 
-                    // Find the event titled 'start' (case-insensitive)
-                    const startEvent = chronologicalEvents.find(ev => ev.title.toLowerCase() === 'start');
-
-                    const startTime = startEvent && startEvent.start ?
-                        new Date(startEvent.start).toLocaleTimeString([], {
+                    const startTime = chronologicalEvents[0].start ?
+                        new Date(chronologicalEvents[0].start).toLocaleTimeString([], {
                             hour: '2-digit',
                             minute: '2-digit',
                             second: '2-digit'
                         }) :
                         'null';
-
                     const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ?
                         new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toLocaleTimeString([], {
                             hour: '2-digit',
@@ -244,7 +241,7 @@ $subTitle = 'Calendar';
 <div class="totals mt-3">
     <div class="d-flex justify-content-between fw-bold text-success">
         <span>Total Work Time:</span>
-        <span>${formatTime(elapsedSec)}</span>
+        <span>${formatTime(totalWorkSec)}</span>
     </div>
     <div class="d-flex justify-content-between fw-bold text-primary">
         <span>Elapsed / Remaining:</span>
@@ -445,6 +442,10 @@ $subTitle = 'Calendar';
     .fc-daygrid-day:hover {
         cursor: pointer;
         background-color: rgba(0, 0, 0, 0.02);
+    }
+
+    .fc .fc-button {
+        padding: 0.2em 0.65em !important;
     }
 </style>
 @endsection
