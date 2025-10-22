@@ -157,7 +157,7 @@ $subTitle = 'Calendar';
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}${i < chronologicalEvents.length - 1 ? ' - ' + new Date(chronologicalEvents[i + 1].start).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : ''}</td>
+    <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}</td>
     <td>${formatTime(durationSec)}</td>
 </tr>`;
                     }
@@ -174,14 +174,12 @@ $subTitle = 'Calendar';
                             const eTime = new Date(event.start);
                             const type = (event.extendedProps.pause_type || '').toLowerCase();
 
-                            // Handle inactive/resume for break calculation
                             if (type === 'inactive') lastPauseTimeFromStart = eTime;
                             else if ((type === 'resume' || type === 'running') && lastPauseTimeFromStart) {
-                                workSecFromStart += (eTime - lastPauseTimeFromStart) / 1000; // add break time
+                                workSecFromStart += (eTime - lastPauseTimeFromStart) / 1000;
                                 lastPauseTimeFromStart = null;
                             }
 
-                            // Work time = difference to previous event (after 'Start')
                             if (i > startIndex) {
                                 const prevTime = new Date(chronologicalEvents[i - 1].start);
                                 let sec = (eTime - prevTime) / 1000;
@@ -254,6 +252,7 @@ $subTitle = 'Calendar';
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
             }
+
 
         });
 
