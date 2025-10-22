@@ -109,15 +109,13 @@ $subTitle = 'Calendar';
                     const startTime = chronologicalEvents[0].start ?
                         new Date(chronologicalEvents[0].start).toLocaleTimeString([], {
                             hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
+                            minute: '2-digit'
                         }) :
                         'null';
                     const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ?
                         new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toLocaleTimeString([], {
                             hour: '2-digit',
-                            minute: '2-digit',
-                            second: '2-digit'
+                            minute: '2-digit'
                         }) :
                         'null';
 
@@ -148,9 +146,13 @@ $subTitle = 'Calendar';
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit', second:'2-digit'})}</td>
-    <td>${formatTime(workTime)}</td>
-</tr>`;
+    <td>${eTime.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'})}</td>
+    <td>
+        ${formatTime(workTime)}
+        ${breakTime > 0 ? ` / Break: ${formatTime(breakTime)}` : ''}
+    </td>
+</tr>
+            `;
                     }
 
                     const targetSec = 8 * 3600;
@@ -158,7 +160,7 @@ $subTitle = 'Calendar';
                     const remainingSec = Math.max(targetSec - totalWorkSec, 0);
                     const completed = totalWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
-                    // Add total rows
+                    // Add total row
                     tableRows += `
 <tr class="fw-bold text-success">
     <td colspan="2" class="text-end">Total</td>
@@ -167,7 +169,8 @@ $subTitle = 'Calendar';
 <tr class="fw-bold text-primary">
     <td colspan="2" class="text-end">Elapsed / Remaining</td>
     <td colspan="2">${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</td>
-</tr>`;
+</tr>
+        `;
 
                     modalBody.innerHTML = `
 <div class="summary border-bottom pb-3 mb-3">
@@ -175,15 +178,21 @@ $subTitle = 'Calendar';
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
         <div>
             <strong>8 Hours Completed:</strong>
-            <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">${completed}</span>
+            <span class="badge ${totalWorkSec >= targetSec ? 'bg-success' : 'bg-danger'} fs-6">
+                ${completed}
+            </span>
         </div>
         <div>
             <strong>Start Time:</strong>
-            <span class="badge fs-6 bg-danger">${startTime}</span>
+            <span class="badge fs-6 bg-danger">
+                ${startTime}
+            </span>
         </div>
         <div>
             <strong>End Time:</strong>
-            <span class="badge fs-6 bg-danger">${endTime}</span>
+            <span class="badge fs-6 bg-danger">
+                ${endTime}
+            </span>
         </div>
     </div>
 </div>
@@ -197,7 +206,9 @@ $subTitle = 'Calendar';
                 <th>Duration</th>
             </tr>
         </thead>
-        <tbody>${tableRows}</tbody>
+        <tbody>
+            ${tableRows}
+        </tbody>
     </table>
 </div>
 
@@ -210,71 +221,20 @@ $subTitle = 'Calendar';
         <span>Elapsed / Remaining:</span>
         <span>${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</span>
     </div>
-</div>`;
+</div>
+`;
+                    const rows = modalBody.querySelectorAll('tbody tr');
+                    for (let i = 1; i < rows.length - 2; i++) { // skip first and last total rows
+                        const currEvent = rows[i].cells[0].textContent.trim();
+                        const currTime = rows[i].cells[1].textContent.trim();
+                        const prevEvent = rows[i - 1].cells[0].textContent.trim();
+                        const prevTime = rows[i - 1].cells[1].textContent.trim();
 
-
-
-                    // --- MERGE & HIDE CONSECUTIVE DUPLICATE EVENTS ---
-                    const tbody = modalBody.querySelector('tbody');
-                    const allRows = Array.from(tbody.querySelectorAll('tr'));
-                    let mergedRows = [];
-                    let prevEventName = '';
-
-                    for (let i = 0; i < allRows.length; i++) {
-                        const curr = allRows[i];
-                        if (!curr || curr.classList.contains('fw-bold')) continue; // skip totals
-
-                        const currEvent = curr.cells[0]?.textContent.trim();
-                        const currTime = curr.cells[1]?.textContent.trim();
-                        const currDuration = curr.cells[2]?.textContent.trim();
-
-                        // Skip row if same as previous consecutive event
-                        if (currEvent === prevEventName) continue;
-                        if (currEvent === 'Resumebreak') continue;
-
-                        const next = allRows[i + 1];
-                        if (next && !next.classList.contains('fw-bold')) {
-                            const nextEvent = next.cells[0]?.textContent.trim();
-                            const nextTime = next.cells[1]?.textContent.trim();
-                            const nextDuration = next.cells[2]?.textContent.trim();
-
-                            // Merge only if different event names
-                            if (currEvent !== nextEvent) {
-                                const mergedRow = document.createElement('tr');
-                                mergedRow.innerHTML = `
-<td>${currEvent}</td>
-<td>${currTime} - ${nextTime}</td>
-<td>${currDuration}</td>`;
-                                mergedRows.push(mergedRow);
-                            } else {
-                                // If same as next, merge times
-                                const mergedRow = document.createElement('tr');
-                                mergedRow.innerHTML = `
-<td>${currEvent}</td>
-<td>${currTime} - ${nextTime}</td>
-<td>${currDuration}</td>`;
-                                mergedRows.push(mergedRow);
-                                i++; // skip next as it's merged
-                            }
-                        } else {
-                            // Single event
-                            const singleRow = document.createElement('tr');
-                            singleRow.innerHTML = `
-<td>${currEvent}</td>
-<td>${currTime}</td>
-<td>${currDuration}</td>`;
-                            mergedRows.push(singleRow);
+                        // Hide if either Event or Time matches the previous row
+                        if (currEvent === prevEvent || currTime === prevTime) {
+                            rows[i].style.display = 'none';
                         }
-
-                        prevEventName = currEvent; // update previous
                     }
-
-                    // Clear & append merged
-                    tbody.innerHTML = '';
-                    mergedRows.forEach(r => tbody.appendChild(r));
-
-
-
                     modal.show();
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
