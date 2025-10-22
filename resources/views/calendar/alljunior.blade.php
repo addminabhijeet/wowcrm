@@ -113,24 +113,8 @@ $subTitle = 'Calendar';
 
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
-                        const eTimeStr = event.startStr; // exact DB time string
+                        const eTimeStr = event.startStr;
                         const type = (event.extendedProps.pause_type || '').toLowerCase();
-                        let breakTime = 0,
-                            workTime = 0;
-
-                        if (type === 'inactive') lastPauseTime = eTimeStr;
-                        else if ((type === 'resume' || type === 'running') && lastPauseTime) {
-                            breakTime = (new Date(eTimeStr) - new Date(lastPauseTime)) / 1000;
-                            totalBreakSec += breakTime;
-                            lastPauseTime = null;
-                        }
-
-                        if (i > 0) {
-                            const prevTimeStr = chronologicalEvents[i - 1].startStr;
-                            workTime = (new Date(eTimeStr) - new Date(prevTimeStr)) / 1000;
-                            if (workTime < 0) workTime = 0;
-                            totalWorkSec += workTime;
-                        }
 
                         let durationSec = 0;
                         if (i < chronologicalEvents.length - 1) {
@@ -140,14 +124,14 @@ $subTitle = 'Calendar';
                             durationSec = Math.max(0, (new Date(event.end) - new Date(eTimeStr)) / 1000);
                         }
 
-                        // ✅ Show only HH:MM:SS instead of full ISO date
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${new Date(eTimeStr).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}</td>
+    <td>${eTimeStr.slice(11, 19)}</td>
     <td>${formatTime(durationSec)}</td>
 </tr>`;
                     }
+
 
 
                     // --- Calculate 8-hour completion from first 'Start' event only ---
