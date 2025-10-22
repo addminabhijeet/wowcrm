@@ -95,28 +95,38 @@ $subTitle = 'Calendar';
                 modalDate.textContent = info.dateStr;
                 modalBody.innerHTML = '';
 
+                // filter events that start on this date
                 const eventsOnDate = calendar.getEvents().filter(e => e.startStr.slice(0, 10) === info.dateStr);
 
-                // Sort earliest first
-                eventsOnDate.sort((a, b) => a.startStr.localeCompare(b.startStr));
+                // Sort by actual Date (earliest first)
+                eventsOnDate.sort((a, b) => new Date(a.start) - new Date(b.start));
 
                 if (eventsOnDate.length > 0) {
-                    let totalBreakSec = 0;
-                    let totalWorkSec = 0;
-                    let lastPauseTime = null;
                     let tableRows = '';
 
                     const chronologicalEvents = [...eventsOnDate];
 
-                    const startTime = chronologicalEvents[0].startStr || 'null';
-                    const endTime = chronologicalEvents[chronologicalEvents.length - 1].endStr || 'null';
+                    // Compute human-friendly summary start/end (use local time)
+                    const firstEvent = chronologicalEvents[0];
+                    const lastEvent = chronologicalEvents[chronologicalEvents.length - 1];
+
+                    const startTime = firstEvent.start ? new Date(firstEvent.start).toLocaleString() : 'null';
+                    // if last event has an end, use it; otherwise fall back to its start
+                    const endTime = (lastEvent.end ? new Date(lastEvent.end) : new Date(lastEvent.start)).toLocaleString();
+
+                    // Helper to format time-of-day HH:MM:SS from an ISO/start value in local timezone
+                    const fmtTimeOfDay = (iso) => {
+                        if (!iso) return '';
+                        return new Date(iso).toLocaleTimeString('en-GB', {
+                            hour12: false
+                        });
+                    };
 
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
                         const eTimeStr = event.startStr;
-                        const type = (event.extendedProps.pause_type || '').toLowerCase();
-
                         let durationSec = 0;
+
                         if (i < chronologicalEvents.length - 1) {
                             const nextTimeStr = chronologicalEvents[i + 1].startStr;
                             durationSec = Math.max(0, (new Date(nextTimeStr) - new Date(eTimeStr)) / 1000);
@@ -127,12 +137,10 @@ $subTitle = 'Calendar';
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${eTimeStr.slice(11, 19)}</td>
+    <td>${fmtTimeOfDay(eTimeStr)}</td>
     <td>${formatTime(durationSec)}</td>
 </tr>`;
                     }
-
-
 
                     // --- Calculate 8-hour completion from first 'Start' event only ---
                     const startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'start');
