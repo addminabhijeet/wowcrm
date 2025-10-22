@@ -147,14 +147,34 @@ $subTitle = 'Calendar';
                             lastPauseTime = null;
                         }
 
-                        // ✅ Calculate accurate duration until next event
+                        // ✅ Calculate accurate duration until next event or end
                         let durationSec = 0;
-                        if (i < chronologicalEvents.length - 1) {
-                            const nextTime = new Date(chronologicalEvents[i + 1].start);
-                            durationSec = Math.max(0, (nextTime - eTime) / 1000);
+                        const nextEvent = chronologicalEvents[i + 1];
+
+                        if (nextEvent) {
+                            // Use next event's *start or end* whichever makes sense
+                            const nextStart = nextEvent.start ? new Date(nextEvent.start) : null;
+                            const nextEnd = nextEvent.end ? new Date(nextEvent.end) : null;
+
+                            // Choose whichever is valid and later than current
+                            let nextTime = nextStart && nextStart > eTime ? nextStart : nextEnd;
+
+                            // If still invalid or same timestamp, skip same-time events
+                            if (nextTime && nextTime > eTime) {
+                                durationSec = (nextTime - eTime) / 1000;
+                            } else {
+                                // try fallback to event.end if exists
+                                if (event.end && new Date(event.end) > eTime) {
+                                    durationSec = (new Date(event.end) - eTime) / 1000;
+                                } else {
+                                    durationSec = 0;
+                                }
+                            }
                         } else if (event.end) {
+                            // last event with valid end time
                             durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
                         }
+
 
                         // ✅ Add only active work duration to total work seconds
                         if (
@@ -169,7 +189,21 @@ $subTitle = 'Calendar';
                         tableRows += `
 <tr>
     <td>${event.title}</td>
-    <td>${eTime.toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' })}${i < chronologicalEvents.length - 1 ? ' - ' + new Date(chronologicalEvents[i + 1].start).toLocaleTimeString([], { hour:'2-digit', minute:'2-digit', second:'2-digit' }) : ''}</td>
+    <td>
+    ${eTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+    ${
+        (() => {
+            const nextEvent = chronologicalEvents[i + 1];
+            if (!nextEvent) return '';
+            const nextStart = nextEvent.start ? new Date(nextEvent.start) : null;
+            const nextEnd = nextEvent.end ? new Date(nextEvent.end) : null;
+            const nextTime = (nextStart && nextStart > eTime) ? nextStart : nextEnd;
+            return nextTime && nextTime > eTime
+                ? ' - ' + nextTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+                : '';
+        })()
+    }
+</td>
     <td>${formatTimeSeconds(durationSec)}</td>
 </tr>`;
                     }
