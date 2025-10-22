@@ -108,13 +108,17 @@ $subTitle = 'Calendar';
 
                     const chronologicalEvents = [...eventsOnDate];
 
-                    const startTime = chronologicalEvents[0].start ?
-                        new Date(chronologicalEvents[0].start).toLocaleTimeString([], {
+                    // Find the event titled 'start' (case-insensitive)
+                    const startEvent = chronologicalEvents.find(ev => ev.title.toLowerCase() === 'start');
+
+                    const startTime = startEvent && startEvent.start ?
+                        new Date(startEvent.start).toLocaleTimeString([], {
                             hour: '2-digit',
                             minute: '2-digit',
                             second: '2-digit'
                         }) :
                         'null';
+
                     const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ?
                         new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toLocaleTimeString([], {
                             hour: '2-digit',
@@ -241,7 +245,7 @@ $subTitle = 'Calendar';
 <div class="totals mt-3">
     <div class="d-flex justify-content-between fw-bold text-success">
         <span>Total Work Time:</span>
-        <span>${formatTime(totalWorkSec)}</span>
+        <span>${formatTime(elapsedSec)}</span>
     </div>
     <div class="d-flex justify-content-between fw-bold text-primary">
         <span>Elapsed / Remaining:</span>
