@@ -108,9 +108,8 @@ $subTitle = 'Calendar';
 
                     const chronologicalEvents = [...eventsOnDate];
 
-                    // Find the event titled 'start' (case-insensitive)
+                    // Find the first 'Start' event
                     const startEvent = chronologicalEvents.find(ev => ev.title.toLowerCase() === 'start');
-
                     const startTime = startEvent && startEvent.start ?
                         new Date(startEvent.start).toLocaleTimeString([], {
                             hour: '2-digit',
@@ -118,7 +117,6 @@ $subTitle = 'Calendar';
                             second: '2-digit'
                         }) :
                         'null';
-
                     const endTime = chronologicalEvents[chronologicalEvents.length - 1].end ?
                         new Date(chronologicalEvents[chronologicalEvents.length - 1].end).toLocaleTimeString([], {
                             hour: '2-digit',
@@ -127,6 +125,7 @@ $subTitle = 'Calendar';
                         }) :
                         'null';
 
+                    // Build table rows with duration calculation
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
                         const eTime = new Date(event.start);
@@ -149,7 +148,7 @@ $subTitle = 'Calendar';
                             totalWorkSec += workTime;
                         }
 
-                        // Calculate duration as difference to next event start if exists, else 0
+                        // Duration = difference to next event start, or event.end
                         let durationSec = 0;
                         if (i < chronologicalEvents.length - 1) {
                             const nextTime = new Date(chronologicalEvents[i + 1].start);
@@ -166,26 +165,23 @@ $subTitle = 'Calendar';
 </tr>`;
                     }
 
-                    // --- Calculate 8-hour completion from first 'Start' event only ---
+                    // --- Calculate elapsed & remaining work time from first 'Start' ---
                     let startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'start');
                     let workSecFromStart = 0;
 
                     if (startIndex !== -1) {
                         let lastPauseTimeFromStart = null;
-
                         for (let i = startIndex; i < chronologicalEvents.length; i++) {
                             const event = chronologicalEvents[i];
                             const eTime = new Date(event.start);
                             const type = (event.extendedProps.pause_type || '').toLowerCase();
 
-                            // Handle inactive/resume for break calculation
                             if (type === 'inactive') lastPauseTimeFromStart = eTime;
                             else if ((type === 'resume' || type === 'running') && lastPauseTimeFromStart) {
-                                workSecFromStart += (eTime - lastPauseTimeFromStart) / 1000; // add break time
+                                workSecFromStart += (eTime - lastPauseTimeFromStart) / 1000;
                                 lastPauseTimeFromStart = null;
                             }
 
-                            // Work time = difference to previous event (after 'Start')
                             if (i > startIndex) {
                                 const prevTime = new Date(chronologicalEvents[i - 1].start);
                                 let sec = (eTime - prevTime) / 1000;
@@ -253,62 +249,65 @@ $subTitle = 'Calendar';
     </div>
 </div>`;
 
-                    // --- MERGE & SHOW ONLY FIRST AND LAST TIME FOR CONSECUTIVE DUPLICATE EVENTS ---
+                    // --- MERGE CONSECUTIVE DUPLICATE EVENTS AND SUM DURATIONS ---
                     const tbody = modalBody.querySelector('tbody');
                     const allRows = Array.from(tbody.querySelectorAll('tr'));
                     let mergedRows = [];
-                    let prevEventName = '';
 
                     for (let i = 0; i < allRows.length; i++) {
                         const curr = allRows[i];
                         if (!curr || curr.classList.contains('fw-bold')) continue;
 
                         const currEvent = curr.cells[0]?.textContent.trim();
-                        const currTime = curr.cells[1]?.textContent.trim();
-                        const currDuration = curr.cells[2]?.textContent.trim();
-
-                        if (currEvent === 'Resumebreak') continue;
+                        let currTime = curr.cells[1]?.textContent.trim();
+                        let currDuration = parseTimeToSeconds(curr.cells[2]?.textContent.trim());
 
                         let firstTime = currTime.split(' - ')[0];
                         let lastTime = currTime.split(' - ').pop();
 
-                        // Check consecutive duplicates
+                        // Merge consecutive duplicates
                         let j = i + 1;
                         while (j < allRows.length) {
                             const next = allRows[j];
                             if (!next || next.classList.contains('fw-bold')) break;
 
                             const nextEvent = next.cells[0]?.textContent.trim();
-                            const nextTimeRaw = next.cells[1]?.textContent.trim();
-                            const nextTime = nextTimeRaw.split(' - ').pop();
+                            const nextDuration = parseTimeToSeconds(next.cells[2]?.textContent.trim());
+                            const nextTime = next.cells[1]?.textContent.trim().split(' - ').pop();
 
                             if (nextEvent === currEvent) {
-                                lastTime = nextTime; // extend last time
+                                lastTime = nextTime;
+                                currDuration += nextDuration; // sum durations
                                 j++;
                             } else break;
                         }
 
-                        // Create merged row
                         const mergedRow = document.createElement('tr');
                         mergedRow.innerHTML = `
 <td>${currEvent}</td>
 <td>${firstTime} - ${lastTime}</td>
-<td>${currDuration}</td>`;
+<td>${formatTime(currDuration)}</td>`;
                         mergedRows.push(mergedRow);
-
-                        prevEventName = currEvent;
-                        i = j - 1; // skip processed rows
+                        i = j - 1;
                     }
 
                     tbody.innerHTML = '';
                     mergedRows.forEach(r => tbody.appendChild(r));
 
-
                     modal.show();
+
                 } else {
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
+
+                // Helper to convert HH:MM:SS to seconds
+                function parseTimeToSeconds(timeStr) {
+                    if (!timeStr) return 0;
+                    const parts = timeStr.split(':').map(Number);
+                    return parts[0] * 3600 + parts[1] * 60 + parts[2];
+                }
             }
+
         });
 
         calendar.render()
