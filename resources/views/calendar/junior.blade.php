@@ -167,29 +167,19 @@ $subTitle = 'Calendar';
 </tr>`;
                     }
 
-                    // --- Calculate elapsed & remaining work time from first 'Start' excluding its duration ---
-                    let startIndex = chronologicalEvents.findIndex(ev => ev.title.toLowerCase() === 'start');
+                    // --- Calculate active work time (Resume / Running only, exclude Start, Tea, Lunch, Break) ---
                     let activeWorkSec = 0;
+                    for (let i = 0; i < chronologicalEvents.length; i++) {
+                        const event = chronologicalEvents[i];
+                        const type = (event.extendedProps.pause_type || '').toLowerCase();
+                        const title = (event.title || '').toLowerCase();
 
-                    if (startIndex !== -1) {
-                        let lastPauseTimeFromStart = null;
-                        for (let i = startIndex; i < chronologicalEvents.length; i++) {
-                            const event = chronologicalEvents[i];
-                            const eTime = new Date(event.start);
-                            const type = (event.extendedProps.pause_type || '').toLowerCase();
-
-                            if (type === 'inactive') lastPauseTimeFromStart = eTime;
-                            else if ((type === 'resume' || type === 'running') && lastPauseTimeFromStart) {
-                                activeWorkSec += (eTime - lastPauseTimeFromStart) / 1000;
-                                lastPauseTimeFromStart = null;
-                            }
-
-                            if (i > startIndex && type !== 'start') { // exclude first Start duration
-                                const prevTime = new Date(chronologicalEvents[i - 1].start);
-                                let sec = (eTime - prevTime) / 1000;
-                                if (sec < 0) sec = 0;
-                                activeWorkSec += sec;
-                            }
+                        // Only count Resume or Running events
+                        if (type === 'resume' || type === 'running') {
+                            let startTime = new Date(event.start);
+                            let endTime = event.end ? new Date(event.end) : (i < chronologicalEvents.length - 1 ? new Date(chronologicalEvents[i + 1].start) : startTime);
+                            let diffSec = Math.max(0, (endTime - startTime) / 1000);
+                            activeWorkSec += diffSec;
                         }
                     }
 
@@ -309,6 +299,7 @@ $subTitle = 'Calendar';
                     return parts[0] * 3600 + parts[1] * 60 + parts[2];
                 }
             }
+
 
 
         });
