@@ -194,10 +194,27 @@ $subTitle = 'Calendar';
                         }
                     }
 
+                    // --- Calculate active work time (Start + Resume), ignoring initial login/start gaps ---
+                    let activeWorkSec = 0;
+                    for (let i = 0; i < chronologicalEvents.length; i++) {
+                        const event = chronologicalEvents[i];
+                        const type = (event.extendedProps.pause_type || '').toLowerCase();
+                        const title = event.title.toLowerCase();
+
+                        if (title === 'start' || title === 'resume' || title === 'running') {
+                            let prevTime = i > 0 ? new Date(chronologicalEvents[i - 1].start) : null;
+                            let currTime = new Date(event.start);
+
+                            if (prevTime && currTime > prevTime) {
+                                activeWorkSec += (currTime - prevTime) / 1000;
+                            }
+                        }
+                    }
+
                     const targetSec = 8 * 3600;
-                    const elapsedSec = workSecFromStart;
-                    const remainingSec = Math.max(targetSec - workSecFromStart, 0);
-                    const completed = workSecFromStart >= targetSec ? "✅ Yes" : "❌ No";
+                    const elapsedSec = activeWorkSec;
+                    const remainingSec = Math.max(targetSec - activeWorkSec, 0);
+                    const completed = activeWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
                     tableRows += `
 <tr class="fw-bold text-success">
