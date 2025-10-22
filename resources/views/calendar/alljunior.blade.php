@@ -141,27 +141,25 @@ $subTitle = 'Calendar';
                             lastPauseTime = null;
                         }
 
-                        // --- NEW: Simplified duration calculation ---
-                        // --- FIXED: Correct duration calculation ---
-                        let nextEventStart = chronologicalEvents[i + 1]?.start ? new Date(chronologicalEvents[i + 1].start) : null;
-                        let endTimeCandidate = event.end ? new Date(event.end) : nextEventStart;
-
-                        // If endTimeCandidate is missing or before start, fallback to start
-                        if (!endTimeCandidate || endTimeCandidate <= eTime) {
-                            endTimeCandidate = eTime;
+                        // --- Calculate duration based on time interval displayed in the table ---
+                        let displayStart = eTime;
+                        let displayEndTime = event.end ? new Date(event.end) : null;
+                        const nextEvent = chronologicalEvents[i + 1];
+                        if (!displayEndTime && nextEvent) {
+                            displayEndTime = new Date(nextEvent.start);
                         }
-
-                        durationSec = (endTimeCandidate - eTime) / 1000;
-
-                        // ------------------------------------------
+                        if (!displayEndTime || displayEndTime <= displayStart) {
+                            displayEndTime = displayStart;
+                        }
+                        durationSec = (displayEndTime - displayStart) / 1000;
 
                         // Only count active work time
                         if (type !== 'inactive' && !['break', 'tea', 'lunch'].includes(event.title.toLowerCase())) {
                             totalWorkSec += durationSec;
                         }
 
-                        const displayEnd = endTimeCandidate ?
-                            ' - ' + endTimeCandidate.toLocaleTimeString([], {
+                        const displayEnd = displayEndTime ?
+                            ' - ' + displayEndTime.toLocaleTimeString([], {
                                 hour: '2-digit',
                                 minute: '2-digit',
                                 second: '2-digit'
@@ -175,7 +173,6 @@ $subTitle = 'Calendar';
     <td>${formatTimeSeconds(durationSec)}</td>
 </tr>`;
                     }
-
 
                     // Totals
                     const targetSec = 8 * 3600;
@@ -273,6 +270,7 @@ $subTitle = 'Calendar';
                     modalBody.innerHTML = '<p class="text-center text-muted">No events on this date.</p>';
                 }
             }
+
         });
 
         calendar.render();
