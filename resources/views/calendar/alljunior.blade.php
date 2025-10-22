@@ -127,23 +127,32 @@ $subTitle = 'Calendar';
                         }) :
                         'null';
 
-                    // --- Active work calculation: only Start + Resume/Running, exclude Tea, Break, Lunch ---
+                    // --- Active work calculation: only after Start, include Login + Logout ---
                     let activeWorkSec = 0;
+                    let startSeen = false;
+
                     for (let i = 0; i < chronologicalEvents.length; i++) {
                         const event = chronologicalEvents[i];
-                        const type = (event.extendedProps.pause_type || '').toLowerCase();
                         const title = (event.title || '').toLowerCase();
 
-                        if (['start', 'resume', 'running'].includes(title)) {
-                            // Duration = difference to next event or event.end
+                        if (title === 'start') {
+                            startSeen = true; // Start tracking from here
+                        }
+
+                        if (!startSeen) continue; // Ignore everything before 'Start'
+
+                        // Active events: login, logout, start, resume, running
+                        if (['login', 'logout', 'start', 'resume', 'running'].includes(title)) {
                             let durationSec = 0;
                             const eTime = new Date(event.start);
+
                             if (i < chronologicalEvents.length - 1) {
                                 const nextTime = new Date(chronologicalEvents[i + 1].start);
                                 durationSec = Math.max(0, (nextTime - eTime) / 1000);
                             } else if (event.end) {
                                 durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
                             }
+
                             activeWorkSec += durationSec;
                         }
                     }
