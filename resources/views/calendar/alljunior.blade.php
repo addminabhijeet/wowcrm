@@ -142,14 +142,17 @@ $subTitle = 'Calendar';
                         }
 
                         // --- NEW: Simplified duration calculation ---
-                        let endTimeCandidate = event.end ? new Date(event.end) : null;
-                        const nextEvent = chronologicalEvents[i + 1];
-                        if (!endTimeCandidate && nextEvent && nextEvent.start) {
-                            endTimeCandidate = new Date(nextEvent.start);
+                        // --- FIXED: Correct duration calculation ---
+                        let nextEventStart = chronologicalEvents[i + 1]?.start ? new Date(chronologicalEvents[i + 1].start) : null;
+                        let endTimeCandidate = event.end ? new Date(event.end) : nextEventStart;
+
+                        // If endTimeCandidate is missing or before start, fallback to start
+                        if (!endTimeCandidate || endTimeCandidate <= eTime) {
+                            endTimeCandidate = eTime;
                         }
-                        if (endTimeCandidate && endTimeCandidate > eTime) {
-                            durationSec = (endTimeCandidate - eTime) / 1000;
-                        }
+
+                        durationSec = (endTimeCandidate - eTime) / 1000;
+
                         // ------------------------------------------
 
                         // Only count active work time
