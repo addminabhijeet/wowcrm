@@ -235,7 +235,7 @@ class CalendarController extends Controller
         return view('calendar.senior', compact('view', 'date'));
     }
 
-    public function getSeniorEvents(Request $request)
+    public function SeniorEvents(Request $request)
     {
         $userId = Auth::id();
 
