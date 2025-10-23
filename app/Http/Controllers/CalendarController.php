@@ -61,6 +61,31 @@ class CalendarController extends Controller
         return view('calendar.junior', compact('view', 'date'));
     }
 
+    public function adminUser(Request $request)
+    {
+        $view = $request->input('view', 'month'); // day, week, month
+        $date = $request->input('date', now());
+
+        $start = $end = Carbon::parse($date);
+
+        switch ($view) {
+            case 'day':
+                $start = $start->startOfDay();
+                $end = $end->endOfDay();
+                break;
+            case 'week':
+                $start = $start->startOfWeek();
+                $end = $end->endOfWeek();
+                break;
+            default: // month
+                $start = $start->startOfMonth();
+                $end = $end->endOfMonth();
+                break;
+        }
+
+        return view('calendar.admin', compact('view', 'date'));
+    }
+
     // ✅ FullCalendar event JSON endpoint
     public function juniorEvents(Request $request)
     {
