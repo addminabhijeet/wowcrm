@@ -869,7 +869,7 @@ class CallReportController extends Controller
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
-        return view('reports.allseniordaily', compact(
+        return view('reports.alljuniordaily', compact(
             'totalCalls',
             'calledAndMailedCalls',
             'otherCalls',
@@ -1231,14 +1231,14 @@ class CallReportController extends Controller
 
     public function allseniormonthly(Request $request, $userId)
     {
-        $juniorUser = User::findOrFail($userId);
-        $createdByKey = "{$juniorUser->id}|junior";
+        $seniorUser = User::findOrFail($userId);
+        $createdByKey = "{$seniorUser->id}|senior";
 
         // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
         [$year, $month] = explode('-', $selectedMonth);
 
-        // Total calls for this junior in the selected month (including hierarchical keys)
+        // Total calls for this senior in the selected month (including hierarchical keys)
         $MtotalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
