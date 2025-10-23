@@ -769,23 +769,27 @@ class CallReportController extends Controller
 
     public function allseniordaily(Request $request, $userId)
     {
-        // Get the junior user
-        $juniorUser = User::findOrFail($userId);
-        $createdByKey = "{$juniorUser->id}|junior";
+        $user = Auth::user();
+        $createdByKey = "{$user->id}|senior";
 
         // ================================
         // Main logic with LIKE filters
         // ================================
 
-        // Total calls for this junior (including hierarchical keys)
+        // Total calls for this senior (including hierarchical keys)
         $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
 
-        // Total "Called & Mailed" calls for this junior
+        // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
-        // Total other calls for this junior
+        // Total "Ready To Paid" calls
+        $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where('Exe_Remarks', 'Ready To Paid')
+            ->count();
+
+        // Total other calls (excluding Called & Mailed)
         $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where(function ($q) {
                 $q->where('Exe_Remarks', '<>', 'Called & Mailed')
@@ -794,34 +798,27 @@ class CallReportController extends Controller
             ->count();
 
 
-        // Group data by hour of updated_at (for this junior)
-        $hourlyCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "{$createdByKey}%")
-            ->groupBy('hour')
-            ->orderBy('hour')
-            ->pluck('count', 'hour')
-            ->toArray();
-
         // Selected date (default today)
         $selectedDate = $request->input('selected_date', date('Y-m-d'));
 
-        // Base query filtered by this junior and date
+        // Base query filtered by this senior and date
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate);
 
-        // Selected date totals for this junior
+        // Selected date totals
         $StotalCalls = $query->count();
-
-        $ScalledAndMailedCalls = (clone $query)
-            ->where('Exe_Remarks', 'Called & Mailed')
-            ->count();
-
+        $ScalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
+        $SreadyToPaidCalls = (clone $query)->where('Exe_Remarks', 'Ready To Paid')->count();
         $SotherCalls = (clone $query)
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                $q->where(function ($q2) {
+                    $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->where('Exe_Remarks', '<>', 'Ready To Paid');
+                })
                     ->orWhereNull('Exe_Remarks');
             })
             ->count();
+
 
 
         // Hour-wise "Called & Mailed" counts
@@ -833,11 +830,24 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
+        // Hour-wise "Ready To Paid" counts
+        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate)
+            ->where('Exe_Remarks', 'Ready To Paid')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Hour-wise other calls
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                $q->where(function ($q2) {
+                    $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->where('Exe_Remarks', '<>', 'Ready To Paid');
+                })
                     ->orWhereNull('Exe_Remarks');
             })
             ->groupBy('hour')
@@ -858,6 +868,17 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $r10to11am = $hourlyReadyToPaid[10] ?? 0;
+        $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
+        $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
+        $r1to2pm   = $hourlyReadyToPaid[13] ?? 0;
+        $r2to3pm   = $hourlyReadyToPaid[14] ?? 0;
+        $r3to4pm   = $hourlyReadyToPaid[15] ?? 0;
+        $r4to5pm   = $hourlyReadyToPaid[16] ?? 0;
+        $r5to6pm   = $hourlyReadyToPaid[17] ?? 0;
+        $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
+        $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
+
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -869,12 +890,14 @@ class CallReportController extends Controller
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
-        return view('reports.alljuniordaily', compact(
+        return view('reports.allseniordaily', compact(
             'totalCalls',
             'calledAndMailedCalls',
+            'readyToPaidCalls',
             'otherCalls',
             'StotalCalls',
             'ScalledAndMailedCalls',
+            'SreadyToPaidCalls',
             'SotherCalls',
             'selectedDate',
             't10to11am',
@@ -887,6 +910,16 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'r10to11am',
+            'r11to12pm',
+            'r12to1pm',
+            'r1to2pm',
+            'r2to3pm',
+            'r3to4pm',
+            'r4to5pm',
+            'r5to6pm',
+            'r6to7pm',
+            'r7to8pm',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
