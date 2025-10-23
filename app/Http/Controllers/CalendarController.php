@@ -136,10 +136,10 @@ class CalendarController extends Controller
     public function allAdminlist(Request $request)
     {
         // Fetch all users with role 'trainer'
-        $trainerUsers = User::where('role', 'admin')->get();
+        $adminUsers = User::where('role', 'admin')->get();
 
         // Pass users to the view
-        return view('calendar.alladminlist', compact('trainerUsers'));
+        return view('calendar.alladminlist', compact('adminUsers'));
     }
 
     public function allSeniorlist(Request $request)
