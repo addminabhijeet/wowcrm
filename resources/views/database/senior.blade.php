@@ -181,7 +181,7 @@ $script ='<script>
 
                         {{-- Exe Remarks --}}
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','N/A','VM','Busy']; @endphp
+                            @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Paid','VM','Busy']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                 <option value="">-- Select --</option>
                                 @foreach($exeOptions as $option)
@@ -322,7 +322,7 @@ $script ='<script>
             'Did Not Pickup': '#d4edda',
             'Not Interested': '#f8d7da',
             'Others': '#d1ecf1',
-            'N/A': '#e2e3e5',
+            'Ready To Paid': '#e2e3e5',
             'VM': '#fff3cd',
             'Busy': '#cce5ff'
         };
@@ -639,7 +639,7 @@ $script ='<script>
                 if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
                     let opts = [];
                     if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
-                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'];
+                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'Ready To Paid', 'VM', 'Busy'];
                     if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'HIB', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC'];
                     if (k === 'Relocation') opts = ['YES', 'NO'];
                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
@@ -1277,75 +1277,77 @@ $script ='<script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-$('#seniorUpdateForm').on('submit', e => {
-    e.preventDefault();
-    $.ajax({
-        url: e.target.action,         // uses form's action attribute
-        type: e.target.method,        // uses form's method attribute (POST/GET)
-        data: new FormData(e.target),
-        contentType: false,
-        processData: false,
-        success: r => r.success && location.reload(),
-        error: () => alert("Error while saving.")
+    $('#seniorUpdateForm').on('submit', e => {
+        e.preventDefault();
+        $.ajax({
+            url: e.target.action, // uses form's action attribute
+            type: e.target.method, // uses form's method attribute (POST/GET)
+            data: new FormData(e.target),
+            contentType: false,
+            processData: false,
+            success: r => r.success && location.reload(),
+            error: () => alert("Error while saving.")
+        });
     });
-});
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Get CSRF token from meta tag
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    // Attach input listener for dynamically added rows too
-    document.addEventListener('input', function (e) {
-        if (e.target.matches('.email-input')) {
-            const input = e.target;
-            const email = input.value.trim();
-            const hint = input.nextElementSibling;
+        // Attach input listener for dynamically added rows too
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('.email-input')) {
+                const input = e.target;
+                const email = input.value.trim();
+                const hint = input.nextElementSibling;
 
-            // Basic email validation before checking DB
-            if (email.length < 5 || !email.includes('@')) {
-                hint.textContent = '';
-                input.classList.remove('is-invalid', 'is-valid');
-                return;
+                // Basic email validation before checking DB
+                if (email.length < 5 || !email.includes('@')) {
+                    hint.textContent = '';
+                    input.classList.remove('is-invalid', 'is-valid');
+                    return;
+                }
+
+                // Debounce to avoid excessive requests
+                clearTimeout(input._emailCheckTimer);
+                input._emailCheckTimer = setTimeout(() => {
+
+                    fetch("{{ route('check.uniqueemail') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({
+                                email: email
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.exists) {
+                                input.classList.add('is-invalid');
+                                input.classList.remove('is-valid');
+                                hint.textContent = 'This email already exists in the database.';
+                                hint.style.color = 'red';
+                            } else {
+                                input.classList.remove('is-invalid');
+                                input.classList.add('is-valid');
+                                hint.textContent = 'Email available.';
+                                hint.style.color = 'green';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Email check failed:', error);
+                            hint.textContent = '⚠️ Server error. Try again.';
+                            hint.style.color = 'orange';
+                        });
+
+                }, 500); // 500ms debounce
             }
-
-            // Debounce to avoid excessive requests
-            clearTimeout(input._emailCheckTimer);
-            input._emailCheckTimer = setTimeout(() => {
-
-                fetch("{{ route('check.uniqueemail') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: JSON.stringify({ email: email })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.exists) {
-                        input.classList.add('is-invalid');
-                        input.classList.remove('is-valid');
-                        hint.textContent = 'This email already exists in the database.';
-                        hint.style.color = 'red';
-                    } else {
-                        input.classList.remove('is-invalid');
-                        input.classList.add('is-valid');
-                        hint.textContent = 'Email available.';
-                        hint.style.color = 'green';
-                    }
-                })
-                .catch(error => {
-                    console.error('Email check failed:', error);
-                    hint.textContent = '⚠️ Server error. Try again.';
-                    hint.style.color = 'orange';
-                });
-
-            }, 500); // 500ms debounce
-        }
+        });
     });
-});
 </script>
 
 @endsection
