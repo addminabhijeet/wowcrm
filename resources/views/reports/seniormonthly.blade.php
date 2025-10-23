@@ -398,6 +398,104 @@ $script = '<script>
 
     var chart = new ApexCharts(document.querySelector("#dailyIconBarChart"), options);
     chart.render();
+
+    var options = {
+        series: [{
+            name: "Sales",
+            data: [{
+                x: "Mon",
+                y: 20,
+            }, {
+                x: "Tue",
+                y: 40,
+            }, {
+                x: "Wed",
+                y: 20,
+            }, {
+                x: "Thur",
+                y: 30,
+            }, {
+                x: "Fri",
+                y: 40,
+            }, {
+                x: "Sat",
+                y: 35,
+            }]
+        }],
+        chart: {
+            type: "bar",
+            width: 164,
+            height: 80,
+            sparkline: {
+                enabled: true
+            },
+            toolbar: {
+                show: false
+            }
+        },
+        plotOptions: {
+            bar: {
+                borderRadius: 6,
+                horizontal: false,
+                columnWidth: 14,
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        states: {
+            hover: {
+                filter: {
+                    type: "none"
+                }
+            }
+        },
+        fill: {
+            type: "gradient",
+            colors: ["#E3E6E9"],
+            gradient: {
+                shade: "light",
+                type: "vertical",
+                shadeIntensity: 0.5,
+                gradientToColors: ["#E3E6E9"],
+                inverseColors: false,
+                opacityFrom: 1,
+                opacityTo: 1,
+                stops: [0, 100],
+            },
+        },
+        grid: {
+            show: false,
+            borderColor: "#D1D5DB",
+            strokeDashArray: 1,
+            position: "back",
+        },
+        xaxis: {
+            labels: {
+                show: false
+            },
+            type: "category",
+            categories: ["Mon", "Tue", "Wed", "Thur", "Fri", "Sat"]
+        },
+        yaxis: {
+            labels: {
+                show: false,
+                formatter: function(value) {
+                    return (value / 1000).toFixed(0) + "k";
+                }
+            }
+        },
+        tooltip: {
+            y: {
+                formatter: function(value) {
+                    return value / 1000 + "k";
+                }
+            }
+        }
+    };
+
+    var chart = new ApexCharts(document.querySelector("#dailyIconBar"), options);
+    chart.render();
 </script>';
 @endphp
 
@@ -412,14 +510,14 @@ $script = '<script>
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
                     <div>
                         <h5 class="fw-bold mb-1">📞 Calls Statistic</h5>
-                        <span class="text-muted small">Monthly Calls Overview</span>
+                        <span class="text-muted small">Yearly Calls Overview</span>
                     </div>
-                    <form method="GET" action="{{ route('call.reports.seniormonthly') }}" class="d-flex align-items-center gap-2">
-                        <label for="selected_month" class="form-label mb-0 fw-semibold small">Select Month:</label>
-                        <input type="month"
-                            name="selected_month"
-                            id="selected_month"
-                            value="{{ request('selected_month', date('Y-m')) }}"
+                    <form method="GET" action="{{ route('call.reports.senior') }}" class="d-flex align-items-center gap-2">
+                        <label for="selected_date" class="form-label mb-0 fw-semibold small">Select Date:</label>
+                        <input type="date"
+                            name="selected_date"
+                            id="selected_date"
+                            value="{{ request('selected_date', date('Y-m-d')) }}"
                             class="form-control form-control-sm"
                             onchange="this.form.submit()">
                     </form>
@@ -427,7 +525,6 @@ $script = '<script>
 
                 <!-- Stats Section -->
                 <div class="row g-3 mb-4">
-                    <!-- Total Calls -->
                     <div class="col-sm-6 col-md-3">
                         <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                             <div class="icon mb-2 text-primary fs-2">
@@ -435,12 +532,10 @@ $script = '<script>
                             </div>
                             <div>
                                 <small class="text-muted d-block">Total Calls (TC)</small>
-                                <h4 class="fw-bold text-dark mb-0">{{ $MtotalCalls }}</h4>
+                                <h4 class="fw-bold text-dark mb-0">{{ $StotalCalls }}</h4>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Other Calls -->
                     <div class="col-sm-6 col-md-3">
                         <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                             <div class="icon mb-2 text-success fs-2">
@@ -448,38 +543,33 @@ $script = '<script>
                             </div>
                             <div>
                                 <small class="text-muted d-block">Other Calls (OC)</small>
-                                <h4 class="fw-bold text-dark mb-0">{{ $MotherCalls }}</h4>
+                                <h4 class="fw-bold text-dark mb-0">{{ $SotherCalls }}</h4>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Called & Mailed -->
                     <div class="col-sm-6 col-md-3">
                         <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                            <div class="icon mb-2 text-info fs-2">
+                            <div class="icon mb-2 text-warning fs-2">
                                 <i class="bi bi-envelope-paper-fill"></i>
                             </div>
                             <div>
                                 <small class="text-muted d-block">Called & Mailed (C&MC)</small>
-                                <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
+                                <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Ready To Paid -->
                     <div class="col-sm-6 col-md-3">
                         <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                             <div class="icon mb-2 text-warning fs-2">
-                                <i class="bi bi-cash-stack"></i>
+                                <i class="bi bi-envelope-paper-fill"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block">Ready To Paid (R2P)</small>
-                                <h4 class="fw-bold text-dark mb-0">{{ $MreadyToPaidCalls }}</h4>
+                                <small class="text-muted d-block">Ready To Paid Calls (R2P)</small>
+                                <h4 class="fw-bold text-dark mb-0">{{ $SreadyToPaidCalls }}</h4>
                             </div>
                         </div>
                     </div>
                 </div>
-
 
                 <!-- Table Section -->
                 <div class="table-responsive">
@@ -572,7 +662,7 @@ $script = '<script>
                     <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                         <div>
                             <span class="text-secondary fw-normal d-block mb-1">Total Calls (TC)</span>
-                            <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
+                            <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
                         </div>
                         <div class="position-relative">
                             <div id="semiCircleGauge"></div>
@@ -586,7 +676,7 @@ $script = '<script>
                     <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                         <div>
                             <span class="text-secondary fw-normal d-block mb-1">Other Calls (OC)</span>
-                            <h5 class="fw-semibold mb-0">{{ $MotherCalls }}</h5>
+                            <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
                         </div>
                         <div id="areaChart" class="p-2"></div>
                     </div>
@@ -595,7 +685,7 @@ $script = '<script>
                     <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                         <div>
                             <span class="text-secondary fw-normal d-block mb-1">Called & Mailed Calls (C&MC)</span>
-                            <h5 class="fw-semibold mb-0">{{ $McalledAndMailedCalls }}</h5>
+                            <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
                         </div>
                         <div id="iconBarChartCmc" class="p-2"></div>
                     </div>
@@ -604,7 +694,7 @@ $script = '<script>
                     <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 shadow-sm bg-white">
                         <div>
                             <span class="text-secondary fw-normal d-block mb-1">Ready To Paid Calls (R2P)</span>
-                            <h5 class="fw-semibold mb-0">{{ $MreadyToPaidCalls }}</h5>
+                            <h5 class="fw-semibold mb-0">{{ $readyToPaidCalls }}</h5>
                         </div>
                         <div id="iconBarChartR2p" class="p-2"></div>
                     </div>
@@ -613,6 +703,7 @@ $script = '<script>
             </div>
         </div>
     </div>
+
 </div>
 
 @endsection
