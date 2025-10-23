@@ -253,10 +253,16 @@ $role = Auth::user()->role;
                     <span>Report</span>
                 </a>
                 <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.alljuniorlist', ['userId' => Auth::id()]) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Team Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
                     <li><a href="{{ route('call.reports.allseniorlist', ['userId' => Auth::id()]) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('call.reports.alljuniorlist', ['userId' => Auth::id()]) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Team Report</a></li>
+                    <li><a href="{{ route('call.reports.allaccountantlist', ['userId' => Auth::id()]) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Accountant Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.alltrainerlist', ['userId' => Auth::id()]) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer Report</a></li>
                 </ul>
             </li>
 
