@@ -54,7 +54,7 @@ $script = '<script>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($seniorUsers as $index => $user)
+                    @forelse($adminUsers as $index => $user)
                     <tr>
                         <td>{{ $index + 1 }}</td>
 
