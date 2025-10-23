@@ -133,7 +133,7 @@ class CalendarController extends Controller
         $trainerUsers = User::where('role', 'trainer')->get();
 
         // Pass users to the view
-        return view('calendar.alltrainerlist', compact('trainerUsers'));
+        return view('calendar.alladminlist', compact('trainerUsers'));
     }
 
     public function allSeniorlist(Request $request)
