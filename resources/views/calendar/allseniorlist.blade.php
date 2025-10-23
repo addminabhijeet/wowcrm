@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
-$title='All Junior Call Report';
-$subTitle = 'All Junior Call Report';
+$title='All Senior Call Report';
+$subTitle = 'All Senior Call Report';
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
         $(this).closest("tr").addClass("d-none")
@@ -63,7 +63,7 @@ $script = '<script>
                         <td>{{ $user->role }}</td>
 
                         <td class="text-center">
-                            <a href="{{ route('calendar.alljuniorUser', $user->id) }}" class="btn btn-sm btn-primary">
+                            <a href="{{ route('calendar.allseniorUser', $user->id) }}" class="btn btn-sm btn-primary">
                                 View 
                             </a>
                         </td>
@@ -71,7 +71,7 @@ $script = '<script>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center">No junior users found.</td>
+                        <td colspan="7" class="text-center">No senior users found.</td>
                     </tr>
                     @endforelse
                 </tbody>
