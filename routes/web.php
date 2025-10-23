@@ -94,8 +94,8 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/accountant/calendar/', [CalendarController::class, 'accountantUser'])->name('calendar.accountantUser');
     Route::get('/dashboard/trainer/calendar/', [CalendarController::class, 'trainerUser'])->name('calendar.trainerUser');
     Route::get('/dashboard/senior/calendar/allseniorlist', [CalendarController::class, 'allSeniorlist'])->name('calendar.allSeniorlist');
-    Route::get('/dashboard/admin/calendar/allaccountantlist', [CalendarController::class, 'allAccountantlist'])->name('calendar.allAccountantlist');
-    Route::get('/dashboard/admin/calendar/alltrainerlist', [CalendarController::class, 'allTrainerlist'])->name('calendar.allTrainerlist');
+    Route::get('/dashboard/senior/calendar/allaccountantlist', [CalendarController::class, 'allAccountantlist'])->name('calendar.allAccountantlist');
+    Route::get('/dashboard/senior/calendar/alltrainerlist', [CalendarController::class, 'allTrainerlist'])->name('calendar.allTrainerlist');
 
     Route::get('/dashboard/admin/google-sheet', [GoogleSheetController::class, 'index'])->name('google.sheet.index');
     Route::post('/dashboard/admin/google-sheet/fetch', [GoogleSheetController::class, 'adminfetch'])->name('google.sheet.adminfetch');
