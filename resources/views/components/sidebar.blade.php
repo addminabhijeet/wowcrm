@@ -266,7 +266,7 @@ $role = Auth::user()->role;
                     <span>Timer</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('timer.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Report</a></li>
+                    <li><a href="{{ route('timer.allsenior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('timer.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Report</a></li>
