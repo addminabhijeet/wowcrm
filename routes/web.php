@@ -84,6 +84,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/junior/calendar/events', [CalendarController::class, 'juniorEvents'])->name('calendar.juniorEvents');
     Route::get('/dashboard/senior/calendar/', [CalendarController::class, 'seniorUser'])->name('calendar.seniorUser');
     Route::get('/dashboard/senior/calendar/alljuniorlist', [CalendarController::class, 'allJuniorlist'])->name('calendar.allJuniorlist');
+    Route::get('/dashboard/senior/calendar/alladminlist', [CalendarController::class, 'allAdminlist'])->name('calendar.allAdminlist');
     Route::get('/dashboard/senior/calendar/alljunior/{userId}', [CalendarController::class, 'alljuniorUser'])->name('calendar.alljuniorUser');
     Route::get('/dashboard/senior/calendar/allsenior/{userId}', [CalendarController::class, 'allseniorUser'])->name('calendar.allseniorUser');
     Route::get('/dashboard/senior/calendar/allaccountant/{userId}', [CalendarController::class, 'allaccountantUser'])->name('calendar.allaccountantUser');
