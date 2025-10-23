@@ -349,6 +349,24 @@ class CallReportController extends Controller
         return view('reports.allseniorlist', compact('seniorUsers'));
     }
 
+    public function allaccountantlist(Request $request)
+    {
+        // Fetch all users with role 'senior'
+        $accountantUsers = User::where('role', 'accountant')->get();
+
+        // Pass users to the view
+        return view('reports.allaccountantlist', compact('accountantUsers'));
+    }
+
+    public function alltrainerlist(Request $request)
+    {
+        // Fetch all users with role 'trainer'
+        $trainerUsers = User::where('role', 'trainer')->get();
+
+        // Pass users to the view
+        return view('reports.alltrainerlist', compact('trainerUsers'));
+    }
+
     public function alljuniordaily(Request $request, $userId)
     {
         // Get the junior user
