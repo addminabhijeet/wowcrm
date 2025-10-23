@@ -88,6 +88,17 @@ class GoogleSheetController extends Controller
         return redirect()->route('google.sheet.admin')->with('success', 'Data fetched successfully!');
     }
 
+    public function checkEmail(Request $request)
+    {
+        $email = $request->input('email');
+
+        $exists = GoogleSheetData::where('Email_Address', $email)->exists();
+
+        return response()->json([
+            'exists' => $exists
+        ]);
+    }
+
 
     public function adminupdate(Request $request)
     {
