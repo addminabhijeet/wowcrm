@@ -305,6 +305,144 @@ class CalendarController extends Controller
 
 
 
+    public function getAllSeniorEvents(Request $request, $userId)
+    {
+        // ✅ Fetch the junior user
+        $junior = User::where('id', $userId)
+            ->where('role', 'junior')
+            ->first();
+
+        if (!$junior) {
+            return response()->json(['error' => 'Junior user not found'], 404);
+        }
+
+        // ✅ Fetch all events for this junior (latest first)
+        $events = UserTimerPause::where('user_id', $junior->id)
+            ->orderBy('event_time', 'desc')
+            ->get();
+
+        // ✅ Define color mapping for clarity
+        $labelColors = [
+            'start'  => '#007bff',
+            'resume' => '#28a745',
+            'pause'  => '#ffc107',
+            'stop'   => '#dc3545',
+            'other'  => '#6c757d'
+        ];
+
+        // ✅ Format event data for FullCalendar
+        $eventsData = $events->map(function ($event) use ($labelColors) {
+            $type = strtolower($event->pause_type ?? 'other');
+
+            return [
+                'id'    => $event->id,
+                'title' => ucfirst($type),
+                'start' => $event->event_time,
+                'allDay' => false,
+                'extendedProps' => [
+                    'status'            => $event->status ?? 'N/A',
+                    'pause_type'        => $type,
+                    'remaining_seconds' => $event->remaining_seconds ?? 0,
+                    'label_color'       => $labelColors[$type] ?? $labelColors['other'],
+                ]
+            ];
+        });
+
+        return response()->json($eventsData);
+    }
+
+    public function getAllAccountantEvents(Request $request, $userId)
+    {
+        // ✅ Fetch the junior user
+        $junior = User::where('id', $userId)
+            ->where('role', 'junior')
+            ->first();
+
+        if (!$junior) {
+            return response()->json(['error' => 'Junior user not found'], 404);
+        }
+
+        // ✅ Fetch all events for this junior (latest first)
+        $events = UserTimerPause::where('user_id', $junior->id)
+            ->orderBy('event_time', 'desc')
+            ->get();
+
+        // ✅ Define color mapping for clarity
+        $labelColors = [
+            'start'  => '#007bff',
+            'resume' => '#28a745',
+            'pause'  => '#ffc107',
+            'stop'   => '#dc3545',
+            'other'  => '#6c757d'
+        ];
+
+        // ✅ Format event data for FullCalendar
+        $eventsData = $events->map(function ($event) use ($labelColors) {
+            $type = strtolower($event->pause_type ?? 'other');
+
+            return [
+                'id'    => $event->id,
+                'title' => ucfirst($type),
+                'start' => $event->event_time,
+                'allDay' => false,
+                'extendedProps' => [
+                    'status'            => $event->status ?? 'N/A',
+                    'pause_type'        => $type,
+                    'remaining_seconds' => $event->remaining_seconds ?? 0,
+                    'label_color'       => $labelColors[$type] ?? $labelColors['other'],
+                ]
+            ];
+        });
+
+        return response()->json($eventsData);
+    }
+
+    public function getAllTrainerEvents(Request $request, $userId)
+    {
+        // ✅ Fetch the junior user
+        $junior = User::where('id', $userId)
+            ->where('role', 'junior')
+            ->first();
+
+        if (!$junior) {
+            return response()->json(['error' => 'Junior user not found'], 404);
+        }
+
+        // ✅ Fetch all events for this junior (latest first)
+        $events = UserTimerPause::where('user_id', $junior->id)
+            ->orderBy('event_time', 'desc')
+            ->get();
+
+        // ✅ Define color mapping for clarity
+        $labelColors = [
+            'start'  => '#007bff',
+            'resume' => '#28a745',
+            'pause'  => '#ffc107',
+            'stop'   => '#dc3545',
+            'other'  => '#6c757d'
+        ];
+
+        // ✅ Format event data for FullCalendar
+        $eventsData = $events->map(function ($event) use ($labelColors) {
+            $type = strtolower($event->pause_type ?? 'other');
+
+            return [
+                'id'    => $event->id,
+                'title' => ucfirst($type),
+                'start' => $event->event_time,
+                'allDay' => false,
+                'extendedProps' => [
+                    'status'            => $event->status ?? 'N/A',
+                    'pause_type'        => $type,
+                    'remaining_seconds' => $event->remaining_seconds ?? 0,
+                    'label_color'       => $labelColors[$type] ?? $labelColors['other'],
+                ]
+            ];
+        });
+
+        return response()->json($eventsData);
+    }
+
     public function getAllJuniorEvents(Request $request, $userId)
     {
         // ✅ Fetch the junior user
