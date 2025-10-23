@@ -1231,8 +1231,8 @@ class CallReportController extends Controller
 
     public function allseniormonthly(Request $request, $userId)
     {
-        $seniorUser = User::findOrFail($userId);
-        $createdByKey = "{$seniorUser->id}|senior";
+        $user = Auth::user();
+        $createdByKey = "{$user->id}|senior";
 
         // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
@@ -1251,12 +1251,19 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
-        // Total other calls (not "Called & Mailed")
+        // Total "Ready To Paid" calls
+        $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Ready To Paid')
+            ->count();
+
+        // Total other calls (not "Called & Mailed" or "Ready To Paid")
         $MotherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
                     ->orWhereNull('Exe_Remarks');
             })
             ->count();
@@ -1272,13 +1279,23 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
+        // Hour-wise "Ready To Paid" counts
+        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Ready To Paid')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
         // Hour-wise "Other Calls" counts
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
                     ->orWhereNull('Exe_Remarks');
             })
             ->groupBy('hour')
@@ -1309,10 +1326,22 @@ class CallReportController extends Controller
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
+        $r10to11am = $hourlyReadyToPaid[10] ?? 0;
+        $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
+        $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
+        $r1to2pm   = $hourlyReadyToPaid[13] ?? 0;
+        $r2to3pm   = $hourlyReadyToPaid[14] ?? 0;
+        $r3to4pm   = $hourlyReadyToPaid[15] ?? 0;
+        $r4to5pm   = $hourlyReadyToPaid[16] ?? 0;
+        $r5to6pm   = $hourlyReadyToPaid[17] ?? 0;
+        $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
+        $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
+
+
         return view('reports.allseniormonthly', compact(
-            'seniorUser',
             'MtotalCalls',
             'McalledAndMailedCalls',
+            'MreadyToPaidCalls',
             'MotherCalls',
             'selectedMonth',
             't10to11am',
@@ -1334,7 +1363,18 @@ class CallReportController extends Controller
             'o4to5pm',
             'o5to6pm',
             'o6to7pm',
-            'o7to8pm'
+            'o7to8pm',
+            'r10to11am',
+            'r11to12pm',
+            'r12to1pm',
+            'r1to2pm',
+            'r2to3pm',
+            'r3to4pm',
+            'r4to5pm',
+            'r5to6pm',
+            'r6to7pm',
+            'r7to8pm'
+
         ));
     }
 
