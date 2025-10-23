@@ -136,6 +136,15 @@ class CalendarController extends Controller
         return view('calendar.alltrainerlist', compact('trainerUsers'));
     }
 
+    public function allSeniorlist(Request $request)
+    {
+        // Fetch all users with role 'senior'
+        $seniorUsers = User::where('role', 'senior')->get();
+
+        // Pass users to the view
+        return view('calendar.alltrainerlist', compact('seniorUsers'));
+    }
+
     public function alljuniorUser(Request $request, $user_id)
     {
         $view = $request->input('view', 'month'); // day, week, month
