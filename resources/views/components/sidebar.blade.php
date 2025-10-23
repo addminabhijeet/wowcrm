@@ -196,22 +196,22 @@ $role = Auth::user()->role;
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
-                    <span>Candidate</span>
+                    <span>Users</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('users.admin') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Employee</a></li>
+                    <li><a href="{{ route('users.admin') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Admin</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('users.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Candidate</a></li>
+                    <li><a href="{{ route('users.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('users.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Candidate</a></li>
+                    <li><a href="{{ route('users.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('users.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Accountant Candidate</a></li>
+                    <li><a href="{{ route('users.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Accountant</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('users.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer Candidate</a></li>
+                    <li><a href="{{ route('users.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer</a></li>
                 </ul>
             </li>
 
