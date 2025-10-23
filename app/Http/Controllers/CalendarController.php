@@ -227,6 +227,83 @@ class CalendarController extends Controller
         return view('calendar.allsenior', compact('events', 'view', 'date', 'senior'));
     }
 
+    public function allaccountantUser(Request $request, $user_id)
+    {
+        $view = $request->input('view', 'month'); // day, week, month
+        $date = $request->input('date', now());
+
+        $start = $end = Carbon::parse($date);
+
+        switch ($view) {
+            case 'day':
+                $start = $start->startOfDay();
+                $end = $end->endOfDay();
+                break;
+            case 'week':
+                $start = $start->startOfWeek();
+                $end = $end->endOfWeek();
+                break;
+            default: // month
+                $start = $start->startOfMonth();
+                $end = $end->endOfMonth();
+                break;
+        }
+
+        // ✅ Fetch the accountant user details
+        $accountant = User::find($user_id);
+
+        if (!$accountant) {
+            abort(404, 'Accountant not found');
+        }
+
+        $events = UserTimerPause::where('user_id', $user_id)
+            ->whereBetween('event_time', [$start, $end])
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        // ✅ Pass $accountant to view
+        return view('calendar.allaccountant', compact('events', 'view', 'date', 'accountant'));
+    }
+
+    public function alltrainerUser(Request $request, $user_id)
+    {
+        $view = $request->input('view', 'month'); // day, week, month
+        $date = $request->input('date', now());
+
+        $start = $end = Carbon::parse($date);
+
+        switch ($view) {
+            case 'day':
+                $start = $start->startOfDay();
+                $end = $end->endOfDay();
+                break;
+            case 'week':
+                $start = $start->startOfWeek();
+                $end = $end->endOfWeek();
+                break;
+            default: // month
+                $start = $start->startOfMonth();
+                $end = $end->endOfMonth();
+                break;
+        }
+
+        // ✅ Fetch the trainer user details
+        $trainer = User::find($user_id);
+
+        if (!$trainer) {
+            abort(404, 'Trainer not found');
+        }
+
+        $events = UserTimerPause::where('user_id', $user_id)
+            ->whereBetween('event_time', [$start, $end])
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        // ✅ Pass $trainer to view
+        return view('calendar.alltrainer', compact('events', 'view', 'date', 'trainer'));
+    }
+
+
 
     public function getAllJuniorEvents(Request $request, $userId)
     {
