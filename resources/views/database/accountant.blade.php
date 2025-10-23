@@ -65,24 +65,8 @@ $script ='<script>
 
                         {{-- Date --}}
                         <td>
-                            @php
-                            $dateValue = '';
-                            if (!empty($row->Date) && \Carbon\Carbon::hasFormat($row->Date, 'Y-m-d')) {
-                            $dateValue = \Carbon\Carbon::parse($row->Date)->format('m/d/Y');
-                            } elseif (!empty($row->Date)) {
-                            // Try to safely parse unknown format
-                            try {
-                            $dateValue = \Carbon\Carbon::parse($row->Date)->format('m/d/Y');
-                            } catch (\Exception $e) {
-                            $dateValue = '';
-                            }
-                            }
-                            @endphp
-
-                            <input type="text"
-                                class="form-control date-picker"
-                                data-key="Date"
-                                value="{{ $dateValue }}">
+                            <input type="text" class="form-control date-picker" data-key="Date"
+                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
                         </td>
 
                         {{-- Name --}}
@@ -131,21 +115,8 @@ $script ='<script>
 
                         {{-- Graduation Date --}}
                         <td>
-                            @php
-                            $gradDateValue = '';
-                            if (!empty($row->Graduation_Date)) {
-                            try {
-                            $gradDateValue = \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y');
-                            } catch (\Exception $e) {
-                            $gradDateValue = '';
-                            }
-                            }
-                            @endphp
-
-                            <input type="text"
-                                class="form-control date-picker"
-                                data-key="Graduation_Date"
-                                value="{{ $gradDateValue }}">
+                            <input type="text" class="form-control date-picker" data-key="Graduation Date"
+                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
                         </td>
 
                         {{-- Immigration --}}
@@ -1125,5 +1096,63 @@ $script ='<script>
         });
     });
 </script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Get CSRF token from meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    // Attach input listener for dynamically added rows too
+    document.addEventListener('input', function (e) {
+        if (e.target.matches('.email-input')) {
+            const input = e.target;
+            const email = input.value.trim();
+            const hint = input.nextElementSibling;
+
+            // Basic email validation before checking DB
+            if (email.length < 5 || !email.includes('@')) {
+                hint.textContent = '';
+                input.classList.remove('is-invalid', 'is-valid');
+                return;
+            }
+
+            // Debounce to avoid excessive requests
+            clearTimeout(input._emailCheckTimer);
+            input._emailCheckTimer = setTimeout(() => {
+
+                fetch("{{ route('check.uniqueemail') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+                        hint.textContent = 'This email already exists in the database.';
+                        hint.style.color = 'red';
+                    } else {
+                        input.classList.remove('is-invalid');
+                        input.classList.add('is-valid');
+                        hint.textContent = 'Email available.';
+                        hint.style.color = 'green';
+                    }
+                })
+                .catch(error => {
+                    console.error('Email check failed:', error);
+                    hint.textContent = '⚠️ Server error. Try again.';
+                    hint.style.color = 'orange';
+                });
+
+            }, 500); // 500ms debounce
+        }
+    });
+});
+</script>
+
 
 @endsection
