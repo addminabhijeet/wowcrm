@@ -92,7 +92,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/admin/calendar/', [CalendarController::class, 'adminUser'])->name('calendar.adminUser');
     Route::get('/dashboard/accountant/calendar/', [CalendarController::class, 'accountantUser'])->name('calendar.accountantUser');
     Route::get('/dashboard/trainer/calendar/', [CalendarController::class, 'trainerUser'])->name('calendar.trainerUser');
-    Route::get('/dashboard/admin/calendar/allseniorlist', [CalendarController::class, 'allSeniorlist'])->name('calendar.allSeniorlist');
+    Route::get('/dashboard/senior/calendar/allseniorlist', [CalendarController::class, 'allSeniorlist'])->name('calendar.allSeniorlist');
     Route::get('/dashboard/admin/calendar/allaccountantlist', [CalendarController::class, 'allAccountantlist'])->name('calendar.allAccountantlist');
     Route::get('/dashboard/admin/calendar/alltrainerlist', [CalendarController::class, 'allTrainerlist'])->name('calendar.allTrainerlist');
 
