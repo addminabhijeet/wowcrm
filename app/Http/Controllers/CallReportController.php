@@ -503,22 +503,22 @@ class CallReportController extends Controller
     public function allaccountantdaily(Request $request, $userId)
     {
         // Get the accountant user
-        $accountantUser = User::findOrFail($userId);
-        $createdByKey = "{$accountantUser->id}|accountant";
+        $juniorUser = User::findOrFail($userId);
+        $createdByKey = "{$juniorUser->id}|junior";
 
         // ================================
         // Main logic with LIKE filters
         // ================================
 
-        // Total calls for this accountant (including hierarchical keys)
+        // Total calls for this junior (including hierarchical keys)
         $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
 
-        // Total "Called & Mailed" calls for this accountant
+        // Total "Called & Mailed" calls for this junior
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
-        // Total other calls for this accountant
+        // Total other calls for this junior
         $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where(function ($q) {
                 $q->where('Exe_Remarks', '<>', 'Called & Mailed')
@@ -527,7 +527,7 @@ class CallReportController extends Controller
             ->count();
 
 
-        // Group data by hour of updated_at (for this accountant)
+        // Group data by hour of updated_at (for this junior)
         $hourlyCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->groupBy('hour')
@@ -538,11 +538,11 @@ class CallReportController extends Controller
         // Selected date (default today)
         $selectedDate = $request->input('selected_date', date('Y-m-d'));
 
-        // Base query filtered by this accountant and date
+        // Base query filtered by this junior and date
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate);
 
-        // Selected date totals for this accountant
+        // Selected date totals for this junior
         $StotalCalls = $query->count();
 
         $ScalledAndMailedCalls = (clone $query)
@@ -602,7 +602,7 @@ class CallReportController extends Controller
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
-        return view('reports.allaccountantdaily', compact(
+        return view('reports.alljuniordaily', compact(
             'totalCalls',
             'calledAndMailedCalls',
             'otherCalls',
