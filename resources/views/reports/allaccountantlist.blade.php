@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
-$title='All Junior Call Report';
-$subTitle = 'All Junior Call Report';
+$title='All Accountant Call Report';
+$subTitle = 'All Accountant Call Report';
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
         $(this).closest("tr").addClass("d-none")
@@ -54,7 +54,7 @@ $script = '<script>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($juniorUsers as $index => $user)
+                    @forelse($accountantUsers as $index => $user)
                     <tr>
                         <td>{{ $index + 1 }}</td>
 
@@ -63,11 +63,11 @@ $script = '<script>
                         <td>{{ $user->role }}</td>
 
                         <td class="text-center">
-                            <a href="{{ route('call.reports.alljuniormonthly', $user->id) }}" class="btn btn-sm btn-primary">
+                            <a href="{{ route('call.reports.allaccountantmonthly', $user->id) }}" class="btn btn-sm btn-primary">
                                 View Monthly
                             </a>
 
-                            <a href="{{ route('call.reports.alljuniordaily', $user->id) }}" class="btn btn-sm btn-success">
+                            <a href="{{ route('call.reports.allaccountantdaily', $user->id) }}" class="btn btn-sm btn-success">
                                 View Daily
                             </a>
                         </td>
@@ -75,7 +75,7 @@ $script = '<script>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center">No junior users found.</td>
+                        <td colspan="7" class="text-center">No accountant users found.</td>
                     </tr>
                     @endforelse
                 </tbody>
