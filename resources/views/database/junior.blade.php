@@ -1133,12 +1133,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (data.exists) {
                         input.classList.add('is-invalid');
                         input.classList.remove('is-valid');
-                        hint.textContent = '⚠️ This email already exists in the database.';
+                        hint.textContent = 'This email already exists in the database.';
                         hint.style.color = 'red';
                     } else {
                         input.classList.remove('is-invalid');
                         input.classList.add('is-valid');
-                        hint.textContent = '✅ Email available.';
+                        hint.textContent = 'Email available.';
                         hint.style.color = 'green';
                     }
                 })
