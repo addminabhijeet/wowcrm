@@ -54,7 +54,7 @@ $script = '<script>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($juniorUsers as $index => $user)
+                    @forelse($trainerUsers as $index => $user)
                     <tr>
                         <td>{{ $index + 1 }}</td>
 
@@ -63,7 +63,7 @@ $script = '<script>
                         <td>{{ $user->role }}</td>
 
                         <td class="text-center">
-                            <a href="{{ route('calendar.alljuniorUser', $user->id) }}" class="btn btn-sm btn-primary">
+                            <a href="{{ route('calendar.alltrainerUser', $user->id) }}" class="btn btn-sm btn-primary">
                                 View 
                             </a>
                         </td>
