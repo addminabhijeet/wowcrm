@@ -221,7 +221,7 @@ $role = Auth::user()->role;
                     <span>Calendar</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('calendar.seniorUser') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Personal Calendar</a></li>
+                    <li><a href="{{ route('calendar.adminUser') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Personal Calendar</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Junior Calendar</a></li>
@@ -230,10 +230,10 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('calendar.allSeniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Senior Calendar</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('calendar.allSeniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Account Calendar</a></li>
+                    <li><a href="{{ route('calendar.allAccountantlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Account Calendar</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('calendar.allSeniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Trainer Calendar</a></li>
+                    <li><a href="{{ route('calendar.allTrainerlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Trainer Calendar</a></li>
                 </ul>
             </li>
 
