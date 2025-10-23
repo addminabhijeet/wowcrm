@@ -482,6 +482,138 @@ class CallReportController extends Controller
         ));
     }
 
+    public function allseniordaily(Request $request, $userId)
+    {
+        // Get the junior user
+        $juniorUser = User::findOrFail($userId);
+        $createdByKey = "{$juniorUser->id}|junior";
+
+        // ================================
+        // Main logic with LIKE filters
+        // ================================
+
+        // Total calls for this junior (including hierarchical keys)
+        $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
+
+        // Total "Called & Mailed" calls for this junior
+        $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->count();
+
+        // Total other calls for this junior
+        $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
+            ->count();
+
+
+        // Group data by hour of updated_at (for this junior)
+        $hourlyCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->groupBy('hour')
+            ->orderBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Selected date (default today)
+        $selectedDate = $request->input('selected_date', date('Y-m-d'));
+
+        // Base query filtered by this junior and date
+        $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate);
+
+        // Selected date totals for this junior
+        $StotalCalls = $query->count();
+
+        $ScalledAndMailedCalls = (clone $query)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->count();
+
+        $SotherCalls = (clone $query)
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
+            ->count();
+
+
+        // Hour-wise "Called & Mailed" counts
+        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate)
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+
+
+        // Initialize hour blocks (10 AM - 8 PM)
+        $t10to11am = $hourlyCalledMailed[10] ?? 0;
+        $t11to12pm = $hourlyCalledMailed[11] ?? 0;
+        $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
+        $t1to2pm   = $hourlyCalledMailed[13] ?? 0;
+        $t2to3pm   = $hourlyCalledMailed[14] ?? 0;
+        $t3to4pm   = $hourlyCalledMailed[15] ?? 0;
+        $t4to5pm   = $hourlyCalledMailed[16] ?? 0;
+        $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
+        $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
+        $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+
+        $o10to11am = $hourlyOtherCalls[10] ?? 0;
+        $o11to12pm = $hourlyOtherCalls[11] ?? 0;
+        $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
+        $o1to2pm   = $hourlyOtherCalls[13] ?? 0;
+        $o2to3pm   = $hourlyOtherCalls[14] ?? 0;
+        $o3to4pm   = $hourlyOtherCalls[15] ?? 0;
+        $o4to5pm   = $hourlyOtherCalls[16] ?? 0;
+        $o5to6pm   = $hourlyOtherCalls[17] ?? 0;
+        $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
+        $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
+
+        return view('reports.allseniordaily', compact(
+            'totalCalls',
+            'calledAndMailedCalls',
+            'otherCalls',
+            'StotalCalls',
+            'ScalledAndMailedCalls',
+            'SotherCalls',
+            'selectedDate',
+            't10to11am',
+            't11to12pm',
+            't12to1pm',
+            't1to2pm',
+            't2to3pm',
+            't3to4pm',
+            't4to5pm',
+            't5to6pm',
+            't6to7pm',
+            't7to8pm',
+            'o10to11am',
+            'o11to12pm',
+            'o12to1pm',
+            'o1to2pm',
+            'o2to3pm',
+            'o3to4pm',
+            'o4to5pm',
+            'o5to6pm',
+            'o6to7pm',
+            'o7to8pm'
+        ));
+    }
 
 
 
