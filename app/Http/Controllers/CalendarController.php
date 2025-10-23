@@ -11,29 +11,10 @@ use App\Models\User;
 
 class CalendarController extends Controller
 {
-    public function index($month = null, $year = null)
+    public function index()
     {
-        $month = $month ?? date('m');
-        $year = $year ?? date('Y');
-
-        $startOfMonth = Carbon::createFromDate($year, $month, 1);
-        $endOfMonth = $startOfMonth->copy()->endOfMonth();
-
-        // Get all days in month
-        $dates = [];
-        for ($day = $startOfMonth->day; $day <= $endOfMonth->day; $day++) {
-            $dates[] = $startOfMonth->copy()->day($day);
-        }
-
-        // Get attendance for logged-in user
-        $attendances = Attendance::where('user_id', Auth::id())
-            ->whereBetween('date', [$startOfMonth, $endOfMonth])
-            ->get()
-            ->keyBy(function ($item) {
-                return $item->date->format('Y-m-d');
-            });
-
-        return view('calendar.admin', compact('dates', 'attendances', 'month', 'year'));
+        
+        return view('calendar.admin');
     }
 
     public function juniorUser(Request $request)
