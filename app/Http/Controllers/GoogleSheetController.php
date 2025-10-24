@@ -396,11 +396,10 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
+        $juniorUserId = $request->input('junior_user'); // dropdown value
 
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
-
-        $juniorUserId = $request->input('junior_user'); // dropdown value
 
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
             $q->where('created_by', $authUser->id . '|senior')
@@ -414,6 +413,7 @@ class GoogleSheetController extends Controller
             $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
         }
 
+        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -424,19 +424,22 @@ class GoogleSheetController extends Controller
             });
         }
 
-
+        // Pagination with appended filters for AJAX navigation
         $data = $query->orderBy('Date', 'desc')->paginate(10);
+        $data->appends([
+            'search' => $search,
+            'row_id' => $rowId,
+            'junior_user' => $juniorUserId,
+        ]);
 
         // Map forwarded_by dynamically
         $data->getCollection()->transform(function ($item) use ($authUser) {
-
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
-
                 $names = [];
+
                 foreach ($entries as $entry) {
                     $parts = explode('|', $entry);
                     $userId = $parts[0] ?? null;
@@ -453,7 +456,6 @@ class GoogleSheetController extends Controller
                     }
                 }
 
-                // Join all names for forwarded chain
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -468,12 +470,14 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
 
+        // Handle AJAX request for both search and pagination
         if ($request->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
         }
 
         return view('database.senior', compact('data', 'juniorUsers'));
     }
+
 
     public function seniorcandm(Request $request)
     {

@@ -903,7 +903,6 @@ $script ='<script>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-<!-- AJAX Search + Suggestions + Pagination -->
 <script>
     $(document).ready(function() {
 
@@ -923,13 +922,15 @@ $script ='<script>
         // -----------------------------
         // Fetch Table Data via AJAX
         // -----------------------------
-        function fetchTable(search = '', page = 1) {
+        function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
             $.ajax({
                 url: "{{ route('google.sheet.senior') }}",
                 type: 'GET',
                 data: {
                     search,
-                    page
+                    page,
+                    junior_user,
+                    row_id
                 },
                 success: function(res) {
                     $('#senior-table-wrapper').html(res);
@@ -945,9 +946,11 @@ $script ='<script>
         // -----------------------------
         const showSuggestions = debounce(function() {
             const query = $('#senior-search').val().trim();
+            const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+
             if (query.length < 3) {
                 $('#search-suggestions').empty().hide();
-                fetchTable(''); // reset table
+                fetchTable('', 1, junior_user); // reset table
                 return;
             }
 
@@ -976,36 +979,31 @@ $script ='<script>
         // Click suggestion
         $(document).on('click', '#search-suggestions a', function(e) {
             e.preventDefault();
-            const rowId = $(this).data('id'); // get the row ID
+            const rowId = $(this).data('id');
+            const junior_user = $('#junior-filter').val();
             $('#senior-search').val($(this).text());
             $('#search-suggestions').empty().hide();
 
-            // Fetch only this row
-            $.ajax({
-                url: "{{ route('google.sheet.senior') }}",
-                type: 'GET',
-                data: {
-                    row_id: rowId
-                },
-                success: function(res) {
-                    $('#senior-table-wrapper').html(res);
-                },
-                error: function(err) {
-                    console.error(err);
-                }
-            });
+            fetchTable('', 1, junior_user, rowId);
         });
 
-
-        // Pagination click
+        // Pagination click (AJAX)
         $(document).on('click', '.pagination a', function(e) {
             e.preventDefault();
             const page = $(this).attr('href').split('page=')[1];
-            const search = $('#senior-search').val();
-            fetchTable(search, page);
+            const search = $('#senior-search').val().trim();
+            const junior_user = $('#junior-filter').val() || '';
+            fetchTable(search, page, junior_user);
         });
 
-        // Click outside suggestions
+        // Junior dropdown filter
+        $(document).on('change', '#junior-filter', function() {
+            const junior_user = $(this).val();
+            const search = $('#senior-search').val().trim();
+            fetchTable(search, 1, junior_user);
+        });
+
+        // Click outside suggestions to hide
         $(document).click(function(e) {
             if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
                 $('#search-suggestions').empty().hide();
@@ -1014,6 +1012,7 @@ $script ='<script>
 
     });
 </script>
+
 
 <style>
     .scroll-sm {
