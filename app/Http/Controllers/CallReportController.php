@@ -769,7 +769,7 @@ class CallReportController extends Controller
 
     public function allseniordaily(Request $request, $userId)
     {
-        $createdByKey = "{$userId->id}|senior";
+        $createdByKey = "{$userId}|senior";
 
         // ================================
         // Main logic with LIKE filters
