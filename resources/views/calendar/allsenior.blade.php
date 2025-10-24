@@ -75,7 +75,7 @@ $subTitle = 'Calendar';
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
-            events: "{{ route('calendar.allSeniorEvents', ['userId' => $senior->id]) }}",
+            events: "{{ route('calendar.allSeniorEvents') }}",
             displayEventTime: false,
             displayEventEnd: false,
             eventContent: function() {
@@ -156,6 +156,7 @@ $subTitle = 'Calendar';
                             activeWorkSec += durationSec;
                         }
                     }
+
 
                     // Build table rows (original code)
                     for (let i = 0; i < chronologicalEvents.length; i++) {

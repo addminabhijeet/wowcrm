@@ -189,7 +189,7 @@ class CalendarController extends Controller
         return view('calendar.alljunior', compact('events', 'view', 'date', 'junior'));
     }
 
-    public function allseniorUser(Request $request, $user_id)
+    public function allseniorUser(Request $request)
     {
         $view = $request->input('view', 'month'); // day, week, month
         $date = $request->input('date', now());
@@ -211,20 +211,7 @@ class CalendarController extends Controller
                 break;
         }
 
-        // ✅ Fetch the senior user details
-        $senior = User::find($user_id);
-
-        if (!$senior) {
-            abort(404, 'Senior not found');
-        }
-
-        $events = UserTimerPause::where('user_id', $user_id)
-            ->whereBetween('event_time', [$start, $end])
-            ->orderBy('event_time', 'asc')
-            ->get();
-
-        // ✅ Pass $senior to view
-        return view('calendar.allsenior', compact('events', 'view', 'date', 'senior'));
+        return view('calendar.allsenior', compact('view', 'date'));
     }
 
     public function allaccountantUser(Request $request, $user_id)
@@ -303,25 +290,15 @@ class CalendarController extends Controller
         return view('calendar.alltrainer', compact('events', 'view', 'date', 'trainer'));
     }
 
-
-
     public function getAllSeniorEvents(Request $request, $userId)
     {
-        // ✅ Fetch the junior user
-        $junior = User::where('id', $userId)
-            ->where('role', 'junior')
-            ->first();
 
-        if (!$junior) {
-            return response()->json(['error' => 'Junior user not found'], 404);
-        }
-
-        // ✅ Fetch all events for this junior (latest first)
-        $events = UserTimerPause::where('user_id', $junior->id)
-            ->orderBy('event_time', 'desc')
+        // Fetch events sorted by latest first
+        $events = UserTimerPause::where('user_id', $userId)
+            ->orderBy('event_time', 'desc')  // <-- Latest events first
             ->get();
 
-        // ✅ Define color mapping for clarity
+        // Define color mapping for clarity
         $labelColors = [
             'start'  => '#007bff',
             'resume' => '#28a745',
@@ -330,7 +307,6 @@ class CalendarController extends Controller
             'other'  => '#6c757d'
         ];
 
-        // ✅ Format event data for FullCalendar
         $eventsData = $events->map(function ($event) use ($labelColors) {
             $type = strtolower($event->pause_type ?? 'other');
 
@@ -507,7 +483,7 @@ class CalendarController extends Controller
 
     public function seniorUser(Request $request)
     {
-        $view = $request->input('view', 'month'); // day, week, month
+        $view = $request->input('view', 'month');
         $date = $request->input('date', now());
 
         $start = $end = Carbon::parse($date);
