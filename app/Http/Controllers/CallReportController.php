@@ -769,8 +769,7 @@ class CallReportController extends Controller
 
     public function allseniordaily(Request $request, $userId)
     {
-        $user = Auth::user();
-        $createdByKey = "{$user->id}|senior";
+        $createdByKey = "{$userId->id}|senior";
 
         // ================================
         // Main logic with LIKE filters
@@ -1264,8 +1263,7 @@ class CallReportController extends Controller
 
     public function allseniormonthly(Request $request, $userId)
     {
-        $user = Auth::user();
-        $createdByKey = "{$user->id}|senior";
+        $createdByKey = "{$userId->id}|senior";
 
         // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
