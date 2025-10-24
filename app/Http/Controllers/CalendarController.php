@@ -211,7 +211,9 @@ class CalendarController extends Controller
                 break;
         }
 
-        return view('calendar.allsenior', compact('view', 'date'));
+        $user = User::findOrFail($user_id);
+
+        return view('calendar.allsenior', compact('view', 'date', 'user'));
     }
 
     public function allaccountantUser(Request $request, $user_id)
