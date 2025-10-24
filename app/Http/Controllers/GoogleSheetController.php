@@ -425,7 +425,7 @@ class GoogleSheetController extends Controller
         }
 
 
-        $data = $query->orderBy('Date', 'desc')->paginate(50);
+        $data = $query->orderBy('Date', 'desc')->paginate(10);
 
         // Map forwarded_by dynamically
         $data->getCollection()->transform(function ($item) use ($authUser) {
