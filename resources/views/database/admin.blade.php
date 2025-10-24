@@ -18,18 +18,29 @@ $script ='<script>
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>10</option>
             </select>
-            <form class="navbar-search">
-                <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
+
+            <!-- Search Input -->
+            <form class="navbar-search position-relative" autocomplete="off">
+                <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control" placeholder="Search Name, Email, Phone">
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+                <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
-            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
-                <option>Status</option>
-                <option>Active</option>
-                <option>Inactive</option>
+
+            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user" id="junior-filter">
+                <option value="">Select Junior</option>
+                @foreach ($juniorUsers as $junior)
+                <option value="{{ $junior->id }}">
+                    {{ $junior->name }}
+                    @if($junior->designation) ({{ $junior->designation }}) @endif
+                </option>
+                @endforeach
             </select>
+
+
         </div>
     </div>
-    <div class="card-body p-24">
+
+    <div class="card-body p-24" id="senior-table-wrapper">
         <div class="table-responsive scroll-sm">
             @if($data->isEmpty())
             <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
@@ -43,6 +54,7 @@ $script ='<script>
                         <th scope="col">Email Address</th>
                         <th scope="col">Phone Number</th>
                         <th scope="col">Location</th>
+                        <th scope="col">Remark</th>
                         <th scope="col">Relocation</th>
                         <th scope="col">Graduation Date</th>
                         <th scope="col">Immigration</th>
@@ -52,6 +64,7 @@ $script ='<script>
                         <th scope="col">Exe Remarks</th>
                         <th scope="col">1st Follow Up Remarks</th>
                         <th scope="col">Time Zone</th>
+                        <th scope="col">Forwarded By</th>
                         <th scope="col">View</th>
                         <th scope="col" class="text-center">Actions</th>
                     </tr>
@@ -83,13 +96,19 @@ $script ='<script>
                         {{-- Phone Number --}}
                         <td>
                             <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                maxlength="12" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
+                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
                         </td>
 
                         {{-- Location --}}
                         <td>
                             <input type="text" class="form-control location-autocomplete" data-key="Location"
                                 value="{{ $row->Location ?? '' }}" placeholder="Type location">
+                        </td>
+
+                        {{-- Remark --}}
+                        <td>
+                            <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                         </td>
 
                         {{-- Relocation --}}
@@ -113,7 +132,7 @@ $script ='<script>
 
                         {{-- Immigration --}}
                         <td>
-                            @php $immOptions = ['Dependent Visa','Global Visa','Graduate Visa','Student Visa','Citizen','Permanent Residence(ILR)']; @endphp
+                            @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','HIB','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Immigration">
                                 <option value="">-- Select --</option>
                                 @foreach($immOptions as $option)
@@ -140,18 +159,29 @@ $script ='<script>
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="$100">
+                                value="{{ $row->Amount !== null ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount (469)">
                         </td>
 
                         {{-- Qualification --}}
                         <td>
-                            <input type="text" class="form-control qualification-input" data-key="Qualification"
-                                value="{{ $row->Qualification ?? '' }}" placeholder="Qualification">
+                            @php
+                            $qualificationOptions = [
+                            'Masters','Master of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.'];
+                            @endphp
+
+                            <select class="form-select dynamic-dropdown" data-key="Qualification">
+                                <option value="">-- Select --</option>
+                                @foreach($qualificationOptions as $option)
+                                <option value="{{ $option }}" {{ $row->Qualification === $option ? 'selected' : '' }}>
+                                    {{ $option }}
+                                </option>
+                                @endforeach
+                            </select>
                         </td>
 
                         {{-- Exe Remarks --}}
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Not Interested','Others','N/A','VM','Busy']; @endphp
+                            @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Paid','VM','Busy']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                 <option value="">-- Select --</option>
                                 @foreach($exeOptions as $option)
@@ -175,6 +205,8 @@ $script ='<script>
                             </select>
                         </td>
 
+
+
                         {{-- Time Zone --}}
                         <td>
                             @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
@@ -186,6 +218,12 @@ $script ='<script>
                                 </option>
                                 @endforeach
                             </select>
+                        </td>
+
+                        {{-- Forwarded By --}}
+                        <td>
+                            <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
+                                value="{{ $row->forwarded_by ?? '' }}" placeholder="Forwarded By" readonly>
                         </td>
 
                         {{-- View (Resume) --}}
@@ -279,20 +317,28 @@ $script ='<script>
 
         const exeColors = {
             'Called & Mailed': '#d4edda',
+            'Ready To Paid': '#d4edda',
+            'Not Connected': '#f8d7da',
+            'Did Not Pickup': '#d4edda',
             'Not Interested': '#f8d7da',
             'Others': '#d1ecf1',
-            'N/A': '#e2e3e5',
+            'Ready To Paid': '#e2e3e5',
             'VM': '#fff3cd',
             'Busy': '#cce5ff'
         };
         const immColors = {
-            'Dependent Visa': '#d1ecf1',
-            'Global Visa': '#cce5ff',
-            'Graduate Visa': '#d4edda',
-            'Student Visa': '#fff3cd',
-            'Citizen': '#e2e3e5',
-            'Permanent Residence(ILR)': '#f8d7da'
+            'F1 CPT': '#d1ecf1',
+            'F1 OPT': '#cce5ff',
+            'STEM OPT': '#d4edda',
+            'HIB': '#fff3cd',
+            'B2': '#e2e3e5',
+            'B1': '#f8d7da',
+            'H4': '#ffe5b4',
+            'H4 EAD': '#e6ccff',
+            'GC/PR': '#d0f0c0',
+            'USC': '#f5c6cb'
         };
+
         const relColors = {
             'YES': '#d4edda',
             'NO': '#f8d7da'
@@ -319,6 +365,19 @@ $script ='<script>
             'MST': '#cce5ff',
             'PST': '#fff3cd'
         };
+        const qualificationColors = {
+            'Masters': '#e2f0d9',
+            'Master of Science': '#cce5ff',
+            'Bachelors': '#e2f0d9',
+            'PG': '#cce5ff',
+            'MBA': '#e2f0d9',
+            'PG Diploma': '#e2f0d9',
+            'M.Tech': '#cce5ff',
+            'B.Tech': '#e2f0d9',
+            'MA': '#e2f0d9',
+            'Associate Degree': '#cce5ff',
+            'Aerospace Proj. Manag.': '#e2f0d9',
+        };
         const dateColor = "#e0f7fa";
         const amountColors = "#e0f7fa";
 
@@ -332,6 +391,7 @@ $script ='<script>
             else if (key === '1st Follow Up Remarks') color = followColors[val] || color;
             else if (key === 'Course') color = courseColors[val] || color;
             else if (key === 'Time Zone') color = timezoneColors[val] || color;
+            else if (key === 'Qualification') color = qualificationColors[val] || color;
             select.style.backgroundColor = color;
         }
 
@@ -394,22 +454,6 @@ $script ='<script>
             }
         }
 
-        function validateQualificationInput(inp) {
-            const v = inp.value;
-            const ok = /^[A-Z\s]+$/.test(v) && v.length > 0;
-            if (ok) {
-                inp.classList.remove('invalid');
-                inp.classList.add('valid');
-            } else if (v.length === 0) {
-                inp.classList.remove('invalid');
-                inp.classList.remove('valid');
-                inp.classList.add('neutral');
-            } else {
-                inp.classList.add('invalid');
-                inp.classList.remove('valid');
-            }
-        }
-
         function validateAmountInput(inp) {
             let v = inp.value.trim();
 
@@ -447,7 +491,11 @@ $script ='<script>
         }
 
 
+
+
         function initDatePickers(context = document) {
+            const laravelToday = "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
+
             context.querySelectorAll('input.date-picker').forEach(input => {
                 const key = input.dataset.key;
                 const opts = {
@@ -460,9 +508,13 @@ $script ='<script>
                         if (input.value) input.style.backgroundColor = dateColor;
                     }
                 };
-                if (key === "Graduation Date") opts.maxDate = "today";
-                if (key === "Date") opts.minDate = "today";
+
+                // ✅ Use Laravel's timezone-based today
+                if (key === "Graduation Date") opts.maxDate = laravelToday;
+                if (key === "Date") opts.minDate = laravelToday;
+
                 flatpickr(input, opts);
+
                 input.addEventListener('blur', function() {
                     if (input.value && !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(input.value)) {
                         input.style.backgroundColor = '#fff';
@@ -470,6 +522,7 @@ $script ='<script>
                 });
             });
         }
+
 
         function initLocationAutocomplete(context = document) {
             $(context).find('input.location-autocomplete').each(function() {
@@ -538,7 +591,6 @@ $script ='<script>
             });
         }
 
-
         function applyInitialState(context = document) {
             context.querySelectorAll('select.dynamic-dropdown').forEach(s => updateSelectColor(s));
             initDatePickers(context);
@@ -569,13 +621,7 @@ $script ='<script>
                     validateNameInput(i);
                 });
             });
-            context.querySelectorAll('input.qualification-input').forEach(i => {
-                validateQualificationInput(i);
-                i.addEventListener('input', () => {
-                    i.value = i.value.toUpperCase().replace(/[^A-Z\s]/g, '');
-                    validateQualificationInput(i);
-                });
-            });
+
         }
 
         function addBlankRow() {
@@ -590,19 +636,22 @@ $script ='<script>
             let cells = `<td>—</td>`;
 
             colKeys.forEach(k => {
-                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone'].includes(k)) {
+                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
                     let opts = [];
-                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Others', 'N/A', 'VM', 'Busy'];
-                    if (k === 'Immigration') opts = ['Dependent Visa', 'Global Visa', 'Graduate Visa', 'Student Visa', 'Citizen', 'Permanent Residence(ILR)'];
+                    if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
+                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'Ready To Paid', 'VM', 'Busy'];
+                    if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'HIB', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC'];
                     if (k === 'Relocation') opts = ['YES', 'NO'];
                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
                     if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
                     if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
                     cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
                 } else if (k === 'Amount') {
-                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="$100"></td>`;
+                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount (469)"></td>`;
                 } else if (k === 'Location') {
                     cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
+                } else if (k === 'Remark') {
+                    cells += `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
                 } else if (k === 'Date' || k === 'Graduation Date') {
                     cells += `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
                 } else if (k === 'Phone Number') {
@@ -611,8 +660,8 @@ $script ='<script>
                     cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
                 } else if (k === 'Name') {
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                } else if (k === 'Qualification') {
-                    cells += `<td><input type="text" class="form-control qualification-input" data-key="${k}" placeholder="Qualification"><span class="small-hint"></span></td>`;
+                } else if (k === 'forwardedBy') {
+                    cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
                 } else if (k === 'View') {
                     cells += `<td>
                     <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
@@ -680,10 +729,10 @@ $script ='<script>
                 // Determine URL and method
                 let url, method;
                 if (id === "new") {
-                    url = "{{ route('adminstore') }}";
+                    url = "{{ route('seniorstore') }}";
                     method = "POST";
                 } else {
-                    url = "{{ route('adminupdate') }}";
+                    url = "{{ route('seniorupdate') }}";
                     method = "POST";
                     formData.append("id", id);
                 }
@@ -808,13 +857,162 @@ $script ='<script>
                 e.target.value = v;
                 validateNameInput(e.target);
             }
-            if (e.target.matches('input.qualification-input')) {
-                e.target.value = e.target.value.toUpperCase().replace(/[^A-Z\s]/g, '');
-                validateQualificationInput(e.target);
-            }
         });
     });
 </script>
+
+<style>
+    .input-hint {
+        font-size: .85rem;
+        color: #6c757d;
+    }
+
+    select.dynamic-dropdown {
+        min-width: 160px;
+    }
+
+    input.valid {
+        background-color: #d4edda;
+    }
+
+    input.invalid {
+        background-color: #f8d7da;
+    }
+
+    input.neutral {
+        background-color: #ffffff;
+    }
+
+    select.neutral {
+        background-color: #ffffff;
+    }
+
+    select.valid {
+        background-color: #d4edda;
+    }
+
+    .phone-hint,
+    .small-hint {
+        font-size: .8rem;
+        color: #6c757d;
+        display: block;
+        margin-top: 2px;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    $(document).ready(function() {
+
+        // -----------------------------
+        // Helper: Debounce
+        // -----------------------------
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this,
+                    args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
+
+        // -----------------------------
+        // Fetch Table Data via AJAX
+        // -----------------------------
+        function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
+            $.ajax({
+                url: "{{ route('google.sheet.senior') }}",
+                type: 'GET',
+                data: {
+                    search,
+                    page,
+                    junior_user,
+                    row_id
+                },
+                success: function(res) {
+                    $('#senior-table-wrapper').html(res);
+                },
+                error: function(err) {
+                    console.error(err);
+                }
+            });
+        }
+
+        // -----------------------------
+        // Live Search Suggestions
+        // -----------------------------
+        const showSuggestions = debounce(function() {
+            const query = $('#senior-search').val().trim();
+            const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+
+            if (query.length < 3) {
+                $('#search-suggestions').empty().hide();
+                fetchTable('', 1, junior_user); // reset table
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('senior.suggestions') }}",
+                type: 'GET',
+                data: {
+                    query
+                },
+                success: function(res) {
+                    let suggestions = '';
+                    if (res.length) {
+                        res.forEach(item => {
+                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
+                        });
+                    } else {
+                        suggestions = '<span class="list-group-item">No results found</span>';
+                    }
+                    $('#search-suggestions').html(suggestions).show();
+                }
+            });
+        }, 300);
+
+        $('#senior-search').on('input', showSuggestions);
+
+        // Click suggestion
+        $(document).on('click', '#search-suggestions a', function(e) {
+            e.preventDefault();
+            const rowId = $(this).data('id');
+            const junior_user = $('#junior-filter').val();
+            $('#senior-search').val($(this).text());
+            $('#search-suggestions').empty().hide();
+
+            fetchTable('', 1, junior_user, rowId);
+        });
+
+        // Pagination click (AJAX)
+        $(document).on('click', '.pagination a', function(e) {
+            e.preventDefault();
+            const page = $(this).attr('href').split('page=')[1];
+            const search = $('#senior-search').val().trim();
+            const junior_user = $('#junior-filter').val() || '';
+            fetchTable(search, page, junior_user);
+        });
+
+        // Junior dropdown filter
+        $(document).on('change', '#junior-filter', function() {
+            const junior_user = $(this).val();
+            const search = $('#senior-search').val().trim();
+            fetchTable(search, 1, junior_user);
+        });
+
+        // Click outside suggestions to hide
+        $(document).click(function(e) {
+            if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
+                $('#search-suggestions').empty().hide();
+            }
+        });
+
+    });
+</script>
+
 
 <style>
     .scroll-sm {
@@ -1057,4 +1255,98 @@ $script ='<script>
         cursor: -webkit-grabbing;
     }
 </style>
+
+<script>
+    document.getElementById('junior-filter').addEventListener('change', function() {
+        let juniorId = this.value;
+        let search = document.getElementById('senior-search').value;
+
+        fetch("{{ route('google.sheet.senior') }}?junior_user=" + juniorId + "&search=" + search, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('senior-table-wrapper').innerHTML = html;
+            });
+    });
+</script>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $('#seniorUpdateForm').on('submit', e => {
+        e.preventDefault();
+        $.ajax({
+            url: e.target.action, // uses form's action attribute
+            type: e.target.method, // uses form's method attribute (POST/GET)
+            data: new FormData(e.target),
+            contentType: false,
+            processData: false,
+            success: r => r.success && location.reload(),
+            error: () => alert("Error while saving.")
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+        // Attach input listener for dynamically added rows too
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('.email-input')) {
+                const input = e.target;
+                const email = input.value.trim();
+                const hint = input.nextElementSibling;
+
+                // Basic email validation before checking DB
+                if (email.length < 5 || !email.includes('@')) {
+                    hint.textContent = '';
+                    input.classList.remove('is-invalid', 'is-valid');
+                    return;
+                }
+
+                // Debounce to avoid excessive requests
+                clearTimeout(input._emailCheckTimer);
+                input._emailCheckTimer = setTimeout(() => {
+
+                    fetch("{{ route('check.uniqueemail') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({
+                                email: email
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.exists) {
+                                input.classList.add('is-invalid');
+                                input.classList.remove('is-valid');
+                                hint.textContent = 'This email already exists in the database.';
+                                hint.style.color = 'red';
+                            } else {
+                                input.classList.remove('is-invalid');
+                                input.classList.add('is-valid');
+                                hint.textContent = 'Email available.';
+                                hint.style.color = 'green';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Email check failed:', error);
+                            hint.textContent = '⚠️ Server error. Try again.';
+                            hint.style.color = 'orange';
+                        });
+
+                }, 500); // 500ms debounce
+            }
+        });
+    });
+</script>
+
 @endsection

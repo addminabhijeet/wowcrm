@@ -103,7 +103,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/calendar/allaccountantlist', [CalendarController::class, 'allAccountantlist'])->name('calendar.allAccountantlist');
     Route::get('/dashboard/senior/calendar/alltrainerlist', [CalendarController::class, 'allTrainerlist'])->name('calendar.allTrainerlist');
 
-    Route::get('/dashboard/admin/google-sheet', [GoogleSheetController::class, 'index'])->name('google.sheet.index');
+    Route::get('/dashboard/admin/google-sheet', [GoogleSheetController::class, 'admin'])->name('google.sheet.index');
     Route::post('/dashboard/admin/google-sheet/fetch', [GoogleSheetController::class, 'adminfetch'])->name('google.sheet.adminfetch');
     Route::patch('/dashboard/admin/google-sheet/update/{id}', [GoogleSheetController::class, 'adminupdate'])->name('google.sheet.adminupdate');
     Route::post('/dashboard/admin/google-sheet/store', [GoogleSheetController::class, 'adminstore'])->name('google.sheet.adminstore');
