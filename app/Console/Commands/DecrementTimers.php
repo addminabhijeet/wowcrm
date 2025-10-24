@@ -10,33 +10,30 @@ use Carbon\Carbon;
 class DecrementTimers extends Command
 {
     protected $signature = 'timers:decrement';
-    protected $description = 'Decrement active timers 17 times per minute, 4 seconds per cycle';
+    protected $description = 'Decrement running/resumed timers every 3 seconds within the current minute';
 
-    /**
-     * Tracks last known remaining seconds per user
-     */
-    protected array $lastRemaining = [];
+    protected $lastRemaining = [];
 
-    public function handle(): void
+    public function handle()
     {
         $this->info('⏳ Timer decrement process started...');
 
         $startTime = Carbon::now();
         $endTime = $startTime->copy()->addMinute()->startOfMinute();
-        $totalCycles = 17;                     // Number of cycles per minute
-        $decrementPerCycle = 4;                // Seconds to subtract each cycle
-        $interval = 60 / $totalCycles;         // Spread evenly across 1 minute (~3.529s)
-        $cycleCounter = 0;
+        $interval = 3; // base cycle duration in seconds
         $nextTick = microtime(true);
 
-        while (Carbon::now()->lessThan($endTime) && $cycleCounter < $totalCycles) {
+        // --- Extra decrement setup ---
+        $extraTotal = 300; // total extra seconds to decrement in 1 hour
+        $cycleCounter = 0;
+        $extraCycleInterval = 4; // every 4 cycles, apply 1 extra second
+
+        while (Carbon::now()->lessThan($endTime)) {
             try {
-                $cycleCounter++;
                 $cycleStart = microtime(true);
 
-                // 🔍 Fetch latest running timers per user
+                // --- original logic unchanged ---
                 $latestTimers = DB::table('user_timer_logs')
-                    ->select('id', 'user_id', 'remaining_seconds')
                     ->whereIn('id', function ($sub) {
                         $sub->select(DB::raw('MAX(id)'))
                             ->from('user_timer_logs')
@@ -48,68 +45,54 @@ class DecrementTimers extends Command
 
                 $affected = 0;
 
+                // Determine extra decrement this cycle
+                $extraThisCycle = 0;
+                if ($cycleCounter % $extraCycleInterval === 0) {
+                    $extraThisCycle = 1;
+                }
+
                 foreach ($latestTimers as $timer) {
                     $userId = $timer->user_id;
-                    $currentRemaining = (int) $timer->remaining_seconds;
+                    $currentRemaining = $timer->remaining_seconds;
 
-                    // ✅ Only decrement if it hasn't been updated externally
                     if (!isset($this->lastRemaining[$userId]) || $this->lastRemaining[$userId] === $currentRemaining) {
-                        $newRemaining = max($currentRemaining - $decrementPerCycle, 0);
-
                         DB::table('user_timer_logs')
                             ->where('id', $timer->id)
                             ->update([
-                                'remaining_seconds' => $newRemaining,
+                                'remaining_seconds' => max($currentRemaining - 3 - $extraThisCycle, 0),
                                 'updated_at' => now(),
                             ]);
 
-                        $this->lastRemaining[$userId] = $newRemaining;
                         $affected++;
+                        $this->lastRemaining[$userId] = $currentRemaining - 3 - $extraThisCycle;
                     } else {
-                        // External update detected — sync the current value
                         $this->lastRemaining[$userId] = $currentRemaining;
                     }
                 }
 
                 if ($affected > 0) {
-                    $this->line(sprintf(
-                        '%s → ✅ Updated %d timer(s). (-%ds each) [Cycle %d/%d]',
-                        now()->format('H:i:s'),
-                        $affected,
-                        $decrementPerCycle,
-                        $cycleCounter,
-                        $totalCycles
-                    ));
+                    $this->line(now() . " → Updated $affected latest timers. (Extra: $extraThisCycle sec)");
                 }
 
-                // 🕒 Drift-compensated wait until next cycle
+                // ✅ Compensate for drift
+                $cycleCounter++;
                 $nextTick += $interval;
                 $sleepTime = $nextTick - microtime(true);
                 if ($sleepTime > 0) {
-                    usleep((int) ($sleepTime * 1_000_000));
+                    usleep((int)($sleepTime * 1_000_000));
                 }
 
             } catch (Throwable $e) {
-                $this->error(sprintf(
-                    '❌ Error on cycle %d: %s',
-                    $cycleCounter,
-                    $e->getMessage()
-                ));
-                // Continue timing despite error
+                $this->error("❌ Error: " . $e->getMessage());
+                $cycleCounter++;
                 $nextTick += $interval;
                 $sleepTime = $nextTick - microtime(true);
                 if ($sleepTime > 0) {
-                    usleep((int) ($sleepTime * 1_000_000));
+                    usleep((int)($sleepTime * 1_000_000));
                 }
             }
         }
 
-        // ⏸ Ensure 1 full minute total before exit
-        $remainingTime = $endTime->floatDiffInSeconds(Carbon::now());
-        if ($remainingTime > 0) {
-            usleep((int) ($remainingTime * 1_000_000));
-        }
-
-        $this->info('⏹ Timer decrement process completed for this minute (' . $cycleCounter . ' cycles).');
+        $this->info("⏹ Timer decrement process completed for this minute.");
     }
 }
