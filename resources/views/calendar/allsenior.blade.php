@@ -75,7 +75,7 @@ $subTitle = 'Calendar';
                 center: 'title',
                 right: 'dayGridMonth,timeGridWeek,timeGridDay'
             },
-            events: "{{ route('calendar.allSeniorEvents') }}",
+            events: "{{ route('calendar.allSeniorEvents', ['userId' => $user->id]) }}",
             displayEventTime: false,
             displayEventEnd: false,
             eventContent: function() {
