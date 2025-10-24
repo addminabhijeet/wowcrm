@@ -1263,7 +1263,7 @@ class CallReportController extends Controller
 
     public function allseniormonthly(Request $request, $userId)
     {
-        $createdByKey = "{$userId->id}|senior";
+        $createdByKey = "{$userId}|senior";
 
         // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
