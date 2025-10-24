@@ -189,7 +189,7 @@ class CalendarController extends Controller
         return view('calendar.alljunior', compact('events', 'view', 'date', 'junior'));
     }
 
-    public function allseniorUser(Request $request)
+    public function allseniorUser(Request $request, $user_id)
     {
         $view = $request->input('view', 'month'); // day, week, month
         $date = $request->input('date', now());
