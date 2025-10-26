@@ -10,7 +10,7 @@ use Carbon\Carbon;
 class DecrementTimers extends Command
 {
     protected $signature = 'timers:decrement';
-    protected $description = 'Decrement running/resumed timers every 3 seconds within the current minute';
+    protected $description = 'Decrement running/resumed timers every 3 seconds within the current minute with 66 seconds total per minute';
 
     protected $lastRemaining = [];
 
@@ -23,16 +23,15 @@ class DecrementTimers extends Command
         $interval = 3; // base cycle duration in seconds
         $nextTick = microtime(true);
 
-        // --- Extra decrement setup ---
-        $extraTotal = 300; // total extra seconds to decrement in 1 hour
         $cycleCounter = 0;
-        $extraCycleInterval = 4; // every 4 cycles, apply 1 extra second
+        $totalCyclesPerMinute = 60 / $interval; // 20 cycles
+        $cyclesSubtract4 = 6; // 6 cycles subtract 4 seconds
+        $cyclesSubtract3 = $totalCyclesPerMinute - $cyclesSubtract4; // 14 cycles subtract 3 seconds
 
         while (Carbon::now()->lessThan($endTime)) {
             try {
                 $cycleStart = microtime(true);
 
-                // --- original logic unchanged ---
                 $latestTimers = DB::table('user_timer_logs')
                     ->whereIn('id', function ($sub) {
                         $sub->select(DB::raw('MAX(id)'))
@@ -45,33 +44,30 @@ class DecrementTimers extends Command
 
                 $affected = 0;
 
-                // Determine extra decrement this cycle
-                $extraThisCycle = 0;
-                if ($cycleCounter % $extraCycleInterval === 0) {
-                    $extraThisCycle = 1;
-                }
-
                 foreach ($latestTimers as $timer) {
                     $userId = $timer->user_id;
                     $currentRemaining = $timer->remaining_seconds;
+
+                    // Determine decrement for this cycle
+                    $decrement = ($cycleCounter < $cyclesSubtract4) ? 4 : 3;
 
                     if (!isset($this->lastRemaining[$userId]) || $this->lastRemaining[$userId] === $currentRemaining) {
                         DB::table('user_timer_logs')
                             ->where('id', $timer->id)
                             ->update([
-                                'remaining_seconds' => max($currentRemaining - 3 - $extraThisCycle, 0),
+                                'remaining_seconds' => max($currentRemaining - $decrement, 0),
                                 'updated_at' => now(),
                             ]);
 
                         $affected++;
-                        $this->lastRemaining[$userId] = $currentRemaining - 3 - $extraThisCycle;
+                        $this->lastRemaining[$userId] = $currentRemaining - $decrement;
                     } else {
                         $this->lastRemaining[$userId] = $currentRemaining;
                     }
                 }
 
                 if ($affected > 0) {
-                    $this->line(now() . " → Updated $affected latest timers. (Extra: $extraThisCycle sec)");
+                    $this->line(now() . " → Updated $affected latest timers with decrement of " . (($cycleCounter < $cyclesSubtract4) ? 4 : 3) . " seconds.");
                 }
 
                 // ✅ Compensate for drift
