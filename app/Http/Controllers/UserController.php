@@ -133,11 +133,11 @@ class UserController extends Controller
     public function admindestroy($id)
     {
         $user = User::findOrFail($id);
-        $role = $user->role;
-        $user->delete();
+        $user->is_deleted = 1; // Mark as deleted
+        $user->save();
 
         return redirect()->route("users.admin")
-            ->with('success',  ' deleted successfully!');
+            ->with('success', 'User deleted successfully!');
     }
 
     public function junior()
