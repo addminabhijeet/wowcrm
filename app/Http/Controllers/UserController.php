@@ -268,7 +268,7 @@ class UserController extends Controller
     public function juniordestroy($id)
     {
         $user = User::findOrFail($id);
-        $role = $user->role;
+        $user->is_deleted = 1; // Mark as deleted
         $user->delete();
 
         return redirect()->route("users.junior")
@@ -394,8 +394,8 @@ class UserController extends Controller
     public function seniordestroy($id)
     {
         $user = User::findOrFail($id);
-        $role = $user->role;
-        $user->delete();
+        $user->is_deleted = 1; // Mark as deleted
+        $user->save();
 
         return redirect()->route("users.senior")
             ->with('success',  ' deleted successfully!');
@@ -514,8 +514,8 @@ class UserController extends Controller
     public function trainerdestroy($id)
     {
         $user = User::findOrFail($id);
-        $role = $user->role;
-        $user->delete();
+        $user->is_deleted = 1; // Mark as deleted
+        $user->save();
 
         return redirect()->route("users.trainer")
             ->with('success',  ' deleted successfully!');
@@ -634,8 +634,8 @@ class UserController extends Controller
     public function accountantdestroy($id)
     {
         $user = User::findOrFail($id);
-        $role = $user->role;
-        $user->delete();
+        $user->is_deleted = 1; // Mark as deleted
+        $user->save();
 
         return redirect()->route("users.account")
             ->with('success',  ' deleted successfully!');
@@ -755,8 +755,8 @@ class UserController extends Controller
     public function customerdestroy($id)
     {
         $user = User::findOrFail($id);
-        $role = $user->role;
-        $user->delete();
+        $user->is_deleted = 1; // Mark as deleted
+        $user->save();
 
         return redirect()->route("users.customer")
             ->with('success',  ' deleted successfully!');
