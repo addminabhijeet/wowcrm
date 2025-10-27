@@ -14,7 +14,9 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::where('role', 'admin')->get();
+        $users = User::where('role', 'admin')
+            ->where('is_deleted', 0)
+            ->get();
         return view('user.admin', compact('users'));
     }
 
@@ -281,7 +283,9 @@ class UserController extends Controller
 
     public function senior()
     {
-        $users = User::where('role', 'senior')->get();
+        $users = User::where('role', 'senior')
+            ->where('is_deleted', 0)
+            ->get();
         return view('user.senior', compact('users'));
     }
 
@@ -407,7 +411,9 @@ class UserController extends Controller
 
     public function trainer()
     {
-        $users = User::where('role', 'trainer')->get();
+        $users = User::where('role', 'trainer')
+            ->where('is_deleted', 0)
+            ->get();
         return view('user.trainer', compact('users'));
     }
 
@@ -527,7 +533,9 @@ class UserController extends Controller
 
     public function accountant()
     {
-        $users = User::where('role', 'accountant')->get();
+        $users = User::where('role', 'accountant')
+            ->where('is_deleted', 0)
+            ->get();
         return view('user.accountant', compact('users'));
     }
 
@@ -647,7 +655,9 @@ class UserController extends Controller
 
     public function customer()
     {
-        $users = User::where('role', 'customer')->get();
+        $users = User::where('role', 'customer')
+            ->where('is_deleted', 0)
+            ->get();
         return view('user.customer', compact('users'));
     }
 
