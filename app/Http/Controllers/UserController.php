@@ -275,7 +275,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
         $user->is_deleted = 1; // Mark as deleted
-        $user->delete();
+        $user->save();
 
         return redirect()->route("users.junior")
             ->with('success',  ' deleted successfully!');
