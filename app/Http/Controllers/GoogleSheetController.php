@@ -934,16 +934,18 @@ class GoogleSheetController extends Controller
             $exeRemark = $rowData['Exe Remarks'];
 
             if ($exeRemark === 'Ready To Paid') {
+                $authUser = Auth::user();
+
                 // Append ":0|accountant" only if not already present
                 if (strpos($updateData['created_by'], ':0|accountant') === false) {
                     $updateData['created_by'] .= ':0|accountant';
                 }
 
-                // Replace "0|senior" with actual senior ID (only if it ends with 0|senior)
+                // Replace "0|senior" with authenticated user's ID (only if it ends with 0|senior)
                 if (preg_match('/0\|senior$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
                         '/0\|senior$/',
-                        $id . '|senior',
+                        $authUser->id . '|senior',
                         $updateData['created_by']
                     );
                 }
