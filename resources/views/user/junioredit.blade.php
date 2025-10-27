@@ -167,7 +167,6 @@ $script ='<script>
                                             <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
                                             <option value="candidate" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
                                             <option value="accountant" {{ $user->role == 'accountant' ? 'selected' : '' }}>Accountant</option>
-                                            <option value="Caller" {{ $user->role == 'Caller' ? 'selected' : '' }}>Caller</option>
                                         </select>
                                     </div>
                                 </div>
@@ -185,6 +184,7 @@ $script ='<script>
                                             <option value="Junior" {{ $user->designation == 'Junior' ? 'selected' : '' }}>Junior</option>
                                             <option value="Senior" {{ $user->designation == 'Senior' ? 'selected' : '' }}>Senior</option>
                                             <option value="Trainer" {{ $user->designation == 'Trainer' ? 'selected' : '' }}>Trainer</option>
+                                            <option value="Caller" {{ $user->role == 'Caller' ? 'selected' : '' }}>Caller</option>
                                         </select>
                                     </div>
                                 </div>
