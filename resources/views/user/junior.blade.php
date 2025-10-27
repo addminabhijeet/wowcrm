@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @php
-$title='Dashboard';
+$title='Junior List';
 $subTitle = 'Admin';
 $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 @endphp
