@@ -75,7 +75,7 @@ $script = '<script>
                                 <label for="designation" class="form-label fw-semibold text-primary-light text-sm mb-8">
                                     Designation <span class="text-danger-600">*</span>
                                 </label>
-                                <select name="designation" id="designation" class="form-control radius-8 form-select" required>
+                                <select name="designation" id="designation" class="form-control radius-8 form-select">
                                     <option value="">Select Designation</option>
                                   
                                     <option value="Caller">Caller</option>
