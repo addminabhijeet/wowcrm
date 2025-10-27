@@ -12,6 +12,7 @@ use App\Models\Payment;
 use App\Models\TimerSetting;
 use Illuminate\Support\Facades\Mail;
 use App\Models\SmtpSetting;
+use Carbon\Carbon;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class DashboardController extends Controller
@@ -31,6 +32,7 @@ class DashboardController extends Controller
     public function index()
     {
         $users = User::all();
+        $newUsers = User::where('created_at', '>=', Carbon::now()->subDays(30))->count();
         return view('dashboard.admin', compact('users'));
     }
 
