@@ -184,7 +184,7 @@ $script ='<script>
                                             <option value="Junior" {{ $user->designation == 'Junior' ? 'selected' : '' }}>Junior</option>
                                             <option value="Senior" {{ $user->designation == 'Senior' ? 'selected' : '' }}>Senior</option>
                                             <option value="Trainer" {{ $user->designation == 'Trainer' ? 'selected' : '' }}>Trainer</option>
-                                            <option value="Caller" {{ $user->role == 'Caller' ? 'selected' : '' }}>Caller</option>
+                                            <option value="Caller" {{ $user->designation == 'Caller' ? 'selected' : '' }}>Caller</option>
                                         </select>
                                     </div>
                                 </div>
