@@ -142,9 +142,13 @@ class UserController extends Controller
 
     public function junior()
     {
-        $users = User::where('role', 'junior')->get();
+        $users = User::where('role', 'junior')
+            ->where('is_deleted', 0)
+            ->get();
+
         return view('user.junior', compact('users'));
     }
+
 
     public function juniorcreate()
     {
