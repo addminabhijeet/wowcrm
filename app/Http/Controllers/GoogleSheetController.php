@@ -16,7 +16,7 @@ class GoogleSheetController extends Controller
 {
     public function admin(Request $request)
     {
-       $authUser = Auth::user();
+        $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // dropdown value
@@ -2128,15 +2128,18 @@ class GoogleSheetController extends Controller
     }
 
 
-    public function accountant()
+    public function accountant(Request $request)
     {
         $authUser = Auth::user();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+        $juniorUserId = $request->input('junior_user'); // dropdown value
 
         // Build patterns for LIKE match
         $userPattern = "%:" . $authUser->id . "|accountant";
         $zeroPattern = "%:0|accountant";
 
-        $data = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
             // Direct match with "id|accountant"
             $q->where('created_by', $authUser->id . '|accountant')
                 // Direct match with "0|accountant"
@@ -2150,30 +2153,77 @@ class GoogleSheetController extends Controller
             ->where(function ($q) use ($authUser) {
                 $q->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|accountant', $authUser->id . '|accountant'])
                     ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|accountant', '0|accountant']);
-            })
-            ->paginate(10);
+            });
 
-        // Map forwarded_by dynamically
+        // Filter by selected junior
+        if ($juniorUserId) {
+            $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
+        }
+
+        // Search or specific row filter
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Pagination with appended filters for AJAX navigation
+        $data = $query->orderBy('Date', 'desc')->paginate(10);
+        $data->appends([
+            'search' => $search,
+            'row_id' => $rowId,
+            'junior_user' => $juniorUserId,
+        ]);
+
+        // Map forwarded_by dynamically (multi-level like senior)
         $data->getCollection()->transform(function ($item) use ($authUser) {
-            $parts = explode('|', $item->created_by ?? '');
-            $userId = $parts[0] ?? null;
-            $role   = $parts[1] ?? 'unknown';
+            $forwardedBy = '';
 
-            if ($userId == $authUser->id) {
-                $forwardedBy = "SELF ({$userId}) ({$role})";
-            } elseif ($userId == 0) {
-                $forwardedBy = "SYSTEM (0) ({$role})";
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                $names = [];
+
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                $forwardedBy = implode(' → ', $names);
             } else {
-                $user = \App\Models\User::find($userId);
-                $name = $user ? $user->name : 'Unknown';
-                $forwardedBy = "{$name} ({$userId}) ({$role})";
+                $forwardedBy = 'N/A';
             }
 
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
 
-        return view('database.accountant', compact('data'));
+        // Fetch junior users list for dropdown
+        $juniorUsers = \App\Models\User::where('role', 'junior')
+            ->where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'email', 'phone', 'designation']);
+
+        // Handle AJAX request for both search and pagination
+        if ($request->ajax()) {
+            return view('database.partials.senior_table', compact('data'))->render();
+        }
+
+        return view('database.accountant', compact('data', 'juniorUsers'));
     }
 
 
