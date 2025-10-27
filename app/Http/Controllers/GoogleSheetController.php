@@ -936,18 +936,18 @@ class GoogleSheetController extends Controller
             if ($exeRemark === 'Ready To Paid') {
                 $authUser = Auth::user();
 
-                // Append ":0|accountant" only if not already present
-                if (strpos($updateData['created_by'], ':0|accountant') === false) {
-                    $updateData['created_by'] .= ':0|accountant';
-                }
-
-                // Replace "0|senior" with authenticated user's ID (only if it ends with 0|senior)
+                // Replace "0|senior" with "auth_id|senior:0|accountant"
                 if (preg_match('/0\|senior$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
                         '/0\|senior$/',
-                        $authUser->id . '|senior',
+                        $authUser->id . '|senior:0|accountant',
                         $updateData['created_by']
                     );
+                }
+
+                // Ensure ":0|accountant" exists at the end if missing
+                if (strpos($updateData['created_by'], ':0|accountant') === false) {
+                    $updateData['created_by'] .= ':0|accountant';
                 }
             } elseif ($exeRemark === 'Called & Mailed') {
                 $tag = $id . '|senior';
