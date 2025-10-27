@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
-$title='All Senior Call Report';
-$subTitle = 'All Senior Call Report';
+$title='All Admin Calendar';
+$subTitle = 'All Admin Calendar';
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
         $(this).closest("tr").addClass("d-none")
@@ -71,7 +71,7 @@ $script = '<script>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center">No senior users found.</td>
+                        <td colspan="7" class="text-center">No Admin users found.</td>
                     </tr>
                     @endforelse
                 </tbody>

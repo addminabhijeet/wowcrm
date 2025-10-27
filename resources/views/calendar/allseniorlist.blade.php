@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
-$title='All Senior Call Report';
-$subTitle = 'All Senior Call Report';
+$title='All Senior Calendar';
+$subTitle = 'All Senior Calendar';
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
         $(this).closest("tr").addClass("d-none")
