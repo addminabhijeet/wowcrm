@@ -88,7 +88,7 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        $juniorUsers = \App\Models\User::where('role', 'junior')
+        $juniorUsers = \App\Models\User::whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
