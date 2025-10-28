@@ -66,7 +66,7 @@ class TimerController extends Controller
                 $notice_status = $timer->notice_status;
                 $pause_type        = $timer->pause_type;
             } else {
-                $remaining_seconds = 0;
+                $remaining_seconds = $workDaySeconds;
                 $elapsed_seconds = 0;
                 $status = 'running';
                 $button_status = 1;
