@@ -150,7 +150,19 @@ $script = '<script>
 
 
                         <div class="position-absolute top-0 end-0 me-16 mt-16" id="badgeContainer_{{ $timer['user_id'] }}">
-                            @if(!empty($timer['pause_type']))
+                            @php
+                            // Convert seconds to HH:MM:SS format for easy comparison
+                            $remainingFormatted = gmdate('H:i:s', $timer['remaining_seconds']);
+                            $elapsedFormatted = gmdate('H:i:s', $timer['elapsed_seconds']);
+                            @endphp
+
+                            {{-- Check for Offline condition first --}}
+                            @if($remainingFormatted === '08:00:00' && $elapsedFormatted === '00:00:00')
+                            <span class="badge bg-dark text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">Offline</span>
+
+                            {{-- Then handle other pause types --}}
+                            @elseif(!empty($timer['pause_type']))
                             @if($timer['pause_type'] == 'lunch')
                             <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Lunch Break</span>
@@ -169,6 +181,7 @@ $script = '<script>
                             @endif
                             @endif
                         </div>
+
 
 
 
@@ -738,33 +751,33 @@ $script = '<script>
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Loop through all timer widgets
-    document.querySelectorAll('.timer-widget').forEach(function(widget) {
-        const userId = widget.getAttribute('data-user');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Loop through all timer widgets
+        document.querySelectorAll('.timer-widget').forEach(function(widget) {
+            const userId = widget.getAttribute('data-user');
 
-        // Get the countdown and elapsed text
-        const countdownEl = widget.querySelector('.countdown');
-        const elapsedEl = widget.querySelector('.elapsed');
-        const badgeContainer = document.querySelector('#badgeContainer_' + userId);
+            // Get the countdown and elapsed text
+            const countdownEl = widget.querySelector('.countdown');
+            const elapsedEl = widget.querySelector('.elapsed');
+            const badgeContainer = document.querySelector('#badgeContainer_' + userId);
 
-        if (!countdownEl || !elapsedEl || !badgeContainer) return;
+            if (!countdownEl || !elapsedEl || !badgeContainer) return;
 
-        const countdownTime = countdownEl.textContent.trim();
-        const elapsedTime = elapsedEl.textContent.trim();
+            const countdownTime = countdownEl.textContent.trim();
+            const elapsedTime = elapsedEl.textContent.trim();
 
-        // Check condition
-        if (countdownTime === '08:00:00' || elapsedTime === '00:00:00') {
-            const badge = badgeContainer.querySelector('.badge');
-            if (badge && badge.textContent.trim() === 'Resumed') {
-                // Replace Resumed badge with Offline
-                badge.textContent = 'Offline';
-                badge.classList.remove('bg-primary');
-                badge.classList.add('bg-dark');
+            // Check condition
+            if (countdownTime === '08:00:00' || elapsedTime === '00:00:00') {
+                const badge = badgeContainer.querySelector('.badge');
+                if (badge && badge.textContent.trim() === 'Resumed') {
+                    // Replace Resumed badge with Offline
+                    badge.textContent = 'Offline';
+                    badge.classList.remove('bg-primary');
+                    badge.classList.add('bg-dark');
+                }
             }
-        }
+        });
     });
-});
 </script>
 
 
