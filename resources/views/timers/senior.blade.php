@@ -150,16 +150,13 @@ $script = '<script>
 
 
                         <div class="position-absolute top-0 end-0 me-16 mt-16" id="badgeContainer_{{ $timer['user_id'] }}">
-                            
+                            @if(!empty($timer['pause_type']))
                             @if($timer['pause_type'] == 'lunch')
                             <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Lunch Break</span>
                             @elseif($timer['pause_type'] == 'tea')
                             <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Tea Break</span>
-                            @elseif($timer['pause_type'] == 'offline')
-                            <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">Offline</span>
                             @elseif($timer['pause_type'] == 'break')
                             <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Short Break</span>
@@ -170,7 +167,7 @@ $script = '<script>
                             <span class="badge bg-secondary text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Unknown</span>
                             @endif
-                            
+                            @endif
                         </div>
 
 
