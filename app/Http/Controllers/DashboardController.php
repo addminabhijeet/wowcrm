@@ -533,6 +533,14 @@ class DashboardController extends Controller
         return view('smtp.editall', compact('juniorUsers'));
     }
 
+    public function targeteditall()
+    {
+        // Get only users that have SMTP settings
+        $targetUsers = User::all();
+
+        return view('target.editall', compact('targetUsers'));
+    }
+
 
     public function add()
     {
