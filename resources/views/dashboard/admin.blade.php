@@ -77,8 +77,8 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
             <div class="card-body p-20">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <div>
-                        <p class="fw-medium text-primary-light mb-1">Total Candidates</p>
-                        <h6 class="mb-0">{{ $users->where('role', 'customer')->count() }}</h6>
+                        <p class="fw-medium text-primary-light mb-1">Total Accounts</p>
+                        <h6 class="mb-0">{{ $users->where('role', 'accountant')->count() }}</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
                         <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl mb-0"></iconify-icon>
