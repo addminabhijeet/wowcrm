@@ -43,6 +43,7 @@ $script ='<script>
                         <th scope="col">Email Address</th>
                         <th scope="col">Phone Number</th>
                         <th scope="col">Location</th>
+                        <th scope="col">Remark</th>
                         <th scope="col">Relocation</th>
                         <th scope="col">Graduation Date</th>
                         <th scope="col">Immigration</th>
@@ -83,7 +84,7 @@ $script ='<script>
                         {{-- Phone Number --}}
                         <td>
                             <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                maxlength="12" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
+                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
                         </td>
 
                         {{-- Location --}}
@@ -91,6 +92,13 @@ $script ='<script>
                             <input type="text" class="form-control location-autocomplete" data-key="Location"
                                 value="{{ $row->Location ?? '' }}" placeholder="Type location">
                         </td>
+
+                        {{-- Remark --}}
+                        <td>
+                            <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                        </td>
+
 
                         {{-- Relocation --}}
                         <td>
@@ -113,7 +121,7 @@ $script ='<script>
 
                         {{-- Immigration --}}
                         <td>
-                            @php $immOptions = ['Dependent Visa','Global Visa','Graduate Visa','Student Visa','Citizen','Permanent Residence(ILR)']; @endphp
+                            @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','HIB','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Immigration">
                                 <option value="">-- Select --</option>
                                 @foreach($immOptions as $option)
@@ -140,7 +148,7 @@ $script ='<script>
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount">
+                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount(469)">
                         </td>
 
                         {{-- Qualification --}}
@@ -163,7 +171,7 @@ $script ='<script>
 
                         {{-- Exe Remarks --}}
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Not Interested','Others','N/A','VM','Busy']; @endphp
+                            @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Connect','Others','N/A','VM','Busy']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                 <option value="">-- Select --</option>
                                 @foreach($exeOptions as $option)
@@ -217,11 +225,10 @@ $script ='<script>
                         </td>
 
                         <td class="text-center">
-                            <button class="btn btn-sm btn-primary mail-btn" data-id="{{ $row->id }}">
-                                <i class="fas fa-envelope"></i> Mail
+                            <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
+                                <i class="fas fa-save"></i> Save
                             </button>
                         </td>
-
                     </tr>
                     @endforeach
                 </tbody>
@@ -290,8 +297,12 @@ $script ='<script>
     document.addEventListener("DOMContentLoaded", function() {
         const tableBody = document.getElementById("sheet-table-body");
 
+
         const exeColors = {
             'Called & Mailed': '#d4edda',
+            'Ready To Paid': '#d4edda',
+            'Not Connected': '#f8d7da',
+            'Did Not Pickup': '#d4edda',
             'Not Interested': '#f8d7da',
             'Others': '#d1ecf1',
             'N/A': '#e2e3e5',
@@ -299,13 +310,18 @@ $script ='<script>
             'Busy': '#cce5ff'
         };
         const immColors = {
-            'Dependent Visa': '#d1ecf1',
-            'Global Visa': '#cce5ff',
-            'Graduate Visa': '#d4edda',
-            'Student Visa': '#fff3cd',
-            'Citizen': '#e2e3e5',
-            'Permanent Residence(ILR)': '#f8d7da'
+            'F1 CPT': '#d1ecf1',
+            'F1 OPT': '#cce5ff',
+            'STEM OPT': '#d4edda',
+            'HIB': '#fff3cd',
+            'B2': '#e2e3e5',
+            'B1': '#f8d7da',
+            'H4': '#ffe5b4',
+            'H4 EAD': '#e6ccff',
+            'GC/PR': '#d0f0c0',
+            'USC': '#f5c6cb'
         };
+
         const relColors = {
             'YES': '#d4edda',
             'NO': '#f8d7da'
@@ -458,6 +474,8 @@ $script ='<script>
         }
 
         function initDatePickers(context = document) {
+            const laravelToday = "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
+
             context.querySelectorAll('input.date-picker').forEach(input => {
                 const key = input.dataset.key;
                 const opts = {
@@ -470,9 +488,13 @@ $script ='<script>
                         if (input.value) input.style.backgroundColor = dateColor;
                     }
                 };
-                if (key === "Graduation Date") opts.maxDate = "today";
-                if (key === "Date") opts.minDate = "today";
+
+                // ✅ Use Laravel's timezone-based today
+                if (key === "Graduation Date") opts.maxDate = laravelToday;
+                if (key === "Date") opts.minDate = laravelToday;
+
                 flatpickr(input, opts);
+
                 input.addEventListener('blur', function() {
                     if (input.value && !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(input.value)) {
                         input.style.backgroundColor = '#fff';
@@ -480,6 +502,7 @@ $script ='<script>
                 });
             });
         }
+
 
         function initLocationAutocomplete(context = document) {
             $(context).find('input.location-autocomplete').each(function() {
@@ -580,7 +603,57 @@ $script ='<script>
             });
         }
 
+        function addBlankRow() {
+            let colKeys = [];
+            let firstRow = tableBody.querySelector("tr");
+            if (firstRow) {
+                firstRow.querySelectorAll("input[data-key], select[data-key]").forEach(cell => colKeys.push(cell.dataset.key));
+            }
 
+            let newRow = document.createElement("tr");
+            newRow.setAttribute("data-id", "new");
+            let cells = `<td>—</td>`;
+
+            colKeys.forEach(k => {
+                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
+                    let opts = [];
+                    if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
+                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'];
+                    if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'HIB', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC'];
+                    if (k === 'Relocation') opts = ['YES', 'NO'];
+                    if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
+                    if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+                    if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
+                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
+                } else if (k === 'Amount') {
+                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount(469)"></td>`;
+                } else if (k === 'Location') {
+                    cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
+                } else if (k === 'Remark') {
+                    cells += `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
+                } else if (k === 'Date' || k === 'Graduation Date') {
+                    cells += `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
+                } else if (k === 'Phone Number') {
+                    cells += `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
+                } else if (k === 'Email Address') {
+                    cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
+                } else if (k === 'Name') {
+                    cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
+                } else if (k === 'View') {
+                    cells += `<td>
+                    <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
+                    <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+                    <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
+                    <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+                </td>`;
+                }
+            });
+
+            cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
+            newRow.innerHTML = cells;
+            tableBody.appendChild(newRow);
+            applyInitialState(newRow);
+        }
 
         // Check if we need to add a blank row on page load
         // Only add if there are no existing "new" rows
@@ -1006,4 +1079,80 @@ $script ='<script>
         cursor: -webkit-grabbing;
     }
 </style>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    $('#seniorUpdateForm').on('submit', e => {
+        e.preventDefault();
+        $.ajax({
+            url: e.target.action, // uses form's action attribute
+            type: e.target.method, // uses form's method attribute (POST/GET)
+            data: new FormData(e.target),
+            contentType: false,
+            processData: false,
+            success: r => r.success && location.reload(),
+            error: () => alert("Error while saving.")
+        });
+    });
+</script>
+
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    // Get CSRF token from meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+
+    // Attach input listener for dynamically added rows too
+    document.addEventListener('input', function (e) {
+        if (e.target.matches('.email-input')) {
+            const input = e.target;
+            const email = input.value.trim();
+            const hint = input.nextElementSibling;
+
+            // Basic email validation before checking DB
+            if (email.length < 5 || !email.includes('@')) {
+                hint.textContent = '';
+                input.classList.remove('is-invalid', 'is-valid');
+                return;
+            }
+
+            // Debounce to avoid excessive requests
+            clearTimeout(input._emailCheckTimer);
+            input._emailCheckTimer = setTimeout(() => {
+
+                fetch("{{ route('check.uniqueemail') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+                        hint.textContent = 'This email already exists in the database.';
+                        hint.style.color = 'red';
+                    } else {
+                        input.classList.remove('is-invalid');
+                        input.classList.add('is-valid');
+                        hint.textContent = 'Email available.';
+                        hint.style.color = 'green';
+                    }
+                })
+                .catch(error => {
+                    console.error('Email check failed:', error);
+                    hint.textContent = '⚠️ Server error. Try again.';
+                    hint.style.color = 'orange';
+                });
+
+            }, 500); // 500ms debounce
+        }
+    });
+});
+</script>
+
+
 @endsection
