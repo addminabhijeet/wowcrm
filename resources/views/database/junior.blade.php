@@ -489,17 +489,9 @@ $script ='<script>
                     }
                 };
 
-                // ✅ Allow future dates (no maxDate restriction)
-                if (key === "Graduation Date") {
-                    // previously limited to today or before
-                    // now can pick any date after today too
-                    opts.minDate = laravelToday;
-                }
-
-                // ✅ Also allow selecting future dates for "Date" field
-                if (key === "Date") {
-                    opts.minDate = laravelToday;
-                }
+                // 🗓️ Allow both past and future dates (no min/max restriction)
+                // Just remove these constraints completely
+                // (keep this comment for clarity — no maxDate or minDate set)
 
                 flatpickr(input, opts);
 
@@ -510,6 +502,7 @@ $script ='<script>
                 });
             });
         }
+
 
 
 
