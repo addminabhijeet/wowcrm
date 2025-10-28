@@ -2456,12 +2456,12 @@ class GoogleSheetController extends Controller
         if (isset($rowData['Exe Remarks'])) {
             $exeRemark = $rowData['Exe Remarks'];
 
-            if ($exeRemark === 'Ready To Paid') {
+            if ($exeRemark === 'Payment Completed') {
                 // Append ":0|accountant" only if not already present
                 if (strpos($updateData['created_by'], ':0|accountant') === false) {
                     $updateData['created_by'] .= ':0|accountant';
                 }
-            } elseif ($exeRemark === 'Called & Mailed') {
+            } elseif ($exeRemark === 'Payment Completed') {
                 $tag = $id . '|accountant';
                 // Append only if created_by exactly matches the tag
                 if ($updateData['created_by'] === $tag) {
