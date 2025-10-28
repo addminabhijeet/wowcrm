@@ -71,7 +71,7 @@ class TimerController extends Controller
                 $status = 'running';
                 $button_status = 1;
                 $notice_status = 0;
-                $pause_type        = 'offline';
+                $pause_type        = null;
             }
 
             return [

@@ -721,7 +721,7 @@ $script = '<script>
                             } else if (data.pause_type === 'resume') {
                                 badgeContainer.innerHTML = `<span class="badge bg-primary text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Resumed</span>`;
                             } else {
-                                badgeContainer.innerHTML = `<span class="badge bg-primary text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Offline</span>`;
+                                badgeContainer.innerHTML = `<span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm" style="font-size:12px;min-width:100px;text-align:center;">Resumed</span>`;
                             }
                         }
                     })
