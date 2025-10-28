@@ -310,7 +310,7 @@ $role = Auth::user()->role;
                     <span>Target</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('target.editall') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All User Target</a></li>
+                    <li><a href="{{ route('target.all') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All User Target</a></li>
                 </ul>
             </li>
             
