@@ -2457,19 +2457,19 @@ class GoogleSheetController extends Controller
             $exeRemark = $rowData['Exe Remarks'];
 
             if ($exeRemark === 'Payment Completed') {
-                // Append ":0|accountant" only if not already present
-                if (strpos($updateData['created_by'], ':0|accountant') === false) {
-                    $updateData['created_by'] .= ':0|accountant';
+                // Append ":0|trainer" only if not already present
+                if (strpos($updateData['created_by'], ':0|trainer') === false) {
+                    $updateData['created_by'] .= ':0|trainer';
                 }
             } elseif ($exeRemark === 'Payment Completed') {
-                $tag = $id . '|accountant';
+                $tag = $id . '|trainer';
                 // Append only if created_by exactly matches the tag
                 if ($updateData['created_by'] === $tag) {
                     $updateData['created_by'] .= ':' . $tag;
                 }
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
-                $tag = $id . '|junior';
+                $tag = $id . '|trainer';
                 // Append only if tag already exists in created_by
                 if (strpos($updateData['created_by'], $tag) !== false) {
                     $updateData['created_by'] .= ':' . $tag;
