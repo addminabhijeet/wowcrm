@@ -602,7 +602,7 @@ class CallReportController extends Controller
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
-        return view('reports.alljuniordaily', compact(
+        return view('reports.alltrainerdaily', compact(
             'totalCalls',
             'calledAndMailedCalls',
             'otherCalls',
