@@ -533,7 +533,7 @@ class DashboardController extends Controller
         return view('smtp.editall', compact('juniorUsers'));
     }
 
-    public function targeteditall()
+    public function targetall()
     {
         // Get only users that have SMTP settings
        $targetUsers = User::whereIn('role', ['senior', 'junior'])->get();
