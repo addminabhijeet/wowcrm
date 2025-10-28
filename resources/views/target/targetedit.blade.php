@@ -1,203 +1,174 @@
 @extends('layout.layout')
-
 @php
-$title = 'SMTP';
-$subTitle = 'Settings - SMTP';
-$script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
+$title='All Junior Call Report';
+$subTitle = 'All Junior Call Report';
+$script = '<script>
+    $(".remove-item-btn").on("click", function() {
+        $(this).closest("tr").addClass("d-none")
+    });
+</script>';
 @endphp
 
 @section('content')
 
 <div class="card h-100 p-0 radius-12">
+    <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
+        <div class="d-flex align-items-center flex-wrap gap-3">
+            <span class="text-md fw-medium text-secondary-light mb-0">Show</span>
+            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                <option>5</option>
+                <option>6</option>
+                <option>7</option>
+                <option>8</option>
+                <option>9</option>
+                <option>10</option>
+            </select>
+
+
+            <form class="navbar-search">
+                <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
+                <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+            </form>
+            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
+                <option>Status</option>
+                <option>Active</option>
+                <option>Inactive</option>
+            </select>
+            <a href="{{ route('smtp.add') }}"
+                class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+                <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
+                All SMTP Users
+            </a>
+        </div>
+    </div>
+
     <div class="card-body p-24">
-        <div class="row gy-4">
-            <div class="col-xxl-12">
-                <div class="card radius-12 shadow-none border overflow-hidden">
+        <div class="table-responsive scroll-sm">
+            <table class="table bordered-table sm-table mb-0">
+                <thead>
+                    <tr>
+                        <th>S.L</th>
+                        <th>Name</th>
+                        <th>Target</th>
+                        <th>Target Date</th>
+                        <th>Due Date</th>
+                        <th class="text-center">Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($targetUsers as $index => $user)
+                    <tr>
+                        <td>{{ $index + 1 }}</td>
+                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->target }}</td>
+                        <td>{{ $user->target_date }}</td>
+                        <td>{{ $user->due_date }}</td>
+                        <td class="text-center">
+                            <a href="{{ route('smtp.edit', $user->id) }}" class="btn btn-sm btn-primary">
+                                View
+                            </a>
+                        </td>
+                    </tr>
+                    @empty
+                    <tr>
+                        <td colspan="6" class="text-center">No junior users found.</td>
+                    </tr>
+                    @endforelse
+                </tbody>
 
-                    {{-- Card Header --}}
-                    <div class="card-header bg-neutral-100 border-bottom py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
-                        <div class="d-flex align-items-center gap-10">
-                            <span class="w-36-px h-36-px bg-base rounded-circle d-flex justify-content-center align-items-center">
-                                <iconify-icon icon="material-symbols:smtp-outline" class="menu-icon"></iconify-icon>
-                            </span>
-                            <span class="text-lg fw-semibold text-primary-light">SMTP Settings</span>
-                        </div>
-                    </div>
+            </table>
+        </div>
 
-                    <div class="card-body p-24">
-
-                        {{-- Single Alert Container --}}
-                        <div id="smtpAlertContainer" class="mb-3">
-                            @if(session('success'))
-                            <div class="alert alert-success">{{ session('success') }}</div>
-                            @endif
-                            @if(session('error'))
-                            <div class="alert alert-danger">{{ session('error') }}</div>
-                            @endif
-                        </div>
-
-                        {{-- SMTP Update Form --}}
-                        <form action="{{ route('smtp.update', $smtp->user_id ?? auth()->id()) }}" method="POST" class="mb-5">
-                            @csrf
-                            @method('PUT')
-                            <div class="row gy-3">
-
-                                {{-- Mailer --}}
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">Mailer <span class="text-danger-600">*</span></label>
-                                    <div class="input-group radius-8">
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
-                                            <iconify-icon icon="mdi:email-outline"></iconify-icon>
-                                        </span>
-                                        <input type="text" name="mailer" class="form-control radius-8" value="{{ old('mailer', $smtp->mailer ?? 'smtp') }}">
-                                    </div>
-                                </div>
-
-                                {{-- Host --}}
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">Host <span class="text-danger-600">*</span></label>
-                                    <div class="input-group radius-8">
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
-                                            <iconify-icon icon="mdi:server-network"></iconify-icon>
-                                        </span>
-                                        <input type="text" name="host" class="form-control radius-8" value="{{ old('host', $smtp->host ?? '') }}">
-                                    </div>
-                                </div>
-
-                                {{-- Port --}}
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">Port <span class="text-danger-600">*</span></label>
-                                    <div class="input-group radius-8">
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
-                                            <iconify-icon icon="mdi:port"></iconify-icon>
-                                        </span>
-                                        <input type="number" name="port" class="form-control radius-8" value="{{ old('port', $smtp->port ?? 465) }}">
-                                    </div>
-                                </div>
-
-                                {{-- Username --}}
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">Username <span class="text-danger-600">*</span></label>
-                                    <div class="input-group radius-8">
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
-                                            <iconify-icon icon="mdi:account-outline"></iconify-icon>
-                                        </span>
-                                        <input type="email" name="username" class="form-control radius-8" value="{{ old('username', $smtp->username ?? '') }}">
-                                    </div>
-                                </div>
-
-                                {{-- Password --}}
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">Password <small>(Leave blank to keep current)</small></label>
-                                    <div class="input-group radius-8">
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
-                                            <iconify-icon icon="mdi:lock-outline"></iconify-icon>
-                                        </span>
-                                        <input type="password" name="password" id="smtpPassword" class="form-control radius-8">
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300 cursor-pointer" id="togglePassword">
-                                            <iconify-icon icon="mdi:eye-outline" id="eyeIcon"></iconify-icon>
-                                        </span>
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300 cursor-pointer" id="copyPassword">
-                                            <iconify-icon icon="mdi:content-copy"></iconify-icon>
-                                        </span>
-                                    </div>
-                                </div>
-
-                                {{-- Encryption --}}
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">Encryption <span class="text-danger-600">*</span></label>
-                                    <div class="input-group radius-8">
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
-                                            <iconify-icon icon="mdi:shield-outline"></iconify-icon>
-                                        </span>
-                                        <input type="text" name="encryption" class="form-control radius-8" value="{{ old('encryption', $smtp->encryption ?? 'ssl') }}">
-                                    </div>
-                                </div>
-
-                                {{-- From Address --}}
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">From Address <span class="text-danger-600">*</span></label>
-                                    <div class="input-group radius-8">
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
-                                            <iconify-icon icon="mdi:email-open-outline"></iconify-icon>
-                                        </span>
-                                        <input type="email" name="from_address" class="form-control radius-8" value="{{ old('from_address', $smtp->from_address ?? '') }}">
-                                    </div>
-                                </div>
-
-                                {{-- From Name --}}
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">From Name <span class="text-danger-600">*</span></label>
-                                    <div class="input-group radius-8">
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
-                                            <iconify-icon icon="mdi:account-box-outline"></iconify-icon>
-                                        </span>
-                                        <input type="text" name="from_name" class="form-control radius-8" value="{{ old('from_name', $smtp->from_name ?? '') }}">
-                                    </div>
-                                </div>
-
-                                {{-- From Name --}}
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">
-                                        User Name <span class="text-danger-600">*</span>
-                                    </label>
-                                    <div class="input-group radius-8">
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
-                                            <iconify-icon icon="mdi:account-box-outline"></iconify-icon>
-                                        </span>
-                                        <select name="user_id" class="form-control radius-8" disabled>
-                                            <option value="">Select User</option>
-                                            @foreach($users as $user)
-                                            <option value="{{ $user->id }}"
-                                                {{ old('user_id', $smtp->user_id ?? '') == $user->id ? 'selected' : '' }}>
-                                                {{ $user->name }}
-                                            </option>
-                                            @endforeach
-                                        </select>
-                                    </div>
-                                </div>
-
-
-
-                                {{-- Submit Button --}}
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-primary-light text-md mb-8"><span class="visibility-hidden">Save</span></label>
-                                    <button type="submit" class="btn btn-primary border border-primary-600 text-md px-24 py-8 radius-8 w-100 text-center">Update</button>
-                                </div>
-
-                            </div>
-                        </form>
-
-                        {{-- AJAX TEST EMAIL FORM --}}
-                        <hr class="my-4">
-                        <h5 class="text-primary-light mb-3">Send Test Email</h5>
-
-                        <form id="testSmtpForm">
-                            @csrf
-                            <div class="row gy-3 align-items-end">
-                                <div class="col-sm-6">
-                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">Recipient Email</label>
-                                    <div class="input-group radius-8">
-                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
-                                            <iconify-icon icon="mdi:email-send-outline"></iconify-icon>
-                                        </span>
-                                        <input type="email" name="test_email" id="testEmail" class="form-control radius-8" placeholder="Enter test email address" required>
-                                    </div>
-                                </div>
-                                <div class="col-sm-6">
-                                    <button type="submit" id="sendTestBtn" class="btn btn-success border border-success-600 text-md px-24 py-8 radius-8 w-100 text-center">
-                                        <span id="btnText">Send Test Email</span>
-                                    </button>
-                                </div>
-                            </div>
-                        </form>
-
-                    </div> <!-- card-body -->
-                </div>
-            </div>
+        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
+            <span>Showing 1 to 10 of 12 entries</span>
+            <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">
+                        <iconify-icon icon="ep:d-arrow-left" class=""></iconify-icon>
+                    </a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md bg-primary-600 text-white" href="javascript:void(0)">1</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px" href="javascript:void(0)">2</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">3</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">4</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">5</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">
+                        <iconify-icon icon="ep:d-arrow-right" class=""></iconify-icon>
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </div>
 
+<!-- Modal Start -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
+        <div class="modal-content radius-16 bg-base">
+            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Role</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-24">
+                <form action="#">
+                    <div class="row">
+                        <div class="col-12 mb-20">
+                            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Role Name</label>
+                            <input type="text" class="form-control radius-8" placeholder="Enter Role  Name">
+                        </div>
+                        <div class="col-12 mb-20">
+                            <label for="desc" class="form-label fw-semibold text-primary-light text-sm mb-8">Description</label>
+                            <textarea class="form-control" id="desc" rows="4" cols="50" placeholder="Write some text"></textarea>
+                        </div>
+
+                        <div class="col-12 mb-20">
+                            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
+                            <div class="d-flex align-items-center flex-wrap gap-28">
+                                <div class="form-check checked-success d-flex align-items-center gap-2">
+                                    <input class="form-check-input" type="radio" name="label" id="Personal">
+                                    <label class="form-check-label line-height-1 fw-medium text-secondary-light text-sm d-flex align-items-center gap-1" for="Personal">
+                                        <span class="w-8-px h-8-px bg-success-600 rounded-circle"></span>
+                                        Active
+                                    </label>
+                                </div>
+                                <div class="form-check checked-danger d-flex align-items-center gap-2">
+                                    <input class="form-check-input" type="radio" name="label" id="Holiday">
+                                    <label class="form-check-label line-height-1 fw-medium text-secondary-light text-sm d-flex align-items-center gap-1" for="Holiday">
+                                        <span class="w-8-px h-8-px bg-danger-600 rounded-circle"></span>
+                                        Inactive
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
+                            <button type="reset" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-40 py-11 radius-8">
+                                Cancel
+                            </button>
+                            <button type="submit" class="btn btn-primary border border-primary-600 text-md px-48 py-12 radius-8">
+                                Save
+                            </button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal End -->
 
 @endsection
