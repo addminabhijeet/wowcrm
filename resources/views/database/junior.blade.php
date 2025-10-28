@@ -104,7 +104,7 @@ $script ='<script>
                         <td>
                             @php $relOptions = ['YES','NO']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Relocation">
-                                <option value="">-- Select --</option>
+                                <option value="">-- Relocation--</option>
                                 @foreach($relOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Relocation === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -123,7 +123,7 @@ $script ='<script>
                         <td>
                             @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','HIB','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Immigration">
-                                <option value="">-- Select --</option>
+                                <option value="">-- Immigration --</option>
                                 @foreach($immOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Immigration === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -136,7 +136,7 @@ $script ='<script>
                         <td>
                             @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Course">
-                                <option value="">-- Select --</option>
+                                <option value="">-- Course --</option>
                                 @foreach($courseOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Course === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -159,7 +159,7 @@ $script ='<script>
                             @endphp
 
                             <select class="form-select dynamic-dropdown" data-key="Qualification">
-                                <option value="">-- Select --</option>
+                                <option value="">-- Qualification --</option>
                                 @foreach($qualificationOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Qualification === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -173,7 +173,7 @@ $script ='<script>
                         <td>
                             @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Connect','Others','N/A','VM','Busy']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                <option value="">-- Select --</option>
+                                <option value="">-- Exe Remarks --</option>
                                 @foreach($exeOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -186,7 +186,7 @@ $script ='<script>
                         <td>
                             @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="1st Follow Up Remarks">
-                                <option value="">-- Select --</option>
+                                <option value="">-- 1st Follow Up Remarks --</option>
                                 @foreach($followOptions as $option)
                                 <option value="{{ $option }}" {{ $row->First_Follow_Up_Remarks === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -199,7 +199,7 @@ $script ='<script>
                         <td>
                             @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Time Zone">
-                                <option value="">-- Select --</option>
+                                <option value="">-- Time Zone --</option>
                                 @foreach($timezoneOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Time_Zone === $option ? 'selected' : '' }}>
                                     {{ $option }}
