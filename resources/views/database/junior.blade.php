@@ -1154,5 +1154,119 @@ document.addEventListener('DOMContentLoaded', function () {
 });
 </script>
 
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<script>
+    $(document).ready(function() {
+
+        // -----------------------------
+        // Helper: Debounce
+        // -----------------------------
+        function debounce(func, wait) {
+            let timeout;
+            return function() {
+                const context = this,
+                    args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
+            };
+        }
+
+        // -----------------------------
+        // Fetch Table Data via AJAX
+        // -----------------------------
+        function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
+            $.ajax({
+                url: "{{ route('google.sheet.junior') }}",
+                type: 'GET',
+                data: {
+                    search,
+                    page,
+                    junior_user,
+                    row_id
+                },
+                success: function(res) {
+                    $('#senior-table-wrapper').html(res);
+                },
+                error: function(err) {
+                    console.error(err);
+                }
+            });
+        }
+
+        // -----------------------------
+        // Live Search Suggestions
+        // -----------------------------
+        const showSuggestions = debounce(function() {
+            const query = $('#senior-search').val().trim();
+            const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+
+            if (query.length < 3) {
+                $('#search-suggestions').empty().hide();
+                fetchTable('', 1, junior_user); // reset table
+                return;
+            }
+
+            $.ajax({
+                url: "{{ route('junior.suggestions') }}",
+                type: 'GET',
+                data: {
+                    query
+                },
+                success: function(res) {
+                    let suggestions = '';
+                    if (res.length) {
+                        res.forEach(item => {
+                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
+                        });
+                    } else {
+                        suggestions = '<span class="list-group-item">No results found</span>';
+                    }
+                    $('#search-suggestions').html(suggestions).show();
+                }
+            });
+        }, 300);
+
+        $('#senior-search').on('input', showSuggestions);
+
+        // Click suggestion
+        $(document).on('click', '#search-suggestions a', function(e) {
+            e.preventDefault();
+            const rowId = $(this).data('id');
+            const junior_user = $('#junior-filter').val();
+            $('#senior-search').val($(this).text());
+            $('#search-suggestions').empty().hide();
+
+            fetchTable('', 1, junior_user, rowId);
+        });
+
+        // Pagination click (AJAX)
+        $(document).on('click', '.pagination a', function(e) {
+            e.preventDefault();
+            const page = $(this).attr('href').split('page=')[1];
+            const search = $('#senior-search').val().trim();
+            const junior_user = $('#junior-filter').val() || '';
+            fetchTable(search, page, junior_user);
+        });
+
+        // Junior dropdown filter
+        $(document).on('change', '#junior-filter', function() {
+            const junior_user = $(this).val();
+            const search = $('#senior-search').val().trim();
+            fetchTable(search, 1, junior_user);
+        });
+
+        // Click outside suggestions to hide
+        $(document).click(function(e) {
+            if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
+                $('#search-suggestions').empty().hide();
+            }
+        });
+
+    });
+</script>
+
+
 
 @endsection
