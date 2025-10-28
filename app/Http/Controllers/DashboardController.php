@@ -32,7 +32,7 @@ class DashboardController extends Controller
     public function index()
     {
         $users = User::all();
-        $newUsers = User::where('created_at', '>=', Carbon::now()->subDays(30))->count();
+        $newUsers = User::where('created_at', '>=', Carbon::now()->subDays(30))->get();
         return view('dashboard.admin', compact('users','newUsers'));
     }
 
