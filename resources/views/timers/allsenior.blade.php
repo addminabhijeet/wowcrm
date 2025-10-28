@@ -151,17 +151,17 @@ $script = '<script>
 
                         <div class="position-absolute top-0 end-0 me-16 mt-16" id="badgeContainer_{{ $timer['user_id'] }}">
                             @php
-                            // Convert seconds to HH:MM:SS format for easy comparison
+                            // Convert seconds to HH:MM:SS format for comparison
                             $remainingFormatted = gmdate('H:i:s', $timer['remaining_seconds']);
                             $elapsedFormatted = gmdate('H:i:s', $timer['elapsed_seconds']);
                             @endphp
 
-                            {{-- Check for Offline condition first --}}
-                            @if($remainingFormatted === '08:00:00' && $elapsedFormatted === '00:00:00')
+                            {{-- Force "Offline" if Countdown still 08:00:00 OR Elapsed still 00:00:00 --}}
+                            @if($remainingFormatted === '08:00:00' || $elapsedFormatted === '00:00:00')
                             <span class="badge bg-dark text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Offline</span>
 
-                            {{-- Then handle other pause types --}}
+                            {{-- Otherwise, check for pause types --}}
                             @elseif(!empty($timer['pause_type']))
                             @if($timer['pause_type'] == 'lunch')
                             <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
@@ -181,6 +181,7 @@ $script = '<script>
                             @endif
                             @endif
                         </div>
+
 
 
 
