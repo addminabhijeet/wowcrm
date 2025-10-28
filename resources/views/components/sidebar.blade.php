@@ -259,10 +259,10 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('call.reports.allseniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href=""><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Accountant Report</a></li>
+                    <li><a href="{{ route('call.reports.allaccountantlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Accountant Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href=""><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer Report</a></li>
+                    <li><a href="{{ route('call.reports.alltrainerlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer Report</a></li>
                 </ul>
             </li>
 
