@@ -150,25 +150,16 @@ $script = '<script>
 
 
                         <div class="position-absolute top-0 end-0 me-16 mt-16" id="badgeContainer_{{ $timer['user_id'] }}">
-                            @php
-                            // Convert seconds to HH:MM:SS format for comparison
-                            $remainingFormatted = gmdate('H:i:s', $timer['remaining_seconds']);
-                            $elapsedFormatted = gmdate('H:i:s', $timer['elapsed_seconds']);
-                            @endphp
-
-                            {{-- Force "Offline" if Countdown still 08:00:00 OR Elapsed still 00:00:00 --}}
-                            @if($remainingFormatted === '08:00:00' || $elapsedFormatted === '00:00:00')
-                            <span class="badge bg-dark text-white px-3 py-2 radius-8 shadow-sm"
-                                style="font-size:12px; min-width:100px; text-align:center;">Offline</span>
-
-                            {{-- Otherwise, check for pause types --}}
-                            @elseif(!empty($timer['pause_type']))
+                            @if(!empty($timer['pause_type']))
                             @if($timer['pause_type'] == 'lunch')
                             <span class="badge bg-danger text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Lunch Break</span>
                             @elseif($timer['pause_type'] == 'tea')
                             <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Tea Break</span>
+                            @elseif($timer['pause_type'] == '')
+                            <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
+                                style="font-size:12px; min-width:100px; text-align:center;">Offline</span>
                             @elseif($timer['pause_type'] == 'break')
                             <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Short Break</span>
