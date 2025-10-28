@@ -176,10 +176,10 @@ $role = Auth::user()->role;
                     <span>Report</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('call.reports.allaccountantdaily', $user->id) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Personal Report</a></li>
+                    <li><a href="{{ route('call.reports.allaccountantdaily', Auth::id()) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Personal Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('call.reports.allaccountantmonthly', $user->id) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
+                    <li><a href="{{ route('call.reports.allaccountantmonthly', Auth::id()) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('call.reports.allseniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Team Report</a></li>
