@@ -2231,6 +2231,79 @@ class GoogleSheetController extends Controller
         return view('database.accountant', compact('data', 'juniorUsers'));
     }
 
+    public function accountantpaid(Request $request)
+    {
+        $authUser = Auth::user();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+
+        $query = GoogleSheetData::where(function ($q) {
+            // Removed user_id|senior check
+            // Only keep the accountant part filter
+            $q->where(function ($q2) {
+                $q2->whereRaw("created_by = '0|trainer'")
+                    ->orWhereRaw("created_by LIKE '0|trainer:%'")
+                    ->orWhereRaw("created_by LIKE '%:0|trainer'")
+                    ->orWhereRaw("created_by LIKE '%:0|trainer:%'");
+            });
+        });
+
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $data = $query->orderBy('Date', 'desc')->paginate(10);
+
+        $data->getCollection()->transform(function ($item) use ($authUser) {
+
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                // Split by ':' to handle multiple forwarded entries
+                $entries = explode(':', $item->created_by);
+
+                $names = [];
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                // Join all names for forwarded chain
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+
+        if (request()->ajax()) {
+            return view('database.partials.senior_table', compact('data'))->render();
+        }
+
+        return view('database.accountantpaid', compact('data', 'juniorUsers'));
+    }
+
+
 
 
 
