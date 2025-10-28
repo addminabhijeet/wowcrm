@@ -456,7 +456,7 @@ $script = '<script>
                                 <i class="bi bi-envelope-paper-fill"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block">Called & Mailed (C&MC)</small>
+                                <small class="text-muted d-block">Paid (C&MC)</small>
                                 <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
                             </div>
                         </div>
@@ -469,7 +469,7 @@ $script = '<script>
                         <thead class="table-primary">
                             <tr>
                                 <th class="fw-semibold">⏰ Time Range</th>
-                                <th class="fw-semibold text-center">📊 Called & Mailed Count</th>
+                                <th class="fw-semibold text-center">📊 Paid Count</th>
                                 <th class="fw-semibold text-center">📊 Other Call Count</th>
                             </tr>
                         </thead>
@@ -560,7 +560,7 @@ $script = '<script>
 
                     <div class="d-flex align-items-center gap-1 justify-content-between">
                         <div>
-                            <span class="text-secondary-light fw-normal mb-12 text-xl">Called & Mailed Calls (C&MC)</span>
+                            <span class="text-secondary-light fw-normal mb-12 text-xl">Paid Calls (C&MC)</span>
                             <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
                         </div>
                         <div id="dailyIconBarChart"></div>
