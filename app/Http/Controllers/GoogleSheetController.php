@@ -2300,7 +2300,7 @@ class GoogleSheetController extends Controller
             return view('database.partials.senior_table', compact('data'))->render();
         }
 
-        return view('database.accountantpaid', compact('data', 'juniorUsers'));
+        return view('database.seniorpaid', compact('data'));
     }
 
 
