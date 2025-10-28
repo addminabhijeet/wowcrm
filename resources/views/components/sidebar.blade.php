@@ -156,7 +156,7 @@ $role = Auth::user()->role;
                     <span>Calendar</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href=""><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>Calendar</a></li>
+                    <li><a href="{{ route('calendar.allaccountantUser', Auth::id()) }}"><i class="ri-circle-fill circle-icon text-info-main w-auto"></i>Calendar</a></li>
                 </ul>
             </li>
 
