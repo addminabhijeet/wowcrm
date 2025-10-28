@@ -157,10 +157,9 @@ $script = '<script>
                             @elseif($timer['pause_type'] == 'tea')
                             <span class="badge bg-success text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Tea Break</span>
-                            @elseif($timer['pause_type'] == '' || $timer['pause_type'] == 'offline')
+                            @elseif($timer['pause_type'] == 'offline')
                             <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Offline</span>
-
                             @elseif($timer['pause_type'] == 'break')
                             <span class="badge bg-warning text-white px-3 py-2 radius-8 shadow-sm"
                                 style="font-size:12px; min-width:100px; text-align:center;">Short Break</span>

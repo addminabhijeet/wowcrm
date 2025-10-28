@@ -7,7 +7,6 @@ use App\Models\UserTimerLog;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserTimerPause;
-use Carbon\Carbon;
 use App\Models\TimerSetting;
 
 class TimerController extends Controller
@@ -56,46 +55,29 @@ class TimerController extends Controller
 
         $juniors = User::where('role', 'junior')->get();
         $login_user = User::where('status')->get();
-
         $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
-            // Get today's date in New York timezone
-            $todayNY = Carbon::now('America/New_York')->toDateString();
+            $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
 
-            // Check if user has a timer entry for today
-            $todayTimer = UserTimerLog::where('user_id', $junior->id)
-                ->whereDate('start_time', $todayNY)
-                ->latest()
-                ->first();
-
-            // If no log for today, mark as offline
-            if (!$todayTimer) {
-                return [
-                    'user_id'          => $junior->id,
-                    'name'             => $junior->name,
-                    'image'            => $junior->image,
-                    'email'            => $junior->email,
-                    'remaining_seconds' => $workDaySeconds,
-                    'elapsed_seconds'  => 0,
-                    'status'           => 'offline',
-                    'button_status'    => 0,
-                    'notice_status'    => 0,
-                    'pause_type'        => 'offline', // 👈 important for badge display
-                ];
+            if ($timer) {
+                $remaining_seconds = $timer->remaining_seconds;
+                $elapsed_seconds = $workDaySeconds - $remaining_seconds;
+                $status = $timer->status;
+                $button_status = $timer->button_status;
+                $notice_status = $timer->notice_status;
+                $pause_type        = $timer->pause_type;
+            } else {
+                $remaining_seconds = $workDaySeconds;
+                $elapsed_seconds = 0;
+                $status = 'running';
+                $button_status = 1;
+                $notice_status = 0;
+                $pause_type        = 'offline';
             }
-
-            // Otherwise, continue your existing logic
-            $timer = $todayTimer;
-            $remaining_seconds = $timer->remaining_seconds;
-            $elapsed_seconds = $workDaySeconds - $remaining_seconds;
-            $status = $timer->status;
-            $button_status = $timer->button_status;
-            $notice_status = $timer->notice_status;
-            $pause_type = $timer->pause_type;
 
             return [
                 'user_id'          => $junior->id,
                 'name'             => $junior->name,
-                'image'            => $junior->image,
+                'image'             => $junior->image,
                 'email'            => $junior->email,
                 'remaining_seconds' => $remaining_seconds,
                 'elapsed_seconds'  => $elapsed_seconds,
@@ -108,7 +90,6 @@ class TimerController extends Controller
 
         return view('timers.senior', compact('timers', 'juniors', 'login_user'));
     }
-
 
     public function allseniorTimers()
     {
