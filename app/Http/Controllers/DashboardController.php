@@ -33,7 +33,7 @@ class DashboardController extends Controller
     {
         $users = User::all();
         $newUsers = User::where('created_at', '>=', Carbon::now()->subDays(30))->get();
-        return view('dashboard.admin', compact('users','newUsers'));
+        return view('dashboard.admin', compact('users', 'newUsers'));
     }
 
     public function junior()
@@ -536,18 +536,21 @@ class DashboardController extends Controller
     public function targetall()
     {
         // Get only users that have SMTP settings
-       $targetUsers = User::whereIn('role', ['senior', 'junior'])->get();
+        $targetUsers = User::whereIn('role', ['senior', 'junior'])->get();
 
         return view('target.editall', compact('targetUsers'));
     }
 
-    public function targetedit()
+    public function targetedit($id)
     {
-        // Get only users that have SMTP settings
-       $targetUsers = User::whereIn('role', ['senior', 'junior'])->get();
+        // Fetch the user by ID (only if their role is 'senior' or 'junior')
+        $targetUser = User::whereIn('role', ['senior', 'junior'])
+            ->where('id', $id)
+            ->firstOrFail();
 
-        return view('target.editall', compact('targetUsers'));
+        return view('target.editall', compact('targetUser'));
     }
+
 
     public function add()
     {
