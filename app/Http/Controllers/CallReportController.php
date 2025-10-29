@@ -1602,6 +1602,17 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
+        $targetValues = explode('|', $juniorUser->target ?? '');
+        $targetGiven = (int) $targetValues[0] ?? 0; // or adjust if multiple values stored
+
+        $targetAchieved = $McalledAndMailedCalls;
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+
+        // Calculate Days Left (based on last due_date entry)
+        $dueDates = explode('|', $juniorUser->due_date ?? '');
+        $lastDueDate = !empty($dueDates) ? end($dueDates) : null;
+        $daysLeft = $lastDueDate ? max(0, now()->diffInDays(\Carbon\Carbon::parse($lastDueDate), false)) : 0;
+
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
@@ -1650,7 +1661,11 @@ class CallReportController extends Controller
             'o4to5pm',
             'o5to6pm',
             'o6to7pm',
-            'o7to8pm'
+            'o7to8pm',
+            'targetGiven',
+            'targetAchieved',
+            'targetYetToAchieve',
+            'daysLeft'
         ));
     }
 }
