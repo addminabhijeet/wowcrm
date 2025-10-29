@@ -43,29 +43,37 @@ $script = '<script>
                     </tr>
                 </thead>
                 <tbody>
+                    @php
+                    $targets = $targetUsers->target ? explode(' | ', $targetUsers->target) : [];
+                    $targetDates = $targetUsers->target_date ? explode(' | ', $targetUsers->target_date) : [];
+                    $dueDates = $targetUsers->due_date ? explode(' | ', $targetUsers->due_date) : [];
+                    @endphp
+
+                    @foreach($targets as $index => $target)
                     <tr>
                         <td>{{ $targetUsers->name }}</td>
-                        <td>{{ $targetUsers->target ?? '-' }}</td>
-                        <td>{{ $targetUsers->target_date ?? '-' }}</td>
-                        <td>{{ $targetUsers->due_date ?? '-' }}</td>
-                        {{-- Action Buttons --}}
+                        <td>{{ $target }}</td>
+                        <td>{{ $targetDates[$index] ?? '-' }}</td>
+                        <td>{{ $dueDates[$index] ?? '-' }}</td>
                         <td class="text-center">
-                            {{-- Edit Button --}}
                             <button type="button"
                                 class="btn btn-sm btn-warning d-flex align-items-center gap-1"
                                 data-bs-toggle="modal"
                                 data-bs-target="#userModal"
                                 data-mode="edit"
                                 data-id="{{ $targetUsers->id }}"
-                                data-target="{{ $targetUsers->target }}"
-                                data-target_date="{{ $targetUsers->target_date }}"
-                                data-due_date="{{ $targetUsers->due_date }}">
+                                data-index="{{ $index }}"
+                                data-target="{{ $target }}"
+                                data-target_date="{{ $targetDates[$index] ?? '' }}"
+                                data-due_date="{{ $dueDates[$index] ?? '' }}">
                                 <iconify-icon icon="mdi:pencil" class="text-lg"></iconify-icon>
                                 Edit
                             </button>
                         </td>
                     </tr>
+                    @endforeach
                 </tbody>
+
             </table>
         </div>
     </div>
@@ -83,7 +91,7 @@ $script = '<script>
             {{-- ✅ Form sends only target data --}}
             <form id="userForm" method="POST" action="{{ route('target.save', $targetUsers->id) }}">
                 @csrf
-                <input type="hidden" name="id" id="user_id" value="{{ $targetUsers->id }}">
+                <input type="hidden" name="id" id="user_index" value="{{ $targetUsers->id }}">
 
                 <div class="modal-body p-24">
                     <div class="row">
@@ -108,7 +116,7 @@ $script = '<script>
                 </div>
 
                 <div class="modal-footer">
-                   
+
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
@@ -118,27 +126,30 @@ $script = '<script>
 
 {{-- ✅ Script for Add/Edit Target Modal --}}
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const userModal = document.getElementById("userModal");
-    const form = document.getElementById("userForm");
-    const modalTitle = document.getElementById("userModalLabel");
+    document.addEventListener("DOMContentLoaded", () => {
+        const userModal = document.getElementById("userModal");
+        const form = document.getElementById("userForm");
+        const modalTitle = document.getElementById("userModalLabel");
 
-    userModal.addEventListener("show.bs.modal", (event) => {
-        const button = event.relatedTarget;
-        const mode = button.getAttribute("data-mode");
+        userModal.addEventListener("show.bs.modal", (event) => {
+            const button = event.relatedTarget;
+            const mode = button.getAttribute("data-mode");
 
-        if (mode === "edit") {
-            modalTitle.textContent = "Edit Target";
-            form.querySelector("#user_id").value = button.dataset.id;
-            form.querySelector("#user_target").value = button.dataset.target || '';
-            form.querySelector("#user_target_date").value = button.dataset.target_date || '';
-            form.querySelector("#user_due_date").value = button.dataset.due_date || '';
-        } else {
-            modalTitle.textContent = "Add Target";
-            form.reset();
-            form.querySelector("#user_id").value = "{{ $targetUsers->id }}";
-        }
+            if (mode === "edit") {
+                modalTitle.textContent = "Edit Target";
+                form.querySelector("#user_id").value = button.dataset.id;
+                form.querySelector("#user_index").value = button.dataset.index;
+                form.querySelector("#user_target").value = button.dataset.target || '';
+                form.querySelector("#user_target_date").value = button.dataset.target_date || '';
+                form.querySelector("#user_due_date").value = button.dataset.due_date || '';
+            } else {
+                modalTitle.textContent = "Add Target";
+                form.reset();
+                form.querySelector("#user_id").value = "{{ $targetUsers->id }}";
+                form.querySelector("#user_index").value = ""; // clear index for new
+            }
+        });
     });
-});
 </script>
+
 @endsection
