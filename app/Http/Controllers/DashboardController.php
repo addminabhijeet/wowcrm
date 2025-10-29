@@ -566,24 +566,30 @@ class DashboardController extends Controller
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|email|max:255',
-            'role' => 'required|string|in:senior,junior',
+            'phone' => 'nullable|string|max:20',
+            'role' => 'required|string|in:junior,senior',
+            'designation' => 'nullable|string|max:255',
             'target' => 'nullable|string|max:255',
-            'target_date' => 'nullable|date',
-            'due_date' => 'nullable|date',
+            'target_date' => 'nullable|string|max:255',
+            'due_date' => 'nullable|string|max:255',
+            'status' => 'required|boolean',
         ]);
 
-        // ✅ Update if ID exists, else create new
         if ($request->id) {
+            // Update existing record
             $user = User::findOrFail($request->id);
             $user->update($validated);
-            $message = 'User updated successfully.';
+            $message = 'User updated successfully!';
         } else {
-            $user = User::create($validated);
-            $message = 'New user added successfully.';
+            // Create new record
+            $validated['password'] = bcrypt('123456'); // Default password for new users
+            User::create($validated);
+            $message = 'New user added successfully!';
         }
 
         return redirect()->back()->with('success', $message);
     }
+
 
 
     public function add()

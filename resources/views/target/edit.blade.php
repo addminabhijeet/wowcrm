@@ -21,7 +21,8 @@ $script = '<script>
             </select>
 
             {{-- ✅ Button to open Add User modal --}}
-            <button type="button" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
+            <button type="button"
+                class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
                 data-bs-toggle="modal" data-bs-target="#userModal" data-mode="add">
                 <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
                 Add User
@@ -36,10 +37,13 @@ $script = '<script>
                     <tr>
                         <th>Name</th>
                         <th>Email</th>
+                        <th>Phone</th>
                         <th>Role</th>
+                        <th>Designation</th>
                         <th>Target</th>
                         <th>Target Date</th>
                         <th>Due Date</th>
+                        <th>Status</th>
                         <th class="text-center">Action</th>
                     </tr>
                 </thead>
@@ -48,17 +52,33 @@ $script = '<script>
                     <tr>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
+                        <td>{{ $user->phone ?? '-' }}</td>
                         <td>{{ ucfirst($user->role) }}</td>
+                        <td>{{ $user->designation ?? '-' }}</td>
                         <td>{{ $user->target ?? '-' }}</td>
                         <td>{{ $user->target_date ?? '-' }}</td>
                         <td>{{ $user->due_date ?? '-' }}</td>
+                        <td>
+                            @if($user->status == 1)
+                                <span class="badge bg-success">Active</span>
+                            @else
+                                <span class="badge bg-danger">Inactive</span>
+                            @endif
+                        </td>
                         <td class="text-center">
-                            {{-- ✅ Edit User modal trigger --}}
+                            {{-- ✅ Edit button --}}
                             <button type="button" class="btn btn-sm btn-primary editUserBtn"
-                                data-id="{{ $user->id }}" data-name="{{ $user->name }}"
-                                data-email="{{ $user->email }}" data-role="{{ $user->role }}"
-                                data-target="{{ $user->target }}" data-target_date="{{ $user->target_date }}"
-                                data-due_date="{{ $user->due_date }}" data-bs-toggle="modal"
+                                data-id="{{ $user->id }}"
+                                data-name="{{ $user->name }}"
+                                data-email="{{ $user->email }}"
+                                data-phone="{{ $user->phone }}"
+                                data-role="{{ $user->role }}"
+                                data-designation="{{ $user->designation }}"
+                                data-target="{{ $user->target }}"
+                                data-target_date="{{ $user->target_date }}"
+                                data-due_date="{{ $user->due_date }}"
+                                data-status="{{ $user->status }}"
+                                data-bs-toggle="modal"
                                 data-bs-target="#userModal" data-mode="edit">
                                 Edit
                             </button>
@@ -67,31 +87,6 @@ $script = '<script>
                     @endforeach
                 </tbody>
             </table>
-        </div>
-
-        <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
-            <span>Showing 1 to 10 of 12 entries</span>
-            <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
-                <li class="page-item">
-                    <a
-                        class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md"
-                        href="javascript:void(0)">
-                        <iconify-icon icon="ep:d-arrow-left" class=""></iconify-icon>
-                    </a>
-                </li>
-                <li class="page-item">
-                    <a
-                        class="page-link text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md bg-primary-600 text-white"
-                        href="javascript:void(0)">1</a>
-                </li>
-                <li class="page-item">
-                    <a
-                        class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md"
-                        href="javascript:void(0)">
-                        <iconify-icon icon="ep:d-arrow-right" class=""></iconify-icon>
-                    </a>
-                </li>
-            </ul>
         </div>
     </div>
 </div>
@@ -104,19 +99,28 @@ $script = '<script>
                 <h1 class="modal-title fs-5" id="userModalLabel">Add/Edit User</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
+
             <form id="userForm" method="POST" action="{{ route('target.save') }}">
                 @csrf
                 <input type="hidden" name="id" id="user_id">
+
                 <div class="modal-body p-24">
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Name</label>
                             <input type="text" name="name" id="user_name" class="form-control" required>
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Email</label>
                             <input type="email" name="email" id="user_email" class="form-control" required>
                         </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Phone</label>
+                            <input type="text" name="phone" id="user_phone" class="form-control">
+                        </div>
+
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Role</label>
                             <select name="role" id="user_role" class="form-select">
@@ -124,20 +128,37 @@ $script = '<script>
                                 <option value="senior">Senior</option>
                             </select>
                         </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Designation</label>
+                            <input type="text" name="designation" id="user_designation" class="form-control">
+                        </div>
+
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Target</label>
                             <input type="text" name="target" id="user_target" class="form-control">
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Target Date</label>
                             <input type="date" name="target_date" id="user_target_date" class="form-control">
                         </div>
+
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Due Date</label>
                             <input type="date" name="due_date" id="user_due_date" class="form-control">
                         </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Status</label>
+                            <select name="status" id="user_status" class="form-select">
+                                <option value="1">Active</option>
+                                <option value="0">Inactive</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
+
                 <div class="modal-footer">
                     <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-primary">Save</button>
@@ -147,32 +168,35 @@ $script = '<script>
     </div>
 </div>
 
-{{-- ✅ JavaScript for Add/Edit --}}
+{{-- ✅ Script for Add/Edit Modal --}}
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const userModal = document.getElementById("userModal");
-        const form = document.getElementById("userForm");
+document.addEventListener("DOMContentLoaded", () => {
+    const userModal = document.getElementById("userModal");
+    const form = document.getElementById("userForm");
 
-        userModal.addEventListener("show.bs.modal", (event) => {
-            const button = event.relatedTarget;
-            const mode = button.getAttribute("data-mode");
+    userModal.addEventListener("show.bs.modal", (event) => {
+        const button = event.relatedTarget;
+        const mode = button.getAttribute("data-mode");
 
-            if (mode === "edit") {
-                form.querySelector("#userModalLabel").textContent = "Edit User";
-                form.querySelector("#user_id").value = button.dataset.id;
-                form.querySelector("#user_name").value = button.dataset.name;
-                form.querySelector("#user_email").value = button.dataset.email;
-                form.querySelector("#user_role").value = button.dataset.role;
-                form.querySelector("#user_target").value = button.dataset.target;
-                form.querySelector("#user_target_date").value = button.dataset.target_date;
-                form.querySelector("#user_due_date").value = button.dataset.due_date;
-            } else {
-                form.reset();
-                form.querySelector("#userModalLabel").textContent = "Add New User";
-                form.querySelector("#user_id").value = "";
-            }
-        });
+        if (mode === "edit") {
+            form.querySelector("#userModalLabel").textContent = "Edit User";
+            form.querySelector("#user_id").value = button.dataset.id;
+            form.querySelector("#user_name").value = button.dataset.name;
+            form.querySelector("#user_email").value = button.dataset.email;
+            form.querySelector("#user_phone").value = button.dataset.phone;
+            form.querySelector("#user_role").value = button.dataset.role;
+            form.querySelector("#user_designation").value = button.dataset.designation;
+            form.querySelector("#user_target").value = button.dataset.target;
+            form.querySelector("#user_target_date").value = button.dataset.target_date;
+            form.querySelector("#user_due_date").value = button.dataset.due_date;
+            form.querySelector("#user_status").value = button.dataset.status;
+        } else {
+            form.reset();
+            form.querySelector("#userModalLabel").textContent = "Add New User";
+            form.querySelector("#user_id").value = "";
+        }
     });
+});
 </script>
 
 @endsection
