@@ -38,7 +38,6 @@ $script = '<script>
                         <th>Name</th>
                         <th>Target</th>
                         <th>Target Month</th>
-                        <th>Due Month</th>
                         <th class="text-center">Action</th>
                     </tr>
                 </thead>
@@ -46,7 +45,6 @@ $script = '<script>
                     @php
                         $targets = $targetUsers->target ? explode(' | ', $targetUsers->target) : [];
                         $targetDates = $targetUsers->target_date ? explode(' | ', $targetUsers->target_date) : [];
-                        $dueDates = $targetUsers->due_date ? explode(' | ', $targetUsers->due_date) : [];
                     @endphp
 
                     @foreach($targets as $index => $target)
@@ -54,7 +52,6 @@ $script = '<script>
                         <td>{{ $targetUsers->name }}</td>
                         <td>{{ $target }}</td>
                         <td>{{ $targetDates[$index] ?? '-' }}</td>
-                        <td>{{ $dueDates[$index] ?? '-' }}</td>
                         <td class="text-center">
                             <button type="button"
                                 class="btn btn-sm btn-warning d-flex align-items-center gap-1"
@@ -64,8 +61,7 @@ $script = '<script>
                                 data-id="{{ $targetUsers->id }}"
                                 data-index="{{ $index }}"
                                 data-target="{{ $target }}"
-                                data-target_date="{{ $targetDates[$index] ?? '' }}"
-                                data-due_date="{{ $dueDates[$index] ?? '' }}">
+                                data-target_date="{{ $targetDates[$index] ?? '' }}">
                                 <iconify-icon icon="mdi:pencil" class="text-lg"></iconify-icon>
                                 Edit
                             </button>
@@ -87,7 +83,7 @@ $script = '<script>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            {{-- ✅ Form sends only target data --}}
+            {{-- ✅ Form sends only target + target_month --}}
             <form id="userForm" method="POST" action="{{ route('target.save', $targetUsers->id) }}">
                 @csrf
                 <input type="hidden" name="id" id="user_id" value="{{ $targetUsers->id }}">
@@ -96,21 +92,15 @@ $script = '<script>
                 <div class="modal-body p-24">
                     <div class="row">
                         {{-- Target --}}
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label">Target</label>
                             <input type="number" name="target" id="user_target" class="form-control" required>
                         </div>
 
                         {{-- Target Month --}}
-                        <div class="col-md-4 mb-3">
+                        <div class="col-md-6 mb-3">
                             <label class="form-label">Target Month</label>
                             <input type="month" name="target_date" id="user_target_date" class="form-control" required>
-                        </div>
-
-                        {{-- Due Month --}}
-                        <div class="col-md-4 mb-3">
-                            <label class="form-label">Due Month</label>
-                            <input type="month" name="due_date" id="user_due_date" class="form-control" required>
                         </div>
                     </div>
                 </div>
@@ -140,7 +130,6 @@ document.addEventListener("DOMContentLoaded", () => {
             form.querySelector("#user_index").value = button.dataset.index;
             form.querySelector("#user_target").value = button.dataset.target;
             form.querySelector("#user_target_date").value = button.dataset.target_date;
-            form.querySelector("#user_due_date").value = button.dataset.due_date;
         } else {
             modalTitle.textContent = "Add Target";
             form.reset();
