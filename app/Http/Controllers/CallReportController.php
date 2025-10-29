@@ -1023,7 +1023,13 @@ class CallReportController extends Controller
         // Calculate Days Left (based on last due_date entry)
         $dueDates = explode('|', $juniorUser->due_date ?? '');
         $lastDueDate = !empty($dueDates) ? end($dueDates) : null;
-        $daysLeft = $lastDueDate ? max(0, now()->diffInDays(\Carbon\Carbon::parse($lastDueDate), false)) : 0;
+
+        if ($lastDueDate) {
+            $diff = now()->floatDiffInDays(\Carbon\Carbon::parse($lastDueDate), false);
+            $daysLeft = max(0, ceil($diff)); // ✅ Always round up (e.g., 0.4 → 1)
+        } else {
+            $daysLeft = 0;
+        }
 
 
         return view('reports.alljuniormonthly', compact(
