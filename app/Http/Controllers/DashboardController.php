@@ -532,18 +532,14 @@ class DashboardController extends Controller
 
         return view('smtp.editall', compact('juniorUsers'));
     }
-
     public function targetall()
     {
-        // Get only users that have SMTP settings
         $targetUsers = User::whereIn('role', ['senior', 'junior'])->get();
-
         return view('target.editall', compact('targetUsers'));
     }
 
     public function targetedit($id)
     {
-        // Fetch the user by ID (only if their role is 'senior' or 'junior')
         $targetUsers = User::whereIn('role', ['senior', 'junior'])
             ->where('id', $id)
             ->firstOrFail();
@@ -553,31 +549,33 @@ class DashboardController extends Controller
 
     public function targetadd($id)
     {
-        // Fetch the user by ID (only if their role is 'senior' or 'junior')
         $targetUsers = User::whereIn('role', ['senior', 'junior'])
             ->where('id', $id)
             ->firstOrFail();
 
         return view('target.edit', compact('targetUsers'));
     }
-    public function targetSave(Request $request)
+
+    public function targetSave(Request $request, $id)
     {
         $validated = $request->validate([
-            'id' => 'required|exists:users,id',
             'target' => 'required|integer',
             'target_date' => 'required|date',
             'due_date' => 'required|date|after:target_date',
             'index' => 'nullable'
         ]);
 
-        $user = User::findOrFail($request->id);
+        $user = User::findOrFail($id);
 
-        $targets = $user->target ? explode(' | ', $user->target) : [];
-        $targetDates = $user->target_date ? explode(' | ', $user->target_date) : [];
-        $dueDates = $user->due_date ? explode(' | ', $user->due_date) : [];
+        // Split existing values cleanly
+        $targets = $user->target ? array_map('trim', explode('|', $user->target)) : [];
+        $targetDates = $user->target_date ? array_map('trim', explode('|', $user->target_date)) : [];
+        $dueDates = $user->due_date ? array_map('trim', explode('|', $user->due_date)) : [];
 
-        if ($request->index !== null && $request->index !== '') {
-            $index = (int) $request->index;
+        // If editing an existing index
+        if ($request->filled('index')) {
+            $index = (int)$request->index;
+
             if (!isset($targets[$index])) {
                 return back()->with('error', 'Invalid target index.');
             }
@@ -586,6 +584,7 @@ class DashboardController extends Controller
             $targetDates[$index] = $validated['target_date'];
             $dueDates[$index] = $validated['due_date'];
         } else {
+            // Add new entry at the end
             $targets[] = $validated['target'];
             $targetDates[] = $validated['target_date'];
             $dueDates[] = $validated['due_date'];
@@ -604,18 +603,17 @@ class DashboardController extends Controller
     {
         $user = User::findOrFail($id);
 
-        // Get all stored values
-        $targets = $user->target ? explode(' | ', $user->target) : [];
-        $targetDates = $user->target_date ? explode(' | ', $user->target_date) : [];
-        $dueDates = $user->due_date ? explode(' | ', $user->due_date) : [];
+        $index = (int)$request->input('index');
 
-        $index = (int) $request->input('index');
+        $targets = $user->target ? array_map('trim', explode('|', $user->target)) : [];
+        $targetDates = $user->target_date ? array_map('trim', explode('|', $user->target_date)) : [];
+        $dueDates = $user->due_date ? array_map('trim', explode('|', $user->due_date)) : [];
 
         if (!isset($targets[$index])) {
             return back()->with('error', 'Invalid target index.');
         }
 
-        // Remove the selected entry
+        // Remove selected index
         unset($targets[$index], $targetDates[$index], $dueDates[$index]);
 
         // Reindex arrays
@@ -623,17 +621,14 @@ class DashboardController extends Controller
         $targetDates = array_values($targetDates);
         $dueDates = array_values($dueDates);
 
-        // Update user
         $user->update([
             'target' => implode(' | ', $targets),
             'target_date' => implode(' | ', $targetDates),
             'due_date' => implode(' | ', $dueDates),
         ]);
 
-        return back()->with('success', 'Target deleted successfully.');
+        return redirect()->back()->with('success', 'Target deleted successfully!');
     }
-
-
 
     public function add()
     {
