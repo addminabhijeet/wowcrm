@@ -1,100 +1,93 @@
 @extends('layout.layout')
 
 @php
-    $title='Dashboard';
-    $subTitle = 'Senior';
-    $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
+$title='Dashboard';
+$subTitle = 'Senior';
+$script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 @endphp
 
 @section('content')
 
-            <div class="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4">
-                <div class="col">
-                    <div class="card shadow-none border bg-gradient-start-1 h-100">
-                        <div class="card-body p-20">
-                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                                <div>
-                                    <p class="fw-medium text-primary-light mb-1">Total Resumes</p>
-                                    <h6 class="mb-0">0</h6>
-                                </div>
-                                <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
-                                    <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>
-                                </div>
-                            </div>
-                            <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-                                <span class="d-inline-flex align-items-center gap-1 text-success-main">
-                                    <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +6
-                                </span>
-                                Last 30 days total resumes
-                            </p>
-                        </div>
-                    </div><!-- card end -->
+<div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
+
+    <!-- Total Target Given -->
+    <div class="col">
+        <div class="card h-100 border-0 shadow-sm"
+            style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 20px; color: #0d47a1; transition: all 0.3s ease; cursor: pointer;"
+            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
+                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">120</h3>
                 </div>
-                <div class="col">
-                    <div class="card shadow-none border bg-gradient-start-2 h-100">
-                        <div class="card-body p-20">
-                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                                <div>
-                                    <p class="fw-medium text-primary-light mb-1">Total Pending Resumes</p>
-                                    <h6 class="mb-0">0</h6>
-                                </div>
-                                <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
-                                    <iconify-icon icon="fa-solid:award" class="text-white text-2xl mb-0"></iconify-icon>
-                                </div>
-                            </div>
-                            <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-                                <span class="d-inline-flex align-items-center gap-1 text-danger-main">
-                                    <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> -1
-                                </span>
-                                Last 30 days total pending resumes
-                            </p>
-                        </div>
-                    </div><!-- card end -->
-                </div>
-                <div class="col">
-                    <div class="card shadow-none border bg-gradient-start-3 h-100">
-                        <div class="card-body p-20">
-                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                                <div>
-                                    <p class="fw-medium text-primary-light mb-1">Total Inreview Resumes</p>
-                                    <h6 class="mb-0">0</h6>
-                                </div>
-                                <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
-                                    <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
-                                </div>
-                            </div>
-                            <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-                                <span class="d-inline-flex align-items-center gap-1 text-success-main">
-                                    <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +1
-                                </span>
-                                Last 30 days total inreview resumes
-                            </p>
-                        </div>
-                    </div><!-- card end -->
-                </div>
-                <div class="col">
-                    <div class="card shadow-none border bg-gradient-start-4 h-100">
-                        <div class="card-body p-20">
-                            <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                                <div>
-                                    <p class="fw-medium text-primary-light mb-1">Total Completed Resumes</p>
-                                    <h6 class="mb-0">0</h6>
-                                </div>
-                                <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
-                                    <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl mb-0"></iconify-icon>
-                                </div>
-                            </div>
-                            <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
-                                <span class="d-inline-flex align-items-center gap-1 text-success-main">
-                                    <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon> +$1
-                                </span>
-                                Last 30 days Total completed resumes
-                            </p>
-                        </div>
-                    </div><!-- card end -->
+                <div class="d-flex justify-content-center align-items-center"
+                    style="width: 70px; height: 70px; background-color: rgba(13,71,161,0.1); border-radius: 50%;">
+                    <iconify-icon icon="mdi:bullseye-arrow" style="font-size: 34px; color: #0d47a1;"></iconify-icon>
                 </div>
             </div>
+        </div>
+    </div>
 
-            
+    <!-- Total Target Achieved -->
+    <div class="col">
+        <div class="card h-100 border-0 shadow-sm"
+            style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); border-radius: 20px; color: #6a1b9a; transition: all 0.3s ease; cursor: pointer;"
+            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
+                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">85</h3>
+                </div>
+                <div class="d-flex justify-content-center align-items-center"
+                    style="width: 70px; height: 70px; background-color: rgba(106,27,154,0.1); border-radius: 50%;">
+                    <iconify-icon icon="fa-solid:trophy" style="font-size: 34px; color: #6a1b9a;"></iconify-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Target Yet to Achieve -->
+    <div class="col">
+        <div class="card h-100 border-0 shadow-sm"
+            style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
+            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
+                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">35</h3>
+                </div>
+                <div class="d-flex justify-content-center align-items-center"
+                    style="width: 70px; height: 70px; background-color: rgba(239,108,0,0.1); border-radius: 50%;">
+                    <iconify-icon icon="mdi:progress-clock" style="font-size: 34px; color: #ef6c00;"></iconify-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Days Left -->
+    <div class="col">
+        <div class="card h-100 border-0 shadow-sm"
+            style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
+            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
+                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">12</h3>
+                </div>
+                <div class="d-flex justify-content-center align-items-center"
+                    style="width: 70px; height: 70px; background-color: rgba(46,125,50,0.1); border-radius: 50%;">
+                    <iconify-icon icon="mdi:calendar-clock" style="font-size: 34px; color: #2e7d32;"></iconify-icon>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+
 
 @endsection
