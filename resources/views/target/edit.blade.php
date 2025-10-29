@@ -36,36 +36,19 @@ $script = '<script>
                 <thead>
                     <tr>
                         <th>Name</th>
-                        <th>Email</th>
-                        <th>Phone</th>
-                        <th>Role</th>
-                        <th>Designation</th>
                         <th>Target</th>
                         <th>Target Date</th>
                         <th>Due Date</th>
-                        <th>Status</th>
                         <th class="text-center">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
                         <td>{{ $targetUsers->name }}</td>
-                        <td>{{ $targetUsers->email }}</td>
-                        <td>{{ $targetUsers->phone ?? '-' }}</td>
-                        <td>{{ ucfirst($targetUsers->role) }}</td>
-                        <td>{{ $targetUsers->designation ?? '-' }}</td>
                         <td>{{ $targetUsers->target ?? '-' }}</td>
                         <td>{{ $targetUsers->target_date ?? '-' }}</td>
                         <td>{{ $targetUsers->due_date ?? '-' }}</td>
-                        <td>
-                            @if($targetUsers->status == 1)
-                                <span class="badge bg-success">Active</span>
-                            @else
-                                <span class="badge bg-danger">Inactive</span>
-                            @endif
-                        </td>
-
-                        {{-- ✅ Action Buttons --}}
+                        {{-- Action Buttons --}}
                         <td class="text-center">
                             {{-- Edit Button --}}
                             <button type="button"
