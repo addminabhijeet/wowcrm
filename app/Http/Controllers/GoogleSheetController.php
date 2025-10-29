@@ -1484,7 +1484,7 @@ class GoogleSheetController extends Controller
     }
 
 
-        public function junior()
+    public function junior()
     {
         $authUser = Auth::user();
         $pattern = "%:" . $authUser->id . "|junior"; // will check last part
