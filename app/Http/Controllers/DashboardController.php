@@ -560,8 +560,7 @@ class DashboardController extends Controller
     {
         $validated = $request->validate([
             'target' => 'required|integer',
-            'target_date' => 'required|date',
-            'due_date' => 'required|date|after:target_date',
+            'target_date' => 'required|date|after:target_date',
             'index' => 'nullable'
         ]);
 
@@ -570,7 +569,6 @@ class DashboardController extends Controller
         // Split existing values cleanly
         $targets = $user->target ? array_map('trim', explode('|', $user->target)) : [];
         $targetDates = $user->target_date ? array_map('trim', explode('|', $user->target_date)) : [];
-        $dueDates = $user->due_date ? array_map('trim', explode('|', $user->due_date)) : [];
 
         // If editing an existing index
         if ($request->filled('index')) {
@@ -582,18 +580,15 @@ class DashboardController extends Controller
 
             $targets[$index] = $validated['target'];
             $targetDates[$index] = $validated['target_date'];
-            $dueDates[$index] = $validated['due_date'];
         } else {
             // Add new entry at the end
             $targets[] = $validated['target'];
             $targetDates[] = $validated['target_date'];
-            $dueDates[] = $validated['due_date'];
         }
 
         $user->update([
             'target' => implode(' | ', $targets),
             'target_date' => implode(' | ', $targetDates),
-            'due_date' => implode(' | ', $dueDates),
         ]);
 
         return redirect()->back()->with('success', 'Target saved successfully!');
@@ -607,7 +602,6 @@ class DashboardController extends Controller
 
         $targets = $user->target ? array_map('trim', explode('|', $user->target)) : [];
         $targetDates = $user->target_date ? array_map('trim', explode('|', $user->target_date)) : [];
-        $dueDates = $user->due_date ? array_map('trim', explode('|', $user->due_date)) : [];
 
         if (!isset($targets[$index])) {
             return back()->with('error', 'Invalid target index.');
@@ -619,12 +613,10 @@ class DashboardController extends Controller
         // Reindex arrays
         $targets = array_values($targets);
         $targetDates = array_values($targetDates);
-        $dueDates = array_values($dueDates);
 
         $user->update([
             'target' => implode(' | ', $targets),
             'target_date' => implode(' | ', $targetDates),
-            'due_date' => implode(' | ', $dueDates),
         ]);
 
         return redirect()->back()->with('success', 'Target deleted successfully!');
