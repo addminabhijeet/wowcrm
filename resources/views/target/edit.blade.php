@@ -69,7 +69,7 @@ $script = '<script>
                             </button>
 
                             {{-- ✅ Delete Button --}}
-                            <form action="{{ route('target.delete', $targetUsers->id) }}" method="POST"
+                            <form action="" method="POST"
                                 onsubmit="return confirm('Are you sure you want to delete this target month?')">
                                 @csrf
                                 @method('DELETE')
