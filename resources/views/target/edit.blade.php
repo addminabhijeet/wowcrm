@@ -41,7 +41,7 @@ $script = '<script>
             <a href="{{ route('smtp.add') }}"
                 class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
                 <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                All SMTP Users
+                New Target
             </a>
         </div>
     </div>
@@ -66,7 +66,7 @@ $script = '<script>
                         <td>{{ $targetUsers->due_date }}</td>
                         <td class="text-center">
                             <a href="{{ route('target.edit', $targetUsers->id) }}" class="btn btn-sm btn-primary">
-                                Target
+                                Edit
                             </a>
                         </td>
                     </tr>
