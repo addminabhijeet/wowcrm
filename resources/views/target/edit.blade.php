@@ -20,12 +20,12 @@ $script = '<script>
                 <option>1</option>
             </select>
 
-            {{-- ✅ Button to open Add User modal --}}
+            {{-- ✅ Button to open Add Target modal --}}
             <button type="button"
                 class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
                 data-bs-toggle="modal" data-bs-target="#userModal" data-mode="add">
                 <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                Add User
+                Add Target
             </button>
         </div>
     </div>
@@ -59,18 +59,35 @@ $script = '<script>
                         <td>{{ $targetUsers->due_date ?? '-' }}</td>
                         <td>
                             @if($targetUsers->status == 1)
-                            <span class="badge bg-success">Active</span>
+                                <span class="badge bg-success">Active</span>
                             @else
-                            <span class="badge bg-danger">Inactive</span>
+                                <span class="badge bg-danger">Inactive</span>
                             @endif
                         </td>
-                    </tr>
 
+                        {{-- ✅ Action Buttons --}}
+                        <td class="text-center">
+                            {{-- Edit Button --}}
+                            <button type="button"
+                                class="btn btn-sm btn-warning d-flex align-items-center gap-1"
+                                data-bs-toggle="modal"
+                                data-bs-target="#userModal"
+                                data-mode="edit"
+                                data-id="{{ $targetUsers->id }}"
+                                data-target="{{ $targetUsers->target }}"
+                                data-target_date="{{ $targetUsers->target_date }}"
+                                data-due_date="{{ $targetUsers->due_date }}">
+                                <iconify-icon icon="mdi:pencil" class="text-lg"></iconify-icon>
+                                Edit
+                            </button>
+                        </td>
+                    </tr>
                 </tbody>
             </table>
         </div>
     </div>
 </div>
+
 {{-- ✅ Add/Edit Target Modal --}}
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
@@ -116,30 +133,29 @@ $script = '<script>
     </div>
 </div>
 
-{{--  Script for Add/Edit Target Modal --}}
+{{-- ✅ Script for Add/Edit Target Modal --}}
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const userModal = document.getElementById("userModal");
-        const form = document.getElementById("userForm");
+document.addEventListener("DOMContentLoaded", () => {
+    const userModal = document.getElementById("userModal");
+    const form = document.getElementById("userForm");
+    const modalTitle = document.getElementById("userModalLabel");
 
-        userModal.addEventListener("show.bs.modal", (event) => {
-            const button = event.relatedTarget;
-            const mode = button.getAttribute("data-mode");
+    userModal.addEventListener("show.bs.modal", (event) => {
+        const button = event.relatedTarget;
+        const mode = button.getAttribute("data-mode");
 
-            if (mode === "edit") {
-                form.querySelector("#userModalLabel").textContent = "Edit Target";
-                form.querySelector("#user_id").value = button.dataset.id;
-                form.querySelector("#user_target").value = button.dataset.target;
-                form.querySelector("#user_target_date").value = button.dataset.target_date;
-                form.querySelector("#user_due_date").value = button.dataset.due_date;
-            } else {
-                form.reset();
-                form.querySelector("#userModalLabel").textContent = "Add Target";
-                form.querySelector("#user_id").value = "{{ $targetUsers->id }}";
-            }
-        });
+        if (mode === "edit") {
+            modalTitle.textContent = "Edit Target";
+            form.querySelector("#user_id").value = button.dataset.id;
+            form.querySelector("#user_target").value = button.dataset.target || '';
+            form.querySelector("#user_target_date").value = button.dataset.target_date || '';
+            form.querySelector("#user_due_date").value = button.dataset.due_date || '';
+        } else {
+            modalTitle.textContent = "Add Target";
+            form.reset();
+            form.querySelector("#user_id").value = "{{ $targetUsers->id }}";
+        }
     });
+});
 </script>
-
-
 @endsection
