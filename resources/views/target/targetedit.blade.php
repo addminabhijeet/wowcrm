@@ -51,7 +51,7 @@ $script = '<script>
             <table class="table bordered-table sm-table mb-0">
                 <thead>
                     <tr>
-                        <th>S.L</th>
+                      
                         <th>Name</th>
                         <th>Target</th>
                         <th>Target Date</th>
@@ -62,7 +62,7 @@ $script = '<script>
                 <tbody>
                     @forelse($targetUsers as $index => $user)
                     <tr>
-                        <td>{{ $index + 1 }}</td>
+               
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->target }}</td>
                         <td>{{ $user->target_date }}</td>
