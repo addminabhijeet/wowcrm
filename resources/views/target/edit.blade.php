@@ -1,4 +1,5 @@
 @extends('layout.layout')
+
 @php
 $title = 'User Target';
 $subTitle = 'User Target';
@@ -20,7 +21,7 @@ $script = '<script>
                 <option>1</option>
             </select>
 
-            {{-- ✅ Button to open Add Target modal --}}
+            {{-- ✅ Add Target Button --}}
             <button type="button"
                 class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
                 data-bs-toggle="modal" data-bs-target="#userModal" data-mode="add">
@@ -69,17 +70,15 @@ $script = '<script>
                             </button>
 
                             {{-- ✅ Delete Button --}}
-                            <form action="" method="POST"
+                            <form action="{{ route('target.delete', $targetUsers->id) }}" method="POST"
                                 onsubmit="return confirm('Are you sure you want to delete this target month?')">
                                 @csrf
-                                @method('DELETE')
                                 <input type="hidden" name="index" value="{{ $index }}">
                                 <button type="submit" class="btn btn-sm btn-danger d-flex align-items-center gap-1">
                                     <iconify-icon icon="mdi:trash-can" class="text-lg"></iconify-icon>
-                                    Deleted
+                                    Delete
                                 </button>
                             </form>
-
                         </td>
                     </tr>
                     @endforeach
