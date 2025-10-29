@@ -104,7 +104,7 @@ $script ='<script>
                         <td>
                             @php $relOptions = ['YES','NO']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Relocation">
-                                <option value="">-- Relocation--</option>
+                                <option value="">-- Select --</option>
                                 @foreach($relOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Relocation === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -123,7 +123,7 @@ $script ='<script>
                         <td>
                             @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','HIB','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Immigration">
-                                <option value="">-- Immigration --</option>
+                                <option value="">-- Select --</option>
                                 @foreach($immOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Immigration === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -136,7 +136,7 @@ $script ='<script>
                         <td>
                             @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Course">
-                                <option value="">-- Course --</option>
+                                <option value="">-- Select --</option>
                                 @foreach($courseOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Course === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -159,7 +159,7 @@ $script ='<script>
                             @endphp
 
                             <select class="form-select dynamic-dropdown" data-key="Qualification">
-                                <option value="">-- Qualification --</option>
+                                <option value="">-- Select --</option>
                                 @foreach($qualificationOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Qualification === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -173,7 +173,7 @@ $script ='<script>
                         <td>
                             @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Connect','Others','N/A','VM','Busy']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                <option value="">-- Exe Remarks --</option>
+                                <option value="">-- Select --</option>
                                 @foreach($exeOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -186,7 +186,7 @@ $script ='<script>
                         <td>
                             @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="1st Follow Up Remarks">
-                                <option value="">-- 1st Follow Up Remarks --</option>
+                                <option value="">-- Select --</option>
                                 @foreach($followOptions as $option)
                                 <option value="{{ $option }}" {{ $row->First_Follow_Up_Remarks === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -199,7 +199,7 @@ $script ='<script>
                         <td>
                             @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Time Zone">
-                                <option value="">-- Time Zone --</option>
+                                <option value="">-- Select --</option>
                                 @foreach($timezoneOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Time_Zone === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -489,9 +489,9 @@ $script ='<script>
                     }
                 };
 
-                // 🗓️ Allow both past and future dates (no min/max restriction)
-                // Just remove these constraints completely
-                // (keep this comment for clarity — no maxDate or minDate set)
+                // ✅ Use Laravel's timezone-based today
+                if (key === "Graduation Date") opts.maxDate = laravelToday;
+                if (key === "Date") opts.minDate = laravelToday;
 
                 flatpickr(input, opts);
 
@@ -502,8 +502,6 @@ $script ='<script>
                 });
             });
         }
-
-
 
 
         function initLocationAutocomplete(context = document) {
@@ -1100,177 +1098,61 @@ $script ='<script>
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get CSRF token from meta tag
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+document.addEventListener('DOMContentLoaded', function () {
+    // Get CSRF token from meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        // Attach input listener for dynamically added rows too
-        document.addEventListener('input', function(e) {
-            if (e.target.matches('.email-input')) {
-                const input = e.target;
-                const email = input.value.trim();
-                const hint = input.nextElementSibling;
+    // Attach input listener for dynamically added rows too
+    document.addEventListener('input', function (e) {
+        if (e.target.matches('.email-input')) {
+            const input = e.target;
+            const email = input.value.trim();
+            const hint = input.nextElementSibling;
 
-                // Basic email validation before checking DB
-                if (email.length < 5 || !email.includes('@')) {
-                    hint.textContent = '';
-                    input.classList.remove('is-invalid', 'is-valid');
-                    return;
-                }
-
-                // Debounce to avoid excessive requests
-                clearTimeout(input._emailCheckTimer);
-                input._emailCheckTimer = setTimeout(() => {
-
-                    fetch("{{ route('check.uniqueemail') }}", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken
-                            },
-                            body: JSON.stringify({
-                                email: email
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.exists) {
-                                input.classList.add('is-invalid');
-                                input.classList.remove('is-valid');
-                                hint.textContent = 'This email already exists in the database.';
-                                hint.style.color = 'red';
-                            } else {
-                                input.classList.remove('is-invalid');
-                                input.classList.add('is-valid');
-                                hint.textContent = 'Email available.';
-                                hint.style.color = 'green';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Email check failed:', error);
-                            hint.textContent = '⚠️ Server error. Try again.';
-                            hint.style.color = 'orange';
-                        });
-
-                }, 500); // 500ms debounce
-            }
-        });
-    });
-</script>
-
-<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-<script>
-    $(document).ready(function() {
-
-        // -----------------------------
-        // Helper: Debounce
-        // -----------------------------
-        function debounce(func, wait) {
-            let timeout;
-            return function() {
-                const context = this,
-                    args = arguments;
-                clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(context, args), wait);
-            };
-        }
-
-        // -----------------------------
-        // Fetch Table Data via AJAX
-        // -----------------------------
-        function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
-            $.ajax({
-                url: "{{ route('google.sheet.junior') }}",
-                type: 'GET',
-                data: {
-                    search,
-                    page,
-                    junior_user,
-                    row_id
-                },
-                success: function(res) {
-                    $('#senior-table-wrapper').html(res);
-                },
-                error: function(err) {
-                    console.error(err);
-                }
-            });
-        }
-
-        // -----------------------------
-        // Live Search Suggestions
-        // -----------------------------
-        const showSuggestions = debounce(function() {
-            const query = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
-
-            if (query.length < 3) {
-                $('#search-suggestions').empty().hide();
-                fetchTable('', 1, junior_user); // reset table
+            // Basic email validation before checking DB
+            if (email.length < 5 || !email.includes('@')) {
+                hint.textContent = '';
+                input.classList.remove('is-invalid', 'is-valid');
                 return;
             }
 
-            $.ajax({
-                url: "{{ route('junior.suggestions') }}",
-                type: 'GET',
-                data: {
-                    query
-                },
-                success: function(res) {
-                    let suggestions = '';
-                    if (res.length) {
-                        res.forEach(item => {
-                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
-                        });
+            // Debounce to avoid excessive requests
+            clearTimeout(input._emailCheckTimer);
+            input._emailCheckTimer = setTimeout(() => {
+
+                fetch("{{ route('check.uniqueemail') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+                        hint.textContent = 'This email already exists in the database.';
+                        hint.style.color = 'red';
                     } else {
-                        suggestions = '<span class="list-group-item">No results found</span>';
+                        input.classList.remove('is-invalid');
+                        input.classList.add('is-valid');
+                        hint.textContent = 'Email available.';
+                        hint.style.color = 'green';
                     }
-                    $('#search-suggestions').html(suggestions).show();
-                }
-            });
-        }, 300);
+                })
+                .catch(error => {
+                    console.error('Email check failed:', error);
+                    hint.textContent = '⚠️ Server error. Try again.';
+                    hint.style.color = 'orange';
+                });
 
-        $('#senior-search').on('input', showSuggestions);
-
-        // Click suggestion
-        $(document).on('click', '#search-suggestions a', function(e) {
-            e.preventDefault();
-            const rowId = $(this).data('id');
-            const junior_user = $('#junior-filter').val();
-            $('#senior-search').val($(this).text());
-            $('#search-suggestions').empty().hide();
-
-            fetchTable('', 1, junior_user, rowId);
-        });
-
-        // Pagination click (AJAX)
-        $(document).on('click', '.pagination a', function(e) {
-            e.preventDefault();
-            const page = $(this).attr('href').split('page=')[1];
-            const search = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val() || '';
-            fetchTable(search, page, junior_user);
-        });
-
-        // Junior dropdown filter
-        $(document).on('change', '#junior-filter', function() {
-            const junior_user = $(this).val();
-            const search = $('#senior-search').val().trim();
-            fetchTable(search, 1, junior_user);
-        });
-
-        // Click outside suggestions to hide
-        $(document).click(function(e) {
-            if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
-                $('#search-suggestions').empty().hide();
-            }
-        });
-
+            }, 500); // 500ms debounce
+        }
     });
+});
 </script>
-
 
 
 @endsection
