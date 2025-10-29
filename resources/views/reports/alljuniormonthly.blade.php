@@ -417,7 +417,7 @@ $script = '<script>
                     </div>
                 </div>
             </div>
-        </div><!-- card end -->
+        </div>
     </div>
     <div class="col">
         <div class="card shadow-none border bg-gradient-start-2 h-100">
@@ -432,7 +432,7 @@ $script = '<script>
                     </div>
                 </div>
             </div>
-        </div><!-- card end -->
+        </div>
     </div>
     <div class="col">
         <div class="card shadow-none border bg-gradient-start-3 h-100">
@@ -447,7 +447,7 @@ $script = '<script>
                     </div>
                 </div>
             </div>
-        </div><!-- card end -->
+        </div>
     </div>
     <div class="col">
         <div class="card shadow-none border bg-gradient-start-4 h-100">
@@ -462,7 +462,7 @@ $script = '<script>
                     </div>
                 </div>
             </div>
-        </div><!-- card end -->
+        </div>
     </div>
 </div>
 
