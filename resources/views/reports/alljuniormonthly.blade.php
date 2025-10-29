@@ -407,15 +407,18 @@ $script = '<script>
 
     <!-- Total Target Given -->
     <div class="col">
-        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #00c6ff, #0072ff); color: #fff; border-radius: 20px;">
+        <div class="card h-100 border-0 shadow-sm"
+            style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 20px; color: #0d47a1; transition: all 0.3s ease; cursor: pointer;"
+            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <p class="mb-1 fw-semibold" style="font-size: 16px; opacity: 0.9;">Total Target Given</p>
+                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
                     <h3 class="mb-0 fw-bold" style="font-size: 36px;">120</h3>
                 </div>
                 <div class="d-flex justify-content-center align-items-center"
-                    style="width: 70px; height: 70px; background-color: rgba(255,255,255,0.2); border-radius: 50%;">
-                    <iconify-icon icon="mdi:bullseye-arrow" style="font-size: 32px; color: #fff;"></iconify-icon>
+                    style="width: 70px; height: 70px; background-color: rgba(13,71,161,0.1); border-radius: 50%;">
+                    <iconify-icon icon="mdi:bullseye-arrow" style="font-size: 34px; color: #0d47a1;"></iconify-icon>
                 </div>
             </div>
         </div>
@@ -423,31 +426,37 @@ $script = '<script>
 
     <!-- Total Target Achieved -->
     <div class="col">
-        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #8e2de2, #4a00e0); color: #fff; border-radius: 20px;">
+        <div class="card h-100 border-0 shadow-sm"
+            style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); border-radius: 20px; color: #6a1b9a; transition: all 0.3s ease; cursor: pointer;"
+            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <p class="mb-1 fw-semibold" style="font-size: 16px; opacity: 0.9;">Total Target Achieved</p>
+                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
                     <h3 class="mb-0 fw-bold" style="font-size: 36px;">85</h3>
                 </div>
                 <div class="d-flex justify-content-center align-items-center"
-                    style="width: 70px; height: 70px; background-color: rgba(255,255,255,0.2); border-radius: 50%;">
-                    <iconify-icon icon="fa-solid:trophy" style="font-size: 32px; color: #fff;"></iconify-icon>
+                    style="width: 70px; height: 70px; background-color: rgba(106,27,154,0.1); border-radius: 50%;">
+                    <iconify-icon icon="fa-solid:trophy" style="font-size: 34px; color: #6a1b9a;"></iconify-icon>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Total Target Yet to Achieve -->
+    <!-- Target Yet to Achieve -->
     <div class="col">
-        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #ff9966, #ff5e62); color: #fff; border-radius: 20px;">
+        <div class="card h-100 border-0 shadow-sm"
+            style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
+            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <p class="mb-1 fw-semibold" style="font-size: 16px; opacity: 0.9;">Target Yet to Achieve</p>
+                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
                     <h3 class="mb-0 fw-bold" style="font-size: 36px;">35</h3>
                 </div>
                 <div class="d-flex justify-content-center align-items-center"
-                    style="width: 70px; height: 70px; background-color: rgba(255,255,255,0.2); border-radius: 50%;">
-                    <iconify-icon icon="mdi:progress-clock" style="font-size: 32px; color: #fff;"></iconify-icon>
+                    style="width: 70px; height: 70px; background-color: rgba(239,108,0,0.1); border-radius: 50%;">
+                    <iconify-icon icon="mdi:progress-clock" style="font-size: 34px; color: #ef6c00;"></iconify-icon>
                 </div>
             </div>
         </div>
@@ -455,21 +464,25 @@ $script = '<script>
 
     <!-- Days Left -->
     <div class="col">
-        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #00b09b, #96c93d); color: #fff; border-radius: 20px;">
+        <div class="card h-100 border-0 shadow-sm"
+            style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
+            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <p class="mb-1 fw-semibold" style="font-size: 16px; opacity: 0.9;">Days Left</p>
+                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
                     <h3 class="mb-0 fw-bold" style="font-size: 36px;">12</h3>
                 </div>
                 <div class="d-flex justify-content-center align-items-center"
-                    style="width: 70px; height: 70px; background-color: rgba(255,255,255,0.2); border-radius: 50%;">
-                    <iconify-icon icon="mdi:calendar-clock" style="font-size: 32px; color: #fff;"></iconify-icon>
+                    style="width: 70px; height: 70px; background-color: rgba(46,125,50,0.1); border-radius: 50%;">
+                    <iconify-icon icon="mdi:calendar-clock" style="font-size: 34px; color: #2e7d32;"></iconify-icon>
                 </div>
             </div>
         </div>
     </div>
 
 </div>
+
 
 
 <div class="row gy-4 mt-1">
