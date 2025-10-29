@@ -38,7 +38,7 @@ $script = '<script>
                 <option>Active</option>
                 <option>Inactive</option>
             </select>
-            <a href="{{ route('smtp.add') }}"
+            <a href="{{ route('target.add') }}"
                 class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
                 <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
                 New Target
