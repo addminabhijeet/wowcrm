@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='User Target';
+$title = 'User Target';
 $subTitle = 'User Target';
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
@@ -44,9 +44,9 @@ $script = '<script>
                 </thead>
                 <tbody>
                     @php
-                    $targets = $targetUsers->target ? explode(' | ', $targetUsers->target) : [];
-                    $targetDates = $targetUsers->target_date ? explode(' | ', $targetUsers->target_date) : [];
-                    $dueDates = $targetUsers->due_date ? explode(' | ', $targetUsers->due_date) : [];
+                        $targets = $targetUsers->target ? explode(' | ', $targetUsers->target) : [];
+                        $targetDates = $targetUsers->target_date ? explode(' | ', $targetUsers->target_date) : [];
+                        $dueDates = $targetUsers->due_date ? explode(' | ', $targetUsers->due_date) : [];
                     @endphp
 
                     @foreach($targets as $index => $target)
@@ -73,7 +73,6 @@ $script = '<script>
                     </tr>
                     @endforeach
                 </tbody>
-
             </table>
         </div>
     </div>
@@ -91,7 +90,8 @@ $script = '<script>
             {{-- ✅ Form sends only target data --}}
             <form id="userForm" method="POST" action="{{ route('target.save', $targetUsers->id) }}">
                 @csrf
-                <input type="hidden" name="id" id="user_index" value="{{ $targetUsers->id }}">
+                <input type="hidden" name="id" id="user_id" value="{{ $targetUsers->id }}">
+                <input type="hidden" name="index" id="user_index">
 
                 <div class="modal-body p-24">
                     <div class="row">
@@ -116,7 +116,6 @@ $script = '<script>
                 </div>
 
                 <div class="modal-footer">
-
                     <button type="submit" class="btn btn-primary">Save</button>
                 </div>
             </form>
@@ -126,30 +125,30 @@ $script = '<script>
 
 {{-- ✅ Script for Add/Edit Target Modal --}}
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
-        const userModal = document.getElementById("userModal");
-        const form = document.getElementById("userForm");
-        const modalTitle = document.getElementById("userModalLabel");
+document.addEventListener("DOMContentLoaded", () => {
+    const userModal = document.getElementById("userModal");
+    const form = document.getElementById("userForm");
+    const modalTitle = document.getElementById("userModalLabel");
 
-        userModal.addEventListener("show.bs.modal", (event) => {
-            const button = event.relatedTarget;
-            const mode = button.getAttribute("data-mode");
+    userModal.addEventListener("show.bs.modal", (event) => {
+        const button = event.relatedTarget;
+        const mode = button.getAttribute("data-mode");
 
-            if (mode === "edit") {
-                modalTitle.textContent = "Edit Target";
-                form.querySelector("#user_id").value = button.dataset.id;
-                form.querySelector("#user_index").value = button.dataset.index;
-                form.querySelector("#user_target").value = button.dataset.target || '';
-                form.querySelector("#user_target_date").value = button.dataset.target_date || '';
-                form.querySelector("#user_due_date").value = button.dataset.due_date || '';
-            } else {
-                modalTitle.textContent = "Add Target";
-                form.reset();
-                form.querySelector("#user_id").value = "{{ $targetUsers->id }}";
-                form.querySelector("#user_index").value = ""; // clear index for new
-            }
-        });
+        if (mode === "edit") {
+            modalTitle.textContent = "Edit Target";
+            form.querySelector("#user_id").value = button.dataset.id;
+            form.querySelector("#user_index").value = button.dataset.index;
+            form.querySelector("#user_target").value = button.dataset.target;
+            form.querySelector("#user_target_date").value = button.dataset.target_date;
+            form.querySelector("#user_due_date").value = button.dataset.due_date;
+        } else {
+            modalTitle.textContent = "Add Target";
+            form.reset();
+            form.querySelector("#user_id").value = "{{ $targetUsers->id }}";
+            form.querySelector("#user_index").value = "";
+        }
     });
+});
 </script>
 
 @endsection

@@ -560,7 +560,6 @@ class DashboardController extends Controller
 
         return view('target.edit', compact('targetUsers'));
     }
-
     public function targetSave(Request $request)
     {
         $validated = $request->validate([
@@ -568,73 +567,38 @@ class DashboardController extends Controller
             'target' => 'required|integer',
             'target_date' => 'required|date',
             'due_date' => 'required|date|after:target_date',
-            'index' => 'nullable|integer' // added for editing specific record
+            'index' => 'nullable'
         ]);
 
         $user = User::findOrFail($request->id);
 
-        // If user already has previous target history
-        if ($user->target) {
-            $targets = explode(' | ', $user->target);
-            $targetDates = explode(' | ', $user->target_date);
-            $dueDates = explode(' | ', $user->due_date);
+        $targets = $user->target ? explode(' | ', $user->target) : [];
+        $targetDates = $user->target_date ? explode(' | ', $user->target_date) : [];
+        $dueDates = $user->due_date ? explode(' | ', $user->due_date) : [];
 
-            // 🧩 EDIT EXISTING TARGET (if index provided)
-            if ($request->filled('index')) {
-                $index = $request->index;
-
-                // validate index exists
-                if (!isset($targets[$index])) {
-                    return back()->with('error', 'Invalid target index.');
-                }
-
-                // check if the new dates are logically correct
-                $prevDue = $index > 0 ? $dueDates[$index - 1] : null;
-                $nextStart = isset($targetDates[$index + 1]) ? $targetDates[$index + 1] : null;
-
-                if ($prevDue && strtotime($validated['target_date']) <= strtotime($prevDue)) {
-                    return back()->with('error', 'Start date must be after previous due date.');
-                }
-                if ($nextStart && strtotime($validated['due_date']) >= strtotime($nextStart)) {
-                    return back()->with('error', 'Due date must be before the next start date.');
-                }
-
-                // update specific entry
-                $targets[$index] = $validated['target'];
-                $targetDates[$index] = $validated['target_date'];
-                $dueDates[$index] = $validated['due_date'];
-            }
-            // 🧩 ADD NEW TARGET
-            else {
-                $lastDue = end($dueDates);
-
-                if (strtotime($validated['target_date']) <= strtotime($lastDue)) {
-                    return back()->with('error', 'New target start date must be after previous due date.');
-                }
-
-                $targets[] = $validated['target'];
-                $targetDates[] = $validated['target_date'];
-                $dueDates[] = $validated['due_date'];
+        if ($request->index !== null && $request->index !== '') {
+            $index = (int) $request->index;
+            if (!isset($targets[$index])) {
+                return back()->with('error', 'Invalid target index.');
             }
 
-            // save updated values
-            $user->update([
-                'target' => implode(' | ', $targets),
-                'target_date' => implode(' | ', $targetDates),
-                'due_date' => implode(' | ', $dueDates),
-            ]);
+            $targets[$index] = $validated['target'];
+            $targetDates[$index] = $validated['target_date'];
+            $dueDates[$index] = $validated['due_date'];
         } else {
-            // first entry for user
-            $user->update([
-                'target' => $validated['target'],
-                'target_date' => $validated['target_date'],
-                'due_date' => $validated['due_date'],
-            ]);
+            $targets[] = $validated['target'];
+            $targetDates[] = $validated['target_date'];
+            $dueDates[] = $validated['due_date'];
         }
+
+        $user->update([
+            'target' => implode(' | ', $targets),
+            'target_date' => implode(' | ', $targetDates),
+            'due_date' => implode(' | ', $dueDates),
+        ]);
 
         return redirect()->back()->with('success', 'Target saved successfully!');
     }
-
 
 
 
