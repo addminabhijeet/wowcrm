@@ -48,43 +48,24 @@ $script = '<script>
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach ($targetUsers as $user)
                     <tr>
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->email }}</td>
-                        <td>{{ $user->phone ?? '-' }}</td>
-                        <td>{{ ucfirst($user->role) }}</td>
-                        <td>{{ $user->designation ?? '-' }}</td>
-                        <td>{{ $user->target ?? '-' }}</td>
-                        <td>{{ $user->target_date ?? '-' }}</td>
-                        <td>{{ $user->due_date ?? '-' }}</td>
+                        <td>{{ $targetUsers->name }}</td>
+                        <td>{{ $targetUsers->email }}</td>
+                        <td>{{ $targetUsers->phone ?? '-' }}</td>
+                        <td>{{ ucfirst($targetUsers->role) }}</td>
+                        <td>{{ $targetUsers->designation ?? '-' }}</td>
+                        <td>{{ $targetUsers->target ?? '-' }}</td>
+                        <td>{{ $targetUsers->target_date ?? '-' }}</td>
+                        <td>{{ $targetUsers->due_date ?? '-' }}</td>
                         <td>
-                            @if($user->status == 1)
-                                <span class="badge bg-success">Active</span>
+                            @if($targetUsers->status == 1)
+                            <span class="badge bg-success">Active</span>
                             @else
-                                <span class="badge bg-danger">Inactive</span>
+                            <span class="badge bg-danger">Inactive</span>
                             @endif
                         </td>
-                        <td class="text-center">
-                            {{-- ✅ Edit button --}}
-                            <button type="button" class="btn btn-sm btn-primary editUserBtn"
-                                data-id="{{ $user->id }}"
-                                data-name="{{ $user->name }}"
-                                data-email="{{ $user->email }}"
-                                data-phone="{{ $user->phone }}"
-                                data-role="{{ $user->role }}"
-                                data-designation="{{ $user->designation }}"
-                                data-target="{{ $user->target }}"
-                                data-target_date="{{ $user->target_date }}"
-                                data-due_date="{{ $user->due_date }}"
-                                data-status="{{ $user->status }}"
-                                data-bs-toggle="modal"
-                                data-bs-target="#userModal" data-mode="edit">
-                                Edit
-                            </button>
-                        </td>
                     </tr>
-                    @endforeach
+
                 </tbody>
             </table>
         </div>
@@ -170,33 +151,33 @@ $script = '<script>
 
 {{-- ✅ Script for Add/Edit Modal --}}
 <script>
-document.addEventListener("DOMContentLoaded", () => {
-    const userModal = document.getElementById("userModal");
-    const form = document.getElementById("userForm");
+    document.addEventListener("DOMContentLoaded", () => {
+        const userModal = document.getElementById("userModal");
+        const form = document.getElementById("userForm");
 
-    userModal.addEventListener("show.bs.modal", (event) => {
-        const button = event.relatedTarget;
-        const mode = button.getAttribute("data-mode");
+        userModal.addEventListener("show.bs.modal", (event) => {
+            const button = event.relatedTarget;
+            const mode = button.getAttribute("data-mode");
 
-        if (mode === "edit") {
-            form.querySelector("#userModalLabel").textContent = "Edit User";
-            form.querySelector("#user_id").value = button.dataset.id;
-            form.querySelector("#user_name").value = button.dataset.name;
-            form.querySelector("#user_email").value = button.dataset.email;
-            form.querySelector("#user_phone").value = button.dataset.phone;
-            form.querySelector("#user_role").value = button.dataset.role;
-            form.querySelector("#user_designation").value = button.dataset.designation;
-            form.querySelector("#user_target").value = button.dataset.target;
-            form.querySelector("#user_target_date").value = button.dataset.target_date;
-            form.querySelector("#user_due_date").value = button.dataset.due_date;
-            form.querySelector("#user_status").value = button.dataset.status;
-        } else {
-            form.reset();
-            form.querySelector("#userModalLabel").textContent = "Add New User";
-            form.querySelector("#user_id").value = "";
-        }
+            if (mode === "edit") {
+                form.querySelector("#userModalLabel").textContent = "Edit User";
+                form.querySelector("#user_id").value = button.dataset.id;
+                form.querySelector("#user_name").value = button.dataset.name;
+                form.querySelector("#user_email").value = button.dataset.email;
+                form.querySelector("#user_phone").value = button.dataset.phone;
+                form.querySelector("#user_role").value = button.dataset.role;
+                form.querySelector("#user_designation").value = button.dataset.designation;
+                form.querySelector("#user_target").value = button.dataset.target;
+                form.querySelector("#user_target_date").value = button.dataset.target_date;
+                form.querySelector("#user_due_date").value = button.dataset.due_date;
+                form.querySelector("#user_status").value = button.dataset.status;
+            } else {
+                form.reset();
+                form.querySelector("#userModalLabel").textContent = "Add New User";
+                form.querySelector("#user_id").value = "";
+            }
+        });
     });
-});
 </script>
 
 @endsection
