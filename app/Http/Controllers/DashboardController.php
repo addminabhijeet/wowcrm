@@ -544,7 +544,7 @@ class DashboardController extends Controller
     public function targetedit($id)
     {
         // Fetch the user by ID (only if their role is 'senior' or 'junior')
-        $targetUser = User::whereIn('role', ['senior', 'junior'])
+        $targetUsers = User::whereIn('role', ['senior', 'junior'])
             ->where('id', $id)
             ->firstOrFail();
 
