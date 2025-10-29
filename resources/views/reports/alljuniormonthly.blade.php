@@ -403,68 +403,74 @@ $script = '<script>
 
 @section('content')
 
-<div class="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4">
+<div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
+
+    <!-- Total Target Given -->
     <div class="col">
-        <div class="card shadow-none border bg-gradient-start-1 h-100">
-            <div class="card-body p-20">
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                    <div>
-                        <p class="fw-medium text-primary-light mb-1">Total Target Given</p>
-                        <h6 class="mb-0">0</h6>
-                    </div>
-                    <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
-                        <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>
-                    </div>
+        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #00c6ff, #0072ff); color: #fff; border-radius: 20px;">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <p class="mb-1 fw-semibold" style="font-size: 16px; opacity: 0.9;">Total Target Given</p>
+                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">120</h3>
+                </div>
+                <div class="d-flex justify-content-center align-items-center"
+                    style="width: 70px; height: 70px; background-color: rgba(255,255,255,0.2); border-radius: 50%;">
+                    <iconify-icon icon="mdi:bullseye-arrow" style="font-size: 32px; color: #fff;"></iconify-icon>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Total Target Achieved -->
     <div class="col">
-        <div class="card shadow-none border bg-gradient-start-2 h-100">
-            <div class="card-body p-20">
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                    <div>
-                        <p class="fw-medium text-primary-light mb-1">Total Target Archived</p>
-                        <h6 class="mb-0">0</h6>
-                    </div>
-                    <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
-                        <iconify-icon icon="fa-solid:award" class="text-white text-2xl mb-0"></iconify-icon>
-                    </div>
+        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #8e2de2, #4a00e0); color: #fff; border-radius: 20px;">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <p class="mb-1 fw-semibold" style="font-size: 16px; opacity: 0.9;">Total Target Achieved</p>
+                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">85</h3>
+                </div>
+                <div class="d-flex justify-content-center align-items-center"
+                    style="width: 70px; height: 70px; background-color: rgba(255,255,255,0.2); border-radius: 50%;">
+                    <iconify-icon icon="fa-solid:trophy" style="font-size: 32px; color: #fff;"></iconify-icon>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Total Target Yet to Achieve -->
     <div class="col">
-        <div class="card shadow-none border bg-gradient-start-3 h-100">
-            <div class="card-body p-20">
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                    <div>
-                        <p class="fw-medium text-primary-light mb-1">Total Target Need To Achived</p>
-                        <h6 class="mb-0">0</h6>
-                    </div>
-                    <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
-                        <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
-                    </div>
+        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #ff9966, #ff5e62); color: #fff; border-radius: 20px;">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <p class="mb-1 fw-semibold" style="font-size: 16px; opacity: 0.9;">Target Yet to Achieve</p>
+                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">35</h3>
+                </div>
+                <div class="d-flex justify-content-center align-items-center"
+                    style="width: 70px; height: 70px; background-color: rgba(255,255,255,0.2); border-radius: 50%;">
+                    <iconify-icon icon="mdi:progress-clock" style="font-size: 32px; color: #fff;"></iconify-icon>
                 </div>
             </div>
         </div>
     </div>
+
+    <!-- Days Left -->
     <div class="col">
-        <div class="card shadow-none border bg-gradient-start-4 h-100">
-            <div class="card-body p-20">
-                <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
-                    <div>
-                        <p class="fw-medium text-primary-light mb-1">Total Number of Days Left</p>
-                        <h6 class="mb-0">0</h6>
-                    </div>
-                    <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
-                        <iconify-icon icon="solar:wallet-bold" class="text-white text-2xl mb-0"></iconify-icon>
-                    </div>
+        <div class="card border-0 shadow-sm h-100" style="background: linear-gradient(135deg, #00b09b, #96c93d); color: #fff; border-radius: 20px;">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <p class="mb-1 fw-semibold" style="font-size: 16px; opacity: 0.9;">Days Left</p>
+                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">12</h3>
+                </div>
+                <div class="d-flex justify-content-center align-items-center"
+                    style="width: 70px; height: 70px; background-color: rgba(255,255,255,0.2); border-radius: 50%;">
+                    <iconify-icon icon="mdi:calendar-clock" style="font-size: 32px; color: #fff;"></iconify-icon>
                 </div>
             </div>
         </div>
     </div>
+
 </div>
+
 
 <div class="row gy-4 mt-1">
 
