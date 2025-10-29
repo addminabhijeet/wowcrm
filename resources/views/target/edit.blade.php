@@ -71,71 +71,38 @@ $script = '<script>
         </div>
     </div>
 </div>
-
-{{-- ✅ Add/Edit User Modal --}}
+{{-- ✅ Add/Edit Target Modal (modified version) --}}
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content radius-16 bg-base">
             <div class="modal-header py-16 px-24 border-bottom">
-                <h1 class="modal-title fs-5" id="userModalLabel">Add/Edit User</h1>
+                <h1 class="modal-title fs-5" id="userModalLabel">Add/Edit Target</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
+            {{-- ✅ Keep the same route but only pass target fields --}}
             <form id="userForm" method="POST" action="{{ route('target.save', $targetUsers->id) }}">
                 @csrf
-                <input type="hidden" name="id" id="user_id">
+                <input type="hidden" name="id" id="user_id" value="{{ $targetUsers->id }}">
 
                 <div class="modal-body p-24">
                     <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Name</label>
-                            <input type="text" name="name" id="user_name" class="form-control" required>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Email</label>
-                            <input type="email" name="email" id="user_email" class="form-control" required>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Phone</label>
-                            <input type="text" name="phone" id="user_phone" class="form-control">
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Role</label>
-                            <select name="role" id="user_role" class="form-select">
-                                <option value="junior">Junior</option>
-                                <option value="senior">Senior</option>
-                            </select>
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Designation</label>
-                            <input type="text" name="designation" id="user_designation" class="form-control">
-                        </div>
-
-                        <div class="col-md-6 mb-3">
+                        {{-- Target --}}
+                        <div class="col-md-4 mb-3">
                             <label class="form-label">Target</label>
-                            <input type="text" name="target" id="user_target" class="form-control">
+                            <input type="number" name="target" id="user_target" class="form-control" required>
                         </div>
 
-                        <div class="col-md-6 mb-3">
+                        {{-- Target Date --}}
+                        <div class="col-md-4 mb-3">
                             <label class="form-label">Target Date</label>
-                            <input type="date" name="target_date" id="user_target_date" class="form-control">
+                            <input type="date" name="target_date" id="user_target_date" class="form-control" required>
                         </div>
 
-                        <div class="col-md-6 mb-3">
+                        {{-- Due Date --}}
+                        <div class="col-md-4 mb-3">
                             <label class="form-label">Due Date</label>
-                            <input type="date" name="due_date" id="user_due_date" class="form-control">
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Status</label>
-                            <select name="status" id="user_status" class="form-select">
-                                <option value="1">Active</option>
-                                <option value="0">Inactive</option>
-                            </select>
+                            <input type="date" name="due_date" id="user_due_date" class="form-control" required>
                         </div>
                     </div>
                 </div>
@@ -149,7 +116,7 @@ $script = '<script>
     </div>
 </div>
 
-{{-- ✅ Script for Add/Edit Modal --}}
+{{-- ✅ Script for Add/Edit Target Modal --}}
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const userModal = document.getElementById("userModal");
@@ -160,21 +127,15 @@ $script = '<script>
             const mode = button.getAttribute("data-mode");
 
             if (mode === "edit") {
-                form.querySelector("#userModalLabel").textContent = "Edit User";
+                form.querySelector("#userModalLabel").textContent = "Edit Target";
                 form.querySelector("#user_id").value = button.dataset.id;
-                form.querySelector("#user_name").value = button.dataset.name;
-                form.querySelector("#user_email").value = button.dataset.email;
-                form.querySelector("#user_phone").value = button.dataset.phone;
-                form.querySelector("#user_role").value = button.dataset.role;
-                form.querySelector("#user_designation").value = button.dataset.designation;
                 form.querySelector("#user_target").value = button.dataset.target;
                 form.querySelector("#user_target_date").value = button.dataset.target_date;
                 form.querySelector("#user_due_date").value = button.dataset.due_date;
-                form.querySelector("#user_status").value = button.dataset.status;
             } else {
                 form.reset();
-                form.querySelector("#userModalLabel").textContent = "Add New User";
-                form.querySelector("#user_id").value = "";
+                form.querySelector("#userModalLabel").textContent = "Add Target";
+                form.querySelector("#user_id").value = "{{ $targetUsers->id }}";
             }
         });
     });
