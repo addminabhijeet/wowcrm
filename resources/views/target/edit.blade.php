@@ -51,7 +51,6 @@ $script = '<script>
             <table class="table bordered-table sm-table mb-0">
                 <thead>
                     <tr>
-
                         <th>Name</th>
                         <th>Target</th>
                         <th>Target Date</th>
@@ -62,17 +61,16 @@ $script = '<script>
                 <tbody>
                     <tr>
                         <td>{{ $targetUsers->name }}</td>
-                        <td>{{ $targetUsers->email }}</td>
-                        <td>{{ $targetUsers->role }}</td>
+                        <td>{{ $targetUsers->target }}</td>
+                        <td>{{ $targetUsers->target_date }}</td>
+                        <td>{{ $targetUsers->due_date }}</td>
                         <td class="text-center">
                             <a href="{{ route('target.edit', $targetUsers->id) }}" class="btn btn-sm btn-primary">
                                 Target
                             </a>
                         </td>
                     </tr>
-
                 </tbody>
-
             </table>
         </div>
 
