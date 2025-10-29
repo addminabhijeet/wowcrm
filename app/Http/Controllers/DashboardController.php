@@ -551,6 +551,40 @@ class DashboardController extends Controller
         return view('target.edit', compact('targetUsers'));
     }
 
+    public function targetadd($id)
+    {
+        // Fetch the user by ID (only if their role is 'senior' or 'junior')
+        $targetUsers = User::whereIn('role', ['senior', 'junior'])
+            ->where('id', $id)
+            ->firstOrFail();
+
+        return view('target.edit', compact('targetUsers'));
+    }
+
+    public function targetSave(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'role' => 'required|string|in:senior,junior',
+            'target' => 'nullable|string|max:255',
+            'target_date' => 'nullable|date',
+            'due_date' => 'nullable|date',
+        ]);
+
+        // ✅ Update if ID exists, else create new
+        if ($request->id) {
+            $user = User::findOrFail($request->id);
+            $user->update($validated);
+            $message = 'User updated successfully.';
+        } else {
+            $user = User::create($validated);
+            $message = 'New user added successfully.';
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
+
 
     public function add()
     {

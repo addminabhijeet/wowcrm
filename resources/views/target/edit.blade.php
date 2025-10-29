@@ -12,37 +12,20 @@ $script = '<script>
 @section('content')
 
 <div class="card h-100 p-0 radius-12">
-    <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
+    <div
+        class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
         <div class="d-flex align-items-center flex-wrap gap-3">
             <span class="text-md fw-medium text-secondary-light mb-0">Show</span>
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
-                <option>5</option>
-                <option>6</option>
-                <option>7</option>
-                <option>8</option>
-                <option>9</option>
-                <option>10</option>
             </select>
 
-
-            <form class="navbar-search">
-                <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
-                <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
-            </form>
-            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
-                <option>Status</option>
-                <option>Active</option>
-                <option>Inactive</option>
-            </select>
-            <a href="{{ route('target.add') }}"
-                class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+            {{-- ✅ Button to open Add User modal --}}
+            <button type="button" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
+                data-bs-toggle="modal" data-bs-target="#userModal" data-mode="add">
                 <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                New Target
-            </a>
+                Add User
+            </button>
         </div>
     </div>
 
@@ -52,6 +35,8 @@ $script = '<script>
                 <thead>
                     <tr>
                         <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
                         <th>Target</th>
                         <th>Target Date</th>
                         <th>Due Date</th>
@@ -59,17 +44,27 @@ $script = '<script>
                     </tr>
                 </thead>
                 <tbody>
+                    @foreach ($targetUsers as $user)
                     <tr>
-                        <td>{{ $targetUsers->name }}</td>
-                        <td>{{ $targetUsers->target }}</td>
-                        <td>{{ $targetUsers->target_date }}</td>
-                        <td>{{ $targetUsers->due_date }}</td>
+                        <td>{{ $user->name }}</td>
+                        <td>{{ $user->email }}</td>
+                        <td>{{ ucfirst($user->role) }}</td>
+                        <td>{{ $user->target ?? '-' }}</td>
+                        <td>{{ $user->target_date ?? '-' }}</td>
+                        <td>{{ $user->due_date ?? '-' }}</td>
                         <td class="text-center">
-                            <a href="{{ route('target.edit', $targetUsers->id) }}" class="btn btn-sm btn-primary">
+                            {{-- ✅ Edit User modal trigger --}}
+                            <button type="button" class="btn btn-sm btn-primary editUserBtn"
+                                data-id="{{ $user->id }}" data-name="{{ $user->name }}"
+                                data-email="{{ $user->email }}" data-role="{{ $user->role }}"
+                                data-target="{{ $user->target }}" data-target_date="{{ $user->target_date }}"
+                                data-due_date="{{ $user->due_date }}" data-bs-toggle="modal"
+                                data-bs-target="#userModal" data-mode="edit">
                                 Edit
-                            </a>
+                            </button>
                         </td>
                     </tr>
+                    @endforeach
                 </tbody>
             </table>
         </div>
@@ -78,27 +73,21 @@ $script = '<script>
             <span>Showing 1 to 10 of 12 entries</span>
             <ul class="pagination d-flex flex-wrap align-items-center gap-2 justify-content-center">
                 <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">
+                    <a
+                        class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md"
+                        href="javascript:void(0)">
                         <iconify-icon icon="ep:d-arrow-left" class=""></iconify-icon>
                     </a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md bg-primary-600 text-white" href="javascript:void(0)">1</a>
+                    <a
+                        class="page-link text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md bg-primary-600 text-white"
+                        href="javascript:void(0)">1</a>
                 </li>
                 <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px" href="javascript:void(0)">2</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">3</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">4</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">5</a>
-                </li>
-                <li class="page-item">
-                    <a class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md" href="javascript:void(0)">
+                    <a
+                        class="page-link bg-neutral-200 text-secondary-light fw-semibold radius-8 border-0 d-flex align-items-center justify-content-center h-32-px w-32-px text-md"
+                        href="javascript:void(0)">
                         <iconify-icon icon="ep:d-arrow-right" class=""></iconify-icon>
                     </a>
                 </li>
@@ -107,59 +96,83 @@ $script = '<script>
     </div>
 </div>
 
-<!-- Modal Start -->
-<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog modal-dialog-centered">
+{{-- ✅ Add/Edit User Modal --}}
+<div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content radius-16 bg-base">
-            <div class="modal-header py-16 px-24 border border-top-0 border-start-0 border-end-0">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Add New Role</h1>
+            <div class="modal-header py-16 px-24 border-bottom">
+                <h1 class="modal-title fs-5" id="userModalLabel">Add/Edit User</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body p-24">
-                <form action="#">
+            <form id="userForm" method="POST" action="{{ route('target.save') }}">
+                @csrf
+                <input type="hidden" name="id" id="user_id">
+                <div class="modal-body p-24">
                     <div class="row">
-                        <div class="col-12 mb-20">
-                            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Role Name</label>
-                            <input type="text" class="form-control radius-8" placeholder="Enter Role  Name">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Name</label>
+                            <input type="text" name="name" id="user_name" class="form-control" required>
                         </div>
-                        <div class="col-12 mb-20">
-                            <label for="desc" class="form-label fw-semibold text-primary-light text-sm mb-8">Description</label>
-                            <textarea class="form-control" id="desc" rows="4" cols="50" placeholder="Write some text"></textarea>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email</label>
+                            <input type="email" name="email" id="user_email" class="form-control" required>
                         </div>
-
-                        <div class="col-12 mb-20">
-                            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Status </label>
-                            <div class="d-flex align-items-center flex-wrap gap-28">
-                                <div class="form-check checked-success d-flex align-items-center gap-2">
-                                    <input class="form-check-input" type="radio" name="label" id="Personal">
-                                    <label class="form-check-label line-height-1 fw-medium text-secondary-light text-sm d-flex align-items-center gap-1" for="Personal">
-                                        <span class="w-8-px h-8-px bg-success-600 rounded-circle"></span>
-                                        Active
-                                    </label>
-                                </div>
-                                <div class="form-check checked-danger d-flex align-items-center gap-2">
-                                    <input class="form-check-input" type="radio" name="label" id="Holiday">
-                                    <label class="form-check-label line-height-1 fw-medium text-secondary-light text-sm d-flex align-items-center gap-1" for="Holiday">
-                                        <span class="w-8-px h-8-px bg-danger-600 rounded-circle"></span>
-                                        Inactive
-                                    </label>
-                                </div>
-                            </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Role</label>
+                            <select name="role" id="user_role" class="form-select">
+                                <option value="junior">Junior</option>
+                                <option value="senior">Senior</option>
+                            </select>
                         </div>
-                        <div class="d-flex align-items-center justify-content-center gap-3 mt-24">
-                            <button type="reset" class="border border-danger-600 bg-hover-danger-200 text-danger-600 text-md px-40 py-11 radius-8">
-                                Cancel
-                            </button>
-                            <button type="submit" class="btn btn-primary border border-primary-600 text-md px-48 py-12 radius-8">
-                                Save
-                            </button>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Target</label>
+                            <input type="text" name="target" id="user_target" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Target Date</label>
+                            <input type="date" name="target_date" id="user_target_date" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Due Date</label>
+                            <input type="date" name="due_date" id="user_due_date" class="form-control">
                         </div>
                     </div>
-                </form>
-            </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-<!-- Modal End -->
+
+{{-- ✅ JavaScript for Add/Edit --}}
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const userModal = document.getElementById("userModal");
+        const form = document.getElementById("userForm");
+
+        userModal.addEventListener("show.bs.modal", (event) => {
+            const button = event.relatedTarget;
+            const mode = button.getAttribute("data-mode");
+
+            if (mode === "edit") {
+                form.querySelector("#userModalLabel").textContent = "Edit User";
+                form.querySelector("#user_id").value = button.dataset.id;
+                form.querySelector("#user_name").value = button.dataset.name;
+                form.querySelector("#user_email").value = button.dataset.email;
+                form.querySelector("#user_role").value = button.dataset.role;
+                form.querySelector("#user_target").value = button.dataset.target;
+                form.querySelector("#user_target_date").value = button.dataset.target_date;
+                form.querySelector("#user_due_date").value = button.dataset.due_date;
+            } else {
+                form.reset();
+                form.querySelector("#userModalLabel").textContent = "Add New User";
+                form.querySelector("#user_id").value = "";
+            }
+        });
+    });
+</script>
 
 @endsection
