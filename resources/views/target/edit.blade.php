@@ -37,8 +37,8 @@ $script = '<script>
                     <tr>
                         <th>Name</th>
                         <th>Target</th>
-                        <th>Target Date</th>
-                        <th>Due Date</th>
+                        <th>Target Month</th>
+                        <th>Due Month</th>
                         <th class="text-center">Action</th>
                     </tr>
                 </thead>
@@ -101,16 +101,16 @@ $script = '<script>
                             <input type="number" name="target" id="user_target" class="form-control" required>
                         </div>
 
-                        {{-- Target Date --}}
+                        {{-- Target Month --}}
                         <div class="col-md-4 mb-3">
-                            <label class="form-label">Target Date</label>
-                            <input type="date" name="target_date" id="user_target_date" class="form-control" required>
+                            <label class="form-label">Target Month</label>
+                            <input type="month" name="target_date" id="user_target_date" class="form-control" required>
                         </div>
 
-                        {{-- Due Date --}}
+                        {{-- Due Month --}}
                         <div class="col-md-4 mb-3">
-                            <label class="form-label">Due Date</label>
-                            <input type="date" name="due_date" id="user_due_date" class="form-control" required>
+                            <label class="form-label">Due Month</label>
+                            <input type="month" name="due_date" id="user_due_date" class="form-control" required>
                         </div>
                     </div>
                 </div>
