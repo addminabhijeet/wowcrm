@@ -2,7 +2,7 @@
 
 @php
 $title='Dashboard';
-$subTitle = 'Junior';
+$subTitle = 'IT recruiter';
 $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 @endphp
 
