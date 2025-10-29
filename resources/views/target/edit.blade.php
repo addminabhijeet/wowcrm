@@ -52,7 +52,9 @@ $script = '<script>
                         <td>{{ $targetUsers->name }}</td>
                         <td>{{ $target }}</td>
                         <td>{{ $targetDates[$index] ?? '-' }}</td>
-                        <td class="text-center">
+                        <td class="text-center d-flex gap-2 justify-content-center">
+
+                            {{-- ✅ Edit Button --}}
                             <button type="button"
                                 class="btn btn-sm btn-warning d-flex align-items-center gap-1"
                                 data-bs-toggle="modal"
@@ -65,6 +67,19 @@ $script = '<script>
                                 <iconify-icon icon="mdi:pencil" class="text-lg"></iconify-icon>
                                 Edit
                             </button>
+
+                            {{-- ✅ Delete Button --}}
+                            <form action="{{ route('target.delete', $targetUsers->id) }}" method="POST"
+                                onsubmit="return confirm('Are you sure you want to delete this target month?')">
+                                @csrf
+                                @method('DELETE')
+                                <input type="hidden" name="index" value="{{ $index }}">
+                                <button type="submit" class="btn btn-sm btn-danger d-flex align-items-center gap-1">
+                                    <iconify-icon icon="mdi:trash-can" class="text-lg"></iconify-icon>
+                                    Delete
+                                </button>
+                            </form>
+
                         </td>
                     </tr>
                     @endforeach
@@ -83,7 +98,6 @@ $script = '<script>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            {{-- ✅ Form sends only target + target_month --}}
             <form id="userForm" method="POST" action="{{ route('target.save', $targetUsers->id) }}">
                 @csrf
                 <input type="hidden" name="id" id="user_id" value="{{ $targetUsers->id }}">
@@ -91,13 +105,11 @@ $script = '<script>
 
                 <div class="modal-body p-24">
                     <div class="row">
-                        {{-- Target --}}
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Target</label>
                             <input type="number" name="target" id="user_target" class="form-control" required>
                         </div>
 
-                        {{-- Target Month --}}
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Target Month</label>
                             <input type="month" name="target_date" id="user_target_date" class="form-control" required>
@@ -113,7 +125,6 @@ $script = '<script>
     </div>
 </div>
 
-{{-- ✅ Script for Add/Edit Target Modal --}}
 <script>
 document.addEventListener("DOMContentLoaded", () => {
     const userModal = document.getElementById("userModal");

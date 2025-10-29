@@ -601,6 +601,39 @@ class DashboardController extends Controller
         return redirect()->back()->with('success', 'Target saved successfully!');
     }
 
+    public function targetDelete(Request $request, $id)
+    {
+        $request->validate([
+            'index' => 'required|integer',
+        ]);
+
+        $user = User::findOrFail($id);
+
+        $targets = $user->target ? explode(' | ', $user->target) : [];
+        $targetDates = $user->target_date ? explode(' | ', $user->target_date) : [];
+
+        $index = (int) $request->index;
+
+        if (!isset($targets[$index])) {
+            return back()->with('error', 'Invalid target index.');
+        }
+
+        // Remove the target and month
+        unset($targets[$index]);
+        unset($targetDates[$index]);
+
+        // Reindex arrays to maintain order
+        $targets = array_values($targets);
+        $targetDates = array_values($targetDates);
+
+        // Update database
+        $user->update([
+            'target' => implode(' | ', $targets),
+            'target_date' => implode(' | ', $targetDates),
+        ]);
+
+        return back()->with('success', 'Target month deleted successfully!');
+    }
 
 
 
