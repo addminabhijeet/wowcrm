@@ -1014,6 +1014,18 @@ class CallReportController extends Controller
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
+        $targetValues = explode('|', $juniorUser->target ?? '');
+        $targetGiven = (int) $targetValues[0] ?? 0; // or adjust if multiple values stored
+
+        $targetAchieved = $McalledAndMailedCalls;
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+
+        // Calculate Days Left (based on last due_date entry)
+        $dueDates = explode('|', $juniorUser->due_date ?? '');
+        $lastDueDate = !empty($dueDates) ? end($dueDates) : null;
+        $daysLeft = $lastDueDate ? max(0, now()->diffInDays(\Carbon\Carbon::parse($lastDueDate), false)) : 0;
+
+
         return view('reports.alljuniormonthly', compact(
             'juniorUser',
             'MtotalCalls',
