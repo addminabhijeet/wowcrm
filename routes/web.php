@@ -181,7 +181,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/target/add/{user}', [DashboardController::class, 'targetadd'])->name('target.add');
     Route::post('dashboard/target/save/{user}', [DashboardController::class, 'targetSave'])->name('target.save');
     Route::get('/dashboard/target/targetall', [DashboardController::class, 'targetall'])->name('target.all');
-    
     Route::put('/dashboard/smtp/allupdate', [DashboardController::class, 'addupdate'])->name('smtp.addupdate');
     Route::put('/dashboard/smtp/update/{user}', [DashboardController::class, 'update'])->name('smtp.update');
     Route::post('/dashboard/smtp/test', [DashboardController::class, 'test'])->name('smtp.test');

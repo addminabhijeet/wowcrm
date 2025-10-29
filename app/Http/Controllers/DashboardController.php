@@ -535,7 +535,7 @@ class DashboardController extends Controller
 
     public function targetall()
     {
-        // Get only users with 'senior' or 'junior' roles
+        // Get only users that have SMTP settings
         $targetUsers = User::whereIn('role', ['senior', 'junior'])->get();
 
         return view('target.editall', compact('targetUsers'));
@@ -560,24 +560,23 @@ class DashboardController extends Controller
 
         return view('target.edit', compact('targetUsers'));
     }
-
     public function targetSave(Request $request)
     {
         $validated = $request->validate([
             'id' => 'required|exists:users,id',
             'target' => 'required|integer',
-            'target_date' => 'required|string', // now month format (YYYY-MM)
+            'target_date' => 'required|date',
+            'due_date' => 'required|date|after:target_date',
             'index' => 'nullable'
         ]);
 
         $user = User::findOrFail($request->id);
 
-        // Split stored values into arrays
         $targets = $user->target ? explode(' | ', $user->target) : [];
         $targetDates = $user->target_date ? explode(' | ', $user->target_date) : [];
+        $dueDates = $user->due_date ? explode(' | ', $user->due_date) : [];
 
-        // If editing an existing target
-        if ($request->filled('index')) {
+        if ($request->index !== null && $request->index !== '') {
             $index = (int) $request->index;
             if (!isset($targets[$index])) {
                 return back()->with('error', 'Invalid target index.');
@@ -585,17 +584,17 @@ class DashboardController extends Controller
 
             $targets[$index] = $validated['target'];
             $targetDates[$index] = $validated['target_date'];
-        }
-        // Adding a new target
-        else {
+            $dueDates[$index] = $validated['due_date'];
+        } else {
             $targets[] = $validated['target'];
             $targetDates[] = $validated['target_date'];
+            $dueDates[] = $validated['due_date'];
         }
 
-        // Update user record
         $user->update([
             'target' => implode(' | ', $targets),
             'target_date' => implode(' | ', $targetDates),
+            'due_date' => implode(' | ', $dueDates),
         ]);
 
         return redirect()->back()->with('success', 'Target saved successfully!');
