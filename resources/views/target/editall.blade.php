@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
-$title='All Accountant Call Report';
-$subTitle = 'All Accountant Call Report';
+$title='All User Target';
+$subTitle = 'All User Target';
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
         $(this).closest("tr").addClass("d-none")
@@ -44,7 +44,7 @@ $script = '<script>
             <table class="table bordered-table sm-table mb-0">
                 <thead>
                     <tr>
-                  
+
 
                         <th>Name</th>
                         <th>Email</th>
@@ -56,7 +56,7 @@ $script = '<script>
                 <tbody>
                     @forelse($targetUsers as $index => $user)
                     <tr>
-                 
+
 
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
