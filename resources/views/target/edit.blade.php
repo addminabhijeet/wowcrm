@@ -3,11 +3,6 @@
 @php
 $title = 'User Target';
 $subTitle = 'User Target';
-$script = '<script>
-    $(".remove-item-btn").on("click", function() {
-        $(this).closest("tr").addClass("d-none")
-    });
-</script>';
 @endphp
 
 @section('content')
@@ -136,14 +131,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (mode === "edit") {
             modalTitle.textContent = "Edit Target";
-            form.querySelector("#user_id").value = button.dataset.id;
             form.querySelector("#user_index").value = button.dataset.index;
             form.querySelector("#user_target").value = button.dataset.target;
             form.querySelector("#user_target_date").value = button.dataset.target_date;
         } else {
             modalTitle.textContent = "Add Target";
             form.reset();
-            form.querySelector("#user_id").value = "{{ $targetUsers->id }}";
             form.querySelector("#user_index").value = "";
         }
     });
