@@ -71,7 +71,7 @@ $script = '<script>
         </div>
     </div>
 </div>
-{{-- ✅ Add/Edit Target Modal (modified version) --}}
+{{-- ✅ Add/Edit Target Modal --}}
 <div class="modal fade" id="userModal" tabindex="-1" aria-labelledby="userModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content radius-16 bg-base">
@@ -80,7 +80,7 @@ $script = '<script>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            {{-- ✅ Keep the same route but only pass target fields --}}
+            {{-- ✅ Form sends only target data --}}
             <form id="userForm" method="POST" action="{{ route('target.save', $targetUsers->id) }}">
                 @csrf
                 <input type="hidden" name="id" id="user_id" value="{{ $targetUsers->id }}">
@@ -116,7 +116,7 @@ $script = '<script>
     </div>
 </div>
 
-{{-- ✅ Script for Add/Edit Target Modal --}}
+{{--  Script for Add/Edit Target Modal --}}
 <script>
     document.addEventListener("DOMContentLoaded", () => {
         const userModal = document.getElementById("userModal");
@@ -140,5 +140,6 @@ $script = '<script>
         });
     });
 </script>
+
 
 @endsection

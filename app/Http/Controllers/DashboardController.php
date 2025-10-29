@@ -563,32 +563,28 @@ class DashboardController extends Controller
 
     public function targetSave(Request $request)
     {
+        // Basic validation only for target fields
         $validated = $request->validate([
-            'name' => 'required|string|max:255',
-            'email' => 'required|email|max:255',
-            'phone' => 'nullable|string|max:20',
-            'role' => 'required|string|in:junior,senior',
-            'designation' => 'nullable|string|max:255',
-            'target' => 'nullable|string|max:255',
-            'target_date' => 'nullable|string|max:255',
-            'due_date' => 'nullable|string|max:255',
-            'status' => 'required|boolean',
+            'id' => 'required|exists:users,id',
+            'target' => 'required|integer',
+            'target_date' => 'required|date',
+            'due_date' => 'required|date',
         ]);
 
-        if ($request->id) {
-            // Update existing record
-            $user = User::findOrFail($request->id);
-            $user->update($validated);
-            $message = 'User updated successfully!';
-        } else {
-            // Create new record
-            $validated['password'] = bcrypt('123456'); // Default password for new users
-            User::create($validated);
-            $message = 'New user added successfully!';
-        }
+        // Fetch the existing user
+        $user = User::findOrFail($request->id);
 
-        return redirect()->back()->with('success', $message);
+        // Update only the target-related fields
+        $user->update([
+            'target' => $validated['target'],
+            'target_date' => $validated['target_date'],
+            'due_date' => $validated['due_date'],
+        ]);
+
+        // Redirect with success message
+        return redirect()->back()->with('success', 'Target updated successfully!');
     }
+
 
 
 
