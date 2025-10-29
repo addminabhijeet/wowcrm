@@ -51,7 +51,7 @@ $script = '<script>
             <table class="table bordered-table sm-table mb-0">
                 <thead>
                     <tr>
-                      
+
                         <th>Name</th>
                         <th>Target</th>
                         <th>Target Date</th>
@@ -60,24 +60,17 @@ $script = '<script>
                     </tr>
                 </thead>
                 <tbody>
-                    @forelse($targetUsers as $index => $user)
                     <tr>
-               
-                        <td>{{ $user->name }}</td>
-                        <td>{{ $user->target }}</td>
-                        <td>{{ $user->target_date }}</td>
-                        <td>{{ $user->due_date }}</td>
+                        <td>{{ $targetUsers->name }}</td>
+                        <td>{{ $targetUsers->email }}</td>
+                        <td>{{ $targetUsers->role }}</td>
                         <td class="text-center">
-                            <a href="{{ route('smtp.edit', $user->id) }}" class="btn btn-sm btn-primary">
-                                View
+                            <a href="{{ route('target.edit', $targetUsers->id) }}" class="btn btn-sm btn-primary">
+                                Target
                             </a>
                         </td>
                     </tr>
-                    @empty
-                    <tr>
-                        <td colspan="6" class="text-center">No junior users found.</td>
-                    </tr>
-                    @endforelse
+
                 </tbody>
 
             </table>
