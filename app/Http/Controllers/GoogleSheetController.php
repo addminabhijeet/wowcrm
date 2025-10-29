@@ -1484,47 +1484,21 @@ class GoogleSheetController extends Controller
     }
 
 
-    public function junior(Request $request)
+        public function junior()
     {
         $authUser = Auth::user();
         $pattern = "%:" . $authUser->id . "|junior"; // will check last part
 
-        $search = $request->input('search');
-        $rowId = $request->input('row_id');
-
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $pattern) {
+        $data = GoogleSheetData::where(function ($q) use ($authUser, $pattern) {
             $q->where('created_by', $authUser->id . '|junior') // exact match
-                ->orWhere('created_by', 'LIKE', $pattern);     // ends with :id|junior
+                ->orWhere('created_by', 'LIKE', $pattern);       // ends with :id|junior
         })
-            ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
-
-        // ✅ Add search and row_id filters (same logic as senior)
-        if ($rowId) {
-            $query->where('id', $rowId);
-        } elseif ($search && strlen($search) >= 3) {
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'LIKE', "%{$search}%")
-                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
-                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
-            });
-        }
-
-        $data = $query->orderBy('Date', 'desc')->paginate(10);
-
-        // Preserve filters during pagination
-        $data->appends([
-            'search' => $search,
-            'row_id' => $rowId,
-        ]);
-
-        // ✅ Handle AJAX requests for table updates (like senior)
-        if ($request->ajax()) {
-            return view('database.partials.senior_table', compact('data'))->render();
-        }
+            ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']) // ensures it's last part
+            ->orderBy('Date', 'desc') // ✅ sort by Date descending (latest first)
+            ->paginate(10);
 
         return view('database.junior', compact('data'));
     }
-
 
 
     public function juniorcandm()
