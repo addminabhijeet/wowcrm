@@ -548,7 +548,7 @@ class DashboardController extends Controller
             ->where('id', $id)
             ->firstOrFail();
 
-        return view('target.editall', compact('targetUser'));
+        return view('target.editall', compact('targetUsers'));
     }
 
 
