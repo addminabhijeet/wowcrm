@@ -76,7 +76,7 @@ $script = '<script>
                                 <input type="hidden" name="index" value="{{ $index }}">
                                 <button type="submit" class="btn btn-sm btn-danger d-flex align-items-center gap-1">
                                     <iconify-icon icon="mdi:trash-can" class="text-lg"></iconify-icon>
-                                    Delete
+                                    Deleted
                                 </button>
                             </form>
 
