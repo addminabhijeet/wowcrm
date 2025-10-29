@@ -454,7 +454,7 @@ $script = '<script>
             <div class="card-body p-20">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <div>
-                        <p class="fw-medium text-primary-light mb-1">Total Target Need To Achived</p>
+                        <p class="fw-medium text-primary-light mb-1">Total Number of Days Left</p>
                         <h6 class="mb-0">0</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
