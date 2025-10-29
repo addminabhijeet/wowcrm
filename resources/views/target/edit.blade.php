@@ -81,7 +81,7 @@ $script = '<script>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
 
-            <form id="userForm" method="POST" action="{{ route('target.save') }}">
+            <form id="userForm" method="POST" action="{{ route('target.save', $targetUsers->id) }}">
                 @csrf
                 <input type="hidden" name="id" id="user_id">
 
