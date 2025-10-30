@@ -734,9 +734,7 @@ $script = '<script>
 
 </div>
 
-
-
-
+</div>
 
 
 
