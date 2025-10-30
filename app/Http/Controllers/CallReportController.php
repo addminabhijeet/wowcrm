@@ -289,6 +289,35 @@ class CallReportController extends Controller
         $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
         $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
 
+        $targetValues = explode('|', $juniorUser->target ?? '');
+        $targetGiven = (int) $targetValues[0] ?? 0; // or adjust if multiple values stored
+
+        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Payment Completed')
+            ->count();
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+
+        // Calculate Days Left (based on last target_date entry)
+        $dueDates = explode('|', $juniorUser->target_date ?? '');
+        $lastDueDate = !empty($dueDates) ? end($dueDates) : null;
+
+        if ($lastDueDate) {
+            // ✅ If only month is provided (e.g., "2025-11"), assume the last day of that month
+            if (preg_match('/^\d{4}-\d{2}$/', $lastDueDate)) {
+                // Append last day of month
+                $carbonDate = \Carbon\Carbon::parse($lastDueDate . '-01')->endOfMonth();
+            } else {
+                // Otherwise treat it as a normal full date
+                $carbonDate = \Carbon\Carbon::parse($lastDueDate);
+            }
+
+            $diff = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff)); // ✅ Always round up (e.g., 0.4 → 1)
+        } else {
+            $daysLeft = 0;
+        }
 
         return view('reports.seniormonthly', compact(
             'MtotalCalls',
@@ -325,8 +354,11 @@ class CallReportController extends Controller
             'r4to5pm',
             'r5to6pm',
             'r6to7pm',
-            'r7to8pm'
-
+            'r7to8pm',
+            'targetGiven',
+            'targetAchieved',
+            'targetYetToAchieve',
+            'daysLeft'
         ));
     }
 
@@ -1403,6 +1435,37 @@ class CallReportController extends Controller
         $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
 
 
+        $targetValues = explode('|', $juniorUser->target ?? '');
+        $targetGiven = (int) $targetValues[0] ?? 0; // or adjust if multiple values stored
+
+        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Payment Completed')
+            ->count();
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+
+        // Calculate Days Left (based on last target_date entry)
+        $dueDates = explode('|', $juniorUser->target_date ?? '');
+        $lastDueDate = !empty($dueDates) ? end($dueDates) : null;
+
+        if ($lastDueDate) {
+            // ✅ If only month is provided (e.g., "2025-11"), assume the last day of that month
+            if (preg_match('/^\d{4}-\d{2}$/', $lastDueDate)) {
+                // Append last day of month
+                $carbonDate = \Carbon\Carbon::parse($lastDueDate . '-01')->endOfMonth();
+            } else {
+                // Otherwise treat it as a normal full date
+                $carbonDate = \Carbon\Carbon::parse($lastDueDate);
+            }
+
+            $diff = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff)); // ✅ Always round up (e.g., 0.4 → 1)
+        } else {
+            $daysLeft = 0;
+        }
+
+
         return view('reports.allseniormonthly', compact(
             'MtotalCalls',
             'McalledAndMailedCalls',
@@ -1438,7 +1501,11 @@ class CallReportController extends Controller
             'r4to5pm',
             'r5to6pm',
             'r6to7pm',
-            'r7to8pm'
+            'r7to8pm',
+            'targetGiven',
+            'targetAchieved',
+            'targetYetToAchieve',
+            'daysLeft'
 
         ));
     }
