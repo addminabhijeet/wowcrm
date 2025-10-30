@@ -1018,7 +1018,6 @@ class CallReportController extends Controller
             })
             ->count();
 
-
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
@@ -1041,7 +1040,6 @@ class CallReportController extends Controller
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
-
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
@@ -1066,7 +1064,6 @@ class CallReportController extends Controller
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
-
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
         $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
@@ -1077,7 +1074,7 @@ class CallReportController extends Controller
             // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
             $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
                 ? $date
-                : \Carbon\Carbon::parse($date)->format('Y-m');
+                : Carbon::parse($date)->format('Y-m');
 
             if ($monthPart === $selectedMonth) {
                 $targetIndex = $index;
@@ -1086,7 +1083,9 @@ class CallReportController extends Controller
         }
 
         // Use the matching month's target, else fallback to first or 0
-        $targetGiven = isset($targetValues[$targetIndex]) ? (int) $targetValues[$targetIndex] : ((int) $targetValues[0] ?? 0);
+        $targetGiven = isset($targetValues[$targetIndex])
+            ? (int) $targetValues[$targetIndex]
+            : ((int) ($targetValues[0] ?? 0));
 
         // Calculate Days Left (based on matched target_date entry)
         $matchedDate = $targetDates[$targetIndex] ?? null;
@@ -1094,9 +1093,9 @@ class CallReportController extends Controller
         if ($matchedDate) {
             // ✅ Handle "YYYY-MM" (month only) or full date
             if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
+                $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate);
+                $carbonDate = Carbon::parse($matchedDate);
             }
 
             $diff = now()->floatDiffInDays($carbonDate, false);
@@ -1110,11 +1109,10 @@ class CallReportController extends Controller
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Payment Completed')
             ->count();
+
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         // --- Calculate Present / Absent / Working / Non-working days ---
-
-
         $events = UserTimerPause::where('user_id', $juniorUser->id)
             ->whereYear('event_time', $year)
             ->whereMonth('event_time', $month)
@@ -1123,7 +1121,7 @@ class CallReportController extends Controller
 
         // Group events by date
         $groupedEvents = $events->groupBy(function ($event) {
-            return \Carbon\Carbon::parse($event->event_time)->format('Y-m-d');
+            return Carbon::parse($event->event_time)->format('Y-m-d');
         });
 
         // Determine all days in the selected month
@@ -1176,7 +1174,6 @@ class CallReportController extends Controller
                 $absentDays++;
             }
         }
-
 
         return view('reports.alljuniormonthly', compact(
             'juniorUser',
@@ -1873,7 +1870,7 @@ class CallReportController extends Controller
             ->count();
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
-        
+
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
