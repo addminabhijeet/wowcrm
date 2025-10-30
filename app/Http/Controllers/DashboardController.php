@@ -149,14 +149,21 @@ class DashboardController extends Controller
             }
 
             // Create a new timer
-            $timer = UserTimerLog::create([
+            $timerData = [
                 'user_id'           => $user->id,
                 'login_id'          => $user->id,
                 'start_time'        => now(),
                 'remaining_seconds' => $workDaySeconds,
                 'status'            => 'running',
                 'pause_type'        => 'resume',
-            ]);
+            ];
+            
+            if ($user->role === 'senior') {
+                $timerData['button_status'] = '1';
+            }
+
+            $timer = UserTimerLog::create($timerData);
+
 
             UserTimerPause::create([
                 'user_timer_log_id' => $timer->id,
@@ -595,7 +602,7 @@ class DashboardController extends Controller
 
         return redirect()->back()->with('success', 'Target saved successfully!');
     }
-    
+
     public function targetDelete(Request $request, $id)
     {
         $user = User::findOrFail($id);
