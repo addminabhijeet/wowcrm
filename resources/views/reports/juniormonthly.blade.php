@@ -752,16 +752,57 @@ $script = '<script>
 <script>
 document.getElementById("downloadPdfBtn").addEventListener("click", function () {
     const element = document.getElementById("pdfContent");
+
+    // Get the natural height and width of the content
+    const elementWidth = element.scrollWidth;
+    const elementHeight = element.scrollHeight;
+
+    // A4 paper size in pixels at 96 DPI
+    const a4WidthPx = 794;  
+    const a4HeightPx = 1123;
+
+    // Calculate scale to fit entire content on a single page
+    const scaleX = a4WidthPx / elementWidth;
+    const scaleY = a4HeightPx / elementHeight;
+    const scale = Math.min(scaleX, scaleY, 1); // prevent upscaling
+
     const opt = {
-        margin:       0.5,
-        filename:     'page-report.pdf',
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+        margin:       0,
+        filename:     'monthly-report.pdf',
+        image:        { type: 'jpeg', quality: 1 },
+        html2canvas:  {
+            scale: 2,              // high resolution
+            useCORS: true,         // allow external icons/images
+            scrollY: 0,            // ignore window scroll
+            backgroundColor: "#ffffff",
+            width: elementWidth,
+            height: elementHeight,
+        },
+        jsPDF: { 
+            unit: 'px', 
+            format: [a4WidthPx, a4HeightPx], 
+            orientation: 'portrait' 
+        }
     };
-    html2pdf().set(opt).from(element).save();
+
+    html2pdf()
+        .set(opt)
+        .from(element)
+        .toPdf()
+        .get('pdf')
+        .then(function (pdf) {
+            // Scale and center content on a single page
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
+            const offsetX = (pageWidth - elementWidth * scale) / 2;
+            const offsetY = (pageHeight - elementHeight * scale) / 2;
+            pdf.internal.scaleFactor = 1 / scale;
+            pdf.internal.write(10, offsetY, '');
+        })
+        .save();
 });
 </script>
+
 
 
 
