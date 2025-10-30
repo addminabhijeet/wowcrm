@@ -289,7 +289,7 @@ class CallReportController extends Controller
         $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
         $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
 
-        
+
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
         $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
@@ -328,6 +328,12 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
+        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Payment Completed')
+            ->count();
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         return view('reports.seniormonthly', compact(
             'MtotalCalls',
@@ -1095,6 +1101,12 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
+        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Payment Completed')
+            ->count();
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         return view('reports.alljuniormonthly', compact(
             'juniorUser',
@@ -1493,6 +1505,12 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
+        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Payment Completed')
+            ->count();
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         return view('reports.allseniormonthly', compact(
             'MtotalCalls',
@@ -1768,6 +1786,13 @@ class CallReportController extends Controller
         } else {
             $daysLeft = 0;
         }
+
+        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Payment Completed')
+            ->count();
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
