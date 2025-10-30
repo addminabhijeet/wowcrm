@@ -665,7 +665,7 @@ $script = '<script>
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
                         <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Present Days</p>
-                        <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $absentDays }}</h3>
+                        <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $presentDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
                         style="width: 70px; height: 70px; background-color: rgba(46,125,50,0.1); border-radius: 50%;">
@@ -703,7 +703,7 @@ $script = '<script>
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
                         <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Working Days</p>
-                        <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $absentDays }}</h3>
+                        <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $workingDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
                         style="width: 70px; height: 70px; background-color: rgba(239,108,0,0.1); border-radius: 50%;">
@@ -722,7 +722,7 @@ $script = '<script>
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
                         <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Non Working Days</p>
-                        <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $absentDays }}</h3>
+                        <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $nonWorkingDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
                         style="width: 70px; height: 70px; background-color: rgba(21,101,192,0.1); border-radius: 50%;">
