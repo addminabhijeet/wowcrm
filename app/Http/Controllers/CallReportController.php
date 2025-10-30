@@ -1826,6 +1826,7 @@ class CallReportController extends Controller
             ->toArray();
 
         $juniorUser = $user;
+        $presentDays = $absentDays = $workingDays = $nonWorkingDays = 0;
 
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
@@ -1872,7 +1873,7 @@ class CallReportController extends Controller
             ->count();
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
-        $presentDays = $absentDays = $workingDays = $nonWorkingDays = 0;
+        
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
