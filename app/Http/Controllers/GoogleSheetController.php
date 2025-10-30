@@ -493,7 +493,10 @@ class GoogleSheetController extends Controller
 
         // Filter by selected junior
         if ($juniorUserId) {
-            $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
+            $query->where(function ($q) use ($juniorUserId) {
+                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+            });
         }
 
         // Search or specific row filter
