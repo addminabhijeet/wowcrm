@@ -7,6 +7,9 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Carbon\CarbonPeriod;
+use Carbon\Carbon;
+use App\Models\UserTimerPause;
 
 
 
@@ -1109,6 +1112,72 @@ class CallReportController extends Controller
             ->count();
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
+        // --- Calculate Present / Absent / Working / Non-working days ---
+
+
+        $events = UserTimerPause::where('user_id', $juniorUser->id)
+            ->whereYear('event_time', $year)
+            ->whereMonth('event_time', $month)
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        // Group events by date
+        $groupedEvents = $events->groupBy(function ($event) {
+            return \Carbon\Carbon::parse($event->event_time)->format('Y-m-d');
+        });
+
+        // Determine all days in the selected month
+        $startOfMonth = Carbon::create($year, $month, 1);
+        $endOfMonth   = $startOfMonth->copy()->endOfMonth();
+        $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
+
+        $presentDays = 0;
+        $absentDays = 0;
+        $workingDays = 0;
+        $nonWorkingDays = 0;
+
+        // Loop through each day
+        foreach ($daysInMonth as $day) {
+            $dateStr = $day->format('Y-m-d');
+            $dailyEvents = $groupedEvents->get($dateStr, collect());
+
+            if ($dailyEvents->isEmpty()) {
+                // No data at all → non-working day
+                $nonWorkingDays++;
+                continue;
+            }
+
+            $workingDays++;
+
+            // Sort by time for duration calculation
+            $sorted = $dailyEvents->sortBy('event_time')->values();
+            $totalBreakSec = 0;
+            $lastPause = null;
+
+            foreach ($sorted as $event) {
+                $pauseType = strtolower($event->pause_type ?? '');
+                $eventTime = Carbon::parse($event->event_time);
+
+                if ($pauseType === 'inactive') {
+                    $lastPause = $eventTime;
+                } elseif (in_array($pauseType, ['resume', 'running']) && $lastPause) {
+                    $totalBreakSec += $eventTime->diffInSeconds($lastPause);
+                    $lastPause = null;
+                }
+            }
+
+            $startTime = Carbon::parse($sorted->first()->event_time);
+            $endTime   = Carbon::parse($sorted->last()->event_time);
+            $totalWorkSec = max(0, $endTime->diffInSeconds($startTime) - $totalBreakSec);
+
+            if ($totalWorkSec >= 8 * 3600) {
+                $presentDays++;
+            } else {
+                $absentDays++;
+            }
+        }
+
+
         return view('reports.alljuniormonthly', compact(
             'juniorUser',
             'MtotalCalls',
@@ -1138,7 +1207,11 @@ class CallReportController extends Controller
             'targetGiven',
             'targetAchieved',
             'targetYetToAchieve',
-            'daysLeft'
+            'daysLeft',
+            'presentDays',
+            'absentDays',
+            'workingDays',
+            'nonWorkingDays'
         ));
     }
 
