@@ -1765,7 +1765,6 @@ class CallReportController extends Controller
     }
 
 
-
     public function juniormonthly(Request $request)
     {
         $user = Auth::user();
@@ -1798,7 +1797,6 @@ class CallReportController extends Controller
             })
             ->count();
 
-
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
@@ -1823,42 +1821,94 @@ class CallReportController extends Controller
             ->toArray();
 
         $juniorUser = $user;
-        $presentDays = $absentDays = $workingDays = $nonWorkingDays = 0;
 
-        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
+        // ---------- ✅ Added Correct Daily Attendance Logic ----------
+        $events = UserTimerPause::where('user_id', $juniorUser->id)
+            ->whereYear('event_time', $year)
+            ->whereMonth('event_time', $month)
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        $groupedEvents = $events->groupBy(function ($event) {
+            return Carbon::parse($event->event_time)->format('Y-m-d');
+        });
+
+        $startOfMonth = Carbon::create($year, $month, 1);
+        $endOfMonth   = $startOfMonth->copy()->endOfMonth();
+        $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
+
+        $presentDays = 0;
+        $absentDays = 0;
+        $workingDays = 0;
+        $nonWorkingDays = 0;
+
+        foreach ($daysInMonth as $day) {
+            $dateStr = $day->format('Y-m-d');
+            $dailyEvents = $groupedEvents->get($dateStr, collect());
+
+            if ($dailyEvents->isEmpty()) {
+                $nonWorkingDays++;
+                continue;
+            }
+
+            $workingDays++;
+
+            $sorted = $dailyEvents->sortBy('event_time')->values();
+            $totalBreakSec = 0;
+            $lastPause = null;
+
+            foreach ($sorted as $event) {
+                $pauseType = strtolower($event->pause_type ?? '');
+                $eventTime = Carbon::parse($event->event_time);
+
+                if ($pauseType === 'inactive') {
+                    $lastPause = $eventTime;
+                } elseif (in_array($pauseType, ['resume', 'running']) && $lastPause) {
+                    $totalBreakSec += $eventTime->diffInSeconds($lastPause);
+                    $lastPause = null;
+                }
+            }
+
+            $startTime = Carbon::parse($sorted->first()->event_time);
+            $endTime   = Carbon::parse($sorted->last()->event_time);
+            $totalWorkSec = max(0, $endTime->diffInSeconds($startTime) - $totalBreakSec);
+
+            if ($totalWorkSec >= 8 * 3600) {
+                $presentDays++;
+            } else {
+                $absentDays++;
+            }
+        }
+        // ---------- ✅ End of Daily Attendance Logic ----------
+
+        // Handle multiple targets and target_dates
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
         $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
-        // Find index of matching month (e.g., "2025-10")
         $targetIndex = null;
         foreach ($targetDates as $index => $date) {
-            // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
             $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
                 ? $date
                 : \Carbon\Carbon::parse($date)->format('Y-m');
-
             if ($monthPart === $selectedMonth) {
                 $targetIndex = $index;
                 break;
             }
         }
 
-        // Use the matching month's target, else fallback to first or 0
-        $targetGiven = isset($targetValues[$targetIndex]) ? (int) $targetValues[$targetIndex] : ((int) $targetValues[0] ?? 0);
+        $targetGiven = isset($targetValues[$targetIndex])
+            ? (int) $targetValues[$targetIndex]
+            : ((int) ($targetValues[0] ?? 0));
 
-        // Calculate Days Left (based on matched target_date entry)
         $matchedDate = $targetDates[$targetIndex] ?? null;
-
         if ($matchedDate) {
-            // ✅ Handle "YYYY-MM" (month only) or full date
             if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
                 $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
                 $carbonDate = \Carbon\Carbon::parse($matchedDate);
             }
-
             $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
+            $daysLeft = max(0, ceil($diff));
         } else {
             $daysLeft = 0;
         }
@@ -1869,8 +1919,6 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Payment Completed')
             ->count();
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
-
-
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
