@@ -611,7 +611,7 @@ $script = '<script>
             </div>
         </div>
     </div>
-
+<div class="row">
     <div class="col-xxl-4 col-lg-6">
         <div class="card h-100 radius-8 border-0">
             <div class="card-body p-24">
@@ -652,7 +652,8 @@ $script = '<script>
     </div>
 </div>
 
-<div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
+<!-- Added margin-top spacing between the two designs -->
+<div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4 mt-5">
 
     <!-- Total Present Days -->
     <div class="col">
@@ -731,6 +732,7 @@ $script = '<script>
     </div>
 
 </div>
+
 
 
 
