@@ -2558,11 +2558,11 @@ class GoogleSheetController extends Controller
                     $updateData['created_by'] .= ':' . $zerotag;
                 }
             } else {
-                // For all other remarks, apply "Revert To Junior" logic
-                // Match any integer followed by "|junior"
-                if (preg_match('/(\d+)\|junior/', $updateData['created_by'], $matches)) {
-                    $juniorId = $matches[1]; // Extract the integer
-                    $tag = $juniorId . '|junior';
+                // For all other remarks, apply "Revert To Senior" logic
+                // Match any integer followed by "|senior"
+                if (preg_match('/(\d+)\|senior/', $updateData['created_by'], $matches)) {
+                    $seniorId = $matches[1]; // Extract the integer
+                    $tag = $seniorId . '|senior';
                     // Append only if tag already exists in created_by
                     if (strpos($updateData['created_by'], $tag) !== false) {
                         $updateData['created_by'] .= ':' . $tag;
