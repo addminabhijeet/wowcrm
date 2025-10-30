@@ -1872,6 +1872,8 @@ class CallReportController extends Controller
             ->count();
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
+        $presentDays = $absentDays = $workingDays = $nonWorkingDays = 0;
+
         // Initialize hour blocks (10 AM - 8 PM)
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
