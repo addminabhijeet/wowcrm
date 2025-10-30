@@ -289,35 +289,45 @@ class CallReportController extends Controller
         $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
         $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
 
-        $targetValues = explode('|', $juniorUser->target ?? '');
-        $targetGiven = (int) $targetValues[0] ?? 0; // or adjust if multiple values stored
+        
+        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
+        $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
+        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
-        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Payment Completed')
-            ->count();
-        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+        // Find index of matching month (e.g., "2025-10")
+        $targetIndex = null;
+        foreach ($targetDates as $index => $date) {
+            // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
+            $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
+                ? $date
+                : \Carbon\Carbon::parse($date)->format('Y-m');
 
-        // Calculate Days Left (based on last target_date entry)
-        $dueDates = explode('|', $juniorUser->target_date ?? '');
-        $lastDueDate = !empty($dueDates) ? end($dueDates) : null;
+            if ($monthPart === $selectedMonth) {
+                $targetIndex = $index;
+                break;
+            }
+        }
 
-        if ($lastDueDate) {
-            // ✅ If only month is provided (e.g., "2025-11"), assume the last day of that month
-            if (preg_match('/^\d{4}-\d{2}$/', $lastDueDate)) {
-                // Append last day of month
-                $carbonDate = \Carbon\Carbon::parse($lastDueDate . '-01')->endOfMonth();
+        // Use the matching month's target, else fallback to first or 0
+        $targetGiven = isset($targetValues[$targetIndex]) ? (int) $targetValues[$targetIndex] : ((int) $targetValues[0] ?? 0);
+
+        // Calculate Days Left (based on matched target_date entry)
+        $matchedDate = $targetDates[$targetIndex] ?? null;
+
+        if ($matchedDate) {
+            // ✅ Handle "YYYY-MM" (month only) or full date
+            if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
+                $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
-                // Otherwise treat it as a normal full date
-                $carbonDate = \Carbon\Carbon::parse($lastDueDate);
+                $carbonDate = \Carbon\Carbon::parse($matchedDate);
             }
 
             $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff)); // ✅ Always round up (e.g., 0.4 → 1)
+            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
         } else {
             $daysLeft = 0;
         }
+
 
         return view('reports.seniormonthly', compact(
             'MtotalCalls',
@@ -1046,35 +1056,45 @@ class CallReportController extends Controller
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
-        $targetValues = explode('|', $juniorUser->target ?? '');
-        $targetGiven = (int) $targetValues[0] ?? 0; // or adjust if multiple values stored
 
-        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Payment Completed')
-            ->count();
-        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
+        $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
+        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
-        // Calculate Days Left (based on last target_date entry)
-        $dueDates = explode('|', $juniorUser->target_date ?? '');
-        $lastDueDate = !empty($dueDates) ? end($dueDates) : null;
+        // Find index of matching month (e.g., "2025-10")
+        $targetIndex = null;
+        foreach ($targetDates as $index => $date) {
+            // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
+            $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
+                ? $date
+                : \Carbon\Carbon::parse($date)->format('Y-m');
 
-        if ($lastDueDate) {
-            // ✅ If only month is provided (e.g., "2025-11"), assume the last day of that month
-            if (preg_match('/^\d{4}-\d{2}$/', $lastDueDate)) {
-                // Append last day of month
-                $carbonDate = \Carbon\Carbon::parse($lastDueDate . '-01')->endOfMonth();
+            if ($monthPart === $selectedMonth) {
+                $targetIndex = $index;
+                break;
+            }
+        }
+
+        // Use the matching month's target, else fallback to first or 0
+        $targetGiven = isset($targetValues[$targetIndex]) ? (int) $targetValues[$targetIndex] : ((int) $targetValues[0] ?? 0);
+
+        // Calculate Days Left (based on matched target_date entry)
+        $matchedDate = $targetDates[$targetIndex] ?? null;
+
+        if ($matchedDate) {
+            // ✅ Handle "YYYY-MM" (month only) or full date
+            if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
+                $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
-                // Otherwise treat it as a normal full date
-                $carbonDate = \Carbon\Carbon::parse($lastDueDate);
+                $carbonDate = \Carbon\Carbon::parse($matchedDate);
             }
 
             $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff)); // ✅ Always round up (e.g., 0.4 → 1)
+            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
         } else {
             $daysLeft = 0;
         }
+
 
         return view('reports.alljuniormonthly', compact(
             'juniorUser',
@@ -1435,32 +1455,40 @@ class CallReportController extends Controller
         $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
 
 
-        $targetValues = explode('|', $juniorUser->target ?? '');
-        $targetGiven = (int) $targetValues[0] ?? 0; // or adjust if multiple values stored
+        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
+        $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
+        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
-        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Payment Completed')
-            ->count();
-        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+        // Find index of matching month (e.g., "2025-10")
+        $targetIndex = null;
+        foreach ($targetDates as $index => $date) {
+            // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
+            $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
+                ? $date
+                : \Carbon\Carbon::parse($date)->format('Y-m');
 
-        // Calculate Days Left (based on last target_date entry)
-        $dueDates = explode('|', $juniorUser->target_date ?? '');
-        $lastDueDate = !empty($dueDates) ? end($dueDates) : null;
+            if ($monthPart === $selectedMonth) {
+                $targetIndex = $index;
+                break;
+            }
+        }
 
-        if ($lastDueDate) {
-            // ✅ If only month is provided (e.g., "2025-11"), assume the last day of that month
-            if (preg_match('/^\d{4}-\d{2}$/', $lastDueDate)) {
-                // Append last day of month
-                $carbonDate = \Carbon\Carbon::parse($lastDueDate . '-01')->endOfMonth();
+        // Use the matching month's target, else fallback to first or 0
+        $targetGiven = isset($targetValues[$targetIndex]) ? (int) $targetValues[$targetIndex] : ((int) $targetValues[0] ?? 0);
+
+        // Calculate Days Left (based on matched target_date entry)
+        $matchedDate = $targetDates[$targetIndex] ?? null;
+
+        if ($matchedDate) {
+            // ✅ Handle "YYYY-MM" (month only) or full date
+            if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
+                $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
-                // Otherwise treat it as a normal full date
-                $carbonDate = \Carbon\Carbon::parse($lastDueDate);
+                $carbonDate = \Carbon\Carbon::parse($matchedDate);
             }
 
             $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff)); // ✅ Always round up (e.g., 0.4 → 1)
+            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
         } else {
             $daysLeft = 0;
         }
@@ -1703,32 +1731,40 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        $targetValues = explode('|', $juniorUser->target ?? '');
-        $targetGiven = (int) $targetValues[0] ?? 0; // or adjust if multiple values stored
+        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
+        $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
+        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
-        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Payment Completed')
-            ->count();
-        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+        // Find index of matching month (e.g., "2025-10")
+        $targetIndex = null;
+        foreach ($targetDates as $index => $date) {
+            // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
+            $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
+                ? $date
+                : \Carbon\Carbon::parse($date)->format('Y-m');
 
-        // Calculate Days Left (based on last target_date entry)
-        $dueDates = explode('|', $juniorUser->target_date ?? '');
-        $lastDueDate = !empty($dueDates) ? end($dueDates) : null;
+            if ($monthPart === $selectedMonth) {
+                $targetIndex = $index;
+                break;
+            }
+        }
 
-        if ($lastDueDate) {
-            // ✅ If only month is provided (e.g., "2025-11"), assume the last day of that month
-            if (preg_match('/^\d{4}-\d{2}$/', $lastDueDate)) {
-                // Append last day of month
-                $carbonDate = \Carbon\Carbon::parse($lastDueDate . '-01')->endOfMonth();
+        // Use the matching month's target, else fallback to first or 0
+        $targetGiven = isset($targetValues[$targetIndex]) ? (int) $targetValues[$targetIndex] : ((int) $targetValues[0] ?? 0);
+
+        // Calculate Days Left (based on matched target_date entry)
+        $matchedDate = $targetDates[$targetIndex] ?? null;
+
+        if ($matchedDate) {
+            // ✅ Handle "YYYY-MM" (month only) or full date
+            if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
+                $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
-                // Otherwise treat it as a normal full date
-                $carbonDate = \Carbon\Carbon::parse($lastDueDate);
+                $carbonDate = \Carbon\Carbon::parse($matchedDate);
             }
 
             $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff)); // ✅ Always round up (e.g., 0.4 → 1)
+            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
         } else {
             $daysLeft = 0;
         }
