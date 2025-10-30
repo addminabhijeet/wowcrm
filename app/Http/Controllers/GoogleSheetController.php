@@ -3140,7 +3140,78 @@ class GoogleSheetController extends Controller
         }
 
         return view('database.trainer', compact('data', 'juniorUsers'));
+    }
 
+    public function trainercompleted(Request $request)
+    {
+        $authUser = Auth::user();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+
+        $query = GoogleSheetData::where(function ($q) {
+            // Removed user_id|senior check
+            // Only keep the completed part filter
+            $q->where(function ($q2) {
+                $q2->whereRaw("created_by = '0|completed'")
+                    ->orWhereRaw("created_by LIKE '0|completed:%'")
+                    ->orWhereRaw("created_by LIKE '%:0|completed'")
+                    ->orWhereRaw("created_by LIKE '%:0|completed:%'");
+            });
+        });
+
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $data = $query->orderBy('Date', 'desc')->paginate(10);
+
+        $data->getCollection()->transform(function ($item) use ($authUser) {
+
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                // Split by ':' to handle multiple forwarded entries
+                $entries = explode(':', $item->created_by);
+
+                $names = [];
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                // Join all names for forwarded chain
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+
+        if (request()->ajax()) {
+            return view('database.partials.senior_table', compact('data'))->render();
+        }
+
+        return view('database.trainercompleted', compact('data', 'juniorUsers'));
     }
 
 
@@ -3230,6 +3301,53 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
+        // --- Extract Email & Phone for uniqueness check ---
+        $email = $rowData['Email Address'] ?? $row->Email_Address;
+        $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
+        $name  = $rowData['Name'] ?? $row->Name;
+        $date  = $rowData['Date'] ?? $row->Date;
+
+        if (empty($name)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Name is required.'
+            ]);
+        }
+
+        if (empty($date)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Date is required.'
+            ]);
+        }
+        // Check for duplicate Email (ignore current record)
+        if (!empty($email)) {
+            $emailExists = GoogleSheetData::where('Email_Address', $email)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($emailExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email address already exists in records.'
+                ]);
+            }
+        }
+
+        // Check for duplicate Phone (ignore current record)
+        if (!empty($phone)) {
+            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)
+                ->where('id', '!=', $id)
+                ->exists();
+
+            if ($phoneExists) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Phone number already exists in records.'
+                ]);
+            }
+        }
+
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
@@ -3261,22 +3379,19 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Prepare update data
+        // --- Prepare update data with null defaults for empty fields ---
         $updateData = [
-            'Date' => isset($rowData['Date']) && !empty($rowData['Date']) ?
-                $this->parseDate($rowData['Date']) : null,
+            'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
-            'Email_Address' => $rowData['Email Address'] ?? null,
-            'Phone_Number' => $rowData['Phone Number'] ?? null,
+            'Email_Address' => $email, // keep original email
+            'Phone_Number' => $phone,  // keep original phone
             'Location' => $rowData['Location'] ?? null,
+            'Remark' => $rowData['Remark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
-            'Graduation_Date' => isset($rowData['Graduation Date']) && !empty($rowData['Graduation Date']) ?
-                $this->parseDate($rowData['Graduation Date']) : null,
+            'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
             'Course' => $rowData['Course'] ?? null,
-            'Amount' => isset($rowData['Amount']) ?
-                $this->parseAmount($rowData['Amount'])
-                : $row->Amount,
+            'Amount' => isset($rowData['Amount']) && $rowData['Amount'] !== '' ? $this->parseAmount($rowData['Amount']) : 469, // ✅ default 469
             'Qualification' => $rowData['Qualification'] ?? null,
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
@@ -3295,37 +3410,180 @@ class GoogleSheetController extends Controller
         if (isset($rowData['Exe Remarks'])) {
             $exeRemark = $rowData['Exe Remarks'];
 
-            if ($exeRemark === 'Ready To Paid') {
-                // Append ":0|accountant" only if not already present
-                if (strpos($updateData['created_by'], ':0|accountant') === false) {
-                    $updateData['created_by'] .= ':0|accountant';
+            if ($exeRemark === 'Training Completed') {
+                $authUser = Auth::user();
+
+                // Replace "0|trainer" with "auth_id|trainer:0|completed"
+                if (preg_match('/0\|trainer$/', $updateData['created_by'])) {
+                    $updateData['created_by'] = preg_replace(
+                        '/0\|trainer$/',
+                        $authUser->id . '|trainer:0|completed',
+                        $updateData['created_by']
+                    );
                 }
-            } elseif ($exeRemark === 'Called & Mailed') {
+
+                // Ensure ":0|completed" exists at the end if missing
+                if (strpos($updateData['created_by'], ':0|completed') === false) {
+                    $updateData['created_by'] .= ':0|completed';
+                }
+            } elseif ($exeRemark === 'Payment Completed') {
                 $tag = $id . '|trainer';
-                // Append only if created_by exactly matches the tag
-                if ($updateData['created_by'] === $tag) {
-                    $updateData['created_by'] .= ':' . $tag;
+                $zerotag = '0|trainer';
+
+                // Get the last segment after the last colon
+                $parts = explode(':', $updateData['created_by']);
+                $lastPart = end($parts);
+
+                // Append only if the last part exactly matches the tag
+                if ($lastPart === $tag) {
+                    $updateData['created_by'] .= ':' . $zerotag;
                 }
             } else {
-                // For all other remarks, apply "Revert To Junior" logic
-                $tag = $id . '|junior';
-                // Append only if tag already exists in created_by
-                if (strpos($updateData['created_by'], $tag) !== false) {
-                    $updateData['created_by'] .= ':' . $tag;
+                // For all other remarks, apply "Revert To accountant" logic
+                // Match any integer followed by "|accountant"
+                if (preg_match('/(\d+)\|accountant/', $updateData['created_by'], $matches)) {
+                    $accountantId = $matches[1]; // Extract the integer
+                    $tag = $accountantId . '|accountant';
+                    // Append only if tag already exists in created_by
+                    if (strpos($updateData['created_by'], $tag) !== false) {
+                        $updateData['created_by'] .= ':' . $tag;
+                    }
+                }
+
+                // Replace "0|trainer" with actual trainer ID (only if it ends with 0|trainer)
+                if (preg_match('/0\|trainer$/', $updateData['created_by'])) {
+                    $updateData['created_by'] = preg_replace(
+                        '/0\|trainer$/',
+                        $id . '|trainer',
+                        $updateData['created_by']
+                    );
                 }
             }
         }
 
+        foreach ($updateData as $key => $value) {
+            if ($value === '' && !in_array($key, ['Email_Address', 'Name', 'Date', 'Amount'])) {
+                $updateData[$key] = null;
+            }
+        }
 
         try {
             $row->update($updateData);
+            $user = Auth::user();
+            $mailMessage = 'No email sent.';
+            $name = $rowData['Name'] ?? null;
+            $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
+
+            // --- Send email if Exe_Remarks is "Training Completed" ---
+            if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Training Completed' && !empty($email)) {
+                try {
+                    $smtp = SmtpSetting::where('user_id', $user->id)->first();
+                    if (!$smtp) {
+                        return response()->json([
+                            'message' => 'No SMTP settings found.'
+                        ]);
+                    } else {
+                        // Configure mailer dynamically (same as test() method)
+                        config([
+                            'mail.mailers.smtp.transport' => $smtp->mailer,
+                            'mail.mailers.smtp.host' => $smtp->host,
+                            'mail.mailers.smtp.port' => $smtp->port,
+                            'mail.mailers.smtp.username' => $smtp->username,
+                            'mail.mailers.smtp.password' => decrypt($smtp->password),
+                            'mail.mailers.smtp.encryption' => $smtp->encryption,
+                            'mail.from.address' => $smtp->from_address,
+                            'mail.from.name' => $smtp->from_name,
+                        ]);
+
+                        // --- Fetch Email Template from Database ---
+                        $template = EmailTemplate::where('name', 'Called_Mailed')->first();
+
+                        if ($template) {
+                            $subject = $template->subject;
+                            $messageBody = $template->body;
+                        } else {
+                            // Fallback if template not found
+                            $subject = "Unlock Career Stability with Fortune 500 Projects !";
+                            $messageBody =
+                                "Hi {$name},\n\n" .
+                                "I hope this message finds you well.\n\n" .
+                                "My name is {$smtp->from_name}, and I’m part of the Talent Acquisition Team at Synergie Systems INC., a respected workforce development and project management firm based in Delaware. We partner with some of the most renowned Fortune 500 companies across the U.S., delivering not just staffing solutions but long-term career success.\n\n" .
+                                "After reviewing your profile, I believe you could be a strong fit for several exciting opportunities we currently have available. And more importantly, I believe we can offer you not just a job, but a career pathway built on stability, support, and growth.\n\n" .
+                                "What Makes Synergie Different?\n" .
+                                "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                "At Synergie, we understand that a fulfilling career is built on trust, purpose, and progress. That's why we go beyond recruitment—we invest in you. Our commitment is simple: to help you grow, thrive, and achieve your highest potential.\n\n" .
+                                "Here’s what you can expect when you join our community:\n\n" .
+                                "                  - Direct Project Placements with Fortune 500 and Tier 1 clients\n" .
+                                "                  - Full-time employment with Synergie—never just a short-term contract\n" .
+                                "                  - Real-world project experience with today’s most in-demand tools and technologies\n" .
+                                "                  - Dedicated support from day one: resume branding, interview prep, and onboarding guidance\n" .
+                                "                  - Zero Bond Policy—because your freedom and career choices matter\n" .
+                                "                  - Support for OPT, CPT, STEM OPT, H1B & Green Card sponsorships\n\n" .
+                                "More Than a Paycheck — A Path to Prosperity\n" .
+                                "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                "We believe that when you bring value, you deserve to be valued. That’s why we offer a transparent, competitive compensation structure designed to reward your dedication and drive.\n\n" .
+                                "                  - Full-Time Roles: \$40–\$50/hr\n" .
+                                "                  - Part-Time Roles: \$15–\$25/hr\n" .
+                                "                  - Paid Internships available\n" .
+                                "                  - 15% Salary Raise every 6 months based on performance\n" .
+                                "                  - 12 Days Paid Vacation annually\n" .
+                                "                  - Relocation Assistance for client deployments\n\n" .
+                                "Comprehensive Benefits That Put You First\n" .
+                                "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                "At Synergie, we care for your career—and your well-being. We provide:\n\n" .
+                                "                  - Health, Dental & Vision Insurance\n" .
+                                "                  - Short- & Long-Term Disability Insurance\n" .
+                                "                  - Life Insurance & 401(k) Retirement Plan\n" .
+                                "                  - Legal & Immigration Support\n" .
+                                "                  - Tax Assistance & Transparent Payroll\n" .
+                                "                  - Workers’ Compensation—your safety is our priority\n\n" .
+                                "Support Tailored for International Talent\n" .
+                                "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                "We take pride in guiding hundreds of F1/OPT/CPT/STEM OPT professionals every year toward long-term success in the U.S.:\n\n" .
+                                "                  - Offer Letters, Client Confirmations & Employer Letters\n" .
+                                "                  - Full STEM Extension & OPT/CPT Support\n" .
+                                "                  - H1B Sponsorship after project onboarding\n" .
+                                "                  - Relocation & Immigration Documentation\n" .
+                                "                  - Ongoing Green Card Processing Assistance\n\n" .
+                                "Not Quite Job-Ready? We’ll Bridge That Gap\n" .
+                                "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                "Sometimes, all it takes is one last push to unlock your dream opportunity. That’s why we offer a 4-week industry-focused workshop, designed by experts with over a decade of experience to prepare you for real-world success.\n\n" .
+                                "What You’ll Gain:\n\n" .
+                                "                  - Live Zoom sessions & recorded expert sessions\n" .
+                                "                  - Real-time project simulations & hands-on assignments\n" .
+                                "                  - One-on-one resume branding & mock interviews\n" .
+                                "                  - Global Certificate of Completion & recruiter access\n" .
+                                "                  - 100% Fee Refund with your first project paycheck (Only \${$amount}—one-time, fully refundable)\n\n" .
+                                "Let’s Take the First Step Together\n" .
+                                "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                "If you’re seeking more than just another role—if you’re looking for a career that recognizes your potential, offers true support, and opens doors to the future you deserve—then Synergie is here for you.\n\n" .
+                                "This is your opportunity to move forward with confidence, backed by a team that believes in you and works tirelessly to help you succeed.\n\n" .
+                                "Please feel free to reply to this email or reach me directly over the phone if you’d like to learn more or take the next step.\n\n" .
+                                "Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.\n\n" .
+                                "Visit Our Website: https://www.synergiesystems.com/";
+                        }
+
+                        // --- Send Email (No Template Logic Changed) ---
+                        Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
+                            $message->from($smtp->from_address, $smtp->from_name)
+                                ->to($email)
+                                ->subject($subject);
+                        });
+
+                        $mailMessage = "Email sent successfully to {$email}!";
+                    }
+                } catch (\Exception $e) {
+                    $mailMessage = 'Failed to send email: ' . $e->getMessage();
+                }
+            }
 
             return response()->json([
                 'success' => true,
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => !empty($record->resume) ? true : false
+                'resume_path' => !empty($row->resume) ? true : false,
+                'mail_message' => $mailMessage
             ]);
         } catch (\Exception $e) {
             return response()->json([
