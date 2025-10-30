@@ -20,7 +20,7 @@ $script ='<script>
             </select>
 
             <!-- Search Input -->
-            <form class="navbar-search position-relative" autocomplete="off">
+            <!-- <form class="navbar-search position-relative" autocomplete="off">
                 <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control" placeholder="Search Name, Email, Phone">
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
                 <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
@@ -34,7 +34,7 @@ $script ='<script>
                     @if($junior->designation) ({{ $junior->designation }}) @endif
                 </option>
                 @endforeach
-            </select>
+            </select> -->
 
 
         </div>
