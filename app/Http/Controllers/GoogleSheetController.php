@@ -772,6 +772,38 @@ class GoogleSheetController extends Controller
         return response()->json($results);
     }
 
+    // -----------------------------
+    // AJAX Search Suggestions
+    // -----------------------------
+    public function accountantSuggestions(Request $request)
+    {
+        $authUser = Auth::user();
+        $query = $request->input('query');
+
+        $results = [];
+
+        if ($query && strlen($query) >= 3) {
+            $results = GoogleSheetData::where(function ($q) use ($authUser) {
+                $userPattern = "%:" . $authUser->id . "|senior";
+                $zeroPattern = "%:0|senior";
+
+                $q->where('created_by', $authUser->id . '|senior')
+                    ->orWhere('created_by', '0|senior')
+                    ->orWhere('created_by', 'LIKE', $userPattern)
+                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+            })
+                ->where(function ($q) use ($query) {
+                    $q->where('Name', 'LIKE', "%{$query}%")
+                        ->orWhere('Email_Address', 'LIKE', "%{$query}%")
+                        ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
+                })
+                ->limit(10)
+                ->get(['id', 'Name', 'Email_Address', 'Phone_Number']);
+        }
+
+        return response()->json($results);
+    }
+
     public function seniorfetch(Request $request)
     {
         $request->validate([
