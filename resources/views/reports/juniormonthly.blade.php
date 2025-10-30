@@ -403,6 +403,18 @@ $script = '<script>
 
 @section('content')
 
+<!-- Include html2pdf.js -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+<!-- Download PDF Button -->
+<div class="d-flex justify-content-end mb-3">
+    <button class="btn btn-danger btn-sm" id="downloadPdfBtn">
+        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
+    </button>
+</div>
+
+<!-- Wrap the main content in a container for PDF export -->
+<div id="pdfContent">
 
 <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
 
@@ -733,6 +745,24 @@ $script = '<script>
     </div>
 
 </div>
+
+</div> <!-- End of #pdfContent -->
+
+<!-- Script to handle PDF download -->
+<script>
+document.getElementById("downloadPdfBtn").addEventListener("click", function () {
+    const element = document.getElementById("pdfContent");
+    const opt = {
+        margin:       0.5,
+        filename:     'page-report.pdf',
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
+        jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+    };
+    html2pdf().set(opt).from(element).save();
+});
+</script>
+
 
 
     @endsection
