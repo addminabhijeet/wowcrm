@@ -19,24 +19,6 @@ $script ='<script>
                 <option>10</option>
             </select>
 
-            <!-- Search Input -->
-            <!-- <form class="navbar-search position-relative" autocomplete="off">
-                <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control" placeholder="Search Name, Email, Phone">
-                <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
-                <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
-            </form>
-
-            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user" id="junior-filter">
-                <option value="">Select Junior</option>
-                @foreach ($juniorUsers as $junior)
-                <option value="{{ $junior->id }}">
-                    {{ $junior->name }}
-                    @if($junior->designation) ({{ $junior->designation }}) @endif
-                </option>
-                @endforeach
-            </select> -->
-
-
         </div>
     </div>
 
