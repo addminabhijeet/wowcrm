@@ -313,7 +313,7 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('target.all') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All User Target</a></li>
                 </ul>
             </li>
-            
+
             @endif
 
             {{-- ================= Trainer ================= --}}
@@ -345,6 +345,9 @@ $role = Auth::user()->role;
                 </a>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('google.sheet.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.trainercompleted') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All Completed</a></li>
                 </ul>
             </li>
 

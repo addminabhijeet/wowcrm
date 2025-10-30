@@ -139,6 +139,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/junior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadjuniorResume'])->name('download.resume');
 
     Route::get('/dashboard/trainer/google-sheet', [GoogleSheetController::class, 'trainer'])->name('google.sheet.trainer');
+    Route::get('/dashboard/trainer/google-sheet-completed', [GoogleSheetController::class, 'trainercompleted'])->name('google.sheet.trainercompleted');
     Route::post('/dashboard/trainer/google-sheet/fetch', [GoogleSheetController::class, 'trainerfetch'])->name('google.sheet.trainerfetch');
     Route::patch('/dashboard/trainer/google-sheet/pdfupdate/{id}', [GoogleSheetController::class, 'trainerpdfupdate'])->name('google.sheet.trainerpdfupdate');
     Route::post('/dashboard/trainer/google-sheet/pdfstore', [GoogleSheetController::class, 'trainerpdfstore'])->name('google.sheet.trainerpdfstore');
