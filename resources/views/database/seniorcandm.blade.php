@@ -173,8 +173,10 @@ $script ='<script>
 
                         {{-- Exe Remarks --}}
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Paid','VM','Busy']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
+                            @php
+                            $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Paid','VM','Busy'];
+                            @endphp
+                            <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
                                 <option value="">-- Exe Remarks --</option>
                                 @foreach($exeOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
@@ -183,6 +185,7 @@ $script ='<script>
                                 @endforeach
                             </select>
                         </td>
+
 
                         {{-- 1st Follow Up Remarks --}}
                         <td>
