@@ -3211,7 +3211,7 @@ class GoogleSheetController extends Controller
             return view('database.partials.senior_table', compact('data'))->render();
         }
 
-        return view('database.trainercompleted', compact('data'));
+        return view('database.trainercomplete', compact('data'));
     }
 
 
