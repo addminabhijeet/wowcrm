@@ -171,8 +171,10 @@ $script ='<script>
 
                         {{-- Exe Remarks --}}
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Connect','Others','N/A','VM','Busy']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
+                            @php
+                            $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Paid','VM','Busy'];
+                            @endphp
+                            <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
                                 <option value="">-- Exe Remarks --</option>
                                 @foreach($exeOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
@@ -181,6 +183,7 @@ $script ='<script>
                                 @endforeach
                             </select>
                         </td>
+
 
                         {{-- 1st Follow Up Remarks --}}
                         <td>
@@ -1098,60 +1101,62 @@ $script ='<script>
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-    // Get CSRF token from meta tag
-    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get CSRF token from meta tag
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-    // Attach input listener for dynamically added rows too
-    document.addEventListener('input', function (e) {
-        if (e.target.matches('.email-input')) {
-            const input = e.target;
-            const email = input.value.trim();
-            const hint = input.nextElementSibling;
+        // Attach input listener for dynamically added rows too
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('.email-input')) {
+                const input = e.target;
+                const email = input.value.trim();
+                const hint = input.nextElementSibling;
 
-            // Basic email validation before checking DB
-            if (email.length < 5 || !email.includes('@')) {
-                hint.textContent = '';
-                input.classList.remove('is-invalid', 'is-valid');
-                return;
+                // Basic email validation before checking DB
+                if (email.length < 5 || !email.includes('@')) {
+                    hint.textContent = '';
+                    input.classList.remove('is-invalid', 'is-valid');
+                    return;
+                }
+
+                // Debounce to avoid excessive requests
+                clearTimeout(input._emailCheckTimer);
+                input._emailCheckTimer = setTimeout(() => {
+
+                    fetch("{{ route('check.uniqueemail') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({
+                                email: email
+                            })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.exists) {
+                                input.classList.add('is-invalid');
+                                input.classList.remove('is-valid');
+                                hint.textContent = 'This email already exists in the database.';
+                                hint.style.color = 'red';
+                            } else {
+                                input.classList.remove('is-invalid');
+                                input.classList.add('is-valid');
+                                hint.textContent = 'Email available.';
+                                hint.style.color = 'green';
+                            }
+                        })
+                        .catch(error => {
+                            console.error('Email check failed:', error);
+                            hint.textContent = '⚠️ Server error. Try again.';
+                            hint.style.color = 'orange';
+                        });
+
+                }, 500); // 500ms debounce
             }
-
-            // Debounce to avoid excessive requests
-            clearTimeout(input._emailCheckTimer);
-            input._emailCheckTimer = setTimeout(() => {
-
-                fetch("{{ route('check.uniqueemail') }}", {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken
-                    },
-                    body: JSON.stringify({ email: email })
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (data.exists) {
-                        input.classList.add('is-invalid');
-                        input.classList.remove('is-valid');
-                        hint.textContent = 'This email already exists in the database.';
-                        hint.style.color = 'red';
-                    } else {
-                        input.classList.remove('is-invalid');
-                        input.classList.add('is-valid');
-                        hint.textContent = 'Email available.';
-                        hint.style.color = 'green';
-                    }
-                })
-                .catch(error => {
-                    console.error('Email check failed:', error);
-                    hint.textContent = '⚠️ Server error. Try again.';
-                    hint.style.color = 'orange';
-                });
-
-            }, 500); // 500ms debounce
-        }
+        });
     });
-});
 </script>
 
 
