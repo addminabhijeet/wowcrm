@@ -559,9 +559,9 @@ class DashboardController extends Controller
     public function targetSave(Request $request, $id)
     {
         $validated = $request->validate([
-            'target' => 'required|integer',
-            'target_date' => 'required|date|after:target_date',
-            'index' => 'nullable'
+            'target' => 'required|integer|min:1',
+            'target_date' => 'required|date',
+            'index' => 'nullable|integer'
         ]);
 
         $user = User::findOrFail($id);
@@ -570,9 +570,9 @@ class DashboardController extends Controller
         $targets = $user->target ? array_map('trim', explode('|', $user->target)) : [];
         $targetDates = $user->target_date ? array_map('trim', explode('|', $user->target_date)) : [];
 
-        // If editing an existing index
+        // ✅ Edit existing target (if index provided)
         if ($request->filled('index')) {
-            $index = (int)$request->index;
+            $index = (int) $request->index;
 
             if (!isset($targets[$index])) {
                 return back()->with('error', 'Invalid target index.');
@@ -580,12 +580,14 @@ class DashboardController extends Controller
 
             $targets[$index] = $validated['target'];
             $targetDates[$index] = $validated['target_date'];
-        } else {
-            // Add new entry at the end
+        }
+        // ✅ Add new target if no index is passed
+        else {
             $targets[] = $validated['target'];
             $targetDates[] = $validated['target_date'];
         }
 
+        // ✅ Update user targets and target_dates
         $user->update([
             'target' => implode(' | ', $targets),
             'target_date' => implode(' | ', $targetDates),
@@ -593,12 +595,11 @@ class DashboardController extends Controller
 
         return redirect()->back()->with('success', 'Target saved successfully!');
     }
-
+    
     public function targetDelete(Request $request, $id)
     {
         $user = User::findOrFail($id);
-
-        $index = (int)$request->input('index');
+        $index = (int) $request->index;
 
         $targets = $user->target ? array_map('trim', explode('|', $user->target)) : [];
         $targetDates = $user->target_date ? array_map('trim', explode('|', $user->target_date)) : [];
@@ -607,20 +608,18 @@ class DashboardController extends Controller
             return back()->with('error', 'Invalid target index.');
         }
 
-        // Remove selected index
-        unset($targets[$index], $targetDates[$index], $dueDates[$index]);
+        unset($targets[$index]);
+        unset($targetDates[$index]);
 
-        // Reindex arrays
-        $targets = array_values($targets);
-        $targetDates = array_values($targetDates);
-
+        // Reindex arrays and update DB
         $user->update([
-            'target' => implode(' | ', $targets),
-            'target_date' => implode(' | ', $targetDates),
+            'target' => implode(' | ', array_values($targets)),
+            'target_date' => implode(' | ', array_values($targetDates)),
         ]);
 
         return redirect()->back()->with('success', 'Target deleted successfully!');
     }
+
 
     public function add()
     {
