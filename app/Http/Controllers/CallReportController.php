@@ -1923,7 +1923,11 @@ class CallReportController extends Controller
             'targetGiven',
             'targetAchieved',
             'targetYetToAchieve',
-            'daysLeft'
+            'daysLeft',
+            'presentDays',
+            'absentDays',
+            'workingDays',
+            'nonWorkingDays'
         ));
     }
 }
