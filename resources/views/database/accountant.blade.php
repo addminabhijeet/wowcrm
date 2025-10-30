@@ -729,10 +729,10 @@ $script ='<script>
                 // Determine URL and method
                 let url, method;
                 if (id === "new") {
-                    url = "{{ route('seniorstore') }}";
+                    url = "{{ route('accountantstore') }}";
                     method = "POST";
                 } else {
-                    url = "{{ route('seniorupdate') }}";
+                    url = "{{ route('accountantupdate') }}";
                     method = "POST";
                     formData.append("id", id);
                 }
@@ -924,7 +924,7 @@ $script ='<script>
         // -----------------------------
         function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
             $.ajax({
-                url: "{{ route('google.sheet.senior') }}",
+                url: "{{ route('google.sheet.accountant') }}",
                 type: 'GET',
                 data: {
                     search,
@@ -955,7 +955,7 @@ $script ='<script>
             }
 
             $.ajax({
-                url: "{{ route('senior.suggestions') }}",
+                url: "{{ route('accountant.suggestions') }}",
                 type: 'GET',
                 data: {
                     query
@@ -1261,7 +1261,7 @@ $script ='<script>
         let juniorId = this.value;
         let search = document.getElementById('senior-search').value;
 
-        fetch("{{ route('google.sheet.senior') }}?junior_user=" + juniorId + "&search=" + search, {
+        fetch("{{ route('google.sheet.accountant') }}?junior_user=" + juniorId + "&search=" + search, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
