@@ -842,6 +842,69 @@ $script = '<script>
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", function() {
             const element = document.getElementById("pdfContent");
+
+            // ✅ Clone the element so we can safely modify styles
+            const clonedElement = element.cloneNode(true);
+
+            // ✅ Add the bold black & white print style dynamically
+            const printStyle = document.createElement("style");
+            printStyle.textContent = `
+            * {
+                color: #000 !important;
+                box-shadow: none !important;
+                text-shadow: none !important;
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+            body { background: #fff !important; }
+            h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
+                color: #000 !important;
+                font-weight: 800 !important;
+            }
+            .card {
+                background: #fff !important;
+                border: 2px solid #000 !important;
+                color: #000 !important;
+            }
+            table, th, td {
+                border: 2px solid #000 !important;
+                color: #000 !important;
+                font-weight: 800 !important;
+                background: #fff !important;
+            }
+            .badge {
+                background: #ddd !important;
+                color: #000 !important;
+                font-weight: 900 !important;
+                border: 2px solid #000 !important;
+                padding: 4px 8px !important;
+            }
+            i, iconify-icon {
+                color: #000 !important;
+                filter: grayscale(100%) contrast(200%) !important;
+            }
+            h3, h4, h5 {
+                font-size: 1.3em !important;
+                font-weight: 900 !important;
+            }
+            input, select, label {
+                color: #000 !important;
+                border: 1px solid #000 !important;
+                font-weight: 800 !important;
+            }
+            #semiCircleGauge, #areaChart, #dailyIconBarChart {
+                border: 2px solid #000 !important;
+                background: #fff !important;
+                min-height: 80px;
+            }
+            .card-body, .row, .col {
+                padding: 10px !important;
+                margin: 0 !important;
+            }
+        `;
+            clonedElement.prepend(printStyle);
+
+            // Original scaling logic preserved
             const elementWidth = element.scrollWidth;
             const elementHeight = element.scrollHeight;
             const a4WidthPx = 1175;
@@ -875,24 +938,13 @@ $script = '<script>
                 },
             };
 
+            // ✅ Use cloned element with print style for pdf
             html2pdf()
                 .set(opt)
-                .from(element)
+                .from(clonedElement)
                 .toPdf()
-                .get('pdf')
-                .then(function(pdf) {
-                    const pageWidth = pdf.internal.pageSize.getWidth();
-                    const pageHeight = pdf.internal.pageSize.getHeight();
-                    const contentWidth = elementWidth * scale;
-                    const contentHeight = elementHeight * scale;
-
-                    const offsetX = margin + (innerWidth - contentWidth) / 2;
-                    const offsetY = margin + (innerHeight - contentHeight) / 2;
-
-                    pdf.internal.scaleFactor = 1 / scale;
-                    pdf.internal.write(10, offsetY, '');
-                })
                 .save();
         });
     </script>
+
     @endsection
