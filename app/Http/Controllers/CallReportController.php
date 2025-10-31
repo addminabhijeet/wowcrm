@@ -1147,33 +1147,56 @@ class CallReportController extends Controller
 
             $workingDays++;
 
-            // Sort by time for duration calculation
+            // Sort earliest first
             $sorted = $dailyEvents->sortBy('event_time')->values();
+
+            // --- Match JS Logic: Active work starts only after "start" event ---
+            $startSeen = false;
+            $activeWorkSec = 0;
             $totalBreakSec = 0;
             $lastPause = null;
 
-            foreach ($sorted as $event) {
+            for ($i = 0; $i < $sorted->count(); $i++) {
+                $event = $sorted[$i];
+                $title = strtolower($event->status ?? '');
                 $pauseType = strtolower($event->pause_type ?? '');
                 $eventTime = Carbon::parse($event->event_time);
 
+                // Mark when "start" is seen
+                if ($title === 'start') {
+                    $startSeen = true;
+                }
+
+                if (!$startSeen) continue; // Ignore events before "start"
+
+                // Handle pauses just like JS
                 if ($pauseType === 'inactive') {
                     $lastPause = $eventTime;
                 } elseif (in_array($pauseType, ['resume', 'running']) && $lastPause) {
                     $totalBreakSec += $eventTime->diffInSeconds($lastPause);
                     $lastPause = null;
                 }
+
+                // Calculate duration to next event
+                if ($i < $sorted->count() - 1) {
+                    $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
+                    $duration = max(0, $nextEventTime->diffInSeconds($eventTime));
+
+                    // Active events (login, logout, start, resume, running)
+                    if (in_array($title, ['login', 'logout', 'start', 'resume', 'running'])) {
+                        $activeWorkSec += $duration;
+                    }
+                }
             }
 
-            $startTime = Carbon::parse($sorted->first()->event_time);
-            $endTime   = Carbon::parse($sorted->last()->event_time);
-            $totalWorkSec = max(0, $endTime->diffInSeconds($startTime) - $totalBreakSec);
-
-            if ($totalWorkSec >= 8 * 3600) {
+            // --- 8-hour check (28800 seconds) ---
+            if ($activeWorkSec >= 8 * 3600) {
                 $presentDays++;
             } else {
                 $absentDays++;
             }
         }
+
 
         return view('reports.alljuniormonthly', compact(
             'juniorUser',
