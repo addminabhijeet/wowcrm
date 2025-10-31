@@ -1147,6 +1147,12 @@ class CallReportController extends Controller
 
             $workingDays++;
 
+            // ✅ Auto-present rule: If any event has pause_type = 'start'
+            if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
+                $presentDays++;
+                continue; // Skip further processing for this day
+            }
+
             // Sort earliest first
             $sorted = $dailyEvents->sortBy('event_time')->values();
 
@@ -1194,7 +1200,6 @@ class CallReportController extends Controller
                 $absentDays++;
             }
         }
-
 
 
 
