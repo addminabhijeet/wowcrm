@@ -841,15 +841,15 @@ $script = '<script>
     </div>
 </div>
 <script>
-    document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-        const element = document.getElementById("pdfContent");
+document.getElementById("downloadPdfBtn").addEventListener("click", async function () {
+    const element = document.getElementById("pdfContent");
 
-        // ✅ Clone element for clean styling
-        const clonedElement = element.cloneNode(true);
+    // ✅ Clone element to apply isolated print styles
+    const clonedElement = element.cloneNode(true);
 
-        // ✅ Add black & white print style dynamically
-        const printStyle = document.createElement("style");
-        printStyle.textContent = `
+    // ✅ Add black & white print style dynamically (for PDF only)
+    const printStyle = document.createElement("style");
+    printStyle.textContent = `
         * {
             color: #000 !important;
             box-shadow: none !important;
@@ -857,7 +857,7 @@ $script = '<script>
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
         }
-        body { background: #fff !important; }
+        body { background: #fff !important; margin: 0 !important; }
         h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
             color: #000 !important;
             font-weight: 800 !important;
@@ -892,69 +892,51 @@ $script = '<script>
         #semiCircleGauge, #areaChart, #dailyIconBarChart {
             border: 2px solid #000 !important;
             background: #fff !important;
-            min-height: 80px;
+            min-height: 80px !important;
         }
         .card-body, .row, .col {
             padding: 10px !important;
             margin: 0 !important;
         }
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
     `;
-        clonedElement.prepend(printStyle);
+    clonedElement.prepend(printStyle);
 
-        // ✅ Wait for assets to fully load
-        await new Promise(resolve => setTimeout(resolve, 400));
+    // ✅ Wait for a short time to ensure all assets/styles load
+    await new Promise(resolve => setTimeout(resolve, 500));
 
-        // ✅ A4 size in px at 96 DPI (portrait)
-        const a4WidthPx = 794;
-        const a4HeightPx = 1123;
+    // ✅ Proper A4 PDF dimensions in pixels
+    const a4WidthPx = 1175;
+    const a4HeightPx = Math.round(a4WidthPx * 1.4142);
 
-        // ✅ Measure full content size
-        const contentWidth = clonedElement.scrollWidth;
-        const contentHeight = clonedElement.scrollHeight;
+    // ✅ PDF generation options (optimized for full A4 coverage)
+    const opt = {
+        margin: [0, 0, 0, 0],
+        filename: 'monthly-report.pdf',
+        image: { type: 'jpeg', quality: 0.98 },
+        html2canvas: {
+            scale: 3,
+            useCORS: true,
+            scrollY: 0,
+            backgroundColor: "#ffffff",
+            logging: false,
+            letterRendering: true,
+        },
+        jsPDF: {
+            unit: 'px',
+            format: [a4WidthPx, a4HeightPx],
+            orientation: 'portrait',
+        },
+        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
+    };
 
-        // ✅ Calculate scale to fit content within A4 size
-        const scale = Math.min(a4WidthPx / contentWidth, a4HeightPx / contentHeight);
-
-        // ✅ PDF generation configuration
-        const opt = {
-            margin: 0,
-            filename: 'monthly-report.pdf',
-            image: {
-                type: 'jpeg',
-                quality: 1
-            },
-            html2canvas: {
-                scale: 3,
-                useCORS: true,
-                scrollY: 0,
-                backgroundColor: "#ffffff",
-                logging: false,
-                letterRendering: true,
-            },
-            jsPDF: {
-                unit: 'px',
-                format: [a4WidthPx, a4HeightPx],
-                orientation: 'portrait',
-            },
-            pagebreak: {
-                mode: ['avoid-all', 'css', 'legacy']
-            },
-        };
-
-        // ✅ Apply transform scale for perfect fit
-        clonedElement.style.transformOrigin = "top left";
-        clonedElement.style.transform = `scale(${scale})`;
-
-        // ✅ Wrap inside container to preserve layout
-        const wrapper = document.createElement("div");
-        wrapper.style.width = a4WidthPx + "px";
-        wrapper.style.height = a4HeightPx + "px";
-        wrapper.style.overflow = "hidden";
-        wrapper.appendChild(clonedElement);
-
-        // ✅ Generate and download the PDF
-        await html2pdf().set(opt).from(wrapper).save();
-    });
+    // ✅ Generate the full-page PDF
+    await html2pdf().set(opt).from(clonedElement).save();
+});
 </script>
+
 
 @endsection
