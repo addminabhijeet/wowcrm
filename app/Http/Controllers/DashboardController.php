@@ -60,11 +60,162 @@ class DashboardController extends Controller
             $button_status     = $timer->button_status ?? 1;
         }
 
+        // ==============================
+        // ADDITIONAL MONTHLY DATA SECTION
+        // ==============================
+        $juniorUser = $user;
+        $createdByKey = "{$juniorUser->id}|junior";
+
+        $selectedMonth = date('Y-m');
+        [$year, $month] = explode('-', $selectedMonth);
+
+        // --- TARGET LOGIC (same as monthly) ---
+        $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
+        $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+
+        $targetIndex = null;
+        foreach ($targetDates as $index => $date) {
+            $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
+                ? $date
+                : \Carbon\Carbon::parse($date)->format('Y-m');
+
+            if ($monthPart === $selectedMonth) {
+                $targetIndex = $index;
+                break;
+            }
+        }
+
+        $targetGiven = isset($targetValues[$targetIndex])
+            ? (int) $targetValues[$targetIndex]
+            : ((int) ($targetValues[0] ?? 0));
+
+        $matchedDate = $targetDates[$targetIndex] ?? null;
+        if ($matchedDate) {
+            if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
+                $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
+            } else {
+                $carbonDate = \Carbon\Carbon::parse($matchedDate);
+            }
+
+            $diff = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff));
+        } else {
+            $daysLeft = 0;
+        }
+
+        $targetAchieved = \App\Models\GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Payment Completed')
+            ->count();
+
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+
+        // --- ATTENDANCE LOGIC ---
+        $events = \App\Models\UserTimerPause::where('user_id', $juniorUser->id)
+            ->whereYear('event_time', $year)
+            ->whereMonth('event_time', $month)
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        $groupedEvents = $events->groupBy(function ($event) {
+            return \Carbon\Carbon::parse($event->event_time)->format('Y-m-d');
+        });
+
+        $startOfMonth = \Carbon\Carbon::create($year, $month, 1);
+        $endOfMonth   = $startOfMonth->copy()->endOfMonth();
+        $daysInMonth  = \Carbon\CarbonPeriod::create($startOfMonth, $endOfMonth);
+
+        $presentDays = 0;
+        $halfDays = 0;
+        $absentDays = 0;
+        $workingDays = 0;
+        $nonWorkingDays = 0;
+
+        foreach ($daysInMonth as $day) {
+            $dateStr = $day->format('Y-m-d');
+            $dailyEvents = $groupedEvents->get($dateStr, collect());
+
+            if ($day->isWeekend()) {
+                $nonWorkingDays++;
+                continue;
+            }
+
+            if ($dailyEvents->isEmpty()) {
+                $absentDays++;
+                $workingDays++;
+                continue;
+            }
+
+            $workingDays++;
+
+            if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
+                $presentDays++;
+                continue;
+            }
+
+            $sorted = $dailyEvents->sortBy('event_time')->values();
+
+            $startSeen = false;
+            $activeWorkSec = 0;
+            $totalBreakSec = 0;
+            $lastPauseTime = null;
+
+            for ($i = 0; $i < $sorted->count(); $i++) {
+                $event = $sorted[$i];
+                $title = strtolower($event->status ?? '');
+                $pauseType = strtolower($event->pause_type ?? '');
+                $eventName = $title ?: $pauseType;
+                $eventTime = \Carbon\Carbon::parse($event->event_time);
+
+                if ($eventName === 'start') {
+                    $startSeen = true;
+                }
+
+                if (!$startSeen) continue;
+
+                if ($pauseType === 'inactive') {
+                    $lastPauseTime = $eventTime;
+                } elseif (in_array($pauseType, ['resume', 'running']) && $lastPauseTime) {
+                    $totalBreakSec += $eventTime->diffInSeconds($lastPauseTime);
+                    $lastPauseTime = null;
+                }
+
+                if ($i < $sorted->count() - 1) {
+                    $nextEventTime = \Carbon\Carbon::parse($sorted[$i + 1]->event_time);
+                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
+
+                    if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
+                        $activeWorkSec += $durationSec;
+                    }
+                }
+            }
+
+            if ($activeWorkSec >= (8 * 3600)) {
+                $presentDays++;
+            } elseif ($activeWorkSec >= (4 * 3600)) {
+                $halfDays++;
+            } else {
+                $absentDays++;
+            }
+        }
+
+        // ==============================
+        // RETURN TO DASHBOARD
+        // ==============================
         return view('dashboard.junior', compact(
             'remaining_seconds',
             'elapsed_seconds',
             'status',
-            'button_status'
+            'button_status',
+            'targetGiven',
+            'targetAchieved',
+            'targetYetToAchieve',
+            'daysLeft',
+            'presentDays',
+            'absentDays',
+            'workingDays',
+            'nonWorkingDays'
         ));
     }
 
@@ -157,7 +308,7 @@ class DashboardController extends Controller
                 'status'            => 'running',
                 'pause_type'        => 'resume',
             ];
-            
+
             if ($user->role === 'senior') {
                 $timerData['button_status'] = '1';
             }
