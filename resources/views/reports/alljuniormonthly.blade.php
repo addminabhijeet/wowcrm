@@ -757,18 +757,19 @@ $script = '<script>
             const elementWidth = element.scrollWidth;
             const elementHeight = element.scrollHeight;
 
-            // A4 paper size in pixels at 96 DPI
-            const a4WidthPx = 1240; // A4 width at 150 DPI
-            const a4HeightPx = 1754; // A4 height at 150 DPI
-
+            // A4 paper size in pixels at 150 DPI
+            const a4WidthPx = 1240;
+            const a4HeightPx = 1754;
 
             // Calculate scale to fit entire content on a single page
             const scaleX = a4WidthPx / elementWidth;
             const scaleY = a4HeightPx / elementHeight;
             const scale = Math.min(scaleX, scaleY, 1); // prevent upscaling
 
+            const margin = 40; // ✅ Equal margin on all four sides (in px)
+
             const opt = {
-                margin: 0,
+                margin: margin, // ✅ Apply uniform margin
                 filename: 'monthly-report.pdf',
                 image: {
                     type: 'jpeg',
@@ -795,17 +796,22 @@ $script = '<script>
                 .toPdf()
                 .get('pdf')
                 .then(function(pdf) {
-                    // Scale and center content on a single page
+                    // Center the scaled content with margin accounted for
                     const pageWidth = pdf.internal.pageSize.getWidth();
                     const pageHeight = pdf.internal.pageSize.getHeight();
-                    const offsetX = (pageWidth - elementWidth * scale) / 2;
-                    const offsetY = (pageHeight - elementHeight * scale) / 2;
+                    const contentWidth = elementWidth * scale;
+                    const contentHeight = elementHeight * scale;
+
+                    const offsetX = (pageWidth - contentWidth) / 2;
+                    const offsetY = (pageHeight - contentHeight) / 2;
+
                     pdf.internal.scaleFactor = 1 / scale;
-                    pdf.internal.write(10, offsetY, '');
+                    pdf.internal.write(10, offsetY + margin, '');
                 })
                 .save();
         });
     </script>
+
 
 
 
