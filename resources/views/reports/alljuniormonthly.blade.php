@@ -656,7 +656,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Working Days</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Working Days</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $workingDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
