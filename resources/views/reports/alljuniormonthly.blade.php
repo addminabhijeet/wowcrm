@@ -965,6 +965,18 @@ $script = '<script>
                 mode: ['avoid-all', 'css', 'legacy']
             }
         };
+        
+        // Convert Iconify icons to inline SVG images for html2canvas visibility
+        clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
+            const svg = document.createElement("img");
+            const iconName = icon.getAttribute("icon");
+            svg.src = `https://api.iconify.design/${iconName}.svg?color=%23000`;
+            svg.width = 34;
+            svg.height = 34;
+            svg.style.filter = "contrast(250%) brightness(0%)";
+            icon.replaceWith(svg);
+        });
+
 
         // ✅ Generate the full-page PDF
         await html2pdf().set(opt).from(clonedElement).save();
