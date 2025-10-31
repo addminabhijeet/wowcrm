@@ -1196,7 +1196,7 @@ class CallReportController extends Controller
             }
 
             // --- Apply 8-hour threshold ---
-            if ($activeWorkSec >= (8 * 3600)) {
+            if ($activeWorkSec >= (7 * 3600)) {
                 $presentDays++;
             } else {
                 $absentDays++;
