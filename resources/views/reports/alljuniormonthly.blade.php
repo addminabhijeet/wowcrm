@@ -402,6 +402,89 @@ $script = '<script>
 @endphp
 
 @section('content')
+<style>
+    /* --- Print Optimization for Black & White Clarity --- */
+    @media print {
+
+        /* General reset */
+        * {
+            color: #000 !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+        }
+
+        body {
+            background: #fff !important;
+        }
+
+        /* Remove gradients and set high contrast borders */
+        .card {
+            background: #fff !important;
+            border: 1px solid #000 !important;
+        }
+
+        /* Make table borders clear */
+        table,
+        th,
+        td {
+            border: 1px solid #000 !important;
+            color: #000 !important;
+        }
+
+        /* Badge visibility (make it solid grayscale) */
+        .badge {
+            background: #ddd !important;
+            color: #000 !important;
+            border: 1px solid #000 !important;
+        }
+
+        /* Remove background gradients or colors from metrics cards */
+        [style*="background: linear-gradient"],
+        [style*="background-color"] {
+            background: #fff !important;
+        }
+
+        /* Make icons grayscale and visible */
+        iconify-icon,
+        i {
+            color: #000 !important;
+            filter: grayscale(100%) !important;
+        }
+
+        /* Emphasize headers and titles */
+        h3,
+        h4,
+        h5,
+        p,
+        small,
+        label,
+        span {
+            color: #000 !important;
+        }
+
+        /* Ensure charts and other visuals are visible */
+        #semiCircleGauge,
+        #areaChart,
+        #dailyIconBarChart {
+            border: 1px solid #000 !important;
+            background: #fff !important;
+        }
+
+        /* Improve layout readability */
+        .card-body {
+            background: #fff !important;
+            color: #000 !important;
+        }
+
+        /* Remove hover effects on print */
+        [onmouseover],
+        [onmouseout] {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+    }
+</style>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <div class="d-flex justify-content-end mb-3">
     <button class="btn btn-danger btn-sm" id="downloadPdfBtn">
