@@ -108,17 +108,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                 <span class="text-sm fw-semibold py-6 px-12 bg-neutral-500 rounded-pill text-white line-height-1 ms-12 notification-alert">35</span>
                             </button>
                         </li>
-                        <!-- <li class="nav-item" role="presentation">
-                                        <button class="nav-link d-flex align-items-center" id="pills-recent-leads-tab" data-bs-toggle="pill" data-bs-target="#pills-recent-leads" type="button" role="tab" aria-controls="pills-recent-leads" aria-selected="false" tabindex="-1">
-                                            Latest Subscribe
-                                            <span class="text-sm fw-semibold py-6 px-12 bg-neutral-500 rounded-pill text-white line-height-1 ms-12 notification-alert">35</span>
-                                        </button>
-                                    </li> -->
                     </ul>
-                    <!-- <a  href="javascript:void(0)" class="text-primary-600 hover-text-primary d-flex align-items-center gap-1">
-                                    View All
-                                    <iconify-icon icon="solar:alt-arrow-right-linear" class="icon"></iconify-icon>
-                                </a> -->
                 </div>
 
                 <div class="tab-content" id="pills-tabContent">
@@ -175,132 +165,9 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                             </table>
                         </div>
                     </div>
-                    <!-- <div class="tab-pane fade" id="pills-recent-leads" role="tabpanel" aria-labelledby="pills-recent-leads-tab" tabindex="0">
-                                    <div class="table-responsive scroll-sm">
-                                        <table class="table bordered-table sm-table mb-0">
-                                            <thead>
-                                                <tr>
-                                                    <th scope="col">Users </th>
-                                                    <th scope="col">Registered On</th>
-                                                    <th scope="col">Plan</th>
-                                                    <th scope="col" class="text-center">Status</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('assets/images/users/user1.png') }}" alt="" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
-                                                            <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">Dianne Russell</h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">redaniel@gmail.com</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>27 Mar 2024</td>
-                                                    <td>Free</td>
-                                                    <td class="text-center">
-                                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('assets/images/users/user2.png') }}" alt="" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
-                                                            <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">Wade Warren</h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">xterris@gmail.com</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>27 Mar 2024</td>
-                                                    <td>Basic</td>
-                                                    <td class="text-center">
-                                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('assets/images/users/user3.png') }}" alt="" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
-                                                            <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">Albert Flores</h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">seannand@mail.ru</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>27 Mar 2024</td>
-                                                    <td>Standard</td>
-                                                    <td class="text-center">
-                                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('assets/images/users/user4.png') }}" alt="" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
-                                                            <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">Bessie Cooper </h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">igerrin@gmail.com</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>27 Mar 2024</td>
-                                                    <td>Business</td>
-                                                    <td class="text-center">
-                                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
-                                                    </td>
-                                                </tr>
-                                                <tr>
-                                                    <td>
-                                                        <div class="d-flex align-items-center">
-                                                            <img src="{{ asset('assets/images/users/user5.png') }}" alt="" class="w-40-px h-40-px rounded-circle flex-shrink-0 me-12 overflow-hidden">
-                                                            <div class="flex-grow-1">
-                                                                <h6 class="text-md mb-0 fw-medium">Arlene McCoy</h6>
-                                                                <span class="text-sm text-secondary-light fw-medium">fellora@mail.ru</span>
-                                                            </div>
-                                                        </div>
-                                                    </td>
-                                                    <td>27 Mar 2024</td>
-                                                    <td>Enterprise </td>
-                                                    <td class="text-center">
-                                                        <span class="bg-success-focus text-success-main px-24 py-4 rounded-pill fw-medium text-sm">Active</span>
-                                                    </td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div> -->
                 </div>
             </div>
         </div>
     </div>
 </div>
-
-
-<script>
-    const togglePassword = document.getElementById('togglePassword');
-    const passwordInput = document.getElementById('smtpPassword');
-    const eyeIcon = document.getElementById('eyeIcon');
-    const copyPassword = document.getElementById('copyPassword');
-
-    // Toggle show/hide
-    togglePassword.addEventListener('click', () => {
-        if (passwordInput.type === 'password') {
-            passwordInput.type = 'text';
-            eyeIcon.setAttribute('icon', 'mdi:eye-off-outline');
-        } else {
-            passwordInput.type = 'password';
-            eyeIcon.setAttribute('icon', 'mdi:eye-outline');
-        }
-    });
-
-    // Copy to clipboard
-    copyPassword.addEventListener('click', () => {
-        passwordInput.select();
-        passwordInput.setSelectionRange(0, 99999);
-        navigator.clipboard.writeText(passwordInput.value);
-        alert('Password copied to clipboard!');
-    });
-</script>
 @endsection
