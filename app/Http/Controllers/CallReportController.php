@@ -1140,7 +1140,6 @@ class CallReportController extends Controller
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
             if ($dailyEvents->isEmpty()) {
-                // No data → non-working day
                 $nonWorkingDays++;
                 continue;
             }
@@ -1152,48 +1151,51 @@ class CallReportController extends Controller
 
             $startSeen = false;
             $activeWorkSec = 0;
-            $lastPause = null;
             $totalBreakSec = 0;
+            $lastPauseTime = null;
 
-            // --- Loop through events ---
             for ($i = 0; $i < $sorted->count(); $i++) {
                 $event = $sorted[$i];
-                $title = strtolower($event->status ?? '');      // use 'status' for event title
+
+                // Normalize event labels like JS (some may come from `status`, some from `pause_type`)
+                $title = strtolower($event->status ?? '');
                 $pauseType = strtolower($event->pause_type ?? '');
+
+                // Determine the main event name
+                $eventName = $title ?: $pauseType;
+
                 $eventTime = Carbon::parse($event->event_time);
 
-                // --- Detect "start" event (begin tracking only after this) ---
-                if ($title === 'start') {
+                // --- JS parity: start tracking only after "start" event ---
+                if ($eventName === 'start') {
                     $startSeen = true;
                 }
 
-                if (!$startSeen) continue; // ignore before start
-
-                // --- Handle pause/resume logic ---
-                if ($pauseType === 'inactive') {
-                    $lastPause = $eventTime;
-                } elseif (in_array($pauseType, ['resume', 'running']) && $lastPause) {
-                    $totalBreakSec += $eventTime->diffInSeconds($lastPause);
-                    $lastPause = null;
+                if (!$startSeen) {
+                    continue; // Ignore anything before "start"
                 }
 
-                // --- Duration until next event ---
-                if ($i < $sorted->count() - 1) {
-                    $nextEvent = $sorted[$i + 1];
-                    $nextEventTime = Carbon::parse($nextEvent->event_time);
-                    $duration = max(0, $nextEventTime->diffInSeconds($eventTime));
+                // Handle pauses like JS
+                if ($pauseType === 'inactive') {
+                    $lastPauseTime = $eventTime;
+                } elseif (in_array($pauseType, ['resume', 'running']) && $lastPauseTime) {
+                    $totalBreakSec += $eventTime->diffInSeconds($lastPauseTime);
+                    $lastPauseTime = null;
+                }
 
-                    // Include only these event types for active work time
-                    if (in_array($title, ['login', 'logout', 'start', 'resume', 'running'])) {
-                        $activeWorkSec += $duration;
+                // Calculate duration between this and next event
+                if ($i < $sorted->count() - 1) {
+                    $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
+                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
+
+                    // Count only active events (same list as JS)
+                    if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
+                        $activeWorkSec += $durationSec;
                     }
                 }
             }
 
-            // Subtract total breaks
-            $activeWorkSec = max(0, $activeWorkSec - $totalBreakSec);
-
-            // --- Mark day as Present/Absent ---
+            // --- Apply 8-hour threshold ---
             if ($activeWorkSec >= (8 * 3600)) {
                 $presentDays++;
             } else {
