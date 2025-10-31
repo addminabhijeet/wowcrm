@@ -754,24 +754,22 @@ $script = '<script>
         document.getElementById("downloadPdfBtn").addEventListener("click", function() {
             const element = document.getElementById("pdfContent");
 
-            // Get the natural height and width of the content
+            // ✅ A4 width fixed
+            const a4WidthPx = 1175;
+            const margin = 40; // margin on all sides
+
+            // ✅ Get content size
             const elementWidth = element.scrollWidth;
             const elementHeight = element.scrollHeight;
 
-            // A4 paper size in pixels at 150 DPI
-            const a4WidthPx = 1175;
-            const a4HeightPx = 1754;
-            const margin = 40; // Equal margin on all four sides
+            // ✅ Calculate scaling based on A4 width (fit width only)
+            const scale = (a4WidthPx - margin * 2) / elementWidth;
 
-            // ✅ Available area inside margins
-            const innerWidth = a4WidthPx - margin * 2;
-            const innerHeight = a4HeightPx - margin * 2;
+            // ✅ Compute the scaled height of the content
+            const scaledHeight = elementHeight * scale;
+            const a4HeightPx = scaledHeight + margin * 2; // Adjust page height to fit content
 
-            // ✅ Calculate scale to fit entire content inside printable area
-            const scaleX = innerWidth / elementWidth;
-            const scaleY = innerHeight / elementHeight;
-            const scale = Math.min(scaleX, scaleY, 1); // prevent upscaling
-
+            // ✅ Define pdf options
             const opt = {
                 margin: margin,
                 filename: 'monthly-report.pdf',
@@ -780,7 +778,7 @@ $script = '<script>
                     quality: 1
                 },
                 html2canvas: {
-                    scale: 2, // high resolution
+                    scale: 2,
                     useCORS: true,
                     scrollY: 0,
                     backgroundColor: "#ffffff",
@@ -800,14 +798,13 @@ $script = '<script>
                 .toPdf()
                 .get('pdf')
                 .then(function(pdf) {
-                    // ✅ Center and fit scaled content within margins
+                    // ✅ Optional: ensure content centered vertically if smaller than page
                     const pageWidth = pdf.internal.pageSize.getWidth();
                     const pageHeight = pdf.internal.pageSize.getHeight();
                     const contentWidth = elementWidth * scale;
                     const contentHeight = elementHeight * scale;
-
-                    const offsetX = margin + (innerWidth - contentWidth) / 2;
-                    const offsetY = margin + (innerHeight - contentHeight) / 2;
+                    const offsetX = margin + (pageWidth - contentWidth) / 2;
+                    const offsetY = margin + (pageHeight - contentHeight) / 2;
 
                     pdf.internal.scaleFactor = 1 / scale;
                     pdf.internal.write(10, offsetY, '');
