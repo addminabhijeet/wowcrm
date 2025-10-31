@@ -1140,8 +1140,17 @@ class CallReportController extends Controller
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
-            if ($dailyEvents->isEmpty()) {
+            // ✅ Consider only Saturday/Sunday as non-working days
+            if ($day->isWeekend()) { // Saturday or Sunday
                 $nonWorkingDays++;
+                continue;
+            }
+
+            // For all other days (Mon–Fri)
+            if ($dailyEvents->isEmpty()) {
+                // ✅ No events on a working day = absent
+                $absentDays++;
+                $workingDays++;
                 continue;
             }
 
@@ -1200,6 +1209,7 @@ class CallReportController extends Controller
                 $absentDays++;
             }
         }
+
 
 
 
