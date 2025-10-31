@@ -749,6 +749,7 @@ $script = '<script>
     </div> <!-- End of #pdfContent -->
 
     <!-- Script to handle PDF download -->
+    <!-- Script to handle PDF download -->
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", function() {
             const element = document.getElementById("pdfContent");
@@ -760,16 +761,19 @@ $script = '<script>
             // A4 paper size in pixels at 150 DPI
             const a4WidthPx = 1240;
             const a4HeightPx = 1754;
+            const margin = 40; // Equal margin on all four sides
 
-            // Calculate scale to fit entire content on a single page
-            const scaleX = a4WidthPx / elementWidth;
-            const scaleY = a4HeightPx / elementHeight;
+            // ✅ Available area inside margins
+            const innerWidth = a4WidthPx - margin * 2;
+            const innerHeight = a4HeightPx - margin * 2;
+
+            // ✅ Calculate scale to fit entire content inside printable area
+            const scaleX = innerWidth / elementWidth;
+            const scaleY = innerHeight / elementHeight;
             const scale = Math.min(scaleX, scaleY, 1); // prevent upscaling
 
-            const margin = 40; // ✅ Equal margin on all four sides (in px)
-
             const opt = {
-                margin: margin, // ✅ Apply uniform margin
+                margin: margin,
                 filename: 'monthly-report.pdf',
                 image: {
                     type: 'jpeg',
@@ -777,8 +781,8 @@ $script = '<script>
                 },
                 html2canvas: {
                     scale: 2, // high resolution
-                    useCORS: true, // allow external icons/images
-                    scrollY: 0, // ignore window scroll
+                    useCORS: true,
+                    scrollY: 0,
                     backgroundColor: "#ffffff",
                     width: elementWidth,
                     height: elementHeight,
@@ -786,8 +790,8 @@ $script = '<script>
                 jsPDF: {
                     unit: 'px',
                     format: [a4WidthPx, a4HeightPx],
-                    orientation: 'portrait'
-                }
+                    orientation: 'portrait',
+                },
             };
 
             html2pdf()
@@ -796,21 +800,22 @@ $script = '<script>
                 .toPdf()
                 .get('pdf')
                 .then(function(pdf) {
-                    // Center the scaled content with margin accounted for
+                    // ✅ Center and fit scaled content within margins
                     const pageWidth = pdf.internal.pageSize.getWidth();
                     const pageHeight = pdf.internal.pageSize.getHeight();
                     const contentWidth = elementWidth * scale;
                     const contentHeight = elementHeight * scale;
 
-                    const offsetX = (pageWidth - contentWidth) / 2;
-                    const offsetY = (pageHeight - contentHeight) / 2;
+                    const offsetX = margin + (innerWidth - contentWidth) / 2;
+                    const offsetY = margin + (innerHeight - contentHeight) / 2;
 
                     pdf.internal.scaleFactor = 1 / scale;
-                    pdf.internal.write(10, offsetY + margin, '');
+                    pdf.internal.write(10, offsetY, '');
                 })
                 .save();
         });
     </script>
+
 
 
 
