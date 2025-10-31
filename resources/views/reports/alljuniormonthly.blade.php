@@ -402,22 +402,14 @@ $script = '<script>
 @endphp
 
 @section('content')
-<!-- Include html2pdf.js -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
-
-<!-- Download PDF Button -->
 <div class="d-flex justify-content-end mb-3">
     <button class="btn btn-danger btn-sm" id="downloadPdfBtn">
         <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
     </button>
 </div>
-
-<!-- Wrap the main content in a container for PDF export -->
 <div id="pdfContent">
-
     <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
-
-        <!-- Total Target Given -->
         <div class="col">
             <div class="card h-100 border-0 shadow-sm"
                 style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 20px; color: #0d47a1; transition: all 0.3s ease; cursor: pointer;"
@@ -435,8 +427,6 @@ $script = '<script>
                 </div>
             </div>
         </div>
-
-        <!-- Total Target Achieved -->
         <div class="col">
             <div class="card h-100 border-0 shadow-sm"
                 style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); border-radius: 20px; color: #6a1b9a; transition: all 0.3s ease; cursor: pointer;"
@@ -454,8 +444,6 @@ $script = '<script>
                 </div>
             </div>
         </div>
-
-        <!-- Target Yet to Achieve -->
         <div class="col">
             <div class="card h-100 border-0 shadow-sm"
                 style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
@@ -473,8 +461,6 @@ $script = '<script>
                 </div>
             </div>
         </div>
-
-        <!-- Days Left -->
         <div class="col">
             <div class="card h-100 border-0 shadow-sm"
                 style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
@@ -492,21 +478,14 @@ $script = '<script>
                 </div>
             </div>
         </div>
-
     </div>
-
-
-
     <div class="row gy-4 mt-1">
-
         <div class="col-xxl-8 col-lg-6">
             <div class="card h-100 border-0 shadow-sm radius-12">
                 <div class="card-body p-4">
-                    <!-- Header -->
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
                         <div>
                             <h5 class="fw-bold mb-1">📞 Monthly Call Report</h5>
-
                         </div>
                         <form method="GET" action="{{ route('call.reports.juniormonthly') }}" class="d-flex align-items-center gap-2">
                             <label for="selected_month" class="form-label mb-0 fw-semibold small">Select Month:</label>
@@ -518,8 +497,6 @@ $script = '<script>
                                 onchange="this.form.submit()">
                         </form>
                     </div>
-
-                    <!-- Stats Section -->
                     <div class="row g-3 mb-4">
                         <div class="col-md-4">
                             <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
@@ -555,8 +532,6 @@ $script = '<script>
                             </div>
                         </div>
                     </div>
-
-                    <!-- Table Section -->
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered align-middle mb-0">
                             <thead class="table-primary">
@@ -619,17 +594,14 @@ $script = '<script>
                                 </tr>
                             </tbody>
                         </table>
-
                     </div>
                 </div>
             </div>
         </div>
-
         <div class="col-xxl-4 col-lg-6">
             <div class="card h-100 radius-8 border-0">
                 <div class="card-body p-24">
                     <h6 class="mb-2 fw-bold text-lg">Statistic</h6>
-
                     <div class="mt-24">
                         <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div>
@@ -643,7 +615,6 @@ $script = '<script>
                                 </span>
                             </div>
                         </div>
-
                         <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div>
                                 <span class="text-secondary-light fw-normal mb-12 text-xl">Other Calls (OC)</span>
@@ -651,7 +622,6 @@ $script = '<script>
                             </div>
                             <div id="areaChart"></div>
                         </div>
-
                         <div class="d-flex align-items-center gap-1 justify-content-between">
                             <div>
                                 <span class="text-secondary-light fw-normal mb-12 text-xl">Called & Mailed Calls (C&MC)</span>
@@ -663,12 +633,7 @@ $script = '<script>
                 </div>
             </div>
         </div>
-
-
-
         <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
-
-            <!-- Total Present Days -->
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
@@ -686,8 +651,6 @@ $script = '<script>
                     </div>
                 </div>
             </div>
-
-            <!-- Total Absent Days -->
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #ffebee, #ffcdd2); border-radius: 20px; color: #c62828; transition: all 0.3s ease; cursor: pointer;"
@@ -705,8 +668,6 @@ $script = '<script>
                     </div>
                 </div>
             </div>
-
-            <!-- Working Days -->
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #fff8e1, #ffecb3); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
@@ -724,8 +685,6 @@ $script = '<script>
                     </div>
                 </div>
             </div>
-
-            <!-- Non Working Days -->
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 20px; color: #1565c0; transition: all 0.3s ease; cursor: pointer;"
@@ -743,35 +702,21 @@ $script = '<script>
                     </div>
                 </div>
             </div>
-
         </div>
-
-    </div> <!-- End of #pdfContent -->
-
-    <!-- Script to handle PDF download -->
-    <!-- Script to handle PDF download -->
+    </div> 
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", function() {
             const element = document.getElementById("pdfContent");
-
-            // Get the natural height and width of the content
             const elementWidth = element.scrollWidth;
             const elementHeight = element.scrollHeight;
-
-            // A4 paper size at 150 DPI (fixed width)
             const a4WidthPx = 1175;
-            const a4HeightPx = Math.round(a4WidthPx * 1.4142); // ✅ Maintain A4 aspect ratio (210×297 mm)
-
-            const margin = 40; // Equal margin on all four sides
-
-            // ✅ Available area inside margins
+            const a4HeightPx = Math.round(a4WidthPx * 1.4142); 
+            const margin = 40; 
             const innerWidth = a4WidthPx - margin * 2;
             const innerHeight = a4HeightPx - margin * 2;
-
-            // ✅ Calculate scale to fit entire content inside printable area
             const scaleX = innerWidth / elementWidth;
             const scaleY = innerHeight / elementHeight;
-            const scale = Math.min(scaleX, scaleY, 1); // prevent upscaling
+            const scale = Math.min(scaleX, scaleY, 1); 
 
             const opt = {
                 margin: margin,
@@ -781,7 +726,7 @@ $script = '<script>
                     quality: 1
                 },
                 html2canvas: {
-                    scale: 2, // high resolution
+                    scale: 2, 
                     useCORS: true,
                     scrollY: 0,
                     backgroundColor: "#ffffff",
@@ -801,7 +746,6 @@ $script = '<script>
                 .toPdf()
                 .get('pdf')
                 .then(function(pdf) {
-                    // ✅ Center and fit scaled content within margins
                     const pageWidth = pdf.internal.pageSize.getWidth();
                     const pageHeight = pdf.internal.pageSize.getHeight();
                     const contentWidth = elementWidth * scale;
@@ -816,11 +760,4 @@ $script = '<script>
                 .save();
         });
     </script>
-
-
-
-
-
-
-
     @endsection
