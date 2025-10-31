@@ -554,7 +554,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $targetGiven }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -571,7 +571,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $targetAchieved }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -588,7 +588,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $targetYetToAchieve }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -605,7 +605,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $daysLeft }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -622,7 +622,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Present Days</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Present Days</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $presentDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -639,7 +639,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Absent Days</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Absent Days</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $absentDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -656,7 +656,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Working Days</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Working Days</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $workingDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -673,7 +673,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Non Working Days</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Non Working Days</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $nonWorkingDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -709,7 +709,7 @@ $script = '<script>
                                     <i class="bi bi-telephone-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted d-block">Total Calls (TC)</small>
+                                    <small class="text-muted fw-bold d-block">Total Calls (TC)</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MtotalCalls }}</h4>
                                 </div>
                             </div>
@@ -720,7 +720,7 @@ $script = '<script>
                                     <i class="bi bi-bar-chart-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted d-block">Other Calls (OC)</small>
+                                    <small class="text-muted fw-bold d-block">Other Calls (OC)</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MotherCalls }}</h4>
                                 </div>
                             </div>
@@ -731,7 +731,7 @@ $script = '<script>
                                     <i class="bi bi-envelope-paper-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted d-block">Called & Mailed (C&MC)</small>
+                                    <small class="text-muted fw-bold d-block">Called & Mailed (C&MC)</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
                                 </div>
                             </div>
@@ -741,9 +741,9 @@ $script = '<script>
                         <table class="table table-hover table-bordered align-middle mb-0">
                             <thead class="table-primary">
                                 <tr>
-                                    <th class="fw-semibold">Time Range</th>
-                                    <th class="fw-semibold text-center">Called & Mailed Count</th>
-                                    <th class="fw-semibold text-center">Other Call Count</th>
+                                    <th class="fw-bold">Time Range</th>
+                                    <th class="fw-bold text-center">Called & Mailed Count</th>
+                                    <th class="fw-bold text-center">Other Call Count</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -810,7 +810,7 @@ $script = '<script>
                     <div class="mt-24">
                         <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div class="me-4">
-                                <span class="text-secondary-light fw-normal mb-12 text-xl">Total Calls (TC)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Total Calls (TC)</span>
                                 <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
                             </div>
                             <div id="semiCircleGauge" class="me-3"></div>
@@ -818,14 +818,14 @@ $script = '<script>
 
                         <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div>
-                                <span class="text-secondary-light fw-normal mb-12 text-xl">Other Calls (OC)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Other Calls (OC)</span>
                                 <h5 class="fw-semibold mb-0">{{ $MotherCalls }}</h5>
                             </div>
                             <div id="areaChart"></div>
                         </div>
                         <div class="d-flex align-items-center gap-1 justify-content-between">
                             <div>
-                                <span class="text-secondary-light fw-normal mb-12 text-xl">Called & Mailed Calls (C&MC)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Called & Mailed Calls (C&MC)</span>
                                 <h5 class="fw-semibold mb-0">{{ $McalledAndMailedCalls }}</h5>
                             </div>
                             <div id="dailyIconBarChart"></div>
