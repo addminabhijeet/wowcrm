@@ -862,6 +862,26 @@ $script = '<script>
             background: #fff !important;
             border: 2px solid #000 !important;
             color: #000 !important;
+            box-shadow: none !important;
+            transition: none !important;
+        }
+        .card[onmouseover], .card[onmouseout] {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .card-body, .row, .col {
+            background: #fff !important;
+            color: #000 !important;
+            padding: 10px !important;
+            margin: 0 !important;
+        }
+        .card-body div[style*="background-color: rgba(13,71,161"] {
+            background: #f5f5f5 !important;
+            border: 2px solid #000 !important;
+        }
+        iconify-icon, i {
+            color: #000 !important;
+            filter: grayscale(100%) contrast(250%) !important;
         }
         table, th, td {
             border: 2px solid #000 !important;
