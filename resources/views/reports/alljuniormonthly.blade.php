@@ -852,6 +852,7 @@ $script = '<script>
             text-shadow: none !important;
             -webkit-print-color-adjust: exact !important;
             print-color-adjust: exact !important;
+            filter: contrast(250%) brightness(0%) !important;
         }
         body { background: #fff !important; margin: 0 !important; }
         h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
@@ -864,12 +865,14 @@ $script = '<script>
             color: #000 !important;
             box-shadow: none !important;
             transition: none !important;
+            filter: contrast(250%) brightness(0%) !important;
         }
         table, th, td {
             border: 2px solid #000 !important;
             color: #000 !important;
             font-weight: 800 !important;
             background: #fff !important;
+            -webkit-text-stroke: 0.3px #000 !important;
         }
         .badge {
             background: #ddd !important;
@@ -877,6 +880,7 @@ $script = '<script>
             font-weight: 900 !important;
             border: 2px solid #000 !important;
             padding: 4px 8px !important;
+            filter: contrast(250%) brightness(0%) !important;
         }
         i, iconify-icon {
             color: #000 !important;
@@ -885,10 +889,12 @@ $script = '<script>
         input, select, label {
             color: #000 !important;
             font-weight: 800 !important;
+            -webkit-text-stroke: 0.2px #000 !important;
         }
         #semiCircleGauge, #areaChart, #dailyIconBarChart {
             background: #fff !important;
             min-height: 80px !important;
+            filter: contrast(250%) brightness(0%) !important;
         }
         .card-body, .row, .col {
             padding: 10px !important;
