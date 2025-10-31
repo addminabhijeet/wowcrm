@@ -905,7 +905,7 @@ $script = '<script>
             clonedElement.prepend(printStyle);
 
             // ✅ Wait extra time to ensure charts/icons/fonts load
-            await new Promise(resolve => setTimeout(resolve, 2500)); // <-- 1.5 seconds delay (increase if needed)
+            await new Promise(resolve => setTimeout(resolve, 1500)); // <-- 1.5 seconds delay (increase if needed)
 
             // PDF dimensions
             const elementWidth = element.scrollWidth;
