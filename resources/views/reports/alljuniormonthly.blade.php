@@ -840,7 +840,7 @@ $script = '<script>
         </div>
     </div>
     <script>
-        document.getElementById("downloadPdfBtn").addEventListener("click", function() {
+        document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
             const element = document.getElementById("pdfContent");
 
             // ✅ Clone the element so we can safely modify styles
@@ -904,7 +904,10 @@ $script = '<script>
         `;
             clonedElement.prepend(printStyle);
 
-            // Original scaling logic preserved
+            // ✅ Wait extra time to ensure charts/icons/fonts load
+            await new Promise(resolve => setTimeout(resolve, 1500)); // <-- 1.5 seconds delay (increase if needed)
+
+            // PDF dimensions
             const elementWidth = element.scrollWidth;
             const elementHeight = element.scrollHeight;
             const a4WidthPx = 1175;
@@ -916,6 +919,7 @@ $script = '<script>
             const scaleY = innerHeight / elementHeight;
             const scale = Math.min(scaleX, scaleY, 1);
 
+            // ✅ PDF options with improved rendering
             const opt = {
                 margin: margin,
                 filename: 'monthly-report.pdf',
@@ -924,10 +928,12 @@ $script = '<script>
                     quality: 1
                 },
                 html2canvas: {
-                    scale: 2,
+                    scale: 3, // ↑ better quality (takes slightly longer)
                     useCORS: true,
                     scrollY: 0,
                     backgroundColor: "#ffffff",
+                    logging: true,
+                    letterRendering: true,
                     width: elementWidth,
                     height: elementHeight,
                 },
@@ -938,7 +944,7 @@ $script = '<script>
                 },
             };
 
-            // ✅ Use cloned element with print style for pdf
+            // ✅ Generate PDF
             html2pdf()
                 .set(opt)
                 .from(clonedElement)
@@ -946,5 +952,6 @@ $script = '<script>
                 .save();
         });
     </script>
+
 
     @endsection
