@@ -405,8 +405,6 @@ $script = '<script>
 <style>
     /* --- Optimized for Black & White Printing with Bold Text --- */
     @media print {
-
-        /* Global text visibility and contrast */
         * {
             color: #000 !important;
             box-shadow: none !important;
@@ -419,7 +417,6 @@ $script = '<script>
             background: #fff !important;
         }
 
-        /* Make all text bolder for visibility */
         h1,
         h2,
         h3,
@@ -436,7 +433,6 @@ $script = '<script>
             font-weight: 700 !important;
         }
 
-        /* Cards: remove gradients and keep structure clear */
         .card {
             background: #fff !important;
             border: 2px solid #000 !important;
@@ -445,10 +441,8 @@ $script = '<script>
 
         .card-body {
             background: #fff !important;
-            color: #000 !important;
         }
 
-        /* Table borders and cells */
         table {
             border-collapse: collapse !important;
             width: 100% !important;
@@ -460,14 +454,12 @@ $script = '<script>
             border: 2px solid #000 !important;
             color: #000 !important;
             font-weight: 700 !important;
-            background: #fff !important;
         }
 
         thead {
             background: #e0e0e0 !important;
         }
 
-        /* Badge visibility: solid borders & bold text */
         .badge {
             background: #ddd !important;
             color: #000 !important;
@@ -476,28 +468,17 @@ $script = '<script>
             padding: 4px 8px !important;
         }
 
-        /* Remove all color backgrounds and gradients */
         [style*="background: linear-gradient"],
         [style*="background-color"] {
             background: #fff !important;
         }
 
-        /* Icons in pure black */
         iconify-icon,
         i {
             color: #000 !important;
             filter: grayscale(100%) contrast(200%) !important;
         }
 
-        /* Headings and labels more prominent */
-        h3,
-        h4,
-        h5 {
-            font-size: 1.3em !important;
-            font-weight: 800 !important;
-        }
-
-        /* Form inputs for month selection */
         input,
         select,
         label {
@@ -506,7 +487,6 @@ $script = '<script>
             font-weight: 700 !important;
         }
 
-        /* Graph placeholders stay visible */
         #semiCircleGauge,
         #areaChart,
         #dailyIconBarChart {
@@ -515,14 +495,6 @@ $script = '<script>
             min-height: 80px;
         }
 
-        /* Prevent hover/transform effects during print */
-        [onmouseover],
-        [onmouseout] {
-            transform: none !important;
-            box-shadow: none !important;
-        }
-
-        /* Optional: Improve spacing for print clarity */
         .card-body,
         .row,
         .col {
@@ -530,7 +502,6 @@ $script = '<script>
             margin: 0 !important;
         }
 
-        /* Page setup */
         @page {
             size: A4 portrait;
             margin: 15mm;
@@ -844,115 +815,90 @@ $script = '<script>
     document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
         const element = document.getElementById("pdfContent");
 
-        // ✅ Clone the element so we can safely modify styles
+        // ✅ Clone for safe styling
         const clonedElement = element.cloneNode(true);
 
-        // ✅ Add the bold black & white print style dynamically
+        // ✅ Inject black & white style
         const printStyle = document.createElement("style");
         printStyle.textContent = `
-            * {
-                color: #000 !important;
-                box-shadow: none !important;
-                text-shadow: none !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            body { background: #fff !important; }
-            h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
-                color: #000 !important;
-                font-weight: 800 !important;
-            }
-            .card {
-                background: #fff !important;
-                border: 2px solid #000 !important;
-                color: #000 !important;
-            }
-            table, th, td {
-                border: 2px solid #000 !important;
-                color: #000 !important;
-                font-weight: 800 !important;
-                background: #fff !important;
-            }
-            .badge {
-                background: #ddd !important;
-                color: #000 !important;
-                font-weight: 900 !important;
-                border: 2px solid #000 !important;
-                padding: 4px 8px !important;
-            }
-            i, iconify-icon {
-                color: #000 !important;
-                filter: grayscale(100%) contrast(200%) !important;
-            }
-            h3, h4, h5 {
-                font-size: 1.3em !important;
-                font-weight: 900 !important;
-            }
-            input, select, label {
-                color: #000 !important;
-                border: 1px solid #000 !important;
-                font-weight: 800 !important;
-            }
-            #semiCircleGauge, #areaChart, #dailyIconBarChart {
-                border: 2px solid #000 !important;
-                background: #fff !important;
-                min-height: 80px;
-            }
-            .card-body, .row, .col {
-                padding: 10px !important;
-                margin: 0 !important;
-            }
-        `;
+        * {
+            color: #000 !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body { background: #fff !important; }
+        h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
+            color: #000 !important;
+            font-weight: 800 !important;
+        }
+        .card {
+            background: #fff !important;
+            border: 2px solid #000 !important;
+            color: #000 !important;
+        }
+        table, th, td {
+            border: 2px solid #000 !important;
+            color: #000 !important;
+            font-weight: 800 !important;
+            background: #fff !important;
+        }
+        .badge {
+            background: #ddd !important;
+            color: #000 !important;
+            font-weight: 900 !important;
+            border: 2px solid #000 !important;
+            padding: 4px 8px !important;
+        }
+        i, iconify-icon {
+            color: #000 !important;
+            filter: grayscale(100%) contrast(200%) !important;
+        }
+        input, select, label {
+            color: #000 !important;
+            border: 1px solid #000 !important;
+            font-weight: 800 !important;
+        }
+        #semiCircleGauge, #areaChart, #dailyIconBarChart {
+            border: 2px solid #000 !important;
+            background: #fff !important;
+            min-height: 80px;
+        }
+        .card-body, .row, .col {
+            padding: 10px !important;
+            margin: 0 !important;
+        }
+    `;
         clonedElement.prepend(printStyle);
 
-        // ✅ Wait extra time to ensure charts/icons/fonts load
-        await new Promise(resolve => setTimeout(resolve, 1500)); // <-- 1.5 seconds delay (increase if needed)
+        // ✅ Wait for icons/charts to fully render
+        await new Promise(resolve => setTimeout(resolve, 1200));
 
-        // PDF dimensions
-        const elementWidth = element.scrollWidth;
-        const elementHeight = element.scrollHeight;
-        const a4WidthPx = 1175;
-        const a4HeightPx = Math.round(a4WidthPx * 1.4142);
-        const margin = 40;
-        const innerWidth = a4WidthPx - margin * 2;
-        const innerHeight = a4HeightPx - margin * 2;
-        const scaleX = innerWidth / elementWidth;
-        const scaleY = innerHeight / elementHeight;
-        const scale = Math.min(scaleX, scaleY, 1);
-
-        // ✅ PDF options with improved rendering
+        // ✅ PDF configuration (A4 optimized)
         const opt = {
-            margin: margin,
+            margin: 10,
             filename: 'monthly-report.pdf',
             image: {
                 type: 'jpeg',
-                quality: 1
+                quality: 0.98
             },
             html2canvas: {
-                scale: 3, // ↑ better quality (takes slightly longer)
+                scale: 2.5,
                 useCORS: true,
                 scrollY: 0,
                 backgroundColor: "#ffffff",
-                logging: true,
-                letterRendering: true,
-                width: elementWidth,
-                height: elementHeight,
             },
             jsPDF: {
-                unit: 'px',
-                format: [a4WidthPx, a4HeightPx],
-                orientation: 'portrait',
+                unit: 'mm',
+                format: 'a4',
+                orientation: 'portrait'
             },
         };
 
         // ✅ Generate PDF
-        html2pdf()
-            .set(opt)
-            .from(clonedElement)
-            .toPdf()
-            .save();
+        await html2pdf().set(opt).from(clonedElement).save();
     });
 </script>
-
 
 @endsection
