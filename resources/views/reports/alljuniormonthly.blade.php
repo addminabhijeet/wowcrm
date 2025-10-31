@@ -844,90 +844,84 @@ $script = '<script>
     document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
         const element = document.getElementById("pdfContent");
 
-        // ✅ Clone element for style isolation
+        // ✅ Clone element for clean styling
         const clonedElement = element.cloneNode(true);
 
-        // ✅ Add black & white style dynamically
+        // ✅ Add black & white print style dynamically
         const printStyle = document.createElement("style");
         printStyle.textContent = `
-            * {
-                color: #000 !important;
-                box-shadow: none !important;
-                text-shadow: none !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            body { background: #fff !important; }
-            h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
-                color: #000 !important;
-                font-weight: 800 !important;
-            }
-            .card {
-                background: #fff !important;
-                border: 2px solid #000 !important;
-                color: #000 !important;
-            }
-            table, th, td {
-                border: 2px solid #000 !important;
-                color: #000 !important;
-                font-weight: 800 !important;
-                background: #fff !important;
-            }
-            .badge {
-                background: #ddd !important;
-                color: #000 !important;
-                font-weight: 900 !important;
-                border: 2px solid #000 !important;
-                padding: 4px 8px !important;
-            }
-            i, iconify-icon {
-                color: #000 !important;
-                filter: grayscale(100%) contrast(200%) !important;
-            }
-            h3, h4, h5 {
-                font-size: 1.3em !important;
-                font-weight: 900 !important;
-            }
-            input, select, label {
-                color: #000 !important;
-                border: 1px solid #000 !important;
-                font-weight: 800 !important;
-            }
-            #semiCircleGauge, #areaChart, #dailyIconBarChart {
-                border: 2px solid #000 !important;
-                background: #fff !important;
-                min-height: 80px;
-            }
-            .card-body, .row, .col {
-                padding: 10px !important;
-                margin: 0 !important;
-            }
-        `;
+        * {
+            color: #000 !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+        }
+        body { background: #fff !important; }
+        h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
+            color: #000 !important;
+            font-weight: 800 !important;
+        }
+        .card {
+            background: #fff !important;
+            border: 2px solid #000 !important;
+            color: #000 !important;
+        }
+        table, th, td {
+            border: 2px solid #000 !important;
+            color: #000 !important;
+            font-weight: 800 !important;
+            background: #fff !important;
+        }
+        .badge {
+            background: #ddd !important;
+            color: #000 !important;
+            font-weight: 900 !important;
+            border: 2px solid #000 !important;
+            padding: 4px 8px !important;
+        }
+        i, iconify-icon {
+            color: #000 !important;
+            filter: grayscale(100%) contrast(200%) !important;
+        }
+        input, select, label {
+            color: #000 !important;
+            border: 1px solid #000 !important;
+            font-weight: 800 !important;
+        }
+        #semiCircleGauge, #areaChart, #dailyIconBarChart {
+            border: 2px solid #000 !important;
+            background: #fff !important;
+            min-height: 80px;
+        }
+        .card-body, .row, .col {
+            padding: 10px !important;
+            margin: 0 !important;
+        }
+    `;
         clonedElement.prepend(printStyle);
 
-        // ✅ Wait to ensure assets are loaded before rendering
-        await new Promise(resolve => setTimeout(resolve, 500));
+        // ✅ Wait for assets to fully load
+        await new Promise(resolve => setTimeout(resolve, 400));
 
-        // PDF dimension calculations
-        const elementWidth = element.scrollWidth;
-        const elementHeight = element.scrollHeight;
-        const a4WidthPx = 1175;
-        const a4HeightPx = Math.round(a4WidthPx * 1.4142 * 1.2);
+        // ✅ A4 size in px at 96 DPI (portrait)
+        const a4WidthPx = 794;
+        const a4HeightPx = 1123;
 
-        const margin = 40;
-        const innerWidth = a4WidthPx - margin * 2;
-        const innerHeight = a4HeightPx - margin * 2;
-        const scaleX = innerWidth / elementWidth;
-        const scaleY = innerHeight / elementHeight;
-        const scale = Math.min(scaleX, scaleY, 1);
+        // ✅ Measure full content size
+        const contentWidth = clonedElement.scrollWidth;
+        const contentHeight = clonedElement.scrollHeight;
 
-        // ✅ PDF generation options
+        // ✅ Calculate scale to fit content within A4 size
+        const scale = Math.min(a4WidthPx / contentWidth, a4HeightPx / contentHeight);
+
+        // ✅ PDF generation configuration
         const opt = {
-            margin: margin,
+            margin: 0,
             filename: 'monthly-report.pdf',
             image: {
                 type: 'jpeg',
-                quality: 5
+                quality: 1
             },
             html2canvas: {
                 scale: 3,
@@ -936,18 +930,30 @@ $script = '<script>
                 backgroundColor: "#ffffff",
                 logging: false,
                 letterRendering: true,
-                width: elementWidth,
-                height: elementHeight,
             },
             jsPDF: {
                 unit: 'px',
                 format: [a4WidthPx, a4HeightPx],
                 orientation: 'portrait',
             },
+            pagebreak: {
+                mode: ['avoid-all', 'css', 'legacy']
+            },
         };
 
-        // ✅ Generate PDF
-        await html2pdf().set(opt).from(clonedElement).save();
+        // ✅ Apply transform scale for perfect fit
+        clonedElement.style.transformOrigin = "top left";
+        clonedElement.style.transform = `scale(${scale})`;
+
+        // ✅ Wrap inside container to preserve layout
+        const wrapper = document.createElement("div");
+        wrapper.style.width = a4WidthPx + "px";
+        wrapper.style.height = a4HeightPx + "px";
+        wrapper.style.overflow = "hidden";
+        wrapper.appendChild(clonedElement);
+
+        // ✅ Generate and download the PDF
+        await html2pdf().set(opt).from(wrapper).save();
     });
 </script>
 
