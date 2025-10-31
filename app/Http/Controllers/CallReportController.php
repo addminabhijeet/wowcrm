@@ -1130,6 +1130,7 @@ class CallReportController extends Controller
         $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
 
         $presentDays = 0;
+        $halfDays = 0;
         $absentDays = 0;
         $workingDays = 0;
         $nonWorkingDays = 0;
@@ -1156,26 +1157,17 @@ class CallReportController extends Controller
 
             for ($i = 0; $i < $sorted->count(); $i++) {
                 $event = $sorted[$i];
-
-                // Normalize event labels like JS (some may come from `status`, some from `pause_type`)
                 $title = strtolower($event->status ?? '');
                 $pauseType = strtolower($event->pause_type ?? '');
-
-                // Determine the main event name
                 $eventName = $title ?: $pauseType;
-
                 $eventTime = Carbon::parse($event->event_time);
 
-                // --- JS parity: start tracking only after "start" event ---
                 if ($eventName === 'start') {
                     $startSeen = true;
                 }
 
-                if (!$startSeen) {
-                    continue; // Ignore anything before "start"
-                }
+                if (!$startSeen) continue;
 
-                // Handle pauses like JS
                 if ($pauseType === 'inactive') {
                     $lastPauseTime = $eventTime;
                 } elseif (in_array($pauseType, ['resume', 'running']) && $lastPauseTime) {
@@ -1183,25 +1175,26 @@ class CallReportController extends Controller
                     $lastPauseTime = null;
                 }
 
-                // Calculate duration between this and next event
                 if ($i < $sorted->count() - 1) {
                     $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
                     $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
 
-                    // Count only active events (same list as JS)
                     if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
                         $activeWorkSec += $durationSec;
                     }
                 }
             }
 
-            // --- Apply 8-hour threshold ---
-            if ($activeWorkSec >= (4 * 3600)) {
+            // --- Apply threshold with Half-Day logic ---
+            if ($activeWorkSec >= (8 * 3600)) {
                 $presentDays++;
+            } elseif ($activeWorkSec >= (4 * 3600)) {
+                $halfDays++;
             } else {
                 $absentDays++;
             }
         }
+
 
 
 
