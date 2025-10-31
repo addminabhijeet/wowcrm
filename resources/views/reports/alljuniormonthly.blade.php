@@ -890,7 +890,7 @@ document.getElementById("downloadPdfBtn").addEventListener("click", async functi
         }
         #semiCircleGauge, #areaChart, #dailyIconBarChart {
             background: #fff !important;
-            min-height: 50px !important;
+            max-height: 50px !important;
         }
         .card-body, .row, .col {
             padding: 10px !important;
