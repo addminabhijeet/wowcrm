@@ -759,7 +759,7 @@ $script = '<script>
             const elementHeight = element.scrollHeight;
 
             // A4 paper size in pixels at 150 DPI
-            const a4WidthPx = 1170;
+            const a4WidthPx = 1175;
             const a4HeightPx = 1754;
             const margin = 40; // Equal margin on all four sides
 
