@@ -934,7 +934,7 @@ $script = '<script>
         clonedElement.prepend(printStyle);
 
         // ✅ Wait for a short time to ensure all assets/styles load
-        await new Promise(resolve => setTimeout(resolve, 500));
+        await new Promise(resolve => setTimeout(resolve, 5));
 
         // ✅ Proper A4 PDF dimensions in pixels
         const a4WidthPx = 1175;
@@ -965,7 +965,7 @@ $script = '<script>
                 mode: ['avoid-all', 'css', 'legacy']
             }
         };
-        
+
         // Convert Iconify icons to inline SVG images for html2canvas visibility
         clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
             const svg = document.createElement("img");
