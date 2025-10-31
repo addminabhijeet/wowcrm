@@ -601,7 +601,7 @@ $script = '<script>
         <div class="col-xxl-4 col-lg-6">
             <div class="card h-100 radius-8 border-0">
                 <div class="card-body p-24">
-                    <h6 class="mb-2 fw-bold text-lg">Statistic</h6>
+                    <h6 class="mb-2 fw-bold text-lg">Overall Statistic</h6>
                     <div class="mt-24">
                         <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div>
