@@ -1850,26 +1850,30 @@ class CallReportController extends Controller
 
         $juniorUser = $user;
 
-        // ---------- ✅ Added Correct Daily Attendance Logic ----------
+        // --- Calculate Present / Absent / Working / Non-working days ---
         $events = UserTimerPause::where('user_id', $juniorUser->id)
             ->whereYear('event_time', $year)
             ->whereMonth('event_time', $month)
             ->orderBy('event_time', 'asc')
             ->get();
 
+        // Group events by date
         $groupedEvents = $events->groupBy(function ($event) {
             return Carbon::parse($event->event_time)->format('Y-m-d');
         });
 
+        // Determine all days in the selected month
         $startOfMonth = Carbon::create($year, $month, 1);
         $endOfMonth   = $startOfMonth->copy()->endOfMonth();
         $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
 
         $presentDays = 0;
+        $halfDays = 0;
         $absentDays = 0;
         $workingDays = 0;
         $nonWorkingDays = 0;
 
+        // Loop through each day
         foreach ($daysInMonth as $day) {
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
@@ -1881,28 +1885,55 @@ class CallReportController extends Controller
 
             $workingDays++;
 
-            $sorted = $dailyEvents->sortBy('event_time')->values();
-            $totalBreakSec = 0;
-            $lastPause = null;
+            // ✅ Auto-present rule: If any event has pause_type = 'start'
+            if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
+                $presentDays++;
+                continue; // Skip further processing for this day
+            }
 
-            foreach ($sorted as $event) {
+            // Sort earliest first
+            $sorted = $dailyEvents->sortBy('event_time')->values();
+
+            $startSeen = false;
+            $activeWorkSec = 0;
+            $totalBreakSec = 0;
+            $lastPauseTime = null;
+
+            for ($i = 0; $i < $sorted->count(); $i++) {
+                $event = $sorted[$i];
+                $title = strtolower($event->status ?? '');
                 $pauseType = strtolower($event->pause_type ?? '');
+                $eventName = $title ?: $pauseType;
                 $eventTime = Carbon::parse($event->event_time);
 
+                if ($eventName === 'start') {
+                    $startSeen = true;
+                }
+
+                if (!$startSeen) continue;
+
                 if ($pauseType === 'inactive') {
-                    $lastPause = $eventTime;
-                } elseif (in_array($pauseType, ['resume', 'running']) && $lastPause) {
-                    $totalBreakSec += $eventTime->diffInSeconds($lastPause);
-                    $lastPause = null;
+                    $lastPauseTime = $eventTime;
+                } elseif (in_array($pauseType, ['resume', 'running']) && $lastPauseTime) {
+                    $totalBreakSec += $eventTime->diffInSeconds($lastPauseTime);
+                    $lastPauseTime = null;
+                }
+
+                if ($i < $sorted->count() - 1) {
+                    $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
+                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
+
+                    if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
+                        $activeWorkSec += $durationSec;
+                    }
                 }
             }
 
-            $startTime = Carbon::parse($sorted->first()->event_time);
-            $endTime   = Carbon::parse($sorted->last()->event_time);
-            $totalWorkSec = max(0, $endTime->diffInSeconds($startTime) - $totalBreakSec);
-
-            if ($totalWorkSec >= 8 * 3600) {
+            // --- Apply threshold with Half-Day logic ---
+            if ($activeWorkSec >= (8 * 3600)) {
                 $presentDays++;
+            } elseif ($activeWorkSec >= (4 * 3600)) {
+                $halfDays++;
             } else {
                 $absentDays++;
             }
