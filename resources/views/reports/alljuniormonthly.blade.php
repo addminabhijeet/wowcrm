@@ -709,7 +709,7 @@ $script = '<script>
                                     <i class="bi bi-telephone-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted fw-bold d-block">Total Calls</small>
+                                    <small class=" fw-bold d-block">Total Calls</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MtotalCalls }}</h4>
                                 </div>
                             </div>
@@ -720,7 +720,7 @@ $script = '<script>
                                     <i class="bi bi-bar-chart-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted fw-bold d-block">Other Calls</small>
+                                    <small class=" fw-bold d-block">Other Calls</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MotherCalls }}</h4>
                                 </div>
                             </div>
@@ -731,7 +731,7 @@ $script = '<script>
                                     <i class="bi bi-envelope-paper-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted fw-bold d-block">Called & Mailed</small>
+                                    <small class=" fw-bold d-block">Called & Mailed</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
                                 </div>
                             </div>
