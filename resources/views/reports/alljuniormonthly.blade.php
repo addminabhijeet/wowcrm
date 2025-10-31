@@ -841,7 +841,7 @@ $script = '<script>
     </div>
 </div>
 <script>
-    document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
+    document.getElementById("downloadPdfBtn").addEventListener("click", async function () {
         const element = document.getElementById("pdfContent");
 
         // ✅ Clone element for style isolation
@@ -905,31 +905,32 @@ $script = '<script>
         `;
         clonedElement.prepend(printStyle);
 
-        // ✅ Wait to ensure assets are loaded before rendering
-        await new Promise(resolve => setTimeout(resolve, 1500));
+        // Wait to ensure charts or icons load
+        await new Promise(resolve => setTimeout(resolve, 1000));
 
-        // PDF dimension calculations
+        // --- Fixed A4 sizing ---
         const elementWidth = element.scrollWidth;
         const elementHeight = element.scrollHeight;
         const a4WidthPx = 1175;
         const a4HeightPx = Math.round(a4WidthPx * 1.4142);
-        const margin = 40;
+
+        // ✅ Ensure full-page coverage
+        const margin = 0; // removed margin to maximize page fill
         const innerWidth = a4WidthPx - margin * 2;
         const innerHeight = a4HeightPx - margin * 2;
+
+        // Slightly increase scaling for full coverage (no white borders)
         const scaleX = innerWidth / elementWidth;
         const scaleY = innerHeight / elementHeight;
-        const scale = Math.min(scaleX, scaleY, 1);
+        const scale = Math.min(scaleX, scaleY) * 1.05; // <-- added 5% fill boost
 
         // ✅ PDF generation options
         const opt = {
             margin: margin,
             filename: 'monthly-report.pdf',
-            image: {
-                type: 'jpeg',
-                quality: 1
-            },
+            image: { type: 'jpeg', quality: 1 },
             html2canvas: {
-                scale: 3,
+                scale: 4, // higher DPI for sharper full-page render
                 useCORS: true,
                 scrollY: 0,
                 backgroundColor: "#ffffff",
@@ -945,9 +946,17 @@ $script = '<script>
             },
         };
 
-        // ✅ Generate PDF
-        await html2pdf().set(opt).from(clonedElement).save();
+        // ✅ Generate full-page PDF
+        await html2pdf().set(opt).from(clonedElement).toPdf().get('pdf').then(pdf => {
+            const totalPages = pdf.internal.getNumberOfPages();
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFillColor(255, 255, 255);
+                pdf.rect(0, 0, a4WidthPx, a4HeightPx, 'F');
+            }
+        }).save();
     });
 </script>
+
 
 @endsection
