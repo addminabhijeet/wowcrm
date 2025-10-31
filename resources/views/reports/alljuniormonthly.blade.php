@@ -861,17 +861,22 @@ $script = '<script>
             filter: contrast(250%) brightness(0%) !important;
         }
         .icon-wrapper {
-            background: #f2f2f2 !important;
-            border-radius: 50% !important;
+            background: #fff !important;
             border: 2px solid #000 !important;
+            border-radius: 50% !important;
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            filter: contrast(250%) brightness(0%) !important;
         }
-        .icon-wrapper iconify-icon, iconify-icon, i {
+        iconify-icon,
+        i,
+        .icon-wrapper iconify-icon {
             color: #000 !important;
-            filter: contrast(250%) brightness(0%) !important;
+            filter: grayscale(100%) contrast(200%) brightness(0%) !important;
+        }
+        [style*="background: linear-gradient"],
+        [style*="background-color"] {
+            background: #fff !important;
         }
         .card {
             background: #fff !important;
@@ -880,6 +885,10 @@ $script = '<script>
             box-shadow: none !important;
             transition: none !important;
             filter: contrast(250%) brightness(0%) !important;
+        }
+        [onmouseover], [onmouseout] {
+            transform: none !important;
+            box-shadow: none !important;
         }
         table, th, td {
             border: 2px solid #000 !important;
