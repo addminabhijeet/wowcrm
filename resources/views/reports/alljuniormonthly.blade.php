@@ -813,12 +813,7 @@ $script = '<script>
                                 <span class="text-secondary-light fw-normal mb-12 text-xl">Total Calls (TC)</span>
                                 <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
                             </div>
-                            <div class="position-relative">
-                                <div id="semiCircleGauge"></div>
-                                <span class="w-36-px h-36-px rounded-circle bg-neutral-100 d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0">
-                                    <iconify-icon icon="mdi:emoji" class="text-primary-600 text-md mb-0"></iconify-icon>
-                                </span>
-                            </div>
+                            <div id="semiCircleGauge"></div>
                         </div>
                         <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div>
@@ -890,10 +885,7 @@ $script = '<script>
         }
         #semiCircleGauge, #areaChart, #dailyIconBarChart {
             background: #fff !important;
-            border: 2px solid #000 !important;
-            max-height: 40px !important; 
-            min-height: 40px !important;
-            overflow: hidden !important;
+            min-height: 80px !important;
         }
         .card-body, .row, .col {
             padding: 10px !important;
