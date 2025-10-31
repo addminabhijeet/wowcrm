@@ -403,87 +403,141 @@ $script = '<script>
 
 @section('content')
 <style>
-    /* --- Print Optimization for Black & White Clarity --- */
+    /* --- Optimized for Black & White Printing with Bold Text --- */
     @media print {
 
-        /* General reset */
+        /* Global text visibility and contrast */
         * {
             color: #000 !important;
             box-shadow: none !important;
             text-shadow: none !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
         }
 
         body {
             background: #fff !important;
         }
 
-        /* Remove gradients and set high contrast borders */
-        .card {
-            background: #fff !important;
-            border: 1px solid #000 !important;
-        }
-
-        /* Make table borders clear */
-        table,
-        th,
-        td {
-            border: 1px solid #000 !important;
-            color: #000 !important;
-        }
-
-        /* Badge visibility (make it solid grayscale) */
-        .badge {
-            background: #ddd !important;
-            color: #000 !important;
-            border: 1px solid #000 !important;
-        }
-
-        /* Remove background gradients or colors from metrics cards */
-        [style*="background: linear-gradient"],
-        [style*="background-color"] {
-            background: #fff !important;
-        }
-
-        /* Make icons grayscale and visible */
-        iconify-icon,
-        i {
-            color: #000 !important;
-            filter: grayscale(100%) !important;
-        }
-
-        /* Emphasize headers and titles */
+        /* Make all text bolder for visibility */
+        h1,
+        h2,
         h3,
         h4,
         h5,
+        h6,
         p,
-        small,
         label,
-        span {
+        span,
+        small,
+        th,
+        td {
+            color: #000 !important;
+            font-weight: 700 !important;
+        }
+
+        /* Cards: remove gradients and keep structure clear */
+        .card {
+            background: #fff !important;
+            border: 2px solid #000 !important;
             color: #000 !important;
         }
 
-        /* Ensure charts and other visuals are visible */
-        #semiCircleGauge,
-        #areaChart,
-        #dailyIconBarChart {
-            border: 1px solid #000 !important;
-            background: #fff !important;
-        }
-
-        /* Improve layout readability */
         .card-body {
             background: #fff !important;
             color: #000 !important;
         }
 
-        /* Remove hover effects on print */
+        /* Table borders and cells */
+        table {
+            border-collapse: collapse !important;
+            width: 100% !important;
+        }
+
+        table,
+        th,
+        td {
+            border: 2px solid #000 !important;
+            color: #000 !important;
+            font-weight: 700 !important;
+            background: #fff !important;
+        }
+
+        thead {
+            background: #e0e0e0 !important;
+        }
+
+        /* Badge visibility: solid borders & bold text */
+        .badge {
+            background: #ddd !important;
+            color: #000 !important;
+            font-weight: 800 !important;
+            border: 2px solid #000 !important;
+            padding: 4px 8px !important;
+        }
+
+        /* Remove all color backgrounds and gradients */
+        [style*="background: linear-gradient"],
+        [style*="background-color"] {
+            background: #fff !important;
+        }
+
+        /* Icons in pure black */
+        iconify-icon,
+        i {
+            color: #000 !important;
+            filter: grayscale(100%) contrast(200%) !important;
+        }
+
+        /* Headings and labels more prominent */
+        h3,
+        h4,
+        h5 {
+            font-size: 1.3em !important;
+            font-weight: 800 !important;
+        }
+
+        /* Form inputs for month selection */
+        input,
+        select,
+        label {
+            color: #000 !important;
+            border: 1px solid #000 !important;
+            font-weight: 700 !important;
+        }
+
+        /* Graph placeholders stay visible */
+        #semiCircleGauge,
+        #areaChart,
+        #dailyIconBarChart {
+            border: 2px solid #000 !important;
+            background: #fff !important;
+            min-height: 80px;
+        }
+
+        /* Prevent hover/transform effects during print */
         [onmouseover],
         [onmouseout] {
             transform: none !important;
             box-shadow: none !important;
         }
+
+        /* Optional: Improve spacing for print clarity */
+        .card-body,
+        .row,
+        .col {
+            padding: 10px !important;
+            margin: 0 !important;
+        }
+
+        /* Page setup */
+        @page {
+            size: A4 portrait;
+            margin: 15mm;
+        }
     }
 </style>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 <div class="d-flex justify-content-end mb-3">
