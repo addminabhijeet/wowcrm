@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='Call Report';
+$title='Call Report Monthly';
 $subTitle = 'Called and Mailed Report';
 $script = '<script>
     var options = {
