@@ -86,9 +86,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
         </div>
     </div>
 
-</div>
 
-<div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
 
     <!-- Total Present Days -->
     <div class="col">
