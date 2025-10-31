@@ -809,12 +809,13 @@ $script = '<script>
                     <h6 class="fw-bold mb-1">Overall Call Report</h6>
                     <div class="mt-24">
                         <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
-                            <div>
+                            <div class="me-4">
                                 <span class="text-secondary-light fw-normal mb-12 text-xl">Total Calls (TC)</span>
                                 <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
                             </div>
                             <div id="semiCircleGauge"></div>
                         </div>
+
                         <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div>
                                 <span class="text-secondary-light fw-normal mb-12 text-xl">Other Calls (OC)</span>
