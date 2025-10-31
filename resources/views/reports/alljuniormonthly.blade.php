@@ -945,31 +945,12 @@ $script = '<script>
             },
         };
 
-        // ✅ Generate PDF (Fixed full-page and multi-page issue)
+        // ✅ Generate PDF
         html2pdf()
-            .set({
-                ...opt,
-                html2canvas: {
-                    scale: 2, // Slightly lower for better fit (still sharp)
-                    useCORS: true,
-                    scrollY: 0,
-                    backgroundColor: "#ffffff",
-                    windowWidth: document.documentElement.scrollWidth,
-                    windowHeight: document.documentElement.scrollHeight,
-                },
-                jsPDF: {
-                    unit: 'mm',
-                    format: 'a4',
-                    orientation: 'portrait',
-                },
-                pagebreak: {
-                    mode: ['avoid-all', 'css', 'legacy']
-                } // ✅ Enables multipage content properly
-            })
+            .set(opt)
             .from(clonedElement)
             .toPdf()
             .save();
-
     });
 </script>
 
