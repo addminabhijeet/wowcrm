@@ -890,7 +890,6 @@ document.getElementById("downloadPdfBtn").addEventListener("click", async functi
             font-weight: 800 !important;
         }
         #semiCircleGauge, #areaChart, #dailyIconBarChart {
-            border: 2px solid #000 !important;
             background: #fff !important;
             min-height: 80px !important;
         }
