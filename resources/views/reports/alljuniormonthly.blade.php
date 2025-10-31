@@ -886,12 +886,11 @@ document.getElementById("downloadPdfBtn").addEventListener("click", async functi
         }
         input, select, label {
             color: #000 !important;
-            border: 1px solid #000 !important;
             font-weight: 800 !important;
         }
         #semiCircleGauge, #areaChart, #dailyIconBarChart {
             background: #fff !important;
-            min-height: 70px !important;
+            min-height: 50px !important;
         }
         .card-body, .row, .col {
             padding: 10px !important;
