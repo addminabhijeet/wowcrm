@@ -709,7 +709,7 @@ $script = '<script>
                                     <i class="bi bi-telephone-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted fw-bold d-block">Total Calls (TC)</small>
+                                    <small class="text-muted fw-bold d-block">Total Calls</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MtotalCalls }}</h4>
                                 </div>
                             </div>
@@ -720,7 +720,7 @@ $script = '<script>
                                     <i class="bi bi-bar-chart-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted fw-bold d-block">Other Calls (OC)</small>
+                                    <small class="text-muted fw-bold d-block">Other Calls</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MotherCalls }}</h4>
                                 </div>
                             </div>
@@ -731,7 +731,7 @@ $script = '<script>
                                     <i class="bi bi-envelope-paper-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted fw-bold d-block">Called & Mailed (C&MC)</small>
+                                    <small class="text-muted fw-bold d-block">Called & Mailed</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
                                 </div>
                             </div>
@@ -810,7 +810,7 @@ $script = '<script>
                     <div class="mt-24">
                         <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div class="me-4">
-                                <span class="text-secondary-light fw-bold mb-12 text-xl">Total Calls (TC)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Total Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
                             </div>
                             <div id="semiCircleGauge" class="me-3"></div>
@@ -818,14 +818,14 @@ $script = '<script>
 
                         <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div>
-                                <span class="text-secondary-light fw-bold mb-12 text-xl">Other Calls (OC)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Other Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $MotherCalls }}</h5>
                             </div>
                             <div id="areaChart"></div>
                         </div>
                         <div class="d-flex align-items-center gap-1 justify-content-between">
                             <div>
-                                <span class="text-secondary-light fw-bold mb-12 text-xl">Called & Mailed Calls (C&MC)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Called & Mailed Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $McalledAndMailedCalls }}</h5>
                             </div>
                             <div id="dailyIconBarChart"></div>
