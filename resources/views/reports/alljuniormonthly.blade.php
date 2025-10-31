@@ -841,15 +841,15 @@ $script = '<script>
     </div>
 </div>
 <script>
-document.getElementById("downloadPdfBtn").addEventListener("click", async function () {
-    const element = document.getElementById("pdfContent");
+    document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
+        const element = document.getElementById("pdfContent");
 
-    // ✅ Clone element to apply isolated print styles
-    const clonedElement = element.cloneNode(true);
+        // ✅ Clone element to apply isolated print styles
+        const clonedElement = element.cloneNode(true);
 
-    // ✅ Add black & white print style dynamically (for PDF only)
-    const printStyle = document.createElement("style");
-    printStyle.textContent = `
+        // ✅ Add black & white print style dynamically (for PDF only)
+        const printStyle = document.createElement("style");
+        printStyle.textContent = `
         * {
             color: #000 !important;
             box-shadow: none !important;
@@ -890,7 +890,10 @@ document.getElementById("downloadPdfBtn").addEventListener("click", async functi
         }
         #semiCircleGauge, #areaChart, #dailyIconBarChart {
             background: #fff !important;
-            max-height: 50px !important;
+            border: 2px solid #000 !important;
+            max-height: 40px !important; 
+            min-height: 40px !important;
+            overflow: hidden !important;
         }
         .card-body, .row, .col {
             padding: 10px !important;
@@ -901,39 +904,44 @@ document.getElementById("downloadPdfBtn").addEventListener("click", async functi
             margin: 0;
         }
     `;
-    clonedElement.prepend(printStyle);
+        clonedElement.prepend(printStyle);
 
-    // ✅ Wait for a short time to ensure all assets/styles load
-    await new Promise(resolve => setTimeout(resolve, 500));
+        // ✅ Wait for a short time to ensure all assets/styles load
+        await new Promise(resolve => setTimeout(resolve, 500));
 
-    // ✅ Proper A4 PDF dimensions in pixels
-    const a4WidthPx = 1175;
-    const a4HeightPx = Math.round(a4WidthPx * 1.4142);
+        // ✅ Proper A4 PDF dimensions in pixels
+        const a4WidthPx = 1175;
+        const a4HeightPx = Math.round(a4WidthPx * 1.4142);
 
-    // ✅ PDF generation options (optimized for full A4 coverage)
-    const opt = {
-        margin: [0, 0, 0, 0],
-        filename: 'monthly-report.pdf',
-        image: { type: 'jpeg', quality: 0.98 },
-        html2canvas: {
-            scale: 3,
-            useCORS: true,
-            scrollY: 0,
-            backgroundColor: "#ffffff",
-            logging: false,
-            letterRendering: true,
-        },
-        jsPDF: {
-            unit: 'px',
-            format: [a4WidthPx, a4HeightPx],
-            orientation: 'portrait',
-        },
-        pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
-    };
+        // ✅ PDF generation options (optimized for full A4 coverage)
+        const opt = {
+            margin: [0, 0, 0, 0],
+            filename: 'monthly-report.pdf',
+            image: {
+                type: 'jpeg',
+                quality: 0.98
+            },
+            html2canvas: {
+                scale: 3,
+                useCORS: true,
+                scrollY: 0,
+                backgroundColor: "#ffffff",
+                logging: false,
+                letterRendering: true,
+            },
+            jsPDF: {
+                unit: 'px',
+                format: [a4WidthPx, a4HeightPx],
+                orientation: 'portrait',
+            },
+            pagebreak: {
+                mode: ['avoid-all', 'css', 'legacy']
+            }
+        };
 
-    // ✅ Generate the full-page PDF
-    await html2pdf().set(opt).from(clonedElement).save();
-});
+        // ✅ Generate the full-page PDF
+        await html2pdf().set(opt).from(clonedElement).save();
+    });
 </script>
 
 
