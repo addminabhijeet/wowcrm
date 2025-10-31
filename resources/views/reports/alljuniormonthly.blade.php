@@ -906,13 +906,14 @@ $script = '<script>
         clonedElement.prepend(printStyle);
 
         // ✅ Wait to ensure assets are loaded before rendering
-        await new Promise(resolve => setTimeout(resolve, 5500));
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         // PDF dimension calculations
         const elementWidth = element.scrollWidth;
         const elementHeight = element.scrollHeight;
         const a4WidthPx = 1175;
-        const a4HeightPx = Math.round(a4WidthPx * 1.4142);
+        const a4HeightPx = Math.round(a4WidthPx * 1.4142 * 1.2);
+
         const margin = 40;
         const innerWidth = a4WidthPx - margin * 2;
         const innerHeight = a4HeightPx - margin * 2;
