@@ -905,8 +905,8 @@ $script = '<script>
         `;
         clonedElement.prepend(printStyle);
 
-        clonedElement.style.minHeight = element.scrollHeight + 'px';
-        await html2pdf().set(opt).from(clonedElement).save();
+        // ✅ Wait to ensure assets are loaded before rendering
+        await new Promise(resolve => setTimeout(resolve, 500));
 
         // PDF dimension calculations
         const elementWidth = element.scrollWidth;
