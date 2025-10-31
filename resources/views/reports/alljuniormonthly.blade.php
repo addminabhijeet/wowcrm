@@ -403,8 +403,7 @@ $script = '<script>
 
 @section('content')
 <style>
-    /* --- Optimized for Black & White Printing with Bold Text --- */
-    @media print {
+
 
         /* Global text visibility and contrast */
         * {
@@ -535,7 +534,7 @@ $script = '<script>
             size: A4 portrait;
             margin: 15mm;
         }
-    }
+    
 </style>
 
 
