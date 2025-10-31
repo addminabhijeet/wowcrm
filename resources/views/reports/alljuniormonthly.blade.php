@@ -839,16 +839,17 @@ $script = '<script>
             </div>
         </div>
     </div>
-    <script>
-        document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-            const element = document.getElementById("pdfContent");
+</div>
+<script>
+    document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
+        const element = document.getElementById("pdfContent");
 
-            // ✅ Clone the element so we can safely modify styles
-            const clonedElement = element.cloneNode(true);
+        // ✅ Clone the element so we can safely modify styles
+        const clonedElement = element.cloneNode(true);
 
-            // ✅ Add the bold black & white print style dynamically
-            const printStyle = document.createElement("style");
-            printStyle.textContent = `
+        // ✅ Add the bold black & white print style dynamically
+        const printStyle = document.createElement("style");
+        printStyle.textContent = `
             * {
                 color: #000 !important;
                 box-shadow: none !important;
@@ -902,56 +903,56 @@ $script = '<script>
                 margin: 0 !important;
             }
         `;
-            clonedElement.prepend(printStyle);
+        clonedElement.prepend(printStyle);
 
-            // ✅ Wait extra time to ensure charts/icons/fonts load
-            await new Promise(resolve => setTimeout(resolve, 1500)); // <-- 1.5 seconds delay (increase if needed)
+        // ✅ Wait extra time to ensure charts/icons/fonts load
+        await new Promise(resolve => setTimeout(resolve, 1500)); // <-- 1.5 seconds delay (increase if needed)
 
-            // PDF dimensions
-            const elementWidth = element.scrollWidth;
-            const elementHeight = element.scrollHeight;
-            const a4WidthPx = 1175;
-            const a4HeightPx = Math.round(a4WidthPx * 1.4142);
-            const margin = 40;
-            const innerWidth = a4WidthPx - margin * 2;
-            const innerHeight = a4HeightPx - margin * 2;
-            const scaleX = innerWidth / elementWidth;
-            const scaleY = innerHeight / elementHeight;
-            const scale = Math.min(scaleX, scaleY, 1);
+        // PDF dimensions
+        const elementWidth = element.scrollWidth;
+        const elementHeight = element.scrollHeight;
+        const a4WidthPx = 1175;
+        const a4HeightPx = Math.round(a4WidthPx * 1.4142);
+        const margin = 40;
+        const innerWidth = a4WidthPx - margin * 2;
+        const innerHeight = a4HeightPx - margin * 2;
+        const scaleX = innerWidth / elementWidth;
+        const scaleY = innerHeight / elementHeight;
+        const scale = Math.min(scaleX, scaleY, 1);
 
-            // ✅ PDF options with improved rendering
-            const opt = {
-                margin: margin,
-                filename: 'monthly-report.pdf',
-                image: {
-                    type: 'jpeg',
-                    quality: 1
-                },
-                html2canvas: {
-                    scale: 3, // ↑ better quality (takes slightly longer)
-                    useCORS: true,
-                    scrollY: 0,
-                    backgroundColor: "#ffffff",
-                    logging: true,
-                    letterRendering: true,
-                    width: elementWidth,
-                    height: elementHeight,
-                },
-                jsPDF: {
-                    unit: 'px',
-                    format: [a4WidthPx, a4HeightPx],
-                    orientation: 'portrait',
-                },
-            };
+        // ✅ PDF options with improved rendering
+        const opt = {
+            margin: margin,
+            filename: 'monthly-report.pdf',
+            image: {
+                type: 'jpeg',
+                quality: 1
+            },
+            html2canvas: {
+                scale: 3, // ↑ better quality (takes slightly longer)
+                useCORS: true,
+                scrollY: 0,
+                backgroundColor: "#ffffff",
+                logging: true,
+                letterRendering: true,
+                width: elementWidth,
+                height: elementHeight,
+            },
+            jsPDF: {
+                unit: 'px',
+                format: [a4WidthPx, a4HeightPx],
+                orientation: 'portrait',
+            },
+        };
 
-            // ✅ Generate PDF
-            html2pdf()
-                .set(opt)
-                .from(clonedElement)
-                .toPdf()
-                .save();
-        });
-    </script>
+        // ✅ Generate PDF
+        html2pdf()
+            .set(opt)
+            .from(clonedElement)
+            .toPdf()
+            .save();
+    });
+</script>
 
 
-    @endsection
+@endsection
