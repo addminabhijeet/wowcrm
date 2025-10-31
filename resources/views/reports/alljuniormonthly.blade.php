@@ -860,6 +860,11 @@ $script = '<script>
             font-weight: 800 !important;
             filter: contrast(250%) brightness(0%) !important;
         }
+        iconify-icon,
+        i {
+            color: #000 !important;
+            filter: grayscale(100%) contrast(200%) !important;
+        }
         .card {
             background: #fff !important;
             border: 2px solid #000 !important;
