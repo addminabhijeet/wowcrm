@@ -861,18 +861,17 @@ $script = '<script>
             filter: contrast(250%) brightness(0%) !important;
         }
         .icon-wrapper {
-            background: #eee !important; /* light gray circle */
+            background: #f2f2f2 !important;
             border-radius: 50% !important;
-            filter: grayscale(100%) brightness(100%) contrast(100%) !important;
+            border: 2px solid #000 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            filter: contrast(250%) brightness(0%) !important;
         }
-        .icon-wrapper iconify-icon {
-            color: #000 !important; /* black icon */
-            filter: grayscale(100%) brightness(0%) contrast(200%) !important;
-        }
-        iconify-icon,
-        i {
+        .icon-wrapper iconify-icon, iconify-icon, i {
             color: #000 !important;
-            filter: grayscale(100%) contrast(200%) !important;
+            filter: contrast(250%) brightness(0%) !important;
         }
         .card {
             background: #fff !important;
