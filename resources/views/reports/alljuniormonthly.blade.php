@@ -858,6 +858,7 @@ $script = '<script>
         h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
             color: #000 !important;
             font-weight: 800 !important;
+            filter: contrast(250%) brightness(0%) !important;
         }
         .card {
             background: #fff !important;
@@ -873,6 +874,7 @@ $script = '<script>
             font-weight: 800 !important;
             background: #fff !important;
             -webkit-text-stroke: 0.3px #000 !important;
+            filter: contrast(250%) brightness(0%) !important;
         }
         .badge {
             background: #ddd !important;
@@ -884,12 +886,13 @@ $script = '<script>
         }
         i, iconify-icon {
             color: #000 !important;
-            filter: grayscale(100%) contrast(200%) !important;
+            filter: contrast(250%) brightness(0%) !important;
         }
         input, select, label {
             color: #000 !important;
             font-weight: 800 !important;
             -webkit-text-stroke: 0.2px #000 !important;
+            filter: contrast(250%) brightness(0%) !important;
         }
         #semiCircleGauge, #areaChart, #dailyIconBarChart {
             background: #fff !important;
@@ -899,6 +902,7 @@ $script = '<script>
         .card-body, .row, .col {
             padding: 10px !important;
             margin: 0 !important;
+            filter: contrast(250%) brightness(0%) !important;
         }
         @page {
             size: A4 portrait;
