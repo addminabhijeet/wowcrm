@@ -35,7 +35,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
             <div class="card-body p-20">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <div>
-                        <p class="fw-medium text-primary-light mb-1">Total Junior Users</p>
+                        <p class="fw-medium text-primary-light mb-1">Total Junior</p>
                         <h6 class="mb-0">{{ $users->where('role', 'junior')->count() }}</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
@@ -56,7 +56,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
             <div class="card-body p-20">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <div>
-                        <p class="fw-medium text-primary-light mb-1">Total Senior Users</p>
+                        <p class="fw-medium text-primary-light mb-1">Total Senior</p>
                         <h6 class="mb-0">{{ $users->where('role', 'senior')->count() }}</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
