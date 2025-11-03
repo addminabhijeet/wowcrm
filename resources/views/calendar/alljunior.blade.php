@@ -318,6 +318,8 @@ $subTitle = 'Calendar';
         function highlightUnderworkedDays(calendar) {
             const allEvents = calendar.getEvents();
             const grouped = {};
+
+            // Group events by date
             allEvents.forEach(ev => {
                 const dateKey = new Date(ev.start).toISOString().split('T')[0];
                 if (!grouped[dateKey]) grouped[dateKey] = [];
@@ -326,31 +328,51 @@ $subTitle = 'Calendar';
 
             Object.keys(grouped).forEach(dateStr => {
                 const dayEvents = grouped[dateStr];
-                let totalBreakSec = 0,
-                    lastPauseTime = null;
 
-                dayEvents.forEach(ev => {
-                    const eTime = new Date(ev.start);
-                    const pauseType = (ev.extendedProps.pause_type || '').toLowerCase();
-                    if (pauseType === 'inactive') lastPauseTime = eTime;
-                    else if (pauseType === 'resume' && lastPauseTime) {
-                        totalBreakSec += (eTime - lastPauseTime) / 1000;
-                        lastPauseTime = null;
+                // Sort chronologically
+                dayEvents.sort((a, b) => new Date(a.start) - new Date(b.start));
+
+                let activeWorkSec = 0;
+                let startSeen = false;
+
+                // Calculate active work seconds (same logic as modal)
+                for (let i = 0; i < dayEvents.length; i++) {
+                    const event = dayEvents[i];
+                    const title = (event.title || '').toLowerCase();
+
+                    if (title === 'start') startSeen = true;
+                    if (!startSeen) continue; // ignore before 'Start'
+
+                    if (['login', 'logout', 'start', 'resume', 'running'].includes(title)) {
+                        let durationSec = 0;
+                        const eTime = new Date(event.start);
+
+                        if (i < dayEvents.length - 1) {
+                            const nextTime = new Date(dayEvents[i + 1].start);
+                            durationSec = Math.max(0, (nextTime - eTime) / 1000);
+                        } else if (event.end) {
+                            durationSec = Math.max(0, (new Date(event.end) - eTime) / 1000);
+                        }
+
+                        activeWorkSec += durationSec;
                     }
-                });
+                }
 
-                const startTime = new Date(dayEvents[0].start);
-                const endTime = new Date(dayEvents[dayEvents.length - 1].start);
-                const totalDaySec = (endTime - startTime) / 1000;
-                const totalWorkSec = totalDaySec - totalBreakSec;
-
+                const targetSec = 8 * 3600; // 8 hours in seconds
                 const cell = calendarEl.querySelector(`.fc-daygrid-day[data-date='${dateStr}']`);
+
                 if (cell) {
-                    if (totalWorkSec < 8 * 3600) cell.style.backgroundColor = 'rgba(220,50,50,0.3)';
-                    else cell.style.backgroundColor = 'rgba(0,123,255,0.08)';
+                    if (activeWorkSec < targetSec) {
+                        // Less than 8 hours: Red shade (same as legend and modal)
+                        cell.style.backgroundColor = 'rgba(220,50,50,0.3)';
+                    } else {
+                        // ≥8 hours: Blue shade
+                        cell.style.backgroundColor = 'rgba(0,123,255,0.08)';
+                    }
                 }
             });
         }
+
 
 
         function generateDailyPDF(events, dateStr) {
