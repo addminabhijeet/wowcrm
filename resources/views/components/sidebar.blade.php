@@ -214,13 +214,13 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('users.admin') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Admin</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('users.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior</a></li>
+                    <li><a href="{{ route('users.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('users.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior</a></li>
+                    <li><a href="{{ route('users.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior IT Recruiter</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('users.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Accountant</a></li>
+                    <li><a href="{{ route('users.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Support</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('users.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer</a></li>
