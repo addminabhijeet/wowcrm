@@ -29,12 +29,20 @@ class DashboardController extends Controller
         ];
     }
 
+
     public function index()
     {
-        $users = User::all();
-        $newUsers = User::where('created_at', '>=', Carbon::now()->subDays(30))->get();
+        // Only users who are not deleted
+        $users = User::where('is_deleted', 0)->get();
+
+        // Only new (not deleted) users created in the last 30 days
+        $newUsers = User::where('is_deleted', 0)
+            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->get();
+
         return view('dashboard.admin', compact('users', 'newUsers'));
     }
+
 
     public function junior()
     {
