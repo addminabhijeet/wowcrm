@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Models\SmtpSetting;
-use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
-use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class SmtpSettingController extends Controller
 {
@@ -54,74 +52,53 @@ class SmtpSettingController extends Controller
 
     public function test(Request $request)
     {
-        $request->validate([
-            'test_email' => 'required|email',
-        ]);
-
         $smtp = SmtpSetting::first();
         if (!$smtp) {
-            return response()->json(['message' => 'No SMTP settings found.'], 400);
-        }
-
-        // Determine encryption
-        $encryption = strtolower($smtp->encryption);
-        if ($encryption === 'ssl/tls') $encryption = 'ssl';
-        if (!in_array($encryption, ['ssl', 'tls', null])) $encryption = null;
-
-        // Test SMTP connection
-        try {
-            $transport = new EsmtpTransport(
-                $smtp->host,
-                $smtp->port,
-                $encryption === 'ssl' // $encryption argument expects bool for SSL
-            );
-
-            $transport->setUsername($smtp->username);
-            $transport->setPassword(decrypt($smtp->password));
-
-            // start() will attempt connection
-            $transport->start();
-        } catch (TransportExceptionInterface $e) {
             return response()->json([
-                'message' => 'SMTP connection failed. Check host, port, encryption, or firewall.',
-                'error' => $e->getMessage()
-            ], 500);
+                'status' => 'error',
+                'message' => 'No SMTP settings found.'
+            ]);
         }
-
-        // Override Laravel mail config
+    
+        // ✅ Temporarily override mail settings
         config([
             'mail.default' => 'smtp',
-            'mail.mailers.smtp.transport' => 'smtp',
+            'mail.mailers.smtp.transport' => $smtp->mailer,
             'mail.mailers.smtp.host' => $smtp->host,
             'mail.mailers.smtp.port' => $smtp->port,
             'mail.mailers.smtp.username' => $smtp->username,
             'mail.mailers.smtp.password' => decrypt($smtp->password),
-            'mail.mailers.smtp.encryption' => $encryption === 'ssl' ? 'ssl' : 'tls',
-            'mail.mailers.smtp.auth_mode' => 'login',
+            'mail.mailers.smtp.encryption' => $smtp->encryption,
             'mail.from.address' => $smtp->from_address,
             'mail.from.name' => $smtp->from_name,
-            'mail.mailers.smtp.timeout' => 30,
         ]);
-
-        $testEmail = $request->test_email;
-
+    
+        $testEmail = $request->input('test_email');
+    
         try {
-            Mail::raw('This is a test email from Synergie Systems CRM.', function ($message) use ($testEmail) {
-                $message->to($testEmail)->subject('SMTP Test Email');
+            // ✅ Use html() instead of setBody()
+            Mail::send([], [], function ($message) use ($testEmail, $smtp) {
+                $html = '<p>This is a test email from <strong>' 
+                      . e($smtp->from_name) . '</strong> (' 
+                      . e($smtp->from_address) . ').</p>';
+    
+                $message->to($testEmail)
+                        ->subject('SMTP Test Email')
+                        ->html($html); // ✅ This avoids AbstractPart error
             });
-
+    
             return response()->json([
-                'message' => "Test email sent successfully to {$testEmail}!"
+                'status' => 'success',
+                'message' => "✅ Test email sent successfully to {$testEmail}!"
             ]);
-        } catch (TransportExceptionInterface $e) {
-            return response()->json([
-                'message' => 'SMTP Transport Error: ' . $e->getMessage(),
-            ], 500);
+    
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to send test email. Check credentials and server restrictions.',
-                'error' => $e->getMessage()
-            ], 500);
+                'status' => 'error',
+                'message' => '❌ Failed to send test email: ' . $e->getMessage()
+            ]);
         }
     }
+
+
 }

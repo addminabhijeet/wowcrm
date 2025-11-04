@@ -53,8 +53,11 @@ class TimerController extends Controller
         $timerSetting = TimerSetting::first();
         $workDaySeconds = $timerSetting ? $timerSetting->work_day_seconds : 8 * 60 * 60;
 
-        $juniors = User::where('role', 'junior')->get();
-        $login_user = User::where('status')->get();
+        $juniors = User::where('role', 'junior')
+        ->where('is_deleted', 0)
+        ->get();
+
+        $login_user = User::where('status')->where('is_deleted', 0)->get();
         $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
             $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
 
@@ -96,8 +99,8 @@ class TimerController extends Controller
         $timerSetting = TimerSetting::first();
         $workDaySeconds = $timerSetting ? $timerSetting->work_day_seconds : 8 * 60 * 60;
 
-        $juniors = User::where('role', 'senior')->get();
-        $login_user = User::where('status')->get();
+        $juniors = User::where('role', 'senior')->where('is_deleted', 0)->get();
+        $login_user = User::where('status')->where('is_deleted', 0)->get();
         $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
             $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
 
@@ -166,7 +169,7 @@ class TimerController extends Controller
         $workDaySeconds = $timerSetting ? $timerSetting->work_day_seconds : 8 * 60 * 60;
 
         // Fetch all juniors
-        $juniors = User::where('role', 'junior')->get();
+        $juniors = User::where('role', 'junior')->where('is_deleted', 0)->get();
 
         $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
             $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();

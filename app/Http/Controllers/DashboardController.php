@@ -251,7 +251,9 @@ class DashboardController extends Controller
 
     public function getLatestPauseTypes()
     {
-        $users = User::where('role', 'junior')->get();
+        $users = User::where('role', 'junior')
+             ->where('is_deleted', 0)
+             ->get();
 
         $data = $users->map(function ($user) {
             $latestLog = UserTimerLog::where('user_id', $user->id)
@@ -694,19 +696,20 @@ class DashboardController extends Controller
     public function editall()
     {
         // Get only users that have SMTP settings
-        $juniorUsers = User::whereHas('smtpSetting')->get();
+        $juniorUsers = User::whereHas('smtpSetting')->where('is_deleted', 0)->get();
 
         return view('smtp.editall', compact('juniorUsers'));
     }
     public function targetall()
     {
-        $targetUsers = User::whereIn('role', ['senior', 'junior'])->get();
+        $targetUsers = User::whereIn('role', ['senior', 'junior'])->where('is_deleted', 0)->get();
         return view('target.editall', compact('targetUsers'));
     }
 
     public function targetedit($id)
     {
         $targetUsers = User::whereIn('role', ['senior', 'junior'])
+            ->where('is_deleted', 0)
             ->where('id', $id)
             ->firstOrFail();
 
@@ -716,6 +719,7 @@ class DashboardController extends Controller
     public function targetadd($id)
     {
         $targetUsers = User::whereIn('role', ['senior', 'junior'])
+            ->where('is_deleted', 0)
             ->where('id', $id)
             ->firstOrFail();
 
@@ -730,7 +734,10 @@ class DashboardController extends Controller
             'index' => 'nullable|integer'
         ]);
 
-        $user = User::findOrFail($id);
+       $user = User::where('id', $id)
+        ->where('is_deleted', 0)
+        ->firstOrFail();
+
 
         // Split existing values cleanly
         $targets = $user->target ? array_map('trim', explode('|', $user->target)) : [];
@@ -764,7 +771,8 @@ class DashboardController extends Controller
 
     public function targetDelete(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        $user = User::where('is_deleted', 0)
+            ->findOrFail($id);
         $index = (int) $request->index;
 
         $targets = $user->target ? array_map('trim', explode('|', $user->target)) : [];
@@ -793,7 +801,10 @@ class DashboardController extends Controller
         $smtpUserIds = SmtpSetting::pluck('user_id')->toArray();
 
         // Get users who do not have SMTP settings
-        $users = User::whereNotIn('id', $smtpUserIds)->get();
+        $users = User::where('is_deleted', 0)
+             ->whereNotIn('id', $smtpUserIds)
+             ->get();
+
 
         return view('smtp.add', compact('users'));
     }
@@ -802,7 +813,8 @@ class DashboardController extends Controller
     public function edit($userId)
     {
         $smtp = SmtpSetting::where('user_id', $userId)->first(); // Get SMTP for specific user
-        $users = User::all(); // Keep for dropdown or selection if needed
+        $users = User::where('is_deleted', 0)->get();
+         // Keep for dropdown or selection if needed
 
         return view('smtp.edit', compact('smtp', 'users'));
     }

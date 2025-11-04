@@ -109,7 +109,10 @@ class CalendarController extends Controller
     public function allJuniorlist(Request $request)
     {
         // Fetch all users with role 'junior'
-        $juniorUsers = User::where('role', 'junior')->get();
+        $juniorUsers = User::where('role', 'junior')
+        ->where('is_deleted', 0)
+        ->get();
+
 
         // Pass users to the view
         return view('calendar.alljuniorlist', compact('juniorUsers'));
@@ -118,7 +121,9 @@ class CalendarController extends Controller
     public function allTrainerlist(Request $request)
     {
         // Fetch all users with role 'trainer'
-        $trainerUsers = User::where('role', 'trainer')->get();
+        $trainerUsers = User::where('role', 'trainer')        
+        ->where('is_deleted', 0)
+        ->get();
 
         // Pass users to the view
         return view('calendar.alltrainerlist', compact('trainerUsers'));
@@ -127,7 +132,9 @@ class CalendarController extends Controller
     public function allAccountantlist(Request $request)
     {
         // Fetch all users with role 'accountant'
-        $accountantUsers = User::where('role', 'accountant')->get();
+        $accountantUsers = User::where('role', 'accountant')        
+        ->where('is_deleted', 0)
+        ->get();
 
         // Pass users to the view
         return view('calendar.allaccountantlist', compact('accountantUsers'));
@@ -136,7 +143,9 @@ class CalendarController extends Controller
     public function allAdminlist(Request $request)
     {
         // Fetch all users with role 'trainer'
-        $adminUsers = User::where('role', 'admin')->get();
+        $adminUsers = User::where('role', 'admin')        
+        ->where('is_deleted', 0)
+        ->get();
 
         // Pass users to the view
         return view('calendar.alladminlist', compact('adminUsers'));
@@ -145,7 +154,9 @@ class CalendarController extends Controller
     public function allSeniorlist(Request $request)
     {
         // Fetch all users with role 'senior'
-        $seniorUsers = User::where('role', 'senior')->get();
+        $seniorUsers = User::where('role', 'senior')        
+        ->where('is_deleted', 0)
+        ->get();
 
         // Pass users to the view
         return view('calendar.allseniorlist', compact('seniorUsers'));
@@ -174,7 +185,10 @@ class CalendarController extends Controller
         }
 
         // ✅ Fetch the junior user details
-        $junior = User::find($user_id);
+        $junior = User::where('id', $user_id)
+              ->where('is_deleted', 0)
+              ->first();
+
 
         if (!$junior) {
             abort(404, 'Junior not found');
@@ -211,7 +225,9 @@ class CalendarController extends Controller
                 break;
         }
 
-        $user = User::findOrFail($user_id);
+        $user = User::where('is_deleted', 0)
+            ->findOrFail($user_id);
+
 
         return view('calendar.allsenior', compact('view', 'date', 'user'));
     }
@@ -239,7 +255,10 @@ class CalendarController extends Controller
         }
 
         // ✅ Fetch the accountant user details
-        $accountant = User::find($user_id);
+        $accountant = User::where('id', $user_id)
+            ->where('is_deleted', 0)
+            ->first();
+
 
         if (!$accountant) {
             abort(404, 'Accountant not found');
@@ -277,7 +296,10 @@ class CalendarController extends Controller
         }
 
         // ✅ Fetch the trainer user details
-        $trainer = User::find($user_id);
+      $trainer = User::where('id', $user_id)
+        ->where('is_deleted', 0)
+        ->first();
+
 
         if (!$trainer) {
             abort(404, 'Trainer not found');
@@ -334,7 +356,9 @@ class CalendarController extends Controller
         // ✅ Fetch the junior user
         $junior = User::where('id', $userId)
             ->where('role', 'junior')
+            ->where('is_deleted', 0)
             ->first();
+
 
         if (!$junior) {
             return response()->json(['error' => 'Junior user not found'], 404);
@@ -378,9 +402,12 @@ class CalendarController extends Controller
     public function getAllTrainerEvents(Request $request, $userId)
     {
         // ✅ Fetch the junior user
-        $junior = User::where('id', $userId)
-            ->where('role', 'junior')
-            ->first();
+        $junior = User::where([
+                ['id', '=', $userId],
+                ['role', '=', 'junior'],
+                ['is_deleted', '=', 0],
+            ])->first();
+
 
         if (!$junior) {
             return response()->json(['error' => 'Junior user not found'], 404);
@@ -426,7 +453,9 @@ class CalendarController extends Controller
         // ✅ Fetch the junior user
         $junior = User::where('id', $userId)
             ->where('role', 'junior')
+            ->where('is_deleted', 0)
             ->first();
+
 
         if (!$junior) {
             return response()->json(['error' => 'Junior user not found'], 404);

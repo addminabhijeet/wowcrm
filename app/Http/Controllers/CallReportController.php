@@ -335,7 +335,7 @@ class CallReportController extends Controller
         $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Payment Completed')
+            ->where('Exe_Remarks', 'Ready To Paid')
             ->count();
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
@@ -386,7 +386,7 @@ class CallReportController extends Controller
     public function alljuniorlist(Request $request)
     {
         // Fetch all users with role 'junior'
-        $juniorUsers = User::where('role', 'junior')->get();
+        $juniorUsers = User::where('role', 'junior')->where('is_deleted', 0)->get();
 
         // Pass users to the view
         return view('reports.alljuniorlist', compact('juniorUsers'));
@@ -395,7 +395,7 @@ class CallReportController extends Controller
     public function allseniorlist(Request $request)
     {
         // Fetch all users with role 'senior'
-        $seniorUsers = User::where('role', 'senior')->get();
+        $seniorUsers = User::where('role', 'senior')->where('is_deleted', 0)->get();
 
         // Pass users to the view
         return view('reports.allseniorlist', compact('seniorUsers'));
@@ -404,7 +404,7 @@ class CallReportController extends Controller
     public function allaccountantlist(Request $request)
     {
         // Fetch all users with role 'senior'
-        $accountantUsers = User::where('role', 'accountant')->get();
+        $accountantUsers = User::where('role', 'accountant')->where('is_deleted', 0)->get();
 
         // Pass users to the view
         return view('reports.allaccountantlist', compact('accountantUsers'));
@@ -413,7 +413,7 @@ class CallReportController extends Controller
     public function alltrainerlist(Request $request)
     {
         // Fetch all users with role 'trainer'
-        $trainerUsers = User::where('role', 'trainer')->get();
+        $trainerUsers = User::where('role', 'trainer')->where('is_deleted', 0)->get();
 
         // Pass users to the view
         return view('reports.alltrainerlist', compact('trainerUsers'));
@@ -422,7 +422,9 @@ class CallReportController extends Controller
     public function alljuniordaily(Request $request, $userId)
     {
         // Get the junior user
-        $juniorUser = User::findOrFail($userId);
+        $juniorUser =  User::where('id', $userId)
+            ->where('is_deleted', 0)
+            ->firstOrFail();
         $createdByKey = "{$juniorUser->id}|junior";
 
         // ================================
@@ -555,7 +557,9 @@ class CallReportController extends Controller
     public function alltrainerdaily(Request $request, $userId)
     {
         // Get the trainer user
-        $trainerUser = User::findOrFail($userId);
+        $trainerUser =  User::where('id', $userId)
+            ->where('is_deleted', 0)
+            ->firstOrFail();
         $createdByKey = "{$trainerUser->id}|trainer";
 
         // ================================
@@ -689,7 +693,9 @@ class CallReportController extends Controller
     public function allaccountantdaily(Request $request, $userId)
     {
         // Get the accountant user
-        $juniorUser = User::findOrFail($userId);
+        $juniorUser =  User::where('id', $userId)
+            ->where('is_deleted', 0)
+            ->firstOrFail();
         $createdByKey = "{$juniorUser->id}|junior";
 
         // ================================
@@ -988,7 +994,9 @@ class CallReportController extends Controller
 
     public function alljuniormonthly(Request $request, $userId)
     {
-        $juniorUser = User::findOrFail($userId);
+        $juniorUser =  User::where('id', $userId)
+            ->where('is_deleted', 0)
+            ->firstOrFail();
         $createdByKey = "{$juniorUser->id}|junior";
 
         // Selected month (default current month in YYYY-MM)
@@ -1107,7 +1115,7 @@ class CallReportController extends Controller
         $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Payment Completed')
+            ->where('Exe_Remarks', 'Ready To Paid')
             ->count();
 
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
@@ -1252,7 +1260,9 @@ class CallReportController extends Controller
 
     public function allaccountantmonthly(Request $request, $userId)
     {
-        $accountantUser = User::findOrFail($userId);
+        $accountantUser =  User::where('id', $userId)
+            ->where('is_deleted', 0)
+            ->firstOrFail();
         $createdByKey = "{$accountantUser->id}|accountant";
 
         // Selected month (default current month in YYYY-MM)
@@ -1361,7 +1371,9 @@ class CallReportController extends Controller
 
     public function alltrainermonthly(Request $request, $userId)
     {
-        $trainerUser = User::findOrFail($userId);
+        $trainerUser =  User::where('id', $userId)
+            ->where('is_deleted', 0)
+            ->firstOrFail();
         $createdByKey = "{$trainerUser->id}|trainer";
 
         // Selected month (default current month in YYYY-MM)
@@ -1471,7 +1483,9 @@ class CallReportController extends Controller
     public function allseniormonthly(Request $request, $userId)
     {
         $createdByKey = "{$userId}|senior";
-        $user = User::findOrFail($userId);
+        $user =  User::where('id', $userId)
+            ->where('is_deleted', 0)
+            ->firstOrFail();
 
         // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
@@ -1619,7 +1633,7 @@ class CallReportController extends Controller
         $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Payment Completed')
+            ->where('Exe_Remarks', 'Ready To Paid')
             ->count();
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
@@ -1995,7 +2009,7 @@ class CallReportController extends Controller
         $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Payment Completed')
+            ->where('Exe_Remarks', 'Ready To Paid')
             ->count();
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
