@@ -490,7 +490,7 @@ $script ='<script>
                 };
 
                 // ✅ Only set minDate for "Date" field (Graduation Date unrestricted)
-                if (key === "Date") opts.minDate = laravelToday;
+                if (key === "Graduation Date") opts.maxDate = laravelToday;
 
                 flatpickr(input, opts);
 
