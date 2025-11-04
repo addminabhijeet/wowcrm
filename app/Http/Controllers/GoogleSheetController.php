@@ -558,7 +558,7 @@ class GoogleSheetController extends Controller
 
         // Handle AJAX request for both search and pagination
         if ($request->ajax()) {
-            return view('database.partials.senior_table', compact('data'))->render();
+            return view('database.senior', compact('data', 'juniorUsers'))->render();
         }
 
         return view('database.senior', compact('data', 'juniorUsers'));
