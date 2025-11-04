@@ -987,14 +987,7 @@ $script ='<script>
             fetchTable('', 1, junior_user, rowId);
         });
 
-        // Pagination click (AJAX)
-        $(document).on('click', '.pagination a', function(e) {
-            e.preventDefault();
-            const page = $(this).attr('href').split('page=')[1];
-            const search = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val() || '';
-            fetchTable(search, page, junior_user);
-        });
+
 
         // Junior dropdown filter
         $(document).on('change', '#junior-filter', function() {
