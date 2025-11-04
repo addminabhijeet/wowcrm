@@ -492,8 +492,7 @@ $script ='<script>
                     }
                 };
 
-                // ✅ Use Laravel's timezone-based today
-                
+                // ✅ Only set minDate for "Date" field (Graduation Date unrestricted)
                 if (key === "Date") opts.minDate = laravelToday;
 
                 flatpickr(input, opts);
@@ -505,6 +504,7 @@ $script ='<script>
                 });
             });
         }
+
 
 
         function initLocationAutocomplete(context = document) {
