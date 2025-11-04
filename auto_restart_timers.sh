@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Correct Laravel project path
-PROJECT_PATH="/home/u235777426/domains/admin.pdfreducer.com/public_html"
+PROJECT_PATH="/home/u235777426/domains/norloxsolutionscrm.com/public_html"
 
 # Full PHP binary path (verify with `which php`)
 PHP_PATH="/usr/bin/php"
