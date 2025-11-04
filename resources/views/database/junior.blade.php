@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='Users Grid';
+$title='Users Grid Raj';
 $subTitle = 'Database Raj';
 $script ='<script>
     $(".remove-item-btn").on("click", function() {
