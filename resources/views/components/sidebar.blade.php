@@ -233,9 +233,6 @@ $role = Auth::user()->role;
                     <span>Calendar</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('calendar.allAdminlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Admin Calendar</a></li>
-                </ul>
-                <ul class="sidebar-submenu">
                     <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Junior Calendar</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
