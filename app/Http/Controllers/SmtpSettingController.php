@@ -51,7 +51,6 @@ class SmtpSettingController extends Controller
 
         return redirect()->back()->with('success', 'SMTP settings updated successfully!');
     }
-
     public function test(Request $request)
     {
         $smtp = SmtpSetting::first();
@@ -78,16 +77,24 @@ class SmtpSettingController extends Controller
 
         $testEmail = $request->input('test_email');
 
-        // Define the HTML content first
-        $htmlContent = '<p>This is a test email from <strong>'
-            . e($smtp->from_name) . '</strong> ('
-            . e($smtp->from_address) . ').</p>';
+        // ✅ Use the same message style as your main mail code
+        $subject = "Test Email from {$smtp->from_name}";
+        $messageBody =
+            "Hi there,\n\n" .
+            "This is a test email sent using your configured SMTP settings.\n\n" .
+            "Mailer: {$smtp->mailer}\n" .
+            "Host: {$smtp->host}\n" .
+            "Port: {$smtp->port}\n" .
+            "Encryption: {$smtp->encryption}\n\n" .
+            "If you received this message, your SMTP configuration is working perfectly.\n\n" .
+            "Best regards,\n{$smtp->from_name}";
 
         try {
-            // 🚀 THE FIX: Use Mail::html() to send raw HTML content
-            Mail::html($htmlContent, function ($message) use ($testEmail) {
-                $message->to($testEmail)
-                    ->subject('SMTP Test Email');
+            // ✅ Send email exactly like in your main logic
+            Mail::raw($messageBody, function ($message) use ($testEmail, $subject, $smtp) {
+                $message->from($smtp->from_address, $smtp->from_name)
+                    ->to($testEmail)
+                    ->subject($subject);
             });
 
             return response()->json([
