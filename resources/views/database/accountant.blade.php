@@ -55,14 +55,9 @@ $script ='<script>
                         <th scope="col">Phone Number</th>
                         <th scope="col">Location</th>
                         <th scope="col">Remark</th>
-                        <th scope="col">Relocation</th>
-                        <th scope="col">Graduation Date</th>
-                        <th scope="col">Immigration</th>
-                        <th scope="col">Course</th>
                         <th scope="col">Amount</th>
                         <th scope="col">Qualification</th>
                         <th scope="col">Exe Remarks</th>
-                        
                         <th scope="col">Forwarded By</th>
                         <th scope="col">View</th>
                         <th scope="col" class="text-center">Actions</th>
@@ -108,51 +103,6 @@ $script ='<script>
                         <td>
                             <input type="text" class="form-control remark-autocomplete" data-key="Remark"
                                 value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
-                        </td>
-
-                        {{-- Relocation --}}
-                        <td>
-                            @php $relOptions = ['YES','NO']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Relocation">
-                                <option value="">-- Select --</option>
-                                @foreach($relOptions as $option)
-                                <option value="{{ $option }}" {{ $row->Relocation === $option ? 'selected' : '' }}>
-                                    {{ $option }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-                        {{-- Graduation Date --}}
-                        <td>
-                            <input type="text" class="form-control date-picker" data-key="Graduation Date"
-                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
-                        </td>
-
-                        {{-- Immigration --}}
-                        <td>
-                            @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','HIB','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Immigration">
-                                <option value="">-- Select --</option>
-                                @foreach($immOptions as $option)
-                                <option value="{{ $option }}" {{ $row->Immigration === $option ? 'selected' : '' }}>
-                                    {{ $option }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-                        {{-- Course --}}
-                        <td>
-                            @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Course">
-                                <option value="">-- Select --</option>
-                                @foreach($courseOptions as $option)
-                                <option value="{{ $option }}" {{ $row->Course === $option ? 'selected' : '' }}>
-                                    {{ $option }}
-                                </option>
-                                @endforeach
-                            </select>
                         </td>
 
                         {{-- Amount --}}
