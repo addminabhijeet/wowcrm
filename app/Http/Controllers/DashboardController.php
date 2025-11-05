@@ -13,6 +13,7 @@ use App\Models\TimerSetting;
 use Illuminate\Support\Facades\Mail;
 use App\Models\SmtpSetting;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class DashboardController extends Controller
@@ -864,26 +865,41 @@ class DashboardController extends Controller
             'encryption' => 'required|string',
             'from_address' => 'required|email',
             'from_name' => 'required|string',
+            'signature_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048', // ✅ added validation
         ]);
 
         $smtp = SmtpSetting::where('user_id', $userId)->firstOrFail();
 
+        // --- Update fields ---
         $smtp->mailer = $request->mailer;
         $smtp->host = $request->host;
         $smtp->port = $request->port;
         $smtp->username = $request->username;
         if ($request->filled('password')) {
-            $smtp->password = encrypt($request->password); // encrypt password
+            $smtp->password = encrypt($request->password);
         }
         $smtp->encryption = $request->encryption;
         $smtp->from_address = $request->from_address;
         $smtp->from_name = $request->from_name;
 
+        // --- ✅ Handle signature image upload ---
+        if ($request->hasFile('signature_image')) {
+            // Delete old image if it exists
+            if (!empty($smtp->signature_image) && \Storage::disk('public')->exists($smtp->signature_image)) {
+                \Storage::disk('public')->delete($smtp->signature_image);
+            }
+
+            // Store new image in "public/signatures/"
+            $path = $request->file('signature_image')->store('signatures', 'public');
+            $smtp->signature_image = $path;
+        }
+
         $smtp->save();
 
         return redirect()->back()->with('success', 'SMTP settings updated successfully!');
     }
-    
+
+
     public function test(Request $request)
     {
         $smtp = SmtpSetting::first();

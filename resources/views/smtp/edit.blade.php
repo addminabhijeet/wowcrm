@@ -136,6 +136,37 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                                     </div>
                                 </div>
 
+                                {{-- ✅ Signature Image --}}
+                                <div class="col-sm-6">
+                                    <label class="form-label fw-semibold text-primary-light text-md mb-8">
+                                        Signature Image
+                                    </label>
+                                    <div class="input-group radius-8">
+                                        <span class="input-group-text bg-neutral-100 border-neutral-300">
+                                            <iconify-icon icon="mdi:image-outline"></iconify-icon>
+                                        </span>
+                                        <input type="file" name="signature_image" id="signatureImage" accept="image/*" class="form-control radius-8">
+                                    </div>
+
+                                    {{-- ✅ Preview Current Image --}}
+                                    @if(!empty($smtp->signature_image))
+                                    <div class="mt-2">
+                                        <p class="text-sm text-primary-light mb-1">Current Signature Image:</p>
+                                        <img src="{{ asset('storage/'.$smtp->signature_image) }}"
+                                            alt="Signature Image"
+                                            class="img-fluid rounded border"
+                                            style="max-height: 120px;">
+                                    </div>
+                                    @endif
+
+                                    {{-- ✅ Preview New Upload --}}
+                                    <div id="previewContainer" class="mt-2" style="display:none;">
+                                        <p class="text-sm text-primary-light mb-1">Preview:</p>
+                                        <img id="previewImage" class="img-fluid rounded border" style="max-height: 120px;">
+                                    </div>
+                                </div>
+
+
                                 {{-- From Name --}}
                                 <div class="col-sm-6">
                                     <label class="form-label fw-semibold text-primary-light text-md mb-8">
@@ -327,6 +358,21 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
 
         } catch (e) {
             console.error("[Error] SMTP page initialization failed:", e);
+        }
+    });
+
+    // --- Signature image preview ---
+    $('#signatureImage').on('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                $('#previewImage').attr('src', e.target.result);
+                $('#previewContainer').show();
+            };
+            reader.readAsDataURL(file);
+        } else {
+            $('#previewContainer').hide();
         }
     });
 </script>
