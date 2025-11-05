@@ -5,8 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Models\SmtpSetting;
-use Symfony\Component\Mime\Part\TextPart;
-use Symfony\Component\Mime\Part\HtmlPart;
+
 
 
 class SmtpSettingController extends Controller
@@ -79,15 +78,16 @@ class SmtpSettingController extends Controller
 
         $testEmail = $request->input('test_email');
 
-        try {
-            Mail::send([], [], function ($message) use ($testEmail, $smtp) {
-                $htmlContent = '<p>This is a test email from <strong>'
-                    . e($smtp->from_name) . '</strong> ('
-                    . e($smtp->from_address) . ').</p>';
+        // Define the HTML content first
+        $htmlContent = '<p>This is a test email from <strong>'
+            . e($smtp->from_name) . '</strong> ('
+            . e($smtp->from_address) . ').</p>';
 
+        try {
+            // 🚀 THE FIX: Use Mail::html() to send raw HTML content
+            Mail::html($htmlContent, function ($message) use ($testEmail) {
                 $message->to($testEmail)
-                    ->subject('SMTP Test Email')
-                    ->html($htmlContent); // ✅ Works in Laravel 9–11
+                    ->subject('SMTP Test Email');
             });
 
             return response()->json([
