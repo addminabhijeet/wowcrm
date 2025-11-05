@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6fdb01cf383b64f9650cb001c7804d1f",
+    "content-hash": "352664b0b048f044edd31d96713e159b",
     "packages": [
         {
             "name": "backpack/basset",
