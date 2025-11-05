@@ -6,6 +6,7 @@ $vendorDir = dirname(__DIR__);
 $baseDir = dirname($vendorDir);
 
 return array(
+    'App\\Console\\Commands\\DecrementTimers' => $baseDir . '/app/Console/Commands/DecrementTimers.php',
     'App\\Http\\Controllers\\Auth\\LoginController' => $baseDir . '/app/Http/Controllers/Auth/LoginController.php',
     'App\\Http\\Controllers\\Auth\\RegisterController' => $baseDir . '/app/Http/Controllers/Auth/RegisterController.php',
     'App\\Http\\Controllers\\CalendarController' => $baseDir . '/app/Http/Controllers/CalendarController.php',
@@ -18,6 +19,7 @@ return array(
     'App\\Http\\Controllers\\PaymentController' => $baseDir . '/app/Http/Controllers/PaymentController.php',
     'App\\Http\\Controllers\\ResumeController' => $baseDir . '/app/Http/Controllers/ResumeController.php',
     'App\\Http\\Controllers\\SmtpSettingController' => $baseDir . '/app/Http/Controllers/SmtpSettingController.php',
+    'App\\Http\\Controllers\\TimerApiController' => $baseDir . '/app/Http/Controllers/TimerApiController.php',
     'App\\Http\\Controllers\\TimerController' => $baseDir . '/app/Http/Controllers/TimerController.php',
     'App\\Http\\Controllers\\UserController' => $baseDir . '/app/Http/Controllers/UserController.php',
     'App\\Http\\Kernel' => $baseDir . '/app/Http/Kernel.php',

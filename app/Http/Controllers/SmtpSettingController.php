@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use App\Models\SmtpSetting;
+use Symfony\Component\Mime\Part\TextPart;
+use Symfony\Component\Mime\Part\HtmlPart;
+
 
 class SmtpSettingController extends Controller
 {
@@ -82,9 +85,10 @@ class SmtpSettingController extends Controller
                     . e($smtp->from_name) . '</strong> ('
                     . e($smtp->from_address) . ').</p>';
 
+                // ✅ Use Symfony Mime HtmlPart instead of string
                 $message->to($testEmail)
                     ->subject('SMTP Test Email')
-                    ->setBody($htmlContent, 'text/html'); // ✅ Compatible fix
+                    ->setBody(new HtmlPart($htmlContent)); // ✅ FIX HERE
             });
 
             return response()->json([

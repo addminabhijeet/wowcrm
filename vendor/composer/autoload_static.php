@@ -581,6 +581,7 @@ class ComposerStaticInit352664b0b048f044edd31d96713e159b
     );
 
     public static $classMap = array (
+        'App\\Console\\Commands\\DecrementTimers' => __DIR__ . '/../..' . '/app/Console/Commands/DecrementTimers.php',
         'App\\Http\\Controllers\\Auth\\LoginController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/LoginController.php',
         'App\\Http\\Controllers\\Auth\\RegisterController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/RegisterController.php',
         'App\\Http\\Controllers\\CalendarController' => __DIR__ . '/../..' . '/app/Http/Controllers/CalendarController.php',
@@ -593,6 +594,7 @@ class ComposerStaticInit352664b0b048f044edd31d96713e159b
         'App\\Http\\Controllers\\PaymentController' => __DIR__ . '/../..' . '/app/Http/Controllers/PaymentController.php',
         'App\\Http\\Controllers\\ResumeController' => __DIR__ . '/../..' . '/app/Http/Controllers/ResumeController.php',
         'App\\Http\\Controllers\\SmtpSettingController' => __DIR__ . '/../..' . '/app/Http/Controllers/SmtpSettingController.php',
+        'App\\Http\\Controllers\\TimerApiController' => __DIR__ . '/../..' . '/app/Http/Controllers/TimerApiController.php',
         'App\\Http\\Controllers\\TimerController' => __DIR__ . '/../..' . '/app/Http/Controllers/TimerController.php',
         'App\\Http\\Controllers\\UserController' => __DIR__ . '/../..' . '/app/Http/Controllers/UserController.php',
         'App\\Http\\Kernel' => __DIR__ . '/../..' . '/app/Http/Kernel.php',
