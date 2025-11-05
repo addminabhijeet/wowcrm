@@ -179,7 +179,7 @@ $role = Auth::user()->role;
                     <span>Candidate</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href=""><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                    <li><a href="candidate.accountant"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
                 </ul>
             </li>
 
