@@ -252,8 +252,8 @@ class DashboardController extends Controller
     public function getLatestPauseTypes()
     {
         $users = User::where('role', 'junior')
-             ->where('is_deleted', 0)
-             ->get();
+            ->where('is_deleted', 0)
+            ->get();
 
         $data = $users->map(function ($user) {
             $latestLog = UserTimerLog::where('user_id', $user->id)
@@ -734,9 +734,9 @@ class DashboardController extends Controller
             'index' => 'nullable|integer'
         ]);
 
-       $user = User::where('id', $id)
-        ->where('is_deleted', 0)
-        ->firstOrFail();
+        $user = User::where('id', $id)
+            ->where('is_deleted', 0)
+            ->firstOrFail();
 
 
         // Split existing values cleanly
@@ -802,8 +802,8 @@ class DashboardController extends Controller
 
         // Get users who do not have SMTP settings
         $users = User::where('is_deleted', 0)
-             ->whereNotIn('id', $smtpUserIds)
-             ->get();
+            ->whereNotIn('id', $smtpUserIds)
+            ->get();
 
 
         return view('smtp.add', compact('users'));
@@ -814,7 +814,7 @@ class DashboardController extends Controller
     {
         $smtp = SmtpSetting::where('user_id', $userId)->first(); // Get SMTP for specific user
         $users = User::where('is_deleted', 0)->get();
-         // Keep for dropdown or selection if needed
+        // Keep for dropdown or selection if needed
 
         return view('smtp.edit', compact('smtp', 'users'));
     }
@@ -886,26 +886,25 @@ class DashboardController extends Controller
 
     public function test(Request $request)
     {
-        $request->validate([
-            'test_email' => 'required|email',
-        ]);
 
         $smtp = SmtpSetting::first();
+
         if (!$smtp) {
-            return response()->json(['message' => 'No SMTP settings found.'], 400);
+            return response()->json([
+                'status' => 'error',
+                'message' => 'No SMTP settings found.'
+            ]);
         }
 
-        // Determine encryption
         $encryption = strtolower($smtp->encryption);
         if ($encryption === 'ssl/tls') $encryption = 'ssl';
         if (!in_array($encryption, ['ssl', 'tls'])) {
             $encryption = null;
         }
 
-        $testEmail = $request->test_email;
 
         try {
-            // Configure and use mailer directly
+            // Configure SMTP dynamically
             config([
                 'mail.mailers.custom_smtp' => [
                     'transport' => 'smtp',
@@ -918,27 +917,50 @@ class DashboardController extends Controller
                     'auth_mode' => 'login',
                 ]
             ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to configure SMTP: ' . $e->getMessage(),
+                'debug' => [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ],
+            ]);
+        }
 
-            // Use the custom mailer
-            Mail::mailer('custom_smtp')->send([], [], function ($message) use ($testEmail, $smtp) {
-                $message->from($smtp->from_address, $smtp->from_name)
-                    ->to($testEmail)
-                    ->subject('SMTP Test Email - Synergie Systems CRM')
-                    ->setBody('This is a test email from Synergie Systems CRM.');
+        $testEmail = trim($request->input('test_email'));
+
+        if (!filter_var($testEmail, FILTER_VALIDATE_EMAIL)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid test email address.'
+            ]);
+        }
+
+        $subject = "Testing the Mail Functionality";
+        $messageBody = "Hi Test,\n\nThis is a test email sent to verify SMTP configuration.\n\nBest,\nYour App";
+
+        try {
+            Mail::raw($messageBody, function ($message) use ($testEmail, $subject) {
+                $message->to($testEmail)
+                    ->subject($subject);
             });
 
             return response()->json([
-                'message' => "Test email sent successfully to {$testEmail}!"
+                'status' => 'success',
+                'message' => "✅ Test email sent successfully to {$testEmail}!"
             ]);
-        } catch (TransportExceptionInterface $e) {
-            return response()->json([
-                'message' => 'SMTP Transport Error: ' . $e->getMessage(),
-            ], 500);
         } catch (\Exception $e) {
             return response()->json([
-                'message' => 'Failed to send test email.',
-                'error' => $e->getMessage()
-            ], 500);
+                'status' => 'error',
+                'message' => '❌ Failed to send test email: ' . $e->getMessage(),
+                'debug' => [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ],
+            ]);
         }
     }
 }
