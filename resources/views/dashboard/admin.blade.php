@@ -35,7 +35,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
             <div class="card-body p-20">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
                     <div>
-                        <p class="fw-medium text-primary-light mb-1">Total IT Caller</p>
+                        <p class="fw-medium text-primary-light mb-1">Total IT Recruiter</p>
                         <h6 class="mb-0">{{ $users->where('role', 'junior')->count() }}</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
@@ -46,7 +46,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                     <span class="d-inline-flex align-items-center gap-1 text-danger-main">
                         <iconify-icon icon="bxs:down-arrow" class="text-xs"></iconify-icon> 
                     </span>
-                    Last 30 days IT Caller Users
+                    Last 30 days IT Recruiter Users
                 </p>
             </div>
         </div><!-- card end -->

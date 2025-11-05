@@ -87,7 +87,7 @@ $script = '<script>
                                     Role <span class="text-danger-600">*</span>
                                 </label>
                                 <select name="role" id="role" class="form-control radius-8 form-select" disabled>
-                                    <option value="junior">IT Caller</option>
+                                    <option value="junior">IT Recruiter</option>
                                     <option value="senior">Senior Caller</option>
                                     <option value="admin" selected>Admin</option>
                                     <option value="customer">Customer</option>

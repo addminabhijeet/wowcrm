@@ -18,7 +18,7 @@ $role = Auth::user()->role;
     <div class="sidebar-menu-area">
         <ul class="sidebar-menu" id="sidebar-menu">
 
-            {{-- ================= IT Caller ================= --}}
+            {{-- ================= IT Recruiter ================= --}}
             @if($role === 'junior')
             <li class="dropdown">
                 <a href="javascript:void(0)">
@@ -26,7 +26,7 @@ $role = Auth::user()->role;
                     <span>Dashboard</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('dashboard.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Caller Dashboard</a></li>
+                    <li><a href="{{ route('dashboard.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Dashboard</a></li>
                 </ul>
             </li>
 
@@ -36,7 +36,7 @@ $role = Auth::user()->role;
                     <span>Calendar</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('calendar.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Caller Cal.</a></li>
+                    <li><a href="{{ route('calendar.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Cal.</a></li>
                 </ul>
             </li>
 
@@ -91,7 +91,7 @@ $role = Auth::user()->role;
                 </ul>
 
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>IT Caller Calendar</a></li>
+                    <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>IT Recruiter Calendar</a></li>
                 </ul>
             </li>
 
@@ -198,7 +198,7 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('call.reports.allseniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Caller Team Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('call.reports.alljuniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Caller Team Report</a></li>
+                    <li><a href="{{ route('call.reports.alljuniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Team Report</a></li>
                 </ul>
             </li>
             @endif
@@ -243,7 +243,7 @@ $role = Auth::user()->role;
                     <span>Calendar</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>IT Caller Calendar</a></li>
+                    <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>IT Recruiter Calendar</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('calendar.allSeniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Senior Caller Calendar</a></li>
@@ -296,7 +296,7 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('timer.allsenior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Caller Timer</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('timer.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Caller Timer</a></li>
+                    <li><a href="{{ route('timer.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Timer</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('timer.admin') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Setting</a></li>

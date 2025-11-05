@@ -54,7 +54,7 @@
                     <div class="mb-16">
                         <select name="role" class="form-control h-56-px bg-neutral-50 radius-12" required>
                             <option value="" disabled selected>Select Role</option>
-                            <option value="junior">IT Caller</option>
+                            <option value="junior">IT Recruiter</option>
                             <option value="senior">Senior Caller</option>
                             <option value="customer">Customer</option>
                             <option value="accountant">Support</option>

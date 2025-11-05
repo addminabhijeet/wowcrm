@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
-$title='All IT Caller Call Report';
-$subTitle = 'All IT Caller Call Report';
+$title='All IT Recruiter Call Report';
+$subTitle = 'All IT Recruiter Call Report';
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
         $(this).closest("tr").addClass("d-none")
@@ -75,7 +75,7 @@ $script = '<script>
                     </tr>
                     @empty
                     <tr>
-                        <td colspan="7" class="text-center">No IT Caller users found.</td>
+                        <td colspan="7" class="text-center">No IT Recruiter users found.</td>
                     </tr>
                     @endforelse
                 </tbody>
