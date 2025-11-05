@@ -885,8 +885,8 @@ class DashboardController extends Controller
         // --- ✅ Handle signature image upload ---
         if ($request->hasFile('signature_image')) {
             // Delete old image if it exists
-            if (!empty($smtp->signature_image) && \Storage::disk('public')->exists($smtp->signature_image)) {
-                \Storage::disk('public')->delete($smtp->signature_image);
+            if (!empty($smtp->signature_image) && Storage::disk('public')->exists($smtp->signature_image)) {
+                Storage::disk('public')->delete($smtp->signature_image);
             }
 
             // Store new image in "public/signatures/"
