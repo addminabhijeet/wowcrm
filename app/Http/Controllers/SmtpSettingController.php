@@ -61,7 +61,7 @@ class SmtpSettingController extends Controller
             ]);
         }
 
-        // ✅ Configure SMTP settings dynamically
+        // ✅ Configure SMTP dynamically
         config([
             'mail.default' => 'smtp',
             'mail.mailers.smtp.transport' => $smtp->mailer,
@@ -84,7 +84,7 @@ class SmtpSettingController extends Controller
 
                 $message->to($testEmail)
                     ->subject('SMTP Test Email')
-                    ->html($htmlContent); // ✅ Correct way to set HTML body
+                    ->setBody($htmlContent, 'text/html'); // ✅ Compatible fix
             });
 
             return response()->json([
