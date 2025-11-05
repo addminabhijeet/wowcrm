@@ -53,14 +53,15 @@ class SmtpSettingController extends Controller
     public function test(Request $request)
     {
         $smtp = SmtpSetting::first();
+
         if (!$smtp) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'No SMTP settings found.'
             ]);
         }
-    
-        // ✅ Temporarily override mail settings
+
+        // ✅ Configure SMTP settings dynamically
         config([
             'mail.default' => 'smtp',
             'mail.mailers.smtp.transport' => $smtp->mailer,
@@ -72,26 +73,24 @@ class SmtpSettingController extends Controller
             'mail.from.address' => $smtp->from_address,
             'mail.from.name' => $smtp->from_name,
         ]);
-    
+
         $testEmail = $request->input('test_email');
-    
+
         try {
-            // ✅ Use html() instead of setBody()
             Mail::send([], [], function ($message) use ($testEmail, $smtp) {
-                $html = '<p>This is a test email from <strong>' 
-                      . e($smtp->from_name) . '</strong> (' 
-                      . e($smtp->from_address) . ').</p>';
-    
+                $htmlContent = '<p>This is a test email from <strong>'
+                    . e($smtp->from_name) . '</strong> ('
+                    . e($smtp->from_address) . ').</p>';
+
                 $message->to($testEmail)
-                        ->subject('SMTP Test Email')
-                        ->html($html); // ✅ This avoids AbstractPart error
+                    ->subject('SMTP Test Email')
+                    ->html($htmlContent); // ✅ Correct way to set HTML body
             });
-    
+
             return response()->json([
                 'status' => 'success',
                 'message' => "✅ Test email sent successfully to {$testEmail}!"
             ]);
-    
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
@@ -99,6 +98,4 @@ class SmtpSettingController extends Controller
             ]);
         }
     }
-
-
 }
