@@ -16,6 +16,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\SmtpSettingController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\TimerApiController;
+use App\Http\Controllers\CandidateController;
 
 
 
@@ -157,6 +158,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/accountant/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewaccountantResume'])->name('view.resume');
     Route::get('/dashboard/accountant/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadaccountantResume'])->name('download.resume');
     Route::post('/dashboard/check-email', [GoogleSheetController::class, 'checkEmail'])->name('check.uniqueemail');
+
+    Route::get('/dashboard/accountant/candidate', [CandidateController::class, 'accountant'])->name('candidate.accountant');
+    Route::post('/dashboard/accountant/candidate/fetch', [CandidateController::class, 'accountantfetch'])->name('candidate.accountantfetch');
+    Route::patch('/dashboard/accountant/candidate/pdfupdate/{id}', [CandidateController::class, 'accountantpdfupdate'])->name('candidate.accountantpdfupdate');
+    Route::post('/dashboard/accountant/candidate/pdfstore', [CandidateController::class, 'accountantpdfstore'])->name('candidate.accountantpdfstore');
 
     Route::get('/dashboard/admin/call-reports', [CallReportController::class, 'index'])->name('call.reports.index');
     Route::get('/dashboard/junior/call-reports', [CallReportController::class, 'junior'])->name('call.reports.junior');
