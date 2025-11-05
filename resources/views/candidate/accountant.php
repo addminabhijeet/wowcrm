@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
-$title='All IT Caller Calendar';
-$subTitle = 'All IT Caller Calendar';
+$title='All Candidate';
+$subTitle = 'All Candidate';
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
         $(this).closest("tr").addClass("d-none")
@@ -158,5 +158,5 @@ $script = '<script>
     </div>
 </div>
 <!-- Modal End -->
-
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 @endsection
