@@ -85,10 +85,9 @@ class SmtpSettingController extends Controller
                     . e($smtp->from_name) . '</strong> ('
                     . e($smtp->from_address) . ').</p>';
 
-                // ✅ Use Symfony Mime HtmlPart instead of string
                 $message->to($testEmail)
                     ->subject('SMTP Test Email')
-                    ->setBody(new HtmlPart($htmlContent)); // ✅ FIX HERE
+                    ->html($htmlContent); // ✅ Works in Laravel 9–11
             });
 
             return response()->json([
