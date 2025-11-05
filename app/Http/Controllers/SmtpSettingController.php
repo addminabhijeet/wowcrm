@@ -51,6 +51,7 @@ class SmtpSettingController extends Controller
 
         return redirect()->back()->with('success', 'SMTP settings updated successfully!');
     }
+    
     public function test(Request $request)
     {
         $smtp = SmtpSetting::first();
@@ -62,7 +63,7 @@ class SmtpSettingController extends Controller
             ]);
         }
 
-        // ✅ Configure SMTP dynamically
+        // Configure SMTP dynamically
         config([
             'mail.default' => 'smtp',
             'mail.mailers.smtp.transport' => $smtp->mailer,
@@ -77,24 +78,16 @@ class SmtpSettingController extends Controller
 
         $testEmail = $request->input('test_email');
 
-        // ✅ Use the same message style as your main mail code
-        $subject = "Test Email from {$smtp->from_name}";
-        $messageBody =
-            "Hi there,\n\n" .
-            "This is a test email sent using your configured SMTP settings.\n\n" .
-            "Mailer: {$smtp->mailer}\n" .
-            "Host: {$smtp->host}\n" .
-            "Port: {$smtp->port}\n" .
-            "Encryption: {$smtp->encryption}\n\n" .
-            "If you received this message, your SMTP configuration is working perfectly.\n\n" .
-            "Best regards,\n{$smtp->from_name}";
-
         try {
-            // ✅ Send email exactly like in your main logic
-            Mail::raw($messageBody, function ($message) use ($testEmail, $subject, $smtp) {
-                $message->from($smtp->from_address, $smtp->from_name)
-                    ->to($testEmail)
-                    ->subject($subject);
+            Mail::send([], [], function ($message) use ($testEmail, $smtp) {
+                $htmlContent = '<p>This is a test email from <strong>'
+                    . e($smtp->from_name) . '</strong> ('
+                    . e($smtp->from_address) . ').</p>';
+
+                // Use string HTML body (Laravel will set correct MIME)
+                $message->to($testEmail)
+                    ->subject('SMTP Test Email')
+                    ->html($htmlContent); // <- uses string only
             });
 
             return response()->json([
