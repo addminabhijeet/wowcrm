@@ -51,7 +51,7 @@ class SmtpSettingController extends Controller
 
         return redirect()->back()->with('success', 'SMTP settings updated successfully!');
     }
-    
+
     public function test(Request $request)
     {
         $smtp = SmtpSetting::first();
@@ -63,31 +63,47 @@ class SmtpSettingController extends Controller
             ]);
         }
 
-        // Configure SMTP dynamically
-        config([
-            'mail.default' => 'smtp',
-            'mail.mailers.smtp.transport' => $smtp->mailer,
-            'mail.mailers.smtp.host' => $smtp->host,
-            'mail.mailers.smtp.port' => $smtp->port,
-            'mail.mailers.smtp.username' => $smtp->username,
-            'mail.mailers.smtp.password' => decrypt($smtp->password),
-            'mail.mailers.smtp.encryption' => $smtp->encryption,
-            'mail.from.address' => $smtp->from_address,
-            'mail.from.name' => $smtp->from_name,
-        ]);
+        try {
+            // Configure SMTP dynamically
+            config([
+                'mail.default' => 'smtp',
+                'mail.mailers.smtp.transport' => $smtp->mailer ?? 'smtp',
+                'mail.mailers.smtp.host' => $smtp->host,
+                'mail.mailers.smtp.port' => $smtp->port,
+                'mail.mailers.smtp.username' => $smtp->username,
+                'mail.mailers.smtp.password' => decrypt($smtp->password),
+                'mail.mailers.smtp.encryption' => $smtp->encryption,
+                'mail.from.address' => $smtp->from_address,
+                'mail.from.name' => $smtp->from_name,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Failed to configure SMTP: ' . $e->getMessage(),
+                'debug' => [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ],
+            ]);
+        }
 
-        $testEmail = $request->input('test_email');
+        $testEmail = trim($request->input('test_email'));
+
+        if (!filter_var($testEmail, FILTER_VALIDATE_EMAIL)) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Invalid test email address.'
+            ]);
+        }
+
+        $subject = "Testing the Mail Functionality";
+        $messageBody = "Hi Test,\n\nThis is a test email sent to verify SMTP configuration.\n\nBest,\nYour App";
 
         try {
-            Mail::send([], [], function ($message) use ($testEmail, $smtp) {
-                $htmlContent = '<p>This is a test email from <strong>'
-                    . e($smtp->from_name) . '</strong> ('
-                    . e($smtp->from_address) . ').</p>';
-
-                // Use string HTML body (Laravel will set correct MIME)
+            Mail::raw($messageBody, function ($message) use ($testEmail, $subject) {
                 $message->to($testEmail)
-                    ->subject('SMTP Test Email')
-                    ->html($htmlContent); // <- uses string only
+                    ->subject($subject);
             });
 
             return response()->json([
@@ -97,7 +113,12 @@ class SmtpSettingController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
-                'message' => '❌ Failed to send test email: ' . $e->getMessage()
+                'message' => '❌ Failed to send test email: ' . $e->getMessage(),
+                'debug' => [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ],
             ]);
         }
     }
