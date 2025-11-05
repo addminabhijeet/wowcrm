@@ -62,8 +62,7 @@ $script ='<script>
                         <th scope="col">Amount</th>
                         <th scope="col">Qualification</th>
                         <th scope="col">Exe Remarks</th>
-                        <th scope="col">1st Follow Up Remarks</th>
-                        <th scope="col">Time Zone</th>
+                        
                         <th scope="col">Forwarded By</th>
                         <th scope="col">View</th>
                         <th scope="col" class="text-center">Actions</th>
@@ -186,34 +185,6 @@ $script ='<script>
                                 <option value="">-- Select --</option>
                                 @foreach($exeOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
-                                    {{ $option }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-                        {{-- 1st Follow Up Remarks --}}
-                        <td>
-                            @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="1st Follow Up Remarks">
-                                <option value="">-- Select --</option>
-                                @foreach($followOptions as $option)
-                                <option value="{{ $option }}" {{ $row->First_Follow_Up_Remarks === $option ? 'selected' : '' }}>
-                                    {{ $option }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-
-
-                        {{-- Time Zone --}}
-                        <td>
-                            @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Time Zone">
-                                <option value="">-- Select --</option>
-                                @foreach($timezoneOptions as $option)
-                                <option value="{{ $option }}" {{ $row->Time_Zone === $option ? 'selected' : '' }}>
                                     {{ $option }}
                                 </option>
                                 @endforeach
