@@ -69,7 +69,7 @@ $role = Auth::user()->role;
 
             @endif
 
-            {{-- ================= Senior Caller ================= --}}
+            {{-- ================= IT Senior Recruiter ================= --}}
             @if($role === 'senior')
             <li class="dropdown">
                 <a href="javascript:void(0)">
@@ -195,7 +195,7 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('call.reports.allaccountantmonthly', Auth::id()) }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('call.reports.allseniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Caller Team Report</a></li>
+                    <li><a href="{{ route('call.reports.allseniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter Team Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('call.reports.alljuniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Team Report</a></li>
@@ -227,7 +227,7 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('users.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('users.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Caller</a></li>
+                    <li><a href="{{ route('users.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('users.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Support</a></li>
@@ -246,7 +246,7 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>IT Recruiter Calendar</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('calendar.allSeniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Senior Caller Calendar</a></li>
+                    <li><a href="{{ route('calendar.allSeniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>IT Senior Recruiter Calendar</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('calendar.allAccountantlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Support Calendar</a></li>
@@ -277,7 +277,7 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('call.reports.alljuniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Team Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('call.reports.allseniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Caller Report</a></li>
+                    <li><a href="{{ route('call.reports.allseniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('call.reports.allaccountantlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Support Report</a></li>
@@ -293,7 +293,7 @@ $role = Auth::user()->role;
                     <span>Timer</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('timer.allsenior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Caller Timer</a></li>
+                    <li><a href="{{ route('timer.allsenior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter Timer</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('timer.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Timer</a></li>
