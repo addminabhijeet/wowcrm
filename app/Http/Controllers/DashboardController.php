@@ -883,10 +883,9 @@ class DashboardController extends Controller
 
         return redirect()->back()->with('success', 'SMTP settings updated successfully!');
     }
-
+    
     public function test(Request $request)
     {
-
         $smtp = SmtpSetting::first();
 
         if (!$smtp) {
@@ -896,26 +895,18 @@ class DashboardController extends Controller
             ]);
         }
 
-        $encryption = strtolower($smtp->encryption);
-        if ($encryption === 'ssl/tls') $encryption = 'ssl';
-        if (!in_array($encryption, ['ssl', 'tls'])) {
-            $encryption = null;
-        }
-
-
         try {
             // Configure SMTP dynamically
             config([
-                'mail.mailers.custom_smtp' => [
-                    'transport' => 'smtp',
-                    'host' => $smtp->host,
-                    'port' => $smtp->port,
-                    'encryption' => $encryption,
-                    'username' => $smtp->username,
-                    'password' => decrypt($smtp->password),
-                    'timeout' => 30,
-                    'auth_mode' => 'login',
-                ]
+                'mail.default' => 'smtp',
+                'mail.mailers.smtp.transport' => $smtp->mailer ?? 'smtp',
+                'mail.mailers.smtp.host' => $smtp->host,
+                'mail.mailers.smtp.port' => $smtp->port,
+                'mail.mailers.smtp.username' => $smtp->username,
+                'mail.mailers.smtp.password' => decrypt($smtp->password),
+                'mail.mailers.smtp.encryption' => $smtp->encryption,
+                'mail.from.address' => $smtp->from_address,
+                'mail.from.name' => $smtp->from_name,
             ]);
         } catch (\Exception $e) {
             return response()->json([
