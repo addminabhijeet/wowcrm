@@ -411,7 +411,7 @@ $script = '<script>
                 <!-- Header -->
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
                     <div>
-                        <h5 class="fw-bold mb-1">📞 Daily Call Report</h5>
+                        <h5 class="fw-bold mb-1">Daily Call Report</h5>
                         
                     </div>
                     <form method="GET" action="{{ route('call.reports.alljuniordaily', ['userId' => request()->route('userId')]) }}" class="d-flex align-items-center gap-2">

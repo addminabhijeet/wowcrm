@@ -27,7 +27,7 @@ $script ='<script>
             </form>
 
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user" id="junior-filter">
-                <option value="">Select Junior</option>
+                <option value="">Select IT Caller</option>
                 @foreach ($juniorUsers as $junior)
                 <option value="{{ $junior->id }}">
                     {{ $junior->name }}

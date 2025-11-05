@@ -87,11 +87,11 @@ $script = '<script>
                                     Role <span class="text-danger-600">*</span>
                                 </label>
                                 <select name="role" id="role" class="form-control radius-8 form-select" disabled>
-                                    <option value="junior">Junior</option>
-                                    <option value="senior">Senior</option>
+                                    <option value="junior">IT Caller</option>
+                                    <option value="senior">Senior Caller</option>
                                     <option value="admin">Admin</option>
                                     <option value="candidate" selected>Candidate</option>
-                                    <option value="accountant">Account</option>
+                                    <option value="accountant">Support</option>
                                 </select>
                                 <!-- Hidden input to submit the value -->
                                 <input type="hidden" name="role" value="junior">

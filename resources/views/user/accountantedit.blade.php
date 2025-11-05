@@ -159,11 +159,11 @@ $script ='<script>
                                         </label>
                                         <select name="role" id="role" class="form-control radius-8 form-select" required>
                                             <option value="" disabled>Select Role</option>
-                                            <option value="junior" {{ $user->role == 'junior' ? 'selected' : '' }}>Junior</option>
-                                            <option value="senior" {{ $user->role == 'senior' ? 'selected' : '' }}>Senior</option>
+                                            <option value="junior" {{ $user->role == 'junior' ? 'selected' : '' }}>IT Caller</option>
+                                            <option value="senior" {{ $user->role == 'senior' ? 'selected' : '' }}>Senior Caller</option>
                                             <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
                                             <option value="candidate" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
-                                            <option value="accountant" {{ $user->role == 'accountant' ? 'selected' : '' }}>Accountant</option>
+                                            <option value="accountant" {{ $user->role == 'accountant' ? 'selected' : '' }}>Support</option>
                                         </select>
                                     </div>
                                 </div>
@@ -175,11 +175,11 @@ $script ='<script>
                                         </label>
                                         <select name="designation" id="designation" class="form-control radius-8 form-select" required>
                                             <option value="" disabled {{ !$user->designation ? 'selected' : '' }}>Select Designation</option>
-                                            <option value="Accountant" {{ $user->designation == 'Accountant' ? 'selected' : '' }}>Accountant</option>
+                                            <option value="Accountant" {{ $user->designation == 'Accountant' ? 'selected' : '' }}>Support</option>
                                             <option value="Admin" {{ $user->designation == 'Admin' ? 'selected' : '' }}>Admin</option>
                                             <option value="Candidate" {{ $user->designation == 'Candidate' ? 'selected' : '' }}>Candidate</option>
-                                            <option value="Junior" {{ $user->designation == 'Junior' ? 'selected' : '' }}>Junior</option>
-                                            <option value="Senior" {{ $user->designation == 'Senior' ? 'selected' : '' }}>Senior</option>
+                                            <option value="Junior" {{ $user->designation == 'Junior' ? 'selected' : '' }}>IT Caller</option>
+                                            <option value="Senior" {{ $user->designation == 'Senior' ? 'selected' : '' }}>Senior Caller</option>
                                             <option value="Trainer" {{ $user->designation == 'Trainer' ? 'selected' : '' }}>Trainer</option>
                                         </select>
                                     </div>

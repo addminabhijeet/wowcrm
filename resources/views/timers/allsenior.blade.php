@@ -2,7 +2,7 @@
 
 @php
 $title = 'Senior Dashboard';
-$subTitle = 'All Junior Timers';
+$subTitle = 'All IT Caller Timers';
 $script = '<script>
     $(".delete-btn").on("click", function() {
         $(this).closest(".user-grid-card").addClass("d-none")
@@ -35,13 +35,13 @@ $script = '<script>
         <a href="javascript:void(0)" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
             id="enableAll">
             <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-            Enable All Junior
+            Enable All IT Caller
         </a>
 
         <a href="javascript:void(0)" class="btn btn-danger text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
             id="disableAll">
             <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
-            Disable All Junior
+            Disable All IT Caller
         </a>
     </div>
     <div class="card-body p-24">
@@ -114,7 +114,7 @@ $script = '<script>
                             data-user="{{ $timer['user_id'] }}"
                             style="width:100%; height:40px; border-radius:14px; background:#0d6efd; border:1px solid #b0c6e6ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
                             <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
-                            Enable Junior
+                            Enable IT Caller
                         </button>
                         @else
                         <button
@@ -122,7 +122,7 @@ $script = '<script>
                             data-user="{{ $timer['user_id'] }}"
                             style="width:100%; height:40px; border-radius:14px; background:#dc3545; border:1px solid #d8adb1ff; color:#fff; display:flex; align-items:center; justify-content:center; font-size:14px; gap:6px; margin-top:16px; cursor:pointer;">
                             <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
-                            Disable Junior
+                            Disable IT Caller
                         </button>
                         @endif
 
@@ -371,7 +371,7 @@ $script = '<script>
                 button.style.border = "1px solid #b0c6e6ff";
                 button.innerHTML = `
                     <iconify-icon icon="mdi:play" style="font-size:16px;"></iconify-icon>
-                    Enable Junior
+                    Enable IT Caller
                 `;
             } else {
                 // Change to Disable
@@ -380,7 +380,7 @@ $script = '<script>
                 button.style.border = "1px solid #d8adb1ff";
                 button.innerHTML = `
                     <iconify-icon icon="mdi:pause" style="font-size:16px;"></iconify-icon>
-                    Disable Junior
+                    Disable IT Caller
                 `;
             }
         }
@@ -477,12 +477,12 @@ $script = '<script>
                 `
                 <a href="javascript:void(0)" class="btn btn-danger disable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
                     <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
-                    Disable Junior
+                    Disable IT Caller
                 </a>` :
                 `
                 <a href="javascript:void(0)" class="btn btn-primary enable-junior text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2" data-user="${userId}">
                     <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                    Enable Junior
+                    Enable IT Caller
                 </a>`;
         }
     }

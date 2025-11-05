@@ -77,7 +77,7 @@ $script = '<script>
                                 </label>
                                 <select name="designation" id="designation" class="form-control radius-8 form-select" required>
                                     <option value="">Select Designation</option>
-                                    <option value="Accountant">Accountant</option>
+                                    <option value="Accountant">Support</option>
                                     
                                 </select>
                             </div>
@@ -87,11 +87,11 @@ $script = '<script>
                                     Role <span class="text-danger-600">*</span>
                                 </label>
                                 <select name="role" id="role" class="form-control radius-8 form-select" disabled>
-                                    <option value="junior">Junior</option>
-                                    <option value="senior">Senior</option>
+                                    <option value="junior">IT Caller</option>
+                                    <option value="senior">Senior Caller</option>
                                     <option value="admin">Admin</option>
                                     <option value="customer">Customer</option>
-                                    <option value="accountant" selected>Accountant</option>
+                                    <option value="accountant" selected>Support</option>
                                 </select>
                                 <!-- Hidden input to submit the value -->
                                 <input type="hidden" name="role" value="junior">
