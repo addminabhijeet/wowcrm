@@ -1,8 +1,8 @@
 @extends('layout.layout')
 
 @php
-$title = 'User Target';
-$subTitle = 'User Target';
+$title = 'Target -> Edit';
+$subTitle = 'Super Admin';
 @endphp
 
 @section('content')

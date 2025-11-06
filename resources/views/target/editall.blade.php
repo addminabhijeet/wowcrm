@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
-$title='All User Target';
-$subTitle = 'All User Target';
+$title='Target -> Edit';
+$subTitle = 'Super Admin';
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
         $(this).closest("tr").addClass("d-none")
