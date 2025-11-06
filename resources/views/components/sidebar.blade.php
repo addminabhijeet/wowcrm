@@ -239,7 +239,7 @@ $role = Auth::user()->role;
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
-                    <iconify-icon icon="fluent:calendar-3-20-regular" class="menu-icon"></iconify-icon>
+                    <iconify-icon icon="hugeicons:invoice-03" class="menu-icon"></iconify-icon>
                     <span>Calendar</span>
                 </a>
                 <ul class="sidebar-submenu">
