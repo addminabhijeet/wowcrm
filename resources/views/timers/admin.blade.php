@@ -1,8 +1,8 @@
 @extends('layout.layout')
 
 @php
-    $title = 'Timer Settings';
-    $subTitle = 'Admin';
+    $title = 'Timer -> Settings';
+    $subTitle = 'Super Admin';
 @endphp
 
 @section('content')

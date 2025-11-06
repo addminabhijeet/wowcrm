@@ -1,8 +1,8 @@
 @extends('layout.layout')
 
 @php
-$title = 'Senior Dashboard';
-$subTitle = 'All IT Recruiter Timers';
+$title = 'Timer -> IT Senior Recruiter';
+$subTitle = 'Super Admin';
 $script = '<script>
     $(".delete-btn").on("click", function() {
         $(this).closest(".user-grid-card").addClass("d-none")
