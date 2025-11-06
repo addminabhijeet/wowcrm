@@ -69,7 +69,10 @@ $script ='<script>
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
                             <span class="w-30 text-md fw-semibold text-primary-light"> Role</span>
-                            <span class="w-70 text-secondary-light fw-medium">: {{ $user->role }}</span>
+                            <span class="w-70 text-secondary-light fw-medium">
+                                : {{ $user->role === 'junior' ? 'IT Recruiter' : $user->role }}
+                            </span>
+
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
                             <span class="w-30 text-md fw-semibold text-primary-light"> Designation</span>

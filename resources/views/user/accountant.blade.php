@@ -60,7 +60,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                         <!-- Role -->
                                         <td class="text-center">
                                             <span class="bg-primary-focus text-primary-main px-24 py-4 rounded-pill fw-medium text-sm">
-                                                {{ ucfirst($user->role) }}
+                                                {{ $user->role === 'accountant' ? 'Support' : ucfirst($user->role) }}
                                             </span>
                                         </td>
 
