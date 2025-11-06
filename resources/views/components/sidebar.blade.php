@@ -217,7 +217,7 @@ $role = Auth::user()->role;
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
-                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <iconify-icon icon="fluent:people-20-filled" class="menu-icon"></iconify-icon>
                     <span>Users</span>
                 </a>
                 <ul class="sidebar-submenu">
@@ -239,7 +239,7 @@ $role = Auth::user()->role;
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
-                    <iconify-icon icon="hugeicons:invoice-03" class="menu-icon"></iconify-icon>
+                    <iconify-icon icon="fluent:calendar-3-20-regular" class="menu-icon"></iconify-icon>
                     <span>Calendar</span>
                 </a>
                 <ul class="sidebar-submenu">
@@ -258,7 +258,7 @@ $role = Auth::user()->role;
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
-                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <iconify-icon icon="fluent:database-20-regular" class="menu-icon"></iconify-icon>
                     <span>Database</span>
                 </a>
                 <ul class="sidebar-submenu">
@@ -270,7 +270,7 @@ $role = Auth::user()->role;
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
-                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <iconify-icon icon="fluent:document-20-regular" class="menu-icon"></iconify-icon>
                     <span>Report</span>
                 </a>
                 <ul class="sidebar-submenu">
@@ -289,7 +289,7 @@ $role = Auth::user()->role;
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
-                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <iconify-icon icon="fluent:timer-20-regular" class="menu-icon"></iconify-icon>
                     <span>Timer</span>
                 </a>
                 <ul class="sidebar-submenu">
@@ -305,7 +305,7 @@ $role = Auth::user()->role;
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
-                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <iconify-icon icon="fluent:mail-20-regular" class="menu-icon"></iconify-icon>
                     <span>SMTP</span>
                 </a>
                 <ul class="sidebar-submenu">
@@ -315,7 +315,7 @@ $role = Auth::user()->role;
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
-                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <iconify-icon icon="fluent:target-20-regular" class="menu-icon"></iconify-icon>
                     <span>Target</span>
                 </a>
                 <ul class="sidebar-submenu">
