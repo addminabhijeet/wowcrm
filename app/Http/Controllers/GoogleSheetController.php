@@ -1530,21 +1530,92 @@ class GoogleSheetController extends Controller
     }
 
 
-    public function junior()
+    public function junior(Request $request)
     {
         $authUser = Auth::user();
-        $pattern = "%:" . $authUser->id . "|junior"; // will check last part
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+        $page = $request->input('page', 1); // ensure pagination works
+        $juniorUserId = $request->input('junior_user'); // optional dropdown filter
 
-        $data = GoogleSheetData::where(function ($q) use ($authUser, $pattern) {
-            $q->where('created_by', $authUser->id . '|junior') // exact match
-                ->orWhere('created_by', 'LIKE', $pattern);       // ends with :id|junior
+        $pattern = "%:" . $authUser->id . "|junior";
+
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $pattern) {
+            $q->where('created_by', $authUser->id . '|junior')
+                ->orWhere('created_by', 'LIKE', $pattern);
         })
-            ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']) // ensures it's last part
-            ->orderBy('Date', 'desc') // ✅ sort by Date descending (latest first)
-            ->paginate(10);
+            ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
 
-        return view('database.junior', compact('data'));
+        // Filter by specific junior if provided
+        if ($juniorUserId) {
+            $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
+        }
+
+        // Search or row_id filter
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Get all filtered results first
+        $results = $query->orderBy('Date', 'desc')->get();
+
+        // Optional: Transform forwarded_by similar to senior()
+        $transformed = $results->map(function ($item) use ($authUser) {
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                $names = [];
+
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        // Apply pagination after transformation
+        $perPage = 10;
+        $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transformed->forPage($page, $perPage),
+            $transformed->count(),
+            $perPage,
+            $page,
+            ['path' => url()->current(), 'query' => $request->query()]
+        );
+
+        // Handle AJAX pagination/search
+        if ($request->ajax()) {
+            return view('database.partials.junior_table', ['data' => $pagedData])->render();
+        }
+
+        return view('database.junior', compact('data', 'pagedData'));
     }
+
 
 
     public function juniorcandm()
