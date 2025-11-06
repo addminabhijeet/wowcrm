@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @php
-$title = 'Timer -> IT Senior Recruiter';
+$title = 'Timer -> IT Recruiter';
 $subTitle = 'Super Admin';
 $script = '<script>
     $(".delete-btn").on("click", function() {
@@ -35,13 +35,13 @@ $script = '<script>
         <a href="javascript:void(0)" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
             id="enableAll">
             <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-            Enable All IT Senior Recruiter
+            Enable All IT Recruiter
         </a>
 
         <a href="javascript:void(0)" class="btn btn-danger text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2"
             id="disableAll">
             <iconify-icon icon="ic:baseline-minus" class="icon text-xl line-height-1"></iconify-icon>
-            Disable All IT Senior Recruiter
+            Disable All IT Recruiter
         </a>
     </div>
     <div class="card-body p-24">
