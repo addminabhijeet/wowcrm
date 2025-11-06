@@ -482,17 +482,17 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // dropdown value
         $page = $request->input('page', 1); // ✅ Ensure page input handled
-    
+
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
-    
+
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
             $q->where('created_by', $authUser->id . '|senior')
                 ->orWhere('created_by', '0|senior')
                 ->orWhere('created_by', 'LIKE', $userPattern)
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
         });
-    
+
         // Filter by selected junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
@@ -500,7 +500,7 @@ class GoogleSheetController extends Controller
                     ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
             });
         }
-    
+
         // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
@@ -511,23 +511,23 @@ class GoogleSheetController extends Controller
                     ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
             });
         }
-    
+
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
         $results = $query->orderBy('id', 'desc')->get();
-    
+
         // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
-    
+
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
                 $names = [];
-    
+
                 foreach ($entries as $entry) {
                     $parts = explode('|', $entry);
                     $userId = $parts[0] ?? null;
                     $role   = $parts[1] ?? 'unknown';
-    
+
                     if ($userId == $authUser->id) {
                         $names[] = "SELF ({$userId}) ({$role})";
                     } elseif ($userId == 0) {
@@ -538,16 +538,16 @@ class GoogleSheetController extends Controller
                         $names[] = "{$name} ({$userId}) ({$role})";
                     }
                 }
-    
+
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
             }
-    
+
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
-    
+
         // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
@@ -558,17 +558,17 @@ class GoogleSheetController extends Controller
             $currentPage,
             ['path' => url()->current(), 'query' => $request->query()]
         );
-    
-        $juniorUsers = \App\Models\User::whereIn('role', ['junior', 'senior'])
+
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
-    
+
         // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
             return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
-    
+
         return view('database.senior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
@@ -2293,7 +2293,7 @@ class GoogleSheetController extends Controller
         });
 
         // Fetch junior users list for dropdown
-        $juniorUsers = \App\Models\User::where('role', 'junior')
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)->where('role', 'junior')
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->orderBy('name', 'asc')
@@ -3145,7 +3145,7 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        $juniorUsers = \App\Models\User::where('role', 'junior')
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)->where('role', 'junior')
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->orderBy('name', 'asc')
