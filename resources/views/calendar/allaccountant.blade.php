@@ -1,8 +1,8 @@
 @extends('layout.layout')
 
 @php
-$title = 'Calendar';
-$subTitle = 'Calendar';
+$title = 'Users -> Support';
+$subTitle = 'Super Admin';
 @endphp
 
 @section('content')

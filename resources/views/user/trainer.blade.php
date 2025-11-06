@@ -2,7 +2,7 @@
 
 @php
 $title='Super Admin';
-$subTitle = 'Users -> Admin';
+$subTitle = 'Users -> Trainer';
 $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 @endphp
 
