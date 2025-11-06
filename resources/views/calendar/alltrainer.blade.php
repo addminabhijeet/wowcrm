@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @php
-$title = 'Users -> Support';
+$title = 'Users -> Trainer';
 $subTitle = 'Super Admin';
 @endphp
 

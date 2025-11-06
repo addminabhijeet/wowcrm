@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='Users -> Support';
+$title='Users -> IT Recruiter';
 $subTitle = 'Super Admin';
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
