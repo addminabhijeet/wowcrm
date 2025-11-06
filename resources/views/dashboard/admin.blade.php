@@ -107,7 +107,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                 </div>
                 <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
                     <span class="d-inline-flex align-items-center gap-1 text-success-main">
-                        <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
+                        <iconify-icon icon="fluent:chart-line-20-regular" class="text-xs"></iconify-icon>
                     </span>
                     Last 30 days Trainer
                 </p>
