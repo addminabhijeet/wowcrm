@@ -159,7 +159,7 @@ $script ='<script>
                                         </label>
                                         <select name="role" id="role" class="form-control radius-8 form-select" required>
                                             <option value="" disabled>Select Role</option>
-                                            <option value="junior" {{ $user->role == 'junior' ? 'selected' : '' }}>Junior</option>
+                                            <option value="junior" {{ $user->role == 'junior' ? 'selected' : '' }}>IT Recruiter</option>
                                             <option value="senior" {{ $user->role == 'senior' ? 'selected' : '' }}>Senior</option>
                                             <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
                                             <option value="candidate" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
@@ -178,7 +178,7 @@ $script ='<script>
                                             <option value="Accountant" {{ $user->designation == 'Accountant' ? 'selected' : '' }}>Accountant</option>
                                             <option value="Admin" {{ $user->designation == 'Admin' ? 'selected' : '' }}>Admin</option>
                                             <option value="Candidate" {{ $user->designation == 'Candidate' ? 'selected' : '' }}>Candidate</option>
-                                            <option value="Junior" {{ $user->designation == 'Junior' ? 'selected' : '' }}>Junior</option>
+                                            <option value="Junior" {{ $user->designation == 'Junior' ? 'selected' : '' }}>IT Recruiter</option>
                                             <option value="Senior" {{ $user->designation == 'Senior' ? 'selected' : '' }}>Senior</option>
                                             <option value="Trainer" {{ $user->designation == 'Trainer' ? 'selected' : '' }}>Trainer</option>
                                         </select>
