@@ -102,7 +102,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                         <h6 class="mb-0">{{ $users->where('role', 'trainer')->count() }}</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
-                        <iconify-icon icon="fluent:teacher-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
+                        <iconify-icon icon="fluent:people-teaching-24-filled" class="text-white text-2xl mb-0"></iconify-icon>
                     </div>
                 </div>
                 <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
