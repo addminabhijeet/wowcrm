@@ -1,8 +1,8 @@
 @extends('layout.layout')
 
 @php
-$title = 'SMTP';
-$subTitle = 'Settings - SMTP';
+$title = 'SMTP -> Edit';
+$subTitle = 'Super Admin';
 $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
 @endphp
 
