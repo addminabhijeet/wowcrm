@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
-$title='All Accountant Call Report';
-$subTitle = 'All Accountant Call Report';
+$title='Report -> Support';
+$subTitle = 'Super Admin';
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
         $(this).closest("tr").addClass("d-none")

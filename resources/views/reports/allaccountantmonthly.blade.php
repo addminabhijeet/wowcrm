@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
-$title='Call Report';
-$subTitle = 'Paid Report';
+$title='Report -> Support';
+$subTitle = 'Super Admin';
 $script = '<script>
     var options = {
         series: [{
