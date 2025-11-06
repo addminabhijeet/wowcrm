@@ -436,8 +436,9 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls for this junior
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
             ->count();
+
 
         // Total other calls for this junior
         $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
@@ -1013,7 +1014,7 @@ class CallReportController extends Controller
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
             ->count();
 
         // Total other calls (not "Called & Mailed")
@@ -1697,7 +1698,7 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls for this junior
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
             ->count();
 
         // Total other calls for this junior
