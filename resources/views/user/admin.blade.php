@@ -1,8 +1,8 @@
 @extends('layout.layout')
 
 @php
-$title='Dashboard';
-$subTitle = 'Admin';
+$title='Users -> Admin';
+$subTitle = 'Super Admin';
 $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 @endphp
 

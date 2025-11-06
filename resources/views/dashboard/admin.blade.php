@@ -18,14 +18,14 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                         <h6 class="mb-0">{{ $users->count() }}</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-cyan rounded-circle d-flex justify-content-center align-items-center">
-                        <iconify-icon icon="gridicons:multiple-users" class="text-white text-2xl mb-0"></iconify-icon>
+                        <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
                     </div>
                 </div>
                 <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
                     <span class="d-inline-flex align-items-center gap-1 text-success-main">
                         <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
                     </span>
-                    Last 30 days total users
+                    Last 30 days Users
                 </p>
             </div>
         </div><!-- card end -->
@@ -39,7 +39,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                         <h6 class="mb-0">{{ $users->where('role', 'junior')->count() }}</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-purple rounded-circle d-flex justify-content-center align-items-center">
-                        <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
+                        <iconify-icon icon="fluent:person-search-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
                     </div>
                 </div>
                 <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
@@ -60,7 +60,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                         <h6 class="mb-0">{{ $users->where('role', 'senior')->count() }}</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-info rounded-circle d-flex justify-content-center align-items-center">
-                        <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
+                        <iconify-icon icon="fluent:person-star-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
                     </div>
                 </div>
                 <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
@@ -81,14 +81,14 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                         <h6 class="mb-0">{{ $users->where('role', 'accountant')->count() }}</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
-                        <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
+                        <iconify-icon icon="fluent:headset-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
                     </div>
                 </div>
                 <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
                     <span class="d-inline-flex align-items-center gap-1 text-success-main">
                         <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
                     </span>
-                    Last 30 days Candidates
+                    Last 30 days Support
                 </p>
             </div>
         </div><!-- card end -->
@@ -102,19 +102,19 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                         <h6 class="mb-0">{{ $users->where('role', 'trainer')->count() }}</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
-                        <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
+                        <iconify-icon icon="fluent:teacher-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
                     </div>
                 </div>
                 <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
                     <span class="d-inline-flex align-items-center gap-1 text-success-main">
                         <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
                     </span>
-                    Last 30 days Candidates
+                    Last 30 days Trainer
                 </p>
             </div>
         </div><!-- card end -->
     </div>
-        <div class="col">
+    <div class="col">
         <div class="card shadow-none border bg-gradient-start-4 h-100">
             <div class="card-body p-20">
                 <div class="d-flex flex-wrap align-items-center justify-content-between gap-3">
@@ -123,14 +123,14 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                         <h6 class="mb-0">{{ $users->where('role', 'admin')->count() }}</h6>
                     </div>
                     <div class="w-50-px h-50-px bg-success-main rounded-circle d-flex justify-content-center align-items-center">
-                        <iconify-icon icon="fluent:people-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
+                        <iconify-icon icon="fluent:shield-person-20-filled" class="text-white text-2xl mb-0"></iconify-icon>
                     </div>
                 </div>
                 <p class="fw-medium text-sm text-primary-light mt-12 mb-0 d-flex align-items-center gap-2">
                     <span class="d-inline-flex align-items-center gap-1 text-success-main">
                         <iconify-icon icon="bxs:up-arrow" class="text-xs"></iconify-icon>
                     </span>
-                    Last 30 days Candidates
+                    Last 30 days Admin
                 </p>
             </div>
         </div><!-- card end -->
