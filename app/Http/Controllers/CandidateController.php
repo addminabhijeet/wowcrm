@@ -100,7 +100,7 @@ class CandidateController extends Controller
         });
 
         // Fetch junior users list for dropdown
-        $juniorUsers = \App\Models\User::where('role', 'junior')
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)->where('role', 'junior')
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->orderBy('name', 'asc')

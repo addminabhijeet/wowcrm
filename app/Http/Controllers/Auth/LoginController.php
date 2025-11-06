@@ -27,7 +27,7 @@ class LoginController extends Controller
         ]);
 
         // 🔍 Check if the user exists and is active
-        $user = \App\Models\User::where('email', $credentials['email'])->first();
+        $user = \App\Models\User::where('is_deleted', 0)->where('email', $credentials['email'])->first();
 
         if (!$user) {
             return back()->withErrors([
