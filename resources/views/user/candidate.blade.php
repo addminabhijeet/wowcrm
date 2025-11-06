@@ -9,9 +9,9 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 @section('content')
 
 
-<div class="row gy-4 mt-1">
-    <div class="col-xxl-9 col-xl-12">
-        <div class="card h-100">
+<div class="row gy-4">
+    <div class="col-12">
+        <div class="card h-100 p-0">
             <div class="card-body p-24">
 
                 <div class="d-flex flex-wrap align-items-center gap-1 justify-content-between mb-16">
