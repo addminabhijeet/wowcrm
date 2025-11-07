@@ -843,7 +843,8 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Ready To Paid" calls
-        $readyToPaidCalls = GoogleSheetData::where('Exe_Remarks', 'Ready To Paid')
+        $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->where('Exe_Remarks', 'Ready To Paid')
             ->count();
 
         // Total other calls (excluding Called & Mailed)
