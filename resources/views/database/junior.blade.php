@@ -18,19 +18,14 @@ $script ='<script>
             <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
                 <option>10</option>
             </select>
-            <form class="navbar-search position-relative" autocomplete="off">
-                <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control" placeholder="Search Name, Email, Phone">
+            <form class="navbar-search">
+                <input type="text" class="bg-base h-40-px w-auto" name="search" placeholder="Search">
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
-                <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
-            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user" id="junior-filter">
-                <option value="">Select IT Recruiter</option>
-                @foreach ($juniorUsers as $junior)
-                <option value="{{ $junior->id }}">
-                    {{ $junior->name }}
-                    @if($junior->designation) ({{ $junior->designation }}) @endif
-                </option>
-                @endforeach
+            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
+                <option>Status</option>
+                <option>Active</option>
+                <option>Inactive</option>
             </select>
         </div>
     </div>
@@ -886,11 +881,11 @@ $script ='<script>
         // -----------------------------
         const showSuggestions = debounce(function() {
             const query = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val();
+            const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
 
             if (query.length < 3) {
                 $('#search-suggestions').empty().hide();
-                fetchTable('', 1, junior_user);
+                fetchTable('', 1, junior_user); // reset table
                 return;
             }
 
@@ -904,12 +899,7 @@ $script ='<script>
                     let suggestions = '';
                     if (res.length) {
                         res.forEach(item => {
-                            suggestions += `
-                                <a href="#" 
-                                   class="list-group-item list-group-item-action search-item" 
-                                   data-id="${item.id}">
-                                   ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}
-                                </a>`;
+                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
                         });
                     } else {
                         suggestions = '<span class="list-group-item">No results found</span>';
@@ -921,37 +911,27 @@ $script ='<script>
 
         $('#senior-search').on('input', showSuggestions);
 
-        // -----------------------------
-        // On Click Suggestion → Show Selected Result
-        // -----------------------------
-        $(document).on('click', '#search-suggestions .search-item', function(e) {
+        // Click suggestion
+        $(document).on('click', '#search-suggestions a', function(e) {
             e.preventDefault();
-
             const rowId = $(this).data('id');
             const junior_user = $('#junior-filter').val();
-
-            // Set selected text in input
             $('#senior-search').val($(this).text());
-
-            // Hide suggestion list
             $('#search-suggestions').empty().hide();
 
-            // Fetch and show only the selected result in the table
             fetchTable('', 1, junior_user, rowId);
         });
 
-        // -----------------------------
+
+
         // Junior dropdown filter
-        // -----------------------------
         $(document).on('change', '#junior-filter', function() {
             const junior_user = $(this).val();
             const search = $('#senior-search').val().trim();
             fetchTable(search, 1, junior_user);
         });
 
-        // -----------------------------
-        // Click outside → hide suggestions
-        // -----------------------------
+        // Click outside suggestions to hide
         $(document).click(function(e) {
             if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
                 $('#search-suggestions').empty().hide();
@@ -960,7 +940,6 @@ $script ='<script>
 
     });
 </script>
-
 
 <style>
     .scroll-sm {
@@ -1222,62 +1201,60 @@ $script ='<script>
 </script>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Get CSRF token from meta tag
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+document.addEventListener('DOMContentLoaded', function () {
+    // Get CSRF token from meta tag
+    const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-        // Attach input listener for dynamically added rows too
-        document.addEventListener('input', function(e) {
-            if (e.target.matches('.email-input')) {
-                const input = e.target;
-                const email = input.value.trim();
-                const hint = input.nextElementSibling;
+    // Attach input listener for dynamically added rows too
+    document.addEventListener('input', function (e) {
+        if (e.target.matches('.email-input')) {
+            const input = e.target;
+            const email = input.value.trim();
+            const hint = input.nextElementSibling;
 
-                // Basic email validation before checking DB
-                if (email.length < 5 || !email.includes('@')) {
-                    hint.textContent = '';
-                    input.classList.remove('is-invalid', 'is-valid');
-                    return;
-                }
-
-                // Debounce to avoid excessive requests
-                clearTimeout(input._emailCheckTimer);
-                input._emailCheckTimer = setTimeout(() => {
-
-                    fetch("{{ route('check.uniqueemail') }}", {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': csrfToken
-                            },
-                            body: JSON.stringify({
-                                email: email
-                            })
-                        })
-                        .then(response => response.json())
-                        .then(data => {
-                            if (data.exists) {
-                                input.classList.add('is-invalid');
-                                input.classList.remove('is-valid');
-                                hint.textContent = 'This email already exists in the database.';
-                                hint.style.color = 'red';
-                            } else {
-                                input.classList.remove('is-invalid');
-                                input.classList.add('is-valid');
-                                hint.textContent = 'Email available.';
-                                hint.style.color = 'green';
-                            }
-                        })
-                        .catch(error => {
-                            console.error('Email check failed:', error);
-                            hint.textContent = '⚠️ Server error. Try again.';
-                            hint.style.color = 'orange';
-                        });
-
-                }, 500); // 500ms debounce
+            // Basic email validation before checking DB
+            if (email.length < 5 || !email.includes('@')) {
+                hint.textContent = '';
+                input.classList.remove('is-invalid', 'is-valid');
+                return;
             }
-        });
+
+            // Debounce to avoid excessive requests
+            clearTimeout(input._emailCheckTimer);
+            input._emailCheckTimer = setTimeout(() => {
+
+                fetch("{{ route('check.uniqueemail') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken
+                    },
+                    body: JSON.stringify({ email: email })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.exists) {
+                        input.classList.add('is-invalid');
+                        input.classList.remove('is-valid');
+                        hint.textContent = 'This email already exists in the database.';
+                        hint.style.color = 'red';
+                    } else {
+                        input.classList.remove('is-invalid');
+                        input.classList.add('is-valid');
+                        hint.textContent = 'Email available.';
+                        hint.style.color = 'green';
+                    }
+                })
+                .catch(error => {
+                    console.error('Email check failed:', error);
+                    hint.textContent = '⚠️ Server error. Try again.';
+                    hint.style.color = 'orange';
+                });
+
+            }, 500); // 500ms debounce
+        }
     });
+});
 </script>
 
 
