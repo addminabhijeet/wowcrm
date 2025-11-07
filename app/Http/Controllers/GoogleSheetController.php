@@ -780,7 +780,7 @@ class GoogleSheetController extends Controller
                         ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
                 })
                 ->limit(10)
-                ->get(['id', 'Name', 'Email_Address', 'Phone_Number']);
+                ->get(['id', 'Name', 'Email_Address', 'Phone_Number',  'Exe_Remarks','forwarded_by']);
         }
 
         return response()->json($results);
