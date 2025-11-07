@@ -1536,19 +1536,19 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
-        $page = $request->input('page', 1); // ✅ Ensure page input handled
+        $juniorUserId = $request->input('junior_user');
+        $page = $request->input('page', 1);
 
         $pattern = "%:" . $authUser->id . "|junior";
 
-        // Base query: existing junior logic
+        // Base query
         $query = GoogleSheetData::where(function ($q) use ($authUser, $pattern) {
-            $q->where('created_by', $authUser->id . '|junior') // exact match
-                ->orWhere('created_by', 'LIKE', $pattern);      // ends with :id|junior
+            $q->where('created_by', $authUser->id . '|junior')
+                ->orWhere('created_by', 'LIKE', $pattern);
         })
             ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
 
-        // Filter by selected junior if dropdown selected
+        // Filter by dropdown junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
@@ -1556,10 +1556,12 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // Search or specific row filter
+        // If specific record selected via suggestion
         if ($rowId) {
             $query->where('id', $rowId);
-        } elseif ($search && strlen($search) >= 3) {
+        }
+        // Otherwise apply normal search
+        elseif ($search && strlen($search) >= 3) {
             $query->where(function ($q) use ($search) {
                 $q->where('Name', 'LIKE', "%{$search}%")
                     ->orWhere('Email_Address', 'LIKE', "%{$search}%")
@@ -1567,10 +1569,10 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // Fetch results ordered by Date descending
+        // Fetch results ordered by Date
         $results = $query->orderBy('Date', 'desc')->get();
 
-        // Transform forwarded_by field
+        // Transform forwarded_by
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
@@ -1598,7 +1600,7 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // Apply pagination after transformation
+        // Pagination
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -1609,19 +1611,25 @@ class GoogleSheetController extends Controller
             ['path' => url()->current(), 'query' => $request->query()]
         );
 
-        // Get list of juniors for dropdown filter
+        // Dropdown juniors
         $juniorUsers = \App\Models\User::where('is_deleted', 0)
             ->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
 
-        // Handle AJAX request for table
+        // AJAX response
         if ($request->ajax()) {
-            return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.senior_table', [
+                'data' => $pagedData,
+                'juniorUsers' => $juniorUsers
+            ])->render();
         }
 
-        return view('database.junior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+        return view('database.junior', [
+            'data' => $pagedData,
+            'juniorUsers' => $juniorUsers
+        ]);
     }
 
 

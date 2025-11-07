@@ -886,11 +886,11 @@ $script ='<script>
         // -----------------------------
         const showSuggestions = debounce(function() {
             const query = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+            const junior_user = $('#junior-filter').val();
 
             if (query.length < 3) {
                 $('#search-suggestions').empty().hide();
-                fetchTable('', 1, junior_user); // reset table
+                fetchTable('', 1, junior_user);
                 return;
             }
 
@@ -904,7 +904,15 @@ $script ='<script>
                     let suggestions = '';
                     if (res.length) {
                         res.forEach(item => {
-                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
+                            suggestions += `
+                                <a href="#" 
+                                   class="list-group-item list-group-item-action search-item" 
+                                   data-id="${item.id}"
+                                   data-name="${item.Name}"
+                                   data-email="${item.Email_Address}"
+                                   data-phone="${item.Phone_Number}">
+                                   ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}
+                                </a>`;
                         });
                     } else {
                         suggestions = '<span class="list-group-item">No results found</span>';
@@ -916,34 +924,40 @@ $script ='<script>
 
         $('#senior-search').on('input', showSuggestions);
 
-        // Click suggestion
-        $(document).on('click', '#search-suggestions a', function(e) {
+        // -----------------------------
+        // On Click Suggestion
+        // -----------------------------
+        $(document).on('click', '#search-suggestions .search-item', function(e) {
             e.preventDefault();
+
             const rowId = $(this).data('id');
             const junior_user = $('#junior-filter').val();
-            const selectedText = $(this).text();
 
-            // Set search input text and hide suggestions
-            $('#senior-search').val(selectedText);
+            // Update input box with selected text (Name | Email | Phone)
+            const name = $(this).data('name');
+            const email = $(this).data('email');
+            const phone = $(this).data('phone');
+            $('#senior-search').val(`${name} | ${email} | ${phone}`);
+
+            // Hide suggestions
             $('#search-suggestions').empty().hide();
 
-            // Fetch the single selected record
+            // Fetch and show the selected row
             fetchTable('', 1, junior_user, rowId);
-
-            // Optional: visually highlight selected row after rendering
-            setTimeout(() => {
-                $(`#senior-table-wrapper tr[data-id="${rowId}"]`).addClass('table-active');
-            }, 400);
         });
 
+        // -----------------------------
         // Junior dropdown filter
+        // -----------------------------
         $(document).on('change', '#junior-filter', function() {
             const junior_user = $(this).val();
             const search = $('#senior-search').val().trim();
             fetchTable(search, 1, junior_user);
         });
 
-        // Click outside suggestions to hide
+        // -----------------------------
+        // Click outside to hide suggestions
+        // -----------------------------
         $(document).click(function(e) {
             if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
                 $('#search-suggestions').empty().hide();
