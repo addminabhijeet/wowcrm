@@ -27,7 +27,7 @@ class CallReportController extends Controller
         // ================================
 
         // Total calls for this senior (including hierarchical keys)
-        $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
+        $totalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")->count();
 
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
@@ -35,12 +35,12 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Ready To Paid" calls
-        $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+        $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->where('Exe_Remarks', 'Ready To Paid')
             ->count();
 
         // Total other calls (excluding Called & Mailed)
-        $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+        $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->where(function ($q) {
                 $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
@@ -54,12 +54,14 @@ class CallReportController extends Controller
         // Base query filtered by this senior and date
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate);
+        $tquery = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate);
 
         // Selected date totals
-        $StotalCalls = $query->count();
+        $StotalCalls = $tquery->count();
         $ScalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
-        $SreadyToPaidCalls = (clone $query)->where('Exe_Remarks', 'Ready To Paid')->count();
-        $SotherCalls = (clone $query)
+        $SreadyToPaidCalls = (clone $tquery)->where('Exe_Remarks', 'Ready To Paid')->count();
+        $SotherCalls = (clone $tquery)
             ->where(function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
@@ -82,7 +84,7 @@ class CallReportController extends Controller
 
         // Hour-wise "Ready To Paid" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "{$createdByKey}%")
+            ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Paid')
             ->groupBy('hour')
@@ -91,7 +93,7 @@ class CallReportController extends Controller
 
         // Hour-wise other calls
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "{$createdByKey}%")
+            ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where(function ($q) {
                 $q->where(function ($q2) {
@@ -851,7 +853,7 @@ class CallReportController extends Controller
             ->count();
 
         // Total other calls (excluding Called & Mailed)
-        $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+        $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->where(function ($q) {
                 $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
@@ -1492,8 +1494,8 @@ class CallReportController extends Controller
         $user =  User::where('id', $userId)
             ->where('is_deleted', 0)
             ->firstOrFail();
-        
-                // Total calls for this senior (including hierarchical keys)
+
+        // Total calls for this senior (including hierarchical keys)
         $totalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")->count();
 
         // Total "Called & Mailed" calls
@@ -1507,7 +1509,7 @@ class CallReportController extends Controller
             ->count();
 
         // Total other calls (excluding Called & Mailed)
-        $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+        $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->where(function ($q) {
                 $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
