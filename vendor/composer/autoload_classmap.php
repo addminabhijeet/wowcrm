@@ -11,6 +11,7 @@ return array(
     'App\\Http\\Controllers\\Auth\\RegisterController' => $baseDir . '/app/Http/Controllers/Auth/RegisterController.php',
     'App\\Http\\Controllers\\CalendarController' => $baseDir . '/app/Http/Controllers/CalendarController.php',
     'App\\Http\\Controllers\\CallReportController' => $baseDir . '/app/Http/Controllers/CallReportController.php',
+    'App\\Http\\Controllers\\CandidateController' => $baseDir . '/app/Http/Controllers/CandidateController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\DashboardController' => $baseDir . '/app/Http/Controllers/DashboardController.php',
     'App\\Http\\Controllers\\EmailTemplateController' => $baseDir . '/app/Http/Controllers/EmailTemplateController.php',

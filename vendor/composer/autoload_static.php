@@ -586,6 +586,7 @@ class ComposerStaticInit352664b0b048f044edd31d96713e159b
         'App\\Http\\Controllers\\Auth\\RegisterController' => __DIR__ . '/../..' . '/app/Http/Controllers/Auth/RegisterController.php',
         'App\\Http\\Controllers\\CalendarController' => __DIR__ . '/../..' . '/app/Http/Controllers/CalendarController.php',
         'App\\Http\\Controllers\\CallReportController' => __DIR__ . '/../..' . '/app/Http/Controllers/CallReportController.php',
+        'App\\Http\\Controllers\\CandidateController' => __DIR__ . '/../..' . '/app/Http/Controllers/CandidateController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
         'App\\Http\\Controllers\\DashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/DashboardController.php',
         'App\\Http\\Controllers\\EmailTemplateController' => __DIR__ . '/../..' . '/app/Http/Controllers/EmailTemplateController.php',
