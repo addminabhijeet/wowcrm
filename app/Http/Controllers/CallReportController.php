@@ -862,11 +862,13 @@ class CallReportController extends Controller
         // Base query filtered by this senior and date
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate);
+        $tquery = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate);
 
         // Selected date totals
         $StotalCalls = $query->count();
         $ScalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
-        $SreadyToPaidCalls = (clone $query)->where('Exe_Remarks', 'Ready To Paid')->count();
+        $SreadyToPaidCalls = (clone $tquery)->where('Exe_Remarks', 'Ready To Paid')->count();
         $SotherCalls = (clone $query)
             ->where(function ($q) {
                 $q->where(function ($q2) {
