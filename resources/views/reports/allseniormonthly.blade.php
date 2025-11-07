@@ -557,7 +557,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetGiven }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -576,7 +576,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetAchieved }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -595,7 +595,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetYetToAchieve }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -614,7 +614,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $daysLeft }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -625,6 +625,7 @@ $script = '<script>
             </div>
         </div>
 
+        <!-- Total Present Days -->
         <div class="col">
             <div class="card h-100 border-0 shadow-sm"
                 style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
@@ -632,7 +633,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Present Days</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Present Days</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $presentDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -651,7 +652,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Absent Days</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Absent Days</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $absentDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -662,7 +663,7 @@ $script = '<script>
             </div>
         </div>
 
-        <!-- Working Days -->
+        <!-- Total Working Days -->
         <div class="col">
             <div class="card h-100 border-0 shadow-sm"
                 style="background: linear-gradient(135deg, #fff8e1, #ffecb3); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
@@ -670,7 +671,7 @@ $script = '<script>
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Working Days</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Working Days</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $workingDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -681,11 +682,12 @@ $script = '<script>
             </div>
         </div>
 
-
     </div>
+
 
     <div class="row gy-4 mt-1">
 
+        <!-- ================= Left Section ================= -->
         <div class="col-xxl-8 col-lg-6">
             <div class="card h-100 border-0 shadow-sm radius-12">
                 <div class="card-body p-4">
@@ -708,193 +710,174 @@ $script = '<script>
 
                     <!-- Stats Section -->
                     <div class="row g-3 mb-4">
-                        <!-- Total Calls -->
-                        <div class="col-sm-6 col-md-3">
+                        <div class="col-md-3">
                             <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                 <div class="icon mb-2 text-primary fs-2">
                                     <i class="bi bi-telephone-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted d-block">Total Calls (TC)</small>
+                                    <small class="fw-bold d-block">Total Calls</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MtotalCalls }}</h4>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Other Calls -->
-                        <div class="col-sm-6 col-md-3">
+                        <div class="col-md-3">
                             <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                 <div class="icon mb-2 text-success fs-2">
                                     <i class="bi bi-bar-chart-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted d-block">Other Calls (OC)</small>
+                                    <small class="fw-bold d-block">Other Calls</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MotherCalls }}</h4>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Called & Mailed -->
-                        <div class="col-sm-6 col-md-3">
+                        <div class="col-md-3">
                             <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                <div class="icon mb-2 text-info fs-2">
+                                <div class="icon mb-2 text-warning fs-2">
                                     <i class="bi bi-envelope-paper-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted d-block">Called & Mailed (C&MC)</small>
+                                    <small class="fw-bold d-block">Called & Mailed</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Ready To Paid -->
-                        <div class="col-sm-6 col-md-3">
+                        <div class="col-md-3">
                             <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                <div class="icon mb-2 text-warning fs-2">
+                                <div class="icon mb-2 text-info fs-2">
                                     <i class="bi bi-cash-stack"></i>
                                 </div>
                                 <div>
-                                    <small class="text-muted d-block">Ready To Paid (R2P)</small>
+                                    <small class="fw-bold d-block">Ready To Paid</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MreadyToPaidCalls }}</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-
                     <!-- Table Section -->
                     <div class="table-responsive">
                         <table class="table table-hover table-bordered align-middle mb-0">
                             <thead class="table-primary">
                                 <tr>
-                                    <th class="fw-semibold">⏰ Time Range</th>
-                                    <th class="fw-semibold text-center">📊 Called & Mailed Count</th>
-                                    <th class="fw-semibold text-center">📊 Ready To Paid Count</th>
-                                    <th class="fw-semibold text-center">📊 Other Call Count</th>
+                                    <th class="fw-bold">Time Range</th>
+                                    <th class="fw-bold text-center">Called & Mailed Count</th>
+                                    <th class="fw-bold text-center">Ready To Paid Count</th>
+                                    <th class="fw-bold text-center">Other Call Count</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td style="white-space: nowrap;">10.00AM-11.00AM</td>
+                                    <td>10.00AM-11.00AM</td>
                                     <td class="text-center"><span class="badge bg-info">{{ $t10to11am }}</span></td>
                                     <td class="text-center"><span class="badge bg-success">{{ $r10to11am }}</span></td>
                                     <td class="text-center"><span class="badge bg-warning">{{ $o10to11am }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">11.00AM-12.00PM</td>
+                                    <td>11.00AM-12.00PM</td>
                                     <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-success">{{ $r11to12pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-warning">{{ $o11to12pm }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">12.00PM-01.00PM</td>
+                                    <td>12.00PM-01.00PM</td>
                                     <td class="text-center"><span class="badge bg-info">{{ $t12to1pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-success">{{ $r12to1pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-warning">{{ $o12to1pm }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">01.00PM-02.00PM</td>
+                                    <td>01.00PM-02.00PM</td>
                                     <td class="text-center"><span class="badge bg-info">{{ $t1to2pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-success">{{ $r1to2pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-warning">{{ $o1to2pm }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">02.00PM-03.00PM</td>
+                                    <td>02.00PM-03.00PM</td>
                                     <td class="text-center"><span class="badge bg-info">{{ $t2to3pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-success">{{ $r2to3pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-warning">{{ $o2to3pm }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">03.00PM-04.00PM</td>
+                                    <td>03.00PM-04.00PM</td>
                                     <td class="text-center"><span class="badge bg-info">{{ $t3to4pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-success">{{ $r3to4pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-warning">{{ $o3to4pm }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">04.00PM-05.00PM</td>
+                                    <td>04.00PM-05.00PM</td>
                                     <td class="text-center"><span class="badge bg-info">{{ $t4to5pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-success">{{ $r4to5pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-warning">{{ $o4to5pm }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">05.00PM-06.00PM</td>
+                                    <td>05.00PM-06.00PM</td>
                                     <td class="text-center"><span class="badge bg-info">{{ $t5to6pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-success">{{ $r5to6pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-warning">{{ $o5to6pm }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">06.00PM-07.00PM</td>
+                                    <td>06.00PM-07.00PM</td>
                                     <td class="text-center"><span class="badge bg-info">{{ $t6to7pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-success">{{ $r6to7pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-warning">{{ $o6to7pm }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">07.00PM-08.00PM</td>
+                                    <td>07.00PM-08.00PM</td>
                                     <td class="text-center"><span class="badge bg-info">{{ $t7to8pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-success">{{ $r7to8pm }}</span></td>
                                     <td class="text-center"><span class="badge bg-warning">{{ $o7to8pm }}</span></td>
                                 </tr>
                             </tbody>
                         </table>
-
-
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- ================= Right Summary ================= -->
         <div class="col-xxl-4 col-lg-6">
             <div class="card h-100 radius-8 border-0">
                 <div class="card-body p-24">
-                    <h6 class="mb-2 fw-bold text-lg">Total Summary (From Joining)</h6>
-
-                    <div class="mt-4">
-                        <!-- Total Calls -->
-                        <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
-                            <div>
-                                <span class="text-secondary fw-normal d-block mb-1">Total Calls (TC)</span>
+                    <h6 class="fw-bold mb-1">Total Summary (From Joining)</h6>
+                    <div class="mt-24">
+                        <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                            <div class="me-4">
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Total Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
                             </div>
-                            <div class="position-relative">
-                                <div id="semiCircleGauge"></div>
-                                <span class="rounded-circle bg-light d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0 p-2">
-                                    <iconify-icon icon="mdi:emoji" class="text-primary fs-5"></iconify-icon>
-                                </span>
-                            </div>
+                            <div id="semiCircleGauge" class="me-3"></div>
                         </div>
 
-                        <!-- Other Calls -->
-                        <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
+                        <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div>
-                                <span class="text-secondary fw-normal d-block mb-1">Other Calls (OC)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Other Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
                             </div>
-                            <div id="areaChart" class="p-2"></div>
+                            <div id="areaChart"></div>
                         </div>
 
-                        <!-- Called & Mailed Calls -->
-                        <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
+                        <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div>
-                                <span class="text-secondary fw-normal d-block mb-1">Called & Mailed Calls (C&MC)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Called & Mailed Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
                             </div>
-                            <div id="iconBarChartCmc" class="p-2"></div>
+                            <div id="iconBarChartCmc"></div>
                         </div>
 
-                        <!-- Ready To Paid Calls -->
-                        <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 shadow-sm bg-white">
+                        <div class="d-flex align-items-center gap-1 justify-content-between">
                             <div>
-                                <span class="text-secondary fw-normal d-block mb-1">Ready To Paid Calls (R2P)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Ready To Paid Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $readyToPaidCalls }}</h5>
                             </div>
-                            <div id="iconBarChartR2p" class="p-2"></div>
+                            <div id="iconBarChartR2p"></div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </div>
+
 </div>
 <script>
     document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
