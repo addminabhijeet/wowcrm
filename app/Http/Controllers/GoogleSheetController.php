@@ -1569,6 +1569,7 @@ class GoogleSheetController extends Controller
             });
         }
 
+
         // Fetch results ordered by Date
         $results = $query->orderBy('Date', 'desc')->get();
 

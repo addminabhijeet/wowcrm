@@ -907,10 +907,7 @@ $script ='<script>
                             suggestions += `
                                 <a href="#" 
                                    class="list-group-item list-group-item-action search-item" 
-                                   data-id="${item.id}"
-                                   data-name="${item.Name}"
-                                   data-email="${item.Email_Address}"
-                                   data-phone="${item.Phone_Number}">
+                                   data-id="${item.id}">
                                    ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}
                                 </a>`;
                         });
@@ -925,7 +922,7 @@ $script ='<script>
         $('#senior-search').on('input', showSuggestions);
 
         // -----------------------------
-        // On Click Suggestion
+        // On Click Suggestion → Show Selected Result
         // -----------------------------
         $(document).on('click', '#search-suggestions .search-item', function(e) {
             e.preventDefault();
@@ -933,16 +930,13 @@ $script ='<script>
             const rowId = $(this).data('id');
             const junior_user = $('#junior-filter').val();
 
-            // Update input box with selected text (Name | Email | Phone)
-            const name = $(this).data('name');
-            const email = $(this).data('email');
-            const phone = $(this).data('phone');
-            $('#senior-search').val(`${name} | ${email} | ${phone}`);
+            // Set selected text in input
+            $('#senior-search').val($(this).text());
 
-            // Hide suggestions
+            // Hide suggestion list
             $('#search-suggestions').empty().hide();
 
-            // Fetch and show the selected row
+            // Fetch and show only the selected result in the table
             fetchTable('', 1, junior_user, rowId);
         });
 
@@ -956,7 +950,7 @@ $script ='<script>
         });
 
         // -----------------------------
-        // Click outside to hide suggestions
+        // Click outside → hide suggestions
         // -----------------------------
         $(document).click(function(e) {
             if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
@@ -966,6 +960,7 @@ $script ='<script>
 
     });
 </script>
+
 
 <style>
     .scroll-sm {
