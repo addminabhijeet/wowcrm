@@ -559,7 +559,8 @@ class GoogleSheetController extends Controller
             ['path' => url()->current(), 'query' => $request->query()]
         );
 
-        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)
+            ->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
@@ -1530,21 +1531,99 @@ class GoogleSheetController extends Controller
     }
 
 
-    public function junior()
+    public function junior(Request $request)
     {
         $authUser = Auth::user();
-        $pattern = "%:" . $authUser->id . "|junior"; // will check last part
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+        $juniorUserId = $request->input('junior_user'); // dropdown value
+        $page = $request->input('page', 1); // ✅ Ensure page input handled
 
-        $data = GoogleSheetData::where(function ($q) use ($authUser, $pattern) {
+        $pattern = "%:" . $authUser->id . "|junior";
+
+        // Base query: existing junior logic
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $pattern) {
             $q->where('created_by', $authUser->id . '|junior') // exact match
-                ->orWhere('created_by', 'LIKE', $pattern);       // ends with :id|junior
+                ->orWhere('created_by', 'LIKE', $pattern);      // ends with :id|junior
         })
-            ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']) // ensures it's last part
-            ->orderBy('Date', 'desc') // ✅ sort by Date descending (latest first)
-            ->paginate(10);
+            ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
 
-        return view('database.junior', compact('data'));
+        // Filter by selected junior if dropdown selected
+        if ($juniorUserId) {
+            $query->where(function ($q) use ($juniorUserId) {
+                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+            });
+        }
+
+        // Search or specific row filter
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // Fetch results ordered by Date descending
+        $results = $query->orderBy('Date', 'desc')->get();
+
+        // Transform forwarded_by field
+        $transformed = $results->map(function ($item) use ($authUser) {
+            $forwardedBy = '';
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                $names = [];
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role = $parts[1] ?? 'unknown';
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        // Apply pagination after transformation
+        $perPage = 10;
+        $currentPage = $page;
+        $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transformed->forPage($currentPage, $perPage),
+            $transformed->count(),
+            $perPage,
+            $currentPage,
+            ['path' => url()->current(), 'query' => $request->query()]
+        );
+
+        // Get list of juniors for dropdown filter
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)
+            ->whereIn('role', ['junior', 'senior'])
+            ->where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'email', 'phone', 'designation']);
+
+        // Handle AJAX request for table
+        if ($request->ajax()) {
+            return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+        }
+
+        return view('database.junior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
+
 
 
     public function juniorcandm()
