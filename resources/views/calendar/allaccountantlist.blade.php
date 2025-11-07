@@ -60,7 +60,7 @@ $script = '<script>
 
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->role }}</td>
+                        <td>{{ $user->role === 'accountant' ? 'Support' : $user->role }}</td>
 
                         <td class="text-center">
                             <a href="{{ route('calendar.allaccountantUser', $user->id) }}" class="btn btn-sm btn-primary">

@@ -60,7 +60,7 @@ $script = '<script>
 
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
-                        <td>{{ $user->role }}</td>
+                        <td>{{ $user->role === 'senior' ? 'IT Senior Recruiter' : $user->role }}</td>
 
                         <td class="text-center">
                             <a href="{{ route('call.reports.allseniormonthly', $user->id) }}" class="btn btn-sm btn-primary">
