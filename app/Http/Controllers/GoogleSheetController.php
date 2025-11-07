@@ -761,7 +761,6 @@ class GoogleSheetController extends Controller
     {
         $authUser = Auth::user();
         $query = $request->input('query');
-
         $results = [];
 
         if ($query && strlen($query) >= 3) {
@@ -780,11 +779,46 @@ class GoogleSheetController extends Controller
                         ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
                 })
                 ->limit(10)
-                ->get(['id', 'Name', 'Email_Address', 'Phone_Number',  'Exe_Remarks','forwarded_by']);
+                ->get(['id', 'Name', 'Email_Address', 'Phone_Number', 'Exe_Remarks', 'created_by']);
         }
 
-        return response()->json($results);
+        // ✅ Transform the forwarded_by column like in senior()
+        $transformed = collect($results)->map(function ($item) use ($authUser) {
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                $names = [];
+
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            // Add transformed field
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        return response()->json($transformed);
     }
+
 
     // -----------------------------
     // AJAX Search Suggestions
