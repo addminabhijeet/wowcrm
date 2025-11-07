@@ -545,24 +545,7 @@ $script = '<script>
             </div>
         </div>
 
-        <!-- Non Working Days -->
-        <div class="col">
-            <div class="card h-100 border-0 shadow-sm"
-                style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 20px; color: #1565c0; transition: all 0.3s ease; cursor: pointer;"
-                onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
-                onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
-                <div class="card-body d-flex justify-content-between align-items-center p-4">
-                    <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Non Working Days</p>
-                        <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $nonWorkingDays }}</h3>
-                    </div>
-                    <div class="d-flex justify-content-center align-items-center"
-                        style="width: 70px; height: 70px; background-color: rgba(21,101,192,0.1); border-radius: 50%;">
-                        <iconify-icon icon="mdi:calendar-blank-outline" style="font-size: 34px; color: #1565c0;"></iconify-icon>
-                    </div>
-                </div>
-            </div>
-        </div>
+
 
 
     </div>
