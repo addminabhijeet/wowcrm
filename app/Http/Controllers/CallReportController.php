@@ -191,12 +191,33 @@ class CallReportController extends Controller
         $user = Auth::user();
         $createdByKey = "{$user->id}|senior";
 
+        // Total calls for this senior (including hierarchical keys)
+        $totalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")->count();
+
+        // Total "Called & Mailed" calls
+        $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+            ->count();
+
+        // Total "Ready To Paid" calls
+        $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->where('Exe_Remarks', 'Ready To Paid')
+            ->count();
+
+        // Total other calls (excluding Called & Mailed)
+        $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
+            ->count();
+
         // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
         [$year, $month] = explode('-', $selectedMonth);
 
         // Total calls for this senior in the selected month (including hierarchical keys)
-        $MtotalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+        $MtotalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->count();
@@ -209,14 +230,14 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Ready To Paid" calls
-        $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+        $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Paid')
             ->count();
 
         // Total other calls (not "Called & Mailed" or "Ready To Paid")
-        $MotherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+        $MotherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
@@ -238,7 +259,7 @@ class CallReportController extends Controller
 
         // Hour-wise "Ready To Paid" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "{$createdByKey}%")
+            ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Paid')
@@ -248,7 +269,7 @@ class CallReportController extends Controller
 
         // Hour-wise "Other Calls" counts
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "{$createdByKey}%")
+            ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
@@ -342,6 +363,10 @@ class CallReportController extends Controller
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         return view('reports.seniormonthly', compact(
+            'totalCalls',
+            'calledAndMailedCalls',
+            'readyToPaidCalls',
+            'otherCalls',
             'MtotalCalls',
             'McalledAndMailedCalls',
             'MreadyToPaidCalls',
