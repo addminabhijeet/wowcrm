@@ -921,13 +921,20 @@ $script ='<script>
             e.preventDefault();
             const rowId = $(this).data('id');
             const junior_user = $('#junior-filter').val();
-            $('#senior-search').val($(this).text());
+            const selectedText = $(this).text();
+
+            // Set search input text and hide suggestions
+            $('#senior-search').val(selectedText);
             $('#search-suggestions').empty().hide();
 
+            // Fetch the single selected record
             fetchTable('', 1, junior_user, rowId);
+
+            // Optional: visually highlight selected row after rendering
+            setTimeout(() => {
+                $(`#senior-table-wrapper tr[data-id="${rowId}"]`).addClass('table-active');
+            }, 400);
         });
-
-
 
         // Junior dropdown filter
         $(document).on('change', '#junior-filter', function() {
