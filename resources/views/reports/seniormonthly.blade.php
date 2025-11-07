@@ -653,7 +653,7 @@ $script = '<script>
                     <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                         <div>
                             <span class="text-secondary fw-normal d-block mb-1">Total Calls (TC)</span>
-                            <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
+                            <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
                         </div>
                         <div class="position-relative">
                             <div id="semiCircleGauge"></div>
@@ -667,7 +667,7 @@ $script = '<script>
                     <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                         <div>
                             <span class="text-secondary fw-normal d-block mb-1">Other Calls (OC)</span>
-                            <h5 class="fw-semibold mb-0">{{ $MotherCalls }}</h5>
+                            <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
                         </div>
                         <div id="areaChart" class="p-2"></div>
                     </div>
@@ -676,7 +676,7 @@ $script = '<script>
                     <div class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                         <div>
                             <span class="text-secondary fw-normal d-block mb-1">Called & Mailed Calls (C&MC)</span>
-                            <h5 class="fw-semibold mb-0">{{ $McalledAndMailedCalls }}</h5>
+                            <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
                         </div>
                         <div id="iconBarChartCmc" class="p-2"></div>
                     </div>
@@ -685,7 +685,7 @@ $script = '<script>
                     <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 shadow-sm bg-white">
                         <div>
                             <span class="text-secondary fw-normal d-block mb-1">Ready To Paid Calls (R2P)</span>
-                            <h5 class="fw-semibold mb-0">{{ $MreadyToPaidCalls }}</h5>
+                            <h5 class="fw-semibold mb-0">{{ $readyToPaidCalls }}</h5>
                         </div>
                         <div id="iconBarChartR2p" class="p-2"></div>
                     </div>
