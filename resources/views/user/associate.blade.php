@@ -24,7 +24,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                     </ul>
                     <a  href="{{ route('users.associate.create') }}" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
                         <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                        Add New Associate
+                        Add New Support Associate
                     </a>
                 </div>
 
