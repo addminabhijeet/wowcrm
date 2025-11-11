@@ -230,7 +230,16 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('users.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('users.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Support</a></li>
+                    <li><a href="{{ route('users.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>US Accounts</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('users.associate') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Support Associate</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('users.support') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Associate</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('users.writter') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Resume Writter</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('users.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer</a></li>
