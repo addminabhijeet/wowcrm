@@ -57,6 +57,27 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/admin/accountant/update/{id}', [UserController::class, 'accountantupdate'])->name('users.accountant.update');
     Route::get('/dashboard/admin/accountant/update/{id}', [UserController::class, 'accountantdestroy'])->name('users.accountant.destroy');
 
+    Route::get('/dashboard/admin/associate', [UserController::class, 'associate'])->name('users.associate');
+    Route::get('/dashboard/admin/associate/create', [UserController::class, 'associatecreate'])->name('users.associate.create');
+    Route::post('/dashboard/admin/associate/store', [UserController::class, 'associatestore'])->name('users.associate.store');
+    Route::get('/dashboard/admin/associate/{id}/edit', [UserController::class, 'associateedit'])->name('users.associate.edit');
+    Route::put('/dashboard/admin/associate/update/{id}', [UserController::class, 'associateupdate'])->name('users.associate.update');
+    Route::get('/dashboard/admin/associate/update/{id}', [UserController::class, 'associatedestroy'])->name('users.associate.destroy');
+
+    Route::get('/dashboard/admin/support', [UserController::class, 'support'])->name('users.support');
+    Route::get('/dashboard/admin/support/create', [UserController::class, 'supportcreate'])->name('users.support.create');
+    Route::post('/dashboard/admin/support/store', [UserController::class, 'supportstore'])->name('users.support.store');
+    Route::get('/dashboard/admin/support/{id}/edit', [UserController::class, 'supportedit'])->name('users.support.edit');
+    Route::put('/dashboard/admin/support/update/{id}', [UserController::class, 'supportupdate'])->name('users.support.update');
+    Route::get('/dashboard/admin/support/update/{id}', [UserController::class, 'supportdestroy'])->name('users.support.destroy');
+
+    Route::get('/dashboard/admin/writter', [UserController::class, 'writter'])->name('users.writter');
+    Route::get('/dashboard/admin/writter/create', [UserController::class, 'writtercreate'])->name('users.writter.create');
+    Route::post('/dashboard/admin/writter/store', [UserController::class, 'writterstore'])->name('users.writter.store');
+    Route::get('/dashboard/admin/writter/{id}/edit', [UserController::class, 'writteredit'])->name('users.writter.edit');
+    Route::put('/dashboard/admin/writter/update/{id}', [UserController::class, 'writterupdate'])->name('users.writter.update');
+    Route::get('/dashboard/admin/writter/update/{id}', [UserController::class, 'writterdestroy'])->name('users.writter.destroy');
+
     Route::get('/dashboard/admin/customer', [UserController::class, 'customer'])->name('users.customer');
     Route::get('/dashboard/admin/customer/create', [UserController::class, 'customercreate'])->name('users.customer.create');
     Route::post('/dashboard/admin/customer/store', [UserController::class, 'customerstore'])->name('users.customer.store');
