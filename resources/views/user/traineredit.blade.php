@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='View Profile';
+$title='View Trainer';
 $subTitle = 'Super Admin';
 $script ='<script>
     // ======================== Upload Image Start =====================
@@ -164,6 +164,7 @@ $script ='<script>
                                             <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
                                             <option value="candidate" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
                                             <option value="accountant" {{ $user->role == 'accountant' ? 'selected' : '' }}>Support</option>
+                                            <option value="trainer" {{ $user->role == 'trainer' ? 'selected' : '' }}>Trainer</option>
                                         </select>
                                     </div>
                                 </div>

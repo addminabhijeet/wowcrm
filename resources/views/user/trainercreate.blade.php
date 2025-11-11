@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='Add User';
+$title='Add Trainer';
 $subTitle = 'Super Admin';
 $script = '<script>
     // ================== Image Upload Js Start ===========================

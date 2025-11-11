@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @php
-$title='Users -> Support';
+$title='Users -> US Accounts';
 $subTitle = 'Super Admin';
 $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 @endphp
@@ -24,7 +24,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                     </ul>
                     <a  href="{{ route('users.junior.create') }}" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
                         <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                        Add New Support
+                        Add New US Accounts
                     </a>
                 </div>
 
@@ -60,7 +60,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                         <!-- Role -->
                                         <td class="text-center">
                                             <span class="bg-primary-focus text-primary-main px-24 py-4 rounded-pill fw-medium text-sm">
-                                                {{ $user->role === 'accountant' ? 'Support' : ucfirst($user->role) }}
+                                                {{ $user->role === 'accountant' ? 'US Accounts' : ucfirst($user->role) }}
                                             </span>
                                         </td>
 
