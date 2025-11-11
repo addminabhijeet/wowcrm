@@ -409,6 +409,393 @@ class UserController extends Controller
             ->with('success',  ' deleted successfully!');
     }
 
+    
+    public function associate()
+    {
+        $users = User::where('role', 'associate')
+            ->where('is_deleted', 0)
+            ->get();
+        return view('user.associate', compact('users'));
+    }
+
+    public function associatecreate()
+    {
+        return view('user.associatecreate');
+    }
+
+    public function associatestore(Request $request)
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email',
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'required|string',
+            'role'        => 'required|string',
+            'password'    => 'required|string|min:6',
+            'status'      => 'required|boolean',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // Handle Image Upload directly to public/user_images
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
+
+        $validated['password'] = Hash::make($validated['password']);
+
+        User::create($validated);
+        return redirect()->route("users.associate")
+            ->with('success', ' added successfully!');
+    }
+
+    // ======================
+    // EDIT / UPDATE
+    // ======================
+    public function associateedit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user.associateedit', compact('user'));
+    }
+
+    public function associateupdate(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'nullable|string',
+            'role'        => 'required|string|in:junior,admin,associate,customer,accountant',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password'    => 'nullable|string|min:6|confirmed',
+        ]);
+
+        $validated['status'] = $request->has('status') ? 1 : 0;
+
+        // Handle Image Upload directly to public/user_images
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            // Generate unique filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+
+                // Delete old image if exists
+                if ($user->image && file_exists(public_path($user->image))) {
+                    unlink(public_path($user->image));
+                }
+
+                // Store relative path for asset()
+                $validated['image'] = 'user_images/' . $newName;
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
+
+        if (!empty($request->password)) {
+            $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route("users.associate.edit", $user->id)
+            ->with('success', ' updated successfully!');
+    }
+
+    // ======================
+    // DELETE
+    // ======================
+    public function associatedestroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->is_deleted = 1; // Mark as deleted
+        $user->save();
+
+        return redirect()->route("users.associate")
+            ->with('success',  ' deleted successfully!');
+    }
+
+    
+    public function support()
+    {
+        $users = User::where('role', 'support')
+            ->where('is_deleted', 0)
+            ->get();
+        return view('user.support', compact('users'));
+    }
+
+    public function supportcreate()
+    {
+        return view('user.supportcreate');
+    }
+
+    public function supportstore(Request $request)
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email',
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'required|string',
+            'role'        => 'required|string',
+            'password'    => 'required|string|min:6',
+            'status'      => 'required|boolean',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // Handle Image Upload directly to public/user_images
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
+
+        $validated['password'] = Hash::make($validated['password']);
+
+        User::create($validated);
+        return redirect()->route("users.support")
+            ->with('success', ' added successfully!');
+    }
+
+    // ======================
+    // EDIT / UPDATE
+    // ======================
+    public function supportedit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user.supportedit', compact('user'));
+    }
+
+    public function supportupdate(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'nullable|string',
+            'role'        => 'required|string|in:junior,admin,support,customer,accountant',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password'    => 'nullable|string|min:6|confirmed',
+        ]);
+
+        $validated['status'] = $request->has('status') ? 1 : 0;
+
+        // Handle Image Upload directly to public/user_images
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            // Generate unique filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+
+                // Delete old image if exists
+                if ($user->image && file_exists(public_path($user->image))) {
+                    unlink(public_path($user->image));
+                }
+
+                // Store relative path for asset()
+                $validated['image'] = 'user_images/' . $newName;
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
+
+        if (!empty($request->password)) {
+            $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route("users.support.edit", $user->id)
+            ->with('success', ' updated successfully!');
+    }
+
+    // ======================
+    // DELETE
+    // ======================
+    public function supportdestroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->is_deleted = 1; // Mark as deleted
+        $user->save();
+
+        return redirect()->route("users.support")
+            ->with('success',  ' deleted successfully!');
+    }
+
+    
+    public function writter()
+    {
+        $users = User::where('role', 'writter')
+            ->where('is_deleted', 0)
+            ->get();
+        return view('user.writter', compact('users'));
+    }
+
+    public function writtercreate()
+    {
+        return view('user.writtercreate');
+    }
+
+    public function writterstore(Request $request)
+    {
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email',
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'required|string',
+            'role'        => 'required|string',
+            'password'    => 'required|string|min:6',
+            'status'      => 'required|boolean',
+            'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
+        ]);
+
+        // Handle Image Upload directly to public/user_images
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            // Generate unique, clean filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+                $validated['image'] = 'user_images/' . $newName; // Store relative path for asset()
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
+
+        $validated['password'] = Hash::make($validated['password']);
+
+        User::create($validated);
+        return redirect()->route("users.writter")
+            ->with('success', ' added successfully!');
+    }
+
+    // ======================
+    // EDIT / UPDATE
+    // ======================
+    public function writteredit($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user.writteredit', compact('user'));
+    }
+
+    public function writterupdate(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'designation' => 'nullable|string',
+            'role'        => 'required|string|in:junior,admin,writter,customer,accountant',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password'    => 'nullable|string|min:6|confirmed',
+        ]);
+
+        $validated['status'] = $request->has('status') ? 1 : 0;
+
+        // Handle Image Upload directly to public/user_images
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            // Generate unique filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+
+                // Delete old image if exists
+                if ($user->image && file_exists(public_path($user->image))) {
+                    unlink(public_path($user->image));
+                }
+
+                // Store relative path for asset()
+                $validated['image'] = 'user_images/' . $newName;
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
+
+        if (!empty($request->password)) {
+            $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route("users.writter.edit", $user->id)
+            ->with('success', ' updated successfully!');
+    }
+
+    // ======================
+    // DELETE
+    // ======================
+    public function writterdestroy($id)
+    {
+        $user = User::findOrFail($id);
+        $user->is_deleted = 1; // Mark as deleted
+        $user->save();
+
+        return redirect()->route("users.writter")
+            ->with('success',  ' deleted successfully!');
+    }
+
     public function trainer()
     {
         $users = User::where('role', 'trainer')
