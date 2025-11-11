@@ -76,6 +76,12 @@ class LoginController extends Controller
                     return redirect()->route('dashboard.trainer');
                 case 'admin':
                     return redirect()->route('dashboard.admin');
+                case 'associate':
+                    return redirect()->route('dashboard.associate');
+                case 'support':
+                    return redirect()->route('dashboard.support');
+                case 'writter':
+                    return redirect()->route('dashboard.writter');
                 default:
                     abort(403, 'Unauthorized action.');
             }
