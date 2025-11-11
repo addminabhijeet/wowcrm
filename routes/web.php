@@ -85,14 +85,15 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/admin/customer/update/{id}', [UserController::class, 'customerupdate'])->name('users.customer.update');
     Route::get('/dashboard/admin/customer/destroy/{id}', [UserController::class, 'customerdestroy'])->name('users.customer.destroy');
 
-
-
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
     Route::get('/dashboard/junior', [DashboardController::class, 'junior'])->name('dashboard.junior');
     Route::get('/dashboard/senior', [DashboardController::class, 'senior'])->name('dashboard.senior');
     Route::get('/dashboard/customer', [DashboardController::class, 'customer'])->name('dashboard.customer');
     Route::get('/dashboard/accountant', [DashboardController::class, 'accountant'])->name('dashboard.accountant');
     Route::get('/dashboard/trainer', [DashboardController::class, 'trainer'])->name('dashboard.trainer');
+    Route::get('/dashboard/associate', [DashboardController::class, 'associate'])->name('dashboard.associate');
+    Route::get('/dashboard/support', [DashboardController::class, 'support'])->name('dashboard.support');
+    Route::get('/dashboard/writter', [DashboardController::class, 'writter'])->name('dashboard.writter');
     Route::get('/button/status', [DashboardController::class, 'getButtonStatus'])->name('button.status');
     Route::post('/dashboard/start-timer', [DashboardController::class, 'startTimer'])->name('timer.start');
     Route::post('/dashboard/start-timer-hide', [DashboardController::class, 'startTimerHide'])->name('timer.starthide');
