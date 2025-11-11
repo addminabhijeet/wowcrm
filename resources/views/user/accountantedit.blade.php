@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='View Profile';
+$title='View US Accounts';
 $subTitle = 'Super Admin';
 $script ='<script>
     // ======================== Upload Image Start =====================
@@ -67,7 +67,7 @@ $script ='<script>
                         <li class="d-flex align-items-center gap-1 mb-12">
                             <span class="w-30 text-md fw-semibold text-primary-light"> Role</span>
                             <span class="w-70 text-secondary-light fw-medium">
-                                : {{ $user->role === 'accountant' ? 'Support' : $user->role }}
+                                : {{ $user->role === 'accountant' ? 'US Accounts' : $user->role }}
                             </span>
 
                         </li>
@@ -166,7 +166,7 @@ $script ='<script>
                                             <option value="senior" {{ $user->role == 'senior' ? 'selected' : '' }}>IT Senior Recruiter</option>
                                             <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
                                             <option value="candidate" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
-                                            <option value="accountant" {{ $user->role == 'accountant' ? 'selected' : '' }}>Support</option>
+                                            <option value="accountant" {{ $user->role == 'accountant' ? 'selected' : '' }}>US Accounts</option>
                                         </select>
                                     </div>
                                 </div>
@@ -178,7 +178,7 @@ $script ='<script>
                                         </label>
                                         <select name="designation" id="designation" class="form-control radius-8 form-select" required>
                                             <option value="" disabled {{ !$user->designation ? 'selected' : '' }}>Select Designation</option>
-                                            <option value="Accountant" {{ $user->designation == 'Accountant' ? 'selected' : '' }}>Support</option>
+                                            <option value="Accountant" {{ $user->designation == 'Accountant' ? 'selected' : '' }}>US Accounts</option>
                                             <option value="Admin" {{ $user->designation == 'Admin' ? 'selected' : '' }}>Admin</option>
                                             <option value="Candidate" {{ $user->designation == 'Candidate' ? 'selected' : '' }}>Candidate</option>
                                             <option value="Junior" {{ $user->designation == 'Junior' ? 'selected' : '' }}>IT Recruiter</option>

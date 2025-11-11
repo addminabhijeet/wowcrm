@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='Add User';
+$title='Add US Accounts';
 $subTitle = 'Super Admin';
 $script = '<script>
     // ================== Image Upload Js Start ===========================
@@ -77,7 +77,7 @@ $script = '<script>
                                 </label>
                                 <select name="designation" id="designation" class="form-control radius-8 form-select" required>
                                     <option value="">Select Designation</option>
-                                    <option value="Accountant">Support</option>
+                                    <option value="accountant">US Accounts</option>
                                     
                                 </select>
                             </div>
@@ -91,7 +91,7 @@ $script = '<script>
                                     <option value="senior">IT Senior Recruiter</option>
                                     <option value="admin">Admin</option>
                                     <option value="customer">Customer</option>
-                                    <option value="accountant" selected>Support</option>
+                                    <option value="accountant" selected>US Accounts</option>
                                 </select>
                                 <!-- Hidden input to submit the value -->
                                 <input type="hidden" name="role" value="junior">
