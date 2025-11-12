@@ -139,7 +139,7 @@ class DashboardController extends Controller
         $absentDays = 0;
         $workingDays = 0;
         $nonWorkingDays = 0;
-
+        /** @var \Carbon\Carbon $day */
         foreach ($daysInMonth as $day) {
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
