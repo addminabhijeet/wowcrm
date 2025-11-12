@@ -733,7 +733,7 @@ $script ='<script>
                     .then(data => {
                         console.log("Response from server:", data);
                         if (data.success) {
-                            alert("Remarks updated successfully ✅");
+                            alert("Updated successfully");
                         } else {
                             console.error("Server error:", data.message);
                             alert("Error: " + (data.message || "Unknown error"));
