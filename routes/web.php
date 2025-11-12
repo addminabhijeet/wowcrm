@@ -64,6 +64,27 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/admin/associate/update/{id}', [UserController::class, 'associateupdate'])->name('users.associate.update');
     Route::get('/dashboard/admin/associate/update/{id}', [UserController::class, 'associatedestroy'])->name('users.associate.destroy');
 
+    Route::get('/dashboard/admin/seniorassociate', [UserController::class, 'seniorassociate'])->name('users.seniorassociate');
+    Route::get('/dashboard/admin/seniorassociate/create', [UserController::class, 'seniorassociatecreate'])->name('users.seniorassociate.create');
+    Route::post('/dashboard/admin/seniorassociate/store', [UserController::class, 'seniorassociatestore'])->name('users.seniorassociate.store');
+    Route::get('/dashboard/admin/seniorassociate/{id}/edit', [UserController::class, 'seniorassociateedit'])->name('users.seniorassociate.edit');
+    Route::put('/dashboard/admin/seniorassociate/update/{id}', [UserController::class, 'seniorassociateupdate'])->name('users.seniorassociate.update');
+    Route::get('/dashboard/admin/seniorassociate/update/{id}', [UserController::class, 'seniorassociatedestroy'])->name('users.seniorassociate.destroy');
+
+    Route::get('/dashboard/admin/operation', [UserController::class, 'operation'])->name('users.operation');
+    Route::get('/dashboard/admin/operation/create', [UserController::class, 'operationcreate'])->name('users.operation.create');
+    Route::post('/dashboard/admin/operation/store', [UserController::class, 'operationstore'])->name('users.operation.store');
+    Route::get('/dashboard/admin/operation/{id}/edit', [UserController::class, 'operationedit'])->name('users.operation.edit');
+    Route::put('/dashboard/admin/operation/update/{id}', [UserController::class, 'operationupdate'])->name('users.operation.update');
+    Route::get('/dashboard/admin/operation/update/{id}', [UserController::class, 'operationdestroy'])->name('users.operation.destroy');
+
+    Route::get('/dashboard/admin/resource', [UserController::class, 'resource'])->name('users.resource');
+    Route::get('/dashboard/admin/resource/create', [UserController::class, 'resourcecreate'])->name('users.resource.create');
+    Route::post('/dashboard/admin/resource/store', [UserController::class, 'resourcestore'])->name('users.resource.store');
+    Route::get('/dashboard/admin/resource/{id}/edit', [UserController::class, 'resourceedit'])->name('users.resource.edit');
+    Route::put('/dashboard/admin/resource/update/{id}', [UserController::class, 'resourceupdate'])->name('users.resource.update');
+    Route::get('/dashboard/admin/resource/update/{id}', [UserController::class, 'resourcedestroy'])->name('users.resource.destroy');
+
     Route::get('/dashboard/admin/support', [UserController::class, 'support'])->name('users.support');
     Route::get('/dashboard/admin/support/create', [UserController::class, 'supportcreate'])->name('users.support.create');
     Route::post('/dashboard/admin/support/store', [UserController::class, 'supportstore'])->name('users.support.store');
