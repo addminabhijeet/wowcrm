@@ -390,6 +390,216 @@ $role = Auth::user()->role;
             </li>
             @endif
 
+            {{-- ================= Support Department ================= --}}
+            @if($role === 'support')
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                    <span>Dashboard</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('dashboard.support') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
+                </ul>
+            </li>
+
+            <!-- <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="hugeicons:invoice-03" class="menu-icon"></iconify-icon>
+                    <span>Calendar</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('calendar.supportUser') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Personal Calendar</a></li>
+                </ul>
+
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>IT Recruiter Calendar</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Database</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.support') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.supportcandm') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self Called & Mailed</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.supportpaid') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Paid</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Report</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.support') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Personal Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.supportmonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.alljuniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Team Report</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Timer</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('timer.support') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Report</a></li>
+                </ul>
+            </li> -->
+            @endif
+
+
+            {{-- ================= Resourcing Department ================= --}}
+            @if($role === 'resource')
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                    <span>Dashboard</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('dashboard.resource') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
+                </ul>
+            </li>
+
+            <!-- <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="hugeicons:invoice-03" class="menu-icon"></iconify-icon>
+                    <span>Calendar</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('calendar.resourceUser') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Personal Calendar</a></li>
+                </ul>
+
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>IT Recruiter Calendar</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Database</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.resource') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.resourcecandm') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self Called & Mailed</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.resourcepaid') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Paid</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Report</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.resource') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Personal Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.resourcemonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.alljuniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Team Report</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Timer</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('timer.resource') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Report</a></li>
+                </ul>
+            </li> -->
+            @endif
+
+
+            {{-- ================= Operation Manager ================= --}}
+            @if($role === 'operation')
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                    <span>Dashboard</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('dashboard.operation') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
+                </ul>
+            </li>
+
+            <!-- <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="hugeicons:invoice-03" class="menu-icon"></iconify-icon>
+                    <span>Calendar</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('calendar.operationUser') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Personal Calendar</a></li>
+                </ul>
+
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>IT Recruiter Calendar</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Database</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.operation') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.operationcandm') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self Called & Mailed</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.operationpaid') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Paid</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Report</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.operation') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Daily Personal Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.operationmonthly') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Personal Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.alljuniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Team Report</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Timer</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('timer.operation') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Report</a></li>
+                </ul>
+            </li> -->
+            @endif
+
+
         </ul>
     </div>
 </aside>
