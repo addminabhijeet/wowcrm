@@ -664,6 +664,47 @@ class GoogleSheetController extends Controller
         return view('database.seniorcandm', compact('data'));
     }
 
+    public function seniorcandmupdate(Request $request)
+    {
+        $id = $request->input('id');
+
+        if (!$id) {
+            return response()->json(['success' => false, 'message' => 'ID is required']);
+        }
+
+        $row = GoogleSheetData::find($id);
+        if (!$row) {
+            return response()->json(['success' => false, 'message' => 'Row not found']);
+        }
+
+        $rowData = json_decode($request->input('data'), true);
+        if (empty($rowData)) {
+            return response()->json(['success' => false, 'message' => 'No data provided']);
+        }
+
+        // ✅ Only allow updates for these two fields
+        $updateData = [
+            'Remark' => $rowData['Remark'] ?? $row->Remark,
+            'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? $row->First_Follow_Up_Remarks,
+        ];
+
+        try {
+            $row->timestamps = false;
+            $row->fill($updateData)->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Remarks updated successfully',
+                'id' => $row->id,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Update failed: ' . $e->getMessage(),
+            ]);
+        }
+    }
+
 
     public function seniorpaid(Request $request)
     {
