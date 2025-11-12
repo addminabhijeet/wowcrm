@@ -211,7 +211,7 @@
     </div>
     @endif
 </div>
-@endif
+
 
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -1298,3 +1298,5 @@
         });
     });
 </script>
+
+@endif
