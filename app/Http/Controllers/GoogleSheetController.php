@@ -51,13 +51,13 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // ✅ Paginate directly from the query (before transforming)
+        // ✅ Pagination at query level (not collection level)
         $perPage = 10;
         $results = $query->orderBy('id', 'desc')->paginate($perPage, ['*'], 'page', $page);
 
-        // ✅ Transform the paginated items
+        // ✅ Transform only current page results
         $results->getCollection()->transform(function ($item) use ($authUser) {
-            $forwardedBy = '';
+            $forwardedBy = 'N/A';
 
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
@@ -68,9 +68,7 @@ class GoogleSheetController extends Controller
                     $userId = $parts[0] ?? null;
                     $role   = $parts[1] ?? 'unknown';
 
-                    $roleLabel = ($role === 'senior')
-                        ? 'IT Senior Recruiter'
-                        : (($role === 'junior') ? 'IT Recruiter' : $role);
+                    $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
 
                     if ($userId == $authUser->id) {
                         $names[] = "SELF ({$userId}) ({$roleLabel})";
@@ -84,16 +82,11 @@ class GoogleSheetController extends Controller
                 }
 
                 $forwardedBy = implode(' → ', $names);
-            } else {
-                $forwardedBy = 'N/A';
             }
 
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
-
-        // ✅ Preserve query parameters in pagination links
-        $results->appends($request->except('page'));
 
         $juniorUsers = \App\Models\User::where('is_deleted', 0)
             ->whereIn('role', ['junior', 'senior'])
@@ -101,7 +94,7 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
 
-        // ✅ Handle AJAX request properly
+        // ✅ For AJAX pagination, return only table partial
         if ($request->ajax()) {
             return view('database.partials.senior_table', [
                 'data' => $results,
@@ -114,6 +107,7 @@ class GoogleSheetController extends Controller
             'juniorUsers' => $juniorUsers
         ]);
     }
+
 
 
     public function adminfetch(Request $request)

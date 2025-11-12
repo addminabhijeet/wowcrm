@@ -1338,4 +1338,40 @@ $script ='<script>
     });
 </script>
 
+<script>
+$(document).on('click', '.pagination a', function(e) {
+    e.preventDefault();
+
+    let url = $(this).attr('href');
+    if (!url) return;
+
+    // Preserve filters
+    const search = $('input[name="search"]').val();
+    const juniorUser = $('#junior_user').val();
+
+    $.ajax({
+        url: url,
+        type: 'GET',
+        data: {
+            search: search,
+            junior_user: juniorUser,
+            ajax: true
+        },
+        beforeSend: function() {
+            $('#senior-table-wrapper').addClass('loading');
+        },
+        success: function(response) {
+            $('#senior-table-wrapper').html(response);
+        },
+        complete: function() {
+            $('#senior-table-wrapper').removeClass('loading');
+        },
+        error: function(xhr) {
+            console.error('Pagination load failed:', xhr);
+        }
+    });
+});
+</script>
+
+
 @endsection
