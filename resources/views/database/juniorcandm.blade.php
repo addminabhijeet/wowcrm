@@ -710,7 +710,7 @@ $script ='<script>
                 // Determine URL and method
                 let url, method;
                 if (id === "new") {
-                    url = "{{ route('') }}";
+                    url = "";
                     method = "POST";
                 } else {
                     url = "{{ route('juniorcandmupdate') }}";
