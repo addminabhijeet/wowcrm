@@ -69,32 +69,36 @@ $script ='<script>
 
                         {{-- Date --}}
                         <td>
-                            <input type="text" class="form-control date-picker" data-key="Date"
-                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
+                            <input type="text"
+                                class="form-control date-picker"
+                                data-key="Date"
+                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}"
+                                readonly
+                                style="background-color: #f8f9fa; cursor: not-allowed;">
                         </td>
 
                         {{-- Name --}}
                         <td>
                             <input type="text" class="form-control name-input" data-key="Name"
-                                value="{{ $row->Name ?? '' }}" placeholder="Name">
+                                value="{{ $row->Name ?? '' }}" placeholder="Name" readonly>
                         </td>
 
                         {{-- Email Address --}}
                         <td>
                             <input type="email" class="form-control email-input" data-key="Email Address"
-                                value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail">
+                                value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail" readonly>
                         </td>
 
                         {{-- Phone Number --}}
                         <td>
                             <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
+                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number" readonly>
                         </td>
 
                         {{-- Location --}}
                         <td>
                             <input type="text" class="form-control location-autocomplete" data-key="Location"
-                                value="{{ $row->Location ?? '' }}" placeholder="Type location">
+                                value="{{ $row->Location ?? '' }}" placeholder="Type location" readonly>
                         </td>
 
                         {{-- Remark --}}
@@ -106,7 +110,7 @@ $script ='<script>
                         {{-- Relocation --}}
                         <td>
                             @php $relOptions = ['YES','NO']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Relocation">
+                            <select class="form-select dynamic-dropdown" data-key="Relocation" disabled>
                                 <option value="">-- Relocation --</option>
                                 @foreach($relOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Relocation === $option ? 'selected' : '' }}>
@@ -119,14 +123,14 @@ $script ='<script>
                         {{-- Graduation Date --}}
                         <td>
                             <input type="text" class="form-control date-picker" data-key="Graduation Date"
-                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
+                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}" readonly>
                         </td>
 
                         {{-- Immigration --}}
                         <td>
                             @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','HIB','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Immigration">
-                                <option value="">--Immigration --</option>
+                            <select class="form-select dynamic-dropdown" data-key="Immigration" disabled>
+                                <option value="">-- Immigration --</option>
                                 @foreach($immOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Immigration === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -138,7 +142,7 @@ $script ='<script>
                         {{-- Course --}}
                         <td>
                             @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Course">
+                            <select class="form-select dynamic-dropdown" data-key="Course" disabled>
                                 <option value="">-- Course --</option>
                                 @foreach($courseOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Course === $option ? 'selected' : '' }}>
@@ -151,7 +155,7 @@ $script ='<script>
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount !== null ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount (469)">
+                                value="{{ $row->Amount !== null ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount (469)" readonly>
                         </td>
 
                         {{-- Qualification --}}
@@ -161,7 +165,7 @@ $script ='<script>
                             'Masters','Master of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.'];
                             @endphp
 
-                            <select class="form-select dynamic-dropdown" data-key="Qualification">
+                            <select class="form-select dynamic-dropdown" data-key="Qualification" disabled>
                                 <option value="">-- Qualification --</option>
                                 @foreach($qualificationOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Qualification === $option ? 'selected' : '' }}>
@@ -205,7 +209,7 @@ $script ='<script>
                         {{-- Time Zone --}}
                         <td>
                             @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Time Zone">
+                            <select class="form-select dynamic-dropdown" data-key="Time Zone" disabled>
                                 <option value="">-- Time Zone --</option>
                                 @foreach($timezoneOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Time_Zone === $option ? 'selected' : '' }}>
