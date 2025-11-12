@@ -19,8 +19,8 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
-        $page = $request->input('page', 1); // ✅ Ensure page input handled
+        $juniorUserId = $request->input('junior_user');
+        $page = $request->input('page', 1);
 
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
@@ -51,11 +51,12 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('id', 'desc')->get();
+        // ✅ Paginate directly from the query (before transforming)
+        $perPage = 10;
+        $results = $query->orderBy('id', 'desc')->paginate($perPage, ['*'], 'page', $page);
 
-        // ✅ Transform after getting all filtered data
-        $transformed = $results->map(function ($item) use ($authUser) {
+        // ✅ Transform the paginated items
+        $results->getCollection()->transform(function ($item) use ($authUser) {
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
@@ -67,22 +68,17 @@ class GoogleSheetController extends Controller
                     $userId = $parts[0] ?? null;
                     $role   = $parts[1] ?? 'unknown';
 
+                    $roleLabel = ($role === 'senior')
+                        ? 'IT Senior Recruiter'
+                        : (($role === 'junior') ? 'IT Recruiter' : $role);
+
                     if ($userId == $authUser->id) {
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "SELF ({$userId}) ({$roleLabel})";
                     } elseif ($userId == 0) {
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
                         $user = \App\Models\User::where('is_deleted', 0)->find($userId);
                         $name = $user ? $user->name : 'Unknown';
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
                 }
@@ -96,28 +92,27 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // ✅ Apply pagination AFTER transformation (like junior)
-        $perPage = 10;
-        $currentPage = $page;
-        $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($currentPage, $perPage),
-            $transformed->count(),
-            $perPage,
-            $currentPage,
-            ['path' => url()->current(), 'query' => $request->query()]
-        );
+        // ✅ Preserve query parameters in pagination links
+        $results->appends($request->except('page'));
 
-        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)
+            ->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
 
-        // Handle AJAX request for both search and pagination
+        // ✅ Handle AJAX request properly
         if ($request->ajax()) {
-            return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+            return view('database.partials.senior_table', [
+                'data' => $results,
+                'juniorUsers' => $juniorUsers
+            ])->render();
         }
 
-        return view('database.admin', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+        return view('database.admin', [
+            'data' => $results,
+            'juniorUsers' => $juniorUsers
+        ]);
     }
 
 
