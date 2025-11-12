@@ -468,7 +468,7 @@ $role = Auth::user()->role;
                     <span>Dashboard</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href=""><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
+                    <li><a href="{{ route('dashboard.resource') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
                 </ul>
             </li>
 
@@ -538,7 +538,7 @@ $role = Auth::user()->role;
                     <span>Dashboard</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href=""><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
+                    <li><a href="{{ route('dashboard.operation') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
                 </ul>
             </li>
 
