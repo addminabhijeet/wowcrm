@@ -568,6 +568,70 @@ class DashboardController extends Controller
         ));
     }
 
+    public function operation()
+    {
+        // Fetch timer settings dynamically
+        $settings = TimerSetting::first();
+        if (!$settings) {
+            return response()->json(['error' => 'Timer settings not configured'], 500);
+        }
+        $workDaySeconds = $settings->work_day_seconds;
+
+        $user  = Auth::user();
+        $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+
+        $remaining_seconds = $workDaySeconds;
+        $elapsed_seconds   = 0;
+        $status            = 'running';
+        $button_status     = 1; // default to show if no timer exists
+
+        if ($timer) {
+            $remaining_seconds = $timer->remaining_seconds;
+            $elapsed_seconds   = $workDaySeconds - $remaining_seconds;
+            $status            = $timer->status;
+            $button_status     = $timer->button_status ?? 1;
+        }
+
+        return view('dashboard.operation', compact(
+            'remaining_seconds',
+            'elapsed_seconds',
+            'status',
+            'button_status'
+        ));
+    }
+
+    public function resource()
+    {
+        // Fetch timer settings dynamically
+        $settings = TimerSetting::first();
+        if (!$settings) {
+            return response()->json(['error' => 'Timer settings not configured'], 500);
+        }
+        $workDaySeconds = $settings->work_day_seconds;
+
+        $user  = Auth::user();
+        $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+
+        $remaining_seconds = $workDaySeconds;
+        $elapsed_seconds   = 0;
+        $status            = 'running';
+        $button_status     = 1; // default to show if no timer exists
+
+        if ($timer) {
+            $remaining_seconds = $timer->remaining_seconds;
+            $elapsed_seconds   = $workDaySeconds - $remaining_seconds;
+            $status            = $timer->status;
+            $button_status     = $timer->button_status ?? 1;
+        }
+
+        return view('dashboard.resource', compact(
+            'remaining_seconds',
+            'elapsed_seconds',
+            'status',
+            'button_status'
+        ));
+    }
+
     public function support()
     {
         // Fetch timer settings dynamically
