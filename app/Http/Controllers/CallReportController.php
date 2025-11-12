@@ -387,6 +387,7 @@ class CallReportController extends Controller
 
         // Loop through each day
         foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
@@ -1280,6 +1281,7 @@ class CallReportController extends Controller
 
         // Loop through each day
         foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
@@ -1818,6 +1820,7 @@ class CallReportController extends Controller
 
         // Loop through each day
         foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
@@ -2161,6 +2164,7 @@ class CallReportController extends Controller
 
         // Loop through each day
         foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
