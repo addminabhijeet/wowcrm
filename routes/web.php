@@ -178,6 +178,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/junior/google-sheet', [GoogleSheetController::class, 'junior'])->name('google.sheet.junior');
     Route::get('/dashboard/junior/google-sheet-candm', [GoogleSheetController::class, 'juniorcandm'])->name('google.sheet.junior.candm');
     Route::post('/dashboard/junior/google-sheet-candm-update', [GoogleSheetController::class, 'juniorcandmupdate'])->name('juniorcandmupdate');
+    Route::post('/dashboard/senior/google-sheet-candm-update', [GoogleSheetController::class, 'seniorcandmupdate'])->name('seniorcandmupdate');
     Route::post('/dashboard/junior/google-sheet/fetch', [GoogleSheetController::class, 'juniorfetch'])->name('google.sheet.juniorfetch');
     Route::patch('/dashboard/junior/google-sheet/pdfupdate/{id}', [GoogleSheetController::class, 'juniorpdfupdate'])->name('google.sheet.juniorpdfupdate');
     Route::post('/dashboard/junior/google-sheet/pdfstore', [GoogleSheetController::class, 'juniorpdfstore'])->name('google.sheet.juniorpdfstore');
