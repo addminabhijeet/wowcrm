@@ -66,31 +66,31 @@ $script ='<script>
                         {{-- Date --}}
                         <td>
                             <input type="text" class="form-control date-picker" data-key="Date"
-                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
+                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}" readonly>
                         </td>
 
                         {{-- Name --}}
                         <td>
                             <input type="text" class="form-control name-input" data-key="Name"
-                                value="{{ $row->Name ?? '' }}" placeholder="Name">
+                                value="{{ $row->Name ?? '' }}" placeholder="Name" readonly>
                         </td>
 
                         {{-- Email Address --}}
                         <td>
                             <input type="email" class="form-control email-input" data-key="Email Address"
-                                value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail">
+                                value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail" readonly>
                         </td>
 
                         {{-- Phone Number --}}
                         <td>
                             <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
+                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number" readonly>
                         </td>
 
                         {{-- Location --}}
                         <td>
                             <input type="text" class="form-control location-autocomplete" data-key="Location"
-                                value="{{ $row->Location ?? '' }}" placeholder="Type location">
+                                value="{{ $row->Location ?? '' }}" placeholder="Type location" readonly>
                         </td>
 
                         {{-- Remark --}}
@@ -103,7 +103,7 @@ $script ='<script>
                         {{-- Relocation --}}
                         <td>
                             @php $relOptions = ['YES','NO']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Relocation">
+                            <select class="form-select dynamic-dropdown" data-key="Relocation" disabled>
                                 <option value="">-- Relocation --</option>
                                 @foreach($relOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Relocation === $option ? 'selected' : '' }}>
@@ -113,16 +113,17 @@ $script ='<script>
                             </select>
                         </td>
 
+
                         {{-- Graduation Date --}}
                         <td>
                             <input type="text" class="form-control date-picker" data-key="Graduation Date"
-                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
+                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}" readonly>
                         </td>
 
                         {{-- Immigration --}}
                         <td>
                             @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','HIB','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Immigration">
+                            <select class="form-select dynamic-dropdown" data-key="Immigration" disabled>
                                 <option value="">-- Immigration --</option>
                                 @foreach($immOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Immigration === $option ? 'selected' : '' }}>
@@ -135,7 +136,7 @@ $script ='<script>
                         {{-- Course --}}
                         <td>
                             @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Course">
+                            <select class="form-select dynamic-dropdown" data-key="Course" disabled>
                                 <option value="">-- Course --</option>
                                 @foreach($courseOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Course === $option ? 'selected' : '' }}>
@@ -148,7 +149,7 @@ $script ='<script>
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount(469)">
+                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount(469)" readonly>
                         </td>
 
                         {{-- Qualification --}}
@@ -158,7 +159,7 @@ $script ='<script>
                             'Masters','Master of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.'];
                             @endphp
 
-                            <select class="form-select dynamic-dropdown" data-key="Qualification">
+                            <select class="form-select dynamic-dropdown" data-key="Qualification" disabled>
                                 <option value="">-- Qualification --</option>
                                 @foreach($qualificationOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Qualification === $option ? 'selected' : '' }}>
@@ -201,7 +202,7 @@ $script ='<script>
                         {{-- Time Zone --}}
                         <td>
                             @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Time Zone">
+                            <select class="form-select dynamic-dropdown" data-key="Time Zone" disabled>
                                 <option value="">-- Time Zone --</option>
                                 @foreach($timezoneOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Time_Zone === $option ? 'selected' : '' }}>
@@ -606,57 +607,57 @@ $script ='<script>
             });
         }
 
-        function addBlankRow() {
-            let colKeys = [];
-            let firstRow = tableBody.querySelector("tr");
-            if (firstRow) {
-                firstRow.querySelectorAll("input[data-key], select[data-key]").forEach(cell => colKeys.push(cell.dataset.key));
-            }
+        // function addBlankRow() {
+        //     let colKeys = [];
+        //     let firstRow = tableBody.querySelector("tr");
+        //     if (firstRow) {
+        //         firstRow.querySelectorAll("input[data-key], select[data-key]").forEach(cell => colKeys.push(cell.dataset.key));
+        //     }
 
-            let newRow = document.createElement("tr");
-            newRow.setAttribute("data-id", "new");
-            let cells = `<td>—</td>`;
+        //     let newRow = document.createElement("tr");
+        //     newRow.setAttribute("data-id", "new");
+        //     let cells = `<td>—</td>`;
 
-            colKeys.forEach(k => {
-                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
-                    let opts = [];
-                    if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
-                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'];
-                    if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'HIB', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC'];
-                    if (k === 'Relocation') opts = ['YES', 'NO'];
-                    if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
-                    if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
-                    if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
-                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
-                } else if (k === 'Amount') {
-                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount(469)"></td>`;
-                } else if (k === 'Location') {
-                    cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
-                } else if (k === 'Remark') {
-                    cells += `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
-                } else if (k === 'Date' || k === 'Graduation Date') {
-                    cells += `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
-                } else if (k === 'Phone Number') {
-                    cells += `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
-                } else if (k === 'Email Address') {
-                    cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
-                } else if (k === 'Name') {
-                    cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                } else if (k === 'View') {
-                    cells += `<td>
-                    <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
-                    <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-                    <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
-                    <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-                </td>`;
-                }
-            });
+        //     colKeys.forEach(k => {
+        //         if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
+        //             let opts = [];
+        //             if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
+        //             if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'];
+        //             if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'HIB', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC'];
+        //             if (k === 'Relocation') opts = ['YES', 'NO'];
+        //             if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
+        //             if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+        //             if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
+        //             cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
+        //         } else if (k === 'Amount') {
+        //             cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount(469)"></td>`;
+        //         } else if (k === 'Location') {
+        //             cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
+        //         } else if (k === 'Remark') {
+        //             cells += `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
+        //         } else if (k === 'Date' || k === 'Graduation Date') {
+        //             cells += `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
+        //         } else if (k === 'Phone Number') {
+        //             cells += `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
+        //         } else if (k === 'Email Address') {
+        //             cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
+        //         } else if (k === 'Name') {
+        //             cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
+        //         } else if (k === 'View') {
+        //             cells += `<td>
+        //             <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
+        //             <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+        //             <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
+        //             <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+        //         </td>`;
+        //         }
+        //     });
 
-            cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
-            newRow.innerHTML = cells;
-            tableBody.appendChild(newRow);
-            applyInitialState(newRow);
-        }
+        //     cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
+        //     newRow.innerHTML = cells;
+        //     tableBody.appendChild(newRow);
+        //     applyInitialState(newRow);
+        // }
 
         // Check if we need to add a blank row on page load
         // Only add if there are no existing "new" rows
