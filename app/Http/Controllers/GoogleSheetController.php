@@ -72,13 +72,16 @@ class GoogleSheetController extends Controller
                     $role   = $parts[1] ?? 'unknown';
 
                     if ($userId == $authUser->id) {
-                        $names[] = "SELF ({$userId}) ({$role})";
+                        $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SELF ({$userId}) ({$roleLabel})";
                     } elseif ($userId == 0) {
-                        $names[] = "SYSTEM (0) ({$role})";
+                        $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
                         $user = \App\Models\User::where('is_deleted', 0)->find($userId);
                         $name = $user ? $user->name : 'Unknown';
-                        $names[] = "{$name} ({$userId}) ({$role})";
+                        $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
                 }
 
@@ -529,13 +532,22 @@ class GoogleSheetController extends Controller
                     $role   = $parts[1] ?? 'unknown';
 
                     if ($userId == $authUser->id) {
-                        $names[] = "SELF ({$userId}) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SELF ({$userId}) ({$roleLabel})";
                     } elseif ($userId == 0) {
-                        $names[] = "SYSTEM (0) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
                         $user = \App\Models\User::where('is_deleted', 0)->find($userId);
                         $name = $user ? $user->name : 'Unknown';
-                        $names[] = "{$name} ({$userId}) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
                 }
 
