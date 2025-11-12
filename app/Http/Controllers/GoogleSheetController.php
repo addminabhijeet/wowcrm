@@ -663,7 +663,6 @@ class GoogleSheetController extends Controller
 
         return view('database.seniorcandm', compact('data'));
     }
-
     public function seniorcandmupdate(Request $request)
     {
         $id = $request->input('id');
@@ -682,19 +681,32 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // ✅ Only allow updates for these two fields
-        $updateData = [
-            'Remark' => $rowData['Remark'] ?? $row->Remark,
-            'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? $row->First_Follow_Up_Remarks,
-        ];
+        // ✅ Properly map frontend keys to DB columns
+        $updateData = [];
+
+        if (array_key_exists('Remark', $rowData)) {
+            $updateData['Remark'] = $rowData['Remark'];
+        }
+
+        if (array_key_exists('1st Follow Up Remarks', $rowData)) {
+            $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
+        }
+
+        if (empty($updateData)) {
+            return response()->json(['success' => false, 'message' => 'No valid fields to update']);
+        }
 
         try {
+            // ✅ Disable timestamps so updated_at is not touched
             $row->timestamps = false;
-            $row->fill($updateData)->save();
+
+            // ✅ Update only the mapped fields
+            $row->update($updateData);
 
             return response()->json([
                 'success' => true,
                 'message' => 'Remarks updated successfully',
+                'updated_fields' => $updateData,
                 'id' => $row->id,
             ]);
         } catch (\Exception $e) {
