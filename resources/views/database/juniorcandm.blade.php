@@ -708,15 +708,13 @@ $script ='<script>
                 }
 
                 // Determine URL and method
-                let url, method;
-                if (id === "new") {
-                    url = "";
-                    method = "POST";
-                } else {
-                    url = "{{ route('juniorcandmupdate') }}";
-                    method = "POST";
+                let url = "{{ route('juniorcandmupdate') }}";
+                let method = "POST";
+
+                if (id) {
                     formData.append("id", id);
                 }
+
 
                 console.log("Sending to:", url, "Method:", method);
 
