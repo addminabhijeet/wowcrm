@@ -65,9 +65,14 @@ $script ='<script>
 
                         {{-- Date --}}
                         <td>
-                            <input type="text" class="form-control date-picker" data-key="Date"
-                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}" readonly>
+                            <input type="text"
+                                class="form-control date-picker"
+                                data-key="Date"
+                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}"
+                                readonly
+                                style="background-color: #f8f9fa; cursor: not-allowed;">
                         </td>
+
 
                         {{-- Name --}}
                         <td>
