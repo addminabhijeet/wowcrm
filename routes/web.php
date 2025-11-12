@@ -115,6 +115,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/associate', [DashboardController::class, 'associate'])->name('dashboard.associate');
     Route::get('/dashboard/support', [DashboardController::class, 'support'])->name('dashboard.support');
     Route::get('/dashboard/writter', [DashboardController::class, 'writter'])->name('dashboard.writter');
+    Route::get('/dashboard/resource', [DashboardController::class, 'resource'])->name('dashboard.resource');
+    Route::get('/dashboard/seniorassociate', [DashboardController::class, 'seniorassociate'])->name('dashboard.seniorassociate');
+    Route::get('/dashboard/operation', [DashboardController::class, 'operation'])->name('dashboard.operation');
     Route::get('/button/status', [DashboardController::class, 'getButtonStatus'])->name('button.status');
     Route::post('/dashboard/start-timer', [DashboardController::class, 'startTimer'])->name('timer.start');
     Route::post('/dashboard/start-timer-hide', [DashboardController::class, 'startTimerHide'])->name('timer.starthide');
