@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='Database -> Admin';
+$title='Database -> All Called and Mailed';
 $subTitle = 'Super Admin';
 $script ='<script>
     $(".remove-item-btn").on("click", function() {
@@ -983,15 +983,6 @@ $script ='<script>
             $('#search-suggestions').empty().hide();
 
             fetchTable('', 1, junior_user, rowId);
-        });
-
-        // Pagination click (AJAX)
-        $(document).on('click', '.pagination a', function(e) {
-            e.preventDefault();
-            const page = $(this).attr('href').split('page=')[1];
-            const search = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val() || '';
-            fetchTable(search, page, junior_user);
         });
 
         // Junior dropdown filter
