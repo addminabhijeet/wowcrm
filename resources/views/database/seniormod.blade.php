@@ -26,7 +26,15 @@ $script ='<script>
                 <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
 
-
+            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user" id="junior-filter">
+                <option value="">Select IT Recruiter</option>
+                @foreach ($juniorUsers as $junior)
+                <option value="{{ $junior->id }}">
+                    {{ $junior->name }}
+                    @if($junior->designation) ({{ $junior->designation }}) @endif
+                </option>
+                @endforeach
+            </select>
 
 
         </div>
@@ -69,36 +77,32 @@ $script ='<script>
 
                         {{-- Date --}}
                         <td>
-                            <input type="text"
-                                class="form-control date-picker"
-                                data-key="Date"
-                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}"
-                                readonly
-                                style="background-color: #f8f9fa; cursor: not-allowed;">
+                            <input type="text" class="form-control date-picker" data-key="Date"
+                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
                         </td>
 
                         {{-- Name --}}
                         <td>
                             <input type="text" class="form-control name-input" data-key="Name"
-                                value="{{ $row->Name ?? '' }}" placeholder="Name" readonly>
+                                value="{{ $row->Name ?? '' }}" placeholder="Name">
                         </td>
 
                         {{-- Email Address --}}
                         <td>
                             <input type="email" class="form-control email-input" data-key="Email Address"
-                                value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail" readonly>
+                                value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail">
                         </td>
 
                         {{-- Phone Number --}}
                         <td>
                             <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number" readonly>
+                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
                         </td>
 
                         {{-- Location --}}
                         <td>
                             <input type="text" class="form-control location-autocomplete" data-key="Location"
-                                value="{{ $row->Location ?? '' }}" placeholder="Type location" readonly>
+                                value="{{ $row->Location ?? '' }}" placeholder="Type location">
                         </td>
 
                         {{-- Remark --}}
@@ -110,7 +114,7 @@ $script ='<script>
                         {{-- Relocation --}}
                         <td>
                             @php $relOptions = ['YES','NO']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Relocation" disabled>
+                            <select class="form-select dynamic-dropdown" data-key="Relocation">
                                 <option value="">-- Relocation --</option>
                                 @foreach($relOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Relocation === $option ? 'selected' : '' }}>
@@ -123,14 +127,14 @@ $script ='<script>
                         {{-- Graduation Date --}}
                         <td>
                             <input type="text" class="form-control date-picker" data-key="Graduation Date"
-                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}" readonly>
+                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
                         </td>
 
                         {{-- Immigration --}}
                         <td>
                             @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','HIB','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Immigration" disabled>
-                                <option value="">-- Immigration --</option>
+                            <select class="form-select dynamic-dropdown" data-key="Immigration">
+                                <option value="">--Immigration --</option>
                                 @foreach($immOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Immigration === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -142,7 +146,7 @@ $script ='<script>
                         {{-- Course --}}
                         <td>
                             @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Course" disabled>
+                            <select class="form-select dynamic-dropdown" data-key="Course">
                                 <option value="">-- Course --</option>
                                 @foreach($courseOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Course === $option ? 'selected' : '' }}>
@@ -155,7 +159,7 @@ $script ='<script>
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount !== null ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount (469)" readonly>
+                                value="{{ $row->Amount !== null ? '$' . number_format($row->Amount, 2) : '' }}" placeholder="Amount (469)">
                         </td>
 
                         {{-- Qualification --}}
@@ -165,7 +169,7 @@ $script ='<script>
                             'Masters','Master of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.'];
                             @endphp
 
-                            <select class="form-select dynamic-dropdown" data-key="Qualification" disabled>
+                            <select class="form-select dynamic-dropdown" data-key="Qualification">
                                 <option value="">-- Qualification --</option>
                                 @foreach($qualificationOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Qualification === $option ? 'selected' : '' }}>
@@ -177,10 +181,8 @@ $script ='<script>
 
                         {{-- Exe Remarks --}}
                         <td>
-                            @php
-                            $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Paid','VM','Busy'];
-                            @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
+                            @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Paid','VM','Busy']; @endphp
+                            <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                 <option value="">-- Exe Remarks --</option>
                                 @foreach($exeOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
@@ -189,7 +191,6 @@ $script ='<script>
                                 @endforeach
                             </select>
                         </td>
-
 
                         {{-- 1st Follow Up Remarks --}}
                         <td>
@@ -209,7 +210,7 @@ $script ='<script>
                         {{-- Time Zone --}}
                         <td>
                             @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Time Zone" disabled>
+                            <select class="form-select dynamic-dropdown" data-key="Time Zone">
                                 <option value="">-- Time Zone --</option>
                                 @foreach($timezoneOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Time_Zone === $option ? 'selected' : '' }}>
@@ -509,7 +510,7 @@ $script ='<script>
                 };
 
                 // ✅ Use Laravel's timezone-based today
-                if (key === "Graduation Date") opts.maxDate = laravelToday;
+                if (key === "Date") opts.maxDate = laravelToday;
                 if (key === "Date") opts.minDate = laravelToday;
 
                 flatpickr(input, opts);
@@ -671,7 +672,7 @@ $script ='<script>
                 }
             });
 
-            // cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
+            cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
             newRow.innerHTML = cells;
             tableBody.appendChild(newRow);
             applyInitialState(newRow);
@@ -700,53 +701,86 @@ $script ='<script>
         tableBody.addEventListener('click', function(e) {
             if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
                 e.preventDefault();
-
                 let saveBtn = e.target.matches('.save-btn') ? e.target : e.target.closest('.save-btn');
                 let id = saveBtn.dataset.id;
                 let row = saveBtn.closest("tr");
                 console.log("Saving row with id:", id);
 
-                // ✅ Collect only 'Remark' and '1st Follow Up Remarks' from the row
+                // Collect all data from the row
                 let rowData = {};
-                let remarkInput = row.querySelector('input[data-key="Remark"], select[data-key="Remark"], textarea[data-key="Remark"]');
-                let followUpInput = row.querySelector('input[data-key="1st Follow Up Remarks"], select[data-key="1st Follow Up Remarks"], textarea[data-key="1st Follow Up Remarks"]');
+                row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
+                    let key = cell.dataset.key;
+                    let value = cell.value;
+                    rowData[key] = value;
+                });
+                console.log("Row data:", rowData);
 
-                if (remarkInput) {
-                    rowData["Remark"] = remarkInput.value;
-                }
-                if (followUpInput) {
-                    rowData["1st Follow Up Remarks"] = followUpInput.value;
-                }
-
-                console.log("Row data to send:", rowData);
-
-                // ✅ Create FormData
+                // Create FormData object
                 let formData = new FormData();
                 formData.append("data", JSON.stringify(rowData));
                 formData.append("_token", "{{ csrf_token() }}");
 
-                if (id) {
+                // Handle resume file upload
+                let resumeInput = row.querySelector("input.resume-input");
+                if (resumeInput && resumeInput.files.length > 0) {
+                    formData.append("resume", resumeInput.files[0]);
+                }
+
+                // Determine URL and method
+                let url, method;
+                if (id === "new") {
+                    url = "{{ route('seniorstore') }}";
+                    method = "POST";
+                } else {
+                    url = "{{ route('seniorupdate') }}";
+                    method = "POST";
                     formData.append("id", id);
                 }
 
-                let url = "{{ route('seniorcandmupdate') }}";
-                let method = "POST";
-
                 console.log("Sending to:", url, "Method:", method);
 
-                // ✅ Send only remark-related data
+                // Send the request
                 fetch(url, {
                         method: method,
                         body: formData
                     })
                     .then(res => {
-                        if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
                         return res.json();
                     })
+                    // In the save button click event handler, update the success callback:
                     .then(data => {
                         console.log("Response from server:", data);
                         if (data.success) {
-                            alert("Updated successfully");
+                            alert("Saved successfully");
+                            if (id === "new") {
+                                // Update row with new ID
+                                row.dataset.id = data.id;
+                                saveBtn.dataset.id = data.id;
+                                row.querySelector("td:first-child").innerText = data.sheet_row_number;
+
+                                const viewBtn = row.querySelector('.view-btn');
+                                const downloadBtn = row.querySelector('.download-btn');
+
+                                if (viewBtn && data.resume_path) {
+                                    viewBtn.href = `/dashboard/senior/google-sheet/view-resume/${data.id}`;
+                                    viewBtn.classList.remove('d-none');
+                                }
+
+                                if (downloadBtn && data.resume_path) {
+                                    downloadBtn.href = `/dashboard/senior/google-sheet/download-resume/${data.id}`;
+                                    downloadBtn.classList.remove('d-none');
+                                }
+
+                                // Only add new blank row if none exists
+                                const existingNewRows = tableBody.querySelectorAll('tr[data-id="new"]');
+                                if (existingNewRows.length === 0) {
+                                    addBlankRow();
+                                }
+                            }
+
                         } else {
                             console.error("Server error:", data.message);
                             alert("Error: " + (data.message || "Unknown error"));
@@ -758,7 +792,6 @@ $script ='<script>
                     });
             }
         });
-
 
         // Handle file upload button clicks
         tableBody.addEventListener('click', function(e) {
@@ -954,14 +987,7 @@ $script ='<script>
             fetchTable('', 1, junior_user, rowId);
         });
 
-        // Pagination click (AJAX)
-        $(document).on('click', '.pagination a', function(e) {
-            e.preventDefault();
-            const page = $(this).attr('href').split('page=')[1];
-            const search = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val() || '';
-            fetchTable(search, page, junior_user);
-        });
+
 
         // Junior dropdown filter
         $(document).on('change', '#junior-filter', function() {
