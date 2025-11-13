@@ -2020,19 +2020,36 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // ✅ Only allow updates for these two fields
-        $updateData = [
-            'Remark' => $rowData['Remark'] ?? $row->Remark,
-            'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? $row->First_Follow_Up_Remarks,
-        ];
+        // ✅ Map frontend keys to database columns
+        $updateData = [];
+
+        if (array_key_exists('Remark', $rowData)) {
+            $updateData['Remark'] = $rowData['Remark'];
+        }
+
+        if (array_key_exists('1st Follow Up Remarks', $rowData)) {
+            $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
+        }
+
+        if (empty($updateData)) {
+            return response()->json(['success' => false, 'message' => 'No valid fields to update']);
+        }
 
         try {
+            // ✅ Prevent timestamps from updating automatically
             $row->timestamps = false;
-            $row->fill($updateData)->save();
+
+            // ✅ Force assign each field manually (bypasses $fillable restrictions)
+            foreach ($updateData as $key => $value) {
+                $row->$key = $value;
+            }
+
+            $row->save();
 
             return response()->json([
                 'success' => true,
                 'message' => 'Remarks updated successfully',
+                'updated_fields' => $updateData,
                 'id' => $row->id,
             ]);
         } catch (\Exception $e) {
