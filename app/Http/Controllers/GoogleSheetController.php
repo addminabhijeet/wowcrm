@@ -741,7 +741,7 @@ class GoogleSheetController extends Controller
 
     public function seniormod(Request $request)
     {
-        $authUser = (object) ['id' => '1'];
+        $authUser = (object) ['id' => null];
         $search = $request->input('search');
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // dropdown value
