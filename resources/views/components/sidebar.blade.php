@@ -101,10 +101,16 @@ $role = Auth::user()->role;
                     <span>Database</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('google.sheet.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                    <li><a href="{{ route('google.sheet.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Called & Mailed</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('google.sheet.seniorcandm') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self Called & Mailed</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.seniormod') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Modified Call</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.seniormodcandm') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Modified Called & Mailed</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('google.sheet.seniorpaid') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Paid</a></li>
