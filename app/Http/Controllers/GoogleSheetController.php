@@ -1031,6 +1031,7 @@ class GoogleSheetController extends Controller
                 $userPattern = "%" . $authUser->id . "|junior";
 
                 $q->where('created_by', $authUser->id . '|junior')
+                    ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior'])
                     ->orWhere('created_by', 'LIKE', $userPattern);
             })
                 ->where(function ($q) use ($query) {
