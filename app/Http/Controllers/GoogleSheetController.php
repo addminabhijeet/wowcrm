@@ -843,7 +843,7 @@ class GoogleSheetController extends Controller
         }
 
 
-        return view('database.seniormod', compact('data'));
+        return view('database.seniormod',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
 
