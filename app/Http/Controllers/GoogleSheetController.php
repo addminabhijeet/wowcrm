@@ -709,7 +709,7 @@ class GoogleSheetController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Remarks updated successfully',
+                'message' => 'Updated successfully',
                 'updated_fields' => $updateData,
                 'id' => $row->id,
             ]);
