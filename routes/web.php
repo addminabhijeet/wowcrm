@@ -161,6 +161,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/senior/google-sheet', [GoogleSheetController::class, 'senior'])->name('google.sheet.senior');
     Route::get('/dashboard/senior/google-sheet-candm', [GoogleSheetController::class, 'seniorcandm'])->name('google.sheet.seniorcandm');
+    Route::get('/dashboard/senior/google-sheet-mod', [GoogleSheetController::class, 'seniormod'])->name('google.sheet.seniormod');
     Route::get('/dashboard/senior/google-sheet-modcandm', [GoogleSheetController::class, 'seniormodcandm'])->name('google.sheet.seniormodcandm');
     Route::get('/dashboard/senior/google-sheet-paid', [GoogleSheetController::class, 'seniorpaid'])->name('google.sheet.seniorpaid');
     Route::get('/dashboard/accountant/google-sheet-paid', [GoogleSheetController::class, 'accountantpaid'])->name('google.sheet.accountantpaid');
