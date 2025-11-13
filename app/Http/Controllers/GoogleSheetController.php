@@ -759,7 +759,7 @@ class GoogleSheetController extends Controller
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$juniorUserId . '|junior', $juniorUserId . '|junior']);
+                    ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$juniorUserId . '|junior', $juniorUserId . '|junior']);
             });
         }
 
@@ -1006,6 +1006,32 @@ class GoogleSheetController extends Controller
                     ->orWhere('created_by', '0|senior')
                     ->orWhere('created_by', 'LIKE', $userPattern)
                     ->orWhere('created_by', 'LIKE', $zeroPattern);
+            })
+                ->where(function ($q) use ($query) {
+                    $q->where('Name', 'LIKE', "%{$query}%")
+                        ->orWhere('Email_Address', 'LIKE', "%{$query}%")
+                        ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
+                })
+                ->limit(10)
+                ->get(['id', 'Name', 'Email_Address', 'Phone_Number']);
+        }
+
+        return response()->json($results);
+    }
+
+    public function seniorSuggestionsmod(Request $request)
+    {
+        $authUser = (object) ['id' => null];
+        $query = $request->input('query');
+
+        $results = [];
+
+        if ($query && strlen($query) >= 3) {
+            $results = GoogleSheetData::where(function ($q) use ($authUser) {
+                $userPattern = "%" . $authUser->id . "|junior";
+
+                $q->where('created_by', $authUser->id . '|junior')
+                    ->orWhere('created_by', 'LIKE', $userPattern);
             })
                 ->where(function ($q) use ($query) {
                     $q->where('Name', 'LIKE', "%{$query}%")
