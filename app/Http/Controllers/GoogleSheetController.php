@@ -700,8 +700,12 @@ class GoogleSheetController extends Controller
             // ✅ Disable timestamps so updated_at is not touched
             $row->timestamps = false;
 
-            // ✅ Update only the mapped fields
-            $row->update($updateData);
+            // ✅ Force assign and save — avoids fillable restrictions
+            foreach ($updateData as $key => $value) {
+                $row->$key = $value;
+            }
+
+            $row->save();
 
             return response()->json([
                 'success' => true,
@@ -716,6 +720,7 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
+
 
 
     public function seniorpaid(Request $request)
