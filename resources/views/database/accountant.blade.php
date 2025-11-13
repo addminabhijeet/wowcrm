@@ -627,16 +627,42 @@ $script ='<script>
                 let id = saveBtn.dataset.id;
                 let row = saveBtn.closest("tr");
 
-                // Confirmation popup before saving
+                // Collect necessary data for preview
+                const senderEmail = "{{ auth()->user()->email }}";
+                const receiverEmail = row.querySelector('input[data-key="email"]')?.value || "N/A";
+                const amount = row.querySelector('input[data-key="amount"]')?.value || "N/A";
+                const courseJoined = row.querySelector('select[data-key="course"]')?.selectedOptions[0]?.text || "N/A";
+                const paymentLink = row.querySelector('input[data-key="payment_link"]')?.value || "N/A";
+
+                // Generate dynamic preview HTML content
+                const previewHTML = `
+            <div style="text-align:left; font-size:14px;">
+                <p><strong>Sender Email:</strong> ${senderEmail}</p>
+                <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
+                <p><strong>Amount:</strong> ₹${amount}</p>
+                <p><strong>Course Joined:</strong> ${courseJoined}</p>
+                <p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>
+                <hr/>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; text-align:center;">
+                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:20px;'>Receiver Email: ${receiverEmail}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:20px;'>Amount: ₹${amount}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:20px;'>Course: ${courseJoined}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:20px;'>Sender Email: ${senderEmail}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                </div>
+            </div>
+        `;
+
+                // Show preview confirmation popup before saving
                 Swal.fire({
-                    title: 'Save Row?',
-                    text: 'Do you want to save the changes?',
-                    icon: 'question',
+                    title: 'Confirm Row Data Before Save',
+                    html: previewHTML,
+                    icon: 'info',
                     showCancelButton: true,
                     confirmButtonText: 'Yes, Save it!',
                     cancelButtonText: 'Cancel',
                     confirmButtonColor: '#28a745',
-                    cancelButtonColor: '#dc3545'
+                    cancelButtonColor: '#dc3545',
+                    width: '800px'
                 }).then((result) => {
                     if (result.isConfirmed) {
                         // Collect all data from the row
@@ -712,62 +738,6 @@ $script ='<script>
                                             addBlankRow();
                                         }
                                     }
-
-                                    // ✅ New Code Starts Here — Show Email, Amount, Course, Sender Email & Payment Link
-                                    let senderEmail = "{{ Auth::user()->email }}";
-                                    let receiverEmail = row.querySelector('input[data-key="email"]')?.value || 'N/A';
-                                    let amount = row.querySelector('input[data-key="amount"]')?.value || 'N/A';
-                                    let course = row.querySelector('select[data-key="course"]')?.value || 'N/A';
-                                    let paymentLink = row.querySelector('input.payment-link')?.value || '#';
-
-                                    // Helper function to open centered popup
-                                    function openCenteredWindow(content, title) {
-                                        let newWin = window.open("", title, "width=500,height=400,top=200,left=500");
-                                        newWin.document.write(`
-                                    <html>
-                                    <head>
-                                        <title>${title}</title>
-                                        <style>
-                                            body {
-                                                display: flex;
-                                                align-items: center;
-                                                justify-content: center;
-                                                height: 100vh;
-                                                font-family: Arial, sans-serif;
-                                                background: linear-gradient(135deg, #eef2ff, #c7d2fe);
-                                            }
-                                            .box {
-                                                text-align: center;
-                                                font-size: 1.6rem;
-                                                font-weight: bold;
-                                                color: #1e293b;
-                                            }
-                                            a {
-                                                color: #2563eb;
-                                                text-decoration: none;
-                                                font-size: 1.2rem;
-                                            }
-                                        </style>
-                                    </head>
-                                    <body>
-                                        <div class="box">${content}</div>
-                                    </body>
-                                    </html>
-                                `);
-                                    }
-
-                                    // Open 4 different pages
-                                    openCenteredWindow(`Sender Email: ${senderEmail}`, "Sender Email");
-                                    openCenteredWindow(`Receiver Email: ${receiverEmail}`, "Receiver Email");
-                                    openCenteredWindow(`Amount: ₹${amount}`, "Amount");
-                                    openCenteredWindow(`Course Joined: ${course}`, "Course Joined");
-
-                                    // Optional — show payment link page
-                                    if (paymentLink && paymentLink !== '#') {
-                                        openCenteredWindow(`<a href="${paymentLink}" target="_blank">Open Payment Link</a>`, "Payment Link");
-                                    }
-                                    // ✅ New Code Ends Here
-
                                 } else {
                                     Swal.fire({
                                         title: 'Error!',
@@ -790,6 +760,7 @@ $script ='<script>
                 });
             }
         });
+
 
 
         // Handle file upload button clicks
