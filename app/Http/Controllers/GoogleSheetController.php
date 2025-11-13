@@ -685,11 +685,19 @@ class GoogleSheetController extends Controller
         $updateData = [];
 
         if (array_key_exists('Remark', $rowData)) {
-            $updateData['Remark'] = $rowData['Remark'];
+            $updateData['Remark'] = trim($rowData['Remark']);
         }
 
         if (array_key_exists('1st Follow Up Remarks', $rowData)) {
             $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
+        }
+
+        // ✅ Make "Remark" mandatory
+        if (!isset($updateData['Remark']) || $updateData['Remark'] === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Remark field is required before updating.'
+            ]);
         }
 
         if (empty($updateData)) {
@@ -720,6 +728,7 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
+
 
 
 
@@ -2024,11 +2033,19 @@ class GoogleSheetController extends Controller
         $updateData = [];
 
         if (array_key_exists('Remark', $rowData)) {
-            $updateData['Remark'] = $rowData['Remark'];
+            $updateData['Remark'] = trim($rowData['Remark']);
         }
 
         if (array_key_exists('1st Follow Up Remarks', $rowData)) {
             $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
+        }
+
+        // ✅ Validate that 'Remark' is mandatory
+        if (!isset($updateData['Remark']) || $updateData['Remark'] === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Remark field is required before updating.'
+            ]);
         }
 
         if (empty($updateData)) {
@@ -2059,6 +2076,7 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
+
 
 
     public function juniorstore(Request $request)
