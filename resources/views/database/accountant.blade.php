@@ -628,29 +628,34 @@ $script ='<script>
                 let row = saveBtn.closest("tr");
 
                 // Collect necessary data for preview
+
                 const senderEmail = "{{ auth()->user()->email }}";
-                const receiverEmail = row.querySelector('input[data-key="email"]')?.value || "N/A";
-                const amount = row.querySelector('input[data-key="amount"]')?.value || "N/A";
-                const courseJoined = row.querySelector('select[data-key="course"]')?.selectedOptions[0]?.text || "N/A";
-                const paymentLink = row.querySelector('input[data-key="payment_link"]')?.value || "N/A";
+                const receiverEmail = row.querySelector('input[data-key="Email Address"]')?.value?.trim() || "N/A";
+                const amount = row.querySelector('input[data-key="Amount"]')?.value?.trim() || "N/A";
+                const remark = row.querySelector('input[data-key="Remark"]')?.value?.trim() || "N/A";
+                const courseJoined = row.querySelector('select[data-key="Course"]')?.selectedOptions[0]?.text || "N/A";
+                const paymentLink = row.querySelector('input[data-key="Payment Link"]')?.value?.trim() || "N/A";
+
 
                 // Generate dynamic preview HTML content
                 const previewHTML = `
-            <div style="text-align:left; font-size:14px;">
-                <p><strong>Sender Email:</strong> ${senderEmail}</p>
-                <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
-                <p><strong>Amount:</strong> ₹${amount}</p>
-                <p><strong>Course Joined:</strong> ${courseJoined}</p>
-                <p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>
-                <hr/>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; text-align:center;">
-                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:20px;'>Receiver Email: ${receiverEmail}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
-                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:20px;'>Amount: ₹${amount}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
-                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:20px;'>Course: ${courseJoined}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
-                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:20px;'>Sender Email: ${senderEmail}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
-                </div>
-            </div>
-        `;
+                    <div style="text-align:left; font-size:14px;">
+                        <p><strong>Sender Email:</strong> ${senderEmail}</p>
+                        <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
+                        <p><strong>Amount:</strong> ${amount}</p>
+                        <p><strong>Course Joined:</strong> ${courseJoined}</p>
+                        <p><strong>Remark:</strong> ${remark}</p>
+                        ${paymentLink && paymentLink !== 'N/A' ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>` : ''}
+                        <hr/>
+                        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; text-align:center;">
+                            <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Receiver Email: ${receiverEmail}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                            <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Amount: ${amount}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                            <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Course: ${courseJoined}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                            <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Remark: ${remark}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                        </div>
+                    </div>
+                `;
+
 
                 // Show preview confirmation popup before saving
                 Swal.fire({
@@ -658,7 +663,7 @@ $script ='<script>
                     html: previewHTML,
                     icon: 'info',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, Save it!',
+                    confirmButtonText: 'Submit',
                     cancelButtonText: 'Cancel',
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#dc3545',
