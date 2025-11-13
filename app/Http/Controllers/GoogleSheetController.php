@@ -747,7 +747,7 @@ class GoogleSheetController extends Controller
         $juniorUserId = $request->input('junior_user'); // dropdown value
         $page = $request->input('page', 1); // ✅ Ensure page input handled
 
-        $userPattern = "%:" . $authUser->id . "|junior";
+        $userPattern = "%" . $authUser->id . "|junior";
 
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
             $q->where('created_by', $authUser->id . '|junior')
