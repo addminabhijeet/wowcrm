@@ -712,6 +712,62 @@ $script ='<script>
                                             addBlankRow();
                                         }
                                     }
+
+                                    // ✅ New Code Starts Here — Show Email, Amount, Course, Sender Email & Payment Link
+                                    let senderEmail = "{{ Auth::user()->email }}";
+                                    let receiverEmail = row.querySelector('input[data-key="email"]')?.value || 'N/A';
+                                    let amount = row.querySelector('input[data-key="amount"]')?.value || 'N/A';
+                                    let course = row.querySelector('select[data-key="course"]')?.value || 'N/A';
+                                    let paymentLink = row.querySelector('input.payment-link')?.value || '#';
+
+                                    // Helper function to open centered popup
+                                    function openCenteredWindow(content, title) {
+                                        let newWin = window.open("", title, "width=500,height=400,top=200,left=500");
+                                        newWin.document.write(`
+                                    <html>
+                                    <head>
+                                        <title>${title}</title>
+                                        <style>
+                                            body {
+                                                display: flex;
+                                                align-items: center;
+                                                justify-content: center;
+                                                height: 100vh;
+                                                font-family: Arial, sans-serif;
+                                                background: linear-gradient(135deg, #eef2ff, #c7d2fe);
+                                            }
+                                            .box {
+                                                text-align: center;
+                                                font-size: 1.6rem;
+                                                font-weight: bold;
+                                                color: #1e293b;
+                                            }
+                                            a {
+                                                color: #2563eb;
+                                                text-decoration: none;
+                                                font-size: 1.2rem;
+                                            }
+                                        </style>
+                                    </head>
+                                    <body>
+                                        <div class="box">${content}</div>
+                                    </body>
+                                    </html>
+                                `);
+                                    }
+
+                                    // Open 4 different pages
+                                    openCenteredWindow(`Sender Email: ${senderEmail}`, "Sender Email");
+                                    openCenteredWindow(`Receiver Email: ${receiverEmail}`, "Receiver Email");
+                                    openCenteredWindow(`Amount: ₹${amount}`, "Amount");
+                                    openCenteredWindow(`Course Joined: ${course}`, "Course Joined");
+
+                                    // Optional — show payment link page
+                                    if (paymentLink && paymentLink !== '#') {
+                                        openCenteredWindow(`<a href="${paymentLink}" target="_blank">Open Payment Link</a>`, "Payment Link");
+                                    }
+                                    // ✅ New Code Ends Here
+
                                 } else {
                                     Swal.fire({
                                         title: 'Error!',
