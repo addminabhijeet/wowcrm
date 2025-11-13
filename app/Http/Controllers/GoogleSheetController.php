@@ -739,7 +739,7 @@ class GoogleSheetController extends Controller
         return view('database.seniormodcandm', compact('data'));
     }
 
-        public function juniormodcandm(Request $request)
+    public function seniormod(Request $request)
     {
         $authUser = Auth::user();
         $search = $request->input('search');
@@ -811,9 +811,9 @@ class GoogleSheetController extends Controller
             return view('database.partials.senior_table', compact('data'))->render();
         }
 
-        return view('database.juniormodcandm', compact('data'));
+        return view('database.seniormod', compact('data'));
     }
-    
+
 
     public function seniorcandmupdate(Request $request)
     {
