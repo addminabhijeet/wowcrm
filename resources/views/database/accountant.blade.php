@@ -633,7 +633,7 @@ $script ='<script>
                 const receiverEmail = row.querySelector('input[data-key="Email Address"]')?.value?.trim() || "N/A";
                 const amount = row.querySelector('input[data-key="Amount"]')?.value?.trim() || "N/A";
                 const remark = row.querySelector('input[data-key="Remark"]')?.value?.trim() || "N/A";
-                const courseJoined = row.querySelector('select[data-key="Course"]')?.value?.trim() || "N/A";
+                const courseJoined = row.querySelector('input[data-key="Course"]')?.value?.trim() || "N/A";
                 const paymentLink = row.querySelector('input[data-key="Payment Link"]')?.value?.trim() || "N/A";
 
 
