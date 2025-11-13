@@ -169,11 +169,13 @@ Route::middleware(['auth'])->group(function () {
     Route::patch('/dashboard/senior/google-sheet/pdfupdate/{id}', [GoogleSheetController::class, 'seniorpdfupdate'])->name('google.sheet.seniorpdfupdate');
     Route::post('/dashboard/senior/google-sheet/pdfstore', [GoogleSheetController::class, 'seniorpdfstore'])->name('google.sheet.seniorpdfstore');
     Route::post('/dashboard/senior/google-sheet/seniorupdate', [GoogleSheetController::class, 'seniorupdate'])->name('seniorupdate');
+    Route::post('/dashboard/senior/google-sheet/seniorupdatemod', [GoogleSheetController::class, 'seniorupdatemod'])->name('seniorupdatemod');
     Route::post('/dashboard/senior/google-sheet/seniorstore', [GoogleSheetController::class, 'seniorstore'])->name('seniorstore');
+    Route::post('/dashboard/senior/google-sheet/seniorstoremod', [GoogleSheetController::class, 'seniorstoremod'])->name('seniorstoremod');
     Route::get('/dashboard/senior/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewseniorResume'])->name('view.resume');
     Route::get('/dashboard/senior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadseniorResume'])->name('download.resume');
     Route::get('/dashboard/senior/google-sheet/search', [GoogleSheetController::class, 'seniorSuggestions'])->name('senior.suggestions');
-        Route::get('/dashboard/senior/google-sheet/searchmod', [GoogleSheetController::class, 'seniorSuggestionsmod'])->name('senior.suggestionsmod');
+    Route::get('/dashboard/senior/google-sheet/searchmod', [GoogleSheetController::class, 'seniorSuggestionsmod'])->name('senior.suggestionsmod');
     Route::get('/dashboard/accountant/google-sheet/search', [GoogleSheetController::class, 'accountantSuggestions'])->name('accountant.suggestions');
     Route::get('/dashboard/trainer/google-sheet/search', [GoogleSheetController::class, 'trainerSuggestions'])->name('trainer.suggestions');
     Route::get('/dashboard/junior/google-sheet/search', [GoogleSheetController::class, 'juniorSuggestions'])->name('junior.suggestions');

@@ -729,10 +729,10 @@ $script ='<script>
                 // Determine URL and method
                 let url, method;
                 if (id === "new") {
-                    url = "{{ route('seniorstore') }}";
+                    url = "{{ route('seniorstoremod') }}";
                     method = "POST";
                 } else {
-                    url = "{{ route('seniorupdate') }}";
+                    url = "{{ route('seniorupdatemod') }}";
                     method = "POST";
                     formData.append("id", id);
                 }
