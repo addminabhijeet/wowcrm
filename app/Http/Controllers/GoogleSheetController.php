@@ -750,7 +750,7 @@ class GoogleSheetController extends Controller
         $userPattern = "%" . $authUser->id . "|junior";
 
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
-            $q->where('created_by', 'LIKE', '%' . $authUser . '|junior%');
+            $q->where('created_by', 'LIKE', '%' . $authUser->id . '|junior%');
         });
 
         // Filter by selected junior
