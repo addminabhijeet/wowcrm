@@ -774,7 +774,7 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('Date', 'asc')->orderBy('id', 'desc')->get();
+        $results = $query->orderBy('Date', 'desc')->get();
 
         // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
