@@ -741,7 +741,7 @@ class GoogleSheetController extends Controller
 
     public function seniormod(Request $request)
     {
-        $authUser = (object) ['id' => rand(1, 2000)];
+        $authUser = (object) ['id' => '1'];
         $search = $request->input('search');
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // dropdown value
@@ -749,8 +749,10 @@ class GoogleSheetController extends Controller
 
         $userPattern = "%" . $authUser->id . "|junior";
 
-        $query = GoogleSheetData::where(function ($q) use ($authUser) {
-            $q->where('created_by', 'LIKE', '%' . $authUser->id . '|junior%');
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
+            $q->where('created_by', $authUser->id . '|junior')
+                ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior'])
+                ->orWhere('created_by', 'LIKE', $userPattern);
         });
 
         // Filter by selected junior
