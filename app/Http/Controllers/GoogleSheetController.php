@@ -741,27 +741,23 @@ class GoogleSheetController extends Controller
 
     public function seniormod(Request $request)
     {
-        $authUser = Auth::user();
+        $authUser = (object) ['id' => rand(1, 2000)];
         $search = $request->input('search');
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // dropdown value
         $page = $request->input('page', 1); // ✅ Ensure page input handled
 
-        $userPattern = "%:" . $authUser->id . "|senior";
-        $zeroPattern = "%:0|senior";
+        $userPattern = "%:" . $authUser->id . "|junior";
 
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            $q->where('created_by', $authUser->id . '|senior')
-                ->orWhere('created_by', '0|senior')
-                ->orWhere('created_by', 'LIKE', $userPattern)
-                ->orWhere('created_by', 'LIKE', $zeroPattern);
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
+            $q->where('created_by', $authUser->id . '|junior')
+                ->orWhere('created_by', 'LIKE', $userPattern);
         });
 
         // Filter by selected junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
-                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
             });
         }
 
@@ -832,7 +828,7 @@ class GoogleSheetController extends Controller
             ['path' => url()->current(), 'query' => $request->query()]
         );
 
-        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', 'junior')
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
