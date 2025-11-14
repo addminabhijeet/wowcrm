@@ -13,10 +13,12 @@ class GoogleSheetData extends Model
         'data',
         'resume',
         'created_by',
-        // Flattened columns
+        'created_at',
+        'updated_at',
         'Date',
         'Name',
         'Email_Address',
+        'Remark',
         'Phone_Number',
         'Location',
         'Relocation',
