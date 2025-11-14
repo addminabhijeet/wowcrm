@@ -672,16 +672,35 @@ class GoogleSheetController extends Controller
 
         // SUBSTRING_INDEX-based filter with second part check
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
+
             $seniorPart = $authUser->id . '|senior';
 
-            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart])
-                ->whereRaw("
-              -- Ensure there is a second part and it ends with |senior
-              LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) >= 1
-              AND
-              SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'
-          ");
+            // CASE 2 ONLY: x|junior : <senior>|senior : <some>|senior
+            $q->whereRaw("
+                -- First part must be ANY junior
+                SUBSTRING_INDEX(created_by, ':', 1) LIKE '%|junior'
+            ")
+
+            ->whereRaw("
+                -- Second part must be the logged-in senior
+                SUBSTRING_INDEX(
+                    SUBSTRING_INDEX(created_by, ':', 2),
+                    ':',
+                    -1
+                ) = ?
+            ", [$seniorPart])
+
+            ->whereRaw("
+                -- Third part must end with |senior
+                SUBSTRING_INDEX(
+                    SUBSTRING_INDEX(created_by, ':', 3),
+                    ':',
+                    -1
+                ) LIKE '%|senior'
+            ");
+
         });
+
 
         if ($rowId) {
             $query->where('id', $rowId);
