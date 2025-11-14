@@ -1620,7 +1620,7 @@ class GoogleSheetController extends Controller
             'Email_Address' => $email, // keep original email
             'Phone_Number' => $phone,  // keep original phone
             'Location' => $rowData['Location'] ?? null,
-            'Remark' => $rowData['Remark'] ?? $row->Remark,
+            'Remark' => $rowData['Remark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
@@ -1674,18 +1674,6 @@ class GoogleSheetController extends Controller
                     if (!str_ends_with($updateData['created_by'], ':0|senior')) {
                         $updateData['created_by'] .= ':0|senior';
                     }
-
-                    // Append today’s date to Remark correctly
-                    $today = now()->format('Y-m-d');
-
-                    if (empty($updateData['Remark'])) {
-                        $updateData['Remark'] = "Called & Mailed by Senior on {$today}";
-                    } else {
-                        // Prevent multiple duplicate entries of same remark
-                        if (!str_contains($updateData['Remark'], "Called & Mailed by Senior on {$today}")) {
-                            $updateData['Remark'] .= " | Called & Mailed by Senior on {$today}";
-                        }
-                    }
                 }
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
@@ -1715,6 +1703,21 @@ class GoogleSheetController extends Controller
                 $updateData[$key] = null;
             }
         }
+
+        // ---- Global Remark Update Every Time Function Runs ----
+        $today = now()->format('Y-m-d');
+        $updateTag = "Updated by Senior on {$today}";
+
+        if (empty($updateData['Remark'])) {
+            // No previous remark → set new
+            $updateData['Remark'] = $updateTag;
+        } else {
+            // Only append if today's remark not already added
+            if (!str_contains($updateData['Remark'], $updateTag)) {
+                $updateData['Remark'] .= " | {$updateTag}";
+            }
+        }
+
 
         try {
             $row->update($updateData);
