@@ -1419,6 +1419,26 @@ class GoogleSheetController extends Controller
                 if ($lastPart === $tag) {
                     $updateData['created_by'] .= ':' . $zerotag;
                 }
+            } else {
+                // For all other remarks, apply "Revert To Junior" logic
+                // Match any integer followed by "|junior"
+                if (preg_match('/(\d+)\|junior/', $updateData['created_by'], $matches)) {
+                    $juniorId = $matches[1]; // Extract the integer
+                    $tag = $juniorId . '|junior';
+                    // Append only if tag already exists in created_by
+                    if (strpos($updateData['created_by'], $tag) !== false) {
+                        $updateData['created_by'] .= ':' . $tag;
+                    }
+                }
+
+                // Replace "0|senior" with actual senior ID (only if it ends with 0|senior)
+                if (preg_match('/0\|senior$/', $updateData['created_by'])) {
+                    $updateData['created_by'] = preg_replace(
+                        '/0\|senior$/',
+                        $id . '|senior',
+                        $updateData['created_by']
+                    );
+                }
             }
         }
 
@@ -1711,26 +1731,6 @@ class GoogleSheetController extends Controller
                     if (!str_ends_with($updateData['created_by'], ':0|senior')) {
                         $updateData['created_by'] .= ':' . $authUser->id . '|senior:0|senior';
                     }
-                }
-            } else {
-                // For all other remarks, apply "Revert To Junior" logic
-                // Match any integer followed by "|junior"
-                if (preg_match('/(\d+)\|junior/', $updateData['created_by'], $matches)) {
-                    $juniorId = $matches[1]; // Extract the integer
-                    $tag = $juniorId . '|junior';
-                    // Append only if tag already exists in created_by
-                    if (strpos($updateData['created_by'], $tag) !== false) {
-                        $updateData['created_by'] .= ':' . $tag;
-                    }
-                }
-
-                // Replace "0|senior" with actual senior ID (only if it ends with 0|senior)
-                if (preg_match('/0\|senior$/', $updateData['created_by'])) {
-                    $updateData['created_by'] = preg_replace(
-                        '/0\|senior$/',
-                        $id . '|senior',
-                        $updateData['created_by']
-                    );
                 }
             }
         }
