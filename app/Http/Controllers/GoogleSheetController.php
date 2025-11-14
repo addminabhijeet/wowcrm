@@ -1647,6 +1647,11 @@ class GoogleSheetController extends Controller
             if ($exeRemark === 'Ready To Paid') {
                 $authUser = Auth::user();
 
+                // Ensure ":0|accountant" exists at the end if missing
+                if (strpos($updateData['created_by'], ':0|senior') === false) {
+                    $updateData['created_by'] .= ':0|senior';
+                }
+
                 // Replace "0|senior" with "auth_id|senior:0|accountant"
                 if (preg_match('/0\|senior$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
@@ -1666,13 +1671,17 @@ class GoogleSheetController extends Controller
                 if (preg_match('/(\d+)\|junior$/', $updateData['created_by'])) {
 
                     // Append id|senior
-                    $updateData['created_by'] .= ':' . $id . '|senior';
+                    $updateData['created_by'] .= ':0|senior';
 
-                    // New York date
-                    $nyDate = \Carbon\Carbon::now('America/New_York')->format('Y-m-d');
+                    // Normal server date
+                    $normalDate = date('Y-m-d');
 
-                    // Update remark
-                    $updateData['Remark'] .= ' | Follow Up by Senior on ' . $nyDate;
+                    // Ensure Remark is not null before appending
+                    if (empty($updateData['Remark'])) {
+                        $updateData['Remark'] = 'Follow Up by Senior on ' . $normalDate;
+                    } else {
+                        $updateData['Remark'] .= ' | Follow Up by Senior on ' . $normalDate;
+                    }
                 }
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
