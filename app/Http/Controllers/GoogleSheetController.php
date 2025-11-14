@@ -681,8 +681,8 @@ class GoogleSheetController extends Controller
         LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) >= 1
         AND
         SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'")
-        ->whereRaw("created_at <> updated_at");;
-        
+                // SECOND CONDITION: Remark contains "Updated by Senior on"
+                ->orWhere('Remark', 'LIKE', '%Updated by Senior on%');
         });
 
 
