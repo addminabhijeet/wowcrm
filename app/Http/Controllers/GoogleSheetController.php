@@ -491,11 +491,17 @@ class GoogleSheetController extends Controller
         $zeroPattern = "%:0|senior";
 
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            $q->where('created_by', $authUser->id . '|senior')
-                ->orWhere('created_by', '0|senior')
-                ->orWhere('created_by', 'LIKE', $userPattern)
-                ->orWhere('created_by', 'LIKE', $zeroPattern);
+            $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+
+                $q2->where('created_by', $authUser->id . '|senior')
+                    ->orWhere('created_by', '0|senior')
+                    ->orWhere('created_by', 'LIKE', $userPattern)
+                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+            })
+                // EXCLUSION: Do NOT show rows having more than one "|senior"
+                ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
         });
+
 
         // Filter by selected junior
         if ($juniorUserId) {
@@ -681,7 +687,7 @@ class GoogleSheetController extends Controller
                 SUBSTRING_INDEX(created_by, ':', 1) LIKE '%|junior'
             ")
 
-            ->whereRaw("
+                ->whereRaw("
                 -- Second part must be the logged-in senior
                 SUBSTRING_INDEX(
                     SUBSTRING_INDEX(created_by, ':', 2),
@@ -690,7 +696,7 @@ class GoogleSheetController extends Controller
                 ) = ?
             ", [$seniorPart])
 
-            ->whereRaw("
+                ->whereRaw("
                 -- Third part must end with |senior
                 SUBSTRING_INDEX(
                     SUBSTRING_INDEX(created_by, ':', 3),
@@ -698,7 +704,6 @@ class GoogleSheetController extends Controller
                     -1
                 ) LIKE '%|senior'
             ");
-
         });
 
 
@@ -1691,7 +1696,7 @@ class GoogleSheetController extends Controller
 
                     // Append ":0|senior" only once
                     if (!str_ends_with($updateData['created_by'], ':0|senior')) {
-                        $updateData['created_by'] .= ':'. $authUser->id . '|senior:0|senior';
+                        $updateData['created_by'] .= ':' . $authUser->id . '|senior:0|senior';
                     }
                 }
             } else {
