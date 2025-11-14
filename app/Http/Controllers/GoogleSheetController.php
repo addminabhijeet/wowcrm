@@ -1691,7 +1691,7 @@ class GoogleSheetController extends Controller
 
                     // Append ":0|senior" only once
                     if (!str_ends_with($updateData['created_by'], ':0|senior')) {
-                        $updateData['created_by'] .= $authUser->id . '|senior:0|senior';
+                        $updateData['created_by'] .= ':'. $authUser->id . '|senior:0|senior';
                     }
                 }
             } else {
