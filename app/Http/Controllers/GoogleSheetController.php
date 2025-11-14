@@ -1661,16 +1661,14 @@ class GoogleSheetController extends Controller
                     $updateData['created_by'] .= ':0|accountant';
                 }
             } elseif ($exeRemark === 'Called & Mailed') {
-                $tag = $id . '|senior';
-                $zerotag = '0|senior';
 
-                // Get the last segment after the last colon
-                $parts = explode(':', $updateData['created_by']);
-                $lastPart = end($parts);
+                // Check if created_by ENDS WITH {integer}|junior
+                if (preg_match('/(\d+)\|junior$/', $updateData['created_by'])) {
 
-                // Append only if the last part exactly matches the tag
-                if ($lastPart === $tag) {
-                    $updateData['created_by'] .= ':' . $zerotag;
+                    // Append senior version
+                    $updateData['created_by'] .= ':0|senior';
+                    $nyDate = \Carbon\Carbon::now('America/New_York')->format('Y-m-d');
+                    $updateData['Remark'] .= 'Follow Up by Senior on ' . $nyDate;
                 }
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
