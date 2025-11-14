@@ -671,20 +671,17 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
 
         // SUBSTRING_INDEX-based filter with second part check
-        $query = GoogleSheetData::where(function ($q) {
+        $query = GoogleSheetData::where(function ($q) use ($authUser) {
+            $seniorPart = $authUser->id . '|senior';
 
-            // FIRST PART CHECK: any junior
-            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) LIKE '%|junior'")
-
-                // Ensure second part exists AND ends with |senior
+            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart])
                 ->whereRaw("
-        LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) >= 1
-        AND
-        SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'")
-                // SECOND CONDITION: Remark contains "Updated by Senior on"
-                ->orWhere('Remark', 'LIKE', '%Updated by Senior on%');
+              -- Ensure there is a second part and it ends with |senior
+              LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) >= 1
+              AND
+              SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'
+          ");
         });
-
 
         if ($rowId) {
             $query->where('id', $rowId);
@@ -1669,13 +1666,13 @@ class GoogleSheetController extends Controller
                     $updateData['created_by'] .= ':0|accountant';
                 }
             } elseif ($exeRemark === 'Called & Mailed') {
-
+                $authUser = Auth::user();
                 // If created_by ends with something like "123|junior"
                 if (preg_match('/(\d+)\|junior$/', $updateData['created_by'])) {
 
                     // Append ":0|senior" only once
                     if (!str_ends_with($updateData['created_by'], ':0|senior')) {
-                        $updateData['created_by'] .= ':0|senior';
+                        $updateData['created_by'] .= $authUser->id . '|senior:0|senior';
                     }
                 }
             } else {
