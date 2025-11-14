@@ -1743,6 +1743,8 @@ class GoogleSheetController extends Controller
             $updateData['Remark'] = $updateTag;
         }
 
+        $updateData['Remark'] = $updateData['Remark'] ?? $updateTag;
+
 
         try {
             $row->update($updateData);
