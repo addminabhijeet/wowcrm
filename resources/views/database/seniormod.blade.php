@@ -181,9 +181,9 @@ $script ='<script>
 
                         {{-- Exe Remarks --}}
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Paid','VM','Busy']; @endphp
+                            @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Connect','Others','N/A','VM','Busy']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                <option value="">-- Exe Remarks --</option>
+                                <option value="">-- Select --</option>
                                 @foreach($exeOptions as $option)
                                 <option value="{{ $option }}" {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
                                     {{ $option }}
@@ -639,7 +639,7 @@ $script ='<script>
                 if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
                     let opts = [];
                     if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
-                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'Ready To Paid', 'VM', 'Busy'];
+                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'];
                     if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'HIB', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC'];
                     if (k === 'Relocation') opts = ['YES', 'NO'];
                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
