@@ -2581,6 +2581,11 @@ class GoogleSheetController extends Controller
         }
 
         $rowData = json_decode($request->input('data'), true);
+
+        if (isset($rowData['Remark']) === false && isset($rowData['remark'])) {
+            $rowData['Remark'] = $rowData['remark'];
+        }
+
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
