@@ -1667,20 +1667,24 @@ class GoogleSheetController extends Controller
                 }
             } elseif ($exeRemark === 'Called & Mailed') {
 
-                // Check if created_by ENDS WITH {integer}|junior
+                // If created_by ends with something like "123|junior"
                 if (preg_match('/(\d+)\|junior$/', $updateData['created_by'])) {
 
-                    // Append id|senior
-                    $updateData['created_by'] .= ':0|senior';
+                    // Append ":0|senior" only once
+                    if (!str_ends_with($updateData['created_by'], ':0|senior')) {
+                        $updateData['created_by'] .= ':0|senior';
+                    }
 
-                    // Normal server date
-                    $normalDate = date('Y-m-d');
+                    // Append today’s date to Remark correctly
+                    $today = now()->format('Y-m-d');
 
-                    // Ensure Remark is not null before appending
                     if (empty($updateData['Remark'])) {
-                        $updateData['Remark'] = 'Follow Up by Senior on ';
+                        $updateData['Remark'] = "Called & Mailed by Senior on {$today}";
                     } else {
-                        $updateData['Remark'] .= ' | Follow Up by Senior on ';
+                        // Prevent multiple duplicate entries of same remark
+                        if (!str_contains($updateData['Remark'], "Called & Mailed by Senior on {$today}")) {
+                            $updateData['Remark'] .= " | Called & Mailed by Senior on {$today}";
+                        }
                     }
                 }
             } else {
