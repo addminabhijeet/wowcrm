@@ -1665,10 +1665,14 @@ class GoogleSheetController extends Controller
                 // Check if created_by ENDS WITH {integer}|junior
                 if (preg_match('/(\d+)\|junior$/', $updateData['created_by'])) {
 
-                    // Append senior version
-                    $updateData['created_by'] .= ':0|senior';
+                    // Append id|senior
+                    $updateData['created_by'] .= ':' . $id . '|senior';
+
+                    // New York date
                     $nyDate = \Carbon\Carbon::now('America/New_York')->format('Y-m-d');
-                    $updateData['Remark'] .= 'Follow Up by Senior on ' . $nyDate;
+
+                    // Update remark
+                    $updateData['Remark'] .= ' | Follow Up by Senior on ' . $nyDate;
                 }
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
