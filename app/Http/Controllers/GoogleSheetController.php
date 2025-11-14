@@ -2582,8 +2582,8 @@ class GoogleSheetController extends Controller
 
         $rowData = json_decode($request->input('data'), true);
 
-        if (isset($rowData['Remark']) === false && isset($rowData['remark'])) {
-            $rowData['Remark'] = $rowData['remark'];
+        if (isset($rowData['Remark']) === false && isset($rowData['Remark'])) {
+            $rowData['Remark'] = $rowData['Remark'];
         }
 
         if (empty($rowData)) {
