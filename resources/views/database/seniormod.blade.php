@@ -1267,28 +1267,37 @@ $script ='<script>
 </script>
 
 <script>
-    $("#saveBtn").on("click", function () {
+    document.addEventListener("DOMContentLoaded", function() {
 
-    let remark = $(".remark-autocomplete").val().trim();
+        function updateRemark(inputEl) {
+            let remark = inputEl.value.trim();
 
-    // Today's tag in same format as backend
-    let today = new Date().toISOString().slice(0, 10);
-    let updateTag = "Updated by Senior on " + today;
+            let today = new Date().toISOString().slice(0, 10);
+            let updateTag = "Updated by Senior on " + today;
 
-    // ✔ If already contains today's tag → don't add again
-    if (remark !== "" && !remark.includes(updateTag)) {
-        remark = remark + " | " + updateTag;
-    }
+            // Avoid duplicate tag for today
+            if (remark !== "" && !remark.includes(updateTag)) {
+                remark = remark + " | " + updateTag;
+            }
 
-    // ✔ If remark is empty → just create the tag
-    if (remark === "") {
-        remark = updateTag;
-    }
+            // If empty, only today's tag
+            if (remark === "") {
+                remark = updateTag;
+            }
 
-    $(".remark-hidden").val(remark);
-});
+            // Update both visible and hidden fields
+            inputEl.value = remark;
+            $(inputEl).closest("td").find(".remark-hidden").val(remark);
+        }
 
+        // Run on user typing or leaving the field
+        $(document).on("input change blur", ".remark-autocomplete", function() {
+            updateRemark(this);
+        });
+
+    });
 </script>
+
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
