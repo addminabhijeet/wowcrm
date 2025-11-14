@@ -1699,10 +1699,16 @@ class GoogleSheetController extends Controller
         }
 
         foreach ($updateData as $key => $value) {
+            // Do NOT convert Remark to null
+            if ($key === 'Remark') {
+                continue;
+            }
+
             if ($value === '' && !in_array($key, ['Email_Address', 'Name', 'Date', 'Amount'])) {
                 $updateData[$key] = null;
             }
         }
+
 
         try {
             $row->update($updateData);
