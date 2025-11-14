@@ -1612,7 +1612,6 @@ class GoogleSheetController extends Controller
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
         }
-        $oldRemark = $row->Remark;
 
         // --- Prepare update data with null defaults for empty fields ---
         $updateData = [
@@ -1621,6 +1620,7 @@ class GoogleSheetController extends Controller
             'Email_Address' => $email, // keep original email
             'Phone_Number' => $phone,  // keep original phone
             'Location' => $rowData['Location'] ?? null,
+            'Remark' => $rowData['Remark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
@@ -1632,7 +1632,6 @@ class GoogleSheetController extends Controller
             'Time_Zone' => $rowData['Time Zone'] ?? null,
             'updated_at' => now(),
         ];
-        $frontendRemark = $rowData['Remark'] ?? null;
 
         // Only update resume if it was uploaded
         if ($request->hasFile('resume')) {
@@ -1704,47 +1703,6 @@ class GoogleSheetController extends Controller
                 $updateData[$key] = null;
             }
         }
-        // -------------------------
-        // Correct Remark Update Logic
-        // -------------------------
-
-        $today = now()->format('Y-m-d');
-        $updateTag = "Updated by Senior on {$today}";
-
-        // What user typed from frontend (may be null or empty)
-        $frontendRemark = trim($rowData['Remark'] ?? "");
-
-        // Existing remark in DB
-        $oldRemark = trim($row->Remark);
-
-        // Case 1: Frontend remark is provided
-        if ($frontendRemark !== "") {
-
-            // If the tag does NOT exist, append it
-            if (!str_contains($frontendRemark, $updateTag)) {
-                $updateData['Remark'] = $frontendRemark . " | " . $updateTag;
-            } else {
-                // Remark already contains the tag
-                $updateData['Remark'] = $frontendRemark;
-            }
-        }
-        // Case 2: No frontend remark, but DB has old remark
-        elseif ($oldRemark !== "") {
-
-            // Append missing tag
-            if (!str_contains($oldRemark, $updateTag)) {
-                $updateData['Remark'] = $oldRemark . " | " . $updateTag;
-            } else {
-                $updateData['Remark'] = $oldRemark;
-            }
-        }
-        // Case 3: No frontend remark AND no old remark -> create remark
-        else {
-            $updateData['Remark'] = $updateTag;
-        }
-
-        $updateData['Remark'] = $updateData['Remark'] ?? $updateTag;
-
 
         try {
             $row->update($updateData);

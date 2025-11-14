@@ -1266,6 +1266,30 @@ $script ='<script>
     });
 </script>
 
+<script>
+    $("#saveBtn").on("click", function () {
+
+    let remark = $(".remark-autocomplete").val().trim();
+
+    // Today's tag in same format as backend
+    let today = new Date().toISOString().slice(0, 10);
+    let updateTag = "Updated by Senior on " + today;
+
+    // ✔ If already contains today's tag → don't add again
+    if (remark !== "" && !remark.includes(updateTag)) {
+        remark = remark + " | " + updateTag;
+    }
+
+    // ✔ If remark is empty → just create the tag
+    if (remark === "") {
+        remark = updateTag;
+    }
+
+    $(".remark-hidden").val(remark);
+});
+
+</script>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
