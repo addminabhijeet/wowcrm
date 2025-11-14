@@ -1632,6 +1632,7 @@ class GoogleSheetController extends Controller
             'Time_Zone' => $rowData['Time Zone'] ?? null,
             'updated_at' => now(),
         ];
+        $frontendRemark = $rowData['Remark'] ?? null;
 
         // Only update resume if it was uploaded
         if ($request->hasFile('resume')) {
@@ -1704,23 +1705,29 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // ---- Global Remark Update Every Time Function Runs ----
         $today = now()->format('Y-m-d');
         $updateTag = "Updated by Senior on {$today}";
 
-        if (empty($oldRemark)) {
-            // No previous remark → new remark
-            $updateData['Remark'] = $updateTag;
+        // Determine base remark (frontend OR old DB remark)
+        if (!empty($frontendRemark)) {
+            // Use text typed by the user (from frontend)
+            $baseRemark = $frontendRemark;
         } else {
-            // Append if today's tag not present
-            if (!str_contains($oldRemark, $updateTag)) {
-                $updateData['Remark'] = $oldRemark . " | " . $updateTag;
-            } else {
-                $updateData['Remark'] = $oldRemark; // Keep unchanged
-            }
+            // No frontend remark -> use old DB remark
+            $baseRemark = $oldRemark;
         }
 
-
+        // If no remark exists at all
+        if (empty($baseRemark)) {
+            $updateData['Remark'] = $updateTag;
+        } else {
+            // Append update tag only if not already present
+            if (!str_contains($baseRemark, $updateTag)) {
+                $updateData['Remark'] = $baseRemark . " | " . $updateTag;
+            } else {
+                $updateData['Remark'] = $baseRemark;
+            }
+        }
 
         try {
             $row->update($updateData);
