@@ -1612,6 +1612,7 @@ class GoogleSheetController extends Controller
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
         }
+        $oldRemark = $row->Remark;
 
         // --- Prepare update data with null defaults for empty fields ---
         $updateData = [
@@ -1620,7 +1621,6 @@ class GoogleSheetController extends Controller
             'Email_Address' => $email, // keep original email
             'Phone_Number' => $phone,  // keep original phone
             'Location' => $rowData['Location'] ?? null,
-            'Remark' => $rowData['Remark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
@@ -1708,15 +1708,18 @@ class GoogleSheetController extends Controller
         $today = now()->format('Y-m-d');
         $updateTag = "Updated by Senior on {$today}";
 
-        if (empty($updateData['Remark'])) {
-            // No previous remark → set new
+        if (empty($oldRemark)) {
+            // No previous remark → new remark
             $updateData['Remark'] = $updateTag;
         } else {
-            // Only append if today's remark not already added
-            if (!str_contains($updateData['Remark'], $updateTag)) {
-                $updateData['Remark'] .= " | {$updateTag}";
+            // Append if today's tag not present
+            if (!str_contains($oldRemark, $updateTag)) {
+                $updateData['Remark'] = $oldRemark . " | " . $updateTag;
+            } else {
+                $updateData['Remark'] = $oldRemark; // Keep unchanged
             }
         }
+
 
 
         try {
