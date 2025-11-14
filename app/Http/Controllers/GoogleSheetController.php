@@ -1620,7 +1620,7 @@ class GoogleSheetController extends Controller
             'Email_Address' => $email, // keep original email
             'Phone_Number' => $phone,  // keep original phone
             'Location' => $rowData['Location'] ?? null,
-    
+            'Remark' => $rowData['Remark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
@@ -1699,11 +1699,6 @@ class GoogleSheetController extends Controller
         }
 
         foreach ($updateData as $key => $value) {
-            // Do NOT convert Remark to null
-            if ($key === 'Remark') {
-                continue;
-            }
-
             if ($value === '' && !in_array($key, ['Email_Address', 'Name', 'Date', 'Amount'])) {
                 $updateData[$key] = null;
             }
