@@ -1678,9 +1678,9 @@ class GoogleSheetController extends Controller
 
                     // Ensure Remark is not null before appending
                     if (empty($updateData['Remark'])) {
-                        $updateData['Remark'] = 'Follow Up by Senior on ' . $normalDate;
+                        $updateData['Remark'] = 'Follow Up by Senior on ';
                     } else {
-                        $updateData['Remark'] .= ' | Follow Up by Senior on ' . $normalDate;
+                        $updateData['Remark'] .= ' | Follow Up by Senior on ';
                     }
                 }
             } else {
