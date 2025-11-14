@@ -1704,30 +1704,45 @@ class GoogleSheetController extends Controller
                 $updateData[$key] = null;
             }
         }
+        // -------------------------
+        // Correct Remark Update Logic
+        // -------------------------
 
         $today = now()->format('Y-m-d');
         $updateTag = "Updated by Senior on {$today}";
 
-        // Determine base remark (frontend OR old DB remark)
-        if (!empty($frontendRemark)) {
-            // Use text typed by the user (from frontend)
-            $baseRemark = $frontendRemark;
-        } else {
-            // No frontend remark -> use old DB remark
-            $baseRemark = $oldRemark;
-        }
+        // What user typed from frontend (may be null or empty)
+        $frontendRemark = trim($rowData['Remark'] ?? "");
 
-        // If no remark exists at all
-        if (empty($baseRemark)) {
-            $updateData['Remark'] = $updateTag;
-        } else {
-            // Append update tag only if not already present
-            if (!str_contains($baseRemark, $updateTag)) {
-                $updateData['Remark'] = $baseRemark . " | " . $updateTag;
+        // Existing remark in DB
+        $oldRemark = trim($row->Remark);
+
+        // Case 1: Frontend remark is provided
+        if ($frontendRemark !== "") {
+
+            // If the tag does NOT exist, append it
+            if (!str_contains($frontendRemark, $updateTag)) {
+                $updateData['Remark'] = $frontendRemark . " | " . $updateTag;
             } else {
-                $updateData['Remark'] = $baseRemark;
+                // Remark already contains the tag
+                $updateData['Remark'] = $frontendRemark;
             }
         }
+        // Case 2: No frontend remark, but DB has old remark
+        elseif ($oldRemark !== "") {
+
+            // Append missing tag
+            if (!str_contains($oldRemark, $updateTag)) {
+                $updateData['Remark'] = $oldRemark . " | " . $updateTag;
+            } else {
+                $updateData['Remark'] = $oldRemark;
+            }
+        }
+        // Case 3: No frontend remark AND no old remark -> create remark
+        else {
+            $updateData['Remark'] = $updateTag;
+        }
+
 
         try {
             $row->update($updateData);
