@@ -109,7 +109,11 @@ $script ='<script>
                         <td>
                             <input type="text" class="form-control remark-autocomplete" data-key="Remark"
                                 value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+
+                            <input type="hidden" name="Remark" class="remark-hidden"
+                                value="{{ $row->Remark ?? '' }}">
                         </td>
+
 
                         {{-- Relocation --}}
                         <td>
@@ -1267,37 +1271,37 @@ $script ='<script>
 </script>
 
 <script>
-document.addEventListener("DOMContentLoaded", function () {
+    document.addEventListener("DOMContentLoaded", function() {
 
-    function updateRemarkOnce(inputEl) {
-        let remark = inputEl.value.trim();
+        function updateRemarkOnce(inputEl) {
+            let remark = inputEl.value.trim();
 
-        let today = new Date().toISOString().slice(0, 10);
-        let updateTag = "Updated by Senior on " + today;
+            let today = new Date().toISOString().slice(0, 10);
+            let updateTag = "Updated by Senior on " + today;
 
-        // 👉 If today's tag already exists → do nothing
-        if (remark.includes(updateTag)) {
-            return;
+            // 👉 If today's tag already exists → do nothing
+            if (remark.includes(updateTag)) {
+                return;
+            }
+
+            // 👉 If empty → set only today's tag
+            if (remark === "") {
+                remark = updateTag;
+            } else {
+                // 👉 Add tag only once
+                remark = remark + " | " + updateTag;
+            }
+
+            inputEl.value = remark;
+            $(inputEl).closest("td").find(".remark-hidden").val(remark);
         }
 
-        // 👉 If empty → set only today's tag
-        if (remark === "") {
-            remark = updateTag;
-        } else {
-            // 👉 Add tag only once
-            remark = remark + " | " + updateTag;
-        }
+        // ✔ Run ONLY when user finishes typing (blur event)
+        $(document).on("blur", ".remark-autocomplete", function() {
+            updateRemarkOnce(this);
+        });
 
-        inputEl.value = remark;
-        $(inputEl).closest("td").find(".remark-hidden").val(remark);
-    }
-
-    // ✔ Run ONLY when user finishes typing (blur event)
-    $(document).on("blur", ".remark-autocomplete", function () {
-        updateRemarkOnce(this);
     });
-
-});
 </script>
 
 
