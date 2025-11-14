@@ -680,7 +680,9 @@ class GoogleSheetController extends Controller
                 ->whereRaw("
         LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) >= 1
         AND
-        SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
+        SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'")
+        ->whereRaw("created_at <> updated_at");;
+        
         });
 
 
