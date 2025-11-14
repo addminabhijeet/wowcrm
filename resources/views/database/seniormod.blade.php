@@ -1267,36 +1267,39 @@ $script ='<script>
 </script>
 
 <script>
-    document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 
-        function updateRemark(inputEl) {
-            let remark = inputEl.value.trim();
+    function updateRemarkOnce(inputEl) {
+        let remark = inputEl.value.trim();
 
-            let today = new Date().toISOString().slice(0, 10);
-            let updateTag = "Updated by Senior on " + today;
+        let today = new Date().toISOString().slice(0, 10);
+        let updateTag = "Updated by Senior on " + today;
 
-            // Avoid duplicate tag for today
-            if (remark !== "" && !remark.includes(updateTag)) {
-                remark = remark + " | " + updateTag;
-            }
-
-            // If empty, only today's tag
-            if (remark === "") {
-                remark = updateTag;
-            }
-
-            // Update both visible and hidden fields
-            inputEl.value = remark;
-            $(inputEl).closest("td").find(".remark-hidden").val(remark);
+        // 👉 If today's tag already exists → do nothing
+        if (remark.includes(updateTag)) {
+            return;
         }
 
-        // Run on user typing or leaving the field
-        $(document).on("input change blur", ".remark-autocomplete", function() {
-            updateRemark(this);
-        });
+        // 👉 If empty → set only today's tag
+        if (remark === "") {
+            remark = updateTag;
+        } else {
+            // 👉 Add tag only once
+            remark = remark + " | " + updateTag;
+        }
 
+        inputEl.value = remark;
+        $(inputEl).closest("td").find(".remark-hidden").val(remark);
+    }
+
+    // ✔ Run ONLY when user finishes typing (blur event)
+    $(document).on("blur", ".remark-autocomplete", function () {
+        updateRemarkOnce(this);
     });
+
+});
 </script>
+
 
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
