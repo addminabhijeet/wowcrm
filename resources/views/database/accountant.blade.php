@@ -682,10 +682,10 @@ $script ='<script>
 
                 // SweetAlert — Improved UI
                 Swal.fire({
-                    title: '<span style="font-size:20px; font-weight:bold;">Preview & Confirm Before Save</span>',
+                    title: '<span style="font-size:20px; font-weight:bold;">Preview & Confirm Before Mail</span>',
                     html: previewHTML,
                     showCancelButton: true,
-                    confirmButtonText: 'Save Data',
+                    confirmButtonText: 'Send Mail',
                     cancelButtonText: 'Cancel',
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#dc3545',
