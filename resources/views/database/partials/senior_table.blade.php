@@ -199,15 +199,20 @@
                     @endif
                 </td>
 
-
+                <td class="text-center">
+                    <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
+                        <i class="fas fa-save"></i> Save
+                    </button>
+                </td>
             </tr>
             @endforeach
         </tbody>
     </table>
-
     @if($data->hasPages())
     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
-        {{ $data->links('pagination::bootstrap-5') }}
+        <div>
+            {{ $data->links('pagination::bootstrap-5') }}
+        </div>
     </div>
     @endif
 </div>
@@ -460,7 +465,7 @@
                 };
 
                 // ✅ Use Laravel's timezone-based today
-                if (key === "Graduation Date") opts.maxDate = laravelToday;
+                if (key === "Date") opts.maxDate = laravelToday;
                 if (key === "Date") opts.minDate = laravelToday;
 
                 flatpickr(input, opts);
@@ -914,7 +919,7 @@
                     let suggestions = '';
                     if (res.length) {
                         res.forEach(item => {
-                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
+                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}| ${item.Exe_Remarks}| ${item.forwarded_by}</a>`;
                         });
                     } else {
                         suggestions = '<span class="list-group-item">No results found</span>';
@@ -937,14 +942,7 @@
             fetchTable('', 1, junior_user, rowId);
         });
 
-        // Pagination click (AJAX)
-        $(document).on('click', '.pagination a', function(e) {
-            e.preventDefault();
-            const page = $(this).attr('href').split('page=')[1];
-            const search = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val() || '';
-            fetchTable(search, page, junior_user);
-        });
+
 
         // Junior dropdown filter
         $(document).on('change', '#junior-filter', function() {
@@ -1299,4 +1297,5 @@
     });
 </script>
 
-@endif
+
+@endsection
