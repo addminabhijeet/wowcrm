@@ -321,7 +321,7 @@ class CallReportController extends Controller
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
         $r8to9am = $hourlyReadyToPaid[8] ?? 0;
-        $r9to10pm = $hourlyReadyToPaid[9] ?? 0;
+        $r9to10am = $hourlyReadyToPaid[9] ?? 0;
         $r10to11am = $hourlyReadyToPaid[10] ?? 0;
         $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
         $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;

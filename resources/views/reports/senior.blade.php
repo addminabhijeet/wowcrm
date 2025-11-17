@@ -585,15 +585,15 @@ $script = '<script>
                         <tbody>
                             <tr>
                                 <td style="white-space: nowrap;">08.00AM-09.00AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t8to9am }}</span></td>
-                                <td class="text-center"><span class="badge bg-success">{{ $r8to9am }}</span></td>
-                                <td class="text-center"><span class="badge bg-warning">{{ $o8to9am }}</span></td>
+                                <td class="text-center"><span class="badge bg-light">{{ $t8to9am }}</span></td>
+                                <td class="text-center"><span class="badge bg-white">{{ $r8to9am }}</span></td>
+                                <td class="text-center"><span class="badge bg-secondary">{{ $o8to9am }}</span></td>
                             </tr>
                             <tr>
                                 <td style="white-space: nowrap;">09.00AM-10.00AM</td>
-                                <td class="text-center"><span class="badge bg-info">{{ $t9to10am }}</span></td>
-                                <td class="text-center"><span class="badge bg-success">{{ $r9to10am }}</span></td>
-                                <td class="text-center"><span class="badge bg-warning">{{ $o9to10am }}</span></td>
+                                <td class="text-center"><span class="badge bg-light">{{ $t9to10am }}</span></td>
+                                <td class="text-center"><span class="badge bg-white">{{ $r9to10am }}</span></td>
+                                <td class="text-center"><span class="badge bg-secondary">{{ $o9to10am }}</span></td>
                             </tr>
                             <tr>
                                 <td style="white-space: nowrap;">10.00AM-11.00AM</td>
