@@ -3195,7 +3195,7 @@ class GoogleSheetController extends Controller
 
 
     // Add a method to serve the PDF files
-    public function viewjuniorResume($id)
+    public function viewJuniorResume($id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -3209,11 +3209,32 @@ class GoogleSheetController extends Controller
             abort(404);
         }
 
+        // Detect MIME type for Word files
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        switch ($extension) {
+            case 'doc':
+                $mime = 'application/msword';
+                break;
+
+            case 'docx':
+                $mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
+                break;
+
+            case 'pdf':
+                $mime = 'application/pdf';
+                break;
+
+            default:
+                abort(415, 'Unsupported file format');
+        }
+
         return response()->file($filePath, [
-            'Content-Type' => 'application/pdf',
+            'Content-Type' => $mime,
             'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
         ]);
     }
+
 
     // Add a method to download the PDF files
     public function downloadjuniorResume($id)
