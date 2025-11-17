@@ -592,7 +592,7 @@ class DashboardController extends Controller
             $button_status     = $timer->button_status ?? 1;
         }
 
-        return view('dashboard.associate', compact(
+        return view('dashboard.career', compact(
             'remaining_seconds',
             'elapsed_seconds',
             'status',
