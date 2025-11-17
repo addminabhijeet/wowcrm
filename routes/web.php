@@ -17,6 +17,7 @@ use App\Http\Controllers\SmtpSettingController;
 use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\TimerApiController;
 use App\Http\Controllers\CandidateController;
+use App\Http\Controllers\PdfController;
 
 
 
@@ -262,6 +263,13 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/timers/latest-pause-types', [DashboardController::class, 'getLatestPauseTypes'])
         ->name('timers.latestPauseTypes');
+
+    Route::get('/dashboard/accountant/pdf/acceptance', [PdfController::class, 'acceptance'])->name('pdf.acceptance');
+    Route::get('/dashboard/accountant/pdf/consultation', [PdfController::class, 'consultation'])->name('pdf.consultation');
+    Route::get('/dashboard/accountant/pdf/delivery', [PdfController::class, 'delivery'])->name('pdf.delivery');
+    Route::get('/dashboard/accountant/pdf/payment', [PdfController::class, 'payment'])->name('pdf.payment');
+    Route::get('/dashboard/accountant/pdf/deliveryuk', [PdfController::class, 'deliveryuk'])->name('pdf.deliveryuk');
+    Route::get('/dashboard/accountant/pdf/paymentuk', [PdfController::class, 'paymentuk'])->name('pdf.paymentuk');
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
