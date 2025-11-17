@@ -568,7 +568,7 @@ class DashboardController extends Controller
         ));
     }
 
-    public function carear()
+    public function career()
     {
         // Fetch timer settings dynamically
         $settings = TimerSetting::first();
