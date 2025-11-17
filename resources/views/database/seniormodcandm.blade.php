@@ -891,7 +891,7 @@ $script ='<script>
         // -----------------------------
         function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
             $.ajax({
-                url: "{{ route('google.sheet.senior') }}",
+                url: "{{ route('google.sheet.seniormodcandm') }}",
                 type: 'GET',
                 data: {
                     search,
@@ -922,7 +922,7 @@ $script ='<script>
             }
 
             $.ajax({
-                url: "{{ route('senior.suggestions') }}",
+                url: "{{ route('senior.suggestionsmod') }}",
                 type: 'GET',
                 data: {
                     query
@@ -931,7 +931,7 @@ $script ='<script>
                     let suggestions = '';
                     if (res.length) {
                         res.forEach(item => {
-                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
+                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}| ${item.Exe_Remarks}| ${item.forwarded_by}</a>`;
                         });
                     } else {
                         suggestions = '<span class="list-group-item">No results found</span>';
@@ -1228,7 +1228,7 @@ $script ='<script>
         let juniorId = this.value;
         let search = document.getElementById('senior-search').value;
 
-        fetch("{{ route('google.sheet.senior') }}?junior_user=" + juniorId + "&search=" + search, {
+        fetch("{{ route('google.sheet.seniormodcandm') }}?junior_user=" + juniorId + "&search=" + search, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }

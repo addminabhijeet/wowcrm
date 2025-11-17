@@ -340,6 +340,30 @@ $role = Auth::user()->role;
 
             @endif
 
+            {{-- ================= Career Builder ================= --}}
+            @if($role === 'career')
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                    <span>Dashboard</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('dashboard.career') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Database</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.career') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Called & Mailed</a></li>
+                </ul>
+            </li>
+
+            @endif
+
             {{-- ================= Trainer ================= --}}
             @if($role === 'trainer')
             <li class="dropdown">
