@@ -931,7 +931,7 @@ $script ='<script>
                     let suggestions = '';
                     if (res.length) {
                         res.forEach(item => {
-                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.Name} | ${item.Email_Address} | ${item.Phone_Number}</a>`;
+                            suggestions += `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}| ${item.Exe_Remarks}| ${item.forwarded_by}</a>`;
                         });
                     } else {
                         suggestions = '<span class="list-group-item">No results found</span>';
@@ -940,6 +940,7 @@ $script ='<script>
                 }
             });
         }, 300);
+
 
         $('#senior-search').on('input', showSuggestions);
 
