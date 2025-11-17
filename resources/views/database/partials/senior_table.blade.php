@@ -203,12 +203,78 @@
                     <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
                         <i class="fas fa-save"></i> Save
                     </button>
+                    <script>
+                        $(document).ready(function() {
+                            $('.save-btn').click(function() {
+                                let rowId = $(this).data('id');
+                                let $tr = $('#row-' + rowId);
+
+                                // Collect row data
+                                let data = {};
+                                $tr.find('input, select').each(function() {
+                                    let key = $(this).data('key');
+                                    if (key) {
+                                        if ($(this).is('select')) {
+                                            data[key] = $(this).val();
+                                        } else {
+                                            data[key] = $(this).val();
+                                        }
+                                    }
+                                });
+
+                                let formData = new FormData();
+                                formData.append('id', rowId);
+                                formData.append('data', JSON.stringify(data));
+
+                                // Attach resume file if uploaded
+                                let fileInput = $tr.find('input.resume-input')[0];
+                                if (fileInput && fileInput.files.length > 0) {
+                                    formData.append('resume', fileInput.files[0]);
+                                }
+
+                                $.ajax({
+                                    url: '{{ route("seniorupdate") }}',
+                                    type: 'POST',
+                                    data: formData,
+                                    contentType: false,
+                                    processData: false,
+                                    headers: {
+                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                    },
+                                    success: function(response) {
+                                        if (response.success) {
+                                            alert(response.message);
+                                            // Optionally update resume buttons dynamically
+                                            if (response.row.resume_exists) {
+                                                let viewBtn = $tr.find('.view-btn');
+                                                viewBtn.attr('href', '/dashboard/senior/google-sheet/view-resume/' + rowId).removeClass('d-none');
+                                                let downloadBtn = $tr.find('.download-btn');
+                                                downloadBtn.attr('href', '/dashboard/senior/google-sheet/download-resume/' + rowId).removeClass('d-none');
+                                                $tr.find('.upload-btn').text('Change File');
+                                            }
+                                        } else {
+                                            alert(response.message);
+                                        }
+                                    },
+                                    error: function(err) {
+                                        alert('AJAX error: ' + err.responseText);
+                                    }
+                                });
+                            });
+
+                            // Show file input when clicking upload
+                            $('.upload-btn').click(function() {
+                                $(this).closest('td').find('input.resume-input').click();
+                            });
+                        });
+                    </script>
+
                 </td>
             </tr>
             @endforeach
         </tbody>
     </table>
 
-   
 
-@endif
+
+    @endif
