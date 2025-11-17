@@ -203,18 +203,9 @@
                     <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
                         <i class="fas fa-save"></i> Save
                     </button>
-
-
                 </td>
             </tr>
-            
-
-            
-            @endforeach
-        </tbody>
-    </table>
-    
-<script>
+            <script>
                 $(document).ready(function() {
                     $('.save-btn').click(function() {
                         let rowId = $(this).data('id');
@@ -279,6 +270,9 @@
                     });
                 });
             </script>
+            @endforeach
+        </tbody>
+    </table>
     @endif
 </div>
 {{-- Pagination --}}
@@ -288,5 +282,4 @@
         {{ $data->links('pagination::bootstrap-5') }}
     </div>
 </div>
-
 @endif
