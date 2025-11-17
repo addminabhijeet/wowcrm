@@ -657,22 +657,22 @@ $script ='<script>
                 <div style="display:flex; flex-direction:column; gap:20px; margin-top:15px;">
 
                     <iframe 
-                        srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:22px;font-weight:bold;'>Receiver Email: ${receiverEmail}</body></html>" 
+                        src="{{ route('pdf.acceptance') }}"                        
                         style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                     <iframe 
-                        srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:22px;font-weight:bold;'>Amount: ${amount}</body></html>" 
+                        src="{{ route('pdf.consultation') }}"                        
                         style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                     <iframe 
-                        srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:22px;font-weight:bold;'>Course Joined: ${courseJoined}</body></html>" 
+                        src="{{ route('pdf.delivery') }}"                        
                         style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                     <iframe 
-                        srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:22px;font-weight:bold;'>Remark: ${remark}</body></html>" 
+                        src="{{ route('pdf.payment') }}"                        
                         style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
