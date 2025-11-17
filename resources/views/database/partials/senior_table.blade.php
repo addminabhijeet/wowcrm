@@ -213,16 +213,7 @@
             @endforeach
         </tbody>
     </table>
-    @endif
-</div>
-{{-- Pagination --}}
-@if($data->hasPages())
-<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
-    <div>
-        {{ $data->links('pagination::bootstrap-5') }}
-    </div>
-</div>
-
+    
 <script>
                 $(document).ready(function() {
                     $('.save-btn').click(function() {
@@ -288,4 +279,14 @@
                     });
                 });
             </script>
+    @endif
+</div>
+{{-- Pagination --}}
+@if($data->hasPages())
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
+    <div>
+        {{ $data->links('pagination::bootstrap-5') }}
+    </div>
+</div>
+
 @endif
