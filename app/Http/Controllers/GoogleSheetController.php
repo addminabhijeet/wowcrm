@@ -3050,8 +3050,18 @@ class GoogleSheetController extends Controller
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            if ($file->getMimeType() !== 'application/pdf') {
-                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            // Allow PDF + Word files
+            $allowed = [
+                'application/pdf',
+                'application/msword', // .doc
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+            ];
+
+            if (!in_array($file->getMimeType(), $allowed)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only PDF or Word files (.pdf, .doc, .docx) are allowed'
+                ]);
             }
 
             $timestamp = now()->format('Ymd_His');
@@ -3066,6 +3076,7 @@ class GoogleSheetController extends Controller
                 $record->resume = null;
             }
         }
+
 
         try {
             $record->save();
