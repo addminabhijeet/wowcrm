@@ -580,7 +580,7 @@ class GoogleSheetController extends Controller
             $currentPage,
             ['path' => url()->current(), 'query' => $request->query()]
         );
-        
+
 
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
@@ -1082,18 +1082,20 @@ class GoogleSheetController extends Controller
 
     public function seniorSuggestionsmod(Request $request)
     {
-        $authUser = (object) ['id' => null];
+        $authUser = Auth::user();
         $query = $request->input('query');
 
         $results = [];
 
         if ($query && strlen($query) >= 3) {
             $results = GoogleSheetData::where(function ($q) use ($authUser) {
-                $userPattern = "%" . $authUser->id . "|junior";
+                $userPattern = "%:" . $authUser->id . "|senior";
+                $zeroPattern = "%:0|senior";
 
-                $q->where('created_by', $authUser->id . '|junior')
-                    ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior'])
-                    ->orWhere('created_by', 'LIKE', $userPattern);
+                $q->where('created_by', $authUser->id . '|senior')
+                    ->orWhere('created_by', '0|senior')
+                    ->orWhere('created_by', 'LIKE', $userPattern)
+                    ->orWhere('created_by', 'LIKE', $zeroPattern);
             })
                 ->where(function ($q) use ($query) {
                     $q->where('Name', 'LIKE', "%{$query}%")
@@ -1101,10 +1103,43 @@ class GoogleSheetController extends Controller
                         ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
                 })
                 ->limit(10)
-                ->get(['id', 'Name', 'Email_Address', 'Phone_Number']);
+                ->get(['id', 'sheet_row_number', 'Name', 'Email_Address', 'Phone_Number', 'Exe_Remarks', 'created_by']);
         }
+        // ✅ Transform the forwarded_by column like in senior()
+        $transformed = collect($results)->map(function ($item) use ($authUser) {
+            $forwardedBy = '';
 
-        return response()->json($results);
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                $names = [];
+
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            // Add transformed field
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        return response()->json($transformed);
     }
 
     public function juniorSuggestions(Request $request)
