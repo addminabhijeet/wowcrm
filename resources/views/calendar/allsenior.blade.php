@@ -199,6 +199,7 @@ $subTitle = 'Super Admin';
                     const targetSec = 8 * 3600;
                     const elapsedSec = activeWorkSec; // only active work
                     const remainingSec = Math.max(targetSec - activeWorkSec, 0);
+                    const extraSec = Math.max(activeWorkSec - targetSec, 0); // extra time
                     const completed = activeWorkSec >= targetSec ? "✅ Yes" : "❌ No";
 
                     tableRows += `
@@ -209,6 +210,10 @@ $subTitle = 'Super Admin';
 <tr class="fw-bold text-primary">
     <td colspan="2" class="text-end">Elapsed / Remaining</td>
     <td colspan="2">${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</td>
+</tr>
+<tr class="fw-bold text-warning">
+    <td colspan="2" class="text-end">Extra Time</td>
+    <td>${formatTime(extraSec)}</td>
 </tr>`;
 
                     modalBody.innerHTML = `
@@ -252,7 +257,12 @@ $subTitle = 'Super Admin';
         <span>Elapsed / Remaining:</span>
         <span>${formatTime(elapsedSec)} / ${formatTime(remainingSec)}</span>
     </div>
-</div>`;
+    <div class="d-flex justify-content-between fw-bold text-warning">
+        <span>Extra Time:</span>
+        <span>${formatTime(extraSec)}</span>
+    </div>
+</div>
+`;
 
                     // --- Merge consecutive duplicates (original code)
                     const tbody = modalBody.querySelector('tbody');

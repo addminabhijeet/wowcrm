@@ -261,6 +261,7 @@ $subTitle = 'Super Admin';
         <span>${formatTime(extraSec)}</span>
     </div>
 </div>
+
 `;
 
                     // --- Merge consecutive duplicates (original code)
