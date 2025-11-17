@@ -922,7 +922,7 @@ $script ='<script>
             }
 
             $.ajax({
-                url: "{{ route('senior.suggestions') }}",
+                url: "{{ route('google.sheet.seniorcandm') }}",
                 type: 'GET',
                 data: {
                     query
