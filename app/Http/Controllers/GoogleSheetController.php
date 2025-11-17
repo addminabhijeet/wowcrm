@@ -1304,41 +1304,19 @@ class GoogleSheetController extends Controller
                 'message' => 'Date is required.'
             ]);
         }
-        // Check for duplicate Email (ignore current record)
-        if (!empty($email)) {
-            $emailExists = GoogleSheetData::where('Email_Address', $email)
-                ->where('id', '!=', $id)
-                ->exists();
-
-            if ($emailExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Email address already exists in records.'
-                ]);
-            }
-        }
-
-        // Check for duplicate Phone (ignore current record)
-        if (!empty($phone)) {
-            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)
-                ->where('id', '!=', $id)
-                ->exists();
-
-            if ($phoneExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Phone number already exists in records.'
-                ]);
-            }
-        }
-
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Validate it's a PDF
-            if ($file->getMimeType() !== 'application/pdf') {
-                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            // Allowed Word MIME types
+            $allowedTypes = [
+                'application/msword', // .doc
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+            ];
+
+            // Validate it's a Word file
+            if (!in_array($file->getMimeType(), $allowedTypes)) {
+                return response()->json(['success' => false, 'message' => 'Only Word files (.doc, .docx) are allowed']);
             }
 
             // Generate unique filename
@@ -1356,13 +1334,11 @@ class GoogleSheetController extends Controller
                     Storage::disk('public')->delete($row->resume);
                 }
 
-                $row->resume = $filePath; // Store file path instead of just filename
-
+                $row->resume = $filePath;
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
         }
-
         // --- Prepare update data with null defaults for empty fields ---
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
@@ -1995,13 +1971,22 @@ class GoogleSheetController extends Controller
             $record->created_by = $user->id . '|senior';
         }
 
-        // Handle resume file upload - Save actual file content
+        // Handle resume file upload
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Validate it's a PDF
-            if ($file->getMimeType() !== 'application/pdf') {
-                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            // Allow PDF + Word files
+            $allowed = [
+                'application/pdf',
+                'application/msword', // .doc
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+            ];
+
+            if (!in_array($file->getMimeType(), $allowed)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only PDF or Word files (.pdf, .doc, .docx) are allowed'
+                ]);
             }
 
             $timestamp = now()->format('Ymd_His');
@@ -2010,11 +1995,9 @@ class GoogleSheetController extends Controller
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
-                $record->resume = $filePath; // Store file path
+                $record->resume = $filePath;
             } catch (\Exception $e) {
-                // Continue without resume if upload fails
                 $record->resume = null;
             }
         }
@@ -2431,10 +2414,48 @@ class GoogleSheetController extends Controller
             abort(404);
         }
 
-        return response()->file($filePath, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
-        ]);
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        // --- If already PDF, return directly ---
+        if ($extension === 'pdf') {
+            return response()->file($filePath, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
+            ]);
+        }
+
+        // --- Convert DOC/DOCX to PDF ---
+        if (in_array($extension, ['doc', 'docx'])) {
+
+            // Load Word file using PHPWord
+            $phpWord = IOFactory::load($filePath);
+
+            // Create a temporary HTML file from Word content
+            $tempHtml = storage_path('app/temp_' . time() . '.html');
+            $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
+            $htmlWriter->save($tempHtml);
+
+            // Convert HTML to PDF via Dompdf
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf($options);
+            $dompdf->loadHtml(file_get_contents($tempHtml));
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            // Output PDF content
+            $pdfOutput = $dompdf->output();
+
+            // Remove temp HTML
+            unlink($tempHtml);
+
+            return response($pdfOutput, 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . pathinfo($filePath, PATHINFO_FILENAME) . '.pdf"');
+        }
+
+        abort(415, 'Unsupported file format');
     }
 
     // Add a method to download the PDF files
