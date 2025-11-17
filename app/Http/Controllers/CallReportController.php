@@ -123,7 +123,7 @@ class CallReportController extends Controller
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
         $r8to9am = $hourlyReadyToPaid[8] ?? 0;
-        $r9to10pm = $hourlyReadyToPaid[9] ?? 0;
+        $r9to10am = $hourlyReadyToPaid[9] ?? 0;
         $r10to11am = $hourlyReadyToPaid[10] ?? 0;
         $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
         $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
@@ -171,7 +171,7 @@ class CallReportController extends Controller
             't6to7pm',
             't7to8pm',
             'r8to9am',
-            'r9to10pm',
+            'r9to10am',
             'r10to11am',
             'r11to12pm',
             'r12to1pm',
@@ -514,7 +514,7 @@ class CallReportController extends Controller
             'o6to7pm',
             'o7to8pm',
             'r8to9am',
-            'r9to10pm',
+            'r9to10am',
             'r10to11am',
             'r11to12pm',
             'r12to1pm',
@@ -1112,7 +1112,7 @@ class CallReportController extends Controller
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
         $r8to9am = $hourlyReadyToPaid[8] ?? 0;
-        $r9to10pm = $hourlyReadyToPaid[9] ?? 0;
+        $r9to10am = $hourlyReadyToPaid[9] ?? 0;
         $r10to11am = $hourlyReadyToPaid[10] ?? 0;
         $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
         $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
@@ -1160,7 +1160,7 @@ class CallReportController extends Controller
             't6to7pm',
             't7to8pm',
             'r8to9am',
-            'r9to10pm',
+            'r9to10am',
             'r10to11am',
             'r11to12pm',
             'r12to1pm',
@@ -1826,7 +1826,7 @@ class CallReportController extends Controller
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
         $r8to9am = $hourlyReadyToPaid[8] ?? 0;
-        $r9to10pm = $hourlyReadyToPaid[9] ?? 0;
+        $r9to10am = $hourlyReadyToPaid[9] ?? 0;
         $r10to11am = $hourlyReadyToPaid[10] ?? 0;
         $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
         $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
@@ -2018,7 +2018,7 @@ class CallReportController extends Controller
             'o5to6pm',
             'o6to7pm',
             'r8to9am',
-            'r9to10pm',
+            'r9to10am',
             'r10to11am',
             'r11to12pm',
             'r12to1pm',
