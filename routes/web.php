@@ -111,6 +111,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/junior', [DashboardController::class, 'junior'])->name('dashboard.junior');
     Route::get('/dashboard/senior', [DashboardController::class, 'senior'])->name('dashboard.senior');
     Route::get('/dashboard/customer', [DashboardController::class, 'customer'])->name('dashboard.customer');
+    Route::get('/dashboard/career', [DashboardController::class, 'career'])->name('dashboard.career');
     Route::get('/dashboard/accountant', [DashboardController::class, 'accountant'])->name('dashboard.accountant');
     Route::get('/dashboard/trainer', [DashboardController::class, 'trainer'])->name('dashboard.trainer');
     Route::get('/dashboard/associate', [DashboardController::class, 'associate'])->name('dashboard.associate');
@@ -252,7 +253,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/smtp/update/{user}', [DashboardController::class, 'update'])->name('smtp.update');
     Route::post('/dashboard/smtp/test', [DashboardController::class, 'test'])->name('smtp.test');
     Route::post('/dashboard/send-payment-mail', [DashboardController::class, 'sendPaymentMail'])
-    ->name('send.payment.mail');
+        ->name('send.payment.mail');
     Route::get('/dashboard/senior/seniortimer', [TimerController::class, 'seniorTimers'])->name('timer.senior');
     Route::get('/dashboard/senior/allseniortimer', [TimerController::class, 'allseniorTimers'])->name('timer.allsenior');
     Route::get('/timer/all-juniors', [TimerController::class, 'allJuniorTimers'])->name('timer.alljuniors');
