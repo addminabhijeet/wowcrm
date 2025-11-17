@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Mail;
 use App\Models\SmtpSetting;
 use Illuminate\Support\Str;
 use App\Models\EmailTemplate;
+use PhpOffice\PhpWord\IOFactory;
+use Dompdf\Dompdf;
+use Dompdf\Options;
 
 
 class GoogleSheetController extends Controller
@@ -3220,30 +3223,48 @@ class GoogleSheetController extends Controller
             abort(404);
         }
 
-        // Detect MIME type for Word files
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
 
-        switch ($extension) {
-            case 'doc':
-                $mime = 'application/msword';
-                break;
-
-            case 'docx':
-                $mime = 'application/vnd.openxmlformats-officedocument.wordprocessingml.document';
-                break;
-
-            case 'pdf':
-                $mime = 'application/pdf';
-                break;
-
-            default:
-                abort(415, 'Unsupported file format');
+        // --- If already PDF, return directly ---
+        if ($extension === 'pdf') {
+            return response()->file($filePath, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
+            ]);
         }
 
-        return response()->file($filePath, [
-            'Content-Type' => $mime,
-            'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
-        ]);
+        // --- Convert DOC/DOCX to PDF ---
+        if (in_array($extension, ['doc', 'docx'])) {
+
+            // Load Word file using PHPWord
+            $phpWord = IOFactory::load($filePath);
+
+            // Create a temporary HTML file from Word content
+            $tempHtml = storage_path('app/temp_' . time() . '.html');
+            $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
+            $htmlWriter->save($tempHtml);
+
+            // Convert HTML to PDF via Dompdf
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf($options);
+            $dompdf->loadHtml(file_get_contents($tempHtml));
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            // Output PDF content
+            $pdfOutput = $dompdf->output();
+
+            // Remove temp HTML
+            unlink($tempHtml);
+
+            return response($pdfOutput, 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . pathinfo($filePath, PATHINFO_FILENAME) . '.pdf"');
+        }
+
+        abort(415, 'Unsupported file format');
     }
 
 
