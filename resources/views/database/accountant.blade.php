@@ -684,7 +684,6 @@ $script ='<script>
                 Swal.fire({
                     title: '<span style="font-size:20px; font-weight:bold;">Preview & Confirm Before Save</span>',
                     html: previewHTML,
-                    icon: 'info',
                     showCancelButton: true,
                     confirmButtonText: 'Save Data',
                     cancelButtonText: 'Cancel',
