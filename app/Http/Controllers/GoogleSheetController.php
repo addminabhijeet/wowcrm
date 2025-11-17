@@ -581,17 +581,20 @@ class GoogleSheetController extends Controller
             ['path' => url()->current(), 'query' => $request->query()]
         );
 
+        if ($rowId) {
+            $pagedData->appends(['row_id' => $rowId]);
+        }
+
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
-
-        // ✅ Handle AJAX pagination and search
-        if ($request->ajax()) {
-            return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
-        }
-
-        return view('database.senior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+            
+        return view('database.senior', [
+            'data' => $pagedData,
+            'juniorUsers' => $juniorUsers,
+            'rowId' => $rowId, 
+        ]);
     }
 
 
