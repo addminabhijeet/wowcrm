@@ -1298,4 +1298,4 @@
 </script>
 
 
-@endsection
+@endif
