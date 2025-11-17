@@ -2650,12 +2650,19 @@ class GoogleSheetController extends Controller
         }
 
         // Handle resume file upload - Save actual file content
+        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Validate it's a PDF
-            if ($file->getMimeType() !== 'application/pdf') {
-                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            // Allowed Word MIME types
+            $allowedTypes = [
+                'application/msword', // .doc
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+            ];
+
+            // Validate it's a Word file
+            if (!in_array($file->getMimeType(), $allowedTypes)) {
+                return response()->json(['success' => false, 'message' => 'Only Word files (.doc, .docx) are allowed']);
             }
 
             // Generate unique filename
@@ -2673,8 +2680,7 @@ class GoogleSheetController extends Controller
                     Storage::disk('public')->delete($row->resume);
                 }
 
-                $row->resume = $filePath; // Store file path instead of just filename
-
+                $row->resume = $filePath;
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
