@@ -261,8 +261,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/timers/work-day', [TimerController::class, 'updateWorkDay'])->name('timer.updateWorkDay');
     Route::post('/timers/base-time', [TimerController::class, 'updateBaseTime'])->name('timer.updateBaseTime');
 
-    Route::get('/timers/latest-pause-types', [DashboardController::class, 'getLatestPauseTypes'])
-        ->name('timers.latestPauseTypes');
+    Route::get('/timers/latest-pause-types', [DashboardController::class, 'getLatestPauseTypes'])->name('timers.latestPauseTypes');
 
     Route::get('/dashboard/accountant/pdf/acceptance', [PdfController::class, 'acceptance'])->name('pdf.acceptance');
     Route::get('/dashboard/accountant/pdf/consultation', [PdfController::class, 'consultation'])->name('pdf.consultation');
