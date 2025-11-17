@@ -648,12 +648,13 @@ $script ='<script>
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
                 } else if (k === 'View') {
                     cells += `<td>
-                    <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
-                    <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-                    <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
-                    <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-                </td>`;
+        <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input" data-key="View">
+        <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+        <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
+        <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+    </td>`;
                 }
+
             });
 
             cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
