@@ -1082,20 +1082,18 @@ class GoogleSheetController extends Controller
 
     public function seniorSuggestionsmod(Request $request)
     {
-        $authUser = Auth::user();
+        $authUser = (object) ['id' => null];
         $query = $request->input('query');
 
         $results = [];
 
         if ($query && strlen($query) >= 3) {
             $results = GoogleSheetData::where(function ($q) use ($authUser) {
-                $userPattern = "%:" . $authUser->id . "|senior";
-                $zeroPattern = "%:0|senior";
+                $userPattern = "%" . $authUser->id . "|junior";
 
-                $q->where('created_by', $authUser->id . '|senior')
-                    ->orWhere('created_by', '0|senior')
-                    ->orWhere('created_by', 'LIKE', $userPattern)
-                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+                $q->where('created_by', $authUser->id . '|junior')
+                    ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior'])
+                    ->orWhere('created_by', 'LIKE', $userPattern);
             })
                 ->where(function ($q) use ($query) {
                     $q->where('Name', 'LIKE', "%{$query}%")
@@ -1105,6 +1103,7 @@ class GoogleSheetController extends Controller
                 ->limit(10)
                 ->get(['id', 'sheet_row_number', 'Name', 'Email_Address', 'Phone_Number', 'Exe_Remarks', 'created_by']);
         }
+
         // ✅ Transform the forwarded_by column like in senior()
         $transformed = collect($results)->map(function ($item) use ($authUser) {
             $forwardedBy = '';
