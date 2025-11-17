@@ -658,22 +658,22 @@ $script ='<script>
 
                     <iframe 
                         src="{{ route('pdf.acceptance') }}"                        
-                        style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                     <iframe 
                         src="{{ route('pdf.consultation') }}"                        
-                        style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                     <iframe 
                         src="{{ route('pdf.delivery') }}"                        
-                        style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                     <iframe 
                         src="{{ route('pdf.payment') }}"                        
-                        style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                 </div>
