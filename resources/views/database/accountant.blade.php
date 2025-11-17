@@ -628,7 +628,6 @@ $script ='<script>
                 let row = saveBtn.closest("tr");
 
                 // Collect necessary data for preview
-
                 const senderEmail = "{{ auth()->user()->email }}";
                 const receiverEmail = row.querySelector('input[data-key="Email Address"]')?.value?.trim() || "N/A";
                 const amount = row.querySelector('input[data-key="Amount"]')?.value?.trim() || "N/A";
@@ -636,30 +635,31 @@ $script ='<script>
                 const courseJoined = row.querySelector('input[data-key="Course"]')?.value?.trim() || "N/A";
                 const paymentLink = row.querySelector('input[data-key="Payment Link"]')?.value?.trim() || "N/A";
 
-
-                // Generate dynamic preview HTML content
+                // Generate preview HTML
                 const previewHTML = `
-                    <div style="text-align:left; font-size:8px;">
-                        <p><strong>Sender Email:</strong> ${senderEmail}</p>
-                        <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
-                        <p><strong>Amount:</strong> ${amount}</p>
-                        <p><strong>Course Joined:</strong> ${courseJoined}</p>
-                        <p><strong>Remark:</strong> ${remark}</p>
-                        ${paymentLink && paymentLink !== 'N/A' ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>` : ''}
-                        <hr/>
-                        <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; text-align:center;">
-                            <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Receiver Email: ${receiverEmail}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
-                            <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Amount: ${amount}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
-                            <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Course: ${courseJoined}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
-                            <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Remark: ${remark}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
-                        </div>
-                    </div>
-                `;
+            <div style="text-align:left; font-size:8px;">
+                <p><strong>Sender Email:</strong> ${senderEmail}</p>
+                <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
+                <p><strong>Amount:</strong> ${amount}</p>
+                <p><strong>Course Joined:</strong> ${courseJoined}</p>
+                <p><strong>Remark:</strong> ${remark}</p>
+                ${paymentLink && paymentLink !== 'N/A' 
+                    ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>` 
+                    : ''
+                }
+                <hr/>
+                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; text-align:center;">
+                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Receiver Email: ${receiverEmail}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Amount: ${amount}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Course: ${courseJoined}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Remark: ${remark}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+                </div>
+            </div>
+        `;
 
-
-                // Show preview confirmation popup before saving
+                // SweetAlert — With Smaller Title Text
                 Swal.fire({
-                    title: 'Confirm Row Data Before Save',
+                    title: '<span style="font-size:16px; font-weight:bold;">Confirm Row Data Before Save</span>',
                     html: previewHTML,
                     icon: 'info',
                     showCancelButton: true,
@@ -678,18 +678,18 @@ $script ='<script>
                             rowData[key] = value;
                         });
 
-                        // Create FormData object
+                        // Create FormData
                         let formData = new FormData();
                         formData.append("data", JSON.stringify(rowData));
                         formData.append("_token", "{{ csrf_token() }}");
 
-                        // Handle resume file upload
+                        // Resume upload handling
                         let resumeInput = row.querySelector("input.resume-input");
                         if (resumeInput && resumeInput.files.length > 0) {
                             formData.append("resume", resumeInput.files[0]);
                         }
 
-                        // Determine URL and method
+                        // Determine URL
                         let url, method;
                         if (id === "new") {
                             url = "{{ route('accountantstore') }}";
@@ -700,7 +700,7 @@ $script ='<script>
                             formData.append("id", id);
                         }
 
-                        // Send the request
+                        // Send request
                         fetch(url, {
                                 method: method,
                                 body: formData
@@ -712,14 +712,13 @@ $script ='<script>
                             .then(data => {
                                 if (data.success) {
                                     Swal.fire({
-                                        title: 'Saved!',
+                                        title: '<span style="font-size:16px;">Saved!</span>',
                                         text: 'Row saved successfully.',
                                         icon: 'success',
                                         confirmButtonColor: '#28a745'
                                     });
 
                                     if (id === "new") {
-                                        // Update row with new ID
                                         row.dataset.id = data.id;
                                         saveBtn.dataset.id = data.id;
                                         row.querySelector("td:first-child").innerText = data.sheet_row_number;
@@ -737,7 +736,6 @@ $script ='<script>
                                             downloadBtn.classList.remove('d-none');
                                         }
 
-                                        // Add new blank row only if none exists
                                         const existingNewRows = tableBody.querySelectorAll('tr[data-id="new"]');
                                         if (existingNewRows.length === 0) {
                                             addBlankRow();
@@ -745,7 +743,7 @@ $script ='<script>
                                     }
                                 } else {
                                     Swal.fire({
-                                        title: 'Error!',
+                                        title: '<span style="font-size:16px;">Error!</span>',
                                         text: data.message || 'Something went wrong.',
                                         icon: 'error',
                                         confirmButtonColor: '#dc3545'
@@ -755,7 +753,7 @@ $script ='<script>
                             .catch(err => {
                                 console.error("Fetch error:", err);
                                 Swal.fire({
-                                    title: 'Save Failed!',
+                                    title: '<span style="font-size:16px;">Save Failed!</span>',
                                     text: 'Check console for details.',
                                     icon: 'error',
                                     confirmButtonColor: '#dc3545'
@@ -765,7 +763,6 @@ $script ='<script>
                 });
             }
         });
-
 
 
         // Handle file upload button clicks
