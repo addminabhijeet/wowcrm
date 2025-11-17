@@ -657,7 +657,7 @@ $script ='<script>
                 <div style="display:flex; flex-direction:column; gap:20px; margin-top:15px;">
 
                     <iframe 
-                        srcdoc="<!DOCTYPE html>
+                        srcdoc="
 <html>
 <head>
 <title>Consultation Services Agreement</title>
