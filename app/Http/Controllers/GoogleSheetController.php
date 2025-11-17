@@ -515,22 +515,9 @@ class GoogleSheetController extends Controller
         }
 
         // Search or specific row filter
-        // If rowId is present, find page number dynamically
         if ($rowId) {
-
-            // Get ALL ids sorted (desc)
-            $allIds = (clone $query)->orderBy('id', 'desc')->pluck('id')->toArray();
-
-            // Find index of the row
-            $index = array_search($rowId, $allIds);
-
-            if ($index !== false) {
-                $page = floor($index / 10) + 1; // 10 items per page
-            }
-
-            // Force filter by row id also
             $query->where('id', $rowId);
-        } else if ($search && strlen($search) >= 3) {
+        } elseif ($search && strlen($search) >= 3) {
             $query->where(function ($q) use ($search) {
                 $q->where('Name', 'LIKE', "%{$search}%")
                     ->orWhere('Email_Address', 'LIKE', "%{$search}%")
@@ -593,25 +580,19 @@ class GoogleSheetController extends Controller
             $currentPage,
             ['path' => url()->current(), 'query' => $request->query()]
         );
+        
 
-        $juniorUsers = \App\Models\User::where('is_deleted', 0)
-            ->whereIn('role', ['junior', 'senior'])
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
 
-        // AJAX MUST return full main Blade (not partial)
+        // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
-            return view('database.senior', [
-                'data' => $pagedData,
-                'juniorUsers' => $juniorUsers
-            ])->render();
+            return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
-        return view('database.senior', [
-            'data' => $pagedData,
-            'juniorUsers' => $juniorUsers
-        ]);
+        return view('database.senior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
 
