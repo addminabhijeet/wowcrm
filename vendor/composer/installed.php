@@ -3,7 +3,7 @@
         'name' => 'laravel/laravel',
         'pretty_version' => 'dev-main',
         'version' => 'dev-main',
-        'reference' => '0950d93d8ff7b98a632191d11d4be69308085f8e',
+        'reference' => 'cb1f282f888c8a69232286c481f9bcd50bbb7627',
         'type' => 'project',
         'install_path' => __DIR__ . '/../../',
         'aliases' => array(),
@@ -406,7 +406,7 @@
         'laravel/laravel' => array(
             'pretty_version' => 'dev-main',
             'version' => 'dev-main',
-            'reference' => '0950d93d8ff7b98a632191d11d4be69308085f8e',
+            'reference' => 'cb1f282f888c8a69232286c481f9bcd50bbb7627',
             'type' => 'project',
             'install_path' => __DIR__ . '/../../',
             'aliases' => array(),
@@ -636,6 +636,24 @@
             'provided' => array(
                 0 => '*',
             ),
+        ),
+        'phpoffice/math' => array(
+            'pretty_version' => '0.3.0',
+            'version' => '0.3.0.0',
+            'reference' => 'fc31c8f57a7a81f962cbf389fd89f4d9d06fc99a',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpoffice/math',
+            'aliases' => array(),
+            'dev_requirement' => false,
+        ),
+        'phpoffice/phpword' => array(
+            'pretty_version' => '1.4.0',
+            'version' => '1.4.0.0',
+            'reference' => '6d75328229bc93790b37e93741adf70646cea958',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../phpoffice/phpword',
+            'aliases' => array(),
+            'dev_requirement' => false,
         ),
         'phpoption/phpoption' => array(
             'pretty_version' => '1.9.4',
