@@ -639,7 +639,7 @@ $script ='<script>
 
                 // Generate dynamic preview HTML content
                 const previewHTML = `
-                    <div style="text-align:left; font-size:14px;">
+                    <div style="text-align:left; font-size:8px;">
                         <p><strong>Sender Email:</strong> ${senderEmail}</p>
                         <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
                         <p><strong>Amount:</strong> ${amount}</p>
