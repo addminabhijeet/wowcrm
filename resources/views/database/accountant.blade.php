@@ -619,7 +619,6 @@ $script ='<script>
             if (e.target.matches('select.dynamic-dropdown')) updateSelectColor(e.target);
         });
 
-        // Event delegation for save buttons (handles both existing and dynamically added buttons)
         tableBody.addEventListener('click', function(e) {
             if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
                 e.preventDefault();
@@ -635,82 +634,102 @@ $script ='<script>
                 const courseJoined = row.querySelector('input[data-key="Course"]')?.value?.trim() || "N/A";
                 const paymentLink = row.querySelector('input[data-key="Payment Link"]')?.value?.trim() || "N/A";
 
-                // Generate preview HTML
+                // Generate improved preview HTML (full-width stacked cards)
                 const previewHTML = `
-            <div style="text-align:left; font-size:8px;">
-                <p><strong>Sender Email:</strong> ${senderEmail}</p>
-                <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
-                <p><strong>Amount:</strong> ${amount}</p>
-                <p><strong>Course Joined:</strong> ${courseJoined}</p>
-                <p><strong>Remark:</strong> ${remark}</p>
-                ${paymentLink && paymentLink !== 'N/A' 
-                    ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>` 
-                    : ''
-                }
+            <div style="text-align:left; font-size:14px; line-height:1.5;">
+
+                <div style="padding:10px 0;">
+                    <p><strong>Sender Email:</strong> ${senderEmail}</p>
+                    <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
+                    <p><strong>Amount:</strong> ${amount}</p>
+                    <p><strong>Course Joined:</strong> ${courseJoined}</p>
+                    <p><strong>Remark:</strong> ${remark}</p>
+
+                    ${paymentLink && paymentLink !== 'N/A'
+                        ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>`
+                        : ''
+                    }
+                </div>
+
                 <hr/>
-                <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:10px; text-align:center;">
-                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Receiver Email: ${receiverEmail}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
-                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Amount: ${amount}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
-                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Course: ${courseJoined}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
-                    <iframe srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:16px;'>Remark: ${remark}</body></html>" style="width:100%;height:150px;border:1px solid #ccc;border-radius:8px;"></iframe>
+
+                <!-- FULL WIDTH STACKED PREVIEW BOXES -->
+                <div style="display:flex; flex-direction:column; gap:20px; margin-top:15px;">
+
+                    <iframe 
+                        srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:22px;font-weight:bold;'>Receiver Email: ${receiverEmail}</body></html>" 
+                        style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                    </iframe>
+
+                    <iframe 
+                        srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:22px;font-weight:bold;'>Amount: ${amount}</body></html>" 
+                        style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                    </iframe>
+
+                    <iframe 
+                        srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:22px;font-weight:bold;'>Course Joined: ${courseJoined}</body></html>" 
+                        style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                    </iframe>
+
+                    <iframe 
+                        srcdoc="<html><body style='display:flex;align-items:center;justify-content:center;height:100vh;font-size:22px;font-weight:bold;'>Remark: ${remark}</body></html>" 
+                        style="width:100%; height:180px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                    </iframe>
+
                 </div>
             </div>
         `;
 
-                // SweetAlert — With Smaller Title Text
+                // SweetAlert — Improved UI
                 Swal.fire({
-                    title: '<span style="font-size:16px; font-weight:bold;">Confirm Row Data Before Save</span>',
+                    title: '<span style="font-size:20px; font-weight:bold;">Preview & Confirm Before Save</span>',
                     html: previewHTML,
                     icon: 'info',
                     showCancelButton: true,
-                    confirmButtonText: 'Submit',
+                    confirmButtonText: 'Save Data',
                     cancelButtonText: 'Cancel',
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#dc3545',
-                    width: '800px'
+                    width: '900px', // wider clean modal
+                    padding: '20px'
                 }).then((result) => {
+
                     if (result.isConfirmed) {
-                        // Collect all data from the row
+
+                        // Collect all row data
                         let rowData = {};
                         row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
-                            let key = cell.dataset.key;
-                            let value = cell.value;
-                            rowData[key] = value;
+                            rowData[cell.dataset.key] = cell.value;
                         });
 
-                        // Create FormData
                         let formData = new FormData();
                         formData.append("data", JSON.stringify(rowData));
                         formData.append("_token", "{{ csrf_token() }}");
 
-                        // Resume upload handling
                         let resumeInput = row.querySelector("input.resume-input");
                         if (resumeInput && resumeInput.files.length > 0) {
                             formData.append("resume", resumeInput.files[0]);
                         }
 
-                        // Determine URL
-                        let url, method;
-                        if (id === "new") {
-                            url = "{{ route('accountantstore') }}";
-                            method = "POST";
-                        } else {
-                            url = "{{ route('accountantupdate') }}";
-                            method = "POST";
+                        let url = id === "new" ?
+                            "{{ route('accountantstore') }}" :
+                            "{{ route('accountantupdate') }}";
+
+                        let method = "POST";
+
+                        if (id !== "new") {
                             formData.append("id", id);
                         }
 
-                        // Send request
                         fetch(url, {
                                 method: method,
                                 body: formData
                             })
-                            .then(res => {
-                                if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
-                                return res.json();
-                            })
+                            .then(res => res.json())
                             .then(data => {
+
                                 if (data.success) {
+
                                     Swal.fire({
                                         title: '<span style="font-size:16px;">Saved!</span>',
                                         text: 'Row saved successfully.',
@@ -721,6 +740,7 @@ $script ='<script>
                                     if (id === "new") {
                                         row.dataset.id = data.id;
                                         saveBtn.dataset.id = data.id;
+
                                         row.querySelector("td:first-child").innerText = data.sheet_row_number;
 
                                         const viewBtn = row.querySelector('.view-btn');
@@ -736,11 +756,11 @@ $script ='<script>
                                             downloadBtn.classList.remove('d-none');
                                         }
 
-                                        const existingNewRows = tableBody.querySelectorAll('tr[data-id="new"]');
-                                        if (existingNewRows.length === 0) {
+                                        if (!tableBody.querySelector('tr[data-id="new"]')) {
                                             addBlankRow();
                                         }
                                     }
+
                                 } else {
                                     Swal.fire({
                                         title: '<span style="font-size:16px;">Error!</span>',
@@ -749,6 +769,7 @@ $script ='<script>
                                         confirmButtonColor: '#dc3545'
                                     });
                                 }
+
                             })
                             .catch(err => {
                                 console.error("Fetch error:", err);
@@ -759,10 +780,12 @@ $script ='<script>
                                     confirmButtonColor: '#dc3545'
                                 });
                             });
+
                     }
                 });
             }
         });
+
 
 
         // Handle file upload button clicks
