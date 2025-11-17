@@ -477,12 +477,12 @@ $script = '<script>
                             <tr>
                                 <td style="white-space: nowrap;">08.00AM-09.00AM</td>
                                 <td class="text-center"><span class="badge bg-light">{{ $t8to9am }}</span></td>
-                                <td class="text-center"><span class="badge bg-secondary">{{ $o8to9am }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o8to9am }}</span></td>
                             </tr>
                             <tr>
                                 <td style="white-space: nowrap;">09.00AM-10.00AM</td>
                                 <td class="text-center"><span class="badge bg-light">{{ $t9to10am }}</span></td>
-                                <td class="text-center"><span class="badge bg-secondary">{{ $o9to10am }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o9to10am }}</span></td>
                             </tr>
                             <tr>
                                 <td style="white-space: nowrap;">10.00AM-11.00AM</td>
