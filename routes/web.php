@@ -251,6 +251,8 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/smtp/allupdate', [DashboardController::class, 'addupdate'])->name('smtp.addupdate');
     Route::put('/dashboard/smtp/update/{user}', [DashboardController::class, 'update'])->name('smtp.update');
     Route::post('/dashboard/smtp/test', [DashboardController::class, 'test'])->name('smtp.test');
+    Route::post('/dashboard/send-payment-mail', [DashboardController::class, 'sendPaymentMail'])
+    ->name('send.payment.mail');
     Route::get('/dashboard/senior/seniortimer', [TimerController::class, 'seniorTimers'])->name('timer.senior');
     Route::get('/dashboard/senior/allseniortimer', [TimerController::class, 'allseniorTimers'])->name('timer.allsenior');
     Route::get('/timer/all-juniors', [TimerController::class, 'allJuniorTimers'])->name('timer.alljuniors');

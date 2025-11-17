@@ -122,4 +122,64 @@ class SmtpSettingController extends Controller
             ]);
         }
     }
+
+
+    public function sendPaymentMail(Request $request)
+    {
+        $receiverEmail = $request->input('receiverEmail');
+        $candidateName = $request->input('candidateName');
+        $paymentLink = $request->input('paymentLink');
+
+        if (!$receiverEmail || !filter_var($receiverEmail, FILTER_VALIDATE_EMAIL)) {
+            return response()->json(['success' => false, 'message' => 'Invalid email']);
+        }
+
+        // Load SMTP ID = 1
+        $smtp = SmtpSetting::where('id', 1)->first();
+
+        if (!$smtp) {
+            return response()->json(['success' => false, 'message' => 'SMTP settings not found']);
+        }
+
+        try {
+            config([
+                'mail.default' => 'smtp',
+                'mail.mailers.smtp.transport' => $smtp->mailer ?? 'smtp',
+                'mail.mailers.smtp.host' => $smtp->host,
+                'mail.mailers.smtp.port' => $smtp->port,
+                'mail.mailers.smtp.username' => $smtp->username,
+                'mail.mailers.smtp.password' => decrypt($smtp->password),
+                'mail.mailers.smtp.encryption' => $smtp->encryption,
+                'mail.from.address' => $smtp->from_address,
+                'mail.from.name' => $smtp->from_name,
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Failed SMTP Configuration']);
+        }
+
+        $subject = "Complete Your Enrollment – Secure Payment Link";
+
+        $body = "
+Hello {$candidateName},
+
+We hope this message finds you well.
+
+Please find below the secure payment link to complete your enrollment process with Synergie Systems. Kindly ensure the payment is processed at your earliest convenience to confirm your spot and initiate the next steps.
+
+{$paymentLink}
+
+Thank you for choosing Synergie Systems. We look forward to working with you.
+";
+
+        try {
+            Mail::raw($body, function ($message) use ($receiverEmail, $subject) {
+                $message->to($receiverEmail)
+                    ->subject($subject);
+            });
+
+            return response()->json(['success' => true, 'message' => 'Mail sent successfully.']);
+        } catch (\Exception $e) {
+            return response()->json(['success' => false, 'message' => 'Mail sending failed: ' . $e->getMessage()]);
+        }
+    }
 }
