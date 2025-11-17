@@ -412,7 +412,7 @@ $script = '<script>
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
                     <div>
                         <h5 class="fw-bold mb-1">Daily Call Report</h5>
-                        
+
                     </div>
                     <form method="GET" action="{{ route('call.reports.alljuniordaily', ['userId' => request()->route('userId')]) }}" class="d-flex align-items-center gap-2">
                         <label for="selected_date" class="form-label mb-0 fw-semibold small">Select Date:</label>
@@ -474,6 +474,16 @@ $script = '<script>
                             </tr>
                         </thead>
                         <tbody>
+                            <tr>
+                                <td style="white-space: nowrap;">08.00AM-09.00AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t8to9am }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o8to9am }}</span></td>
+                            </tr>
+                            <tr>
+                                <td style="white-space: nowrap;">09.00AM-10.00AM</td>
+                                <td class="text-center"><span class="badge bg-info">{{ $t9to10am }}</span></td>
+                                <td class="text-center"><span class="badge bg-warning">{{ $o9to10am }}</span></td>
+                            </tr>
                             <tr>
                                 <td style="white-space: nowrap;">10.00AM-11.00AM</td>
                                 <td class="text-center"><span class="badge bg-info">{{ $t10to11am }}</span></td>
