@@ -109,6 +109,8 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (10 AM - 8 PM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -120,6 +122,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $r8to9am = $hourlyReadyToPaid[8] ?? 0;
+        $r9to10pm = $hourlyReadyToPaid[9] ?? 0;
         $r10to11am = $hourlyReadyToPaid[10] ?? 0;
         $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
         $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
@@ -131,6 +135,8 @@ class CallReportController extends Controller
         $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
         $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -152,6 +158,8 @@ class CallReportController extends Controller
             'SreadyToPaidCalls',
             'SotherCalls',
             'selectedDate',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -162,6 +170,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'r8to9am',
+            'r9to10pm',
             'r10to11am',
             'r11to12pm',
             'r12to1pm',
@@ -172,6 +182,8 @@ class CallReportController extends Controller
             'r5to6pm',
             'r6to7pm',
             'r7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
@@ -282,6 +294,8 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (10 AM - 8 PM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -293,6 +307,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -304,6 +320,8 @@ class CallReportController extends Controller
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
+        $r8to9am = $hourlyReadyToPaid[8] ?? 0;
+        $r9to10pm = $hourlyReadyToPaid[9] ?? 0;
         $r10to11am = $hourlyReadyToPaid[10] ?? 0;
         $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
         $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
@@ -471,6 +489,8 @@ class CallReportController extends Controller
             'MreadyToPaidCalls',
             'MotherCalls',
             'selectedMonth',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -481,6 +501,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
@@ -491,6 +513,8 @@ class CallReportController extends Controller
             'o5to6pm',
             'o6to7pm',
             'o7to8pm',
+            'r8to9am',
+            'r9to10pm',
             'r10to11am',
             'r11to12pm',
             'r12to1pm',
@@ -632,6 +656,8 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (10 AM - 8 PM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -643,6 +669,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -662,6 +690,8 @@ class CallReportController extends Controller
             'ScalledAndMailedCalls',
             'SotherCalls',
             'selectedDate',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -672,6 +702,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
@@ -767,6 +799,8 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (10 AM - 8 PM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -778,6 +812,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -797,6 +833,8 @@ class CallReportController extends Controller
             'ScalledAndMailedCalls',
             'SotherCalls',
             'selectedDate',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -807,6 +845,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
@@ -903,6 +943,8 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (10 AM - 8 PM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -914,6 +956,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -933,6 +977,8 @@ class CallReportController extends Controller
             'ScalledAndMailedCalls',
             'SotherCalls',
             'selectedDate',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -943,6 +989,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
@@ -1050,6 +1098,8 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (10 AM - 8 PM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -1061,6 +1111,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $r8to9am = $hourlyReadyToPaid[8] ?? 0;
+        $r9to10pm = $hourlyReadyToPaid[9] ?? 0;
         $r10to11am = $hourlyReadyToPaid[10] ?? 0;
         $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
         $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
@@ -1072,6 +1124,8 @@ class CallReportController extends Controller
         $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
         $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -1093,6 +1147,8 @@ class CallReportController extends Controller
             'SreadyToPaidCalls',
             'SotherCalls',
             'selectedDate',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -1103,6 +1159,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'r8to9am',
+            'r9to10pm',
             'r10to11am',
             'r11to12pm',
             'r12to1pm',
@@ -1113,6 +1171,8 @@ class CallReportController extends Controller
             'r5to6pm',
             'r6to7pm',
             'r7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
@@ -1186,6 +1246,8 @@ class CallReportController extends Controller
             ->toArray();
 
         // Initialize hour blocks (10 AM - 8 PM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -1197,6 +1259,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -1364,6 +1428,8 @@ class CallReportController extends Controller
             'McalledAndMailedCalls',
             'MotherCalls',
             'selectedMonth',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -1374,6 +1440,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
@@ -1455,6 +1523,8 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (10 AM - 8 PM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -1466,6 +1536,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -1483,6 +1555,8 @@ class CallReportController extends Controller
             'McalledAndMailedCalls',
             'MotherCalls',
             'selectedMonth',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -1493,6 +1567,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
@@ -1566,6 +1642,8 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (10 AM - 8 PM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -1577,6 +1655,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -1594,6 +1674,8 @@ class CallReportController extends Controller
             'McalledAndMailedCalls',
             'MotherCalls',
             'selectedMonth',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -1604,6 +1686,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
@@ -1715,6 +1799,8 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (10 AM - 8 PM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -1726,6 +1812,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -1737,6 +1825,8 @@ class CallReportController extends Controller
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
+        $r8to9am = $hourlyReadyToPaid[8] ?? 0;
+        $r9to10pm = $hourlyReadyToPaid[9] ?? 0;
         $r10to11am = $hourlyReadyToPaid[10] ?? 0;
         $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
         $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
@@ -1904,6 +1994,8 @@ class CallReportController extends Controller
             'MreadyToPaidCalls',
             'MotherCalls',
             'selectedMonth',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -1914,6 +2006,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
@@ -1923,7 +2017,8 @@ class CallReportController extends Controller
             'o4to5pm',
             'o5to6pm',
             'o6to7pm',
-            'o7to8pm',
+            'r8to9am',
+            'r9to10pm',
             'r10to11am',
             'r11to12pm',
             'r12to1pm',
@@ -2027,6 +2122,8 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (8 PM - 6 AM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -2038,6 +2135,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -2057,6 +2156,8 @@ class CallReportController extends Controller
             'ScalledAndMailedCalls',
             'SotherCalls',
             'selectedDate',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -2067,6 +2168,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
@@ -2280,6 +2383,8 @@ class CallReportController extends Controller
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         // Initialize hour blocks (10 AM - 8 PM)
+        $t8to9am = $hourlyCalledMailed[8] ?? 0;
+        $t9to10am = $hourlyCalledMailed[9] ?? 0;
         $t10to11am = $hourlyCalledMailed[10] ?? 0;
         $t11to12pm = $hourlyCalledMailed[11] ?? 0;
         $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
@@ -2291,6 +2396,8 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
         $o10to11am = $hourlyOtherCalls[10] ?? 0;
         $o11to12pm = $hourlyOtherCalls[11] ?? 0;
         $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
@@ -2307,6 +2414,8 @@ class CallReportController extends Controller
             'McalledAndMailedCalls',
             'MotherCalls',
             'selectedMonth',
+            't8to9am',
+            't9to10am',
             't10to11am',
             't11to12pm',
             't12to1pm',
@@ -2317,6 +2426,8 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'o8to9am',
+            'o9to10am',
             'o10to11am',
             'o11to12pm',
             'o12to1pm',
