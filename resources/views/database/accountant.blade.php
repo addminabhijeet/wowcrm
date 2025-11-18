@@ -638,12 +638,20 @@ $script ='<script>
                 const paymentLink = row.querySelector('input[data-key="Payment Link"]')?.value?.trim() || "N/A";
                 const candidateName = row.querySelector('input[data-key="Candidate Name"]')?.value?.trim() || "Candidate";
 
-                // Encode URL parameters correctly
+                const pdfUrl = "{{ route('pdf.acceptance') }}";
+
                 const queryParams = new URLSearchParams({
-                    name: name,
-                    email: receiverEmail,
-                    amount: amount,
+                    senderEmail,
+                    receiverEmail,
+                    amount,
+                    name,
+                    remark,
+                    courseJoined,
+                    paymentLink
                 }).toString();
+
+                document.getElementById('acceptancePdfIframe').src = `${pdfUrl}?${queryParams}`;
+
 
                 // Generate improved preview HTML
                 const previewHTML = `
@@ -665,11 +673,7 @@ $script ='<script>
                 <!-- PREVIEW IFRAME BOXES -->
                 <div style="display:flex; flex-direction:column; gap:20px; margin-top:15px;">
 
-                    <iframe 
-                        src="{{ route('pdf.acceptance') }}?${queryParams}"
-                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                    </iframe>
-
+                    <iframe id="acceptancePdfIframe" style="width:100%; height:600px; border:0;"></iframe>
                     <iframe 
                         src="{{ route('pdf.consultation') }}"
                         style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
