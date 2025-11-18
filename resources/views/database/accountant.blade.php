@@ -671,17 +671,17 @@ $script ='<script>
                     </iframe>
 
                     <iframe 
-                        src="{{ route('pdf.consultation') }}"
+                        src="{{ route('pdf.consultation') }}?${queryParams}"
                         style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                     <iframe 
-                        src="{{ route('pdf.delivery') }}"
+                        src="{{ route('pdf.delivery') }}?${queryParams}"
                         style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                     <iframe 
-                        src="{{ route('pdf.payment') }}"
+                        src="{{ route('pdf.payment') }}?${queryParams}"
                         style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
