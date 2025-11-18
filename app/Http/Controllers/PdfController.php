@@ -4,10 +4,23 @@ namespace App\Http\Controllers;
 
 class PdfController extends Controller
 {
-    public function acceptance()
+    public function acceptance(Request $request)
     {
-        return view('pdf.acceptance');
+        $name   = $request->input('name');
+        $email  = $request->input('email');
+        $amount = $request->input('amount');
+        $course = $request->input('course');
+        $remark = $request->input('remark');
+
+        return view('pdf.acceptance', compact(
+            'name',
+            'email',
+            'amount',
+            'course',
+            'remark'
+        ));
     }
+
 
     public function consultation()
     {

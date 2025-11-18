@@ -634,51 +634,61 @@ $script ='<script>
                 const courseJoined = row.querySelector('[data-key="Course"]')?.value?.trim() || "N/A";
                 const paymentLink = row.querySelector('input[data-key="Payment Link"]')?.value?.trim() || "N/A";
 
+                // Encode URL parameters
+                const queryParams = new URLSearchParams({
+                    name: receiverEmail,
+                    email: senderEmail,
+                    amount: amount,
+                    course: course,
+                    remark: remark
+                }).toString();
+
                 // Generate improved preview HTML (full-width stacked cards)
                 const previewHTML = `
-            <div style="text-align:left; font-size:14px; line-height:1.5;">
+                    <div style="text-align:left; font-size:14px; line-height:1.5;">
 
-                <div style="padding:10px 0;">
-                    <p><strong>Sender Email:</strong> ${senderEmail}</p>
-                    <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
-                    <p><strong>Amount:</strong> ${amount}</p>
-                    <p><strong>Course:</strong> ${courseJoined}</p>
-                    <p><strong>Remark:</strong> ${remark}</p>
+                        <div style="padding:10px 0;">
+                            <p><strong>Sender Email:</strong> ${senderEmail}</p>
+                            <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
+                            <p><strong>Amount:</strong> ${amount}</p>
+                            <p><strong>Course:</strong> ${courseJoined}</p>
+                            <p><strong>Remark:</strong> ${remark}</p>
 
-                    ${paymentLink && paymentLink !== 'N/A'
-                        ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>`
-                        : ''
-                    }
-                </div>
+                            ${paymentLink && paymentLink !== 'N/A'
+                                ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>`
+                                : ''
+                            }
+                        </div>
 
-                <hr/>
+                        <hr/>
 
-                <!-- FULL WIDTH STACKED PREVIEW BOXES -->
-                <div style="display:flex; flex-direction:column; gap:20px; margin-top:15px;">
+                        <!-- FULL WIDTH STACKED PREVIEW BOXES -->
+                        <div style="display:flex; flex-direction:column; gap:20px; margin-top:15px;">
 
-                    <iframe 
-                        src="{{ route('pdf.acceptance') }}"                        
-                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                    </iframe>
+                            <iframe 
+                                src="{{ route('pdf.acceptance') }}?${queryParams}"
+                                style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                            </iframe>
 
-                    <iframe 
-                        src="{{ route('pdf.consultation') }}"                        
-                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                    </iframe>
 
-                    <iframe 
-                        src="{{ route('pdf.delivery') }}"                        
-                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                    </iframe>
+                            <iframe 
+                                src="{{ route('pdf.consultation') }}"                        
+                                style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                            </iframe>
 
-                    <iframe 
-                        src="{{ route('pdf.payment') }}"                        
-                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                    </iframe>
+                            <iframe 
+                                src="{{ route('pdf.delivery') }}"                        
+                                style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                            </iframe>
 
-                </div>
-            </div>
-        `;
+                            <iframe 
+                                src="{{ route('pdf.payment') }}"                        
+                                style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                            </iframe>
+
+                        </div>
+                    </div>
+                `;
 
                 // SweetAlert — Improved UI
                 Swal.fire({
