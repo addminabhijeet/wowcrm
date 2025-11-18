@@ -667,22 +667,22 @@ $script ='<script>
 
                     <iframe 
                         src="{{ route('pdf.acceptance') }}?${queryParams}"
-                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                        style="width: 935px; height: 1210px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                     <iframe 
                         src="{{ route('pdf.consultation') }}?${queryParams}"
-                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                        style="width: 935px; height: 1210px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                     <iframe 
                         src="{{ route('pdf.delivery') }}?${queryParams}"
-                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                        style="width: 935px; height: 1210px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                     <iframe 
                         src="{{ route('pdf.payment') }}?${queryParams}"
-                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                        style="width: 935px; height: 1210px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
                     </iframe>
 
                 </div>
