@@ -2,17 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\GoogleSheetData;
 use Illuminate\Http\Request;
 
 class PdfController extends Controller
 {
-    public function acceptance(Request $request)
+
+    public function acceptance(Request $request, $id)
     {
-        $name   = $request->input('name');
-        $email  = $request->input('email');
-        $amount = $request->input('amount');
-        $course = $request->input('course');
-        $remark = $request->input('remark');
+        // Fetch row by ID
+        $record = GoogleSheetData::findOrFail($id);
+
+        // Map database fields to the variables used in the PDF view
+        $name   = $record->Name;
+        $email  = $record->Email_Address;
+        $amount = $record->Amount;
+        $course = $record->Course;
+        $remark = $record->Remark;
 
         return view('pdf.acceptance', compact(
             'name',

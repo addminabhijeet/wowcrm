@@ -650,9 +650,6 @@ $script ='<script>
                     paymentLink
                 }).toString();
 
-                // ⛔️ REMOVED THIS (iframe does not exist yet)
-                // document.getElementById('acceptancePdfIframe').src = `${pdfUrl}?${queryParams}`;
-
                 // Generate improved preview HTML
                 const previewHTML = `
             <div style="text-align:left; font-size:14px; line-height:1.5;">
