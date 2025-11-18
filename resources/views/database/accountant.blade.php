@@ -632,6 +632,7 @@ $script ='<script>
                 const senderEmail = "{{ auth()->user()->email }}";
                 const receiverEmail = row.querySelector('input[data-key="Email Address"]')?.value?.trim() || "N/A";
                 const amount = row.querySelector('input[data-key="Amount"]')?.value?.trim() || "N/A";
+                const name = row.querySelector('input[data-key="Name"]')?.value?.trim() || "N/A";
                 const remark = row.querySelector('input[data-key="Remark"]')?.value?.trim() || "N/A";
                 const courseJoined = row.querySelector('[data-key="Course"]')?.value?.trim() || "N/A";
                 const paymentLink = row.querySelector('input[data-key="Payment Link"]')?.value?.trim() || "N/A";
@@ -639,11 +640,9 @@ $script ='<script>
 
                 // Encode URL parameters correctly
                 const queryParams = new URLSearchParams({
-                    name: receiverEmail,
-                    email: senderEmail,
+                    name: name,
+                    email: receiverEmail,
                     amount: amount,
-                    course: courseJoined, // FIXED (was undefined)
-                    remark: remark
                 }).toString();
 
                 // Generate improved preview HTML
