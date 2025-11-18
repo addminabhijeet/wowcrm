@@ -621,7 +621,9 @@ $script ='<script>
 
         tableBody.addEventListener('click', function(e) {
             if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
+
                 e.preventDefault();
+
                 let saveBtn = e.target.matches('.save-btn') ? e.target : e.target.closest('.save-btn');
                 let id = saveBtn.dataset.id;
                 let row = saveBtn.closest("tr");
@@ -633,64 +635,62 @@ $script ='<script>
                 const remark = row.querySelector('input[data-key="Remark"]')?.value?.trim() || "N/A";
                 const courseJoined = row.querySelector('[data-key="Course"]')?.value?.trim() || "N/A";
                 const paymentLink = row.querySelector('input[data-key="Payment Link"]')?.value?.trim() || "N/A";
+                const candidateName = row.querySelector('input[data-key="Candidate Name"]')?.value?.trim() || "Candidate";
 
-                // Encode URL parameters
+                // Encode URL parameters correctly
                 const queryParams = new URLSearchParams({
                     name: receiverEmail,
                     email: senderEmail,
                     amount: amount,
-                    course: course,
+                    course: courseJoined, // FIXED (was undefined)
                     remark: remark
                 }).toString();
 
-                // Generate improved preview HTML (full-width stacked cards)
+                // Generate improved preview HTML
                 const previewHTML = `
-                    <div style="text-align:left; font-size:14px; line-height:1.5;">
+            <div style="text-align:left; font-size:14px; line-height:1.5;">
+                <div style="padding:10px 0;">
+                    <p><strong>Sender Email:</strong> ${senderEmail}</p>
+                    <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
+                    <p><strong>Amount:</strong> ${amount}</p>
+                    <p><strong>Course:</strong> ${courseJoined}</p>
+                    <p><strong>Remark:</strong> ${remark}</p>
+                    ${paymentLink && paymentLink !== 'N/A'
+                        ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>`
+                        : ''
+                    }
+                </div>
 
-                        <div style="padding:10px 0;">
-                            <p><strong>Sender Email:</strong> ${senderEmail}</p>
-                            <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
-                            <p><strong>Amount:</strong> ${amount}</p>
-                            <p><strong>Course:</strong> ${courseJoined}</p>
-                            <p><strong>Remark:</strong> ${remark}</p>
+                <hr/>
 
-                            ${paymentLink && paymentLink !== 'N/A'
-                                ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>`
-                                : ''
-                            }
-                        </div>
+                <!-- PREVIEW IFRAME BOXES -->
+                <div style="display:flex; flex-direction:column; gap:20px; margin-top:15px;">
 
-                        <hr/>
+                    <iframe 
+                        src="{{ route('pdf.acceptance') }}?${queryParams}"
+                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                    </iframe>
 
-                        <!-- FULL WIDTH STACKED PREVIEW BOXES -->
-                        <div style="display:flex; flex-direction:column; gap:20px; margin-top:15px;">
+                    <iframe 
+                        src="{{ route('pdf.consultation') }}"
+                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                    </iframe>
 
-                            <iframe 
-                                src="{{ route('pdf.acceptance') }}?${queryParams}"
-                                style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                            </iframe>
+                    <iframe 
+                        src="{{ route('pdf.delivery') }}"
+                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                    </iframe>
 
+                    <iframe 
+                        src="{{ route('pdf.payment') }}"
+                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                    </iframe>
 
-                            <iframe 
-                                src="{{ route('pdf.consultation') }}"                        
-                                style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                            </iframe>
+                </div>
+            </div>
+        `;
 
-                            <iframe 
-                                src="{{ route('pdf.delivery') }}"                        
-                                style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                            </iframe>
-
-                            <iframe 
-                                src="{{ route('pdf.payment') }}"                        
-                                style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                            </iframe>
-
-                        </div>
-                    </div>
-                `;
-
-                // SweetAlert — Improved UI
+                // SweetAlert Modal
                 Swal.fire({
                     title: '<span style="font-size:20px; font-weight:bold;">Preview & Confirm Before Mail</span>',
                     html: previewHTML,
@@ -699,7 +699,7 @@ $script ='<script>
                     cancelButtonText: 'Cancel',
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#dc3545',
-                    width: '900px', // wider clean modal
+                    width: '900px',
                     padding: '20px'
                 }).then((result) => {
 
@@ -714,22 +714,23 @@ $script ='<script>
                                 },
                                 body: JSON.stringify({
                                     receiverEmail: receiverEmail,
-                                    candidateName: row.querySelector('input[data-key="Candidate Name"]')?.value || "Candidate",
+                                    candidateName: candidateName,
                                     paymentLink: paymentLink
                                 })
                             })
                             .then(res => res.json())
                             .then(mailRes => {
+
                                 if (!mailRes.success) {
                                     Swal.fire({
                                         title: "Mail Failed!",
                                         text: mailRes.message,
                                         icon: "error"
                                     });
-                                    return; // Stop here
+                                    return;
                                 }
 
-                                // Continue saving row after mail success
+                                // Continue saving row after email success
                                 let rowData = {};
                                 row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
                                     rowData[cell.dataset.key] = cell.value;
@@ -758,6 +759,7 @@ $script ='<script>
                                     })
                                     .then(res => res.json())
                                     .then(data => {
+
                                         if (data.success) {
                                             Swal.fire({
                                                 title: "Mail Sent & Saved!",
@@ -771,15 +773,18 @@ $script ='<script>
                                                 icon: "error"
                                             });
                                         }
+
                                     });
+
                             })
-                            .catch(err => {
+                            .catch(() => {
                                 Swal.fire("Mail Error", "Unable to send email.", "error");
                             });
 
                     }
 
                 });
+
             }
         });
 
