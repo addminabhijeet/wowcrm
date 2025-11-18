@@ -1332,4 +1332,3 @@ $script ='<script>
 </script>
 
 
-@endsection
