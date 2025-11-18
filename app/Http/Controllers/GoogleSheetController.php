@@ -1164,25 +1164,26 @@ class GoogleSheetController extends Controller
 
         $results = [];
 
+        // Search only when query length >= 3
         if ($query && strlen($query) >= 3) {
-            $results = GoogleSheetData::where(function ($q) use ($authUser) {
-                $userPattern = "%:" . $authUser->id . "|senior";
-                $zeroPattern = "%:0|senior";
-
-                $q->where('created_by', $authUser->id . '|senior')
-                    ->orWhere('created_by', '0|senior')
-                    ->orWhere('created_by', 'LIKE', $userPattern)
-                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+            $results = GoogleSheetData::where(function ($q) use ($query) {
+                $q->where('Name', 'LIKE', "%{$query}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$query}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
             })
-                ->where(function ($q) use ($query) {
-                    $q->where('Name', 'LIKE', "%{$query}%")
-                        ->orWhere('Email_Address', 'LIKE', "%{$query}%")
-                        ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
-                })
                 ->limit(10)
-                ->get(['id', 'sheet_row_number', 'Name', 'Email_Address', 'Phone_Number', 'Exe_Remarks', 'created_by']);
+                ->get([
+                    'id',
+                    'sheet_row_number',
+                    'Name',
+                    'Email_Address',
+                    'Phone_Number',
+                    'Exe_Remarks',
+                    'created_by'
+                ]);
         }
-        // ✅ Transform the forwarded_by column like in senior()
+
+        // Transform forwarded_by field (same logic as before)
         $transformed = collect($results)->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -1211,13 +1212,13 @@ class GoogleSheetController extends Controller
                 $forwardedBy = 'N/A';
             }
 
-            // Add transformed field
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
 
         return response()->json($transformed);
     }
+
 
 
     public function seniorSuggestionsmod(Request $request)
