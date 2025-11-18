@@ -10,141 +10,131 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 
 <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
 
-    <!-- Total Target Given -->
+    <!-- Resume Builder -->
     <div class="col">
-        <div class="card h-100 border-0 shadow-sm"
-            style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 20px; color: #0d47a1; transition: all 0.3s ease; cursor: pointer;"
-            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+        <div class="card h-100 border-0 shadow-sm career-card"
+            style="background: linear-gradient(135deg, #e3f2fd, #90caf9); border-radius: 20px; color: #0d47a1;">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
-                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">$</h3>
+                    <h5 class="fw-bold mb-1">Resume Builder</h5>
+                    <p class="mb-0" style="opacity: 0.8;">Create a professional resume</p>
                 </div>
-                <div class="d-flex justify-content-center align-items-center"
-                    style="width: 70px; height: 70px; background-color: rgba(13,71,161,0.1); border-radius: 50%;">
-                    <iconify-icon icon="mdi:bullseye-arrow" style="font-size: 34px; color: #0d47a1;"></iconify-icon>
-                </div>
+                <iconify-icon icon="mdi:file-document-edit" style="font-size: 45px; color: #0d47a1;"></iconify-icon>
             </div>
         </div>
     </div>
 
-    <!-- Total Target Achieved -->
+    <!-- Job Alerts -->
     <div class="col">
-        <div class="card h-100 border-0 shadow-sm"
-            style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); border-radius: 20px; color: #6a1b9a; transition: all 0.3s ease; cursor: pointer;"
-            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+        <div class="card h-100 border-0 shadow-sm career-card"
+            style="background: linear-gradient(135deg, #f3e5f5, #ce93d8); border-radius: 20px; color: #6a1b9a;">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
-                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">$</h3>
+                    <h5 class="fw-bold mb-1">Job Alerts</h5>
+                    <p class="mb-0" style="opacity: 0.8;">Get instant job alerts</p>
                 </div>
-                <div class="d-flex justify-content-center align-items-center"
-                    style="width: 70px; height: 70px; background-color: rgba(106,27,154,0.1); border-radius: 50%;">
-                    <iconify-icon icon="fa-solid:trophy" style="font-size: 34px; color: #6a1b9a;"></iconify-icon>
-                </div>
+                <iconify-icon icon="mdi:bell-ring-outline" style="font-size: 45px; color: #6a1b9a;"></iconify-icon>
             </div>
         </div>
     </div>
 
-    <!-- Target Yet to Achieve -->
+    <!-- Skill Assessments -->
     <div class="col">
-        <div class="card h-100 border-0 shadow-sm"
-            style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
-            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+        <div class="card h-100 border-0 shadow-sm career-card"
+            style="background: linear-gradient(135deg, #fff3e0, #ffcc80); border-radius: 20px; color: #ef6c00;">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
-                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">$</h3>
+                    <h5 class="fw-bold mb-1">Skill Assessments</h5>
+                    <p class="mb-0" style="opacity: 0.8;">Test & improve your skills</p>
                 </div>
-                <div class="d-flex justify-content-center align-items-center"
-                    style="width: 70px; height: 70px; background-color: rgba(239,108,0,0.1); border-radius: 50%;">
-                    <iconify-icon icon="mdi:progress-clock" style="font-size: 34px; color: #ef6c00;"></iconify-icon>
-                </div>
+                <iconify-icon icon="mdi:chart-line" style="font-size: 45px; color: #ef6c00;"></iconify-icon>
             </div>
         </div>
     </div>
 
-    <!-- Days Left -->
+    <!-- Profile Strength -->
     <div class="col">
-        <div class="card h-100 border-0 shadow-sm"
-            style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
-            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+        <div class="card h-100 border-0 shadow-sm career-card"
+            style="background: linear-gradient(135deg, #e8f5e9, #a5d6a7); border-radius: 20px; color: #2e7d32;">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
-                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">0</h3>
+                    <h5 class="fw-bold mb-1">Profile Strength</h5>
+                    <p class="mb-0" style="opacity: 0.8;">Boost your visibility</p>
                 </div>
-                <div class="d-flex justify-content-center align-items-center"
-                    style="width: 70px; height: 70px; background-color: rgba(46,125,50,0.1); border-radius: 50%;">
-                    <iconify-icon icon="mdi:calendar-clock" style="font-size: 34px; color: #2e7d32;"></iconify-icon>
-                </div>
+                <iconify-icon icon="mdi:account-badge" style="font-size: 45px; color: #2e7d32;"></iconify-icon>
             </div>
         </div>
     </div>
 
-    <!-- Total Present Days -->
+    <!-- Saved Jobs -->
     <div class="col">
-        <div class="card h-100 border-0 shadow-sm"
-            style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
-            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+        <div class="card h-100 border-0 shadow-sm career-card"
+            style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 20px; color: #1565c0;">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Present Days</p>
-                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">0</h3>
+                    <h5 class="fw-bold mb-1">Saved Jobs</h5>
+                    <p class="mb-0" style="opacity: 0.8;">Jobs you saved</p>
                 </div>
-                <div class="d-flex justify-content-center align-items-center"
-                    style="width: 70px; height: 70px; background-color: rgba(46,125,50,0.1); border-radius: 50%;">
-                    <iconify-icon icon="mdi:account-check-outline" style="font-size: 34px; color: #2e7d32;"></iconify-icon>
-                </div>
+                <iconify-icon icon="mdi:bookmark-multiple" style="font-size: 45px; color: #1565c0;"></iconify-icon>
             </div>
         </div>
     </div>
 
-    <!-- Total Absent Days -->
+    <!-- Applied Jobs -->
     <div class="col">
-        <div class="card h-100 border-0 shadow-sm"
-            style="background: linear-gradient(135deg, #ffebee, #ffcdd2); border-radius: 20px; color: #c62828; transition: all 0.3s ease; cursor: pointer;"
-            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+        <div class="card h-100 border-0 shadow-sm career-card"
+            style="background: linear-gradient(135deg, #ffebee, #ffcdd2); border-radius: 20px; color: #c62828;">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Absent Days</p>
-                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">0</h3>
+                    <h5 class="fw-bold mb-1">Applied Jobs</h5>
+                    <p class="mb-0" style="opacity: 0.8;">Track applied jobs</p>
                 </div>
-                <div class="d-flex justify-content-center align-items-center"
-                    style="width: 70px; height: 70px; background-color: rgba(198,40,40,0.1); border-radius: 50%;">
-                    <iconify-icon icon="mdi:account-cancel-outline" style="font-size: 34px; color: #c62828;"></iconify-icon>
-                </div>
+                <iconify-icon icon="mdi:briefcase-check" style="font-size: 45px; color: #c62828;"></iconify-icon>
             </div>
         </div>
     </div>
 
-    <!-- Working Days -->
+    <!-- Career Guidance -->
     <div class="col">
-        <div class="card h-100 border-0 shadow-sm"
-            style="background: linear-gradient(135deg, #fff8e1, #ffecb3); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
-            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
-            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+        <div class="card h-100 border-0 shadow-sm career-card"
+            style="background: linear-gradient(135deg, #ede7f6, #d1c4e9); border-radius: 20px; color: #4527a0;">
             <div class="card-body d-flex justify-content-between align-items-center p-4">
                 <div>
-                    <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Working Days</p>
-                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">0</h3>
+                    <h5 class="fw-bold mb-1">Career Guidance</h5>
+                    <p class="mb-0" style="opacity: 0.8;">Get expert advice</p>
                 </div>
-                <div class="d-flex justify-content-center align-items-center"
-                    style="width: 70px; height: 70px; background-color: rgba(239,108,0,0.1); border-radius: 50%;">
-                    <iconify-icon icon="mdi:briefcase-outline" style="font-size: 34px; color: #ef6c00;"></iconify-icon>
-                </div>
+                <iconify-icon icon="mdi:lightbulb-on-outline" style="font-size: 45px; color: #4527a0;"></iconify-icon>
             </div>
         </div>
     </div>
 
+    <!-- Recommended Jobs -->
+    <div class="col">
+        <div class="card h-100 border-0 shadow-sm career-card"
+            style="background: linear-gradient(135deg, #fff8e1, #ffe082); border-radius: 20px; color: #f9a825;">
+            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                <div>
+                    <h5 class="fw-bold mb-1">Recommended Jobs</h5>
+                    <p class="mb-0" style="opacity: 0.8;">Jobs based on your profile</p>
+                </div>
+                <iconify-icon icon="mdi:thumb-up-outline" style="font-size: 45px; color: #f9a825;"></iconify-icon>
+            </div>
+        </div>
+    </div>
 
 </div>
+
+<!-- Hover Animation -->
+<style>
+    .career-card {
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    .career-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0,0,0,0.12) !important;
+    }
+</style>
 
 
 
