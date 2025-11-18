@@ -246,14 +246,6 @@
                             success: function(response) {
                                 if (response.success) {
                                     alert(response.message);
-                                    // Optionally update resume buttons dynamically
-                                    if (response.row.resume_exists) {
-                                        let viewBtn = $tr.find('.view-btn');
-                                        viewBtn.attr('href', '/dashboard/senior/google-sheet/view-resume/' + rowId).removeClass('d-none');
-                                        let downloadBtn = $tr.find('.download-btn');
-                                        downloadBtn.attr('href', '/dashboard/senior/google-sheet/download-resume/' + rowId).removeClass('d-none');
-                                        $tr.find('.upload-btn').text('Change File');
-                                    }
                                 } else {
                                     alert(response.message);
                                 }
