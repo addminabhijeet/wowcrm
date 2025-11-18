@@ -269,7 +269,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/timers/latest-pause-types', [DashboardController::class, 'getLatestPauseTypes'])->name('timers.latestPauseTypes');
 
-    Route::get('/dashboard/accountant/pdf/acceptance', [PdfController::class, 'acceptance'])->name('pdf.acceptance');
+    Route::get('/dashboard/accountant/pdf/acceptance/{id}', [PdfController::class, 'acceptance'])->name('pdf.acceptance');
     Route::get('/dashboard/accountant/pdf/consultation', [PdfController::class, 'consultation'])->name('pdf.consultation');
     Route::get('/dashboard/accountant/pdf/delivery', [PdfController::class, 'delivery'])->name('pdf.delivery');
     Route::get('/dashboard/accountant/pdf/payment', [PdfController::class, 'payment'])->name('pdf.payment');
