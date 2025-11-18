@@ -348,7 +348,7 @@ $role = Auth::user()->role;
                     <span>Dashboard</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href=""><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
+                    <li><a href="{{ route('dashboard.career') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
                 </ul>
             </li>
 
