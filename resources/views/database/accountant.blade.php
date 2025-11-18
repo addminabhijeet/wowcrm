@@ -650,8 +650,8 @@ $script ='<script>
                     paymentLink
                 }).toString();
 
-                document.getElementById('acceptancePdfIframe').src = `${pdfUrl}?${queryParams}`;
-
+                // ⛔️ REMOVED THIS (iframe does not exist yet)
+                // document.getElementById('acceptancePdfIframe').src = `${pdfUrl}?${queryParams}`;
 
                 // Generate improved preview HTML
                 const previewHTML = `
@@ -662,18 +662,18 @@ $script ='<script>
                     <p><strong>Amount:</strong> ${amount}</p>
                     <p><strong>Course:</strong> ${courseJoined}</p>
                     <p><strong>Remark:</strong> ${remark}</p>
-                    ${paymentLink && paymentLink !== 'N/A'
-                        ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>`
-                        : ''
+                    ${
+                        paymentLink && paymentLink !== 'N/A'
+                            ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>`
+                            : ''
                     }
                 </div>
 
                 <hr/>
 
-                <!-- PREVIEW IFRAME BOXES -->
                 <div style="display:flex; flex-direction:column; gap:20px; margin-top:15px;">
-
                     <iframe id="acceptancePdfIframe" style="width:100%; height:600px; border:0;"></iframe>
+
                     <iframe 
                         src="{{ route('pdf.consultation') }}"
                         style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
@@ -703,7 +703,11 @@ $script ='<script>
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#dc3545',
                     width: '900px',
-                    padding: '20px'
+                    padding: '20px',
+                    didOpen: () => {
+                        // ✅ Corrected: iframe exists now → can set src
+                        document.getElementById('acceptancePdfIframe').src = `${pdfUrl}?${queryParams}`;
+                    }
                 }).then((result) => {
 
                     if (result.isConfirmed) {
@@ -790,6 +794,7 @@ $script ='<script>
 
             }
         });
+
 
 
 
