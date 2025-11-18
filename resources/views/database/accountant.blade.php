@@ -665,7 +665,11 @@ $script ='<script>
                 <!-- PREVIEW IFRAME BOXES -->
                 <div style="display:flex; flex-direction:column; gap:20px; margin-top:15px;">
 
-                    <iframe id="acceptancePdfIframe" style="width:100%; height:600px; border:0;"></iframe>
+                    <iframe 
+                        src="{{ route('pdf.acceptance') }}?${queryParams}"
+                        style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
+                    </iframe>
+
                     <iframe 
                         src="{{ route('pdf.consultation') }}"
                         style="width:794px; height:1123px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
