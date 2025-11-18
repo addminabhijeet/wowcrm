@@ -599,12 +599,35 @@ class GoogleSheetController extends Controller
     public function career(Request $request)
     {
         $authUser = Auth::user();
-        $page = $request->input('page', 1); // Ensure page input handled
 
-        // Fetch all GoogleSheetData, ordered by id descending
-        $results = GoogleSheetData::orderBy('id', 'desc')->get();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+        $juniorUserId = $request->input('junior_user');
+        $page = $request->input('page', 1);
 
-        // Transform data: compute forwarded_by
+        $query = GoogleSheetData::orderBy('id', 'desc');
+
+        if ($rowId) {
+            $query->where('id', $rowId);
+        }
+
+        if ($juniorUserId) {
+            $query->where(function ($q) use ($juniorUserId) {
+                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+            });
+        }
+
+        if ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $results = $query->get();
+
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -646,7 +669,6 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // Apply pagination
         $perPage = 10;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
             $transformed->forPage($page, $perPage),
@@ -656,24 +678,21 @@ class GoogleSheetController extends Controller
             ['path' => url()->current(), 'query' => $request->query()]
         );
 
-        // Get all junior & senior users for dropdowns
         $juniorUsers = \App\Models\User::where('is_deleted', 0)
             ->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
 
-        // Handle AJAX request
         if ($request->ajax()) {
-            return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view(
+                'database.partials.senior_table',
+                ['data' => $pagedData, 'juniorUsers' => $juniorUsers]
+            )->render();
         }
 
         return view('database.career', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
-
-
-
-
 
 
     public function seniorcandm(Request $request)
