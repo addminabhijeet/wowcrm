@@ -638,20 +638,12 @@ $script ='<script>
                 const paymentLink = row.querySelector('input[data-key="Payment Link"]')?.value?.trim() || "N/A";
                 const candidateName = row.querySelector('input[data-key="Candidate Name"]')?.value?.trim() || "Candidate";
 
-                const pdfUrl = "{{ route('pdf.acceptance') }}";
-
+                // Encode URL parameters correctly
                 const queryParams = new URLSearchParams({
-                    senderEmail,
-                    receiverEmail,
-                    amount,
-                    name,
-                    remark,
-                    courseJoined,
-                    paymentLink
+                    name: name,
+                    email: receiverEmail,
+                    amount: amount,
                 }).toString();
-
-                document.getElementById('acceptancePdfIframe').src = `${pdfUrl}?${queryParams}`;
-
 
                 // Generate improved preview HTML
                 const previewHTML = `
