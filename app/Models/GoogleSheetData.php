@@ -31,6 +31,10 @@ class GoogleSheetData extends Model
         'First_Follow_Up_Remarks',
         'Time_Zone',
         'View',
+        'TranId',
+        'TranRef',
+        'PaymentMethod',
+        'PayeeName',
     ];
 
     protected $casts = [
