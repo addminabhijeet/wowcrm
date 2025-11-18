@@ -513,11 +513,8 @@ $script ='<script>
 
         function initLocationAutocomplete(context = document) {
             $(context).find('input.location-autocomplete').each(function() {
-
                 const $input = $(this);
-                const listId = 'loc-suggestions-' + ($input.attr('id') || Math.random().toString(36).substr(2));
 
-                // CSS helper
                 function applyCss(value) {
                     if (!value) {
                         $input.removeClass('valid invalid').addClass('neutral');
@@ -526,66 +523,60 @@ $script ='<script>
                     }
                 }
 
+                // Initial state
                 applyCss($input.val());
 
                 $input.on('input', function() {
                     const q = $(this).val().trim();
                     applyCss(q);
 
-                    $('#' + listId).remove();
-
-                    if (q.length < 2) return;
+                    if (q.length < 2) {
+                        $('#loc-suggestions').remove();
+                        return;
+                    }
 
                     const key = 'pk.e91481c6e5f0a93703159ae988e641a0';
+                    $.getJSON(`https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`)
+                        .done(function(results) {
+                            $('#loc-suggestions').remove();
+                            const $list = $('<div id="loc-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>');
 
-                    $.getJSON(
-                        `https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`
-                    ).done(function(results) {
+                            results.forEach(r => {
+                                const addr = r.address || {};
+                                const city = addr.city || addr.town || addr.village || '';
+                                const state = addr.state || addr.region || '';
+                                const country = addr.country || '';
+                                const display = [city, state, country].filter(Boolean).join(', ');
 
-                        const $list = $(
-                            `<div id="${listId}" class="list-group"
-                     style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>`
-                        );
-
-                        results.forEach(r => {
-                            const addr = r.address || {};
-                            const display = [
-                                addr.city || addr.town || addr.village || '',
-                                addr.state || addr.region || '',
-                                addr.country || ''
-                            ].filter(Boolean).join(', ') || r.display_name;
-
-                            $('<a href="#" class="list-group-item list-group-item-action"></a>')
-                                .text(display)
-                                .on('click', function(e) {
+                                const item = $('<a href="#" class="list-group-item list-group-item-action"></a>').text(display || r.display_name);
+                                item.on('click', function(e) {
                                     e.preventDefault();
-                                    $input.val(display);
-                                    applyCss(display);
-                                    $('#' + listId).remove();
-                                })
-                                .appendTo($list);
-                        });
+                                    $input.val(display || r.display_name);
+                                    applyCss(display || r.display_name); // Apply valid class
+                                    $input.css('background-color', '#d4edda'); // optional highlight
+                                    $('#loc-suggestions').remove();
+                                });
+                                $list.append(item);
+                            });
 
-                        // Append next to input
-                        const parent = $input.parent().css('position', 'relative');
-                        parent.append($list);
-
-                        // Position
-                        $list.css({
-                            top: $input.outerHeight(),
-                            left: 0,
-                            width: $input.outerWidth()
+                            $('body').append($list);
+                            const offset = $input.offset();
+                            $list.css({
+                                top: offset.top + $input.outerHeight(),
+                                left: offset.left,
+                                width: $input.outerWidth()
+                            });
+                        })
+                        .fail(function() {
+                            $('#loc-suggestions').remove();
                         });
-                    });
                 });
 
-                // Close suggestions when losing focus
                 $input.on('blur', function() {
-                    setTimeout(() => $('#' + listId).remove(), 200);
+                    setTimeout(() => $('#loc-suggestions').remove(), 200);
                 });
             });
         }
-
 
         function applyInitialState(context = document) {
             context.querySelectorAll('select.dynamic-dropdown').forEach(s => updateSelectColor(s));
