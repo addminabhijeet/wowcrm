@@ -1104,7 +1104,7 @@ class GoogleSheetController extends Controller
 
 
         if (request()->ajax()) {
-            return view('database.partials.senior_table', compact('data'))->render();
+            return view('database.partials.career_table', compact('data'))->render();
         }
 
         return view('database.seniorpaid', compact('data'));
