@@ -432,7 +432,7 @@ $script ='<script>
                 };
 
                 // ✅ Use Laravel's timezone-based today
-                if (key === "Graduation Date") opts.maxDate = laravelToday;
+                if (key === "Date") opts.maxDate = laravelToday;
                 if (key === "Date") opts.minDate = laravelToday;
 
                 flatpickr(input, opts);
@@ -1332,3 +1332,4 @@ $script ='<script>
 </script>
 
 
+@endsection
