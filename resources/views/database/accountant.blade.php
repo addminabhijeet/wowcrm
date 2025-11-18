@@ -141,6 +141,30 @@ $script ='<script>
                             </select>
                         </td>
 
+                        {{-- TranId --}}
+                        <td>
+                            <input type="text" class="form-control" data-key="TranId"
+                                value="{{ $row->TranId ?? '' }}" placeholder="Transaction ID">
+                        </td>
+
+                        {{-- TranRef --}}
+                        <td>
+                            <input type="text" class="form-control" data-key="TranRef"
+                                value="{{ $row->TranRef ?? '' }}" placeholder="Reference Number">
+                        </td>
+
+                        {{-- Payment Method --}}
+                        <td>
+                            <input type="text" class="form-control" data-key="PaymentMethod"
+                                value="{{ $row->PaymentMethod ?? '' }}" placeholder="Payment Method">
+                        </td>
+
+                        {{-- Payee Name --}}
+                        <td>
+                            <input type="text" class="form-control" data-key="PayeeName"
+                                value="{{ $row->PayeeName ?? '' }}" placeholder="Payee Name">
+                        </td>
+
                         {{-- Forwarded By --}}
                         <td>
                             <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
