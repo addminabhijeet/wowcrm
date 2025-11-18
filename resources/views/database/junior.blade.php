@@ -898,7 +898,7 @@ $script ='<script>
             }
 
             $.ajax({
-                url: "{{ route('junior.suggestions') }}",
+                url: "{{ route('senior.suggestionsmod') }}",
                 type: 'GET',
                 data: {
                     query
