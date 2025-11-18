@@ -514,6 +514,7 @@ $script ='<script>
         function initLocationAutocomplete(context = document) {
             $(context).find('input.location-autocomplete').each(function() {
                 const $input = $(this);
+                let $list = null; // store suggestion box per-input
 
                 function applyCss(value) {
                     if (!value) {
@@ -523,23 +524,24 @@ $script ='<script>
                     }
                 }
 
-                // Initial state
+                // Initial CSS
                 applyCss($input.val());
 
                 $input.on('input', function() {
                     const q = $(this).val().trim();
                     applyCss(q);
 
-                    if (q.length < 2) {
-                        $('#loc-suggestions').remove();
-                        return;
-                    }
+                    if ($list) $list.remove();
+                    if (q.length < 2) return;
 
                     const key = 'pk.e91481c6e5f0a93703159ae988e641a0';
+
                     $.getJSON(`https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`)
                         .done(function(results) {
-                            $('#loc-suggestions').remove();
-                            const $list = $('<div id="loc-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>');
+                            if ($list) $list.remove();
+
+                            // Create suggestion dropdown
+                            $list = $('<div class="list-group loc-suggestions" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>');
 
                             results.forEach(r => {
                                 const addr = r.address || {};
@@ -548,18 +550,25 @@ $script ='<script>
                                 const country = addr.country || '';
                                 const display = [city, state, country].filter(Boolean).join(', ');
 
-                                const item = $('<a href="#" class="list-group-item list-group-item-action"></a>').text(display || r.display_name);
+                                const item = $('<a href="#" class="list-group-item list-group-item-action"></a>')
+                                    .text(display || r.display_name);
+
                                 item.on('click', function(e) {
                                     e.preventDefault();
-                                    $input.val(display || r.display_name);
-                                    applyCss(display || r.display_name); // Apply valid class
-                                    $input.css('background-color', '#d4edda'); // optional highlight
-                                    $('#loc-suggestions').remove();
+                                    const finalVal = display || r.display_name;
+
+                                    $input.val(finalVal);
+                                    applyCss(finalVal);
+                                    $input.css('background-color', '#d4edda');
+
+                                    if ($list) $list.remove();
                                 });
+
                                 $list.append(item);
                             });
 
-                            $('body').append($list);
+                            $("body").append($list);
+
                             const offset = $input.offset();
                             $list.css({
                                 top: offset.top + $input.outerHeight(),
@@ -568,12 +577,14 @@ $script ='<script>
                             });
                         })
                         .fail(function() {
-                            $('#loc-suggestions').remove();
+                            if ($list) $list.remove();
                         });
                 });
 
                 $input.on('blur', function() {
-                    setTimeout(() => $('#loc-suggestions').remove(), 200);
+                    setTimeout(() => {
+                        if ($list) $list.remove();
+                    }, 200);
                 });
             });
         }
