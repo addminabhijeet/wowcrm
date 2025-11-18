@@ -241,12 +241,6 @@ $script ='<script>
                             <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                             @endif
                         </td>
-
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
-                                <i class="fas fa-save"></i> Save
-                            </button>
-                        </td>
                     </tr>
                     @endforeach
                 </tbody>
