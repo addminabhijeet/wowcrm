@@ -727,15 +727,15 @@ $script ='<script>
                 }
 
                 // Determine URL and method
-                let url, method;
-                if (id === "new") {
-                    url = "{{ route('seniorstore') }}";
-                    method = "POST";
-                } else {
-                    url = "{{ route('seniorupdate') }}";
-                    method = "POST";
-                    formData.append("id", id);
-                }
+                // let url, method;
+                // if (id === "new") {
+                //     url = "{{ route('seniorstore') }}";
+                //     method = "POST";
+                // } else {
+                //     url = "{{ route('seniorupdate') }}";
+                //     method = "POST";
+                //     formData.append("id", id);
+                // }
 
                 console.log("Sending to:", url, "Method:", method);
 
@@ -924,7 +924,7 @@ $script ='<script>
         // -----------------------------
         function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
             $.ajax({
-                url: "{{ route('google.sheet.senior') }}",
+                url: "{{ route('google.sheet.career') }}",
                 type: 'GET',
                 data: {
                     search,
@@ -955,7 +955,7 @@ $script ='<script>
             }
 
             $.ajax({
-                url: "{{ route('senior.suggestions') }}",
+                url: "{{ route('career.suggestions') }}",
                 type: 'GET',
                 data: {
                     query
@@ -1254,7 +1254,7 @@ $script ='<script>
         let juniorId = this.value;
         let search = document.getElementById('senior-search').value;
 
-        fetch("{{ route('google.sheet.senior') }}?junior_user=" + juniorId + "&search=" + search, {
+        fetch("{{ route('google.sheet.career') }}?junior_user=" + juniorId + "&search=" + search, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
