@@ -23,29 +23,88 @@ class PdfController extends Controller
         ));
     }
 
-
-    public function consultation()
+    public function consultation(Request $request)
     {
-        return view('pdf.consultation');
+        $name   = $request->input('name');
+        $email  = $request->input('email');
+        $amount = $request->input('amount');
+        $course = $request->input('course');
+        $remark = $request->input('remark');
+
+        return view('pdf.consultation', compact(
+            'name',
+            'email',
+            'amount',
+            'course',
+            'remark'
+        ));
     }
 
-    public function delivery()
+    public function delivery(Request $request)
     {
-        return view('pdf.delivery');
+        $name   = $request->input('name');
+        $email  = $request->input('email');
+        $amount = $request->input('amount');
+        $course = $request->input('course');
+        $remark = $request->input('remark');
+
+        return view('pdf.delivery', compact(
+            'name',
+            'email',
+            'amount',
+            'course',
+            'remark'
+        ));
     }
 
-    public function payment()
+    public function payment(Request $request)
     {
-        return view('pdf.payment');
+        $name   = $request->input('name');
+        $email  = $request->input('email');
+        $amount = $request->input('amount');
+        $course = $request->input('course');
+        $remark = $request->input('remark');
+
+        return view('pdf.payment', compact(
+            'name',
+            'email',
+            'amount',
+            'course',
+            'remark'
+        ));
     }
 
-    public function deliveryuk()
+    public function deliveryuk(Request $request)
     {
-        return view('pdf.deliveryuk');
+        $name   = $request->input('name');
+        $email  = $request->input('email');
+        $amount = $request->input('amount');
+        $course = $request->input('course');
+        $remark = $request->input('remark');
+
+        return view('pdf.deliveryuk', compact(
+            'name',
+            'email',
+            'amount',
+            'course',
+            'remark'
+        ));
     }
 
-    public function paymentuk()
+    public function paymentuk(Request $request)
     {
-        return view('pdf.paymentuk');
+        $name   = $request->input('name');
+        $email  = $request->input('email');
+        $amount = $request->input('amount');
+        $course = $request->input('course');
+        $remark = $request->input('remark');
+
+        return view('pdf.paymentuk', compact(
+            'name',
+            'email',
+            'amount',
+            'course',
+            'remark'
+        ));
     }
 }
