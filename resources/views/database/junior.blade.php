@@ -513,7 +513,6 @@ $script ='<script>
 
         function initLocationAutocomplete(context = document) {
             $(context).find('input.location-autocomplete').each(function() {
-
                 const $input = $(this);
 
                 function applyCss(value) {
@@ -524,84 +523,58 @@ $script ='<script>
                     }
                 }
 
-                // Initial CSS
+                // Initial state
                 applyCss($input.val());
 
-                let suggestionBox = null;
-
-                function removeSuggestions() {
-                    if (suggestionBox) {
-                        suggestionBox.remove();
-                        suggestionBox = null;
-                    }
-                }
-
                 $input.on('input', function() {
-                    const q = $input.val().trim();
+                    const q = $(this).val().trim();
                     applyCss(q);
-                    removeSuggestions();
 
-                    if (q.length < 2) return;
+                    if (q.length < 2) {
+                        $('#loc-suggestions').remove();
+                        return;
+                    }
 
-                    const key = "pk.e91481c6e5f0a93703159ae988e641a0";
-
-                    $.getJSON(
-                            `https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`
-                        )
+                    const key = 'pk.e91481c6e5f0a93703159ae988e641a0';
+                    $.getJSON(`https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`)
                         .done(function(results) {
+                            $('#loc-suggestions').remove();
+                            const $list = $('<div id="loc-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>');
 
-                            removeSuggestions();
-
-                            // Create dropdown container
-                            suggestionBox = $('<div class="loc-suggestions list-group"></div>')
-                                .css({
-                                    position: "absolute",
-                                    zIndex: 9999,
-                                    maxHeight: "200px",
-                                    overflow: "auto",
-                                    width: $input.outerWidth()
-                                });
-
-                            // Generate suggestion items
                             results.forEach(r => {
                                 const addr = r.address || {};
                                 const city = addr.city || addr.town || addr.village || '';
                                 const state = addr.state || addr.region || '';
                                 const country = addr.country || '';
-                                const display = [city, state, country].filter(Boolean).join(', ') || r.display_name;
+                                const display = [city, state, country].filter(Boolean).join(', ');
 
-                                $('<a href="#" class="list-group-item list-group-item-action"></a>')
-                                    .text(display)
-                                    .appendTo(suggestionBox)
-                                    .on("mousedown", function(e) {
-                                        e.preventDefault(); // prevents blur clearing
-
-                                        $input.val(display);
-                                        applyCss(display);
-                                        $input.css('background-color', '#d4edda');
-
-                                        removeSuggestions();
-                                    });
+                                const item = $('<a href="#" class="list-group-item list-group-item-action"></a>').text(display || r.display_name);
+                                item.on('click', function(e) {
+                                    e.preventDefault();
+                                    $input.val(display || r.display_name);
+                                    applyCss(display || r.display_name); // Apply valid class
+                                    $input.css('background-color', '#d4edda'); // optional highlight
+                                    $('#loc-suggestions').remove();
+                                });
+                                $list.append(item);
                             });
 
-                            // Insert suggestions under input (inside same td)
-                            const parent = $input.closest("td");
-                            parent.css("position", "relative"); // ensures dropdown stays aligned
-                            parent.append(suggestionBox);
-
-                            // Position correctly
-                            suggestionBox.css({
-                                top: $input.position().top + $input.outerHeight(),
-                                left: $input.position().left
+                            $('body').append($list);
+                            const offset = $input.offset();
+                            $list.css({
+                                top: offset.top + $input.outerHeight(),
+                                left: offset.left,
+                                width: $input.outerWidth()
                             });
+                        })
+                        .fail(function() {
+                            $('#loc-suggestions').remove();
                         });
                 });
 
-                // Delay removal so click works
-                $input.on("blur", function() {
-                    setTimeout(removeSuggestions, 150);
+                $input.on('blur', function() {
+                    setTimeout(() => $('#loc-suggestions').remove(), 200);
                 });
-
             });
         }
 
