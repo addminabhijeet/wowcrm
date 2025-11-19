@@ -44,8 +44,8 @@ class DashboardController extends Controller
         // Fetch latest notifications for the logged-in admin
         $admin = Auth::user();
         $notifications = $admin->notifications()->latest()->take(10)->get();
+
         return view('dashboard.admin', compact('users', 'newUsers', 'notifications'));
-        return view('components.navbar', compact('users', 'newUsers', 'notifications'));
     }
 
 
