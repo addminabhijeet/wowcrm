@@ -691,46 +691,106 @@ $script ='<script>
 
                 // Generate improved preview HTML
                 const previewHTML = `
-            <div style="text-align:left; font-size:14px; line-height:1.5; width: 2000px;">
-                <div style="padding:10px 0;">
-                    <p><strong>Sender Email:</strong> ${senderEmail}</p>
-                    <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
-                    <p><strong>Amount:</strong> ${amount}</p>
-                    <p><strong>Course:</strong> ${courseJoined}</p>
-                    <p><strong>Remark:</strong> ${remark}</p>
-                    ${paymentLink && paymentLink !== 'N/A'
-                        ? `<p><strong>Payment Link:</strong> <a href="${paymentLink}" target="_blank">${paymentLink}</a></p>`
-                        : ''
-                    }
-                </div>
+            <div style="
+    max-width: 1400px; 
+    margin: 0 auto; 
+    padding: 20px; 
+    font-family: 'Poppins', sans-serif; 
+    color: #222;
+">
 
-                <hr/>
+    <!-- INFO CARD -->
+    <div style="
+        background: #fff; 
+        padding: 25px; 
+        border-radius: 12px; 
+        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+        font-size: 15px;
+        line-height: 1.7;
+        border: 1px solid #eee;
+    ">
 
-                <!-- PREVIEW IFRAME BOXES -->
-                <div style="display:flex; flex-direction:column; gap:20px; margin-top:15px;">
+        <h3 style="margin:0 0 20px; font-weight:600; font-size:20px; color:#333;">
+            Enrollment / Payment Details
+        </h3>
 
-                    <iframe 
-                        src="{{ route('pdf.acceptance') }}?${queryParams}"
-                        style="width: 935px; height: 1210px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                    </iframe>
+        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
 
-                    <iframe 
-                        src="{{ route('pdf.consultation') }}?${queryParams}"
-                        style="width: 935px; height: 1210px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                    </iframe>
+            <p style="margin:0;"><strong>Sender Email:</strong> ${senderEmail}</p>
+            <p style="margin:0;"><strong>Receiver Email:</strong> ${receiverEmail}</p>
 
-                    <iframe 
-                        src="{{ route('pdf.delivery') }}?${queryParams}"
-                        style="width: 935px; height: 1210px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                    </iframe>
+            <p style="margin:0;"><strong>Amount:</strong> ${amount}</p>
+            <p style="margin:0;"><strong>Course:</strong> ${courseJoined}</p>
 
-                    <iframe 
-                        src="{{ route('pdf.payment') }}?${queryParams}"
-                        style="width: 935px; height: 1210px; border:1px solid #ccc; border-radius:10px; box-shadow:0 2px 6px rgba(0,0,0,0.15);">
-                    </iframe>
+            <p style="margin:0; grid-column: span 2;"><strong>Remark:</strong> ${remark}</p>
 
-                </div>
-            </div>
+            ${paymentLink && paymentLink !== 'N/A'
+                ? `<p style="margin:0; grid-column: span 2;">
+                       <strong>Payment Link:</strong> 
+                       <a href="${paymentLink}" target="_blank" 
+                          style="color:#007bff; text-decoration:none; word-break:break-all;">
+                          ${paymentLink}
+                       </a>
+                   </p>`
+                : ''
+            }
+
+        </div>
+    </div>
+
+    <hr style="margin:35px 0; border-top:1px solid #ddd;">
+
+    <!-- IFRAME PREVIEW SECTION -->
+    <h3 style="margin:0 0 20px; font-weight:600; font-size:20px; color:#333;">
+        Preview Documents
+    </h3>
+
+    <div style="
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(950px, 1fr));
+        gap: 35px;
+    ">
+
+        <!-- SINGLE IFRAME CARD -->
+        <div style="background:#fff; padding:18px; border-radius:12px;
+            box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
+            <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Acceptance Form</h4>
+            <iframe 
+                src="{{ route('pdf.acceptance') }}?${queryParams}"
+                style="width:100%; height:1200px; border:0; border-radius:10px;">
+            </iframe>
+        </div>
+
+        <div style="background:#fff; padding:18px; border-radius:12px;
+            box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
+            <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Consultation Form</h4>
+            <iframe 
+                src="{{ route('pdf.consultation') }}?${queryParams}"
+                style="width:100%; height:1200px; border:0; border-radius:10px;">
+            </iframe>
+        </div>
+
+        <div style="background:#fff; padding:18px; border-radius:12px;
+            box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
+            <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Delivery Form</h4>
+            <iframe 
+                src="{{ route('pdf.delivery') }}?${queryParams}"
+                style="width:100%; height:1200px; border:0; border-radius:10px;">
+            </iframe>
+        </div>
+
+        <div style="background:#fff; padding:18px; border-radius:12px;
+            box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
+            <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Payment Form</h4>
+            <iframe 
+                src="{{ route('pdf.payment') }}?${queryParams}"
+                style="width:100%; height:1200px; border:0; border-radius:10px;">
+            </iframe>
+        </div>
+
+    </div>
+</div>
+
         `;
 
                 // SweetAlert Modal
