@@ -4574,7 +4574,7 @@ class GoogleSheetController extends Controller
         if (isset($rowData['Exe Remarks'])) {
             $exeRemark = $rowData['Exe Remarks'];
 
-            if ($exeRemark === 'Payment Completed') {
+            if ($exeRemark === 'Document Send') {
                 $authUser = Auth::user();
 
                 // Replace "0|accountant" with "auth_id|accountant:0|trainer"
