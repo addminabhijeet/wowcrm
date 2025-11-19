@@ -1121,7 +1121,7 @@ class GoogleSheetController extends Controller
             $q->where(function ($q2) {
 
                 // Fetch only rows with created_by containing ":0|senior" at the very end
-                $q2->where('created_by', 'LIKE', '%:0|senior')
+                $q2->where('created_by', 'LIKE', '%:0|accountant:0|senior')
                     ->orWhere('created_by', 'LIKE', '0|accountant:0|senior')
                     ->orWhere(function ($qq) {
                         // Handle ANY_NUMBER|accountant:0|senior
