@@ -213,6 +213,33 @@ $script ='<script>
                             </select>
                         </td>
 
+                        {{-- Audio (New Column) --}}
+                        <td>
+                            <input type="file" accept="audio/*" class="d-none audio-input" data-key="Audio">
+                            <button type="button" class="btn btn-sm btn-warning upload-audio-btn">
+                                {{ !empty($row->audio) ? 'Change Audio' : 'Upload Audio' }}
+                            </button>
+
+                            @if(!empty($row->audio))
+                            <a href="{{ url('dashboard/senior/google-sheet/view-audio/'.$row->id) }}"
+                                target="_blank" class="btn btn-sm btn-primary play-audio-btn">
+                                Play Audio
+                            </a>
+
+                            <a href="{{ url('dashboard/senior/google-sheet/download-audio/'.$row->id) }}"
+                                class="btn btn-sm btn-secondary download-audio-btn">
+                                Download
+                            </a>
+                            @else
+                            <a href="#" target="_blank"
+                                class="btn btn-sm btn-primary play-audio-btn d-none">Play Audio</a>
+
+                            <a href="#" download
+                                class="btn btn-sm btn-secondary download-audio-btn d-none">Download</a>
+                            @endif
+                        </td>
+
+
                         {{-- Forwarded By --}}
                         <td>
                             <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
@@ -719,6 +746,12 @@ $script ='<script>
                     formData.append("resume", resumeInput.files[0]);
                 }
 
+                // Handle audio file upload
+                let audioInput = row.querySelector("input.audio-input");
+                if (audioInput && audioInput.files.length > 0) {
+                    formData.append("audio", audioInput.files[0]);
+                }
+
                 // Determine URL and method
                 let url, method;
                 if (id === "new") {
@@ -767,6 +800,20 @@ $script ='<script>
                                     downloadBtn.classList.remove('d-none');
                                 }
 
+                                const playBtn = row.querySelector('.play-audio-btn');
+                                const downloadAudioBtn = row.querySelector('.download-audio-btn');
+
+                                if (playBtn && data.audio_path) {
+                                    playBtn.href = `/dashboard/senior/google-sheet/view-audio/${data.id}`;
+                                    playBtn.classList.remove('d-none');
+                                }
+
+                                if (downloadAudioBtn && data.audio_path) {
+                                    downloadAudioBtn.href = `/dashboard/senior/google-sheet/download-audio/${data.id}`;
+                                    downloadAudioBtn.classList.remove('d-none');
+                                }
+
+
                                 // Only add new blank row if none exists
                                 const existingNewRows = tableBody.querySelectorAll('tr[data-id="new"]');
                                 if (existingNewRows.length === 0) {
@@ -807,6 +854,26 @@ $script ='<script>
             }
         });
 
+        tableBody.addEventListener('click', function(e) {
+            if (e.target.matches('.upload-audio-btn')) {
+                const row = e.target.closest('tr');
+                const fileInput = row.querySelector('.audio-input');
+                fileInput.click();
+            }
+
+            // Play & Download restrictions for unsaved rows
+            if (e.target.matches('.play-audio-btn') || e.target.matches('.download-audio-btn')) {
+                const row = e.target.closest('tr');
+                const id = row.dataset.id;
+
+                if (id === "new") {
+                    e.preventDefault();
+                    alert("Please save the row first before accessing the audio.");
+                    return;
+                }
+            }
+        });
+
         // Handle file selection
         tableBody.addEventListener('change', function(e) {
             if (e.target.matches('.resume-input')) {
@@ -825,6 +892,23 @@ $script ='<script>
                 if (uploadBtn) uploadBtn.textContent = 'Change File';
 
                 console.log('File selected:', fileName);
+            }
+        });
+
+        tableBody.addEventListener('change', function(e) {
+            if (e.target.matches('.audio-input')) {
+                const row = e.target.closest('tr');
+                const fileName = e.target.files[0] ? e.target.files[0].name : 'No audio selected';
+
+                const playBtn = row.querySelector('.play-audio-btn');
+                const downloadBtn = row.querySelector('.download-audio-btn');
+                const uploadBtn = row.querySelector('.upload-audio-btn');
+
+                if (playBtn) playBtn.classList.remove('d-none');
+                if (downloadBtn) downloadBtn.classList.remove('d-none');
+                if (uploadBtn) uploadBtn.textContent = "Change Audio";
+
+                console.log("Audio selected:", fileName);
             }
         });
 

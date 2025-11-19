@@ -3099,6 +3099,53 @@ class GoogleSheetController extends Controller
         return response()->download($filePath, basename($filePath));
     }
 
+    public function viewseniorAudio($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->audio) {
+            abort(404, 'Audio not found');
+        }
+
+        $filePath = storage_path('app/public/' . $row->audio);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'Audio file missing');
+        }
+
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        // List of acceptable audio formats
+        $allowed = ['mp3', 'wav', 'ogg', 'm4a', 'aac', 'flac', 'wma'];
+
+        if (!in_array($extension, $allowed)) {
+            abort(415, 'Unsupported audio format');
+        }
+
+        return response()->file($filePath, [
+            'Content-Type' => mime_content_type($filePath),
+            'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
+        ]);
+    }
+
+    public function downloadseniorAudio($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->audio) {
+            abort(404, 'Audio not found');
+        }
+
+        $filePath = storage_path('app/public/' . $row->audio);
+
+        if (!file_exists($filePath)) {
+            abort(404, 'Audio file missing');
+        }
+
+        return response()->download($filePath, basename($filePath));
+    }
+
+
     private function parseDate($dateString)
     {
         try {

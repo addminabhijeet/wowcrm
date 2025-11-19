@@ -180,6 +180,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/senior/google-sheet/seniorstoremod', [GoogleSheetController::class, 'seniorstoremod'])->name('seniorstoremod');
     Route::get('/dashboard/senior/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewseniorResume'])->name('view.resume');
     Route::get('/dashboard/senior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadseniorResume'])->name('download.resume');
+    Route::get('/dashboard/senior/google-sheet/view-audio/{id}', [GoogleSheetController::class, 'viewseniorAudio'])->name('view.audio');
+    Route::get('/dashboard/senior/google-sheet/download-audio/{id}', [GoogleSheetController::class, 'downloadseniorAudio'])->name('download.audio');
     Route::get('/dashboard/senior/google-sheet/search', [GoogleSheetController::class, 'seniorSuggestions'])->name('senior.suggestions');
     Route::get('/dashboard/senior/google-sheet/search-paid', [GoogleSheetController::class, 'seniorpaidSuggestions'])->name('senior.suggestionspaid');
     Route::get('/dashboard/career/google-sheet/search', [GoogleSheetController::class, 'careerSuggestions'])->name('career.suggestions');
