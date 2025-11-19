@@ -113,10 +113,10 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('google.sheet.seniormodcandm') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Modified Called & Mailed</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('google.sheet.seniorpaid') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Paid</a></li>
+                    <li><a href="{{ route('google.sheet.seniorcon') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Confirmation Call</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('google.sheet.seniorcon') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Confirmation Call</a></li>
+                    <li><a href="{{ route('google.sheet.seniorpaid') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Paid</a></li>
                 </ul>
             </li>
 
