@@ -99,13 +99,13 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAB/4AA0AAAA
 <div class="text-container"><span class="t s0" style="left:702px;bottom:1026px;letter-spacing:-0.06px;">INVOICE </span>
 <span class="t s1" style="left:652px;bottom:962px;letter-spacing:0.13px;word-spacing:0.06px;">Norlox Solutions LLC </span>
 <span class="t s2" style="left:140px;bottom:929px;letter-spacing:0.13px;word-spacing:0.13px;">Paid On: </span><span class="t s2" style="left:231px;bottom:929px;letter-spacing:0.16px;word-spacing:0.12px;">October 07, 2025 </span>
-<span class="t s2" style="left:140px;bottom:904px;letter-spacing:0.17px;">Method: </span><span class="t s2" style="left:231px;bottom:904px;letter-spacing:0.16px;word-spacing:0.11px;">Domestic Wire Transfer </span>
+<span class="t s2" style="left:140px;bottom:904px;letter-spacing:0.17px;">Method: </span><span class="t s2" style="left:231px;bottom:904px;letter-spacing:0.16px;word-spacing:0.11px;">{{$paymentMethod}} </span>
 <span class="t s3" style="left:775px;bottom:858px;letter-spacing:0.11px;word-spacing:-0.04px;">Bill to: </span>
 <span class="t s2" style="left:146px;bottom:610px;letter-spacing:0.18px;word-spacing:-0.01px;">Job Workshop and Consulting Fees </span><span class="t s2" style="left:564px;bottom:610px;">1 </span><span class="t s2" style="left:655px;bottom:610px;letter-spacing:0.19px;">{{$amount}} </span><span class="t s2" style="left:760px;bottom:610px;letter-spacing:0.19px;">{{$amount}} </span>
 <span class="t s2" style="left:660px;bottom:582px;letter-spacing:0.18px;">Subtotal </span><span class="t s2" style="left:761px;bottom:582px;letter-spacing:0.21px;">{{$amount}} </span>
 <span class="t s2" style="left:680px;bottom:551px;letter-spacing:0.17px;">Total </span><span class="t s2" style="left:761px;bottom:553px;letter-spacing:0.21px;">{{$amount}} </span>
 <span class="t s4" style="left:139px;bottom:450px;letter-spacing:-0.06px;word-spacing:-0.17px;">Purchaser/Buyer/Customer Acceptance: </span>
-<span class="t s2" style="left:139px;bottom:416px;letter-spacing:0.16px;word-spacing:0.05px;">I thus declare and affirm that I have paid a total of {{$amount}} through Domestic Wire Transfer for the Job Workshop </span>
+<span class="t s2" style="left:139px;bottom:416px;letter-spacing:0.16px;word-spacing:0.05px;">I thus declare and affirm that I have paid a total of {{$amount}} through {{$paymentMethod}} for the Job Workshop </span>
 <span class="t s2" style="left:139px;bottom:400px;letter-spacing:0.16px;word-spacing:-0.04px;">and Consulting Fees. </span>
 <span class="t s2" style="left:139px;bottom:384px;letter-spacing:0.17px;word-spacing:-0.01px;">The goods/services were delivered to me online by Norlox Solutions LLC, and I received the item in accordance </span>
 <span class="t s2" style="left:139px;bottom:368px;letter-spacing:0.15px;word-spacing:-0.03px;">with the invoice. </span>
@@ -117,7 +117,7 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAB/4AA0AAAA
 <span class="t s2" style="left:149px;bottom:824px;letter-spacing:0.17px;">Amount: </span><span class="t s7" style="left:203px;bottom:824px;letter-spacing:0.24px;">{{$amount}} </span>
 <span class="t s2" style="left:149px;bottom:805px;letter-spacing:0.17px;">Status: </span><span class="t s7" style="left:195px;bottom:805px;letter-spacing:0.13px;">Paid </span>
 <span class="t s4" style="left:146px;bottom:636px;letter-spacing:-0.06px;">Description </span><span class="t s4" style="left:543px;bottom:636px;letter-spacing:-0.04px;">Quantity </span><span class="t s4" style="left:674px;bottom:636px;letter-spacing:-0.06px;">Price </span><span class="t s4" style="left:766px;bottom:636px;letter-spacing:-0.07px;">Amount </span>
-<span class="t s8" style="left:137px;bottom:1036px;letter-spacing:-0.04px;">Transaction </span><span class="t s8" style="left:220px;bottom:1036px;letter-spacing:-0.08px;">Reference </span><span class="t s8" style="left:292px;bottom:1036px;">#</span><span class="t s8" style="left:301px;bottom:1036px;">: </span><span class="t s7" style="left:309px;bottom:1037px;letter-spacing:0.23px;">VJ5EQ8XGE </span>
+<span class="t s8" style="left:137px;bottom:1036px;letter-spacing:-0.04px;">Transaction </span><span class="t s8" style="left:220px;bottom:1036px;letter-spacing:-0.08px;">Reference </span><span class="t s8" style="left:292px;bottom:1036px;">#</span><span class="t s8" style="left:301px;bottom:1036px;">: </span><span class="t s7" style="left:309px;bottom:1037px;letter-spacing:0.23px;">{{$tranRef}} </span>
 <span class="t s9" style="left:701px;bottom:807px;letter-spacing:-0.06px;word-spacing:-0.07px;">Nihal Mallikarjun </span>
 <span class="t sa" style="left:674px;bottom:779px;letter-spacing:-0.06px;">nihal77778@gmail.com </span>
 <span class="t s2" style="left:707px;bottom:753px;letter-spacing:0.23px;">+1 </span><span class="t sa" style="left:728px;bottom:752px;letter-spacing:-0.05px;word-spacing:-0.17px;">(857) 544-9928 </span>
