@@ -609,7 +609,15 @@ $script ='<script>
                 } else if (k === 'Email Address') {
                     cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
                 } else if (k === 'Name') {
-                    cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
+                    cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
+                } else if (k === 'Transaction ID') {
+                    cells += `<td><input type="text" class="form-control" data-key="TranId" placeholder="Transaction ID"><span class="small-hint"></span></td>`;
+                } else if (k === 'Reference Number') {
+                    cells += `<td><input type="text" class="form-control" data-key="TranRef" placeholder="Reference Number"><span class="small-hint"></span></td>`;
+                } else if (k === 'Payment Method') {
+                    cells += `<td><input type="text" class="form-control" data-key="PaymentMethod" placeholder="Payment Method"><span class="small-hint"></span></td>`;
+                } else if (k === 'Payee Name') {
+                    cells += `<td><input type="text" class="form-control" data-key="PayeeName" placeholder="Payee Name"><span class="small-hint"></span></td>`;
                 } else if (k === 'forwardedBy') {
                     cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
                 } else if (k === 'View') {
