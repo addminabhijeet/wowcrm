@@ -115,6 +115,9 @@ $role = Auth::user()->role;
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('google.sheet.seniorpaid') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Paid</a></li>
                 </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.seniorcon') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Confirmation Call</a></li>
+                </ul>
             </li>
 
             <li class="dropdown">
@@ -173,6 +176,9 @@ $role = Auth::user()->role;
                 </a>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('google.sheet.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.accountantcon') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Confirm Paid</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('google.sheet.accountantpaid') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All Paid</a></li>

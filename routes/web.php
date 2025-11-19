@@ -167,12 +167,15 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/google-sheet-mod', [GoogleSheetController::class, 'seniormod'])->name('google.sheet.seniormod');
     Route::get('/dashboard/senior/google-sheet-modcandm', [GoogleSheetController::class, 'seniormodcandm'])->name('google.sheet.seniormodcandm');
     Route::get('/dashboard/senior/google-sheet-paid', [GoogleSheetController::class, 'seniorpaid'])->name('google.sheet.seniorpaid');
+    Route::get('/dashboard/senior/google-sheet-con', [GoogleSheetController::class, 'seniorcon'])->name('google.sheet.seniorcon');
     Route::get('/dashboard/accountant/google-sheet-paid', [GoogleSheetController::class, 'accountantpaid'])->name('google.sheet.accountantpaid');
+    Route::get('/dashboard/accountant/google-sheet-con', [GoogleSheetController::class, 'accountantcon'])->name('google.sheet.accountantcon');
     Route::post('/dashboard/senior/google-sheet/fetch', [GoogleSheetController::class, 'seniorfetch'])->name('google.sheet.seniorfetch');
     Route::patch('/dashboard/senior/google-sheet/pdfupdate/{id}', [GoogleSheetController::class, 'seniorpdfupdate'])->name('google.sheet.seniorpdfupdate');
     Route::post('/dashboard/senior/google-sheet/pdfstore', [GoogleSheetController::class, 'seniorpdfstore'])->name('google.sheet.seniorpdfstore');
     Route::post('/dashboard/senior/google-sheet/seniorupdate', [GoogleSheetController::class, 'seniorupdate'])->name('seniorupdate');
     Route::post('/dashboard/senior/google-sheet/seniorupdatemod', [GoogleSheetController::class, 'seniorupdatemod'])->name('seniorupdatemod');
+    Route::post('/dashboard/senior/google-sheet/seniorupdatecon', [GoogleSheetController::class, 'seniorupdatecon'])->name('seniorupdatecon');
     Route::post('/dashboard/senior/google-sheet/seniorstore', [GoogleSheetController::class, 'seniorstore'])->name('seniorstore');
     Route::post('/dashboard/senior/google-sheet/seniorstoremod', [GoogleSheetController::class, 'seniorstoremod'])->name('seniorstoremod');
     Route::get('/dashboard/senior/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewseniorResume'])->name('view.resume');
@@ -214,6 +217,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/accountant/google-sheet/pdfstore', [GoogleSheetController::class, 'accountantpdfstore'])->name('google.sheet.accountantpdfstore');
     Route::post('/dashboard/accountant/google-sheet/accountantstore', [GoogleSheetController::class, 'accountantstore'])->name('accountantstore');
     Route::post('/dashboard/accountant/google-sheet/accountantupdate', [GoogleSheetController::class, 'accountantupdate'])->name('accountantupdate');
+    Route::post('/dashboard/accountant/google-sheet/accountantupdatecon', [GoogleSheetController::class, 'accountantupdatecon'])->name('accountantupdatecon');
     Route::get('/dashboard/accountant/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewaccountantResume'])->name('view.resume');
     Route::get('/dashboard/accountant/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadaccountantResume'])->name('download.resume');
     Route::post('/dashboard/check-email', [GoogleSheetController::class, 'checkEmail'])->name('check.uniqueemail');
