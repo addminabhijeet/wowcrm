@@ -116,7 +116,6 @@ $userImage = Auth::user()->image
 
                 @php
                 $user = Auth::user();
-                $notifications = $notifications ?? collect(); // fallback if not passed
                 @endphp
 
                 @if($user && $user->role === 'admin')
@@ -150,13 +149,9 @@ $userImage = Auth::user()->image
                                         <iconify-icon icon="carbon:notification-filled" class="icon text-xxl"></iconify-icon>
                                     </span>
                                     <div>
-                                        <h6 class="text-md fw-semibold mb-4">
-                                            {{ $notification->data['message'] ?? 'New notification' }}
-                                        </h6>
+                                        <h6 class="text-md fw-semibold mb-4">{{ $notification->data['message'] ?? 'New notification' }}</h6>
                                         @if(isset($notification->data['row_id']))
-                                        <p class="mb-0 text-sm text-secondary-light">
-                                            Row ID: {{ $notification->data['row_id'] }}
-                                        </p>
+                                        <p class="mb-0 text-sm text-secondary-light">Row ID: {{ $notification->data['row_id'] }}</p>
                                         @endif
                                     </div>
                                 </div>
@@ -175,7 +170,6 @@ $userImage = Auth::user()->image
                     </div>
                 </div>
                 @endif
-
 
 
                 <div class="dropdown">
