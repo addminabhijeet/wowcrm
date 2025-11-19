@@ -752,7 +752,7 @@ $script ='<script>
     ">
 
         <!-- SINGLE IFRAME CARD -->
-        <div style="background:#fff; padding:18px; border-radius:12px; max-width: 787px;   
+        <div style="background:#fff; padding:18px; border-radius:12px; max-width: 780px;   
             box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
             <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Acceptance Form</h4>
             <iframe 
@@ -761,7 +761,7 @@ $script ='<script>
             </iframe>
         </div>
 
-        <div style="background:#fff; padding:18px; border-radius:12px; max-width: 790px;   
+        <div style="background:#fff; padding:18px; border-radius:12px; max-width: 780px;  
             box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
             <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Consultation Form</h4>
             <iframe 
@@ -770,7 +770,7 @@ $script ='<script>
             </iframe>
         </div>
 
-        <div style="background:#fff; padding:18px; border-radius:12px;
+        <div style="background:#fff; padding:18px; border-radius:12px; max-width: 780px;
             box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
             <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Delivery Form</h4>
             <iframe 
@@ -779,7 +779,7 @@ $script ='<script>
             </iframe>
         </div>
 
-        <div style="background:#fff; padding:18px; border-radius:12px;
+        <div style="background:#fff; padding:18px; border-radius:12px; max-width: 780px;
             box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
             <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Payment Form</h4>
             <iframe 
