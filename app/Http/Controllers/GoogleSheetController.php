@@ -2360,7 +2360,7 @@ class GoogleSheetController extends Controller
         if (isset($rowData['Exe Remarks'])) {
             $exeRemark = $rowData['Exe Remarks'];
 
-            if ($exeRemark === 'Ready To Paid') {
+            if ($exeRemark === 'Verification Completed') {
                 $authUser = Auth::user();
 
                 // Ensure ":0|accountant" exists at the end if missing
@@ -2381,7 +2381,7 @@ class GoogleSheetController extends Controller
                 if (strpos($updateData['created_by'], ':0|accountant') === false) {
                     $updateData['created_by'] .= ':0|accountant';
                 }
-            } elseif ($exeRemark === 'Called & Mailed') {
+            } elseif ($exeRemark === 'Payment Completed') {
                 $authUser = Auth::user();
                 // If created_by ends with something like "123|junior"
                 if (preg_match('/(\d+)\|junior$/', $updateData['created_by'])) {
