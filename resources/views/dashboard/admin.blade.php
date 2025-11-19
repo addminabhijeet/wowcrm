@@ -6,13 +6,6 @@ $subTitle = 'Super Admin';
 $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 @endphp
 
-@section('content')
-{{-- Include the board --}}
-@include('components.navbar', [
-'users' => $users,
-'newUsers' => $newUsers,
-'notifications' => $notifications
-])
 
 <div class="row row-cols-xxxl-5 row-cols-lg-3 row-cols-sm-2 row-cols-1 gy-4">
     <div class="col">
