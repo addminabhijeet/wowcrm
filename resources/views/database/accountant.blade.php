@@ -757,7 +757,7 @@ $script ='<script>
             <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Acceptance Form</h4>
             <iframe 
                 src="{{ route('pdf.acceptance') }}?${queryParams}"
-                style="width:100%; height:1200px; border:0; border-radius:10px;">
+                style="width:700px height:1200px; border:0; border-radius:10px;">
             </iframe>
         </div>
 
@@ -766,7 +766,7 @@ $script ='<script>
             <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Consultation Form</h4>
             <iframe 
                 src="{{ route('pdf.consultation') }}?${queryParams}"
-                style="width:100%; height:1200px; border:0; border-radius:10px;">
+                style="width:500px height:1200px; border:0; border-radius:10px;">
             </iframe>
         </div>
 
