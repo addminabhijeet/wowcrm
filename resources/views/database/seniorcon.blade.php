@@ -774,7 +774,7 @@ $script ='<script>
                 url = "{{ route('seniorstoremod') }}";
                 method = "POST";
             } else {
-                url = "{{ route('seniorupdatemod') }}";
+                url = "{{ route('seniorupdatecon') }}";
                 method = "POST";
                 formData.append("id", id);
             }
