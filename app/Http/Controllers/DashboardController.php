@@ -36,14 +36,16 @@ class DashboardController extends Controller
         // Only users who are not deleted
         $users = User::where('is_deleted', 0)->get();
 
-        // Only new (not deleted) users created in the last 30 days
+        // Only new users created in the last 30 days
         $newUsers = User::where('is_deleted', 0)
             ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->get();
         /** @var \App\Models\User $admin */
         // Fetch latest notifications for the logged-in admin
         $admin = Auth::user();
-        $notifications = $admin->notifications()->latest()->take(10)->get();
+        $notifications = $admin && $admin->role === 'admin'
+            ? $admin->notifications()->latest()->take(10)->get()
+            : collect(); // empty collection if not admin
 
         return view('dashboard.admin', compact('users', 'newUsers', 'notifications'));
     }
