@@ -53,6 +53,7 @@ $script ='<script>
                         <th scope="col">Exe Remarks</th>
                         <th scope="col">1st Follow Up Remarks</th>
                         <th scope="col">Time Zone</th>
+                        <th scope="col">Audio</th>
                         <th scope="col">Forwarded By</th>
                         <th scope="col">View</th>
                         <th scope="col" class="text-center">Actions</th>
@@ -656,285 +657,300 @@ $script ='<script>
             let cells = `<td>—</td>`;
 
             colKeys.forEach(k => {
-                if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
-                    let opts = [];
-                    if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
-                    if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'Ready To Paid', 'VM', 'Busy'];
-                    if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'HIB', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC'];
-                    if (k === 'Relocation') opts = ['YES', 'NO'];
-                    if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
-                    if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
-                    if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
-                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
-                } else if (k === 'Amount') {
-                    cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount (469)"></td>`;
-                } else if (k === 'Location') {
-                    cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
-                } else if (k === 'Remark') {
-                    cells += `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
-                } else if (k === 'Date' || k === 'Graduation Date') {
-                    cells += `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
-                } else if (k === 'Phone Number') {
-                    cells += `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
-                } else if (k === 'Email Address') {
-                    cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
-                } else if (k === 'Name') {
-                    cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                } else if (k === 'forwardedBy') {
-                    cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
-                } else if (k === 'View') {
-                    cells += `<td>
-                    <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
-                    <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-                    <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
-                    <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-                </td>`;
-                }
-            });
+                    if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
+                        let opts = [];
+                        if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
+                        if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'Ready To Paid', 'VM', 'Busy'];
+                        if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'HIB', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC'];
+                        if (k === 'Relocation') opts = ['YES', 'NO'];
+                        if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
+                        if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+                        if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
+                        cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
+                    } else if (k === 'Amount') {
+                        cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount (469)"></td>`;
+                    } else if (k === 'Location') {
+                        cells += `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
+                    } else if (k === 'Remark') {
+                        cells += `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
+                    } else if (k === 'Date' || k === 'Graduation Date') {
+                        cells += `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
+                    } else if (k === 'Phone Number') {
+                        cells += `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
+                    } else if (k === 'Email Address') {
+                        cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
+                    } else if (k === 'Name') {
+                        cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
+                    } else if (k === 'Audio') {
+                        cells += `<td>
+                    <input type="file" accept="audio/*" class="d-none audio-input" data-key="Audio">
+                    <button type="button" class="btn btn-sm btn-warning upload-audio-btn">Upload Audio</button>
 
-            cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
-            newRow.innerHTML = cells;
-            tableBody.appendChild(newRow);
-            applyInitialState(newRow);
-        }
+                    <!-- Audio Player (hidden initially) -->
+                    <audio controls class="audio-player d-none" style="width: 100%;">
+                        Your browser does not support the audio element.
+                    </audio>
 
-        // Check if we need to add a blank row on page load
-        // Only add if there are no existing "new" rows
-        const hasNewRow = tableBody.querySelector('tr[data-id="new"]');
-        const hasAnyRows = tableBody.querySelector('tr');
+                    <!-- Download Button -->
+                    <a href="#" download class="btn btn-sm btn-secondary download-audio-btn d-none">Download</a>
+                    </td>`;
+                                    
 
-        if (!hasNewRow && !hasAnyRows) {
-            // No rows at all - add one blank row
-            addBlankRow();
-        } else if (!hasNewRow && hasAnyRows) {
-            // Has existing rows but no "new" row - add blank row at the end
-            addBlankRow();
-        }
-        // If hasNewRow exists, we don't need to add another one
-
-        // Handle select color changes
-        tableBody.addEventListener('change', function(e) {
-            if (e.target.matches('select.dynamic-dropdown')) updateSelectColor(e.target);
-        });
-
-        // Event delegation for save buttons (handles both existing and dynamically added buttons)
-        tableBody.addEventListener('click', function(e) {
-            if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
-                e.preventDefault();
-                let saveBtn = e.target.matches('.save-btn') ? e.target : e.target.closest('.save-btn');
-                let id = saveBtn.dataset.id;
-                let row = saveBtn.closest("tr");
-                console.log("Saving row with id:", id);
-
-                // Collect all data from the row
-                let rowData = {};
-                row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
-                    let key = cell.dataset.key;
-                    let value = cell.value;
-                    rowData[key] = value;
+                    } else if (k === 'forwardedBy') {
+                        cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
+                    } else if (k === 'View') {
+                        cells += `<td>
+                        <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
+                        <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+                        <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
+                        <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+                    </td>`;
+                    }
                 });
-                console.log("Row data:", rowData);
 
-                // Create FormData object
-                let formData = new FormData();
-                formData.append("data", JSON.stringify(rowData));
-                formData.append("_token", "{{ csrf_token() }}");
+        cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
+        newRow.innerHTML = cells;
+        tableBody.appendChild(newRow);
+        applyInitialState(newRow);
+    }
 
-                // Handle resume file upload
-                let resumeInput = row.querySelector("input.resume-input");
-                if (resumeInput && resumeInput.files.length > 0) {
-                    formData.append("resume", resumeInput.files[0]);
-                }
+    // Check if we need to add a blank row on page load
+    // Only add if there are no existing "new" rows
+    const hasNewRow = tableBody.querySelector('tr[data-id="new"]');
+    const hasAnyRows = tableBody.querySelector('tr');
 
-                // Handle audio file upload
-                let audioInput = row.querySelector("input.audio-input");
-                if (audioInput && audioInput.files.length > 0) {
-                    formData.append("audio", audioInput.files[0]);
-                }
+    if (!hasNewRow && !hasAnyRows) {
+        // No rows at all - add one blank row
+        addBlankRow();
+    } else if (!hasNewRow && hasAnyRows) {
+        // Has existing rows but no "new" row - add blank row at the end
+        addBlankRow();
+    }
+    // If hasNewRow exists, we don't need to add another one
 
-                // Determine URL and method
-                let url, method;
-                if (id === "new") {
-                    url = "{{ route('seniorstoremod') }}";
-                    method = "POST";
-                } else {
-                    url = "{{ route('seniorupdatemod') }}";
-                    method = "POST";
-                    formData.append("id", id);
-                }
+    // Handle select color changes
+    tableBody.addEventListener('change', function(e) {
+        if (e.target.matches('select.dynamic-dropdown')) updateSelectColor(e.target);
+    });
 
-                console.log("Sending to:", url, "Method:", method);
+    // Event delegation for save buttons (handles both existing and dynamically added buttons)
+    tableBody.addEventListener('click', function(e) {
+        if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
+            e.preventDefault();
+            let saveBtn = e.target.matches('.save-btn') ? e.target : e.target.closest('.save-btn');
+            let id = saveBtn.dataset.id;
+            let row = saveBtn.closest("tr");
+            console.log("Saving row with id:", id);
 
-                // Send the request
-                fetch(url, {
-                        method: method,
-                        body: formData
-                    })
-                    .then(res => {
-                        if (!res.ok) {
-                            throw new Error(`HTTP error! status: ${res.status}`);
-                        }
-                        return res.json();
-                    })
-                    // In the save button click event handler, update the success callback:
-                    .then(data => {
-                        console.log("Response from server:", data);
-                        if (data.success) {
-                            alert("Saved successfully");
-                            if (id === "new") {
-                                // Update row with new ID
-                                row.dataset.id = data.id;
-                                saveBtn.dataset.id = data.id;
-                                row.querySelector("td:first-child").innerText = data.sheet_row_number;
+            // Collect all data from the row
+            let rowData = {};
+            row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
+                let key = cell.dataset.key;
+                let value = cell.value;
+                rowData[key] = value;
+            });
+            console.log("Row data:", rowData);
 
-                                const viewBtn = row.querySelector('.view-btn');
-                                const downloadBtn = row.querySelector('.download-btn');
+            // Create FormData object
+            let formData = new FormData();
+            formData.append("data", JSON.stringify(rowData));
+            formData.append("_token", "{{ csrf_token() }}");
 
-                                if (viewBtn && data.resume_path) {
-                                    viewBtn.href = `/dashboard/senior/google-sheet/view-resume/${data.id}`;
-                                    viewBtn.classList.remove('d-none');
-                                }
+            // Handle resume file upload
+            let resumeInput = row.querySelector("input.resume-input");
+            if (resumeInput && resumeInput.files.length > 0) {
+                formData.append("resume", resumeInput.files[0]);
+            }
 
-                                if (downloadBtn && data.resume_path) {
-                                    downloadBtn.href = `/dashboard/senior/google-sheet/download-resume/${data.id}`;
-                                    downloadBtn.classList.remove('d-none');
-                                }
+            // Handle audio file upload
+            let audioInput = row.querySelector("input.audio-input");
+            if (audioInput && audioInput.files.length > 0) {
+                formData.append("audio", audioInput.files[0]);
+            }
 
-                                const playBtn = row.querySelector('.play-audio-btn');
-                                const downloadAudioBtn = row.querySelector('.download-audio-btn');
+            // Determine URL and method
+            let url, method;
+            if (id === "new") {
+                url = "{{ route('seniorstoremod') }}";
+                method = "POST";
+            } else {
+                url = "{{ route('seniorupdatemod') }}";
+                method = "POST";
+                formData.append("id", id);
+            }
 
-                                if (playBtn && data.audio_path) {
-                                    playBtn.href = `/dashboard/senior/google-sheet/view-audio/${data.id}`;
-                                    playBtn.classList.remove('d-none');
-                                }
+            console.log("Sending to:", url, "Method:", method);
 
-                                if (downloadAudioBtn && data.audio_path) {
-                                    downloadAudioBtn.href = `/dashboard/senior/google-sheet/download-audio/${data.id}`;
-                                    downloadAudioBtn.classList.remove('d-none');
-                                }
+            // Send the request
+            fetch(url, {
+                    method: method,
+                    body: formData
+                })
+                .then(res => {
+                    if (!res.ok) {
+                        throw new Error(`HTTP error! status: ${res.status}`);
+                    }
+                    return res.json();
+                })
+                // In the save button click event handler, update the success callback:
+                .then(data => {
+                    console.log("Response from server:", data);
+                    if (data.success) {
+                        alert("Saved successfully");
+                        if (id === "new") {
+                            // Update row with new ID
+                            row.dataset.id = data.id;
+                            saveBtn.dataset.id = data.id;
+                            row.querySelector("td:first-child").innerText = data.sheet_row_number;
 
+                            const viewBtn = row.querySelector('.view-btn');
+                            const downloadBtn = row.querySelector('.download-btn');
 
-                                // Only add new blank row if none exists
-                                const existingNewRows = tableBody.querySelectorAll('tr[data-id="new"]');
-                                if (existingNewRows.length === 0) {
-                                    addBlankRow();
-                                }
+                            if (viewBtn && data.resume_path) {
+                                viewBtn.href = `/dashboard/senior/google-sheet/view-resume/${data.id}`;
+                                viewBtn.classList.remove('d-none');
                             }
 
-                        } else {
-                            console.error("Server error:", data.message);
-                            alert("Error: " + (data.message || "Unknown error"));
+                            if (downloadBtn && data.resume_path) {
+                                downloadBtn.href = `/dashboard/senior/google-sheet/download-resume/${data.id}`;
+                                downloadBtn.classList.remove('d-none');
+                            }
+
+                            const playBtn = row.querySelector('.play-audio-btn');
+                            const downloadAudioBtn = row.querySelector('.download-audio-btn');
+
+                            if (playBtn && data.audio_path) {
+                                playBtn.href = `/dashboard/senior/google-sheet/view-audio/${data.id}`;
+                                playBtn.classList.remove('d-none');
+                            }
+
+                            if (downloadAudioBtn && data.audio_path) {
+                                downloadAudioBtn.href = `/dashboard/senior/google-sheet/download-audio/${data.id}`;
+                                downloadAudioBtn.classList.remove('d-none');
+                            }
+
+
+                            // Only add new blank row if none exists
+                            const existingNewRows = tableBody.querySelectorAll('tr[data-id="new"]');
+                            if (existingNewRows.length === 0) {
+                                addBlankRow();
+                            }
                         }
-                    })
-                    .catch(err => {
-                        console.error("Fetch error:", err);
-                        alert("Save failed. Check console for details.");
-                    });
+
+                    } else {
+                        console.error("Server error:", data.message);
+                        alert("Error: " + (data.message || "Unknown error"));
+                    }
+                })
+                .catch(err => {
+                    console.error("Fetch error:", err);
+                    alert("Save failed. Check console for details.");
+                });
+        }
+    });
+
+    // Handle file upload button clicks
+    tableBody.addEventListener('click', function(e) {
+        if (e.target.matches('.upload-btn')) {
+            const row = e.target.closest('tr');
+            const fileInput = row.querySelector('.resume-input');
+            fileInput.click();
+        }
+
+        // Handle view and download buttons for unsaved rows
+        if (e.target.matches('.view-btn') || e.target.matches('.download-btn')) {
+            const row = e.target.closest('tr');
+            const id = row.dataset.id;
+
+            if (id === "new") {
+                e.preventDefault();
+                alert("Please save the row first before viewing/downloading the resume.");
+                return;
             }
-        });
+        }
+    });
 
-        // Handle file upload button clicks
-        tableBody.addEventListener('click', function(e) {
-            if (e.target.matches('.upload-btn')) {
-                const row = e.target.closest('tr');
-                const fileInput = row.querySelector('.resume-input');
-                fileInput.click();
+    tableBody.addEventListener('click', function(e) {
+        if (e.target.matches('.upload-audio-btn')) {
+            const row = e.target.closest('tr');
+            const fileInput = row.querySelector('.audio-input');
+            fileInput.click();
+        }
+
+        // Play & Download restrictions for unsaved rows
+        if (e.target.matches('.play-audio-btn') || e.target.matches('.download-audio-btn')) {
+            const row = e.target.closest('tr');
+            const id = row.dataset.id;
+
+            if (id === "new") {
+                e.preventDefault();
+                alert("Please save the row first before accessing the audio.");
+                return;
             }
+        }
+    });
 
-            // Handle view and download buttons for unsaved rows
-            if (e.target.matches('.view-btn') || e.target.matches('.download-btn')) {
-                const row = e.target.closest('tr');
-                const id = row.dataset.id;
+    // Handle file selection
+    tableBody.addEventListener('change', function(e) {
+        if (e.target.matches('.resume-input')) {
+            const row = e.target.closest('tr');
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
-                if (id === "new") {
-                    e.preventDefault();
-                    alert("Please save the row first before viewing/downloading the resume.");
-                    return;
-                }
-            }
-        });
+            // Show view and download buttons temporarily
+            const viewBtn = row.querySelector('.view-btn');
+            const downloadBtn = row.querySelector('.download-btn');
 
-        tableBody.addEventListener('click', function(e) {
-            if (e.target.matches('.upload-audio-btn')) {
-                const row = e.target.closest('tr');
-                const fileInput = row.querySelector('.audio-input');
-                fileInput.click();
-            }
+            if (viewBtn) viewBtn.classList.remove('d-none');
+            if (downloadBtn) downloadBtn.classList.remove('d-none');
 
-            // Play & Download restrictions for unsaved rows
-            if (e.target.matches('.play-audio-btn') || e.target.matches('.download-audio-btn')) {
-                const row = e.target.closest('tr');
-                const id = row.dataset.id;
+            // Update button text
+            const uploadBtn = row.querySelector('.upload-btn');
+            if (uploadBtn) uploadBtn.textContent = 'Change File';
 
-                if (id === "new") {
-                    e.preventDefault();
-                    alert("Please save the row first before accessing the audio.");
-                    return;
-                }
-            }
-        });
+            console.log('File selected:', fileName);
+        }
+    });
 
-        // Handle file selection
-        tableBody.addEventListener('change', function(e) {
-            if (e.target.matches('.resume-input')) {
-                const row = e.target.closest('tr');
-                const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+    tableBody.addEventListener('change', function(e) {
+        if (e.target.matches('.audio-input')) {
+            const row = e.target.closest('tr');
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'No audio selected';
 
-                // Show view and download buttons temporarily
-                const viewBtn = row.querySelector('.view-btn');
-                const downloadBtn = row.querySelector('.download-btn');
+            const playBtn = row.querySelector('.play-audio-btn');
+            const downloadBtn = row.querySelector('.download-audio-btn');
+            const uploadBtn = row.querySelector('.upload-audio-btn');
 
-                if (viewBtn) viewBtn.classList.remove('d-none');
-                if (downloadBtn) downloadBtn.classList.remove('d-none');
+            if (playBtn) playBtn.classList.remove('d-none');
+            if (downloadBtn) downloadBtn.classList.remove('d-none');
+            if (uploadBtn) uploadBtn.textContent = "Change Audio";
 
-                // Update button text
-                const uploadBtn = row.querySelector('.upload-btn');
-                if (uploadBtn) uploadBtn.textContent = 'Change File';
+            console.log("Audio selected:", fileName);
+        }
+    });
 
-                console.log('File selected:', fileName);
-            }
-        });
+    // Apply initial state to all existing rows
+    applyInitialState(document);
 
-        tableBody.addEventListener('change', function(e) {
-            if (e.target.matches('.audio-input')) {
-                const row = e.target.closest('tr');
-                const fileName = e.target.files[0] ? e.target.files[0].name : 'No audio selected';
+    // Cleanup location suggestions
+    document.addEventListener('click', function(e) {
+        if (!$(e.target).closest('#loc-suggestions, .location-autocomplete').length)
+            $('#loc-suggestions').remove();
+    });
 
-                const playBtn = row.querySelector('.play-audio-btn');
-                const downloadBtn = row.querySelector('.download-audio-btn');
-                const uploadBtn = row.querySelector('.upload-audio-btn');
-
-                if (playBtn) playBtn.classList.remove('d-none');
-                if (downloadBtn) downloadBtn.classList.remove('d-none');
-                if (uploadBtn) uploadBtn.textContent = "Change Audio";
-
-                console.log("Audio selected:", fileName);
-            }
-        });
-
-        // Apply initial state to all existing rows
-        applyInitialState(document);
-
-        // Cleanup location suggestions
-        document.addEventListener('click', function(e) {
-            if (!$(e.target).closest('#loc-suggestions, .location-autocomplete').length)
-                $('#loc-suggestions').remove();
-        });
-
-        // Real-time validation
-        tableBody.addEventListener('input', function(e) {
-            if (e.target.matches('input.phone-input')) validatePhoneInput(e.target);
-            if (e.target.matches('input.email-input')) {
-                e.target.value = e.target.value.toLowerCase();
-                validateEmailInput(e.target);
-            }
-            if (e.target.matches('input.name-input')) {
-                let v = e.target.value.replace(/[^a-zA-Z\s]/g, '');
-                v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-                e.target.value = v;
-                validateNameInput(e.target);
-            }
-        });
+    // Real-time validation
+    tableBody.addEventListener('input', function(e) {
+        if (e.target.matches('input.phone-input')) validatePhoneInput(e.target);
+        if (e.target.matches('input.email-input')) {
+            e.target.value = e.target.value.toLowerCase();
+            validateEmailInput(e.target);
+        }
+        if (e.target.matches('input.name-input')) {
+            let v = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+            v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+            e.target.value = v;
+            validateNameInput(e.target);
+        }
+    });
     });
 </script>
 
