@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\UserTimerLog;
@@ -39,9 +40,14 @@ class DashboardController extends Controller
         $newUsers = User::where('is_deleted', 0)
             ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->get();
+        /** @var \App\Models\User $admin */
+        // Fetch latest notifications for the logged-in admin
+        $admin = Auth::user();
+        $notifications = $admin->notifications()->latest()->take(10)->get();
 
-        return view('dashboard.admin', compact('users', 'newUsers'));
+        return view('dashboard.admin', compact('users', 'newUsers', 'notifications'));
     }
+
 
 
     public function junior()
