@@ -620,17 +620,13 @@ $script ='<script>
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payee Name"><span class="small-hint"></span></td>`;
                 } else if (k === 'forwardedBy') {
                     cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
-                } else if (k === 'forwardedBy') {
-                    cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
-                } else if (k === 'forwardedBy') {
-                    cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
                 } else if (k === 'View') {
                     cells += `<td>
-                    <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
-                    <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-                    <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
-                    <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-                </td>`;
+        <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input" data-key="View">
+        <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+        <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
+        <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+    </td>`;
                 }
             });
 
@@ -677,12 +673,20 @@ $script ='<script>
                 const courseJoined = row.querySelector('[data-key="Course"]')?.value?.trim() || "N/A";
                 const paymentLink = row.querySelector('input[data-key="Payment Link"]')?.value?.trim() || "N/A";
                 const candidateName = row.querySelector('input[data-key="Candidate Name"]')?.value?.trim() || "Candidate";
+                const tranId = row.querySelector('input[data-key="TranId"]')?.value?.trim() || "N/A";
+                const tranRef = row.querySelector('input[data-key="TranRef"]')?.value?.trim() || "N/A";
+                const paymentMethod = row.querySelector('input[data-key="PaymentMethod"]')?.value?.trim() || "N/A";
+                const payeeName = row.querySelector('input[data-key="PayeeName"]')?.value?.trim() || "N/A";
 
                 // Encode URL parameters correctly
                 const queryParams = new URLSearchParams({
                     name: name,
                     email: receiverEmail,
                     amount: amount,
+                    tranId: tranId,
+                    tranRef: tranRef,
+                    paymentMethod: paymentMethod,
+                    payeeName: payeeName
                 }).toString();
 
                 // Generate improved preview HTML
