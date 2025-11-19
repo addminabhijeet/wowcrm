@@ -691,7 +691,7 @@ $script ='<script>
 
                 // Generate improved preview HTML
                 const previewHTML = `
-            <div style="text-align:left; font-size:14px; line-height:1.5; width: 935px; height: 1210px;">
+            <div style="text-align:left; font-size:14px; line-height:1.5; width: 2000px;">
                 <div style="padding:10px 0;">
                     <p><strong>Sender Email:</strong> ${senderEmail}</p>
                     <p><strong>Receiver Email:</strong> ${receiverEmail}</p>
