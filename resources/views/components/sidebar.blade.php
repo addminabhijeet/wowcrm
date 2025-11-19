@@ -175,10 +175,10 @@ $role = Auth::user()->role;
                     <span>Database</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('google.sheet.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                    <li><a href="{{ route('google.sheet.accountantcon') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Confirm Paid</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('google.sheet.accountantcon') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Confirm Paid</a></li>
+                    <li><a href="{{ route('google.sheet.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('google.sheet.accountantpaid') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All Paid</a></li>
