@@ -2272,6 +2272,57 @@ class GoogleSheetController extends Controller
             }
         }
 
+        // Handle audio file upload - Save actual file content
+        if ($request->hasFile('audio')) {
+            $audio = $request->file('audio');
+
+            // Allowed audio mime types
+            $allowedAudio = [
+                'audio/mpeg',
+                'audio/mp3',
+                'audio/wav',
+                'audio/x-wav',
+                'audio/ogg',
+                'audio/m4a',
+                'audio/aac',
+                'audio/flac',
+                'audio/x-ms-wma',
+                'audio/webm'
+            ];
+
+            if (!in_array($audio->getMimeType(), $allowedAudio)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid audio format. Allowed: MP3, WAV, M4A, OGG, AAC, FLAC, WMA'
+                ]);
+            }
+
+            // Create unique filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($audio->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $audio->getClientOriginalExtension();
+            $newAudioName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Store in storage/app/public/audios
+                $audioPath = $audio->storeAs('audios', $newAudioName, 'public');
+
+                // Delete old audio if exists
+                if ($row->audio && Storage::disk('public')->exists($row->audio)) {
+                    Storage::disk('public')->delete($row->audio);
+                }
+
+                // Save DB path
+                $row->audio = $audioPath;
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Audio upload failed: ' . $e->getMessage()
+                ]);
+            }
+        }
+
+
         // --- Prepare update data with null defaults for empty fields ---
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
@@ -2296,6 +2347,12 @@ class GoogleSheetController extends Controller
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
+
+        // Only update audio if it was uploaded
+        if ($request->hasFile('audio')) {
+            $updateData['audio'] = $row->audio;
+        }
+
 
         // Start with existing created_by value
         $updateData['created_by'] = $row->created_by;
