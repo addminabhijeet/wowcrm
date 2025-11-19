@@ -134,7 +134,7 @@ $script ='<script>
 
                         {{-- Exe Remarks --}}
                         <td>
-                            @php $exeOptions = ['Document Send','Payment Completed']; @endphp
+                            @php $exeOptions = ['Document Send','Verification Completed']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                 <option value="">-- Select --</option>
                                 @foreach($exeOptions as $option)
