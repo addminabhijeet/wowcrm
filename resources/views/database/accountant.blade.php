@@ -577,8 +577,12 @@ $script ='<script>
         function addBlankRow() {
             let colKeys = [];
             let firstRow = tableBody.querySelector("tr");
+
             if (firstRow) {
-                firstRow.querySelectorAll("input[data-key], select[data-key]").forEach(cell => colKeys.push(cell.dataset.key));
+                // FIX: also capture td[data-key] so all columns are detected
+                firstRow.querySelectorAll("[data-key]").forEach(cell => {
+                    colKeys.push(cell.dataset.key);
+                });
             }
 
             let newRow = document.createElement("tr");
@@ -595,7 +599,12 @@ $script ='<script>
                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];
                     if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
                     if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
-                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
+
+                    cells += `<td><select class="form-select dynamic-dropdown" data-key="${k}">
+                <option value="" disabled selected>-- Select ${k} --</option>
+                ${opts.map(o => `<option value="${o}">${o}</option>`).join('')}
+            </select></td>`;
+
                 } else if (k === 'Amount') {
                     cells += `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount (469)"></td>`;
                 } else if (k === 'Location') {
@@ -610,7 +619,10 @@ $script ='<script>
                     cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
                 } else if (k === 'Name') {
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                } else if (k === 'Transaction ID') {
+                }
+
+                // THESE FIELDS WERE MISSING BECAUSE FIRST ROW DID NOT PROVIDE data-key
+                else if (k === 'Transaction ID') {
                     cells += `<td><input type="text" class="form-control" data-key="${k}" placeholder="Transaction ID"><span class="small-hint"></span></td>`;
                 } else if (k === 'Reference Number') {
                     cells += `<td><input type="text" class="form-control" data-key="${k}" placeholder="Reference Number"><span class="small-hint"></span></td>`;
@@ -622,11 +634,11 @@ $script ='<script>
                     cells += `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
                 } else if (k === 'View') {
                     cells += `<td>
-                    <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
-                    <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-                    <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
-                    <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-                </td>`;
+                <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
+                <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+                <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
+                <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+            </td>`;
                 }
             });
 
