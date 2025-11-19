@@ -113,7 +113,6 @@ $userImage = Auth::user()->image
                         </div>
                     </div>
                 </div>
-
                 @php
                 $user = Auth::user();
                 $notifications = $notifications ?? collect(); // fallback if not passed
@@ -137,7 +136,7 @@ $userImage = Auth::user()->image
                                 <h6 class="text-lg text-primary-light fw-semibold mb-0">Notifications</h6>
                             </div>
                             <span class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">
-                                {{ $notifications->count() }}
+                                {{ str_pad($notifications->count(), 2, '0', STR_PAD_LEFT) }}
                             </span>
                         </div>
 
@@ -147,17 +146,19 @@ $userImage = Auth::user()->image
                                 class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between {{ $loop->even ? 'bg-neutral-50' : '' }}">
                                 <div class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
                                     <span class="w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
+                                        @if(isset($notification->data['image']))
+                                        <img src="{{ asset($notification->data['image']) }}" alt="" class="w-100 h-100 rounded-circle">
+                                        @else
                                         <iconify-icon icon="carbon:notification-filled" class="icon text-xxl"></iconify-icon>
+                                        @endif
                                     </span>
                                     <div>
                                         <h6 class="text-md fw-semibold mb-4">
-                                            {{ $notification->data['message'] ?? 'New notification' }}
+                                            {{ $notification->data['title'] ?? 'Notification' }}
                                         </h6>
-                                        @if(isset($notification->data['row_id']))
-                                        <p class="mb-0 text-sm text-secondary-light">
-                                            Row ID: {{ $notification->data['row_id'] }}
+                                        <p class="mb-0 text-sm text-secondary-light text-w-200-px">
+                                            {{ $notification->data['message'] ?? 'New notification' }}
                                         </p>
-                                        @endif
                                     </div>
                                 </div>
                                 <span class="text-sm text-secondary-light flex-shrink-0">
@@ -175,6 +176,7 @@ $userImage = Auth::user()->image
                     </div>
                 </div>
                 @endif
+
 
 
 
