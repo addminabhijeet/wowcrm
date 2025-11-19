@@ -4229,7 +4229,8 @@ class GoogleSheetController extends Controller
             // Ensure it's truly the LAST part of created_by
             ->where(function ($q) use ($authUser) {
                 $q->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|accountant', $authUser->id . '|accountant'])
-                    ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|accountant', '0|accountant']);
+                    ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|accountant', '0|accountant'])
+                    ->whereRaw("(LENGTH(created_by) - LENGTH(REPLACE(created_by, 'accountant', ''))) / LENGTH('accountant') = 1");
             });
 
         // Filter by selected junior
