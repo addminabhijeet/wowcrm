@@ -645,7 +645,7 @@ $script ='<script>
                     url = "{{ route('accountantstore') }}";
                     method = "POST";
                 } else {
-                    url = "{{ route('accountantupdate') }}";
+                    url = "{{ route('accountantupdatecon') }}";
                     method = "POST";
                     formData.append("id", id);
                 }

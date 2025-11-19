@@ -4784,18 +4784,18 @@ class GoogleSheetController extends Controller
             if ($exeRemark === 'Payment Completed') {
                 $authUser = Auth::user();
 
-                // Replace "0|accountant" with "auth_id|accountant:0|trainer"
+                // Replace "0|accountant" with "auth_id|accountant:0|senior"
                 if (preg_match('/0\|accountant$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
                         '/0\|accountant$/',
-                        $authUser->id . '|accountant:0|trainer',
+                        $authUser->id . '|accountant:0|senior',
                         $updateData['created_by']
                     );
                 }
 
-                // Ensure ":0|trainer" exists at the end if missing
-                if (strpos($updateData['created_by'], ':0|trainer') === false) {
-                    $updateData['created_by'] .= ':0|trainer';
+                // Ensure ":0|senior" exists at the end if missing
+                if (strpos($updateData['created_by'], ':0|senior') === false) {
+                    $updateData['created_by'] .= ':0|senior';
                 }
             } elseif ($exeRemark === 'Ready To Paid') {
                 $tag = $id . '|accountant';
@@ -4808,26 +4808,6 @@ class GoogleSheetController extends Controller
                 // Append only if the last part exactly matches the tag
                 if ($lastPart === $tag) {
                     $updateData['created_by'] .= ':' . $zerotag;
-                }
-            } else {
-                // For all other remarks, apply "Revert To Senior" logic
-                // Match any integer followed by "|senior"
-                if (preg_match('/(\d+)\|senior/', $updateData['created_by'], $matches)) {
-                    $seniorId = $matches[1]; // Extract the integer
-                    $tag = $seniorId . '|senior';
-                    // Append only if tag already exists in created_by
-                    if (strpos($updateData['created_by'], $tag) !== false) {
-                        $updateData['created_by'] .= ':' . $tag;
-                    }
-                }
-
-                // Replace "0|accountant" with actual accountant ID (only if it ends with 0|accountant)
-                if (preg_match('/0\|accountant$/', $updateData['created_by'])) {
-                    $updateData['created_by'] = preg_replace(
-                        '/0\|accountant$/',
-                        $id . '|accountant',
-                        $updateData['created_by']
-                    );
                 }
             }
         }
