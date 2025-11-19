@@ -2363,23 +2363,20 @@ class GoogleSheetController extends Controller
             if ($exeRemark === 'Verification Completed') {
                 $authUser = Auth::user();
 
-                // Ensure ":0|accountant" exists at the end if missing
-                if (strpos($updateData['created_by'], ':0|senior') === false) {
-                    $updateData['created_by'] .= ':0|senior';
-                }
-
-                // Replace "0|senior" with "auth_id|senior:0|accountant"
+                // ✔ Proceed ONLY if created_by ends with "0|senior"
                 if (preg_match('/0\|senior$/', $updateData['created_by'])) {
+
+                    // Replace ending "0|senior" → "auth_id|senior:0|accountant"
                     $updateData['created_by'] = preg_replace(
                         '/0\|senior$/',
                         $authUser->id . '|senior:0|accountant',
                         $updateData['created_by']
                     );
-                }
 
-                // Ensure ":0|accountant" exists at the end if missing
-                if (strpos($updateData['created_by'], ':0|accountant') === false) {
-                    $updateData['created_by'] .= ':0|accountant';
+                    // Ensure ":0|accountant" exists only once at the end
+                    if (!preg_match('/0\|accountant$/', $updateData['created_by'])) {
+                        $updateData['created_by'] .= ':0|accountant';
+                    }
                 }
             } elseif ($exeRemark === 'Payment Completed') {
                 $authUser = Auth::user();
@@ -4133,7 +4130,7 @@ class GoogleSheetController extends Controller
                     // 🔥 MUST contain MINIMUM 2 occurrences of "accountant"
                     ->whereRaw("(LENGTH(created_by) - LENGTH(REPLACE(created_by, 'accountant', ''))) / LENGTH('accountant') >= 2");
             });
-            
+
 
         // Filter by selected junior
         if ($juniorUserId) {
