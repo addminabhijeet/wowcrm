@@ -1117,13 +1117,16 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
 
         $query = GoogleSheetData::where(function ($q) {
-            // Removed user_id|senior check
-            // Only keep the accountant part filter
+
             $q->where(function ($q2) {
-                $q2->whereRaw("created_by = '0|accountant'")
-                    ->orWhereRaw("created_by LIKE '0|accountant:%'")
-                    ->orWhereRaw("created_by LIKE '%:0|accountant'")
-                    ->orWhereRaw("created_by LIKE '%:0|accountant:%'");
+
+                // Fetch only rows with created_by containing ":0|senior" at the very end
+                $q2->where('created_by', 'LIKE', '%:0|senior')
+                    ->orWhere('created_by', 'LIKE', '0|accountant:0|senior')
+                    ->orWhere(function ($qq) {
+                        // Handle ANY_NUMBER|accountant:0|senior
+                        $qq->where('created_by', 'LIKE', '%|accountant:0|senior');
+                    });
             });
         });
 
@@ -1144,7 +1147,6 @@ class GoogleSheetController extends Controller
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
 
                 $names = [];
@@ -1164,7 +1166,6 @@ class GoogleSheetController extends Controller
                     }
                 }
 
-                // Join all names for forwarded chain
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -1174,14 +1175,12 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-
         if (request()->ajax()) {
             return view('database.partials.career_table', compact('data'))->render();
         }
 
         return view('database.seniorcon', compact('data'));
     }
-
 
 
     // -----------------------------
