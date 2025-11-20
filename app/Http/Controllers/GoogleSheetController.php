@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Http\Request;
 use App\Models\GoogleSheetData;
 use App\Models\Notification;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
 use App\Models\SmtpSetting;
@@ -4975,6 +4976,39 @@ class GoogleSheetController extends Controller
                 'data' => $dataText
             ]);
 
+            // Generate latest notification HTML using your existing latestNotification() logic
+            $admin = User::find(1); // Admin ID = 1
+            $latestNotification = Notification::with(['user', 'candidate'])
+                ->where('notifiable_id', 1)
+                ->where('notifiable_role', 'Admin')
+                ->latest()
+                ->first();
+
+            $newNotificationHtml = "";
+
+            if ($latestNotification) {
+                $msg = $latestNotification->data ?? '';
+                $userName = $latestNotification->user->name ?? 'Unknown User';
+                $userEmail = $latestNotification->user->email ?? '';
+
+                $candidate = $latestNotification->candidate;
+                $candidateName = $candidate->Name ?? null;
+                $candidateEmail = $candidate->Email_Address ?? null;
+                $candidatePhone = $candidate->Phone_Number ?? null;
+                $candidateCourse = $candidate->Course ?? null;
+
+                $newNotificationHtml = view('partials.single-notification', compact(
+                    'msg',
+                    'userName',
+                    'userEmail',
+                    'candidateName',
+                    'candidateEmail',
+                    'candidatePhone',
+                    'candidateCourse'
+                ))->render();
+            }
+
+
             return response()->json([
                 'success' => true,
                 'message' => 'Row updated successfully',
@@ -4982,7 +5016,8 @@ class GoogleSheetController extends Controller
                 'sheet_row_number' => $row->sheet_row_number,
                 'resume_path' => !empty($row->resume) ? true : false,
                 'mail_message' => $mailMessage,
-                'refresh_notification' => true
+                'refresh_notification' => true,
+                'html' => $newNotificationHtml   // <-- send latest notification item
             ]);
         } catch (\Exception $e) {
             return response()->json([

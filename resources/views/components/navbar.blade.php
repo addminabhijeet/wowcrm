@@ -149,7 +149,44 @@ $userImage = Auth::user()->image
                     </div>
                 </div>
 
+<script>
+    $(document).on("submit", "#accountantForm", function(e) {
+    e.preventDefault();
 
+    let formData = new FormData(this);
+
+    $.ajax({
+        url: "{{ route('accountant.updatecon') }}",
+        type: "POST",
+        data: formData,
+        processData: false,
+        contentType: false,
+
+        success: function(res) {
+            if (res.success) {
+
+                if (res.refresh_notification && res.html) {
+                    // Insert latest notification inside dropdown
+                    $(".max-h-400-px").prepend(res.html);
+
+                    // Update counter badge
+                    let count = parseInt($(".dropdown-menu-lg span.text-primary-600").text());
+                    $(".dropdown-menu-lg span.text-primary-600").text(count + 1);
+                }
+
+                Swal.fire("Updated!", res.message, "success");
+            } else {
+                Swal.fire("Error", res.message, "error");
+            }
+        },
+
+        error: function() {
+            Swal.fire("Error", "Something went wrong", "error");
+        }
+    });
+});
+
+</script>
 
 
 
