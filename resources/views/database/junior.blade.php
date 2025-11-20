@@ -23,10 +23,14 @@ $script ='<script>
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
                 <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
-            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
-                <option>Status</option>
-                <option>Active</option>
-                <option>Inactive</option>
+            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user" id="junior-filter">
+                <option value="">Select IT Recruiter</option>
+                @foreach ($juniorUsers as $junior)
+                <option value="{{ $junior->id }}">
+                    {{ $junior->name }}
+                    @if($junior->designation) ({{ $junior->designation }}) @endif
+                </option>
+                @endforeach
             </select>
         </div>
     </div>
@@ -846,6 +850,49 @@ $script ='<script>
     });
 </script>
 
+<style>
+    .input-hint {
+        font-size: .85rem;
+        color: #6c757d;
+    }
+
+    select.dynamic-dropdown {
+        min-width: 160px;
+    }
+
+    input.valid {
+        background-color: #d4edda;
+    }
+
+    input.invalid {
+        background-color: #f8d7da;
+    }
+
+    input.neutral {
+        background-color: #ffffff;
+    }
+
+    select.neutral {
+        background-color: #ffffff;
+    }
+
+    select.valid {
+        background-color: #d4edda;
+    }
+
+    .phone-hint,
+    .small-hint {
+        font-size: .8rem;
+        color: #6c757d;
+        display: block;
+        margin-top: 2px;
+    }
+</style>
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+
 <script>
     $(document).ready(function() {
 
@@ -1190,6 +1237,23 @@ $script ='<script>
         cursor: -webkit-grabbing;
     }
 </style>
+
+<script>
+    document.getElementById('junior-filter').addEventListener('change', function() {
+        let juniorId = this.value;
+        let search = document.getElementById('senior-search').value;
+
+        fetch("{{ route('google.sheet.senior') }}?junior_user=" + juniorId + "&search=" + search, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('senior-table-wrapper').innerHTML = html;
+            });
+    });
+</script>
 
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
