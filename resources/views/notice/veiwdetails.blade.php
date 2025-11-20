@@ -167,7 +167,7 @@ $script ='<script>
                     @forelse($notifications as $note)
                     @php
                     // Existing values (unchanged)
-                    $msg = $note->data['msg'] ?? '';
+                    $msg = $note->data ?? '';
                     $userName = $note->user->name ?? 'Unknown User';
                     $userEmail = $note->user->email ?? '';
 
