@@ -66,7 +66,7 @@ class DashboardController extends Controller
             ? $admin->notifications()->latest()->take(10)->get()
             : collect(); // empty collection if not admin
 
-        return view('components.navbar', compact('users', 'newUsers', 'notifications'));
+        return view('notice.veiwdetails', compact('users', 'newUsers', 'notifications'));
     }
 
 
