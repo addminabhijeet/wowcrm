@@ -23,7 +23,7 @@ $script ='<script>
 @section('content')
 
 <div class="row gy-4">
-    <div class="col-xxl-9">
+    <div class="col-xxl-3 col-lg-4">
         <div class="card h-100 p-0 email-card overflow-x-auto d-block">
             <div class="min-w-450-px d-flex flex-column justify-content-between h-100">
                 <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center gap-3 justify-content-between flex-wrap">
