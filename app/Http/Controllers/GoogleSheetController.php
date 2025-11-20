@@ -3254,100 +3254,34 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user');
-        $page = $request->input('page', 1);
+        $juniorUserId = $request->input('junior_user'); // dropdown value
+        $page = $request->input('page', 1); // ✅ Ensure page input handled
 
-        // -------------------------------------------------
-        // ✅ NEW: AJAX QUICK SEARCH (DO NOT TOUCH MAIN LOGIC)
-        // -------------------------------------------------
-        if ($request->ajax() && $search && strlen($search) >= 3) {
+        $userPattern = "%:" . $authUser->id . "|senior";
+        $zeroPattern = "%:0|senior";
 
-            $results = GoogleSheetData::where(function ($q) use ($search) {
-                $q->where('Name', 'LIKE', "%{$search}%")
-                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
-                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+            $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+
+                $q2->where('created_by', $authUser->id . '|senior')
+                    ->orWhere('created_by', '0|senior')
+                    ->orWhere('created_by', 'LIKE', $userPattern)
+                    ->orWhere('created_by', 'LIKE', $zeroPattern);
             })
-                ->limit(10)
-                ->get([
-                    'id',
-                    'sheet_row_number',
-                    'Name',
-                    'Email_Address',
-                    'Phone_Number',
-                    'Exe_Remarks',
-                    'created_by'
-                ]);
-
-            // Transform forwarded_by field (same logic used in main code)
-            $transformed = $results->map(function ($item) use ($authUser) {
-                $forwardedBy = '';
-
-                if (!empty($item->created_by)) {
-                    $entries = explode(':', $item->created_by);
-                    $names = [];
-
-                    foreach ($entries as $entry) {
-                        $parts = explode('|', $entry);
-                        $userId = $parts[0] ?? null;
-                        $role   = $parts[1] ?? 'unknown';
-
-                        if ($userId == $authUser->id) {
-                            $roleLabel = ($role === 'senior')
-                                ? 'IT Senior Recruiter'
-                                : (($role === 'junior') ? 'IT Recruiter' : $role);
-                            $names[] = "SELF ({$userId}) ({$roleLabel})";
-                        } elseif ($userId == 0) {
-                            $roleLabel = ($role === 'senior')
-                                ? 'IT Senior Recruiter'
-                                : (($role === 'junior') ? 'IT Recruiter' : $role);
-                            $names[] = "SYSTEM (0) ({$roleLabel})";
-                        } else {
-                            $user = \App\Models\User::where('is_deleted', 0)->find($userId);
-                            $name = $user ? $user->name : 'Unknown';
-                            $roleLabel = ($role === 'senior')
-                                ? 'IT Senior Recruiter'
-                                : (($role === 'junior') ? 'IT Recruiter' : $role);
-                            $names[] = "{$name} ({$userId}) ({$roleLabel})";
-                        }
-                    }
-
-                    $forwardedBy = implode(' → ', $names);
-                } else {
-                    $forwardedBy = 'N/A';
-                }
-
-                $item->forwarded_by = $forwardedBy;
-                return $item;
-            });
-
-            // No pagination needed for AJAX quick search
-            return view('database.partials.career_table', [
-                'data' => $transformed,
-                'juniorUsers' => [] // not used in table but passed to avoid errors
-            ])->render();
-        }
-
-        // -------------------------------------------------
-        // ORIGINAL MAIN LOGIC (UNTOUCHED)
-        // -------------------------------------------------
-
-        $userPattern = "%:" . $authUser->id . "|junior";
-
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
-            $q->where(function ($q2) use ($authUser, $userPattern) {
-                $q2->where('created_by', $authUser->id . '|junior')
-                    ->orWhere('created_by', 'LIKE', $userPattern);
-            })
-                ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
+                // EXCLUSION: Do NOT show rows having more than one "|senior"
+                ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
         });
 
+
+        // Filter by selected junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
+                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
             });
         }
 
+        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -3358,8 +3292,10 @@ class GoogleSheetController extends Controller
             });
         }
 
+        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
         $results = $query->orderBy('id', 'desc')->get();
 
+        // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -3401,6 +3337,7 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -3411,16 +3348,15 @@ class GoogleSheetController extends Controller
             ['path' => url()->current(), 'query' => $request->query()]
         );
 
+
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'designation']);
 
+        // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
-            return view('database.partials.career_table', [
-                'data' => $pagedData,
-                'juniorUsers' => $juniorUsers
-            ])->render();
+            return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
         return view('database.junior', [
