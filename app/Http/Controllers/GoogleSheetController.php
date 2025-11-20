@@ -3371,7 +3371,7 @@ class GoogleSheetController extends Controller
 
         $query = GoogleSheetData::where(function ($q) use ($userPattern) {
             // Check first segment matches your user pattern
-            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$userPattern]);
+            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) LIKE ?", [$userPattern]);
         })
             ->where(function ($q) {
                 // Check second segment is senior (any ID or 0)
