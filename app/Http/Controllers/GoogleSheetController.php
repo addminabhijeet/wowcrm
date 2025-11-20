@@ -3359,26 +3359,27 @@ class GoogleSheetController extends Controller
         return view('database.junior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
-
     public function juniorcandm(Request $request)
     {
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
-        $page = $request->input('page', 1); // ✅ Ensure page input handled
+        $juniorUserId = $request->input('junior_user');
+        $page = $request->input('page', 1);
+
+        // Match first segment ":{id}|junior"
         $userPattern = "%:" . $authUser->id . "|junior";
 
         $query = GoogleSheetData::where(function ($q) use ($userPattern) {
-            // Check first segment matches your user pattern
+            // First segment = junior of current user
             $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) LIKE ?", [$userPattern]);
         })
             ->where(function ($q) {
-                // Check second segment is senior (any ID or 0)
+                // Second segment must be senior
                 $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
             });
 
-        // Filter by selected junior
+        // Filter by specific junior user (dropdown)
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
@@ -3386,7 +3387,7 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // Search or specific row filter
+        // Search or row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -3397,10 +3398,10 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
+        // Order by id DESC (same as senior method)
         $results = $query->orderBy('id', 'desc')->get();
 
-        // ✅ Transform after getting all filtered data
+        // Transform forwarding chain (same as updated method)
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -3414,21 +3415,21 @@ class GoogleSheetController extends Controller
                     $role   = $parts[1] ?? 'unknown';
 
                     if ($userId == $authUser->id) {
-                        $roleLabel = ($role === 'senior')
+                        $roleLabel = $role === 'senior'
                             ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                            : ($role === 'junior' ? 'IT Recruiter' : $role);
                         $names[] = "SELF ({$userId}) ({$roleLabel})";
                     } elseif ($userId == 0) {
-                        $roleLabel = ($role === 'senior')
+                        $roleLabel = $role === 'senior'
                             ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                            : ($role === 'junior' ? 'IT Recruiter' : $role);
                         $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
                         $user = \App\Models\User::where('is_deleted', 0)->find($userId);
                         $name = $user ? $user->name : 'Unknown';
-                        $roleLabel = ($role === 'senior')
+                        $roleLabel = $role === 'senior'
                             ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                            : ($role === 'junior' ? 'IT Recruiter' : $role);
                         $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
                 }
@@ -3442,31 +3443,18 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // ✅ Apply pagination AFTER transformation (like junior)
+        // Apply pagination
         $perPage = 10;
-        $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($currentPage, $perPage),
+            $transformed->forPage($page, $perPage),
             $transformed->count(),
             $perPage,
-            $currentPage,
+            $page,
             ['path' => url()->current(), 'query' => $request->query()]
         );
 
-
-        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
-            ->where('status', 1)
-            ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
-
-        // ✅ Handle AJAX pagination and search
-        if ($request->ajax()) {
-            return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
-        }
-
-        return view('database.juniorcandm', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+        return view('database.juniorcandm', compact('pagedData'));
     }
-
 
 
 
