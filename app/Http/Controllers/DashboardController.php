@@ -11,6 +11,7 @@ use Illuminate\Http\Request;
 use App\Models\User;
 use App\Models\Payment;
 use App\Models\TimerSetting;
+use App\Models\Notification;
 use Illuminate\Support\Facades\Mail;
 use App\Models\SmtpSetting;
 use Carbon\Carbon;
@@ -52,22 +53,25 @@ class DashboardController extends Controller
 
     public function adminnotification()
     {
-        // Only users who are not deleted
         $users = User::where('is_deleted', 0)->get();
 
-        // Only new users created in the last 30 days
         $newUsers = User::where('is_deleted', 0)
             ->where('created_at', '>=', Carbon::now()->subDays(30))
             ->get();
-        /** @var \App\Models\User $admin */
-        // Fetch latest notifications for the logged-in admin
+
         $admin = Auth::user();
-        $notifications = $admin && $admin->role === 'admin'
-            ? $admin->notifications()->latest()->take(10)->get()
-            : collect(); // empty collection if not admin
+
+        // Fetch notifications for logged-in admin
+        $notifications = Notification::where('notifiable_id', $admin->id)
+            ->where('notifiable_role', 'Admin')
+            ->latest()
+            ->take(10)
+            ->get();
 
         return view('notice.veiwdetails', compact('users', 'newUsers', 'notifications'));
     }
+
+
 
 
 

@@ -18,9 +18,12 @@ class Notification extends Model
     ];
 
     protected $casts = [
-        'data' => 'array',     // JSON data
+        'data' => 'array',     // JSON → array
         'read_at' => 'datetime',
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'notifiable_id');
+    }
 }
