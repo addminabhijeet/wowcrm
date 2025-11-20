@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
-        $title='Email';
-        $subTitle = 'Components / Email';
+        $title='Notice';
+        $subTitle = 'Admin Dashboard';
         $script ='<script>
                         // ========================= Adjust Textarea Height depending of text lines(default height 40px) Js Start ===========================
                         function adjustHeight(textarea) {
