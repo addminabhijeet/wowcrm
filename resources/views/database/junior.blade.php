@@ -914,7 +914,7 @@ $script ='<script>
         // -----------------------------
         function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
             $.ajax({
-                url: "{{ route('google.sheet.senior') }}",
+                url: "{{ route('google.sheet.junior') }}",
                 type: 'GET',
                 data: {
                     search,
@@ -1243,7 +1243,7 @@ $script ='<script>
         let juniorId = this.value;
         let search = document.getElementById('senior-search').value;
 
-        fetch("{{ route('google.sheet.senior') }}?junior_user=" + juniorId + "&search=" + search, {
+        fetch("{{ route('google.sheet.junior') }}?junior_user=" + juniorId + "&search=" + search, {
                 headers: {
                     'X-Requested-With': 'XMLHttpRequest'
                 }
