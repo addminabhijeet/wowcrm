@@ -18,12 +18,17 @@ class Notification extends Model
     ];
 
     protected $casts = [
-        'data' => 'array',     // JSON → array
+        'data' => 'array',
         'read_at' => 'datetime',
     ];
 
     public function user()
     {
         return $this->belongsTo(User::class, 'notifiable_id');
+    }
+
+    public function candidate()
+    {
+        return $this->belongsTo(GoogleSheetData::class, 'candidate_id');
     }
 }

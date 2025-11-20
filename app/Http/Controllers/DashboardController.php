@@ -61,8 +61,9 @@ class DashboardController extends Controller
 
         $admin = Auth::user();
 
-        // Fetch notifications for logged-in admin
-        $notifications = Notification::where('notifiable_id', $admin->id)
+        // Fetch notifications including candidate details
+        $notifications = Notification::with('candidate')
+            ->where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'Admin')
             ->latest()
             ->take(10)
@@ -70,6 +71,7 @@ class DashboardController extends Controller
 
         return view('notice.veiwdetails', compact('users', 'newUsers', 'notifications'));
     }
+
 
 
 
