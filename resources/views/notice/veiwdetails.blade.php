@@ -23,9 +23,10 @@ $script ='<script>
 @section('content')
 
 <div class="row gy-4">
-    <div class="col-xxl-3 col-lg-4">
-        <div class="card h-100 p-0 email-card overflow-x-auto d-block">
-            <div class="min-w-450-px d-flex flex-column justify-content-between h-100">
+    <div class="col-12"> <!-- FULL WIDTH -->
+        <div class="card h-100 p-0 email-card w-100"> <!-- Ensure card is 100% -->
+            <div class="d-flex flex-column justify-content-between h-100 w-100"> <!-- remove min width -->
+
                 <div class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center gap-3 justify-content-between flex-wrap">
                     <div class="d-flex align-items-center gap-2">
                         <button class="text-secondary-light d-flex me-8">
@@ -42,16 +43,15 @@ $script ='<script>
                         </button>
                     </div>
                 </div>
+
                 <div class="card-body p-0">
 
                     @forelse($notifications as $note)
                     @php
-                    // Existing values (unchanged)
                     $msg = $note->data ?? '';
                     $userName = $note->user->name ?? 'Unknown User';
                     $userEmail = $note->user->email ?? '';
 
-                    // NEW: Candidate details
                     $candidate = $note->candidate;
                     $candidateName = $candidate->Name ?? null;
                     $candidateEmail = $candidate->Email_Address ?? null;
@@ -59,7 +59,7 @@ $script ='<script>
                     $candidateCourse = $candidate->Course ?? null;
                     @endphp
 
-                    <div class="py-16 px-24 border-bottom">
+                    <div class="py-16 px-24 border-bottom w-100">
                         <div class="d-flex align-items-start gap-3">
 
                             <img src="{{ asset('assets/images/user-list/user-list1.png') }}"
@@ -71,7 +71,6 @@ $script ='<script>
                                     <h6 class="mb-0 text-lg">
                                         {{ $userName }}
 
-                                        {{-- Display candidate name if available --}}
                                         @if($candidateName)
                                         <span class="text-primary-600 ms-2">({{ $candidateName }})</span>
                                         @endif
@@ -80,7 +79,6 @@ $script ='<script>
                                     <span class="text-secondary-light text-md">
                                         {{ $userEmail }}
 
-                                        {{-- Candidate Email --}}
                                         @if($candidateEmail)
                                         • <span class="text-primary-500">{{ $candidateEmail }}</span>
                                         @endif
@@ -88,10 +86,8 @@ $script ='<script>
                                 </div>
 
                                 <div class="mt-20">
-                                    {{-- Notification message --}}
                                     <p class="mb-8 text-primary-light">{{ $msg }}</p>
 
-                                    {{-- Additional candidate details --}}
                                     @if($candidatePhone)
                                     <p class="mb-4 text-primary-light">Phone: {{ $candidatePhone }}</p>
                                     @endif
@@ -110,10 +106,12 @@ $script ='<script>
                         No notifications found.
                     </div>
                     @endforelse
+
                 </div>
             </div>
         </div>
     </div>
 </div>
+
 
 @endsection
