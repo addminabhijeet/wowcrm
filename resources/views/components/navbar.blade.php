@@ -149,7 +149,7 @@ $userImage = Auth::user()->image
                     </div>
                 </div>
 
-<script>
+<!-- <script>
     $(document).on("submit", "#accountantForm", function(e) {
     e.preventDefault();
 
@@ -166,10 +166,9 @@ $userImage = Auth::user()->image
             if (res.success) {
 
                 if (res.refresh_notification && res.html) {
-                    // Insert latest notification inside dropdown
+                    
                     $(".max-h-400-px").prepend(res.html);
 
-                    // Update counter badge
                     let count = parseInt($(".dropdown-menu-lg span.text-primary-600").text());
                     $(".dropdown-menu-lg span.text-primary-600").text(count + 1);
                 }
@@ -186,7 +185,7 @@ $userImage = Auth::user()->image
     });
 });
 
-</script>
+</script> -->
 
 
 
