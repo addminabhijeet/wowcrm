@@ -26,10 +26,6 @@
             <div class="col-xxl-3">
                 <div class="card h-100 p-0">
                     <div class="card-body p-24">
-                        <button type="button" class="btn btn-primary text-sm btn-sm px-12 py-12 w-100 radius-8 d-flex align-items-center gap-2 mb-16" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                            <iconify-icon icon="fa6-regular:square-plus" class="icon text-lg line-height-1"></iconify-icon>
-                            Compose
-                        </button>
 
                         <div class="mt-16">
                             <ul>
@@ -157,7 +153,7 @@
                                 <h6 class="mb-0 text-lg">Kathryn Murphy</h6>
                                 <span class="bg-primary-50 text-primary-600 text-sm radius-4 px-8">Personal</span>
                             </div>
-                            <div class="d-flex align-items-center gap-3">
+                            <div class="d-flex align-items-center gap-3"> 
                                 <button class="text-secondary-light d-flex">
                                     <iconify-icon icon="mdi:star-outline" class="icon text-xxl line-height-1"></iconify-icon>
                                 </button>
