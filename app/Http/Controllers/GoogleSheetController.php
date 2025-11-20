@@ -3251,33 +3251,35 @@ class GoogleSheetController extends Controller
 
     public function junior(Request $request)
     {
-        // If AJAX search is triggered, use juniorSuggestions() logic
-        if ($request->ajax() && $request->has('query')) {
+        $authUser = Auth::user();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+        $juniorUserId = $request->input('junior_user');
+        $page = $request->input('page', 1);
 
-            $query = $request->input('query');
+        // -------------------------------------------------
+        // ✅ NEW: AJAX QUICK SEARCH (DO NOT TOUCH MAIN LOGIC)
+        // -------------------------------------------------
+        if ($request->ajax() && $search && strlen($search) >= 3) {
 
-            $results = [];
+            $results = GoogleSheetData::where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            })
+                ->limit(10)
+                ->get([
+                    'id',
+                    'sheet_row_number',
+                    'Name',
+                    'Email_Address',
+                    'Phone_Number',
+                    'Exe_Remarks',
+                    'created_by'
+                ]);
 
-            if ($query && strlen($query) >= 3) {
-                $results = GoogleSheetData::where(function ($q) use ($query) {
-                    $q->where('Name', 'LIKE', "%{$query}%")
-                        ->orWhere('Email_Address', 'LIKE', "%{$query}%")
-                        ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
-                })
-                    ->limit(10)
-                    ->get([
-                        'id',
-                        'sheet_row_number',
-                        'Name',
-                        'Email_Address',
-                        'Phone_Number',
-                        'Exe_Remarks',
-                        'created_by'
-                    ]);
-            }
-
-            // Apply forwarded_by transformation (same as suggestions)
-            $transformed = collect($results)->map(function ($item) {
+            // Transform forwarded_by field (same logic used in main code)
+            $transformed = $results->map(function ($item) use ($authUser) {
                 $forwardedBy = '';
 
                 if (!empty($item->created_by)) {
@@ -3289,12 +3291,23 @@ class GoogleSheetController extends Controller
                         $userId = $parts[0] ?? null;
                         $role   = $parts[1] ?? 'unknown';
 
-                        if ($userId == 0) {
-                            $names[] = "SYSTEM (0) ({$role})";
+                        if ($userId == $authUser->id) {
+                            $roleLabel = ($role === 'senior')
+                                ? 'IT Senior Recruiter'
+                                : (($role === 'junior') ? 'IT Recruiter' : $role);
+                            $names[] = "SELF ({$userId}) ({$roleLabel})";
+                        } elseif ($userId == 0) {
+                            $roleLabel = ($role === 'senior')
+                                ? 'IT Senior Recruiter'
+                                : (($role === 'junior') ? 'IT Recruiter' : $role);
+                            $names[] = "SYSTEM (0) ({$roleLabel})";
                         } else {
                             $user = \App\Models\User::where('is_deleted', 0)->find($userId);
                             $name = $user ? $user->name : 'Unknown';
-                            $names[] = "{$name} ({$userId}) ({$role})";
+                            $roleLabel = ($role === 'senior')
+                                ? 'IT Senior Recruiter'
+                                : (($role === 'junior') ? 'IT Recruiter' : $role);
+                            $names[] = "{$name} ({$userId}) ({$roleLabel})";
                         }
                     }
 
@@ -3307,24 +3320,21 @@ class GoogleSheetController extends Controller
                 return $item;
             });
 
-            return response()->json($transformed);
+            // No pagination needed for AJAX quick search
+            return view('database.partials.career_table', [
+                'data' => $transformed,
+                'juniorUsers' => [] // not used in table but passed to avoid errors
+            ])->render();
         }
 
-        // -----------------------------------------------------
-        // BELOW IS YOUR ORIGINAL FULL PAGE LOAD LOGIC (UNTOUCHED)
-        // -----------------------------------------------------
-
-        $authUser = Auth::user();
-        $search = $request->input('search');
-        $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user');
-        $page = $request->input('page', 1);
+        // -------------------------------------------------
+        // ORIGINAL MAIN LOGIC (UNTOUCHED)
+        // -------------------------------------------------
 
         $userPattern = "%:" . $authUser->id . "|junior";
 
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
             $q->where(function ($q2) use ($authUser, $userPattern) {
-
                 $q2->where('created_by', $authUser->id . '|junior')
                     ->orWhere('created_by', 'LIKE', $userPattern);
             })
@@ -3393,7 +3403,6 @@ class GoogleSheetController extends Controller
 
         $perPage = 10;
         $currentPage = $page;
-
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
             $transformed->forPage($currentPage, $perPage),
             $transformed->count(),
@@ -3408,10 +3417,16 @@ class GoogleSheetController extends Controller
             ->get(['id', 'name', 'email', 'phone', 'designation']);
 
         if ($request->ajax()) {
-            return view('database.partials.career_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.career_table', [
+                'data' => $pagedData,
+                'juniorUsers' => $juniorUsers
+            ])->render();
         }
 
-        return view('database.junior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+        return view('database.junior', [
+            'data' => $pagedData,
+            'juniorUsers' => $juniorUsers
+        ]);
     }
 
 
