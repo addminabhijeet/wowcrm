@@ -66,6 +66,44 @@ class DashboardController extends Controller
         return view('notice.veiwdetails', compact('users', 'newUsers', 'notifications'));
     }
 
+    public function latestNotification()
+    {
+        $admin = Auth::user();
+
+        $notification = Notification::with(['user', 'candidate'])
+            ->where('notifiable_id', $admin->id)
+            ->where('notifiable_role', 'Admin')
+            ->latest()
+            ->first();
+
+        if (!$notification) {
+            return response()->json(['status' => false, 'html' => '<div class="p-16 text-center">No notifications</div>']);
+        }
+
+        $msg = $notification->data ?? '';
+        $userName = $notification->user->name ?? 'Unknown User';
+        $userEmail = $notification->user->email ?? '';
+
+        $candidate     = $notification->candidate;
+        $candidateName = $candidate->Name ?? null;
+        $candidateEmail = $candidate->Email_Address ?? null;
+        $candidatePhone = $candidate->Phone_Number ?? null;
+        $candidateCourse = $candidate->Course ?? null;
+
+        // Render HTML (same design as your blade)
+        $html = view('partials.single-notification', compact(
+            'msg',
+            'userName',
+            'userEmail',
+            'candidateName',
+            'candidateEmail',
+            'candidatePhone',
+            'candidateCourse'
+        ))->render();
+
+        return response()->json(['status' => true, 'html' => $html]);
+    }
+
 
 
 
