@@ -1954,9 +1954,18 @@ class GoogleSheetController extends Controller
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Validate it's a PDF
-            if ($file->getMimeType() !== 'application/pdf') {
-                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            // Allowed Word MIME types
+            $allowed = [
+                'application/pdf',
+                'application/msword', // .doc
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+            ];
+
+            if (!in_array($file->getMimeType(), $allowed)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only PDF or Word files (.pdf, .doc, .docx) are allowed'
+                ]);
             }
 
             // Generate unique filename
@@ -2248,10 +2257,20 @@ class GoogleSheetController extends Controller
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Validate it's a PDF
-            if ($file->getMimeType() !== 'application/pdf') {
-                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            // Allowed Word MIME types
+            $allowed = [
+                'application/pdf',
+                'application/msword', // .doc
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+            ];
+
+            if (!in_array($file->getMimeType(), $allowed)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only PDF or Word files (.pdf, .doc, .docx) are allowed'
+                ]);
             }
+
 
             // Generate unique filename
             $timestamp = now()->format('Ymd_His');
