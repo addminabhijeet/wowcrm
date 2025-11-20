@@ -136,5 +136,3 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
     </div>
 </div>
 
-
-@endsection
