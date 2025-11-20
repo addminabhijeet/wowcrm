@@ -34,7 +34,7 @@
                         <div class="mt-16">
                             <ul>
                                 <li class="item-active mb-4">
-                                    <a  href="{{ route('email') }}" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
+                                    <a  href="" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
                                         <span class="d-flex align-items-center gap-10 justify-content-between w-100">
                                             <span class="d-flex align-items-center gap-10">
                                                 <span class="icon text-xxl line-height-1 d-flex">
@@ -47,7 +47,7 @@
                                     </a>
                                 </li>
                                 <li class="mb-4">
-                                <a  href="{{ route('starred') }}" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
+                                <a  href="" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
                                         <span class="d-flex align-items-center gap-10 justify-content-between w-100">
                                             <span class="d-flex align-items-center gap-10">
                                                 <span class="icon text-xxl line-height-1 d-flex">
@@ -60,7 +60,7 @@
                                     </a>
                                 </li>
                                 <li class="mb-4">
-                                    <a  href="{{ route('email') }}" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
+                                    <a  href="" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
                                         <span class="d-flex align-items-center gap-10 justify-content-between w-100">
                                             <span class="d-flex align-items-center gap-10">
                                                 <span class="icon text-xxl line-height-1 d-flex">
@@ -73,7 +73,7 @@
                                     </a>
                                 </li>
                                 <li class="mb-4">
-                                    <a  href="{{ route('email') }}" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
+                                    <a  href="" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
                                         <span class="d-flex align-items-center gap-10 justify-content-between w-100">
                                             <span class="d-flex align-items-center gap-10">
                                                 <span class="icon text-xxl line-height-1 d-flex">
@@ -86,7 +86,7 @@
                                     </a>
                                 </li>
                                 <li class="mb-4">
-                                    <a  href="{{ route('email') }}" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
+                                    <a  href="" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
                                         <span class="d-flex align-items-center gap-10 justify-content-between w-100">
                                             <span class="d-flex align-items-center gap-10">
                                                 <span class="icon text-xxl line-height-1 d-flex">
@@ -99,7 +99,7 @@
                                     </a>
                                 </li>
                                 <li>
-                                    <a  href="{{ route('email') }}" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
+                                    <a  href="" class="bg-hover-primary-50 px-12 py-8 w-100 radius-8 text-secondary-light">
                                         <span class="d-flex align-items-center gap-10 justify-content-between w-100">
                                             <span class="d-flex align-items-center gap-10">
                                                 <span class="icon text-xxl line-height-1 d-flex">
