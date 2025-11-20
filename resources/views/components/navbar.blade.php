@@ -113,69 +113,56 @@ $userImage = Auth::user()->image
                         </div>
                     </div>
                 </div>
-                @php
-                $user = Auth::user();
-                $notifications = $notifications ?? collect(); // fallback if not passed
-                @endphp
+                
 
-                @if($user && $user->role === 'admin')
                 <div class="dropdown">
-                    <button class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
-                        type="button" data-bs-toggle="dropdown">
+                    <button class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center" type="button" data-bs-toggle="dropdown">
                         <iconify-icon icon="iconoir:bell" class="text-primary-light text-xl"></iconify-icon>
-                        @if($notifications->count() > 0)
-                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                            {{ $notifications->count() }}
-                        </span>
-                        @endif
                     </button>
-
                     <div class="dropdown-menu to-top dropdown-menu-lg p-0">
                         <div class="m-16 py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
                             <div>
                                 <h6 class="text-lg text-primary-light fw-semibold mb-0">Notifications</h6>
                             </div>
-                            <span class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">
-                                {{ str_pad($notifications->count(), 2, '0', STR_PAD_LEFT) }}
-                            </span>
+                            <span class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">05</span>
                         </div>
 
                         <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
-                            @forelse($notifications as $notification)
-                            <a href="javascript:void(0)"
-                                class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between {{ $loop->even ? 'bg-neutral-50' : '' }}">
+                            <a href="javascript:void(0)" class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
                                 <div class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
                                     <span class="w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
-                                        @if(isset($notification->data['image']))
-                                        <img src="{{ asset($notification->data['image']) }}" alt="" class="w-100 h-100 rounded-circle">
-                                        @else
-                                        <iconify-icon icon="carbon:notification-filled" class="icon text-xxl"></iconify-icon>
-                                        @endif
+                                        <iconify-icon icon="bitcoin-icons:verify-outline" class="icon text-xxl"></iconify-icon>
                                     </span>
                                     <div>
-                                        <h6 class="text-md fw-semibold mb-4">
-                                            {{ $notification->data['title'] ?? 'Notification' }}
-                                        </h6>
-                                        <p class="mb-0 text-sm text-secondary-light text-w-200-px">
-                                            {{ $notification->data['message'] ?? 'New notification' }}
-                                        </p>
+                                        <h6 class="text-md fw-semibold mb-4">Congratulations</h6>
+                                        <p class="mb-0 text-sm text-secondary-light text-w-200-px">Your profile has been Verified. Your profile has been Verified</p>
                                     </div>
                                 </div>
-                                <span class="text-sm text-secondary-light flex-shrink-0">
-                                    {{ $notification->created_at->diffForHumans() }}
-                                </span>
+                                <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
                             </a>
-                            @empty
-                            <p class="px-24 py-12 text-sm text-secondary-light">No notifications</p>
-                            @endforelse
+
+                            <a href="javascript:void(0)" class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between bg-neutral-50">
+                                <div class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
+                                    <span class="w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
+                                        <img src="{{ asset('assets/images/notification/profile-1.png') }}" alt="">
+                                    </span>
+                                    <div>
+                                        <h6 class="text-md fw-semibold mb-4">Ronald Richards</h6>
+                                        <p class="mb-0 text-sm text-secondary-light text-w-200-px">You can stitch between artboards</p>
+                                    </div>
+                                </div>
+                                <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
+                            </a>
+
                         </div>
 
                         <div class="text-center py-12 px-16">
-                            <a href="{{ route('admin.notifications') }}" class="text-primary-600 fw-semibold text-md">See All Notifications</a>
+                            <a href="{{ route('admin.notifications') }}" class="text-primary-600 fw-semibold text-md">See All Notification</a>
                         </div>
+
                     </div>
                 </div>
-                @endif
+
 
 
 
