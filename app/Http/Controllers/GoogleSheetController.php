@@ -3257,19 +3257,16 @@ class GoogleSheetController extends Controller
         $juniorUserId = $request->input('junior_user'); // dropdown value
         $page = $request->input('page', 1); // ✅ Ensure page input handled
 
-        $userPattern = "%:" . $authUser->id . "|senior";
-        $zeroPattern = "%:0|senior";
+        $userPattern = "%:" . $authUser->id . "|junior";
 
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
+            $q->where(function ($q2) use ($authUser, $userPattern) {
 
-                $q2->where('created_by', $authUser->id . '|senior')
-                    ->orWhere('created_by', '0|senior')
-                    ->orWhere('created_by', 'LIKE', $userPattern)
-                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+                $q2->where('created_by', $authUser->id . '|junior')
+                    ->orWhere('created_by', 'LIKE', $userPattern);
             })
-                // EXCLUSION: Do NOT show rows having more than one "|senior"
-                ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
+                // EXCLUSION: Do NOT show rows having more than one "|junior"
+                ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
         });
 
 
@@ -3277,7 +3274,7 @@ class GoogleSheetController extends Controller
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
             });
         }
 
@@ -3356,15 +3353,11 @@ class GoogleSheetController extends Controller
 
         // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
-            return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.career_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
-        return view('database.junior', [
-            'data' => $pagedData,
-            'juniorUsers' => $juniorUsers
-        ]);
+        return view('database.junior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
-
 
 
     public function juniorcandm()
