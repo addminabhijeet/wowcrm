@@ -3495,14 +3495,17 @@ class GoogleSheetController extends Controller
             $file = $request->file('resume');
 
             // Allowed Word MIME types
-            $allowedTypes = [
+            $allowed = [
+                'application/pdf',
                 'application/msword', // .doc
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
             ];
 
-            // Validate it's a Word file
-            if (!in_array($file->getMimeType(), $allowedTypes)) {
-                return response()->json(['success' => false, 'message' => 'Only Word files (.doc, .docx) are allowed']);
+            if (!in_array($file->getMimeType(), $allowed)) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Only PDF or Word files (.pdf, .doc, .docx) are allowed'
+                ]);
             }
 
             // Generate unique filename
