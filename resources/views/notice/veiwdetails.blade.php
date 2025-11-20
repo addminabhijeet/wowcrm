@@ -34,14 +34,6 @@ $script ='<script>
                         </button>
                         <h6 class="mb-0 text-lg">Payment Notifications</h6>
                     </div>
-                    <div class="d-flex align-items-center gap-3">
-                        <button class="text-secondary-light d-flex">
-                            <iconify-icon icon="mdi:star-outline" class="icon text-xxl line-height-1"></iconify-icon>
-                        </button>
-                        <button class="text-secondary-light d-flex">
-                            <iconify-icon icon="material-symbols:delete-outline" class="icon text-xxl line-height-1"></iconify-icon>
-                        </button>
-                    </div>
                 </div>
 
                 <div class="card-body p-0">
