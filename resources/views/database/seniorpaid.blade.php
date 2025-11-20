@@ -215,16 +215,21 @@ $script ='<script>
 
                         {{-- View (Resume) --}}
                         <td>
-                            <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
+                            <input type="file" accept=".pdf, .doc, .docx"
+                                class="d-none resume-input" data-key="View">
+
                             <button type="button" class="btn btn-sm btn-info upload-btn">
                                 {{ !empty($row->resume) ? 'Change File' : 'Upload' }}
                             </button>
 
                             @if(!empty($row->resume))
-                            <a href="{{ url('dashboard/senior/google-sheet/view-resume/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
-                            <a href="{{ url('dashboard/senior/google-sheet/download-resume/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download</a>
+                            <a href="{{ url('dashboard/junior/google-sheet/view-resume/'.$row->id) }}"
+                                target="_blank" class="btn btn-sm btn-primary view-btn">View File</a>
+
+                            <a href="{{ url('dashboard/junior/google-sheet/download-resume/'.$row->id) }}"
+                                class="btn btn-sm btn-secondary download-btn">Download</a>
                             @else
-                            <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
+                            <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
                             <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                             @endif
                         </td>
