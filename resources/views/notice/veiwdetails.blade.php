@@ -166,9 +166,17 @@ $script ='<script>
 
                     @forelse($notifications as $note)
                     @php
+                    // Existing values (unchanged)
                     $msg = $note->data['msg'] ?? '';
                     $userName = $note->user->name ?? 'Unknown User';
                     $userEmail = $note->user->email ?? '';
+
+                    // NEW: Candidate details
+                    $candidate = $note->candidate;
+                    $candidateName = $candidate->Name ?? null;
+                    $candidateEmail = $candidate->Email_Address ?? null;
+                    $candidatePhone = $candidate->Phone_Number ?? null;
+                    $candidateCourse = $candidate->Course ?? null;
                     @endphp
 
                     <div class="py-16 px-24 border-bottom">
@@ -180,23 +188,47 @@ $script ='<script>
 
                             <div>
                                 <div class="d-flex align-items-center flex-wrap gap-2">
-                                    <h6 class="mb-0 text-lg">{{ $userName }}</h6>
-                                    <span class="text-secondary-light text-md">{{ $userEmail }}</span>
+                                    <h6 class="mb-0 text-lg">
+                                        {{ $userName }}
+
+                                        {{-- Display candidate name if available --}}
+                                        @if($candidateName)
+                                        <span class="text-primary-600 ms-2">({{ $candidateName }})</span>
+                                        @endif
+                                    </h6>
+
+                                    <span class="text-secondary-light text-md">
+                                        {{ $userEmail }}
+
+                                        {{-- Candidate Email --}}
+                                        @if($candidateEmail)
+                                        • <span class="text-primary-500">{{ $candidateEmail }}</span>
+                                        @endif
+                                    </span>
                                 </div>
 
                                 <div class="mt-20">
-                                    <p class="mb-0 text-primary-light">{{ $msg }}</p>
+                                    {{-- Notification message --}}
+                                    <p class="mb-8 text-primary-light">{{ $msg }}</p>
+
+                                    {{-- Additional candidate details --}}
+                                    @if($candidatePhone)
+                                    <p class="mb-4 text-primary-light">Phone: {{ $candidatePhone }}</p>
+                                    @endif
+
+                                    @if($candidateCourse)
+                                    <p class="mb-0 text-primary-light">Course: {{ $candidateCourse }}</p>
+                                    @endif
                                 </div>
                             </div>
 
                         </div>
                     </div>
-                    @empty
 
+                    @empty
                     <div class="p-20 text-center text-primary-light">
                         No notifications found.
                     </div>
-
                     @endforelse
 
                 </div>
