@@ -7,29 +7,8 @@
 
         <div>
             <h6 class="text-md fw-semibold mb-4">
-                {{ $msg ?? 'New Notification' }}
+                {!! nl2br(e($msg)) !!}
             </h6>
-
-            {{-- Candidate / User Info --}}
-            <p class="mb-0 text-sm text-secondary-light text-w-200-px">
-                <strong>User:</strong> {{ $userName }} ({{ $userEmail }}) <br>
-
-                @if($candidateName)
-                    <strong>Candidate:</strong> {{ $candidateName }} <br>
-                @endif
-
-                @if($candidateEmail)
-                    <strong>Email:</strong> {{ $candidateEmail }} <br>
-                @endif
-
-                @if($candidatePhone)
-                    <strong>Phone:</strong> {{ $candidatePhone }} <br>
-                @endif
-
-                @if($candidateCourse)
-                    <strong>Course:</strong> {{ $candidateCourse }} <br>
-                @endif
-            </p>
         </div>
     </div>
 
