@@ -113,33 +113,26 @@ $userImage = Auth::user()->image
                         </div>
                     </div>
                 </div>
-                
+
 
                 <div class="dropdown">
-                    <button class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center" type="button" data-bs-toggle="dropdown">
+                    <button id="notificationDropdownBtn"
+                        class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
+                        type="button" data-bs-toggle="dropdown">
                         <iconify-icon icon="iconoir:bell" class="text-primary-light text-xl"></iconify-icon>
                     </button>
+
                     <div class="dropdown-menu to-top dropdown-menu-lg p-0">
+
                         <div class="m-16 py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
                             <div>
                                 <h6 class="text-lg text-primary-light fw-semibold mb-0">Notifications</h6>
                             </div>
-                            <span class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">05</span>
+                            <span class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">01</span>
                         </div>
 
                         <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
-                            <a href="javascript:void(0)" class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
-                                <div class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
-                                    <span class="w-44-px h-44-px bg-success-subtle text-success-main rounded-circle d-flex justify-content-center align-items-center flex-shrink-0">
-                                        <iconify-icon icon="bitcoin-icons:verify-outline" class="icon text-xxl"></iconify-icon>
-                                    </span>
-                                    <div>
-                                        <h6 class="text-md fw-semibold mb-4">Congratulations</h6>
-                                        <p class="mb-0 text-sm text-secondary-light text-w-200-px">Your profile has been Verified. Your profile has been Verified</p>
-                                    </div>
-                                </div>
-                                <span class="text-sm text-secondary-light flex-shrink-0">23 Mins ago</span>
-                            </a>
+                            <div id="latest-notification-box"></div>
                         </div>
 
                         <div class="text-center py-12 px-16">
@@ -148,6 +141,7 @@ $userImage = Auth::user()->image
 
                     </div>
                 </div>
+
 
 
 
@@ -539,4 +533,48 @@ $userImage = Auth::user()->image
         // Check every 2 seconds
         setInterval(updatePauseButtons, 1000);
     });
+</script>
+
+<script>
+    let lastNotificationId = null;
+    let dropdownTimer = null;
+
+    function fetchLatestNotification() {
+        fetch("{{ route('admin.latest-notification') }}")
+            .then(res => res.json())
+            .then(response => {
+
+                if (!response.status) return;
+
+                const latestId = response.id;
+
+                // If NEW notification detected
+                if (lastNotificationId !== latestId) {
+
+                    lastNotificationId = latestId;
+
+                    // Insert latest notification HTML
+                    document.querySelector('#latest-notification-box').innerHTML = response.html;
+
+                    // Auto show dropdown
+                    let dropdownBtn = document.querySelector("#notificationDropdownBtn");
+                    let dropdown = new bootstrap.Dropdown(dropdownBtn);
+                    dropdown.show();
+
+                    // Clear any previous timer
+                    if (dropdownTimer) clearTimeout(dropdownTimer);
+
+                    // Auto hide after 30 seconds
+                    dropdownTimer = setTimeout(() => {
+                        dropdown.hide();
+                    }, 30000);
+                }
+            });
+    }
+
+    // Fetch every 10 seconds
+    setInterval(fetchLatestNotification, 10000);
+
+    // Initial call
+    fetchLatestNotification();
 </script>

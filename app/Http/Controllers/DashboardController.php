@@ -77,20 +77,21 @@ class DashboardController extends Controller
             ->first();
 
         if (!$notification) {
-            return response()->json(['status' => false, 'html' => '<div class="p-16 text-center">No notifications</div>']);
+            return response()->json([
+                'status' => false
+            ]);
         }
 
-        $msg = $notification->data ?? '';
+        $msg = $notification->data;
         $userName = $notification->user->name ?? 'Unknown User';
         $userEmail = $notification->user->email ?? '';
 
-        $candidate     = $notification->candidate;
+        $candidate = $notification->candidate;
         $candidateName = $candidate->Name ?? null;
         $candidateEmail = $candidate->Email_Address ?? null;
         $candidatePhone = $candidate->Phone_Number ?? null;
         $candidateCourse = $candidate->Course ?? null;
 
-        // Render HTML (same design as your blade)
         $html = view('partials.single-notification', compact(
             'msg',
             'userName',
@@ -101,11 +102,13 @@ class DashboardController extends Controller
             'candidateCourse'
         ))->render();
 
-        return response()->json(['status' => true, 'html' => $html]);
+        return response()->json([
+            'status' => true,
+            'html' => $html,
+            'id' => $notification->id,
+            'created_at' => $notification->created_at->timestamp
+        ]);
     }
-
-
-
 
 
 
