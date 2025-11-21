@@ -92,7 +92,7 @@ class DashboardController extends Controller
 
         // Prepare view HTML
         $html = view('notice.partials.single-notification', [
-            'msg' => nl2br(e($notification->data)),
+            'msg' => $notification->data,
             'userName' => $notification->user->name ?? 'Unknown User',
             'userEmail' => $notification->user->email ?? '',
             'candidateName' => $notification->candidate->Name ?? null,
