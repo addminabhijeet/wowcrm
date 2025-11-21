@@ -4958,6 +4958,8 @@ class GoogleSheetController extends Controller
                 // your original email logic here...
             }
 
+            $firstCallerName = $this->getFirstCallerName($row->created_by);
+
             $dataText =
                 "Payment Processed Successfully – Please Review the Details\n" .
                 "Candidate Name: {$name}\n" .
@@ -4965,7 +4967,8 @@ class GoogleSheetController extends Controller
                 "Candidate Phone Number: {$phone}\n" .
                 "Date: {$date}\n" .
                 "Paid Amount: \${$amount}\n" .
-                "First Caller Name: " . ($row->created_by ?? 'N/A');
+                "First Caller Name: {$firstCallerName}";
+
 
             // Create notification
             Notification::create([
@@ -5026,6 +5029,31 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
+
+    private function getFirstCallerName($createdBy)
+    {
+        if (empty($createdBy)) {
+            return 'N/A';
+        }
+
+        // Example format: "37|junior:5|senior"
+        // Extract first segment until the "|"
+        $parts = explode(':', $createdBy);
+        $firstSegment = $parts[0];        // "37|junior"
+        $subParts = explode('|', $firstSegment);
+
+        if (count($subParts) < 2) {
+            return 'N/A';
+        }
+
+        $juniorId = intval($subParts[0]); // 37
+
+        // Fetch user
+        $user = \App\Models\User::find($juniorId);
+
+        return $user->name ?? 'N/A';
+    }
+
 
 
     public function accountantstore(Request $request)
