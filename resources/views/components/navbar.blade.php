@@ -540,7 +540,7 @@ $userImage = Auth::user()->image
     let dropdownTimer = null;
 
     function fetchLatestNotification() {
-        fetch("{{ route('admin.latest-notification') }}")
+        fetch("{{ route('admin.latest.notification') }}")
             .then(res => res.json())
             .then(response => {
 
