@@ -33,4 +33,9 @@ class Notification extends Model
     {
         return $this->belongsTo(GoogleSheetData::class, 'candidate_id');
     }
+
+    public function scopeUnread($query)
+    {
+        return $query->whereNull('read_at');
+    }
 }

@@ -117,23 +117,35 @@ $userImage = Auth::user()->image
 
                 <div class="dropdown">
                     <button id="notificationDropdownBtn"
-                        class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
-                        type="button" data-bs-toggle="dropdown">
+                        class="position-relative has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
+                        type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
                         <iconify-icon icon="iconoir:bell" class="text-primary-light text-xl"></iconify-icon>
+
+                        <!-- Unread badge -->
+                        <span id="unread-badge" class="badge position-absolute top-0 start-100 translate-middle rounded-pill bg-danger d-none"
+                            style="font-size:11px; min-width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center;">
+                            0
+                        </span>
                     </button>
 
                     <div class="dropdown-menu to-top dropdown-menu-lg p-0">
+                        <div class="d-flex justify-content-between align-items-center px-12 py-8 border-bottom">
+                            <strong>Notifications</strong>
+                            <button id="markAllReadBtn" class="btn btn-link btn-sm text-muted">Mark all as read</button>
+                        </div>
 
                         <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
-                            <div id="latest-notification-box"></div>
+                            <div id="latest-notification-box" class="p-12">
+                                <p class="text-muted small mb-0">No notifications</p>
+                            </div>
                         </div>
 
                         <div class="text-center py-12 px-16">
                             <a href="{{ route('admin.notifications') }}" class="text-primary-600 fw-semibold text-md">See All Notification</a>
                         </div>
-
                     </div>
                 </div>
+
 
 
 
@@ -529,45 +541,131 @@ $userImage = Auth::user()->image
 </script>
 
 <script>
+(function () {
+    // CSRF token for POST requests (Laravel)
+    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+
     let lastNotificationId = null;
     let dropdownTimer = null;
+    let isDropdownOpen = false;
+    const pollInterval = 10000; // 10s
+
+    const latestBox = document.querySelector('#latest-notification-box');
+    const dropdownBtn = document.querySelector('#notificationDropdownBtn');
+    const unreadBadge = document.querySelector('#unread-badge');
+    const markAllBtn = document.querySelector('#markAllReadBtn');
+
+    function setBadge(count) {
+        if (!unreadBadge) return;
+        if (count && count > 0) {
+            unreadBadge.textContent = count > 99 ? '99+' : count;
+            unreadBadge.classList.remove('d-none');
+        } else {
+            unreadBadge.textContent = '0';
+            unreadBadge.classList.add('d-none');
+        }
+    }
 
     function fetchLatestNotification() {
-        fetch("{{ route('admin.latest.notification') }}")
+        fetch("{{ route('admin.latest.notification') }}", { credentials: 'same-origin' })
             .then(res => res.json())
             .then(response => {
+                // Update unread badge (even if no new notification)
+                if (typeof response.unread_count !== 'undefined') {
+                    setBadge(response.unread_count);
+                }
 
-                if (!response.status) return;
+                if (!response.status || !response.html) return;
 
                 const latestId = response.id;
 
-                // If NEW notification detected
+                // New notification
                 if (lastNotificationId !== latestId) {
-
                     lastNotificationId = latestId;
 
-                    // Insert latest notification HTML
-                    document.querySelector('#latest-notification-box').innerHTML = response.html;
+                    // Update HTML
+                    if (latestBox) {
+                        latestBox.innerHTML = response.html;
+                        // small highlight
+                        latestBox.firstElementChild?.classList.add('flash-new');
+                        setTimeout(() => latestBox.firstElementChild?.classList.remove('flash-new'), 1400);
+                    }
 
-                    // Auto show dropdown
-                    let dropdownBtn = document.querySelector("#notificationDropdownBtn");
-                    let dropdown = new bootstrap.Dropdown(dropdownBtn);
+                    // show dropdown
+                    const dropdown = new bootstrap.Dropdown(dropdownBtn);
                     dropdown.show();
 
-                    // Clear any previous timer
+                    // clear previous auto-hide
                     if (dropdownTimer) clearTimeout(dropdownTimer);
+                    dropdownTimer = setTimeout(() => dropdown.hide(), 30000);
 
-                    // Auto hide after 30 seconds
-                    dropdownTimer = setTimeout(() => {
-                        dropdown.hide();
-                    }, 30000);
+                    // update badge (server already returned unread_count)
+                    if (typeof response.unread_count !== 'undefined') {
+                        setBadge(response.unread_count);
+                    }
                 }
-            });
+            })
+            .catch(err => console.error('Fetch latest notification error:', err));
     }
 
-    // Fetch every 10 seconds
-    setInterval(fetchLatestNotification, 10000);
+    // Mark all notifications as read (POST)
+    function markAllAsRead() {
+        fetch("{{ route('admin.notifications.markAllRead') }}", {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRF-TOKEN': csrfToken || ''
+            },
+            body: JSON.stringify({})
+        })
+        .then(r => r.json())
+        .then(json => {
+            if (json.status) {
+                setBadge(0);
 
-    // Initial call
+                // update each notification block to show read state (if you want)
+                // e.g. remove highlight or add "read" class. Simple example:
+                document.querySelectorAll('#latest-notification-box .latest-notification-item')
+                    .forEach(el => el.classList.remove('unread'));
+            }
+        })
+        .catch(err => console.error('Mark all read error:', err));
+    }
+
+    // Wire dropdown show event -> mark all read
+    if (dropdownBtn) {
+        dropdownBtn.addEventListener('show.bs.dropdown', function () {
+            // Mark all as read when user opens dropdown (debounced)
+            // Use small timeout to allow dropdown animation to start
+            setTimeout(() => markAllAsRead(), 300);
+        });
+    }
+
+    // Wire mark all button
+    if (markAllBtn) {
+        markAllBtn.addEventListener('click', function (e) {
+            e.preventDefault();
+            markAllAsRead();
+        });
+    }
+
+    // initial fetch + interval
     fetchLatestNotification();
+    setInterval(fetchLatestNotification, pollInterval);
+
+    // initial unread count fetch fallback
+    // (If you want a dedicated endpoint for unread_count, you could call it here)
+})();
 </script>
+
+<style>
+/* highlight animation for new notifications */
+@keyframes flashNew {
+  0% { background: rgba(0, 123, 255, .1); transform: translateY(-4px); }
+  100% { background: transparent; transform: translateY(0); }
+}
+.flash-new {
+  animation: flashNew 0.9s ease;
+}
+</style>

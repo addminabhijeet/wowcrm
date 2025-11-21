@@ -70,43 +70,63 @@ class DashboardController extends Controller
     {
         $admin = Auth::user();
 
+        // Latest notification for this admin
         $notification = Notification::with(['user', 'candidate'])
             ->where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'Admin')
-            ->latest()
+            ->latest('id')
             ->first();
+
+        // Count unread (read_at is null)
+        $unreadCount = Notification::where('notifiable_id', $admin->id)
+            ->where('notifiable_role', 'Admin')
+            ->whereNull('read_at')
+            ->count();
 
         if (!$notification) {
             return response()->json([
-                'status' => false
+                'status' => false,
+                'unread_count' => $unreadCount
             ]);
         }
 
-        $msg = $notification->data;
-        $userName = $notification->user->name ?? 'Unknown User';
-        $userEmail = $notification->user->email ?? '';
-
-        $candidate = $notification->candidate;
-        $candidateName = $candidate->Name ?? null;
-        $candidateEmail = $candidate->Email_Address ?? null;
-        $candidatePhone = $candidate->Phone_Number ?? null;
-        $candidateCourse = $candidate->Course ?? null;
-
-        $html = view('notice.partials.single-notification', compact(
-            'msg',
-            'userName',
-            'userEmail',
-            'candidateName',
-            'candidateEmail',
-            'candidatePhone',
-            'candidateCourse'
-        ))->render();
+        // Prepare view HTML
+        $html = view('notice.partials.single-notification', [
+            'msg' => nl2br(e($notification->data)),
+            'userName' => $notification->user->name ?? 'Unknown User',
+            'userEmail' => $notification->user->email ?? '',
+            'candidateName' => $notification->candidate->Name ?? null,
+            'candidateEmail' => $notification->candidate->Email_Address ?? null,
+            'candidatePhone' => $notification->candidate->Phone_Number ?? null,
+            'candidateCourse' => $notification->candidate->Course ?? null,
+        ])->render();
 
         return response()->json([
             'status' => true,
             'html' => $html,
             'id' => $notification->id,
-            'created_at' => $notification->created_at->timestamp
+            'created_at' => $notification->created_at->timestamp,
+            'unread_count' => $unreadCount,
+        ]);
+    }
+
+    public function markAllRead(Request $request)
+    {
+        $admin = Auth::user();
+
+        // Update read_at for all unread notifications for this admin
+        $now = Carbon::now();
+
+        $affected = Notification::where('notifiable_id', $admin->id)
+            ->where('notifiable_role', 'Admin')
+            ->whereNull('read_at')
+            ->update(['read_at' => $now]);
+
+        return response()->json([
+            'status' => true,
+            'message' => 'Marked as read',
+            'updated' => $affected,
+            'unread_count' => 0,
         ]);
     }
 
