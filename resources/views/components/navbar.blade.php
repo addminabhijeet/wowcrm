@@ -627,107 +627,116 @@ $userImage = Auth::user()->image
 
 <script>
     (function() {
-        // CSRF token for POST requests (Laravel)
+
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        // Load last seen notification ID from localStorage (persists across browser sessions)
-        let lastNotificationId = localStorage.getItem('last_notification_id') || null;
+        let lastNotificationId = localStorage.getItem("last_notification_id") || null;
+        let lastNotificationTime = localStorage.getItem("last_notification_time") || null;
 
         let dropdownTimer = null;
-        let isDropdownOpen = false;
-        const pollInterval = 10000; // 10s
+        const pollInterval = 10000;
 
         const latestBox = document.querySelector('#latest-notification-box');
         const dropdownBtn = document.querySelector('#notificationDropdownBtn');
         const unreadBadge = document.querySelector('#unread-badge');
         const markAllBtn = document.querySelector('#markAllReadBtn');
 
+
         function setBadge(count) {
             if (!unreadBadge) return;
-            if (count && count > 0) {
+
+            if (count > 0) {
                 unreadBadge.textContent = count > 99 ? '99+' : count;
                 unreadBadge.classList.remove('d-none');
             } else {
-                unreadBadge.textContent = '0';
                 unreadBadge.classList.add('d-none');
             }
         }
 
+
         function fetchLatestNotification() {
+
             fetch("{{ route('admin.latest.notification') }}", {
-                    credentials: 'same-origin'
+                    credentials: "same-origin"
                 })
                 .then(res => res.json())
                 .then(response => {
 
-                    if (typeof response.unread_count !== 'undefined') {
+                    if (typeof response.unread_count !== "undefined") {
                         setBadge(response.unread_count);
                     }
 
                     if (!response.status || !response.html) return;
 
                     const latestId = response.id;
+                    const latestTime = response.created_at; // timestamp
 
-                    // If new notification, not seen before
-                    if (lastNotificationId !== latestId) {
+                    // 🚀 ONLY show dropdown if BOTH are new:
+                    // 1. ID changed
+                    // 2. timestamp is newer
+                    if (lastNotificationId != latestId && lastNotificationTime != latestTime) {
 
-                        // Save in localStorage
-                        localStorage.setItem('last_notification_id', latestId);
-                        lastNotificationId = latestId;
+                        // Save ID + timestamp
+                        localStorage.setItem("last_notification_id", latestId);
+                        localStorage.setItem("last_notification_time", latestTime);
 
-                        // Replace latest notification block
+                        // Update HTML
                         if (latestBox) {
                             latestBox.innerHTML = response.html;
 
-                            latestBox.firstElementChild?.classList.add('flash-new');
-                            setTimeout(() => latestBox.firstElementChild?.classList.remove('flash-new'), 1400);
+                            latestBox.firstElementChild?.classList.add("flash-new");
+                            setTimeout(() => latestBox.firstElementChild?.classList.remove("flash-new"), 1400);
                         }
 
-                        // Auto show dropdown only for new notifications
+                        // Show dropdown ONLY for TRUE new notification
                         const dropdown = new bootstrap.Dropdown(dropdownBtn);
                         dropdown.show();
 
                         if (dropdownTimer) clearTimeout(dropdownTimer);
                         dropdownTimer = setTimeout(() => dropdown.hide(), 30000);
 
-                        if (typeof response.unread_count !== 'undefined') {
-                            setBadge(response.unread_count);
-                        }
+                        return;
                     }
+
+                    // If NOT a new notification → DO NOT open dropdown
+                    // Just ensure HTML is loaded once if empty
+                    if (!latestBox.innerHTML.trim()) {
+                        latestBox.innerHTML = response.html;
+                    }
+
                 })
-                .catch(err => console.error('Fetch latest notification error:', err));
+                .catch(err => console.error("Fetch latest notification error:", err));
         }
+
 
         function markAllAsRead() {
             fetch("{{ route('admin.notifications.markallread') }}", {
-                    method: 'POST',
-                    credentials: 'same-origin',
+                    method: "POST",
+                    credentials: "same-origin",
                     headers: {
-                        'Content-Type': 'application/json',
-                        'X-CSRF-TOKEN': csrfToken || ''
+                        "Content-Type": "application/json",
+                        "X-CSRF-TOKEN": csrfToken || ""
                     },
                     body: JSON.stringify({})
                 })
-                .then(r => r.json())
+                .then(res => res.json())
                 .then(json => {
                     if (json.status) {
                         setBadge(0);
-
-                        document.querySelectorAll('#latest-notification-box .latest-notification-item')
-                            .forEach(el => el.classList.remove('unread'));
                     }
-                })
-                .catch(err => console.error('Mark all read error:', err));
+                });
         }
 
+
+        // Mark on dropdown open
         if (dropdownBtn) {
-            dropdownBtn.addEventListener('show.bs.dropdown', function() {
+            dropdownBtn.addEventListener("show.bs.dropdown", () => {
                 setTimeout(() => markAllAsRead(), 300);
             });
         }
 
         if (markAllBtn) {
-            markAllBtn.addEventListener('click', function(e) {
+            markAllBtn.addEventListener("click", (e) => {
                 e.preventDefault();
                 markAllAsRead();
             });
@@ -738,6 +747,7 @@ $userImage = Auth::user()->image
 
     })();
 </script>
+
 
 <style>
     @keyframes flashNew {
