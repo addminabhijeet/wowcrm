@@ -129,6 +129,7 @@ $userImage = Auth::user()->image
                     </button>
 
                     <div class="dropdown-menu to-top dropdown-menu-lg p-0">
+
                         <div class="d-flex justify-content-between align-items-center px-12 py-8 border-bottom">
                             <strong>Notifications</strong>
                             <button id="markAllReadBtn" class="btn btn-link btn-sm text-muted">Mark all as read</button>
@@ -140,11 +141,16 @@ $userImage = Auth::user()->image
                             </div>
                         </div>
 
-                        <div class="text-center py-12 px-16">
-                            <a href="{{ route('admin.notifications') }}" class="text-primary-600 fw-semibold text-md">See All Notification</a>
-                        </div>
+                        <!-- Entire bottom area clickable -->
+                        <a href="{{ route('admin.notifications') }}" class="text-decoration-none">
+                            <div class="text-center py-12 px-16 hover-bg-neutral-100 cursor-pointer">
+                                <span class="text-primary-600 fw-semibold text-md">See All Notification</span>
+                            </div>
+                        </a>
+
                     </div>
                 </div>
+
 
 
 
@@ -541,131 +547,141 @@ $userImage = Auth::user()->image
 </script>
 
 <script>
-(function () {
-    // CSRF token for POST requests (Laravel)
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+    (function() {
+        // CSRF token for POST requests (Laravel)
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-    let lastNotificationId = null;
-    let dropdownTimer = null;
-    let isDropdownOpen = false;
-    const pollInterval = 10000; // 10s
+        let lastNotificationId = null;
+        let dropdownTimer = null;
+        let isDropdownOpen = false;
+        const pollInterval = 10000; // 10s
 
-    const latestBox = document.querySelector('#latest-notification-box');
-    const dropdownBtn = document.querySelector('#notificationDropdownBtn');
-    const unreadBadge = document.querySelector('#unread-badge');
-    const markAllBtn = document.querySelector('#markAllReadBtn');
+        const latestBox = document.querySelector('#latest-notification-box');
+        const dropdownBtn = document.querySelector('#notificationDropdownBtn');
+        const unreadBadge = document.querySelector('#unread-badge');
+        const markAllBtn = document.querySelector('#markAllReadBtn');
 
-    function setBadge(count) {
-        if (!unreadBadge) return;
-        if (count && count > 0) {
-            unreadBadge.textContent = count > 99 ? '99+' : count;
-            unreadBadge.classList.remove('d-none');
-        } else {
-            unreadBadge.textContent = '0';
-            unreadBadge.classList.add('d-none');
+        function setBadge(count) {
+            if (!unreadBadge) return;
+            if (count && count > 0) {
+                unreadBadge.textContent = count > 99 ? '99+' : count;
+                unreadBadge.classList.remove('d-none');
+            } else {
+                unreadBadge.textContent = '0';
+                unreadBadge.classList.add('d-none');
+            }
         }
-    }
 
-    function fetchLatestNotification() {
-        fetch("{{ route('admin.latest.notification') }}", { credentials: 'same-origin' })
-            .then(res => res.json())
-            .then(response => {
-                // Update unread badge (even if no new notification)
-                if (typeof response.unread_count !== 'undefined') {
-                    setBadge(response.unread_count);
-                }
-
-                if (!response.status || !response.html) return;
-
-                const latestId = response.id;
-
-                // New notification
-                if (lastNotificationId !== latestId) {
-                    lastNotificationId = latestId;
-
-                    // Update HTML
-                    if (latestBox) {
-                        latestBox.innerHTML = response.html;
-                        // small highlight
-                        latestBox.firstElementChild?.classList.add('flash-new');
-                        setTimeout(() => latestBox.firstElementChild?.classList.remove('flash-new'), 1400);
-                    }
-
-                    // show dropdown
-                    const dropdown = new bootstrap.Dropdown(dropdownBtn);
-                    dropdown.show();
-
-                    // clear previous auto-hide
-                    if (dropdownTimer) clearTimeout(dropdownTimer);
-                    dropdownTimer = setTimeout(() => dropdown.hide(), 30000);
-
-                    // update badge (server already returned unread_count)
+        function fetchLatestNotification() {
+            fetch("{{ route('admin.latest.notification') }}", {
+                    credentials: 'same-origin'
+                })
+                .then(res => res.json())
+                .then(response => {
+                    // Update unread badge (even if no new notification)
                     if (typeof response.unread_count !== 'undefined') {
                         setBadge(response.unread_count);
                     }
-                }
-            })
-            .catch(err => console.error('Fetch latest notification error:', err));
-    }
 
-    // Mark all notifications as read (POST)
-    function markAllAsRead() {
-        fetch("{{ route('admin.notifications.markallread') }}", {
-            method: 'POST',
-            credentials: 'same-origin',
-            headers: {
-                'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': csrfToken || ''
-            },
-            body: JSON.stringify({})
-        })
-        .then(r => r.json())
-        .then(json => {
-            if (json.status) {
-                setBadge(0);
+                    if (!response.status || !response.html) return;
 
-                // update each notification block to show read state (if you want)
-                // e.g. remove highlight or add "read" class. Simple example:
-                document.querySelectorAll('#latest-notification-box .latest-notification-item')
-                    .forEach(el => el.classList.remove('unread'));
-            }
-        })
-        .catch(err => console.error('Mark all read error:', err));
-    }
+                    const latestId = response.id;
 
-    // Wire dropdown show event -> mark all read
-    if (dropdownBtn) {
-        dropdownBtn.addEventListener('show.bs.dropdown', function () {
-            // Mark all as read when user opens dropdown (debounced)
-            // Use small timeout to allow dropdown animation to start
-            setTimeout(() => markAllAsRead(), 300);
-        });
-    }
+                    // New notification
+                    if (lastNotificationId !== latestId) {
+                        lastNotificationId = latestId;
 
-    // Wire mark all button
-    if (markAllBtn) {
-        markAllBtn.addEventListener('click', function (e) {
-            e.preventDefault();
-            markAllAsRead();
-        });
-    }
+                        // Update HTML
+                        if (latestBox) {
+                            latestBox.innerHTML = response.html;
+                            // small highlight
+                            latestBox.firstElementChild?.classList.add('flash-new');
+                            setTimeout(() => latestBox.firstElementChild?.classList.remove('flash-new'), 1400);
+                        }
 
-    // initial fetch + interval
-    fetchLatestNotification();
-    setInterval(fetchLatestNotification, pollInterval);
+                        // show dropdown
+                        const dropdown = new bootstrap.Dropdown(dropdownBtn);
+                        dropdown.show();
 
-    // initial unread count fetch fallback
-    // (If you want a dedicated endpoint for unread_count, you could call it here)
-})();
+                        // clear previous auto-hide
+                        if (dropdownTimer) clearTimeout(dropdownTimer);
+                        dropdownTimer = setTimeout(() => dropdown.hide(), 30000);
+
+                        // update badge (server already returned unread_count)
+                        if (typeof response.unread_count !== 'undefined') {
+                            setBadge(response.unread_count);
+                        }
+                    }
+                })
+                .catch(err => console.error('Fetch latest notification error:', err));
+        }
+
+        // Mark all notifications as read (POST)
+        function markAllAsRead() {
+            fetch("{{ route('admin.notifications.markallread') }}", {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': csrfToken || ''
+                    },
+                    body: JSON.stringify({})
+                })
+                .then(r => r.json())
+                .then(json => {
+                    if (json.status) {
+                        setBadge(0);
+
+                        // update each notification block to show read state (if you want)
+                        // e.g. remove highlight or add "read" class. Simple example:
+                        document.querySelectorAll('#latest-notification-box .latest-notification-item')
+                            .forEach(el => el.classList.remove('unread'));
+                    }
+                })
+                .catch(err => console.error('Mark all read error:', err));
+        }
+
+        // Wire dropdown show event -> mark all read
+        if (dropdownBtn) {
+            dropdownBtn.addEventListener('show.bs.dropdown', function() {
+                // Mark all as read when user opens dropdown (debounced)
+                // Use small timeout to allow dropdown animation to start
+                setTimeout(() => markAllAsRead(), 300);
+            });
+        }
+
+        // Wire mark all button
+        if (markAllBtn) {
+            markAllBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                markAllAsRead();
+            });
+        }
+
+        // initial fetch + interval
+        fetchLatestNotification();
+        setInterval(fetchLatestNotification, pollInterval);
+
+        // initial unread count fetch fallback
+        // (If you want a dedicated endpoint for unread_count, you could call it here)
+    })();
 </script>
 
 <style>
-/* highlight animation for new notifications */
-@keyframes flashNew {
-  0% { background: rgba(0, 123, 255, .1); transform: translateY(-4px); }
-  100% { background: transparent; transform: translateY(0); }
-}
-.flash-new {
-  animation: flashNew 0.9s ease;
-}
+    /* highlight animation for new notifications */
+    @keyframes flashNew {
+        0% {
+            background: rgba(0, 123, 255, .1);
+            transform: translateY(-4px);
+        }
+
+        100% {
+            background: transparent;
+            transform: translateY(0);
+        }
+    }
+
+    .flash-new {
+        animation: flashNew 0.9s ease;
+    }
 </style>
