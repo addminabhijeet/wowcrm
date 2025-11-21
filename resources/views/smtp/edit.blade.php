@@ -317,7 +317,7 @@ $script = '<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>';
                         btnText.text('Sending...');
 
                         $.ajax({
-                            url: "{{ route('smtp.test') }}",
+                            url: "{{ route('smtp.test', $smtp->id) }}", 
                             method: "POST",
                             data: {
                                 _token: "{{ csrf_token() }}",

@@ -1196,9 +1196,9 @@ class DashboardController extends Controller
         return redirect()->back()->with('success', 'SMTP settings updated successfully!');
     }
 
-    public function test(Request $request)
+    public function test(Request $request, $smtpId)
     {
-        $smtp = SmtpSetting::first();
+        $smtp = SmtpSetting::findOrFail($smtpId); // ← changed
 
         if (!$smtp) {
             return response()->json([
@@ -1208,7 +1208,6 @@ class DashboardController extends Controller
         }
 
         try {
-            // Configure SMTP dynamically
             config([
                 'mail.default' => 'smtp',
                 'mail.mailers.smtp.transport' => $smtp->mailer ?? 'smtp',
@@ -1246,8 +1245,7 @@ class DashboardController extends Controller
 
         try {
             Mail::raw($messageBody, function ($message) use ($testEmail, $subject) {
-                $message->to($testEmail)
-                    ->subject($subject);
+                $message->to($testEmail)->subject($subject);
             });
 
             return response()->json([
