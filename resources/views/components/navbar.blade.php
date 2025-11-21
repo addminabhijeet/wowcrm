@@ -127,32 +127,70 @@ $userImage = Auth::user()->image
                         </span>
                     </button>
 
-                    <div class="dropdown-menu to-top dropdown-menu-lg p-0"
-                        style="width:420px; backdrop-filter:blur(12px); background:rgba(255,255,255,0.65) !important; border-radius:14px; box-shadow:0 8px 25px rgba(0,0,0,0.15);">
+                    <a href="{{ route('admin.notifications') }}" class="text-decoration-none">
 
-                        <div class="d-flex justify-content-between align-items-center px-12 py-8 border-bottom"
-                            style="background:rgba(255,255,255,0.4);">
-                            <strong>Notifications</strong>
-                            <button id="markAllReadBtn" class="btn btn-link btn-sm text-muted">Mark all as read</button>
+                        <div class="dropdown-menu to-top dropdown-menu-lg p-0"
+                            style="
+                width:520px;
+                backdrop-filter: blur(20px);
+                -webkit-backdrop-filter: blur(20px);
+                background: rgba(255,255,255,0.28);
+                border-radius:18px;
+                border:1px solid rgba(255,255,255,0.35);
+                box-shadow:0 12px 40px rgba(0,0,0,0.22);
+                overflow:hidden;
+                cursor:pointer;
+                transition:all .25s ease;
+            "
+                            onmouseover="this.style.background='rgba(255,255,255,0.38)'"
+                            onmouseout="this.style.background='rgba(255,255,255,0.28)'">
+
+                            <div class="d-flex justify-content-between align-items-center px-12 py-10 border-bottom"
+                                style="
+                    background:rgba(255,255,255,0.32);
+                    backdrop-filter:blur(28px);
+                    border-bottom:1px solid rgba(255,255,255,0.18);
+                ">
+                                <strong style="font-size:16px;">Notifications</strong>
+                                <button id="markAllReadBtn" class="btn btn-link btn-sm text-muted"
+                                    style="font-weight:600; font-size:13px;">Mark all as read</button>
+                            </div>
+
+                            <div class="max-h-400-px overflow-y-auto scroll-sm pe-4"
+                                style="
+                    padding:10px;
+                ">
+                                <div id="latest-notification-box"
+                                    style="
+                        padding:14px;
+                        white-space:normal;
+                        word-wrap:break-word;
+                        font-size:14px;
+                        background:rgba(255,255,255,0.20);
+                        border-radius:12px;
+                        border:1px solid rgba(255,255,255,0.20);
+                        transition:all .25s ease;
+                    ">
+                                    <p class="text-muted small mb-0">No notifications</p>
+                                </div>
+                            </div>
+
+                            <div class="text-center py-14 px-16"
+                                style="
+                    background:rgba(255,255,255,0.30);
+                    border-top:1px solid rgba(255,255,255,0.22);
+                    font-weight:600;
+                    font-size:15px;
+                    color:#0055cc;
+                ">
+                                See All Notifications
+                            </div>
+
                         </div>
 
-                        <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
-                            <div id="latest-notification-box" class="p-12"
-                                style="white-space:normal; word-wrap:break-word;">
-                                <p class="text-muted small mb-0">No notifications</p>
-                            </div>
-                        </div>
-
-                        <!-- Entire bottom area clickable -->
-                        <a href="{{ route('admin.notifications') }}" class="text-decoration-none">
-                            <div class="text-center py-12 px-16 hover-bg-neutral-100 cursor-pointer"
-                                style="background:rgba(255,255,255,0.4); border-top:1px solid rgba(0,0,0,0.08);">
-                                <span class="text-primary-600 fw-semibold text-md">See All Notification</span>
-                            </div>
-                        </a>
-
-                    </div>
+                    </a>
                 </div>
+
 
                 <div class="dropdown">
                     <button class="d-flex justify-content-center align-items-center rounded-circle" type="button" data-bs-toggle="dropdown">
