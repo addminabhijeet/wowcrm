@@ -630,8 +630,8 @@ $userImage = Auth::user()->image
         // CSRF token for POST requests (Laravel)
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        // Load last seen notification ID from sessionStorage (prevents showing on refresh)
-        let lastNotificationId = sessionStorage.getItem('last_notification_id') || null;
+        // Load last seen notification ID from localStorage (persists across browser sessions)
+        let lastNotificationId = localStorage.getItem('last_notification_id') || null;
 
         let dropdownTimer = null;
         let isDropdownOpen = false;
@@ -660,7 +660,6 @@ $userImage = Auth::user()->image
                 .then(res => res.json())
                 .then(response => {
 
-                    // Update unread badge
                     if (typeof response.unread_count !== 'undefined') {
                         setBadge(response.unread_count);
                     }
@@ -669,31 +668,28 @@ $userImage = Auth::user()->image
 
                     const latestId = response.id;
 
-                    // Check if it's a NEW notification (not just refresh)
+                    // If new notification, not seen before
                     if (lastNotificationId !== latestId) {
 
-                        // Save new ID into sessionStorage
-                        sessionStorage.setItem('last_notification_id', latestId);
+                        // Save in localStorage
+                        localStorage.setItem('last_notification_id', latestId);
                         lastNotificationId = latestId;
 
-                        // Update latest HTML block
+                        // Replace latest notification block
                         if (latestBox) {
                             latestBox.innerHTML = response.html;
 
-                            // highlight effect
                             latestBox.firstElementChild?.classList.add('flash-new');
                             setTimeout(() => latestBox.firstElementChild?.classList.remove('flash-new'), 1400);
                         }
 
-                        // Only show dropdown if ID changed (avoid showing on refresh)
+                        // Auto show dropdown only for new notifications
                         const dropdown = new bootstrap.Dropdown(dropdownBtn);
                         dropdown.show();
 
-                        // auto hide
                         if (dropdownTimer) clearTimeout(dropdownTimer);
                         dropdownTimer = setTimeout(() => dropdown.hide(), 30000);
 
-                        // update badge again
                         if (typeof response.unread_count !== 'undefined') {
                             setBadge(response.unread_count);
                         }
@@ -724,14 +720,12 @@ $userImage = Auth::user()->image
                 .catch(err => console.error('Mark all read error:', err));
         }
 
-        // Mark all read when dropdown opens
         if (dropdownBtn) {
             dropdownBtn.addEventListener('show.bs.dropdown', function() {
                 setTimeout(() => markAllAsRead(), 300);
             });
         }
 
-        // Mark all read button
         if (markAllBtn) {
             markAllBtn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -739,7 +733,6 @@ $userImage = Auth::user()->image
             });
         }
 
-        // initial fetch + polling
         fetchLatestNotification();
         setInterval(fetchLatestNotification, pollInterval);
 
@@ -752,6 +745,7 @@ $userImage = Auth::user()->image
             background: rgba(0, 123, 255, .1);
             transform: translateY(-4px);
         }
+
         100% {
             background: transparent;
             transform: translateY(0);
