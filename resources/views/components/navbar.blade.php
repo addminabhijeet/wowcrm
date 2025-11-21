@@ -124,6 +124,9 @@ $userImage = Auth::user()->image
                             style="
                 transition:0.25s ease;
                 box-shadow:0 6px 18px rgba(0,0,0,0.15);
+                background:rgba(255,255,255,0.40);
+                backdrop-filter:blur(16px) saturate(200%);
+                -webkit-backdrop-filter:blur(16px) saturate(200%);
             ">
                             <iconify-icon icon="iconoir:bell" class="text-primary-light text-xl"></iconify-icon>
 
@@ -133,6 +136,8 @@ $userImage = Auth::user()->image
                     font-size:11px; min-width:22px; height:22px;
                     display:inline-flex; align-items:center; justify-content:center;
                     box-shadow:0 0 8px rgba(255,0,0,0.5);
+                    background:rgba(255,0,0,0.85);
+                    backdrop-filter:blur(8px);
                 ">
                                 0
                             </span>
@@ -142,70 +147,81 @@ $userImage = Auth::user()->image
                             style="
                 width:520px;
                 max-width:92vw;
-                background:rgba(255,255,255,0.18);
-                backdrop-filter:blur(24px) saturate(200%);
-                -webkit-backdrop-filter:blur(24px) saturate(200%);
-                border-radius:22px;
-                border:1px solid rgba(255,255,255,0.40);
-                box-shadow:0 18px 45px rgba(0,0,0,0.30);
+                background:rgba(255,255,255,0.12);
+                backdrop-filter:blur(30px) saturate(240%);
+                -webkit-backdrop-filter:blur(30px) saturate(240%);
+                border-radius:24px;
+                border:1px solid rgba(255,255,255,0.55);
+                box-shadow:
+                    0 20px 50px rgba(0,0,0,0.35),
+                    inset 0 0 20px rgba(255,255,255,0.25);
                 overflow:hidden;
                 cursor:pointer;
                 transform:translateY(8px);
-                transition:0.25s ease;
+                transition:0.35s ease;
              ">
 
                             <div class="d-flex justify-content-between align-items-center px-12 py-12 border-bottom"
                                 style="
-                    background:rgba(255,255,255,0.25);
-                    backdrop-filter:blur(12px);
-                    -webkit-backdrop-filter:blur(12px);
-                    border-bottom:1px solid rgba(255,255,255,0.40);
+                    background:rgba(255,255,255,0.20);
+                    backdrop-filter:blur(20px);
+                    -webkit-backdrop-filter:blur(20px);
+                    border-bottom:1px solid rgba(255,255,255,0.45);
                     cursor:pointer;
                     font-weight:600;
+                    box-shadow:inset 0 -1px 8px rgba(255,255,255,0.25);
                  ">
                                 <strong style="font-size:17px;">Notifications</strong>
                                 <button id="markAllReadBtn" class="btn btn-link btn-sm text-muted"
                                     style="
                         font-size:13px; text-decoration:none;
                         transition:0.2s;
+                        color:#6c757d !important;
                     ">
                                     Mark all as read
                                 </button>
                             </div>
 
                             <div class="max-h-400-px overflow-y-auto scroll-sm pe-4"
-                                style="cursor:pointer;">
+                                style="
+                    cursor:pointer;
+                    backdrop-filter:blur(14px);
+                    -webkit-backdrop-filter:blur(14px);
+                 ">
                                 <div id="latest-notification-box" class="p-12"
                                     style="
                         white-space:normal;
                         word-wrap:break-word;
                         line-height:1.55;
                         font-size:14px;
-                        background:rgba(255,255,255,0.12);
-                        border-radius:14px;
+                        background:rgba(255,255,255,0.16);
+                        border-radius:16px;
                         margin:10px;
-                        padding:18px;
-                        backdrop-filter:blur(6px);
-                        -webkit-backdrop-filter:blur(6px);
+                        padding:20px;
+                        backdrop-filter:blur(12px);
+                        -webkit-backdrop-filter:blur(12px);
                         cursor:pointer;
-                        border:1px solid rgba(255,255,255,0.28);
-                        box-shadow:0 4px 12px rgba(0,0,0,0.08);
+                        border:1px solid rgba(255,255,255,0.40);
+                        box-shadow:
+                            0 4px 16px rgba(0,0,0,0.12),
+                            inset 0 0 12px rgba(255,255,255,0.25);
                      ">
                                     <p class="text-muted small mb-0">No notifications</p>
                                 </div>
                             </div>
 
-                            <!-- Bottom clickable -->
+                            <!-- Bottom section -->
                             <div class="text-center py-14 px-16 hover-bg-neutral-100 cursor-pointer"
                                 style="
-                    background:rgba(255,255,255,0.20);
+                    background:rgba(255,255,255,0.14);
                     border-top:1px solid rgba(255,255,255,0.32);
-                    backdrop-filter:blur(10px);
-                    -webkit-backdrop-filter:blur(10px);
+                    backdrop-filter:blur(18px);
+                    -webkit-backdrop-filter:blur(18px);
                     font-size:15px;
                     font-weight:600;
                     color:#3b5bfd;
                     transition:0.25s ease;
+                    box-shadow:inset 0 4px 12px rgba(255,255,255,0.15);
                  ">
                                 <span>See All Notifications</span>
                             </div>
@@ -213,6 +229,7 @@ $userImage = Auth::user()->image
                         </div>
                     </a>
                 </div>
+
 
 
 
