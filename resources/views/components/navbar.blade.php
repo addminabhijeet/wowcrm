@@ -124,6 +124,9 @@ $userImage = Auth::user()->image
 
                     <div class="dropdown-menu to-top dropdown-menu-lg p-0">
 
+                        <div class="m-16 py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
+                        </div>
+
                         <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
                             <div id="latest-notification-box"></div>
                         </div>
