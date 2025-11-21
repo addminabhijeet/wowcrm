@@ -630,7 +630,9 @@ $userImage = Auth::user()->image
         // CSRF token for POST requests (Laravel)
         const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
 
-        let lastNotificationId = null;
+        // Load last seen notification ID from sessionStorage (prevents showing on refresh)
+        let lastNotificationId = sessionStorage.getItem('last_notification_id') || null;
+
         let dropdownTimer = null;
         let isDropdownOpen = false;
         const pollInterval = 10000; // 10s
@@ -657,7 +659,8 @@ $userImage = Auth::user()->image
                 })
                 .then(res => res.json())
                 .then(response => {
-                    // Update unread badge (even if no new notification)
+
+                    // Update unread badge
                     if (typeof response.unread_count !== 'undefined') {
                         setBadge(response.unread_count);
                     }
@@ -666,27 +669,31 @@ $userImage = Auth::user()->image
 
                     const latestId = response.id;
 
-                    // New notification
+                    // Check if it's a NEW notification (not just refresh)
                     if (lastNotificationId !== latestId) {
+
+                        // Save new ID into sessionStorage
+                        sessionStorage.setItem('last_notification_id', latestId);
                         lastNotificationId = latestId;
 
-                        // Update HTML
+                        // Update latest HTML block
                         if (latestBox) {
                             latestBox.innerHTML = response.html;
-                            // small highlight
+
+                            // highlight effect
                             latestBox.firstElementChild?.classList.add('flash-new');
                             setTimeout(() => latestBox.firstElementChild?.classList.remove('flash-new'), 1400);
                         }
 
-                        // show dropdown
+                        // Only show dropdown if ID changed (avoid showing on refresh)
                         const dropdown = new bootstrap.Dropdown(dropdownBtn);
                         dropdown.show();
 
-                        // clear previous auto-hide
+                        // auto hide
                         if (dropdownTimer) clearTimeout(dropdownTimer);
                         dropdownTimer = setTimeout(() => dropdown.hide(), 30000);
 
-                        // update badge (server already returned unread_count)
+                        // update badge again
                         if (typeof response.unread_count !== 'undefined') {
                             setBadge(response.unread_count);
                         }
@@ -695,7 +702,6 @@ $userImage = Auth::user()->image
                 .catch(err => console.error('Fetch latest notification error:', err));
         }
 
-        // Mark all notifications as read (POST)
         function markAllAsRead() {
             fetch("{{ route('admin.notifications.markallread') }}", {
                     method: 'POST',
@@ -711,8 +717,6 @@ $userImage = Auth::user()->image
                     if (json.status) {
                         setBadge(0);
 
-                        // update each notification block to show read state (if you want)
-                        // e.g. remove highlight or add "read" class. Simple example:
                         document.querySelectorAll('#latest-notification-box .latest-notification-item')
                             .forEach(el => el.classList.remove('unread'));
                     }
@@ -720,16 +724,14 @@ $userImage = Auth::user()->image
                 .catch(err => console.error('Mark all read error:', err));
         }
 
-        // Wire dropdown show event -> mark all read
+        // Mark all read when dropdown opens
         if (dropdownBtn) {
             dropdownBtn.addEventListener('show.bs.dropdown', function() {
-                // Mark all as read when user opens dropdown (debounced)
-                // Use small timeout to allow dropdown animation to start
                 setTimeout(() => markAllAsRead(), 300);
             });
         }
 
-        // Wire mark all button
+        // Mark all read button
         if (markAllBtn) {
             markAllBtn.addEventListener('click', function(e) {
                 e.preventDefault();
@@ -737,23 +739,19 @@ $userImage = Auth::user()->image
             });
         }
 
-        // initial fetch + interval
+        // initial fetch + polling
         fetchLatestNotification();
         setInterval(fetchLatestNotification, pollInterval);
 
-        // initial unread count fetch fallback
-        // (If you want a dedicated endpoint for unread_count, you could call it here)
     })();
 </script>
 
 <style>
-    /* highlight animation for new notifications */
     @keyframes flashNew {
         0% {
             background: rgba(0, 123, 255, .1);
             transform: translateY(-4px);
         }
-
         100% {
             background: transparent;
             transform: translateY(0);
