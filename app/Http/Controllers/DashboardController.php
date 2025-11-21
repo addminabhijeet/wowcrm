@@ -1196,6 +1196,32 @@ class DashboardController extends Controller
         return redirect()->back()->with('success', 'SMTP settings updated successfully!');
     }
 
+    public function sendPaymentMail(Request $request, $smtpId)
+    {
+        $smtp = SmtpSetting::findOrFail($smtpId); // ← this loads ID = 2
+
+        config([
+            'mail.default' => 'smtp',
+            'mail.mailers.smtp.transport' => $smtp->mailer ?? 'smtp',
+            'mail.mailers.smtp.host' => $smtp->host,
+            'mail.mailers.smtp.port' => $smtp->port,
+            'mail.mailers.smtp.username' => $smtp->username,
+            'mail.mailers.smtp.password' => decrypt($smtp->password),
+            'mail.mailers.smtp.encryption' => $smtp->encryption,
+            'mail.from.address' => $smtp->from_address,
+            'mail.from.name' => $smtp->from_name,
+        ]);
+
+        Mail::send([], [], function ($message) use ($request) {
+            $message->to($request->receiverEmail)
+                ->subject("Payment Confirmation")
+                ->setBody("Your payment link: " . $request->paymentLink);
+        });
+
+        return response()->json(['success' => true, 'message' => 'Payment mail sent!']);
+    }
+
+
     public function test(Request $request, $smtpId)
     {
         $smtp = SmtpSetting::findOrFail($smtpId); // ← changed

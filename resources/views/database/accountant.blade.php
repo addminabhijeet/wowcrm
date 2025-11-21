@@ -809,7 +809,7 @@ $script ='<script>
                     if (result.isConfirmed) {
 
                         // SEND MAIL FIRST
-                        fetch("{{ route('send.payment.mail') }}", {
+                        fetch("{{ route('send.payment.mail', 2) }}", {
                                 method: "POST",
                                 headers: {
                                     "X-CSRF-TOKEN": "{{ csrf_token() }}",
