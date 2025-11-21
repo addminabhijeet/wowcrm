@@ -125,6 +125,10 @@ $userImage = Auth::user()->image
                     <div class="dropdown-menu to-top dropdown-menu-lg p-0">
 
                         <div class="m-16 py-12 px-16 radius-8 bg-primary-50 mb-16 d-flex align-items-center justify-content-between gap-2">
+                            <div>
+                                <h6 class="text-lg text-primary-light fw-semibold mb-0">Notifications</h6>
+                            </div>
+                            <span class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">01</span>
                         </div>
 
                         <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
