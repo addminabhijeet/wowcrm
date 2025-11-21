@@ -114,44 +114,87 @@ $userImage = Auth::user()->image
                     </div>
                 </div>
 
-                <div class="dropdown">
+                <div class="dropdown" style="width:auto;">
                     <button id="notificationDropdownBtn"
                         class="position-relative has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
-                        type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true"
-                        style="background:rgba(255,255,255,0.25); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.35); box-shadow:0 4px 15px rgba(0,0,0,0.15);">
+                        type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
+                        <iconify-icon icon="iconoir:bell" class="text-primary-light text-xl"></iconify-icon>
 
-                        <!-- Removed Icon -->
+                        <!-- Unread badge -->
+                        <span id="unread-badge" class="badge position-absolute top-0 start-100 translate-middle rounded-pill bg-danger d-none"
+                            style="font-size:11px; min-width:22px; height:22px; display:inline-flex; align-items:center; justify-content:center;">
+                            0
+                        </span>
                     </button>
 
                     <div class="dropdown-menu to-top dropdown-menu-lg p-0"
-                        style="width:520px; backdrop-filter:blur(20px); background:rgba(255,255,255,0.30) !important; border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.4); overflow:hidden; cursor:pointer;">
+                        style="
+            width:500px;
+            max-width:90vw;
+            background:rgba(255,255,255,0.20) !important;
+            backdrop-filter:blur(18px) saturate(180%);
+            -webkit-backdrop-filter:blur(18px) saturate(180%);
+            border-radius:18px;
+            border:1px solid rgba(255,255,255,0.35);
+            box-shadow:0 12px 35px rgba(0,0,0,0.22);
+            overflow:hidden;
+            cursor:pointer;
+        ">
 
-                        <a href="{{ route('admin.notifications') }}" class="text-decoration-none" style="display:block; width:100%; height:100%;">
+                        <div class="d-flex justify-content-between align-items-center px-12 py-12 border-bottom"
+                            style="
+                background:rgba(255,255,255,0.22);
+                backdrop-filter:blur(8px);
+                -webkit-backdrop-filter:blur(8px);
+                border-bottom:1px solid rgba(255,255,255,0.35);
+                cursor:pointer;
+             ">
+                            <strong style="font-size:16px;">Notifications</strong>
+                            <button id="markAllReadBtn" class="btn btn-link btn-sm text-muted"
+                                style="font-size:13px; text-decoration:none;">
+                                Mark all as read
+                            </button>
+                        </div>
 
-                            <div class="d-flex justify-content-between align-items-center px-12 py-10 border-bottom"
-                                style="background:rgba(255,255,255,0.18); backdrop-filter:blur(15px);">
-                                <strong style="font-size:18px; color:#000;">Notifications</strong>
-                                <button id="markAllReadBtn" class="btn btn-link btn-sm text-muted" style="font-size:13px;">Mark all as read</button>
+                        <div class="max-h-400-px overflow-y-auto scroll-sm pe-4"
+                            style="cursor:pointer;">
+                            <div id="latest-notification-box" class="p-12"
+                                style="
+                    white-space:normal;
+                    word-wrap:break-word;
+                    line-height:1.5;
+                    font-size:14px;
+                    background:rgba(255,255,255,0.10);
+                    border-radius:12px;
+                    margin:8px;
+                    padding:16px;
+                    backdrop-filter:blur(4px);
+                    -webkit-backdrop-filter:blur(4px);
+                    cursor:pointer;
+                 ">
+                                <p class="text-muted small mb-0">No notifications</p>
                             </div>
+                        </div>
 
-                            <div class="max-h-400-px overflow-y-auto scroll-sm pe-4"
-                                style="background:rgba(255,255,255,0.12); backdrop-filter:blur(12px); padding:8px;">
-
-                                <div id="latest-notification-box" class="p-12"
-                                    style="white-space:normal; word-wrap:break-word; font-size:15px; color:#222;">
-                                    <p class="text-muted small mb-0">No notifications</p>
-                                </div>
-                            </div>
-
+                        <!-- Entire bottom area clickable -->
+                        <a href="{{ route('admin.notifications') }}" class="text-decoration-none" style="cursor:pointer;">
                             <div class="text-center py-14 px-16 hover-bg-neutral-100 cursor-pointer"
-                                style="background:rgba(255,255,255,0.18); backdrop-filter:blur(15px); border-top:1px solid rgba(255,255,255,0.25);">
-                                <span class="text-primary-600 fw-semibold text-md" style="font-size:16px;">See All Notification</span>
+                                style="
+                    background:rgba(255,255,255,0.18);
+                    border-top:1px solid rgba(255,255,255,0.28);
+                    backdrop-filter:blur(8px);
+                    -webkit-backdrop-filter:blur(8px);
+                    font-size:15px;
+                    font-weight:600;
+                    color:#3b5bfd;
+                 ">
+                                <span>See All Notification</span>
                             </div>
-
                         </a>
 
                     </div>
                 </div>
+
 
 
                 <div class="dropdown">
