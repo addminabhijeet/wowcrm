@@ -92,7 +92,7 @@ class DashboardController extends Controller
         $candidatePhone = $candidate->Phone_Number ?? null;
         $candidateCourse = $candidate->Course ?? null;
 
-        $html = view('partials.single-notification', compact(
+        $html = view('notice.partials.single-notification', compact(
             'msg',
             'userName',
             'userEmail',
