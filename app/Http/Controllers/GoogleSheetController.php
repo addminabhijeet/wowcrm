@@ -4926,7 +4926,7 @@ class GoogleSheetController extends Controller
                 "Payment Processed Successfully – Please Review the Details\n" .
                 "Candidate Name: {$name}\n" .
                 "Candidate Email: {$email}\n" .
-                "Candidate Phone Number: {$phone}\n" .
+                "Candidate Phone: {$phone}\n" .
                 "Date: {$date}\n" .
                 "Paid Amount: \${$amount}\n" .
                 "First Caller Name: {$firstCallerName}";
