@@ -117,78 +117,40 @@ $userImage = Auth::user()->image
                 <div class="dropdown">
                     <button id="notificationDropdownBtn"
                         class="position-relative has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
-                        type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">
-                        <iconify-icon icon="iconoir:bell" class="text-primary-light text-xl"></iconify-icon>
+                        type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true"
+                        style="background:rgba(255,255,255,0.25); backdrop-filter:blur(10px); border:1px solid rgba(255,255,255,0.35); box-shadow:0 4px 15px rgba(0,0,0,0.15);">
 
-                        <!-- Unread badge -->
-                        <span id="unread-badge" class="badge position-absolute top-0 start-100 translate-middle rounded-pill bg-danger d-none"
-                            style="font-size:11px; min-width:20px; height:20px; display:inline-flex; align-items:center; justify-content:center;">
-                            0
-                        </span>
+                        <!-- Removed Icon -->
                     </button>
 
-                    <a href="{{ route('admin.notifications') }}" class="text-decoration-none">
+                    <div class="dropdown-menu to-top dropdown-menu-lg p-0"
+                        style="width:520px; backdrop-filter:blur(20px); background:rgba(255,255,255,0.30) !important; border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,0.25); border:1px solid rgba(255,255,255,0.4); overflow:hidden; cursor:pointer;">
 
-                        <div class="dropdown-menu to-top dropdown-menu-lg p-0"
-                            style="
-                width:520px;
-                backdrop-filter: blur(20px);
-                -webkit-backdrop-filter: blur(20px);
-                background: rgba(255,255,255,0.28);
-                border-radius:18px;
-                border:1px solid rgba(255,255,255,0.35);
-                box-shadow:0 12px 40px rgba(0,0,0,0.22);
-                overflow:hidden;
-                cursor:pointer;
-                transition:all .25s ease;
-            "
-                            onmouseover="this.style.background='rgba(255,255,255,0.38)'"
-                            onmouseout="this.style.background='rgba(255,255,255,0.28)'">
+                        <a href="{{ route('admin.notifications') }}" class="text-decoration-none" style="display:block; width:100%; height:100%;">
 
                             <div class="d-flex justify-content-between align-items-center px-12 py-10 border-bottom"
-                                style="
-                    background:rgba(255,255,255,0.32);
-                    backdrop-filter:blur(28px);
-                    border-bottom:1px solid rgba(255,255,255,0.18);
-                ">
-                                <strong style="font-size:16px;">Notifications</strong>
-                                <button id="markAllReadBtn" class="btn btn-link btn-sm text-muted"
-                                    style="font-weight:600; font-size:13px;">Mark all as read</button>
+                                style="background:rgba(255,255,255,0.18); backdrop-filter:blur(15px);">
+                                <strong style="font-size:18px; color:#000;">Notifications</strong>
+                                <button id="markAllReadBtn" class="btn btn-link btn-sm text-muted" style="font-size:13px;">Mark all as read</button>
                             </div>
 
                             <div class="max-h-400-px overflow-y-auto scroll-sm pe-4"
-                                style="
-                    padding:10px;
-                ">
-                                <div id="latest-notification-box"
-                                    style="
-                        padding:14px;
-                        white-space:normal;
-                        word-wrap:break-word;
-                        font-size:14px;
-                        background:rgba(255,255,255,0.20);
-                        border-radius:12px;
-                        border:1px solid rgba(255,255,255,0.20);
-                        transition:all .25s ease;
-                    ">
+                                style="background:rgba(255,255,255,0.12); backdrop-filter:blur(12px); padding:8px;">
+
+                                <div id="latest-notification-box" class="p-12"
+                                    style="white-space:normal; word-wrap:break-word; font-size:15px; color:#222;">
                                     <p class="text-muted small mb-0">No notifications</p>
                                 </div>
                             </div>
 
-                            <div class="text-center py-14 px-16"
-                                style="
-                    background:rgba(255,255,255,0.30);
-                    border-top:1px solid rgba(255,255,255,0.22);
-                    font-weight:600;
-                    font-size:15px;
-                    color:#0055cc;
-                ">
-                                See All Notifications
+                            <div class="text-center py-14 px-16 hover-bg-neutral-100 cursor-pointer"
+                                style="background:rgba(255,255,255,0.18); backdrop-filter:blur(15px); border-top:1px solid rgba(255,255,255,0.25);">
+                                <span class="text-primary-600 fw-semibold text-md" style="font-size:16px;">See All Notification</span>
                             </div>
 
-                        </div>
+                        </a>
 
-                    </a>
+                    </div>
                 </div>
 
 
