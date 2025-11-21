@@ -8,6 +8,8 @@ class Notification extends Model
 {
     protected $table = 'notifications';
 
+    public $timestamps = true; // IMPORTANT ✔
+
     protected $fillable = [
         'type',
         'candidate_id',
@@ -18,10 +20,9 @@ class Notification extends Model
     ];
 
     protected $casts = [
-        'data' => 'string',
+        'data' => 'string',   // Change to 'array' if JSON
         'read_at' => 'datetime',
     ];
-
 
     public function user()
     {
