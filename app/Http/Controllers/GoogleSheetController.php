@@ -4961,7 +4961,7 @@ class GoogleSheetController extends Controller
                 $candidatePhone = $candidate->Phone_Number ?? null;
                 $candidateCourse = $candidate->Course ?? null;
 
-                $newNotificationHtml = view('partials.single-notification', compact(
+                $newNotificationHtml = view('notice.partials.single-notification', compact(
                     'msg',
                     'userName',
                     'userEmail',
