@@ -114,7 +114,6 @@ $userImage = Auth::user()->image
                     </div>
                 </div>
 
-
                 <div class="dropdown">
                     <button id="notificationDropdownBtn"
                         class="position-relative has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
@@ -128,33 +127,32 @@ $userImage = Auth::user()->image
                         </span>
                     </button>
 
-                    <div class="dropdown-menu to-top dropdown-menu-lg p-0">
+                    <div class="dropdown-menu to-top dropdown-menu-lg p-0"
+                        style="width:420px; backdrop-filter:blur(12px); background:rgba(255,255,255,0.65) !important; border-radius:14px; box-shadow:0 8px 25px rgba(0,0,0,0.15);">
 
-                        <div class="d-flex justify-content-between align-items-center px-12 py-8 border-bottom">
+                        <div class="d-flex justify-content-between align-items-center px-12 py-8 border-bottom"
+                            style="background:rgba(255,255,255,0.4);">
                             <strong>Notifications</strong>
                             <button id="markAllReadBtn" class="btn btn-link btn-sm text-muted">Mark all as read</button>
                         </div>
 
                         <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
-                            <div id="latest-notification-box" class="p-12">
+                            <div id="latest-notification-box" class="p-12"
+                                style="white-space:normal; word-wrap:break-word;">
                                 <p class="text-muted small mb-0">No notifications</p>
                             </div>
                         </div>
 
                         <!-- Entire bottom area clickable -->
                         <a href="{{ route('admin.notifications') }}" class="text-decoration-none">
-                            <div class="text-center py-12 px-16 hover-bg-neutral-100 cursor-pointer">
+                            <div class="text-center py-12 px-16 hover-bg-neutral-100 cursor-pointer"
+                                style="background:rgba(255,255,255,0.4); border-top:1px solid rgba(0,0,0,0.08);">
                                 <span class="text-primary-600 fw-semibold text-md">See All Notification</span>
                             </div>
                         </a>
 
                     </div>
                 </div>
-
-
-
-
-
 
                 <div class="dropdown">
                     <button class="d-flex justify-content-center align-items-center rounded-circle" type="button" data-bs-toggle="dropdown">
