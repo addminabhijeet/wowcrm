@@ -4913,8 +4913,6 @@ class GoogleSheetController extends Controller
             $row->update($updateData);
 
             $user = Auth::user();
-            $mailMessage = 'No email sent.';
-
             $name = $rowData['Name'] ?? null;
             $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
 
@@ -4991,7 +4989,6 @@ class GoogleSheetController extends Controller
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
                 'resume_path' => !empty($row->resume) ? true : false,
-                'mail_message' => $mailMessage,
                 'refresh_notification' => true,
                 'html' => $newNotificationHtml   // <-- send latest notification item
             ]);
