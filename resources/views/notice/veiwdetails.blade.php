@@ -78,7 +78,7 @@ $script ='<script>
                                 </div>
 
                                 <div class="mt-20">
-                                    <p class="mb-8 text-primary-light">{{ $msg }}</p>
+                                    <p class="mb-8 text-primary-light">{!! nl2br(e($msg)) !!}</p>
 
                                     @if($candidatePhone)
                                     <p class="mb-4 text-primary-light">Phone: {{ $candidatePhone }}</p>
