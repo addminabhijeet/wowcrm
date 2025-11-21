@@ -55,16 +55,16 @@ class DashboardController extends Controller
 
         $admin = Auth::user();
 
-        // Fetch notifications including candidate details
         $notifications = Notification::with('candidate')
-            ->where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'Admin')
-            ->latest()
+            ->where('notifiable_id', $admin->id)
+            ->orderBy('id', 'desc')
             ->take(10)
             ->get();
 
         return view('notice.veiwdetails', compact('users', 'newUsers', 'notifications'));
     }
+
 
     public function latestNotification()
     {
