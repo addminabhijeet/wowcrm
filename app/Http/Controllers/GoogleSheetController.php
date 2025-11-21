@@ -4925,9 +4925,7 @@ class GoogleSheetController extends Controller
                 isset($rowData['Exe Remarks']) &&
                 $rowData['Exe Remarks'] === 'Payment Completed' &&
                 !empty($email)
-            ) {
-                // your original email logic here...
-            }
+            ) 
 
             $firstCallerName = $this->getFirstCallerName($row->created_by);
 
