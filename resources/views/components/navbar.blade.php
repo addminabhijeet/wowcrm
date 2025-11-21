@@ -610,7 +610,7 @@ $userImage = Auth::user()->image
 
     // Mark all notifications as read (POST)
     function markAllAsRead() {
-        fetch("{{ route('admin.notifications.markAllRead') }}", {
+        fetch("{{ route('admin.notifications.markallread') }}", {
             method: 'POST',
             credentials: 'same-origin',
             headers: {
