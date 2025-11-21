@@ -4918,14 +4918,9 @@ class GoogleSheetController extends Controller
 
             $email = $rowData['Email_Address'] ?? null;
 
-            // --------------------------------------------------
-            // EMAIL SENDING SECTION (UNCHANGED – AS YOU SAID)
-            // --------------------------------------------------
-            if (
-                isset($rowData['Exe Remarks']) &&
-                $rowData['Exe Remarks'] === 'Payment Completed' &&
-                !empty($email)
-            ) 
+            // ------------------------------------------------------------------------------------
+            // ⚠️ EMAIL-SENDING SECTION REMOVED COMPLETELY AS REQUESTED
+            // ------------------------------------------------------------------------------------
 
             $firstCallerName = $this->getFirstCallerName($row->created_by);
 
@@ -4938,7 +4933,6 @@ class GoogleSheetController extends Controller
                 "Paid Amount: \${$amount}\n" .
                 "First Caller Name: {$firstCallerName}";
 
-
             // Create notification
             Notification::create([
                 'type' => 'Payment',
@@ -4948,8 +4942,8 @@ class GoogleSheetController extends Controller
                 'data' => $dataText
             ]);
 
-            // Generate latest notification HTML using your existing latestNotification() logic
-            $admin = User::find(1); // Admin ID = 1
+            // Generate latest notification HTML
+            $admin = User::find(1);
             $latestNotification = Notification::with(['user', 'candidate'])
                 ->where('notifiable_id', 1)
                 ->where('notifiable_role', 'Admin')
@@ -4980,7 +4974,6 @@ class GoogleSheetController extends Controller
                 ))->render();
             }
 
-
             return response()->json([
                 'success' => true,
                 'message' => 'Row updated successfully',
@@ -4988,7 +4981,7 @@ class GoogleSheetController extends Controller
                 'sheet_row_number' => $row->sheet_row_number,
                 'resume_path' => !empty($row->resume) ? true : false,
                 'refresh_notification' => true,
-                'html' => $newNotificationHtml   // <-- send latest notification item
+                'html' => $newNotificationHtml
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -4997,6 +4990,7 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
+
 
     private function getFirstCallerName($createdBy)
     {
