@@ -61,16 +61,12 @@ $script ='<script>
                             <div>
                                 <div class="d-flex align-items-center flex-wrap gap-2">
                                     <h6 class="mb-0 text-lg">
-                                        {{ $userName }}
-
                                         @if($candidateName)
                                         <span class="text-primary-600 ms-2">({{ $candidateName }})</span>
                                         @endif
                                     </h6>
 
                                     <span class="text-secondary-light text-md">
-                                        {{ $userEmail }}
-
                                         @if($candidateEmail)
                                         • <span class="text-primary-500">{{ $candidateEmail }}</span>
                                         @endif
