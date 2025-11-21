@@ -62,7 +62,7 @@ $script ='<script>
                                 <div class="d-flex align-items-center flex-wrap gap-2">
                                     <h6 class="mb-0 text-lg">
                                         @if($candidateName)
-                                        <span class="text-primary-600 ms-2">({{ $candidateName }})</span>
+                                        <span class="text-primary-600 ms-2">{{ $candidateName }}</span>
                                         @endif
                                     </h6>
 
