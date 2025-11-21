@@ -4918,9 +4918,7 @@ class GoogleSheetController extends Controller
 
             $email = $rowData['Email_Address'] ?? null;
 
-            // ------------------------------------------------------------------------------------
-            // ⚠️ EMAIL-SENDING SECTION REMOVED COMPLETELY AS REQUESTED
-            // ------------------------------------------------------------------------------------
+            // EMAIL-SENDING SECTION REMOVED
 
             $firstCallerName = $this->getFirstCallerName($row->created_by);
 
@@ -4984,9 +4982,13 @@ class GoogleSheetController extends Controller
                 'html' => $newNotificationHtml
             ]);
         } catch (\Exception $e) {
+
             return response()->json([
                 'success' => false,
-                'message' => 'Fill Full Detail to Save.'
+                'message' => $e->getMessage(),
+                'error_line' => $e->getLine(),
+                'error_file' => $e->getFile(),
+                'error_trace' => $e->getTraceAsString()
             ]);
         }
     }
