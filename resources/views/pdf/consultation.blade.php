@@ -71,6 +71,37 @@
             }
         }
     </style>
+<style>
+/* Print styles */
+@media print {
+    body * {
+        visibility: hidden; /* Hide everything by default */
+    }
+
+    /* Make page-container and its children visible */
+    .page-container, .page-container * {
+        visibility: visible;
+    }
+
+    /* Style each printable page */
+    .page-container {
+        position: relative;
+        width: 935px;      /* Fixed width */
+        margin: 0 auto;
+    }
+
+    .print-page {
+        page-break-after: always; /* Forces a page break after each section */
+        width: 935px;
+        height: 1210px;    /* Fixed height for each printed page */
+        overflow: hidden;  /* Hide overflow if content exceeds */
+    }
+
+    .print-page:last-child {
+        page-break-after: auto; /* No break after last page */
+    }
+}
+</style>
     <style id="fonts2" type="text/css">
         @font-face {
             font-family: CIDFont-F1_8;
@@ -359,8 +390,6 @@ document.getElementById("printBtn").addEventListener("click", function() {
     });
 });
 </script>
-
-
 
 
 
