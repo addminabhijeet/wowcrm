@@ -222,28 +222,33 @@ document.getElementById("downloadPdfBtn").addEventListener("click", async () => 
     clonedElement.style.width = "210mm"; // A4 width in mm
     clonedElement.style.minHeight = "297mm"; // A4 height in mm
     clonedElement.style.margin = "0 auto";
-    
-    // Use html2pdf to generate PDF (keeps SVGs vector)
-    const opt = {
-        margin:       [10, 10, 10, 10], // top, left, bottom, right in mm
-        filename:     `acceptance_${new Date().toISOString().replace(/[:.]/g, "-")}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 }, // fallback for images
-        html2canvas:  { scale: 2, useCORS: true, allowTaint: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] } // handle page breaks
-    };
 
-    html2pdf().set(opt).from(clonedElement).save();
-});
+    // Initialize jsPDF
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+        unit: 'mm',
+        format: 'a4',
+        orientation: 'portrait'
+    });
 
-// Optional: Allow Ctrl+P to trigger the browser print dialog
-document.addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-        e.preventDefault(); // prevent default browser print
-        window.print();     // opens native print dialog
-    }
+    // Use jsPDF's html method to preserve SVGs as vectors
+    await pdf.html(clonedElement, {
+        x: 10,
+        y: 10,
+        html2canvas: {
+            scale: 2,
+            useCORS: true,
+            allowTaint: true
+        },
+        callback: function (doc) {
+            const filename = `acceptance_${new Date().toISOString().replace(/[:.]/g, "-")}.pdf`;
+            doc.save(filename);
+        },
+        autoPaging: 'text', // automatically handle page breaks
+    });
 });
 </script>
+
 
 </body>
 </html>
