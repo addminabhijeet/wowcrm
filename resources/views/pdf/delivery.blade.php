@@ -112,7 +112,8 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAE2MAA0AAAA
 <span class="t s9" style="left:735px;bottom:952px;letter-spacing:-0.11px;word-spacing:0.04px;">{{$payeeName}} </span>
 <span class="t sa" style="left:688px;bottom:931px;letter-spacing:-0.12px;">{{$email}} </span>
 <span class="t sa" style="left:725px;bottom:910px;letter-spacing:-0.06px;word-spacing:-0.16px;">{{$phone_Number}} </span>
-<div style="position: absolute; bottom: 889px; right: 0; width: 200px; text-align: right;"><span class="t sa">{{$Location}}</span></div>
+<span class="t sa" style="left:470px; bottom:889px; letter-spacing:-0.1px; word-spacing:-0.07px; display: inline-block; text-align: right; width: 200px;">{{$Location}}</span>
+
 
 
 </div>
