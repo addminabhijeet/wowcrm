@@ -214,36 +214,27 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAACqIAA0AAAA
     });
 </script>
 
-
 <script>
 document.getElementById("printBtn").addEventListener("click", function() {
-    // Select the element to print
-    const printContents = document.querySelector(".page-container").innerHTML;
+    const pageContainer = document.querySelector(".page-container");
+    
+    // Hide all other elements on the page
+    const bodyChildren = Array.from(document.body.children);
+    bodyChildren.forEach(el => {
+        if (el !== pageContainer && el !== this) { // keep button if needed
+            el.style.display = 'none';
+        }
+    });
 
-    // Open a new window for printing
-    const printWindow = window.open('', '', 'width=1200,height=900');
+    // Print only the page-container
+    window.print();
 
-    // Write the content into the new window
-    printWindow.document.write(`
-        <html>
-            <head>
-                <title>Print</title>
-                <style>
-                    body { margin: 0; font-family: 'Poppins', sans-serif; }
-                    .page-container { width: 935px; height: 1210px; }
-                </style>
-            </head>
-            <body>
-                ${printContents}
-            </body>
-        </html>
-    `);
-
-    // Wait for content to load before printing
-    printWindow.document.close();
-    printWindow.focus();
-    printWindow.print();
-    printWindow.close();
+    // Restore original display
+    bodyChildren.forEach(el => {
+        if (el !== pageContainer && el !== this) {
+            el.style.display = '';
+        }
+    });
 });
 </script>
 
