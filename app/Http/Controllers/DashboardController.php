@@ -1229,16 +1229,9 @@ class DashboardController extends Controller
         $messageBody = "Your payment is confirmed";
 
         try {
-            Mail::raw($messageBody, function ($message) use ($receiverEmail, $subject, $smtp) {
-
-                // Sender
-                $message->from($smtp->from_address, $smtp->from_name);
-
+            Mail::raw($messageBody, function ($message) use ($receiverEmail, $subject) {
                 // Hard-coded receiver
-                $message->to($receiverEmail);
-
-                // Subject
-                $message->subject($subject);
+                $message->to($receiverEmail)->subject($subject); 
             });
 
             return response()->json([
