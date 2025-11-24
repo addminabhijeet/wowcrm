@@ -336,59 +336,15 @@
         });
     </script>
 <script>
-document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
-    const element = document.querySelector(".page-container");
-
-    // Clone the element so the original page is not modified
-    const clonedElement = element.cloneNode(true);
-    clonedElement.style.width = "210mm"; // A4 width
-    clonedElement.style.minHeight = "297mm"; // A4 height
-    clonedElement.style.margin = "0 auto";
-    
-    // Use html2pdf to generate PDF (keeps SVGs vector)
-    const opt = {
-        margin:       [10, 10, 10, 10],
-        filename:     `acceptance_${new Date().toISOString().replace(/[:.]/g, "-")}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, allowTaint: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
-    };
-
-    html2pdf().set(opt).from(clonedElement).save();
-});
-
-// Ctrl+P / Cmd+P opens print dialog for the page-container only
 document.addEventListener('keydown', function(e) {
+    // Trigger print only when Ctrl+P (Windows/Linux) or Cmd+P (Mac) is pressed
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
-        e.preventDefault(); // prevent default browser print
-
-        const element = document.querySelector(".page-container").cloneNode(true);
-
-        // Create a temporary iframe for printing
-        const printFrame = document.createElement('iframe');
-        printFrame.style.position = 'absolute';
-        printFrame.style.width = '0';
-        printFrame.style.height = '0';
-        printFrame.style.border = '0';
-        document.body.appendChild(printFrame);
-
-        const doc = printFrame.contentWindow.document;
-        doc.open();
-        doc.write('<!DOCTYPE html><html><head><title>Print</title></head><body>');
-        doc.write(element.outerHTML);
-        doc.write('</body></html>');
-        doc.close();
-
-        // Wait a moment for content to render, then print
-        printFrame.contentWindow.focus();
-        printFrame.contentWindow.print();
-
-        // Remove the iframe after printing
-        setTimeout(() => document.body.removeChild(printFrame), 1000);
+        e.preventDefault(); // Prevent the default print behavior
+        window.print();     // Open Chrome's native print dialog
     }
 });
 </script>
+
 
 
 
