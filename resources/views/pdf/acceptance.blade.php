@@ -218,10 +218,10 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAACqIAA0AAAA
 document.getElementById("printBtn").addEventListener("click", function() {
     const pageContainer = document.querySelector(".page-container");
     
-    // Hide all other elements on the page
+    // Hide all other elements on the page (including the print button)
     const bodyChildren = Array.from(document.body.children);
     bodyChildren.forEach(el => {
-        if (el !== pageContainer && el !== this) { // keep button if needed
+        if (el !== pageContainer) {
             el.style.display = 'none';
         }
     });
@@ -231,7 +231,7 @@ document.getElementById("printBtn").addEventListener("click", function() {
 
     // Restore original display
     bodyChildren.forEach(el => {
-        if (el !== pageContainer && el !== this) {
+        if (el !== pageContainer) {
             el.style.display = '';
         }
     });
