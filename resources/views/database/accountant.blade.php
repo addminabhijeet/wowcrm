@@ -687,7 +687,7 @@ $script ='<script>
                 const paymentMethod = row.querySelector('input[data-key="PaymentMethod"]')?.value?.trim() || "N/A";
                 const paymentDate = row.querySelector('input[data-key="PaymentDate"]')?.value?.trim() || "N/A";
                 const payeeName = row.querySelector('input[data-key="PayeeName"]')?.value?.trim() || "N/A";
-                const Phone_Number = row.querySelector('input[data-key="Phone_Number"]')?.value?.trim() || "N/A";
+                const Phone_Number = row.querySelector('input[data-key="Phone Number"]')?.value?.trim() || "N/A";
                 const Location = row.querySelector('input[data-key="Location"]')?.value?.trim() || "N/A";
 
                 // Encode URL parameters correctly

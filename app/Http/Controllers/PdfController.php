@@ -24,7 +24,7 @@ class PdfController extends Controller
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
         $Location     = $request->input('Location');
-        $phone_Number     = $request->input('Phone_Number');
+        $phone_Number = $request->input('Phone_Number');
 
         return view('pdf.acceptance', compact(
             'name',
