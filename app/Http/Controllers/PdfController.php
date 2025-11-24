@@ -15,7 +15,9 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
-        $paymentDate = $request->input('paymentDate');
+        // Convert to "October 07, 2025" format
+        $paymentDateRaw = $request->input('paymentDate');
+        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -43,7 +45,9 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
-        $paymentDate = $request->input('paymentDate');
+        // Convert to "October 07, 2025" format
+        $paymentDateRaw = $request->input('paymentDate');
+        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -70,7 +74,9 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
-        $paymentDate = $request->input('paymentDate');
+        // Convert to "October 07, 2025" format
+        $paymentDateRaw = $request->input('paymentDate');
+        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -97,7 +103,9 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
-        $paymentDate = $request->input('paymentDate');
+        // Convert to "October 07, 2025" format
+        $paymentDateRaw = $request->input('paymentDate');
+        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -124,9 +132,11 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
-        $paymentDate = $request->input('paymentDate');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
+        // Convert to "October 07, 2025" format
+        $paymentDateRaw = $request->input('paymentDate');
+        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
 
         return view('pdf.deliveryuk', compact(
             'name',
@@ -142,6 +152,7 @@ class PdfController extends Controller
         ));
     }
 
+
     public function paymentuk(Request $request)
     {
         $name          = $request->input('name');
@@ -151,7 +162,9 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
-        $paymentDate = $request->input('paymentDate');
+        // Convert to "October 07, 2025" format
+        $paymentDateRaw = $request->input('paymentDate');
+        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
