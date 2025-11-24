@@ -725,32 +725,6 @@ $script ='<script>
         border: 1px solid #eee;
     ">
 
-        <h3 style="margin:0 0 20px; font-weight:600; font-size:20px; color:#333;">
-            Payment Details
-        </h3>
-
-        <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-
-            <p style="margin:0;"><strong>Sender Email:</strong> ${senderEmail}</p>
-            <p style="margin:0;"><strong>Receiver Email:</strong> ${receiverEmail}</p>
-
-            <p style="margin:0;"><strong>Amount:</strong> ${amount}</p>
-            <p style="margin:0;"><strong>Course:</strong> ${courseJoined}</p>
-
-            <p style="margin:0; grid-column: span 2;"><strong>Remark:</strong> ${remark}</p>
-
-            ${paymentLink && paymentLink !== 'N/A'
-                ? `<p style="margin:0; grid-column: span 2;">
-                       <strong>Payment Link:</strong> 
-                       <a href="${paymentLink}" target="_blank" 
-                          style="color:#007bff; text-decoration:none; word-break:break-all;">
-                          ${paymentLink}
-                       </a>
-                   </p>`
-                : ''
-            }
-
-        </div>
     </div>
 
     <hr style="margin:35px 0; border-top:1px solid #ddd;">
