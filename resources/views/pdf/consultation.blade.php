@@ -335,45 +335,37 @@
             pages[pageNo - 1].appendChild(annotationsContainer);
         });
     </script>
-    <script>
-        document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
-            const element = document.querySelector(".page-container");
+<script>
+document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
+    const element = document.querySelector(".page-container");
 
-            // Use html2canvas to take a screenshot of the element
-            const canvas = await html2canvas(element, {
-                scale: 2, // Increase resolution
-                useCORS: true, // Allow cross-origin images
-                logging: true,
-                allowTaint: true
-            });
+    // Clone the element so the original page is not modified
+    const clonedElement = element.cloneNode(true);
+    clonedElement.style.width = "210mm"; // A4 width in mm
+    clonedElement.style.minHeight = "297mm"; // A4 height in mm
+    clonedElement.style.margin = "0 auto";
+    
+    // Use html2pdf to generate PDF (keeps SVGs vector)
+    const opt = {
+        margin:       [10, 10, 10, 10], // top, left, bottom, right in mm
+        filename:     `acceptance_${new Date().toISOString().replace(/[:.]/g, "-")}.pdf`,
+        image:        { type: 'jpeg', quality: 0.98 }, // fallback for images
+        html2canvas:  { scale: 2, useCORS: true, allowTaint: true },
+        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] } // handle page breaks
+    };
 
-            // Convert canvas to image
-            const imgData = canvas.toDataURL("image/png");
+    html2pdf().set(opt).from(clonedElement).save();
+});
 
-            // Create jsPDF and add image
-            const pdf = new jsPDF({
-                unit: "pt",
-                format: "a4",
-                orientation: "portrait"
-            });
-
-            // Calculate width/height to fit A4
-            const pageWidth = pdf.internal.pageSize.getWidth();
-            const pageHeight = pdf.internal.pageSize.getHeight();
-
-            // Resize image to fit A4 while maintaining aspect ratio
-            const imgWidth = canvas.width;
-            const imgHeight = canvas.height;
-            const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
-
-            pdf.addImage(imgData, "PNG", 0, 0, imgWidth * ratio, imgHeight * ratio);
-
-            // Save PDF
-            const filename = `acceptance_${new Date().toISOString().replace(/[:.]/g, "-")}.pdf`;
-            pdf.save(filename);
-        });
-    </script>
-
+// Optional: Allow Ctrl+P to trigger the browser print dialog
+document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
+        e.preventDefault(); // prevent default browser print
+        window.print();     // opens native print dialog
+    }
+});
+</script>
 
 
 
