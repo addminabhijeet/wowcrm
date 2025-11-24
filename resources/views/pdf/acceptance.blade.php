@@ -54,26 +54,16 @@
     .page-container, .page-container * {
         visibility: visible; /* Show only page-container and its children */
     }
-
     .page-container {
         position: absolute;
+        left: 0;
+        top: 0;
         width: 935px;       /* Fixed width */
         height: 1210px;     /* Fixed height */
-        left: 50%;          /* Center horizontally */
-        top: 10%;           /* Center vertically */
-        transform: translate(-50%, -50%); /* Adjust center */
         margin: 0;
-        box-sizing: border-box;
-    }
-
-    /* Optional: set page size to A4 with margins */
-    @page {
-        size: A4;
-        margin: 15mm; /* Adjust as needed */
     }
 }
 </style>
-
     <style class="shared-css" type="text/css" >
 .t {
 	transform-origin: bottom left;
