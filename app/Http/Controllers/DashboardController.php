@@ -1214,7 +1214,7 @@ class DashboardController extends Controller
         ]);
 
         // ▶️ HARD-CODED RECEIVER EMAIL (as you requested)
-        $receiverEmail = "payment.receiver@example.com";  // <-- write your receiver email here
+        $receiverEmail = "addmin.abhijeet@gmail.com";  // <-- write your receiver email here
 
         // Optional email validation
         if (!filter_var($receiverEmail, FILTER_VALIDATE_EMAIL)) {
