@@ -214,14 +214,9 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAACqIAA0AAAA
     });
 </script>
 <script>
-document.addEventListener('keydown', function(e) {
-    // Trigger print only when Ctrl+P (Windows/Linux) or Cmd+P (Mac) is pressed
-    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
-        e.preventDefault(); // Prevent the default print behavior
-        window.print();     // Open Chrome's native print dialog
-    }
+document.getElementById("printBtn").addEventListener("click", function() {
+    window.print(); // Opens Chrome's native print dialog
 });
 </script>
-
 </body>
 </html>
