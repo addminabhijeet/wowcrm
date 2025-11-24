@@ -45,6 +45,25 @@
             cursor: pointer;
         }
     </style>
+    <style>
+/* Print styles */
+@media print {
+    body * {
+        visibility: hidden; /* Hide everything by default */
+    }
+    .page-container, .page-container * {
+        visibility: visible; /* Show only page-container and its children */
+    }
+    .page-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 935px;       /* Fixed width */
+        height: 1210px;     /* Fixed height */
+        margin: 0;
+    }
+}
+</style>
     <style class="shared-css" type="text/css" >
 .t {
 	transform-origin: bottom left;
