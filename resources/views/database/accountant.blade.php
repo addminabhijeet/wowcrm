@@ -817,7 +817,7 @@ $script ='<script>
                     cancelButtonText: 'Cancel',
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#dc3545',
-                    width: '1600px',
+                    width: '1500px',
                     padding: '20px'
                 }).then((result) => {
 
