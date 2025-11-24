@@ -707,7 +707,7 @@ $script ='<script>
                 // Generate improved preview HTML
                 const previewHTML = `
             <div style="
-    max-width: 2400px; 
+    max-width: 1400px; 
     margin: 0 auto; 
     padding: 20px; 
     font-family: 'Poppins', sans-serif; 
@@ -767,15 +767,14 @@ $script ='<script>
     ">
 
         <!-- SINGLE IFRAME CARD -->
-        <div style="background:#fff; padding:18px; border-radius:12px; width:2000px; max-width:2600px;   
-            box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee; margin:0;">
-            <h4 style="margin:0 0 12px 0; font-size:17px; color:#444;">Acceptance Form</h4>
+        <div style="background:#fff; padding:18px; border-radius:12px; max-width: 780px;   
+            box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
+            <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Acceptance Form</h4>
             <iframe 
                 src="{{ route('pdf.acceptance') }}?${queryParams}"
                 style="width:100%; height:1270px; border:0; border-radius:10px;">
             </iframe>
         </div>
-
 
         <div style="background:#fff; padding:18px; border-radius:12px; max-width: 780px;  
             box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
@@ -818,7 +817,7 @@ $script ='<script>
                     cancelButtonText: 'Cancel',
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#dc3545',
-                    width: '900px',
+                    width: '1600px',
                     padding: '20px'
                 }).then((result) => {
 
