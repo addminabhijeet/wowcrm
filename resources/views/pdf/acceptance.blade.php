@@ -102,7 +102,7 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAACqIAA0AAAA
 <script id="annotations" type="application/json">{"pages":[]}</script>
 </head>
 <body>
-
+<button id="downloadPdfBtn">Download PDF</button>
 <div class="page-container">
     
 <section class="page" style="width: 935px; height: 1210px;" aria-label="Page 1">
