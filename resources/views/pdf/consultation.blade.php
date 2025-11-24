@@ -336,9 +336,41 @@
         });
     </script>
     <script>
-        document.getElementById("downloadPdfBtn").addEventListener("click", () => {
+        document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
             const element = document.querySelector(".page-container");
 
+            // Clone the element to avoid modifying original
+            const clonedElement = element.cloneNode(true);
+
+            // Convert all SVGs inside the cloned element to canvas
+            const svgs = clonedElement.querySelectorAll("svg");
+            for (let svg of svgs) {
+                const svgData = new XMLSerializer().serializeToString(svg);
+                const canvas = document.createElement("canvas");
+                const rect = svg.getBoundingClientRect();
+                canvas.width = rect.width * 2; // increase resolution
+                canvas.height = rect.height * 2;
+                const ctx = canvas.getContext("2d");
+
+                const img = new Image();
+                const svgBlob = new Blob([svgData], {
+                    type: "image/svg+xml;charset=utf-8"
+                });
+                const url = URL.createObjectURL(svgBlob);
+
+                await new Promise((resolve, reject) => {
+                    img.onload = () => {
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        URL.revokeObjectURL(url);
+                        svg.replaceWith(canvas); // replace SVG with canvas
+                        resolve();
+                    };
+                    img.onerror = reject;
+                    img.src = url;
+                });
+            }
+
+            // Now generate PDF from the cloned element
             const opt = {
                 margin: 0,
                 filename: `acceptance_${new Date().toISOString().replace(/[:.]/g,"-")}.pdf`,
@@ -348,10 +380,7 @@
                 },
                 html2canvas: {
                     scale: 2,
-                    useCORS: true, // allow cross-origin images
-                    allowTaint: true, // allow tainted canvas
-                    logging: true,
-                    foreignObjectRendering: true // ensures SVGs are rendered
+                    useCORS: true
                 },
                 jsPDF: {
                     unit: "px",
@@ -360,9 +389,10 @@
                 }
             };
 
-            html2pdf().set(opt).from(element).save();
+            html2pdf().set(opt).from(clonedElement).save();
         });
     </script>
+
 
 
 </body>
