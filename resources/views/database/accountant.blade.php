@@ -834,11 +834,17 @@ $script ='<script>
 
                                 let pdfForm = new FormData();
                                 pdfForm.append("_token", "{{ csrf_token() }}");
-
                                 blobs.forEach((blob, index) => {
                                     let filename = `form_${index + 1}_${Date.now()}.pdf`;
-                                    pdfForm.append(`pdf_files[]`, blob, filename);
+
+                                    // FIX: explicitly set PDF MIME type
+                                    const pdfBlob = new Blob([blob], {
+                                        type: "application/pdf"
+                                    });
+
+                                    pdfForm.append(`pdf_files[]`, pdfBlob, filename);
                                 });
+
 
                                 return fetch("{{ route('upload.generated.pdfs') }}", {
                                     method: "POST",
