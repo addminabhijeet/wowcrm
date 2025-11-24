@@ -1215,7 +1215,7 @@ class DashboardController extends Controller
         Mail::send([], [], function ($message) use ($request) {
             $message->to($request->receiverEmail)
                 ->subject("Payment Confirmation")
-                ->setBody("Your payment link: " . $request->paymentLink);
+                ->setBody("Your payment is confirmed");
         });
 
         return response()->json(['success' => true, 'message' => 'Payment mail sent!']);
