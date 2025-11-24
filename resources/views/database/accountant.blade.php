@@ -713,7 +713,6 @@ $script ='<script>
     font-family: 'Poppins', sans-serif; 
     color: #222;
 ">
-
     <!-- INFO CARD -->
     <div style="
         background: #fff; 
@@ -726,13 +725,6 @@ $script ='<script>
     ">
 
     </div>
-
-    <hr style="margin:35px 0; border-top:1px solid #ddd;">
-
-    <!-- IFRAME PREVIEW SECTION -->
-    <h3 style="margin:0 0 20px; font-weight:600; font-size:20px; color:#333;">
-        Preview Documents
-    </h3>
 
     <div style="
         display: grid;
