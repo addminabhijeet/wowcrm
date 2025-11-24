@@ -78,27 +78,23 @@
         visibility: hidden; /* Hide everything by default */
     }
 
-    /* Make page-container and its children visible */
     .page-container, .page-container * {
-        visibility: visible;
+        visibility: visible; /* Show only page-container and its children */
     }
 
-    /* Style each printable page */
     .page-container {
-        position: relative;
-        width: 935px;      /* Fixed width */
-        margin: 0 auto;
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 935px;       /* Fixed width */
+        /* Height doubled to span two pages */
+        height: 2420px;     /* 2 * 1210px */
+        margin: 0;
     }
 
-    .print-page {
-        page-break-after: always; /* Forces a page break after each section */
-        width: 935px;
-        height: 1210px;    /* Fixed height for each printed page */
-        overflow: hidden;  /* Hide overflow if content exceeds */
-    }
-
-    .print-page:last-child {
-        page-break-after: auto; /* No break after last page */
+    /* Force page breaks */
+    .page-break {
+        page-break-before: always;
     }
 }
 </style>
@@ -371,7 +367,7 @@
 document.getElementById("printBtn").addEventListener("click", function() {
     const pageContainer = document.querySelector(".page-container");
     
-    // Hide all other elements on the page (including the print button)
+    // Hide all other elements on the page
     const bodyChildren = Array.from(document.body.children);
     bodyChildren.forEach(el => {
         if (el !== pageContainer) {
@@ -390,7 +386,6 @@ document.getElementById("printBtn").addEventListener("click", function() {
     });
 });
 </script>
-
 
 
 

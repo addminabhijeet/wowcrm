@@ -40,6 +40,25 @@
             cursor: pointer;
         }
     </style>
+        <style>
+/* Print styles */
+@media print {
+    body * {
+        visibility: hidden; /* Hide everything by default */
+    }
+    .page-container, .page-container * {
+        visibility: visible; /* Show only page-container and its children */
+    }
+    .page-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 935px;       /* Fixed width */
+        height: 1210px;     /* Fixed height */
+        margin: 0;
+    }
+}
+</style>
     <style class="shared-css" type="text/css" >
 .t {
 	transform-origin: bottom left;
@@ -199,81 +218,28 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAE2MAA0AAAA
         pages[pageNo - 1].appendChild(annotationsContainer);
     });
 </script>
+
 <script>
-document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
-
-    const element = document.querySelector(".page-container");
-
-    // Clone the HTML for clean PDF rendering
-    const clonedElement = element.cloneNode(true);
-    clonedElement.style.width = "1175px";   // A4 width
-    clonedElement.style.minHeight = "1660px"; // A4 height
-
-    // Temporary container for PDF content
-    const container = document.createElement("div");
-    container.style.position = "fixed";
-    container.style.top = "0";
-    container.style.left = "0";
-    container.style.zIndex = "-9999";
-    container.appendChild(clonedElement);
-    document.body.appendChild(container);
-
-    // Include print-only styles if needed
-    const printStyle = document.createElement("style");
-    printStyle.innerHTML = `
-        * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-        body { background: #ffffff !important; }
-    `;
-    clonedElement.prepend(printStyle);
-
-    // Wait to ensure styles/assets load
-    await new Promise(resolve => setTimeout(resolve, 10));
-
-    // A4 size in pixels
-    const a4WidthPx = 1175;
-    const a4HeightPx = Math.round(a4WidthPx * 1.4142); // 1.4142 = sqrt(2)
-
-    // Convert Iconify icons → inline SVG (required for html2canvas)
-    clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
-        const svg = document.createElement("img");
-        const iconName = icon.getAttribute("icon");
-        svg.src = `https://api.iconify.design/${iconName}.svg?color=%23000`;
-        svg.width = 34;
-        svg.height = 34;
-        svg.style.filter = "contrast(250%) brightness(0%)";
-        icon.replaceWith(svg);
+document.getElementById("printBtn").addEventListener("click", function() {
+    const pageContainer = document.querySelector(".page-container");
+    
+    // Hide all other elements on the page (including the print button)
+    const bodyChildren = Array.from(document.body.children);
+    bodyChildren.forEach(el => {
+        if (el !== pageContainer) {
+            el.style.display = 'none';
+        }
     });
 
-    // PDF options
-    const opt = {
-        margin: 0,
-        filename: `acceptance_${new Date().toISOString().replace(/[:.]/g,"-")}.pdf`,
-        image: {
-            type: "jpeg",
-            quality: 0.98
-        },
-        html2canvas: {
-            scale: 3,
-            useCORS: true,
-            scrollY: 0,
-            backgroundColor: "#ffffff",
-            logging: false,
-        },
-        jsPDF: {
-            unit: "px",
-            format: [a4WidthPx, a4HeightPx],
-            orientation: "portrait"
-        },
-        pagebreak: {
-            mode: ["avoid-all", "css", "legacy"]
+    // Print only the page-container
+    window.print();
+
+    // Restore original display
+    bodyChildren.forEach(el => {
+        if (el !== pageContainer) {
+            el.style.display = '';
         }
-    };
-
-    // Generate PDF
-    await html2pdf().set(opt).from(clonedElement).save();
-
-    // Cleanup cloned content
-    document.body.removeChild(container);
+    });
 });
 </script>
 
