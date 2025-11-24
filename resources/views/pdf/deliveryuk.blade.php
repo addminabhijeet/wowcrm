@@ -109,7 +109,7 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAE2MAA0AAAA
 <span class="t v0 s6" style="left:130px;bottom:245px;letter-spacing:0.03px;">Buyer’s </span><span class="t s6" style="left:173px;bottom:245px;letter-spacing:0.18px;">Signature: </span><span class="t s6" style="left:600px;bottom:245px;letter-spacing:0.21px;">Date: </span><span class="t s6" style="left:667px;bottom:245px;letter-spacing:0.17px;">________________________ </span>
 <span class="t s7" style="left:106px;bottom:1094px;letter-spacing:-0.21px;word-spacing:-0.02px;">DELIVERY RECEIPT </span>
 <span class="t s8" style="left:628px;bottom:1059px;letter-spacing:0.04px;word-spacing:0.1px;">NORLOX SOLUTIONS LLC </span>
-<span class="t s6" style="left:109px;bottom:992px;letter-spacing:0.15px;word-spacing:-0.05px;">August 28, 2025 </span>
+<span class="t s6" style="left:109px;bottom:992px;letter-spacing:0.15px;word-spacing:-0.05px;">{{$paymentDate}} </span>
 <span class="t s6" style="left:675px;bottom:985px;letter-spacing:0.14px;word-spacing:-0.05px;">Services/goods delivered to: </span>
 <span class="t s9" style="left:735px;bottom:952px;letter-spacing:-0.11px;word-spacing:0.04px;">Dev Amit Amin </span>
 <span class="t sa" style="left:688px;bottom:931px;letter-spacing:-0.12px;">devamin03@gmail.com </span>
