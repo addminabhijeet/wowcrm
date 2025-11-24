@@ -232,7 +232,6 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAACqIAA0AAAA
         pages[pageNo - 1].appendChild(annotationsContainer);
     });
 </script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
 document.getElementById("printBtn").addEventListener("click", function() {
@@ -246,36 +245,17 @@ document.getElementById("printBtn").addEventListener("click", function() {
         }
     });
 
-    // Generate filename with current datetime
-    const now = new Date();
-    const datetime = now.getFullYear() + 
-                     ('0' + (now.getMonth()+1)).slice(-2) + 
-                     ('0' + now.getDate()).slice(-2) + '_' +
-                     ('0' + now.getHours()).slice(-2) +
-                     ('0' + now.getMinutes()).slice(-2) +
-                     ('0' + now.getSeconds()).slice(-2);
-    const filename = `Acceptance_${datetime}.pdf`;
+    // Print only the page-container
+    window.print();
 
-    // Use html2pdf to download PDF
-    html2pdf().set({
-        margin:       0,
-        filename:     filename,
-        image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
-        jsPDF:        { unit: 'px', format: [935, 1210], orientation: 'portrait' }
-    }).from(pageContainer).save().finally(() => {
-        // Restore original display after download
-        bodyChildren.forEach(el => {
-            if (el !== pageContainer) {
-                el.style.display = '';
-            }
-        });
+    // Restore original display
+    bodyChildren.forEach(el => {
+        if (el !== pageContainer) {
+            el.style.display = '';
+        }
     });
 });
 </script>
-
-
-
 
 </body>
 </html>
