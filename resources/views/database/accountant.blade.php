@@ -807,6 +807,7 @@ $script ='<script>
                                 pdfForm.append("_token", "{{ csrf_token() }}");
 
                                 blobs.forEach((blob, index) => {
+                                    // Use the iframe size for reference
                                     let filename = `form_${index + 1}_${Date.now()}.pdf`;
                                     pdfForm.append("pdf_files[]", blob, filename);
                                 });
@@ -901,6 +902,7 @@ $script ='<script>
                                     });
                             });
                     }
+
 
                 });
 
