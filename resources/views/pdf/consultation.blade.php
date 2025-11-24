@@ -339,7 +339,7 @@
         document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
             const element = document.querySelector(".page-container");
 
-            // Clone the element to avoid modifying original
+            // Clone the element so the original page is not modified
             const clonedElement = element.cloneNode(true);
 
             // Convert all SVGs inside the cloned element to images
@@ -361,7 +361,7 @@
 
                 await new Promise((resolve, reject) => {
                     img.onload = () => {
-                        svg.replaceWith(img); // replace SVG with image
+                        svg.replaceWith(img);
                         URL.revokeObjectURL(url);
                         resolve();
                     };
@@ -369,10 +369,21 @@
                 });
             }
 
-            // Now generate PDF
+            // Calculate A4 scale factor
+            const a4Width = 595; // px (JS PDF A4 in points)
+            const a4Height = 842; // px
+            const elementRect = clonedElement.getBoundingClientRect();
+            const scaleX = a4Width / elementRect.width;
+            const scaleY = a4Height / elementRect.height;
+            const scale = Math.min(scaleX, scaleY);
+
+            clonedElement.style.transformOrigin = "top left";
+            clonedElement.style.transform = `scale(${scale})`;
+
+            // Generate PDF
             const opt = {
                 margin: 0,
-                filename: `acceptance_${new Date().toISOString().replace(/[:.]/g,"-")}.pdf`,
+                filename: `acceptance_${new Date().toISOString().replace(/[:.]/g, "-")}.pdf`,
                 html2canvas: {
                     scale: 2,
                     useCORS: true,
@@ -380,7 +391,7 @@
                     allowTaint: true
                 },
                 jsPDF: {
-                    unit: "px",
+                    unit: "pt",
                     format: "a4",
                     orientation: "portrait"
                 }
@@ -389,6 +400,7 @@
             html2pdf().set(opt).from(clonedElement).save();
         });
     </script>
+
 
 
 
