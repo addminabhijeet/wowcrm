@@ -3,6 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <title></title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <style>
         body {
             background-color: #444;
@@ -100,7 +102,7 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAACqIAA0AAAA
 <script id="annotations" type="application/json">{"pages":[]}</script>
 </head>
 <body>
-
+<button id="downloadPdfBtn">Download PDF</button>
 <div class="page-container">
     
 <section class="page" style="width: 935px; height: 1210px;" aria-label="Page 1">
@@ -208,5 +210,41 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAACqIAA0AAAA
         pages[pageNo - 1].appendChild(annotationsContainer);
     });
 </script>
+<script>
+    // 📌 PDF DOWNLOAD FUNCTION
+document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
+    const { jsPDF } = window.jspdf;
+
+    // Generate timestamp for filename
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = String(now.getMonth() + 1).padStart(2, "0");
+    const day = String(now.getDate()).padStart(2, "0");
+    const hours = String(now.getHours()).padStart(2, "0");
+    const minutes = String(now.getMinutes()).padStart(2, "0");
+    const seconds = String(now.getSeconds()).padStart(2, "0");
+
+    const filename = `acceptance_${year}-${month}-${day}_${hours}-${minutes}-${seconds}.pdf`;
+
+    const container = document.querySelector(".page-container");
+
+    const canvas = await html2canvas(container, {
+        scale: 2, // High quality
+        useCORS: true
+    });
+
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF({
+        orientation: "portrait",
+        unit: "px",
+        format: [canvas.width, canvas.height]
+    });
+
+    pdf.addImage(imgData, "PNG", 0, 0, canvas.width, canvas.height);
+    pdf.save(filename);
+});
+
+    </script>
 </body>
 </html>
