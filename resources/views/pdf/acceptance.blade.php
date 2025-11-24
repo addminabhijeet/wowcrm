@@ -233,29 +233,37 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAACqIAA0AAAA
     });
 </script>
 
+<!-- Include html2pdf.js from CDN -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
 <script>
 document.getElementById("printBtn").addEventListener("click", function() {
     const pageContainer = document.querySelector(".page-container");
-    
-    // Hide all other elements on the page (including the print button)
-    const bodyChildren = Array.from(document.body.children);
-    bodyChildren.forEach(el => {
-        if (el !== pageContainer) {
-            el.style.display = 'none';
-        }
-    });
 
-    // Print only the page-container
-    window.print();
+    // Generate timestamp
+    const now = new Date();
+    const timestamp = now.getFullYear().toString() +
+                      String(now.getMonth()+1).padStart(2,'0') +
+                      String(now.getDate()).padStart(2,'0') + "_" +
+                      String(now.getHours()).padStart(2,'0') +
+                      String(now.getMinutes()).padStart(2,'0') +
+                      String(now.getSeconds()).padStart(2,'0');
 
-    // Restore original display
-    bodyChildren.forEach(el => {
-        if (el !== pageContainer) {
-            el.style.display = '';
-        }
-    });
+    const filename = `Acceptance_${timestamp}.pdf`;
+
+    // PDF options
+    const opt = {
+        margin:       0,
+        filename:     filename,
+        image:        { type: 'jpeg', quality: 1 },
+        html2canvas:  { scale: 2, useCORS: true },
+        jsPDF:        { unit: 'px', format: [935, 1210], orientation: 'portrait' }
+    };
+
+    html2pdf().set(opt).from(pageContainer).save();
 });
 </script>
+
 
 </body>
 </html>
