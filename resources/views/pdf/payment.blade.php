@@ -123,7 +123,7 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAB/4AA0AAAA
 <span class="t s4" style="left:146px;bottom:636px;letter-spacing:-0.06px;">Description </span><span class="t s4" style="left:543px;bottom:636px;letter-spacing:-0.04px;">Quantity </span><span class="t s4" style="left:674px;bottom:636px;letter-spacing:-0.06px;">Price </span><span class="t s4" style="left:766px;bottom:636px;letter-spacing:-0.07px;">Amount </span>
 <span class="t s8" style="left:137px;bottom:1036px;letter-spacing:-0.04px;">Transaction </span><span class="t s8" style="left:220px;bottom:1036px;letter-spacing:-0.08px;">Reference </span><span class="t s8" style="left:292px;bottom:1036px;">#</span><span class="t s8" style="left:301px;bottom:1036px;">: </span><span class="t s7" style="left:309px;bottom:1037px;letter-spacing:0.23px;">{{$tranRef}} </span>
 <span class="t s9" style="left:701px;bottom:807px;letter-spacing:-0.06px;word-spacing:-0.07px;">{{$payeeName}} </span>
-<span class="t sa" style="left:674px;bottom:779px;letter-spacing:-0.06px;">nihal77778@gmail.com </span>
+<span class="t sa" style="left:674px;bottom:779px;letter-spacing:-0.06px;">{{$email}} </span>
 <span class="t s2" style="left:707px;bottom:753px;letter-spacing:0.23px;">+1 </span><span class="t sa" style="left:728px;bottom:752px;letter-spacing:-0.05px;word-spacing:-0.17px;">(857) 544-9928 </span>
 <span class="t s2" style="left:552px;bottom:727px;letter-spacing:0.17px;word-spacing:0.02px;">71 Aldie Street, Apt3, Boston, MA, 02134, US </span></div>
 
