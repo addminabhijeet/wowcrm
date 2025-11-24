@@ -1215,11 +1215,12 @@ class DashboardController extends Controller
         ]);
     }
 
+
     public function sendPaymentMail(Request $request, $smtpId)
     {
-        $smtp = SmtpSetting::findOrFail($smtpId);
+        $smtp = SmtpSetting::findOrFail($smtpId); // ID = 2 loaded normally
 
-        // Apply SMTP settings
+        // Apply SMTP settings (same as before)
         config([
             'mail.default' => 'smtp',
             'mail.mailers.smtp.transport' => $smtp->mailer ?? 'smtp',
@@ -1232,9 +1233,10 @@ class DashboardController extends Controller
             'mail.from.name' => $smtp->from_name,
         ]);
 
-        // Hard-coded receiver
-        $receiverEmail = "addmin.abhijeet@gmail.com";
-
+        // ▶️ HARD-CODED RECEIVER EMAIL (as you requested)
+        $receiverEmail = "addmin.abhijeet@gmail.com";  // <-- write your receiver email here
+        
+        // Optional email validation
         if (!filter_var($receiverEmail, FILTER_VALIDATE_EMAIL)) {
             return response()->json([
                 'success' => false,
@@ -1242,32 +1244,20 @@ class DashboardController extends Controller
             ]);
         }
 
-        // Get PDF absolute paths
-        $pdfPaths = $request->pdf_paths ?? [];
-
+        // Static subject + message
+        $pdfs = $request->pdf_paths ?? [];
         $subject = "Payment Confirmation";
-        $bodyText = "Your payment is confirmed.\n\nPlease find attached the required documents.";
+        $messageBody = "Your payment is confirmed";
 
         try {
-            Mail::send([], [], function ($message) use ($receiverEmail, $subject, $bodyText, $pdfPaths) {
-                $message->to($receiverEmail)
-                    ->subject($subject)
-                    ->setBody($bodyText, 'text/plain');
-
-                // Attach each PDF
-                foreach ($pdfPaths as $path) {
-                    if (file_exists($path)) {
-                        $message->attach($path, [
-                            'as' => basename($path),
-                            'mime' => 'application/pdf',
-                        ]);
-                    }
-                }
+            Mail::raw($messageBody, function ($message) use ($receiverEmail, $subject, $pdfs) {
+                // Hard-coded receiver
+                $message->to($receiverEmail)->subject($subject);
             });
 
             return response()->json([
                 'success' => true,
-                'message' => "Payment mail with attachments sent successfully!"
+                'message' => "Payment mail sent successfully to {$receiverEmail}!"
             ]);
         } catch (\Exception $e) {
             return response()->json([
@@ -1276,11 +1266,11 @@ class DashboardController extends Controller
                 'debug' => [
                     'file' => $e->getFile(),
                     'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
                 ],
             ]);
         }
     }
-
 
 
 
