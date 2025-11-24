@@ -815,7 +815,21 @@ $script ='<script>
                             `{{ route('pdf.payment') }}?${queryParams}`
                         ];
 
-                        Promise.all(pdfUrls.map(u => fetch(u).then(r => r.blob())))
+                        Promise.all(pdfUrls.map(url =>
+                                fetch(url, {
+                                    method: "GET",
+                                    headers: {
+                                        "Accept": "application/pdf",
+                                        "Cache-Control": "no-cache"
+                                    }
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error("PDF generation failed: " + response.status);
+                                    }
+                                    return response.blob();
+                                })
+                            ))
                             .then(blobs => {
 
                                 let pdfForm = new FormData();
