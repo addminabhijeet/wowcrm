@@ -707,7 +707,7 @@ $script ='<script>
                 // Generate improved preview HTML
                 const previewHTML = `
             <div style="
-    max-width: 1400px; 
+    max-width: 2400px; 
     margin: 0 auto; 
     padding: 20px; 
     font-family: 'Poppins', sans-serif; 
@@ -767,7 +767,7 @@ $script ='<script>
     ">
 
         <!-- SINGLE IFRAME CARD -->
-        <div style="background:#fff; padding:18px; border-radius:12px; width:100%; max-width:1600px;   
+        <div style="background:#fff; padding:18px; border-radius:12px; width:2000px; max-width:2600px;   
             box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee; margin:0;">
             <h4 style="margin:0 0 12px 0; font-size:17px; color:#444;">Acceptance Form</h4>
             <iframe 
