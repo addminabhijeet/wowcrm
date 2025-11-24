@@ -342,45 +342,42 @@
             // Clone the element to avoid modifying original
             const clonedElement = element.cloneNode(true);
 
-            // Convert all SVGs inside the cloned element to canvas
+            // Convert all SVGs inside the cloned element to images
             const svgs = clonedElement.querySelectorAll("svg");
             for (let svg of svgs) {
                 const svgData = new XMLSerializer().serializeToString(svg);
-                const canvas = document.createElement("canvas");
-                const rect = svg.getBoundingClientRect();
-                canvas.width = rect.width * 2; // increase resolution
-                canvas.height = rect.height * 2;
-                const ctx = canvas.getContext("2d");
-
-                const img = new Image();
                 const svgBlob = new Blob([svgData], {
                     type: "image/svg+xml;charset=utf-8"
                 });
                 const url = URL.createObjectURL(svgBlob);
 
+                const img = document.createElement("img");
+                img.src = url;
+
+                // Preserve SVG dimensions
+                const rect = svg.getBoundingClientRect();
+                img.width = rect.width;
+                img.height = rect.height;
+
                 await new Promise((resolve, reject) => {
                     img.onload = () => {
-                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        svg.replaceWith(img); // replace SVG with image
                         URL.revokeObjectURL(url);
-                        svg.replaceWith(canvas); // replace SVG with canvas
                         resolve();
                     };
                     img.onerror = reject;
-                    img.src = url;
                 });
             }
 
-            // Now generate PDF from the cloned element
+            // Now generate PDF
             const opt = {
                 margin: 0,
                 filename: `acceptance_${new Date().toISOString().replace(/[:.]/g,"-")}.pdf`,
-                image: {
-                    type: "jpeg",
-                    quality: 1
-                },
                 html2canvas: {
                     scale: 2,
-                    useCORS: true
+                    useCORS: true,
+                    logging: true,
+                    allowTaint: true
                 },
                 jsPDF: {
                     unit: "px",
@@ -392,6 +389,7 @@
             html2pdf().set(opt).from(clonedElement).save();
         });
     </script>
+
 
 
 
