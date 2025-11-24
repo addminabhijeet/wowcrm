@@ -23,6 +23,8 @@ class PdfController extends Controller
         }
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
+        $Location     = $request->input('Location');
+        $Phone_Number     = $request->input('Phone_Number');
 
         return view('pdf.acceptance', compact(
             'name',
@@ -34,6 +36,8 @@ class PdfController extends Controller
             'tranRef',
             'paymentDate',
             'paymentMethod',
+            'Phone_Number',
+            'Location',
             'payeeName'
         ));
     }
@@ -56,6 +60,9 @@ class PdfController extends Controller
         }
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
+        $Location     = $request->input('Location');
+        $Phone_Number     = $request->input('Phone_Number');
+        
 
         return view('pdf.consultation', compact(
             'name',
@@ -67,6 +74,8 @@ class PdfController extends Controller
             'tranRef',
             'paymentDate',
             'paymentMethod',
+            'Phone_Number',
+            'Location',
             'payeeName'
         ));
     }
@@ -88,6 +97,8 @@ class PdfController extends Controller
         }
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
+        $Location     = $request->input('Location');
+        $Phone_Number     = $request->input('Phone_Number');
 
         return view('pdf.delivery', compact(
             'name',
@@ -98,7 +109,11 @@ class PdfController extends Controller
             'tranId',
             'tranRef',
             'paymentDate',
+            'Phone_Number',
+            'Location',
             'paymentMethod',
+            'Phone_Number',
+            'Location',
             'payeeName'
         ));
     }
@@ -120,6 +135,8 @@ class PdfController extends Controller
         }
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
+        $Location     = $request->input('Location');
+        $Phone_Number     = $request->input('Phone_Number');
 
         return view('pdf.payment', compact(
             'name',
@@ -131,6 +148,8 @@ class PdfController extends Controller
             'tranRef',
             'paymentDate',
             'paymentMethod',
+            'Phone_Number',
+            'Location',
             'payeeName'
         ));
     }
@@ -152,6 +171,8 @@ class PdfController extends Controller
         } else {
             $paymentDate = 'N/A';
         }
+        $Location     = $request->input('Location');
+        $Phone_Number     = $request->input('Phone_Number');
 
         return view('pdf.deliveryuk', compact(
             'name',
@@ -163,6 +184,8 @@ class PdfController extends Controller
             'tranRef',
             'paymentDate',
             'paymentMethod',
+            'Phone_Number',
+            'Location',
             'payeeName'
         ));
     }
@@ -185,6 +208,8 @@ class PdfController extends Controller
         }
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
+        $Location     = $request->input('Location');
+        $Phone_Number     = $request->input('Phone_Number');
 
         return view('pdf.paymentuk', compact(
             'name',
@@ -196,6 +221,8 @@ class PdfController extends Controller
             'tranRef',
             'paymentDate',
             'paymentMethod',
+            'Phone_Number',
+            'Location',
             'payeeName'
         ));
     }
