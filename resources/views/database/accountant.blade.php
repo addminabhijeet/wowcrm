@@ -808,82 +808,112 @@ $script ='<script>
 
                     if (result.isConfirmed) {
 
-                        // SEND MAIL FIRST
-                        fetch("{{ route('send.payment.mail', 2) }}", {
-                                method: "POST",
-                                headers: {
-                                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                    "Content-Type": "application/json"
-                                },
-                                body: JSON.stringify({
-                                    receiverEmail: receiverEmail,
-                                    candidateName: candidateName,
-                                    messageBody: "Hello,\n\nThis is a static email for testing purposes.\nPlease ignore this if not relevant.\n\nBest regards,\nYour Company"
-                                })
-                            })
-                            .then(res => res.json())
-                            .then(mailRes => {
+                        const pdfUrls = [
+                            `{{ route('pdf.acceptance') }}?${queryParams}`,
+                            `{{ route('pdf.consultation') }}?${queryParams}`,
+                            `{{ route('pdf.delivery') }}?${queryParams}`,
+                            `{{ route('pdf.payment') }}?${queryParams}`
+                        ];
 
-                                if (!mailRes.success) {
-                                    Swal.fire({
-                                        title: "Mail Failed!",
-                                        text: mailRes.message,
-                                        icon: "error"
-                                    });
+                        Promise.all(pdfUrls.map(u => fetch(u).then(r => r.blob())))
+                            .then(blobs => {
+
+                                let pdfForm = new FormData();
+                                pdfForm.append("_token", "{{ csrf_token() }}");
+
+                                blobs.forEach((blob, index) => {
+                                    let filename = `form_${index + 1}_${Date.now()}.pdf`;
+                                    pdfForm.append(`pdf_files[]`, blob, filename);
+                                });
+
+                                return fetch("{{ route('upload.generated.pdfs') }}", {
+                                    method: "POST",
+                                    body: pdfForm
+                                }).then(res => res.json());
+                            })
+                            .then(uploadRes => {
+
+                                if (!uploadRes.success) {
+                                    Swal.fire("Error", "Failed to store PDF files.", "error");
                                     return;
                                 }
 
-                                // Continue saving row after email success
-                                let rowData = {};
-                                row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
-                                    rowData[cell.dataset.key] = cell.value;
-                                });
-
-                                let formData = new FormData();
-                                formData.append("data", JSON.stringify(rowData));
-                                formData.append("_token", "{{ csrf_token() }}");
-
-                                let resumeInput = row.querySelector("input.resume-input");
-                                if (resumeInput && resumeInput.files.length > 0) {
-                                    formData.append("resume", resumeInput.files[0]);
-                                }
-
-                                let url = id === "new" ?
-                                    "{{ route('accountantstore') }}" :
-                                    "{{ route('accountantupdate') }}";
-
-                                if (id !== "new") {
-                                    formData.append("id", id);
-                                }
-
-                                fetch(url, {
+                                // SEND MAIL FIRST
+                                fetch("{{ route('send.payment.mail', 2) }}", {
                                         method: "POST",
-                                        body: formData
+                                        headers: {
+                                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                            "Content-Type": "application/json"
+                                        },
+                                        body: JSON.stringify({
+                                            receiverEmail: receiverEmail,
+                                            candidateName: candidateName,
+                                            messageBody: "Hello,\n\nThis is a static email for testing purposes.\nPlease ignore this if not relevant.\n\nBest regards,\nYour Company"
+                                        })
                                     })
                                     .then(res => res.json())
-                                    .then(data => {
+                                    .then(mailRes => {
 
-                                        if (data.success) {
+                                        if (!mailRes.success) {
                                             Swal.fire({
-                                                title: "Mail Sent & Saved!",
-                                                text: "Email sent successfully and row saved.",
-                                                icon: "success"
-                                            });
-                                        } else {
-                                            Swal.fire({
-                                                title: "Save Error",
-                                                text: data.message,
+                                                title: "Mail Failed!",
+                                                text: mailRes.message,
                                                 icon: "error"
                                             });
+                                            return;
                                         }
 
+                                        // Continue saving row after email success
+                                        let rowData = {};
+                                        row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
+                                            rowData[cell.dataset.key] = cell.value;
+                                        });
+
+                                        let formData = new FormData();
+                                        formData.append("data", JSON.stringify(rowData));
+                                        formData.append("_token", "{{ csrf_token() }}");
+
+                                        let resumeInput = row.querySelector("input.resume-input");
+                                        if (resumeInput && resumeInput.files.length > 0) {
+                                            formData.append("resume", resumeInput.files[0]);
+                                        }
+
+                                        let url = id === "new" ?
+                                            "{{ route('accountantstore') }}" :
+                                            "{{ route('accountantupdate') }}";
+
+                                        if (id !== "new") {
+                                            formData.append("id", id);
+                                        }
+
+                                        fetch(url, {
+                                                method: "POST",
+                                                body: formData
+                                            })
+                                            .then(res => res.json())
+                                            .then(data => {
+
+                                                if (data.success) {
+                                                    Swal.fire({
+                                                        title: "Mail Sent & Saved!",
+                                                        text: "Email sent successfully and row saved.",
+                                                        icon: "success"
+                                                    });
+                                                } else {
+                                                    Swal.fire({
+                                                        title: "Save Error",
+                                                        text: data.message,
+                                                        icon: "error"
+                                                    });
+                                                }
+
+                                            });
+
+                                    })
+                                    .catch(() => {
+                                        Swal.fire("Mail Error", "Unable to send email.", "error");
                                     });
-
-                            })
-                            .catch(() => {
-                                Swal.fire("Mail Error", "Unable to send email.", "error");
                             });
-
                     }
 
                 });

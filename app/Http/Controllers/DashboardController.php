@@ -1196,6 +1196,26 @@ class DashboardController extends Controller
         return redirect()->back()->with('success', 'SMTP settings updated successfully!');
     }
 
+    public function uploadGeneratedPdfs(Request $request)
+    {
+        $storedFiles = [];
+
+        foreach ($request->file('pdf_files') as $file) {
+
+            $fileName = 'form_' . time() . '_' . uniqid() . '.pdf';
+
+            $path = $file->storeAs('public/forms', $fileName);
+
+            $storedFiles[] = storage_path('app/' . $path);
+        }
+
+        return response()->json([
+            'success' => true,
+            'paths'   => $storedFiles
+        ]);
+    }
+
+
     public function sendPaymentMail(Request $request, $smtpId)
     {
         $smtp = SmtpSetting::findOrFail($smtpId); // ID = 2 loaded normally
@@ -1215,7 +1235,7 @@ class DashboardController extends Controller
 
         // ▶️ HARD-CODED RECEIVER EMAIL (as you requested)
         $receiverEmail = "addmin.abhijeet@gmail.com";  // <-- write your receiver email here
-
+        $pdfs = $request->pdf_paths ?? [];
         // Optional email validation
         if (!filter_var($receiverEmail, FILTER_VALIDATE_EMAIL)) {
             return response()->json([
@@ -1231,7 +1251,7 @@ class DashboardController extends Controller
         try {
             Mail::raw($messageBody, function ($message) use ($receiverEmail, $subject) {
                 // Hard-coded receiver
-                $message->to($receiverEmail)->subject($subject); 
+                $message->to($receiverEmail)->subject($subject);
             });
 
             return response()->json([
