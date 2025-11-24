@@ -214,33 +214,31 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAACqIAA0AAAA
     });
 </script>
 <script>
-document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
-    const element = document.querySelector(".page-container");
-
-    // Clone the element so the original page is not modified
-    const clonedElement = element.cloneNode(true);
-    clonedElement.style.width = "210mm"; // A4 width in mm
-    clonedElement.style.minHeight = "297mm"; // A4 height in mm
-    clonedElement.style.margin = "0 auto";
-    
-    // Use html2pdf to generate PDF (keeps SVGs vector)
-    const opt = {
-        margin:       [10, 10, 10, 10], // top, left, bottom, right in mm
-        filename:     `acceptance_${new Date().toISOString().replace(/[:.]/g, "-")}.pdf`,
-        image:        { type: 'jpeg', quality: 0.98 }, // fallback for images
-        html2canvas:  { scale: 2, useCORS: true, allowTaint: true },
-        jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
-        pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] } // handle page breaks
-    };
-
-    html2pdf().set(opt).from(clonedElement).save();
-});
-
-// Optional: Allow Ctrl+P to trigger the browser print dialog
 document.addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'p') {
-        e.preventDefault(); // prevent default browser print
-        window.print();     // opens native print dialog
+    if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'p') {
+        e.preventDefault(); // Prevent default print dialog
+
+        const element = document.querySelector(".page-container");
+        if (!element) return;
+
+        // Clone element to avoid modifying original
+        const clonedElement = element.cloneNode(true);
+        clonedElement.style.width = "210mm"; // A4 width
+        clonedElement.style.minHeight = "297mm"; // A4 height
+        clonedElement.style.margin = "0 auto";
+
+        // html2pdf options
+        const opt = {
+            margin:       [10, 10, 10, 10], // top, left, bottom, right in mm
+            filename:     `acceptance_${new Date().toISOString().replace(/[:.]/g, "-")}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 }, // fallback for images
+            html2canvas:  { scale: 2, useCORS: true, allowTaint: true },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] }
+        };
+
+        // Generate PDF and save automatically
+        html2pdf().set(opt).from(clonedElement).save();
     }
 });
 </script>
