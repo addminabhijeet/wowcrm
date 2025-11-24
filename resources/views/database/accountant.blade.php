@@ -58,6 +58,7 @@ $script ='<script>
                         <th scope="col">Amount</th>
                         <th scope="col">Qualification</th>
                         <th scope="col">Exe Remarks</th>
+                        <th scope="col">Payment Date</th>
                         <th scope="col">Transaction ID</th>
                         <th scope="col">Reference Number</th>
                         <th scope="col">Payment Method</th>
@@ -143,6 +144,12 @@ $script ='<script>
                                 </option>
                                 @endforeach
                             </select>
+                        </td>
+
+                        {{-- Payment Date --}}
+                        <td>
+                            <input type="text" class="form-control date-picker" data-key="PaymentDate"
+                                value="{{ $row->PaymentDate ? \Carbon\Carbon::parse($row->PaymentDate)->format('m/d/Y') : '' }}">
                         </td>
 
                         {{-- TranId --}}
@@ -610,6 +617,8 @@ $script ='<script>
                     cells += `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
                 } else if (k === 'Name') {
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
+                } else if (k === 'Payment Date') {
+                    cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payment Date"><span class="small-hint"></span></td>`;
                 } else if (k === 'Transaction ID') {
                     cells += `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Transaction ID"><span class="small-hint"></span></td>`;
                 } else if (k === 'Reference Number') {
@@ -676,6 +685,7 @@ $script ='<script>
                 const tranId = row.querySelector('input[data-key="TranId"]')?.value?.trim() || "N/A";
                 const tranRef = row.querySelector('input[data-key="TranRef"]')?.value?.trim() || "N/A";
                 const paymentMethod = row.querySelector('input[data-key="PaymentMethod"]')?.value?.trim() || "N/A";
+                const paymentDate = row.querySelector('input[data-key="PaymentDate"]')?.value?.trim() || "N/A";
                 const payeeName = row.querySelector('input[data-key="PayeeName"]')?.value?.trim() || "N/A";
 
                 // Encode URL parameters correctly
@@ -686,6 +696,7 @@ $script ='<script>
                     tranId: tranId,
                     tranRef: tranRef,
                     paymentMethod: paymentMethod,
+                    paymentDate: paymentDate,
                     payeeName: payeeName
                 }).toString();
 
