@@ -726,7 +726,7 @@ $script ='<script>
     ">
 
         <h3 style="margin:0 0 20px; font-weight:600; font-size:20px; color:#333;">
-            Enrollment / Payment Details
+            Payment Details
         </h3>
 
         <div style="display:grid; grid-template-columns: 1fr 1fr; gap: 15px;">
