@@ -335,11 +335,40 @@
             pages[pageNo - 1].appendChild(annotationsContainer);
         });
     </script>
+
+
 <script>
 document.getElementById("printBtn").addEventListener("click", function() {
-    window.print(); // Opens Chrome's native print dialog
+    // Select the element to print
+    const printContents = document.querySelector(".page-container").innerHTML;
+
+    // Open a new window for printing
+    const printWindow = window.open('', '', 'width=1200,height=900');
+
+    // Write the content into the new window
+    printWindow.document.write(`
+        <html>
+            <head>
+                <title>Print</title>
+                <style>
+                    body { margin: 0; font-family: 'Poppins', sans-serif; }
+                    .page-container { width: 935px; height: 1210px; }
+                </style>
+            </head>
+            <body>
+                ${printContents}
+            </body>
+        </html>
+    `);
+
+    // Wait for content to load before printing
+    printWindow.document.close();
+    printWindow.focus();
+    printWindow.print();
+    printWindow.close();
 });
 </script>
+
 
 
 
