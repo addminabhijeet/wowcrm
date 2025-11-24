@@ -204,7 +204,7 @@
 </head>
 
 <body>
-    <button id="printBtn">Download PDF</button>
+    <button id="Print">Download PDF</button>
     <div class="page-container">
 
         <section class="page" style="width: 935px; height: 1210px;" aria-label="Page 1">

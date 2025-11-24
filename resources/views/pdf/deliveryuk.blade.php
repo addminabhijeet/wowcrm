@@ -111,7 +111,7 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAE2MAA0AAAA
 
 </head>
 <body>
-<button id="downloadPdfBtn">Download PDF</button>
+<button id="printBtn">Print PDF</button>
 <div class="page-container">
     
 <section class="page" style="width: 935px; height: 1210px;" aria-label="Page 1">
