@@ -60,7 +60,7 @@
         width: 935px;       /* Fixed width */
         height: 1210px;     /* Fixed height */
         left: 50%;          /* Center horizontally */
-        top: 50%;           /* Center vertically */
+        top: 10%;           /* Center vertically */
         transform: translate(-50%, -50%); /* Adjust center */
         margin: 0;
         box-sizing: border-box;
