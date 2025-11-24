@@ -713,18 +713,6 @@ $script ='<script>
     font-family: 'Poppins', sans-serif; 
     color: #222;
 ">
-    <!-- INFO CARD -->
-    <div style="
-        background: #fff; 
-        padding: 25px; 
-        border-radius: 12px; 
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        font-size: 15px;
-        line-height: 1.7;
-        border: 1px solid #eee;
-    ">
-
-    </div>
 
     <div style="
         display: grid;
