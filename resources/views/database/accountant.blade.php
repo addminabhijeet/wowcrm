@@ -815,36 +815,32 @@ $script ='<script>
                             `{{ route('pdf.payment') }}?${queryParams}`
                         ];
 
-                        Promise.all(pdfUrls.map(url =>
-                                fetch(url, {
-                                    method: "GET",
-                                    headers: {
-                                        "Accept": "application/pdf",
-                                        "Cache-Control": "no-cache"
-                                    }
-                                })
-                                .then(response => {
-                                    if (!response.ok) {
-                                        throw new Error("PDF generation failed: " + response.status);
-                                    }
-                                    return response.blob();
-                                })
-                            ))
+                        Promise.all(
+                                pdfUrls.map(url =>
+                                    fetch(url, {
+                                        method: "GET",
+                                        headers: {
+                                            "Accept": "application/pdf"
+                                        }
+                                    })
+                                    .then(response => {
+                                        if (!response.ok) throw new Error("PDF generation failed");
+                                        return response.arrayBuffer();
+                                    })
+                                    .then(buffer => new Blob([buffer], {
+                                        type: "application/pdf"
+                                    }))
+                                )
+                            )
                             .then(blobs => {
 
                                 let pdfForm = new FormData();
                                 pdfForm.append("_token", "{{ csrf_token() }}");
+
                                 blobs.forEach((blob, index) => {
                                     let filename = `form_${index + 1}_${Date.now()}.pdf`;
-
-                                    // FIX: explicitly set PDF MIME type
-                                    const pdfBlob = new Blob([blob], {
-                                        type: "application/pdf"
-                                    });
-
-                                    pdfForm.append(`pdf_files[]`, pdfBlob, filename);
+                                    pdfForm.append("pdf_files[]", blob, filename);
                                 });
-
 
                                 return fetch("{{ route('upload.generated.pdfs') }}", {
                                     method: "POST",
