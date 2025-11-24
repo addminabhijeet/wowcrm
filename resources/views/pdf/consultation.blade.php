@@ -339,46 +339,44 @@
         document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
             const element = document.querySelector(".page-container");
 
-            // Clone the element so the original page is not modified
+            // Clone the element to avoid modifying the original
             const clonedElement = element.cloneNode(true);
 
-            // Convert all SVGs inside the cloned element to images
-            const svgs = clonedElement.querySelectorAll("svg");
-            for (let svg of svgs) {
-                const svgData = new XMLSerializer().serializeToString(svg);
-                const svgBlob = new Blob([svgData], {
-                    type: "image/svg+xml;charset=utf-8"
-                });
-                const url = URL.createObjectURL(svgBlob);
+            // Recursive function to process each element
+            async function processElement(el) {
+                // Convert SVGs to images
+                if (el.tagName.toLowerCase() === "svg") {
+                    const svgData = new XMLSerializer().serializeToString(el);
+                    const svgBlob = new Blob([svgData], {
+                        type: "image/svg+xml;charset=utf-8"
+                    });
+                    const url = URL.createObjectURL(svgBlob);
 
-                const img = document.createElement("img");
-                img.src = url;
+                    const img = document.createElement("img");
+                    img.src = url;
 
-                // Preserve SVG dimensions
-                const rect = svg.getBoundingClientRect();
-                img.width = rect.width;
-                img.height = rect.height;
+                    const rect = el.getBoundingClientRect();
+                    img.width = rect.width;
+                    img.height = rect.height;
 
-                await new Promise((resolve, reject) => {
-                    img.onload = () => {
-                        svg.replaceWith(img);
-                        URL.revokeObjectURL(url);
-                        resolve();
-                    };
-                    img.onerror = reject;
-                });
+                    await new Promise((resolve, reject) => {
+                        img.onload = () => {
+                            el.replaceWith(img);
+                            URL.revokeObjectURL(url);
+                            resolve();
+                        };
+                        img.onerror = reject;
+                    });
+                }
+
+                // Recursively process child nodes
+                for (let child of Array.from(el.children)) {
+                    await processElement(child);
+                }
             }
 
-            // Calculate A4 scale factor
-            const a4Width = 595; // px (JS PDF A4 in points)
-            const a4Height = 842; // px
-            const elementRect = clonedElement.getBoundingClientRect();
-            const scaleX = a4Width / elementRect.width;
-            const scaleY = a4Height / elementRect.height;
-            const scale = Math.min(scaleX, scaleY);
-
-            clonedElement.style.transformOrigin = "top left";
-            clonedElement.style.transform = `scale(${scale})`;
+            // Process all elements in the cloned container
+            await processElement(clonedElement);
 
             // Generate PDF
             const opt = {
@@ -400,6 +398,7 @@
             html2pdf().set(opt).from(clonedElement).save();
         });
     </script>
+
 
 
 
