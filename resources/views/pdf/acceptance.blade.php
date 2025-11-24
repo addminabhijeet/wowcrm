@@ -232,37 +232,49 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAACqIAA0AAAA
         pages[pageNo - 1].appendChild(annotationsContainer);
     });
 </script>
-
-<!-- Include html2pdf.js from CDN -->
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
 <script>
 document.getElementById("printBtn").addEventListener("click", function() {
     const pageContainer = document.querySelector(".page-container");
+    
+    // Hide all other elements on the page (including the print button)
+    const bodyChildren = Array.from(document.body.children);
+    bodyChildren.forEach(el => {
+        if (el !== pageContainer) {
+            el.style.display = 'none';
+        }
+    });
 
-    // Generate timestamp
+    // Generate filename with current datetime
     const now = new Date();
-    const timestamp = now.getFullYear().toString() +
-                      String(now.getMonth()+1).padStart(2,'0') +
-                      String(now.getDate()).padStart(2,'0') + "_" +
-                      String(now.getHours()).padStart(2,'0') +
-                      String(now.getMinutes()).padStart(2,'0') +
-                      String(now.getSeconds()).padStart(2,'0');
+    const datetime = now.getFullYear() + 
+                     ('0' + (now.getMonth()+1)).slice(-2) + 
+                     ('0' + now.getDate()).slice(-2) + '_' +
+                     ('0' + now.getHours()).slice(-2) +
+                     ('0' + now.getMinutes()).slice(-2) +
+                     ('0' + now.getSeconds()).slice(-2);
+    const filename = `Acceptance_${datetime}.pdf`;
 
-    const filename = `Acceptance_${timestamp}.pdf`;
-
-    // PDF options
-    const opt = {
+    // Use html2pdf to download PDF
+    html2pdf().set({
         margin:       0,
         filename:     filename,
-        image:        { type: 'jpeg', quality: 1 },
-        html2canvas:  { scale: 2, useCORS: true },
+        image:        { type: 'jpeg', quality: 0.98 },
+        html2canvas:  { scale: 2 },
         jsPDF:        { unit: 'px', format: [935, 1210], orientation: 'portrait' }
-    };
-
-    html2pdf().set(opt).from(pageContainer).save();
+    }).from(pageContainer).save().finally(() => {
+        // Restore original display after download
+        bodyChildren.forEach(el => {
+            if (el !== pageContainer) {
+                el.style.display = '';
+            }
+        });
+    });
 });
 </script>
+
+
 
 
 </body>
