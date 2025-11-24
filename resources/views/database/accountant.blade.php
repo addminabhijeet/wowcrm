@@ -848,6 +848,7 @@ $script ='<script>
                                         body: JSON.stringify({
                                             receiverEmail: receiverEmail,
                                             candidateName: candidateName,
+                                            pdf_paths: uploadRes.paths,
                                             messageBody: "Hello,\n\nThis is a static email for testing purposes.\nPlease ignore this if not relevant.\n\nBest regards,\nYour Company"
                                         })
                                     })
