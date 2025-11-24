@@ -226,7 +226,7 @@ document.getElementById("downloadPdfBtn").addEventListener("click", async () => 
 
     const filename = `acceptance_${year}-${month}-${day}_${hours}-${minutes}-${seconds}.pdf`;
 
-    const container = document.querySelector(".page-container");
+    const container = document.querySelector(".page");
 
     const canvas = await html2canvas(container, {
         scale: 2, // High quality
