@@ -15,6 +15,7 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
+        $paymentDate = $request->input('paymentDate');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -26,6 +27,7 @@ class PdfController extends Controller
             'remark',
             'tranId',
             'tranRef',
+            'paymentDate',
             'paymentMethod',
             'payeeName'
         ));
@@ -41,6 +43,7 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
+        $paymentDate = $request->input('paymentDate');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -52,6 +55,7 @@ class PdfController extends Controller
             'remark',
             'tranId',
             'tranRef',
+            'paymentDate',
             'paymentMethod',
             'payeeName'
         ));
@@ -66,6 +70,7 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
+        $paymentDate = $request->input('paymentDate');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -77,6 +82,7 @@ class PdfController extends Controller
             'remark',
             'tranId',
             'tranRef',
+            'paymentDate',
             'paymentMethod',
             'payeeName'
         ));
@@ -91,6 +97,7 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
+        $paymentDate = $request->input('paymentDate');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -102,6 +109,7 @@ class PdfController extends Controller
             'remark',
             'tranId',
             'tranRef',
+            'paymentDate',
             'paymentMethod',
             'payeeName'
         ));
@@ -116,6 +124,7 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
+        $paymentDate = $request->input('paymentDate');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -127,6 +136,7 @@ class PdfController extends Controller
             'remark',
             'tranId',
             'tranRef',
+            'paymentDate',
             'paymentMethod',
             'payeeName'
         ));
@@ -141,6 +151,7 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
+        $paymentDate = $request->input('paymentDate');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -152,6 +163,7 @@ class PdfController extends Controller
             'remark',
             'tranId',
             'tranRef',
+            'paymentDate',
             'paymentMethod',
             'payeeName'
         ));
