@@ -339,65 +339,41 @@
         document.getElementById("downloadPdfBtn").addEventListener("click", async () => {
             const element = document.querySelector(".page-container");
 
-            // Clone the element to avoid modifying the original
-            const clonedElement = element.cloneNode(true);
+            // Use html2canvas to take a screenshot of the element
+            const canvas = await html2canvas(element, {
+                scale: 2, // Increase resolution
+                useCORS: true, // Allow cross-origin images
+                logging: true,
+                allowTaint: true
+            });
 
-            // Recursive function to process each element
-            async function processElement(el) {
-                // Convert SVGs to images
-                if (el.tagName.toLowerCase() === "svg") {
-                    const svgData = new XMLSerializer().serializeToString(el);
-                    const svgBlob = new Blob([svgData], {
-                        type: "image/svg+xml;charset=utf-8"
-                    });
-                    const url = URL.createObjectURL(svgBlob);
+            // Convert canvas to image
+            const imgData = canvas.toDataURL("image/png");
 
-                    const img = document.createElement("img");
-                    img.src = url;
+            // Create jsPDF and add image
+            const pdf = new jsPDF({
+                unit: "pt",
+                format: "a4",
+                orientation: "portrait"
+            });
 
-                    const rect = el.getBoundingClientRect();
-                    img.width = rect.width;
-                    img.height = rect.height;
+            // Calculate width/height to fit A4
+            const pageWidth = pdf.internal.pageSize.getWidth();
+            const pageHeight = pdf.internal.pageSize.getHeight();
 
-                    await new Promise((resolve, reject) => {
-                        img.onload = () => {
-                            el.replaceWith(img);
-                            URL.revokeObjectURL(url);
-                            resolve();
-                        };
-                        img.onerror = reject;
-                    });
-                }
+            // Resize image to fit A4 while maintaining aspect ratio
+            const imgWidth = canvas.width;
+            const imgHeight = canvas.height;
+            const ratio = Math.min(pageWidth / imgWidth, pageHeight / imgHeight);
 
-                // Recursively process child nodes
-                for (let child of Array.from(el.children)) {
-                    await processElement(child);
-                }
-            }
+            pdf.addImage(imgData, "PNG", 0, 0, imgWidth * ratio, imgHeight * ratio);
 
-            // Process all elements in the cloned container
-            await processElement(clonedElement);
-
-            // Generate PDF
-            const opt = {
-                margin: 0,
-                filename: `acceptance_${new Date().toISOString().replace(/[:.]/g, "-")}.pdf`,
-                html2canvas: {
-                    scale: 2,
-                    useCORS: true,
-                    logging: true,
-                    allowTaint: true
-                },
-                jsPDF: {
-                    unit: "pt",
-                    format: "a4",
-                    orientation: "portrait"
-                }
-            };
-
-            html2pdf().set(opt).from(clonedElement).save();
+            // Save PDF
+            const filename = `acceptance_${new Date().toISOString().replace(/[:.]/g, "-")}.pdf`;
+            pdf.save(filename);
         });
     </script>
+
 
 
 
