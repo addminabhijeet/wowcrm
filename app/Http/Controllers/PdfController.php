@@ -15,9 +15,12 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
-        // Convert to "October 07, 2025" format
         $paymentDateRaw = $request->input('paymentDate');
-        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        if ($paymentDateRaw && $paymentDateRaw !== 'N/A' && strtotime($paymentDateRaw) !== false) {
+            $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        } else {
+            $paymentDate = 'N/A';
+        }
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -45,9 +48,12 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
-        // Convert to "October 07, 2025" format
         $paymentDateRaw = $request->input('paymentDate');
-        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        if ($paymentDateRaw && $paymentDateRaw !== 'N/A' && strtotime($paymentDateRaw) !== false) {
+            $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        } else {
+            $paymentDate = 'N/A';
+        }
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -74,9 +80,12 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
-        // Convert to "October 07, 2025" format
         $paymentDateRaw = $request->input('paymentDate');
-        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        if ($paymentDateRaw && $paymentDateRaw !== 'N/A' && strtotime($paymentDateRaw) !== false) {
+            $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        } else {
+            $paymentDate = 'N/A';
+        }
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -103,9 +112,12 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
-        // Convert to "October 07, 2025" format
         $paymentDateRaw = $request->input('paymentDate');
-        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        if ($paymentDateRaw && $paymentDateRaw !== 'N/A' && strtotime($paymentDateRaw) !== false) {
+            $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        } else {
+            $paymentDate = 'N/A';
+        }
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
@@ -134,9 +146,12 @@ class PdfController extends Controller
         $tranRef       = $request->input('tranRef');
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
-        // Convert to "October 07, 2025" format
         $paymentDateRaw = $request->input('paymentDate');
-        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        if ($paymentDateRaw && $paymentDateRaw !== 'N/A' && strtotime($paymentDateRaw) !== false) {
+            $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        } else {
+            $paymentDate = 'N/A';
+        }
 
         return view('pdf.deliveryuk', compact(
             'name',
@@ -162,9 +177,12 @@ class PdfController extends Controller
         $remark        = $request->input('remark');
         $tranId        = $request->input('tranId');
         $tranRef       = $request->input('tranRef');
-        // Convert to "October 07, 2025" format
         $paymentDateRaw = $request->input('paymentDate');
-        $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        if ($paymentDateRaw && $paymentDateRaw !== 'N/A' && strtotime($paymentDateRaw) !== false) {
+            $paymentDate = \Carbon\Carbon::parse($paymentDateRaw)->format('F d, Y');
+        } else {
+            $paymentDate = 'N/A';
+        }
         $paymentMethod = $request->input('paymentMethod');
         $payeeName     = $request->input('payeeName');
 
