@@ -1198,8 +1198,9 @@ class DashboardController extends Controller
 
     public function sendPaymentMail(Request $request, $smtpId)
     {
-        $smtp = SmtpSetting::findOrFail($smtpId); // ← this loads ID = 2
+        $smtp = SmtpSetting::findOrFail($smtpId); // ID = 2 loaded normally
 
+        // Apply SMTP settings (same as before)
         config([
             'mail.default' => 'smtp',
             'mail.mailers.smtp.transport' => $smtp->mailer ?? 'smtp',
@@ -1212,14 +1213,51 @@ class DashboardController extends Controller
             'mail.from.name' => $smtp->from_name,
         ]);
 
-        Mail::send([], [], function ($message) use ($request) {
-            $message->to($request->receiverEmail)
-                ->subject("Payment Confirmation")
-                ->setBody("Your payment is confirmed");
-        });
+        // ▶️ HARD-CODED RECEIVER EMAIL (as you requested)
+        $receiverEmail = "payment.receiver@example.com";  // <-- write your receiver email here
 
-        return response()->json(['success' => true, 'message' => 'Payment mail sent!']);
+        // Optional email validation
+        if (!filter_var($receiverEmail, FILTER_VALIDATE_EMAIL)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid receiver email address.'
+            ]);
+        }
+
+        // Static subject + message
+        $subject = "Payment Confirmation";
+        $messageBody = "Your payment is confirmed";
+
+        try {
+            Mail::raw($messageBody, function ($message) use ($receiverEmail, $subject, $smtp) {
+
+                // Sender
+                $message->from($smtp->from_address, $smtp->from_name);
+
+                // Hard-coded receiver
+                $message->to($receiverEmail);
+
+                // Subject
+                $message->subject($subject);
+            });
+
+            return response()->json([
+                'success' => true,
+                'message' => "Payment mail sent successfully to {$receiverEmail}!"
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to send payment mail: ' . $e->getMessage(),
+                'debug' => [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ],
+            ]);
+        }
     }
+
 
 
     public function test(Request $request, $smtpId)
