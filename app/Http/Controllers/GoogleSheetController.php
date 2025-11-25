@@ -5041,11 +5041,14 @@ class GoogleSheetController extends Controller
         try {
             $row->update($updateData);
 
-            $user = Auth::user();
-            $name = $rowData['Name'] ?? null;
-            $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
-
-            $email = $rowData['Email_Address'] ?? null;
+            $name   = $rowData['Name'] ?? $row->Name ?? '';
+            $phone  = $rowData['Phone Number'] ?? $row->Phone_Number ?? '';
+            $date   = $rowData['Date'] ?? $row->Date ?? '';
+            $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : ($row->Amount ?? 0);
+            $email  = $rowData['Email Address']
+                ?? $rowData['Email_Address']
+                ?? $row->Email_Address
+                ?? '';
 
             // EMAIL-SENDING SECTION REMOVED
 
