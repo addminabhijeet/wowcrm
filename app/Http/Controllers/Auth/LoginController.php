@@ -76,6 +76,8 @@ class LoginController extends Controller
                     return redirect()->route('dashboard.trainer');
                 case 'admin':
                     return redirect()->route('dashboard.admin');
+                case 'seniorassociate':
+                    return redirect()->route('dashboard.seniorassociate');
                 case 'associate':
                     return redirect()->route('dashboard.associate');
                 case 'support':
