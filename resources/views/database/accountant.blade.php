@@ -317,7 +317,7 @@
                                     <td>
                                         <input type="file" accept="application/pdf" class="d-none resume-input"
                                             data-key="View">
-                                        <button type="button" class="btn btn-sm btn-info upload-resume-btn">
+                                        <button type="button" class="btn btn-sm btn-info upload-btn">
                                             {{ !empty($row->resume) ? 'Change File' : 'Upload' }}
                                         </button>
 
