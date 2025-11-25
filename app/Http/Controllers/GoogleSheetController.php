@@ -4988,7 +4988,9 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Fill Full Detail to Save.'
+                'message' => $e->getMessage(),  // Show real error
+                'error_line' => $e->getLine(),  // Optional: line number
+                'error_file' => $e->getFile(),  // Optional: which file
             ]);
         }
     }
