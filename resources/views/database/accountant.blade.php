@@ -190,7 +190,7 @@ $script ='<script>
                         {{-- View (Acceptance) --}}
                         <td>
                             <input type="file" accept="application/pdf" class="d-none acceptance-input" data-key="View">
-                            <button type="button" class="btn btn-sm btn-info upload-btn">
+                            <button type="button" class="btn btn-sm btn-info upload-acceptance-btn">
                                 {{ !empty($row->acceptance) ? 'Change File' : 'Upload' }}
                             </button>
 
@@ -210,7 +210,7 @@ $script ='<script>
                         {{-- View (Consultation) --}}
                         <td>
                             <input type="file" accept="application/pdf" class="d-none consultation-input" data-key="View">
-                            <button type="button" class="btn btn-sm btn-info upload-btn">
+                            <button type="button" class="btn btn-sm btn-info upload-consultation-btn">
                                 {{ !empty($row->consultation) ? 'Change File' : 'Upload' }}
                             </button>
 
@@ -230,7 +230,7 @@ $script ='<script>
                         {{-- View (Delivery) --}}
                         <td>
                             <input type="file" accept="application/pdf" class="d-none delivery-input" data-key="View">
-                            <button type="button" class="btn btn-sm btn-info upload-btn">
+                            <button type="button" class="btn btn-sm btn-info upload-delivery-btn">
                                 {{ !empty($row->delivery) ? 'Change File' : 'Upload' }}
                             </button>
 
@@ -250,7 +250,7 @@ $script ='<script>
                         {{-- View (Payment) --}}
                         <td>
                             <input type="file" accept="application/pdf" class="d-none payment-input" data-key="View">
-                            <button type="button" class="btn btn-sm btn-info upload-btn">
+                            <button type="button" class="btn btn-sm btn-info upload-payment-btn">
                                 {{ !empty($row->payment) ? 'Change File' : 'Upload' }}
                             </button>
 
@@ -276,7 +276,7 @@ $script ='<script>
                         {{-- View (Resume) --}}
                         <td>
                             <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
-                            <button type="button" class="btn btn-sm btn-info upload-btn">
+                            <button type="button" class="btn btn-sm btn-info upload-resume-btn">
                                 {{ !empty($row->resume) ? 'Change File' : 'Upload' }}
                             </button>
 
@@ -1028,6 +1028,31 @@ $script ='<script>
                     formData.append("resume", resumeInput.files[0]);
                 }
 
+                // Acceptance file
+                let accInput = row.querySelector("input.acceptance-input");
+                if (accInput && accInput.files.length > 0) {
+                    formData.append("acceptance", accInput.files[0]);
+                }
+
+                // Consultation file
+                let consInput = row.querySelector("input.consultation-input");
+                if (consInput && consInput.files.length > 0) {
+                    formData.append("consultation", consInput.files[0]);
+                }
+
+                // Delivery file
+                let delInput = row.querySelector("input.delivery-input");
+                if (delInput && delInput.files.length > 0) {
+                    formData.append("delivery", delInput.files[0]);
+                }
+
+                // Payment file
+                let payInput = row.querySelector("input.payment-input");
+                if (payInput && payInput.files.length > 0) {
+                    formData.append("payment", payInput.files[0]);
+                }
+
+
                 // Determine URL and method
                 let url, method;
                 if (id === "new") {
@@ -1063,6 +1088,62 @@ $script ='<script>
                                 saveBtn.dataset.id = data.id;
                                 row.querySelector("td:first-child").innerText = data.sheet_row_number;
 
+                                // Acceptance
+                                const viewAcceptanceBtn = row.querySelector('.viewacceptance-btn');
+                                const downloadAcceptanceBtn = row.querySelector('.downloadacceptance-btn');
+
+                                if (viewAcceptanceBtn && data.acceptance_path) {
+                                    viewAcceptanceBtn.href = `/dashboard/senior/google-sheet/view-acceptance/${data.id}`;
+                                    viewAcceptanceBtn.classList.remove('d-none');
+                                }
+
+                                if (downloadAcceptanceBtn && data.acceptance_path) {
+                                    downloadAcceptanceBtn.href = `/dashboard/senior/google-sheet/download-acceptance/${data.id}`;
+                                    downloadAcceptanceBtn.classList.remove('d-none');
+                                }
+
+                                // Consultation
+                                const viewConsultationBtn = row.querySelector('.viewconsultation-btn');
+                                const downloadConsultationBtn = row.querySelector('.downloadconsultation-btn');
+
+                                if (viewConsultationBtn && data.consultation_path) {
+                                    viewConsultationBtn.href = `/dashboard/senior/google-sheet/view-consultation/${data.id}`;
+                                    viewConsultationBtn.classList.remove('d-none');
+                                }
+
+                                if (downloadConsultationBtn && data.consultation_path) {
+                                    downloadConsultationBtn.href = `/dashboard/senior/google-sheet/download-consultation/${data.id}`;
+                                    downloadConsultationBtn.classList.remove('d-none');
+                                }
+
+                                // Delivery
+                                const viewDeliveryBtn = row.querySelector('.viewdelivery-btn');
+                                const downloadDeliveryBtn = row.querySelector('.downloaddelivery-btn');
+
+                                if (viewDeliveryBtn && data.delivery_path) {
+                                    viewDeliveryBtn.href = `/dashboard/senior/google-sheet/view-delivery/${data.id}`;
+                                    viewDeliveryBtn.classList.remove('d-none');
+                                }
+
+                                if (downloadDeliveryBtn && data.delivery_path) {
+                                    downloadDeliveryBtn.href = `/dashboard/senior/google-sheet/download-delivery/${data.id}`;
+                                    downloadDeliveryBtn.classList.remove('d-none');
+                                }
+
+                                // Payment
+                                const viewPaymentBtn = row.querySelector('.viewpayment-btn');
+                                const downloadPaymentBtn = row.querySelector('.downloadpayment-btn');
+
+                                if (viewPaymentBtn && data.payment_path) {
+                                    viewPaymentBtn.href = `/dashboard/senior/google-sheet/view-payment/${data.id}`;
+                                    viewPaymentBtn.classList.remove('d-none');
+                                }
+
+                                if (downloadPaymentBtn && data.payment_path) {
+                                    downloadPaymentBtn.href = `/dashboard/senior/google-sheet/download-payment/${data.id}`;
+                                    downloadPaymentBtn.classList.remove('d-none');
+                                }
+
                                 const viewBtn = row.querySelector('.view-btn');
                                 const downloadBtn = row.querySelector('.download-btn');
 
@@ -1076,57 +1157,6 @@ $script ='<script>
                                     downloadBtn.classList.remove('d-none');
                                 }
 
-                                const viewacceptanceBtn = row.querySelector('.viewacceptance-btn');
-                                const downloadacceptanceBtn = row.querySelector('.downloadacceptance-btn');
-
-                                if (viewacceptanceBtn && data.acceptance_path) {
-                                    viewacceptanceBtn.href = `/dashboard/senior/google-sheet/view-acceptance/${data.id}`;
-                                    viewacceptanceBtn.classList.remove('d-none');
-                                }
-
-                                if (downloadacceptanceBtn && data.resume_path) {
-                                    downloadacceptanceBtn.href = `/dashboard/senior/google-sheet/download-acceptance/${data.id}`;
-                                    downloadacceptanceBtn.classList.remove('d-none');
-                                }
-
-                                const viewconsultationBtn = row.querySelector('.viewconsultation-btn');
-                                const downloadconsultationBtn = row.querySelector('.downloadconsultation-btn');
-
-                                if (viewconsultationBtn && data.consultation_path) {
-                                    viewconsultationBtn.href = `/dashboard/senior/google-sheet/view-consultation/${data.id}`;
-                                    viewconsultationBtn.classList.remove('d-none');
-                                }
-
-                                if (downloadconsultationBtn && data.consultation_path) {
-                                    downloadconsultationBtn.href = `/dashboard/senior/google-sheet/download-consultation/${data.id}`;
-                                    downloadconsultationBtn.classList.remove('d-none');
-                                }
-
-                                const viewdeliveryBtn = row.querySelector('.viewdelivery-btn');
-                                const downloaddeliveryBtn = row.querySelector('.downloaddelivery-btn');
-
-                                if (viewdeliveryBtn && data.delivery_path) {
-                                    viewdeliveryBtn.href = `/dashboard/senior/google-sheet/view-delivery/${data.id}`;
-                                    viewdeliveryBtn.classList.remove('d-none');
-                                }
-
-                                if (downloaddeliveryBtn && data.delivery_path) {
-                                    downloaddeliveryBtn.href = `/dashboard/senior/google-sheet/download-delivery/${data.id}`;
-                                    downloaddeliveryBtn.classList.remove('d-none');
-                                }
-
-                                const viewpaymentBtn = row.querySelector('.viewpayment-btn');
-                                const downloadpaymentBtn = row.querySelector('.downloadpayment-btn');
-
-                                if (viewpaymentBtn && data.payment_path) {
-                                    viewpaymentBtn.href = `/dashboard/senior/google-sheet/view-payment/${data.id}`;
-                                    viewpaymentBtn.classList.remove('d-none');
-                                }
-
-                                if (downloadpaymentBtn && data.payment_path) {
-                                    downloadpaymentBtn.href = `/dashboard/senior/google-sheet/download-payment/${data.id}`;
-                                    downloadpaymentBtn.classList.remove('d-none');
-                                }
 
                                 // Only add new blank row if none exists
                                 const existingNewRows = tableBody.querySelectorAll('tr[data-id="new"]');
@@ -1156,6 +1186,35 @@ $script ='<script>
                 const fileInput = row.querySelector('.resume-input');
                 fileInput.click();
             }
+
+            // Acceptance upload
+            if (e.target.matches('.upload-acceptance-btn')) {
+                const row = e.target.closest('tr');
+                const accInput = row.querySelector('.acceptance-input');
+                if (accInput) accInput.click();
+            }
+
+            // Consultation upload
+            if (e.target.matches('.upload-consultation-btn')) {
+                const row = e.target.closest('tr');
+                const consInput = row.querySelector('.consultation-input');
+                if (consInput) consInput.click();
+            }
+
+            // Delivery upload
+            if (e.target.matches('.upload-delivery-btn')) {
+                const row = e.target.closest('tr');
+                const delInput = row.querySelector('.delivery-input');
+                if (delInput) delInput.click();
+            }
+
+            // Payment upload
+            if (e.target.matches('.upload-payment-btn')) {
+                const row = e.target.closest('tr');
+                const payInput = row.querySelector('.payment-input');
+                if (payInput) payInput.click();
+            }
+
 
             // Handle view and download buttons for unsaved rows
             if (e.target.matches('.view-btn') || e.target.matches('.download-btn')) {
@@ -1189,6 +1248,47 @@ $script ='<script>
 
                 console.log('File selected:', fileName);
             }
+
+            // Acceptance selected
+            if (e.target.matches('.acceptance-input')) {
+                const row = e.target.closest('tr');
+
+                row.querySelector('.viewacceptance-btn')?.classList.remove('d-none');
+                row.querySelector('.downloadacceptance-btn')?.classList.remove('d-none');
+
+                row.querySelector('.upload-btn').textContent = 'Change File';
+            }
+
+            // Consultation selected
+            if (e.target.matches('.consultation-input')) {
+                const row = e.target.closest('tr');
+
+                row.querySelector('.viewconsultation-btn')?.classList.remove('d-none');
+                row.querySelector('.downloadconsultation-btn')?.classList.remove('d-none');
+
+                row.querySelector('.upload-btn').textContent = 'Change File';
+            }
+
+            // Delivery selected
+            if (e.target.matches('.delivery-input')) {
+                const row = e.target.closest('tr');
+
+                row.querySelector('.viewdelivery-btn')?.classList.remove('d-none');
+                row.querySelector('.downloaddelivery-btn')?.classList.remove('d-none');
+
+                row.querySelector('.upload-btn').textContent = 'Change File';
+            }
+
+            // Payment selected
+            if (e.target.matches('.payment-input')) {
+                const row = e.target.closest('tr');
+
+                row.querySelector('.viewpayment-btn')?.classList.remove('d-none');
+                row.querySelector('.downloadpayment-btn')?.classList.remove('d-none');
+
+                row.querySelector('.upload-btn').textContent = 'Change File';
+            }
+
         });
 
         // Apply initial state to all existing rows
