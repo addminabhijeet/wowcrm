@@ -172,6 +172,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/google-sheet-con', [GoogleSheetController::class, 'seniorcon'])->name('google.sheet.seniorcon');
     Route::get('/dashboard/accountant/google-sheet-paid', [GoogleSheetController::class, 'accountantpaid'])->name('google.sheet.accountantpaid');
     Route::get('/dashboard/accountant/google-sheet-con', [GoogleSheetController::class, 'accountantcon'])->name('google.sheet.accountantcon');
+    Route::get('/dashboard/accountant/google-sheet-ver', [GoogleSheetController::class, 'accountantver'])->name('google.sheet.accountantver');
     Route::post('/dashboard/senior/google-sheet/fetch', [GoogleSheetController::class, 'seniorfetch'])->name('google.sheet.seniorfetch');
     Route::patch('/dashboard/senior/google-sheet/pdfupdate/{id}', [GoogleSheetController::class, 'seniorpdfupdate'])->name('google.sheet.seniorpdfupdate');
     Route::post('/dashboard/senior/google-sheet/pdfstore', [GoogleSheetController::class, 'seniorpdfstore'])->name('google.sheet.seniorpdfstore');
