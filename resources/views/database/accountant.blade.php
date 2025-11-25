@@ -302,7 +302,7 @@
                                             <a href="#" target="_blank"
                                                 class="btn btn-sm btn-primary viewpayment-btn d-none">View Payment</a>
                                             <a href="#" download
-                                                class="btn btn-sm btn-secondary download-btn d-none">Download Payment</a>
+                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download Payment</a>
                                         @endif
                                     </td>
 
@@ -588,7 +588,7 @@
 
             function initDatePickers(context = document) {
                 const laravelToday =
-                "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
+                    "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
 
                 context.querySelectorAll('input.date-picker').forEach(input => {
                     const key = input.dataset.key;
@@ -645,12 +645,12 @@
                         const key = 'pk.e91481c6e5f0a93703159ae988e641a0';
                         $.getJSON(
                                 `https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`
-                                )
+                            )
                             .done(function(results) {
                                 $('#loc-suggestions').remove();
                                 const $list = $(
                                     '<div id="loc-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>'
-                                    );
+                                );
 
                                 results.forEach(r => {
                                     const addr = r.address || {};
@@ -663,12 +663,12 @@
 
                                     const item = $(
                                         '<a href="#" class="list-group-item list-group-item-action"></a>'
-                                        ).text(display || r.display_name);
+                                    ).text(display || r.display_name);
                                     item.on('click', function(e) {
                                         e.preventDefault();
                                         $input.val(display || r.display_name);
                                         applyCss(display || r
-                                        .display_name); // Apply valid class
+                                            .display_name); // Apply valid class
                                         $input.css('background-color',
                                             '#d4edda'); // optional highlight
                                         $('#loc-suggestions').remove();
@@ -850,27 +850,27 @@
                     // Collect necessary data for preview
                     const senderEmail = "{{ auth()->user()->email }}";
                     const receiverEmail = row.querySelector('input[data-key="Email Address"]')?.value
-                    ?.trim() || "N/A";
+                        ?.trim() || "N/A";
                     const amount = row.querySelector('input[data-key="Amount"]')?.value?.trim() || "N/A";
                     const name = row.querySelector('input[data-key="Name"]')?.value?.trim() || "N/A";
                     const remark = row.querySelector('input[data-key="Remark"]')?.value?.trim() || "N/A";
                     const courseJoined = row.querySelector('[data-key="Course"]')?.value?.trim() || "N/A";
                     const paymentLink = row.querySelector('input[data-key="Payment Link"]')?.value
-                    ?.trim() || "N/A";
+                        ?.trim() || "N/A";
                     const candidateName = row.querySelector('input[data-key="Candidate Name"]')?.value
                         ?.trim() || "Candidate";
                     const tranId = row.querySelector('input[data-key="TranId"]')?.value?.trim() || "N/A";
                     const tranRef = row.querySelector('input[data-key="TranRef"]')?.value?.trim() || "N/A";
                     const paymentMethod = row.querySelector('input[data-key="PaymentMethod"]')?.value
-                    ?.trim() || "N/A";
+                        ?.trim() || "N/A";
                     const paymentDate = row.querySelector('input[data-key="PaymentDate"]')?.value?.trim() ||
                         "N/A";
                     const payeeName = row.querySelector('input[data-key="PayeeName"]')?.value?.trim() ||
                         "N/A";
                     const Phone_Number = row.querySelector('input[data-key="Phone Number"]')?.value
-                    ?.trim() || "N/A";
+                        ?.trim() || "N/A";
                     const Location = row.querySelector('input[data-key="Location"]')?.value?.trim() ||
-                    "N/A";
+                        "N/A";
 
                     // Encode URL parameters correctly
                     const queryParams = new URLSearchParams({
@@ -1045,7 +1045,7 @@
 
                                             let formData = new FormData();
                                             formData.append("data", JSON.stringify(
-                                            rowData));
+                                                rowData));
                                             formData.append("_token",
                                                 "{{ csrf_token() }}");
 
@@ -1247,7 +1247,7 @@
                                     // Payment
                                     const viewPaymentBtn = row.querySelector('.viewpayment-btn');
                                     const downloadPaymentBtn = row.querySelector(
-                                    '.downloadpayment-btn');
+                                        '.downloadpayment-btn');
 
                                     if (viewPaymentBtn && data.payment_path) {
                                         viewPaymentBtn.href =
@@ -1348,7 +1348,8 @@
                     }
                 }
 
-                if (e.target.matches('.viewacceptance-btn') || e.target.matches('.downloadacceptance-btn')) {
+                if (e.target.matches('.viewacceptance-btn') || e.target.matches(
+                    '.downloadacceptance-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
@@ -1359,7 +1360,8 @@
                     }
                 }
 
-                if (e.target.matches('.viewconsultation-btn') || e.target.matches('.downloadconsultation-btn')) {
+                if (e.target.matches('.viewconsultation-btn') || e.target.matches(
+                        '.downloadconsultation-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
