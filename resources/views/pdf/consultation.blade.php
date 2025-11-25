@@ -71,33 +71,38 @@
             }
         }
     </style>
-<style>
-/* Print styles */
-@media print {
-    body * {
-        visibility: hidden; /* Hide everything by default */
-    }
+    <style>
+        /* Print styles */
+        @media print {
+            body * {
+                visibility: hidden;
+                /* Hide everything by default */
+            }
 
-    .page-container, .page-container * {
-        visibility: visible; /* Show only page-container and its children */
-    }
+            .page-container,
+            .page-container * {
+                visibility: visible;
+                /* Show only page-container and its children */
+            }
 
-    .page-container {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 935px;       /* Fixed width */
-        /* Height doubled to span two pages */
-        height: 2420px;     /* 2 * 1210px */
-        margin: 0;
-    }
+            .page-container {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 935px;
+                /* Fixed width */
+                /* Height doubled to span two pages */
+                height: 2420px;
+                /* 2 * 1210px */
+                margin: 0;
+            }
 
-    /* Force page breaks */
-    .page-break {
-        page-break-before: always;
-    }
-}
-</style>
+            /* Force page breaks */
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
     <style id="fonts2" type="text/css">
         @font-face {
             font-family: CIDFont-F1_8;
@@ -363,29 +368,29 @@
         });
     </script>
 
-<script>
-document.getElementById("printBtn").addEventListener("click", function() {
-    const pageContainer = document.querySelector(".page-container");
-    
-    // Hide all other elements on the page
-    const bodyChildren = Array.from(document.body.children);
-    bodyChildren.forEach(el => {
-        if (el !== pageContainer) {
-            el.style.display = 'none';
-        }
-    });
+    <script>
+        document.getElementById("printBtn").addEventListener("click", function() {
+            const pageContainer = document.querySelector(".page-container");
 
-    // Print only the page-container
-    window.print();
+            // Hide all other elements on the page
+            const bodyChildren = Array.from(document.body.children);
+            bodyChildren.forEach(el => {
+                if (el !== pageContainer) {
+                    el.style.display = 'none';
+                }
+            });
 
-    // Restore original display
-    bodyChildren.forEach(el => {
-        if (el !== pageContainer) {
-            el.style.display = '';
-        }
-    });
-});
-</script>
+            // Print only the page-container
+            window.print();
+
+            // Restore original display
+            bodyChildren.forEach(el => {
+                if (el !== pageContainer) {
+                    el.style.display = '';
+                }
+            });
+        });
+    </script>
 
 
 
