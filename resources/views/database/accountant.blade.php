@@ -195,8 +195,12 @@ $script ='<script>
                             </button>
 
                             @if(!empty($row->acceptance))
-                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptance/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View Acceptance</a>
-                            <a href="{{ url('dashboard/senior/google-sheet/download-acceptance/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download Acceptance</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptance/'.$row->id) }}"
+                                target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View Acceptance</a>
+
+                            <a href="{{ url('dashboard/senior/google-sheet/download-acceptance/'.$row->id) }}"
+                                class="btn btn-sm btn-secondary downloadacceptance-btn">Download Acceptance</a>
+
                             @else
                             <a href="#" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn d-none">View Acceptance</a>
                             <a href="#" download class="btn btn-sm btn-secondary downloadacceptance-btn d-none">Download Acceptance</a>
@@ -211,8 +215,12 @@ $script ='<script>
                             </button>
 
                             @if(!empty($row->consultation))
-                            <a href="{{ url('dashboard/senior/google-sheet/view-consultation/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View Consultation</a>
-                            <a href="{{ url('dashboard/senior/google-sheet/download-consultation/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download Consultation</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/view-consultation/'.$row->id) }}"
+                                target="_blank" class="btn btn-sm btn-primary viewconsultation-btn">View Consultation</a>
+
+                            <a href="{{ url('dashboard/senior/google-sheet/download-consultation/'.$row->id) }}"
+                                class="btn btn-sm btn-secondary downloadconsultation-btn">Download Consultation</a>
+
                             @else
                             <a href="#" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn d-none">View Consultation</a>
                             <a href="#" download class="btn btn-sm btn-secondary downloadacceptance-btn d-none">Download Consultation</a>
@@ -227,8 +235,12 @@ $script ='<script>
                             </button>
 
                             @if(!empty($row->delivery))
-                            <a href="{{ url('dashboard/senior/google-sheet/view-delivery/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View Delivery</a>
-                            <a href="{{ url('dashboard/senior/google-sheet/download-delivery/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download Delivery</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/view-delivery/'.$row->id) }}"
+                                target="_blank" class="btn btn-sm btn-primary viewdelivery-btn">View Delivery</a>
+
+                            <a href="{{ url('dashboard/senior/google-sheet/download-delivery/'.$row->id) }}"
+                                class="btn btn-sm btn-secondary downloaddelivery-btn">Download Delivery</a>
+
                             @else
                             <a href="#" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn d-none">View Delivery</a>
                             <a href="#" download class="btn btn-sm btn-secondary downloadacceptance-btn d-none">Download Delivery</a>
@@ -243,8 +255,12 @@ $script ='<script>
                             </button>
 
                             @if(!empty($row->payment))
-                            <a href="{{ url('dashboard/senior/google-sheet/view-payment/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary viewpayment-btn">View Payment</a>
-                            <a href="{{ url('dashboard/senior/google-sheet/download-payment/'.$row->id) }}" class="btn btn-sm btn-secondary downloadpayment-btn">Download Payment</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/view-payment/'.$row->id) }}"
+                                target="_blank" class="btn btn-sm btn-primary viewpayment-btn">View Payment</a>
+
+                            <a href="{{ url('dashboard/senior/google-sheet/download-payment/'.$row->id) }}"
+                                class="btn btn-sm btn-secondary downloadpayment-btn">Download Payment</a>
+
                             @else
                             <a href="#" target="_blank" class="btn btn-sm btn-primary viewpayment-btn d-none">View Payment</a>
                             <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download Payment</a>
