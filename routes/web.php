@@ -116,11 +116,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/career', [DashboardController::class, 'career'])->name('dashboard.career');
     Route::get('/dashboard/accountant', [DashboardController::class, 'accountant'])->name('dashboard.accountant');
     Route::get('/dashboard/trainer', [DashboardController::class, 'trainer'])->name('dashboard.trainer');
-    Route::get('/dashboard/associate', [DashboardController::class, 'associate'])->name('dashboard.associate');
     Route::get('/dashboard/support', [DashboardController::class, 'support'])->name('dashboard.support');
     Route::get('/dashboard/writter', [DashboardController::class, 'writter'])->name('dashboard.writter');
     Route::get('/dashboard/resource', [DashboardController::class, 'resource'])->name('dashboard.resource');
-    Route::get('/dashboard/seniorassociate', [DashboardController::class, 'seniorassociate'])->name('dashboard.seniorassociate');
     Route::get('/dashboard/operation', [DashboardController::class, 'operation'])->name('dashboard.operation');
     Route::get('/button/status', [DashboardController::class, 'getButtonStatus'])->name('button.status');
     Route::post('/dashboard/start-timer', [DashboardController::class, 'startTimer'])->name('timer.start');
@@ -284,6 +282,12 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/accountant/pdf/payment', [PdfController::class, 'payment'])->name('pdf.payment');
     Route::get('/dashboard/accountant/pdf/deliveryuk', [PdfController::class, 'deliveryuk'])->name('pdf.deliveryuk');
     Route::get('/dashboard/accountant/pdf/paymentuk', [PdfController::class, 'paymentuk'])->name('pdf.paymentuk');
+
+    Route::get('/dashboard/seniorassociate', [DashboardController::class, 'seniorassociate'])->name('dashboard.seniorassociate');
+    Route::get('/dashboard/seniorassociate/google-sheet', [GoogleSheetController::class, 'seniorassociate'])->name('google.sheet.seniorassociate');
+
+    Route::get('/dashboard/associate/google-sheet', [GoogleSheetController::class, 'associate'])->name('google.sheet.associate');
+    Route::get('/dashboard/associate', [DashboardController::class, 'associate'])->name('dashboard.associate');
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');

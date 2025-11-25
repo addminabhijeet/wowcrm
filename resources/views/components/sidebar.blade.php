@@ -349,6 +349,185 @@ $role = Auth::user()->role;
 
             @endif
 
+            {{-- ================= Operation Manager ================= --}}
+            @if($role === 'operation')
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                    <span>Dashboard</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('dashboard.admin') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Dashboard</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:people-20-filled" class="menu-icon"></iconify-icon>
+                    <span>Users</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('users.admin') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Admin</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('users.junior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('users.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('users.accountant') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>US Accounts</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('users.associate') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Support Associate</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('users.support') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Support Associate</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('users.writter') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Resume Writter</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('users.trainer') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="hugeicons:invoice-03" class="menu-icon"></iconify-icon>
+                    <span>Calendar</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('calendar.allJuniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>IT Recruiter Calendar</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('calendar.allSeniorlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>IT Senior Recruiter Calendar</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('calendar.allAccountantlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Support Calendar</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('calendar.allTrainerlist') }}"><i class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Trainer Calendar</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:database-20-regular" class="menu-icon"></iconify-icon>
+                    <span>Database</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.index') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                </ul>
+            </li>
+
+
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:document-20-regular" class="menu-icon"></iconify-icon>
+                    <span>Report</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.alljuniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.allseniorlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.allaccountantlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Support Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.alltrainerlist') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer Report</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:timer-20-regular" class="menu-icon"></iconify-icon>
+                    <span>Timer</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('timer.allsenior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter Timer</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('timer.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Timer</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('timer.admin') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Setting</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:mail-20-regular" class="menu-icon"></iconify-icon>
+                    <span>SMTP</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('smtp.editall') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All User SMTP</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:target-20-regular" class="menu-icon"></iconify-icon>
+                    <span>Target</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('target.all') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All User Target</a></li>
+                </ul>
+            </li>
+
+            @endif
+
+            {{-- ================= Career Builder ================= --}}
+            @if($role === 'seniorassociate')
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                    <span>Dashboard</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('dashboard.seniorassociate') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Database</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.seniorassociate') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                </ul>
+            </li>
+
+            @endif
+
+            {{-- ================= Career Builder ================= --}}
+            @if($role === 'associate')
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                    <span>Dashboard</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('dashboard.associate') }}"><i class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Database</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.associate') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                </ul>
+            </li>
+
+            @endif
+
             {{-- ================= Career Builder ================= --}}
             @if($role === 'career')
             <li class="dropdown">
