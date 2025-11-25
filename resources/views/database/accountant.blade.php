@@ -1249,44 +1249,44 @@ $script ='<script>
                 console.log('File selected:', fileName);
             }
 
-            // Acceptance selected
+            // Acceptance
             if (e.target.matches('.acceptance-input')) {
                 const row = e.target.closest('tr');
 
                 row.querySelector('.viewacceptance-btn')?.classList.remove('d-none');
                 row.querySelector('.downloadacceptance-btn')?.classList.remove('d-none');
 
-                row.querySelector('.upload-btn').textContent = 'Change File';
+                row.querySelector('.upload-acceptance-btn').textContent = 'Change File';
             }
 
-            // Consultation selected
+            // Consultation
             if (e.target.matches('.consultation-input')) {
                 const row = e.target.closest('tr');
 
                 row.querySelector('.viewconsultation-btn')?.classList.remove('d-none');
                 row.querySelector('.downloadconsultation-btn')?.classList.remove('d-none');
 
-                row.querySelector('.upload-btn').textContent = 'Change File';
+                row.querySelector('.upload-consultation-btn').textContent = 'Change File';
             }
 
-            // Delivery selected
+            // Delivery
             if (e.target.matches('.delivery-input')) {
                 const row = e.target.closest('tr');
 
                 row.querySelector('.viewdelivery-btn')?.classList.remove('d-none');
                 row.querySelector('.downloaddelivery-btn')?.classList.remove('d-none');
 
-                row.querySelector('.upload-btn').textContent = 'Change File';
+                row.querySelector('.upload-delivery-btn').textContent = 'Change File';
             }
 
-            // Payment selected
+            // Payment
             if (e.target.matches('.payment-input')) {
                 const row = e.target.closest('tr');
 
                 row.querySelector('.viewpayment-btn')?.classList.remove('d-none');
                 row.querySelector('.downloadpayment-btn')?.classList.remove('d-none');
 
-                row.querySelector('.upload-btn').textContent = 'Change File';
+                row.querySelector('.upload-payment-btn').textContent = 'Change File';
             }
 
         });
