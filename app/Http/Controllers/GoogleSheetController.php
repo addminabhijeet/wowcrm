@@ -4571,6 +4571,130 @@ class GoogleSheetController extends Controller
             }
         }
 
+        // Handle acceptance file upload - Save actual file content
+        if ($request->hasFile('acceptance')) {
+            $file = $request->file('acceptance');
+
+            // Validate it's a PDF
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            // Generate unique filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Store the actual file content
+                $filePath = $file->storeAs('acceptance', $newName, 'public');
+
+                // Delete old acceptance file if exists
+                if ($row->acceptance && Storage::disk('public')->exists($row->acceptance)) {
+                    Storage::disk('public')->delete($row->acceptance);
+                }
+
+                $row->acceptance = $filePath; // Store file path instead of just filename
+
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // Handle consultation file upload - Save actual file content
+        if ($request->hasFile('consultation')) {
+            $file = $request->file('consultation');
+
+            // Validate it's a PDF
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            // Generate unique filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Store the actual file content
+                $filePath = $file->storeAs('consultation', $newName, 'public');
+
+                // Delete old consultation file if exists
+                if ($row->consultation && Storage::disk('public')->exists($row->consultation)) {
+                    Storage::disk('public')->delete($row->consultation);
+                }
+
+                $row->consultation = $filePath; // Store file path instead of just filename
+
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // Handle delivery file upload - Save actual file content
+        if ($request->hasFile('delivery')) {
+            $file = $request->file('delivery');
+
+            // Validate it's a PDF
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            // Generate unique filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Store the actual file content
+                $filePath = $file->storeAs('delivery', $newName, 'public');
+
+                // Delete old delivery file if exists
+                if ($row->delivery && Storage::disk('public')->exists($row->delivery)) {
+                    Storage::disk('public')->delete($row->delivery);
+                }
+
+                $row->delivery = $filePath; // Store file path instead of just filename
+
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // Handle payment file upload - Save actual file content
+        if ($request->hasFile('payment')) {
+            $file = $request->file('payment');
+
+            // Validate it's a PDF
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            // Generate unique filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Store the actual file content
+                $filePath = $file->storeAs('payment', $newName, 'public');
+
+                // Delete old payment file if exists
+                if ($row->payment && Storage::disk('public')->exists($row->payment)) {
+                    Storage::disk('public')->delete($row->payment);
+                }
+
+                $row->payment = $filePath; // Store file path instead of just filename
+
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
         // --- Prepare update data with null defaults for empty fields ---
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
@@ -4588,6 +4712,11 @@ class GoogleSheetController extends Controller
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
             'Time_Zone' => $rowData['Time Zone'] ?? null,
+            'PaymentDate' => !empty($rowData['PaymentDate']) ? $this->parseDate($rowData['PaymentDate']) : null,
+            'TranId' => $rowData['TranId'] ?? null,
+            'TranRef' => $rowData['TranRef'] ?? null,
+            'PaymentMethod' => $rowData['PaymentMethod'] ?? null,
+            'PayeeName' => $rowData['PayeeName'] ?? null,
             'updated_at' => now(),
         ];
 

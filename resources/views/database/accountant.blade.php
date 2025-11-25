@@ -63,6 +63,11 @@ $script ='<script>
                         <th scope="col">Reference Number</th>
                         <th scope="col">Payment Method</th>
                         <th scope="col">Payee Name</th>
+                        <th scope="col">Generate</th>
+                        <th scope="col">Acceptance</th>
+                        <th scope="col">Consultation</th>
+                        <th scope="col">Delivery</th>
+                        <th scope="col">Payment</th>
                         <th scope="col">Forwarded By</th>
                         <th scope="col">View</th>
                         <th scope="col" class="text-center">Actions</th>
@@ -174,6 +179,76 @@ $script ='<script>
                         <td>
                             <input type="text" class="form-control" data-key="PayeeName"
                                 value="{{ $row->PayeeName ?? '' }}" placeholder="Payee Name">
+                        </td>
+
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-success generate-btn" data-id="{{ $row->id }}">
+                                <i class="fas fa-generate"></i> Generate
+                            </button>
+                        </td>
+
+                        {{-- View (Acceptance) --}}
+                        <td>
+                            <input type="file" accept="application/pdf" class="d-none acceptance-input" data-key="View">
+                            <button type="button" class="btn btn-sm btn-info upload-btn">
+                                {{ !empty($row->acceptance) ? 'Change File' : 'Upload' }}
+                            </button>
+
+                            @if(!empty($row->acceptance))
+                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptance/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View Acceptance</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/download-acceptance/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download Acceptance</a>
+                            @else
+                            <a href="#" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn d-none">View Acceptance</a>
+                            <a href="#" download class="btn btn-sm btn-secondary downloadacceptance-btn d-none">Download Acceptance</a>
+                            @endif
+                        </td>
+
+                        {{-- View (Consultation) --}}
+                        <td>
+                            <input type="file" accept="application/pdf" class="d-none consultation-input" data-key="View">
+                            <button type="button" class="btn btn-sm btn-info upload-btn">
+                                {{ !empty($row->consultation) ? 'Change File' : 'Upload' }}
+                            </button>
+
+                            @if(!empty($row->consultation))
+                            <a href="{{ url('dashboard/senior/google-sheet/view-consultation/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View Consultation</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/download-consultation/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download Consultation</a>
+                            @else
+                            <a href="#" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn d-none">View Consultation</a>
+                            <a href="#" download class="btn btn-sm btn-secondary downloadacceptance-btn d-none">Download Consultation</a>
+                            @endif
+                        </td>
+
+                        {{-- View (Delivery) --}}
+                        <td>
+                            <input type="file" accept="application/pdf" class="d-none delivery-input" data-key="View">
+                            <button type="button" class="btn btn-sm btn-info upload-btn">
+                                {{ !empty($row->delivery) ? 'Change File' : 'Upload' }}
+                            </button>
+
+                            @if(!empty($row->delivery))
+                            <a href="{{ url('dashboard/senior/google-sheet/view-delivery/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View Delivery</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/download-delivery/'.$row->id) }}" class="btn btn-sm btn-secondary download-btn">Download Delivery</a>
+                            @else
+                            <a href="#" target="_blank" class="btn btn-sm btn-primary viewacceptance-btn d-none">View Delivery</a>
+                            <a href="#" download class="btn btn-sm btn-secondary downloadacceptance-btn d-none">Download Delivery</a>
+                            @endif
+                        </td>
+
+                        {{-- View (Payment) --}}
+                        <td>
+                            <input type="file" accept="application/pdf" class="d-none payment-input" data-key="View">
+                            <button type="button" class="btn btn-sm btn-info upload-btn">
+                                {{ !empty($row->payment) ? 'Change File' : 'Upload' }}
+                            </button>
+
+                            @if(!empty($row->payment))
+                            <a href="{{ url('dashboard/senior/google-sheet/view-payment/'.$row->id) }}" target="_blank" class="btn btn-sm btn-primary viewpayment-btn">View Payment</a>
+                            <a href="{{ url('dashboard/senior/google-sheet/download-payment/'.$row->id) }}" class="btn btn-sm btn-secondary downloadpayment-btn">Download Payment</a>
+                            @else
+                            <a href="#" target="_blank" class="btn btn-sm btn-primary viewpayment-btn d-none">View Payment</a>
+                            <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download Payment</a>
+                            @endif
                         </td>
 
                         {{-- Forwarded By --}}
@@ -665,13 +740,13 @@ $script ='<script>
         });
 
         tableBody.addEventListener('click', function(e) {
-            if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
+            if (e.target.matches('.generate-btn') || e.target.closest('.generate-btn')) {
 
                 e.preventDefault();
 
-                let saveBtn = e.target.matches('.save-btn') ? e.target : e.target.closest('.save-btn');
-                let id = saveBtn.dataset.id;
-                let row = saveBtn.closest("tr");
+                let generateBtn = e.target.matches('.generate-btn') ? e.target : e.target.closest('.generate-btn');
+                let id = generateBtn.dataset.id;
+                let row = generateBtn.closest("tr");
 
                 // Collect necessary data for preview
                 const senderEmail = "{{ auth()->user()->email }}";
@@ -767,8 +842,7 @@ $script ='<script>
                     title: '<span style="font-size:20px; font-weight:bold;">Preview & Confirm Before Mail</span>',
                     html: previewHTML,
                     showCancelButton: true,
-                    confirmButtonText: 'Send Mail',
-                    cancelButtonText: 'Cancel',
+                    cancelButtonText: 'OK',
                     confirmButtonColor: '#28a745',
                     cancelButtonColor: '#dc3545',
                     width: '1200px',
@@ -812,7 +886,7 @@ $script ='<script>
                                     pdfForm.append("pdf_files[]", blob, filename);
                                 });
 
-                                return fetch("{{ route('upload.generated.pdfs') }}", {
+                                return fetch("", {
                                     method: "POST",
                                     body: pdfForm
                                 }).then(res => res.json());
@@ -825,7 +899,7 @@ $script ='<script>
                                 }
 
                                 // SEND MAIL FIRST
-                                fetch("{{ route('send.payment.mail', 2) }}", {
+                                fetch("", {
                                         method: "POST",
                                         headers: {
                                             "X-CSRF-TOKEN": "{{ csrf_token() }}",
@@ -866,8 +940,8 @@ $script ='<script>
                                         }
 
                                         let url = id === "new" ?
-                                            "{{ route('accountantstore') }}" :
-                                            "{{ route('accountantupdate') }}";
+                                            "" :
+                                            "";
 
                                         if (id !== "new") {
                                             formData.append("id", id);
@@ -906,6 +980,154 @@ $script ='<script>
 
                 });
 
+            }
+        });
+
+        // Event delegation for save buttons (handles both existing and dynamically added buttons)
+        tableBody.addEventListener('click', function(e) {
+            if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
+                e.preventDefault();
+                let saveBtn = e.target.matches('.save-btn') ? e.target : e.target.closest('.save-btn');
+                let id = saveBtn.dataset.id;
+                let row = saveBtn.closest("tr");
+                console.log("Saving row with id:", id);
+
+                // Collect all data from the row
+                let rowData = {};
+                row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
+                    let key = cell.dataset.key;
+                    let value = cell.value;
+                    rowData[key] = value;
+                });
+                console.log("Row data:", rowData);
+
+                // Create FormData object
+                let formData = new FormData();
+                formData.append("data", JSON.stringify(rowData));
+                formData.append("_token", "{{ csrf_token() }}");
+
+                // Handle resume file upload
+                let resumeInput = row.querySelector("input.resume-input");
+                if (resumeInput && resumeInput.files.length > 0) {
+                    formData.append("resume", resumeInput.files[0]);
+                }
+
+                // Determine URL and method
+                let url, method;
+                if (id === "new") {
+                    url = "{{ route('accountantstore') }}";
+                    method = "POST";
+                } else {
+                    url = "{{ route('accountantupdatecon') }}";
+                    method = "POST";
+                    formData.append("id", id);
+                }
+
+                console.log("Sending to:", url, "Method:", method);
+
+                // Send the request
+                fetch(url, {
+                        method: method,
+                        body: formData
+                    })
+                    .then(res => {
+                        if (!res.ok) {
+                            throw new Error(`HTTP error! status: ${res.status}`);
+                        }
+                        return res.json();
+                    })
+                    // In the save button click event handler, update the success callback:
+                    .then(data => {
+                        console.log("Response from server:", data);
+                        if (data.success) {
+                            alert("Saved successfully");
+                            if (id === "new") {
+                                // Update row with new ID
+                                row.dataset.id = data.id;
+                                saveBtn.dataset.id = data.id;
+                                row.querySelector("td:first-child").innerText = data.sheet_row_number;
+
+                                const viewBtn = row.querySelector('.view-btn');
+                                const downloadBtn = row.querySelector('.download-btn');
+
+                                if (viewBtn && data.resume_path) {
+                                    viewBtn.href = `/dashboard/senior/google-sheet/view-resume/${data.id}`;
+                                    viewBtn.classList.remove('d-none');
+                                }
+
+                                if (downloadBtn && data.resume_path) {
+                                    downloadBtn.href = `/dashboard/senior/google-sheet/download-resume/${data.id}`;
+                                    downloadBtn.classList.remove('d-none');
+                                }
+
+                                const viewacceptanceBtn = row.querySelector('.viewacceptance-btn');
+                                const downloadacceptanceBtn = row.querySelector('.downloadacceptance-btn');
+
+                                if (viewacceptanceBtn && data.acceptance_path) {
+                                    viewacceptanceBtn.href = `/dashboard/senior/google-sheet/view-acceptance/${data.id}`;
+                                    viewacceptanceBtn.classList.remove('d-none');
+                                }
+
+                                if (downloadacceptanceBtn && data.resume_path) {
+                                    downloadacceptanceBtn.href = `/dashboard/senior/google-sheet/download-acceptance/${data.id}`;
+                                    downloadacceptanceBtn.classList.remove('d-none');
+                                }
+
+                                const viewconsultationBtn = row.querySelector('.viewconsultation-btn');
+                                const downloadconsultationBtn = row.querySelector('.downloadconsultation-btn');
+
+                                if (viewconsultationBtn && data.consultation_path) {
+                                    viewconsultationBtn.href = `/dashboard/senior/google-sheet/view-consultation/${data.id}`;
+                                    viewconsultationBtn.classList.remove('d-none');
+                                }
+
+                                if (downloadconsultationBtn && data.consultation_path) {
+                                    downloadconsultationBtn.href = `/dashboard/senior/google-sheet/download-consultation/${data.id}`;
+                                    downloadconsultationBtn.classList.remove('d-none');
+                                }
+
+                                const viewdeliveryBtn = row.querySelector('.viewdelivery-btn');
+                                const downloaddeliveryBtn = row.querySelector('.downloaddelivery-btn');
+
+                                if (viewdeliveryBtn && data.delivery_path) {
+                                    viewdeliveryBtn.href = `/dashboard/senior/google-sheet/view-delivery/${data.id}`;
+                                    viewdeliveryBtn.classList.remove('d-none');
+                                }
+
+                                if (downloaddeliveryBtn && data.delivery_path) {
+                                    downloaddeliveryBtn.href = `/dashboard/senior/google-sheet/download-delivery/${data.id}`;
+                                    downloaddeliveryBtn.classList.remove('d-none');
+                                }
+
+                                const viewpaymentBtn = row.querySelector('.viewpayment-btn');
+                                const downloadpaymentBtn = row.querySelector('.downloadpayment-btn');
+
+                                if (viewpaymentBtn && data.payment_path) {
+                                    viewpaymentBtn.href = `/dashboard/senior/google-sheet/view-payment/${data.id}`;
+                                    viewpaymentBtn.classList.remove('d-none');
+                                }
+
+                                if (downloadpaymentBtn && data.payment_path) {
+                                    downloadpaymentBtn.href = `/dashboard/senior/google-sheet/download-payment/${data.id}`;
+                                    downloadpaymentBtn.classList.remove('d-none');
+                                }
+
+                                // Only add new blank row if none exists
+                                const existingNewRows = tableBody.querySelectorAll('tr[data-id="new"]');
+                                if (existingNewRows.length === 0) {
+                                    addBlankRow();
+                                }
+                            }
+
+                        } else {
+                            console.error("Server error:", data.message);
+                            alert("Error: " + (data.message || "Unknown error"));
+                        }
+                    })
+                    .catch(err => {
+                        console.error("Fetch error:", err);
+                        alert("Save failed. Check console for details.");
+                    });
             }
         });
 
