@@ -4999,27 +4999,16 @@ class GoogleSheetController extends Controller
             if ($exeRemark === 'Document Send') {
                 $authUser = Auth::user();
 
-                if (preg_match('/^\d+\|accountant:\d+\|accountant$/', $updateData['created_by'])) {
+                if (preg_match('/0\|accountant$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
-                        '/^\d+\|accountant:\d+\|accountant$/',
-                        $authUser->id . '|accountant:0|accountant',  // adjust replacement as needed
+                        '/0\|accountant$/',
+                        $authUser->id . '|accountant:0|accountant',
                         $updateData['created_by']
                     );
                 }
 
                 if (strpos($updateData['created_by'], ':0|accountant') === false) {
                     $updateData['created_by'] .= ':0|accountant';
-                }
-            } elseif ($exeRemark === 'Ready To Paid') {
-
-                $tag = $id . '|accountant';
-                $zerotag = '0|accountant';
-
-                $parts = explode(':', $updateData['created_by']);
-                $lastPart = end($parts);
-
-                if ($lastPart === $tag) {
-                    $updateData['created_by'] .= ':' . $zerotag;
                 }
             }
         }
