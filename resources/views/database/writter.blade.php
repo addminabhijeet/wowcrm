@@ -20,11 +20,11 @@
                                 <table class="table table-hover table-bordered align-middle mb-0">
                                     <thead class="table-light text-center">
                                         <tr>
-                                            <th scope="col">No.</th>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Email Address</th>
-                                            <th scope="col">Phone Number</th>
-                                            <th scope="col">View</th>
+                                            <th scope="col" class="text-center">No.</th>
+                                            <th scope="col" class="text-center">Name</th>
+                                            <th scope="col" class="text-center">Email Address</th>
+                                            <th scope="col" class="text-center">Phone Number</th>
+                                            <th scope="col" class="text-center">View</th>
                                         </tr>
                                     </thead>
 
