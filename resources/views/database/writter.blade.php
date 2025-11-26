@@ -12,20 +12,6 @@
             <div class="card h-100 p-0">
                 <div class="card-body p-24">
 
-                    <div class="d-flex flex-wrap align-items-center gap-1 justify-content-between mb-16">
-                        <ul class="nav border-gradient-tab nav-pills mb-0" id="pills-tab" role="tablist">
-                            <li class="nav-item" role="presentation">
-                                <button class="nav-link d-flex align-items-center active" id="pills-to-do-list-tab"
-                                    data-bs-toggle="pill" data-bs-target="#pills-to-do-list" type="button" role="tab"
-                                    aria-controls="pills-to-do-list" aria-selected="true">
-                                    Active
-                                    <span
-                                        class="text-sm fw-semibold py-6 px-12 bg-neutral-500 rounded-pill text-white line-height-1 ms-12 notification-alert">35</span>
-                                </button>
-                            </li>
-                        </ul>
-                    </div>
-
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="pills-to-do-list" role="tabpanel"
                             aria-labelledby="pills-to-do-list-tab" tabindex="0">
