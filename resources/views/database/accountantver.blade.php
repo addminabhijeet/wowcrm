@@ -1552,62 +1552,128 @@
                 // Acceptance
                 if (e.target.matches('.acceptance-input')) {
                     const row = e.target.closest('tr');
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
-                    row.querySelector('.viewacceptance-btn')?.classList.remove('d-none');
-                    row.querySelector('.downloadacceptance-btn')?.classList.remove('d-none');
+                    // Show view and download buttons temporarily
+                    const viewBtn = row.querySelector('.viewacceptance-btn');
+                    const downloadBtn = row.querySelector('.downloadacceptance-btn');
 
-                    row.querySelector('.upload-acceptance-btn').textContent = 'Change File';
+                    if (viewBtn) viewBtn.classList.remove('d-none');
+                    if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                    // Update button text
+                    const uploadBtn = row.querySelector('.upload-acceptance-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('File selected:', fileName);
                 }
+
 
                 // Acceptance Sign
                 if (e.target.matches('.acceptancesign-input')) {
                     const row = e.target.closest('tr');
 
-                    row.querySelector('.viewacceptancesign-btn')?.classList.remove('d-none');
-                    row.querySelector('.downloadacceptancesign-btn')?.classList.remove('d-none');
+                    // Get selected file name
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
-                    row.querySelector('.upload-acceptancesign-btn').textContent = 'Change File';
+                    // Show view & download buttons
+                    const viewBtn = row.querySelector('.viewacceptancesign-btn');
+                    const downloadBtn = row.querySelector('.downloadacceptancesign-btn');
+
+                    if (viewBtn) viewBtn.classList.remove('d-none');
+                    if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                    // Update upload button text
+                    const uploadBtn = row.querySelector('.upload-acceptancesign-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    // Log the selected file
+                    console.log('Acceptance sign file selected:', fileName);
                 }
+
 
                 // Consultation
                 if (e.target.matches('.consultation-input')) {
                     const row = e.target.closest('tr');
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
-                    row.querySelector('.viewconsultation-btn')?.classList.remove('d-none');
-                    row.querySelector('.downloadconsultation-btn')?.classList.remove('d-none');
+                    // Show view & download buttons
+                    const viewBtn = row.querySelector('.viewconsultation-btn');
+                    const downloadBtn = row.querySelector('.downloadconsultation-btn');
 
-                    row.querySelector('.upload-consultation-btn').textContent = 'Change File';
+                    if (viewBtn) viewBtn.classList.remove('d-none');
+                    if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                    // Update upload button text
+                    const uploadBtn = row.querySelector('.upload-consultation-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('Consultation file selected:', fileName);
                 }
+
 
                 // Consultation Sign
                 if (e.target.matches('.consultationsign-input')) {
                     const row = e.target.closest('tr');
 
-                    row.querySelector('.viewconsultationsign-btn')?.classList.remove('d-none');
-                    row.querySelector('.downloadconsultationsign-btn')?.classList.remove('d-none');
+                    // Get selected file name (same as resume code)
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+                    console.log('File selected:', fileName);
 
-                    row.querySelector('.upload-consultationsign-btn').textContent = 'Change File';
+                    // Show view & download buttons
+                    const viewBtn = row.querySelector('.viewconsultationsign-btn');
+                    const downloadBtn = row.querySelector('.downloadconsultationsign-btn');
+
+                    if (viewBtn) viewBtn.classList.remove('d-none');
+                    if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                    // Update upload button text
+                    const uploadBtn = row.querySelector('.upload-consultationsign-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
                 }
+
 
                 // Delivery
                 if (e.target.matches('.delivery-input')) {
                     const row = e.target.closest('tr');
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
-                    row.querySelector('.viewdelivery-btn')?.classList.remove('d-none');
-                    row.querySelector('.downloaddelivery-btn')?.classList.remove('d-none');
+                    // Show view and download buttons temporarily
+                    const viewBtn = row.querySelector('.viewdelivery-btn');
+                    const downloadBtn = row.querySelector('.downloaddelivery-btn');
 
-                    row.querySelector('.upload-delivery-btn').textContent = 'Change File';
+                    if (viewBtn) viewBtn.classList.remove('d-none');
+                    if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                    // Update button text
+                    const uploadBtn = row.querySelector('.upload-delivery-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('Delivery file selected:', fileName);
                 }
+
 
                 // Payment
                 if (e.target.matches('.payment-input')) {
                     const row = e.target.closest('tr');
 
-                    row.querySelector('.viewpayment-btn')?.classList.remove('d-none');
-                    row.querySelector('.downloadpayment-btn')?.classList.remove('d-none');
+                    // Get selected file name
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
-                    row.querySelector('.upload-payment-btn').textContent = 'Change File';
+                    // Show view and download buttons (same as resume code)
+                    const viewBtn = row.querySelector('.viewpayment-btn');
+                    const downloadBtn = row.querySelector('.downloadpayment-btn');
+
+                    if (viewBtn) viewBtn.classList.remove('d-none');
+                    if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                    // Update upload button text
+                    const uploadBtn = row.querySelector('.upload-payment-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('Payment file selected:', fileName);
                 }
+
 
             });
 
