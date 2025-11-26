@@ -302,7 +302,8 @@
                                             <a href="#" target="_blank"
                                                 class="btn btn-sm btn-primary viewpayment-btn d-none">View Payment</a>
                                             <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download Payment</a>
+                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download
+                                                Payment</a>
                                         @endif
                                     </td>
 
@@ -311,6 +312,32 @@
                                         <input type="text" class="form-control forwardedBy-input"
                                             data-key="forwardedBy" value="{{ $row->forwarded_by ?? '' }}"
                                             placeholder="Forwarded By" readonly>
+                                    </td>
+
+                                    {{-- View (Acceptance Sign) --}}
+                                    <td>
+                                        <input type="file" accept="application/pdf"
+                                            class="d-none acceptancesign-input" data-key="View">
+                                        <button type="button" class="btn btn-sm btn-info upload-acceptancesign-btn">
+                                            {{ !empty($row->acceptancesign) ? 'Change File' : 'Upload' }}
+                                        </button>
+
+                                        @if (!empty($row->acceptancesign))
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptancesign/' . $row->id) }}"
+                                                target="_blank" class="btn btn-sm btn-primary viewacceptancesign-btn">View
+                                                Acceptance Sign</a>
+
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-acceptancesign/' . $row->id) }}"
+                                                class="btn btn-sm btn-secondary downloadacceptancesign-btn">Download
+                                                Acceptance Sign</a>
+                                        @else
+                                            <a href="#" target="_blank"
+                                                class="btn btn-sm btn-primary viewacceptancesign-btn d-none">View
+                                                Acceptance Sign</a>
+                                            <a href="#" download
+                                                class="btn btn-sm btn-secondary downloadacceptancesign-btn d-none">Download
+                                                Acceptance Sign</a>
+                                        @endif
                                     </td>
 
                                     {{-- View (Resume) --}}
@@ -1349,7 +1376,7 @@
                 }
 
                 if (e.target.matches('.viewacceptance-btn') || e.target.matches(
-                    '.downloadacceptance-btn')) {
+                        '.downloadacceptance-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
