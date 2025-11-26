@@ -117,7 +117,8 @@
                                     <label for="date"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Joined Date</label>
                                     <input type="date" name="Date" id="date" class="form-control radius-8"
-                                        value="{{ old('Date', $candidate->Date) }}" required>
+                                        value="{{ $candidate->Date ? \Carbon\Carbon::parse($candidate->Date)->format('Y-m-d') : '' }}"
+                                        required>
                                 </div>
 
                                 <!-- Payment Date -->
@@ -125,10 +126,12 @@
                                     <label for="PaymentDate"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date</label>
                                     <input type="date" name="PaymentDate" id="PaymentDate" class="form-control radius-8"
-                                        value="{{ old('PaymentDate', $candidate->PaymentDate) }}" required>
+                                        value="{{ $candidate->PaymentDate ? \Carbon\Carbon::parse($candidate->PaymentDate)->format('Y-m-d') : '' }}"
+                                        required>
                                 </div>
 
                             </div>
+
 
 
                             <div class="tab-pane fade" id="pills-notification" role="tabpanel">
