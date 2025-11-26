@@ -155,22 +155,32 @@
 
                             <div class="tab-pane fade" id="pills-resume" role="tabpanel">
 
-                                <!-- Resume Viewer Card -->
-                                <div class="card mb-20">
-                                    <div class="card-body p-0">
-
-                                        @if ($candidate->resume)
-                                            <iframe src="{{ asset($candidate->resume) }}"
-                                                style="width: 100%; height: 90vh; border: none;" frameborder="0">
-                                            </iframe>
-                                        @else
-                                            <p class="text-center py-4 mb-0 text-muted">No Resume Uploaded</p>
-                                        @endif
-
+                                <!-- Candidate Status -->
+                                <div
+                                    class="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
+                                    <div class="d-flex align-items-center gap-3 justify-content-between">
+                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light">
+                                            Candidate Status
+                                        </span>
+                                        <input class="form-check-input" type="checkbox" id="status" name="status"
+                                            value="1" {{ $candidate->status ? 'checked' : '' }}>
                                     </div>
                                 </div>
 
+                                <!-- Resume Viewer -->
+                                @if (!empty($candidate->resume))
+                                    <div class="w-100" style="height: 85vh;">
+                                        <iframe
+                                            src="{{ url('dashboard/junior/google-sheet/view-resume/' . $candidate->id) }}"
+                                            style="width: 100%; height: 100%; border: none;" allowfullscreen>
+                                        </iframe>
+                                    </div>
+                                @else
+                                    <p class="text-danger">No resume available.</p>
+                                @endif
+
                             </div>
+
 
 
                             <div class="tab-pane fade" id="pills-notification" role="tabpanel">
