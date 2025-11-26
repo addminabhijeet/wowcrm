@@ -77,7 +77,7 @@
                                         <div class="mb-20">
                                             <label for="name"
                                                 class="form-label fw-semibold text-primary-light text-sm mb-8">Full Name
-                                                </label>
+                                            </label>
                                             <input type="text" name="name" id="name"
                                                 class="form-control radius-8" value="{{ old('name', $candidate->Name) }}"
                                                 placeholder="Enter Full Name" required>
@@ -87,9 +87,11 @@
                                     <div class="col-sm-6">
                                         <div class="mb-20">
                                             <label for="email"
-                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Email </label>
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Email
+                                            </label>
                                             <input type="email" name="email" id="email"
-                                                class="form-control radius-8" value="{{ old('email', $candidate->Email_Address) }}"
+                                                class="form-control radius-8"
+                                                value="{{ old('email', $candidate->Email_Address) }}"
                                                 placeholder="Enter email address" required>
                                         </div>
                                     </div>
@@ -99,7 +101,8 @@
                                             <label for="phone"
                                                 class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
                                             <input type="text" name="name" id="name"
-                                                class="form-control radius-8" value="{{ old('name', $candidate->Phone_Number) }}"
+                                                class="form-control radius-8"
+                                                value="{{ old('name', $candidate->Phone_Number) }}"
                                                 placeholder="Enter Full Name" required>
                                         </div>
                                     </div>
@@ -109,17 +112,16 @@
 
                             <div class="tab-pane fade" id="pills-change-passwork" role="tabpanel">
                                 <div class="mb-20">
-                                    <label for="your-password"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">New Password</label>
-                                    <input type="password" name="password" class="form-control radius-8"
-                                        id="your-password" placeholder="Enter New Password">
+                                    <label for="Date"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Joined Date</label>
+                                    <input type="date" name="date" id="date" class="form-control radius-8"
+                                        value="{{ old('name', $candidate->Date) }}" placeholder="Enter Full Name" required>
                                 </div>
                                 <div class="mb-20">
-                                    <label for="confirm-password"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Confirm
-                                        Password</label>
-                                    <input type="password" name="password_confirmation" class="form-control radius-8"
-                                        id="confirm-password" placeholder="Confirm Password">
+                                    <label for="PaymentDate"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date</label>
+                                    <input type="PaymentDate" name="PaymentDate" id="PaymentDate" class="form-control radius-8"
+                                        value="{{ old('name', $candidate->PaymentDate) }}" placeholder="PaymentDate" required>
                                 </div>
                             </div>
 
@@ -127,7 +129,8 @@
                                 <div
                                     class="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
                                     <div class="d-flex align-items-center gap-3 justify-content-between">
-                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light">Candidate
+                                        <span
+                                            class="form-check-label line-height-1 fw-medium text-secondary-light">Candidate
                                             Status</span>
                                         <input class="form-check-input" type="checkbox" id="status" name="status"
                                             value="1" {{ $candidate->status ? 'checked' : '' }}>
