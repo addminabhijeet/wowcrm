@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
     $title = $candidate->Name;
-    $subTitle = 'Super Admin';
+    $subTitle = 'Senior Support Associate';
     $script = '<script>
         // ======================== Upload Image Start =====================
         function readURL(input) {
@@ -79,7 +79,7 @@
                                                 class="form-label fw-semibold text-primary-light text-sm mb-8">Full Name
                                                 <span class="text-danger-600">*</span></label>
                                             <input type="text" name="name" id="name"
-                                                class="form-control radius-8" value="{{ old('name', $candidate->name) }}"
+                                                class="form-control radius-8" value="{{ old('name', $candidate->Name) }}"
                                                 placeholder="Enter Full Name" required>
                                         </div>
                                     </div>
@@ -90,7 +90,7 @@
                                                 class="form-label fw-semibold text-primary-light text-sm mb-8">Email <span
                                                     class="text-danger-600">*</span></label>
                                             <input type="email" name="email" id="email"
-                                                class="form-control radius-8" value="{{ old('email', $candidate->email) }}"
+                                                class="form-control radius-8" value="{{ old('email', $candidate->Email_Address) }}"
                                                 placeholder="Enter email address" required>
                                         </div>
                                     </div>
@@ -100,68 +100,9 @@
                                             <label for="phone"
                                                 class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
                                             <input type="number" name="phone" id="phone"
-                                                value="{{ old('phone', $candidate->phone) }}" min="1000000000"
+                                                value="{{ old('phone', $candidate->Phone_Number) }}" min="1000000000"
                                                 max="9999999999" oninput="this.value = this.value.slice(0, 10);"
                                                 placeholder="Enter phone number" class="form-control radius-8">
-                                        </div>
-                                    </div>
-
-                                    <div class="col-sm-6">
-                                        <div class="mb-20">
-                                            <label for="role"
-                                                class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                                Role <span class="text-danger-600">*</span>
-                                            </label>
-                                            <select name="role" id="role"
-                                                class="form-control radius-8 form-select" required>
-                                                <option value="" disabled>Select Role</option>
-                                                <option value="junior"
-                                                    {{ $candidate->role == 'junior' ? 'selected' : '' }}>IT Recruiter
-                                                </option>
-                                                <option value="senior"
-                                                    {{ $candidate->role == 'senior' ? 'selected' : '' }}>IT Senior Recruiter
-                                                </option>
-                                                <option value="admin" {{ $candidate->role == 'admin' ? 'selected' : '' }}>
-                                                    Admin</option>
-                                                <option value="candidate"
-                                                    {{ $candidate->role == 'customer' ? 'selected' : '' }}>Customer</option>
-                                                <option value="accountant"
-                                                    {{ $candidate->role == 'accountant' ? 'selected' : '' }}>US Accounts
-                                                </option>
-                                            </select>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-sm-6">
-                                        <div class="mb-20">
-                                            <label for="designation"
-                                                class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                                Designation <span class="text-danger-600">*</span>
-                                            </label>
-                                            <select name="designation" id="designation"
-                                                class="form-control radius-8 form-select" required>
-                                                <option value="" disabled
-                                                    {{ !$candidate->designation ? 'selected' : '' }}>Select Designation
-                                                </option>
-                                                <option value="Accountant"
-                                                    {{ $candidate->designation == 'Accountant' ? 'selected' : '' }}>US
-                                                    Accounts</option>
-                                                <option value="Admin"
-                                                    {{ $candidate->designation == 'Admin' ? 'selected' : '' }}>Admin
-                                                </option>
-                                                <option value="Candidate"
-                                                    {{ $candidate->designation == 'Candidate' ? 'selected' : '' }}>
-                                                    Candidate</option>
-                                                <option value="Junior"
-                                                    {{ $candidate->designation == 'Junior' ? 'selected' : '' }}>IT
-                                                    Recruiter</option>
-                                                <option value="Senior"
-                                                    {{ $candidate->designation == 'Senior' ? 'selected' : '' }}>IT Senior
-                                                    Recruiter</option>
-                                                <option value="Trainer"
-                                                    {{ $candidate->designation == 'Trainer' ? 'selected' : '' }}>Trainer
-                                                </option>
-                                            </select>
                                         </div>
                                     </div>
 
