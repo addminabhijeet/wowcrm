@@ -200,13 +200,6 @@
                                             value="{{ $row->PayeeName ?? '' }}" placeholder="Payee Name">
                                     </td>
 
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-success generate-btn"
-                                            data-id="{{ $row->id }}">
-                                            <i class="fas fa-generate"></i> Generate
-                                        </button>
-                                    </td>
-
                                     {{-- View (Acceptance) --}}
                                     <td>
                                         <input type="file" accept="application/pdf" class="d-none acceptance-input"
@@ -302,7 +295,8 @@
                                             <a href="#" target="_blank"
                                                 class="btn btn-sm btn-primary viewpayment-btn d-none">View Payment</a>
                                             <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download Payment</a>
+                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download
+                                                Payment</a>
                                         @endif
                                     </td>
 
@@ -311,6 +305,54 @@
                                         <input type="text" class="form-control forwardedBy-input"
                                             data-key="forwardedBy" value="{{ $row->forwarded_by ?? '' }}"
                                             placeholder="Forwarded By" readonly>
+                                    </td>
+
+                                    {{-- View (Payment) --}}
+                                    <td>
+                                        <input type="file" accept="application/pdf" class="d-none payment-input"
+                                            data-key="View">
+                                        <button type="button" class="btn btn-sm btn-info upload-payment-btn">
+                                            {{ !empty($row->payment) ? 'Change File' : 'Upload' }}
+                                        </button>
+
+                                        @if (!empty($row->payment))
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-payment/' . $row->id) }}"
+                                                target="_blank" class="btn btn-sm btn-primary viewpayment-btn">View
+                                                Payment</a>
+
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-payment/' . $row->id) }}"
+                                                class="btn btn-sm btn-secondary downloadpayment-btn">Download Payment</a>
+                                        @else
+                                            <a href="#" target="_blank"
+                                                class="btn btn-sm btn-primary viewpayment-btn d-none">View Payment</a>
+                                            <a href="#" download
+                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download
+                                                Payment</a>
+                                        @endif
+                                    </td>
+
+                                    {{-- View (Payment) --}}
+                                    <td>
+                                        <input type="file" accept="application/pdf" class="d-none payment-input"
+                                            data-key="View">
+                                        <button type="button" class="btn btn-sm btn-info upload-payment-btn">
+                                            {{ !empty($row->payment) ? 'Change File' : 'Upload' }}
+                                        </button>
+
+                                        @if (!empty($row->payment))
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-payment/' . $row->id) }}"
+                                                target="_blank" class="btn btn-sm btn-primary viewpayment-btn">View
+                                                Payment</a>
+
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-payment/' . $row->id) }}"
+                                                class="btn btn-sm btn-secondary downloadpayment-btn">Download Payment</a>
+                                        @else
+                                            <a href="#" target="_blank"
+                                                class="btn btn-sm btn-primary viewpayment-btn d-none">View Payment</a>
+                                            <a href="#" download
+                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download
+                                                Payment</a>
+                                        @endif
                                     </td>
 
                                     {{-- View (Resume) --}}
@@ -1349,7 +1391,7 @@
                 }
 
                 if (e.target.matches('.viewacceptance-btn') || e.target.matches(
-                    '.downloadacceptance-btn')) {
+                        '.downloadacceptance-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
