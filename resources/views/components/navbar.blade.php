@@ -393,6 +393,7 @@
         // ===============================
         // Backend Sync
         // ===============================
+        let userRole = "{{ session('role') }}";
         function syncWithBackend() {
             fetch("{{ route('timer.update') }}", {
                     method: "POST",
@@ -423,10 +424,9 @@
                     if (data.logout) {
                         console.warn("[Sync] Work session ended. Logging out...");
                         clearInterval(backendSyncInterval);
-                        @if (session('role') !== 'accountant')
+                        if (userRole !== 'accountant') {
                             alert("Your 9-hour work session has ended.");
-                        @endif
-                        // forceLogout();
+                        }
                     }
                 })
                 .catch(err => console.error("[Sync] Timer sync failed:", err));
