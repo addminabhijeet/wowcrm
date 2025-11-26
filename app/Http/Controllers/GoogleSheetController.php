@@ -5275,22 +5275,27 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // Extract main details
+        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? $row->Email_Address;
         $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
         $name  = $rowData['Name'] ?? $row->Name;
         $date  = $rowData['Date'] ?? $row->Date;
 
         if (empty($name)) {
-            return response()->json(['success' => false, 'message' => 'Name is required.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Name is required.'
+            ]);
         }
 
         if (empty($date)) {
-            return response()->json(['success' => false, 'message' => 'Date is required.']);
+            return response()->json([
+                'success' => false,
+                'message' => 'Date is required.'
+            ]);
         }
 
-
-        // File upload
+        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
@@ -5316,7 +5321,111 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Prepare update data
+        // Handle acceptance file upload
+        if ($request->hasFile('acceptance')) {
+            $file = $request->file('acceptance');
+
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                $filePath = $file->storeAs('acceptance', $newName, 'public');
+
+                if ($row->acceptance && Storage::disk('public')->exists($row->acceptance)) {
+                    Storage::disk('public')->delete($row->acceptance);
+                }
+
+                $row->acceptance = $filePath;
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // Handle consultation file upload
+        if ($request->hasFile('consultation')) {
+            $file = $request->file('consultation');
+
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                $filePath = $file->storeAs('consultation', $newName, 'public');
+
+                if ($row->consultation && Storage::disk('public')->exists($row->consultation)) {
+                    Storage::disk('public')->delete($row->consultation);
+                }
+
+                $row->consultation = $filePath;
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // Handle delivery file upload
+        if ($request->hasFile('delivery')) {
+            $file = $request->file('delivery');
+
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                $filePath = $file->storeAs('delivery', $newName, 'public');
+
+                if ($row->delivery && Storage::disk('public')->exists($row->delivery)) {
+                    Storage::disk('public')->delete($row->delivery);
+                }
+
+                $row->delivery = $filePath;
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // Handle payment file upload
+        if ($request->hasFile('payment')) {
+            $file = $request->file('payment');
+
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                $filePath = $file->storeAs('payment', $newName, 'public');
+
+                if ($row->payment && Storage::disk('public')->exists($row->payment)) {
+                    Storage::disk('public')->delete($row->payment);
+                }
+
+                $row->payment = $filePath;
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // --- Prepare update data ---
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
@@ -5333,17 +5442,21 @@ class GoogleSheetController extends Controller
             'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
             'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
             'Time_Zone' => $rowData['Time Zone'] ?? null,
-            'updated_at' => now()
+            'PaymentDate' => !empty($rowData['PaymentDate']) ? $this->parseDate($rowData['PaymentDate']) : null,
+            'TranId' => $rowData['TranId'] ?? null,
+            'TranRef' => $rowData['TranRef'] ?? null,
+            'PaymentMethod' => $rowData['PaymentMethod'] ?? null,
+            'PayeeName' => $rowData['PayeeName'] ?? null,
+            'updated_at' => now(),
         ];
 
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
 
-        // Keep created_by
+        // created_by logic preserved exactly
         $updateData['created_by'] = $row->created_by;
 
-        // created_by logic
         if (isset($rowData['Exe Remarks'])) {
             $exeRemark = $rowData['Exe Remarks'];
 
@@ -5353,24 +5466,13 @@ class GoogleSheetController extends Controller
                 if (preg_match('/0\|accountant$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
                         '/0\|accountant$/',
-                        $authUser->id . '|accountant:0|senior',
+                        $authUser->id . '|accountant:0|trainer',
                         $updateData['created_by']
                     );
                 }
 
-                if (strpos($updateData['created_by'], ':0|senior') === false) {
-                    $updateData['created_by'] .= ':0|senior';
-                }
-            } elseif ($exeRemark === 'Document Send') {
-
-                $tag = $id . '|accountant';
-                $zerotag = '0|accountant';
-
-                $parts = explode(':', $updateData['created_by']);
-                $lastPart = end($parts);
-
-                if ($lastPart === $tag) {
-                    $updateData['created_by'] .= ':' . $zerotag;
+                if (strpos($updateData['created_by'], ':0|accountant') === false) {
+                    $updateData['created_by'] .= ':0|accountant';
                 }
             }
         }
@@ -5384,86 +5486,19 @@ class GoogleSheetController extends Controller
         try {
             $row->update($updateData);
 
-            $name   = $rowData['Name'] ?? $row->Name ?? '';
-            $phone  = $rowData['Phone Number'] ?? $row->Phone_Number ?? '';
-            $date   = $rowData['Date'] ?? $row->Date ?? '';
-            $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : ($row->Amount ?? 0);
-            $email  = $rowData['Email Address']
-                ?? $rowData['Email_Address']
-                ?? $row->Email_Address
-                ?? '';
-
-            // EMAIL-SENDING SECTION REMOVED
-
-            $firstCallerName = $this->getFirstCallerName($row->created_by);
-
-            $dataText =
-                "Payment Processed Successfully – Please Review the Details\n" .
-                "Candidate Name: {$name}\n" .
-                "Candidate Email: {$email}\n" .
-                "Candidate Phone: {$phone}\n" .
-                "Date: {$date}\n" .
-                "Paid Amount: \${$amount}\n" .
-                "First Caller Name: {$firstCallerName}";
-
-            // Create notification
-            Notification::create([
-                'type' => 'Payment',
-                'candidate_id' => $row->id,
-                'notifiable_role' => 'Admin',
-                'notifiable_id' => 1,
-                'data' => $dataText
-            ]);
-
-            // Generate latest notification HTML
-            $admin = User::find(1);
-            $latestNotification = Notification::with(['user', 'candidate'])
-                ->where('notifiable_id', 1)
-                ->where('notifiable_role', 'Admin')
-                ->latest()
-                ->first();
-
-            $newNotificationHtml = "";
-
-            if ($latestNotification) {
-                $msg = $latestNotification->data ?? '';
-                $userName = $latestNotification->user->name ?? 'Unknown User';
-                $userEmail = $latestNotification->user->email ?? '';
-
-                $candidate = $latestNotification->candidate;
-                $candidateName = $candidate->Name ?? null;
-                $candidateEmail = $candidate->Email_Address ?? null;
-                $candidatePhone = $candidate->Phone_Number ?? null;
-                $candidateCourse = $candidate->Course ?? null;
-
-                $newNotificationHtml = view('notice.partials.single-notification', compact(
-                    'msg',
-                    'userName',
-                    'userEmail',
-                    'candidateName',
-                    'candidateEmail',
-                    'candidatePhone',
-                    'candidateCourse'
-                ))->render();
-            }
-
             return response()->json([
                 'success' => true,
                 'message' => 'Row updated successfully',
                 'id' => $row->id,
                 'sheet_row_number' => $row->sheet_row_number,
-                'resume_path' => !empty($row->resume) ? true : false,
-                'refresh_notification' => true,
-                'html' => $newNotificationHtml
+                'resume_path' => !empty($row->resume) ? true : false
             ]);
         } catch (\Exception $e) {
-
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),
-                'error_line' => $e->getLine(),
-                'error_file' => $e->getFile(),
-                'error_trace' => $e->getTraceAsString()
+                'message' => $e->getMessage(),  // Show real error
+                'error_line' => $e->getLine(),  // Optional: line number
+                'error_file' => $e->getFile(),  // Optional: which file
             ]);
         }
     }

@@ -222,6 +222,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/accountant/google-sheet/accountantstore', [GoogleSheetController::class, 'accountantstore'])->name('accountantstore');
     Route::post('/dashboard/accountant/google-sheet/accountantupdate', [GoogleSheetController::class, 'accountantupdate'])->name('accountantupdate');
     Route::post('/dashboard/accountant/google-sheet/accountantupdatecon', [GoogleSheetController::class, 'accountantupdatecon'])->name('accountantupdatecon');
+    Route::post('/dashboard/accountant/google-sheet/accountantupdatever', [GoogleSheetController::class, 'accountantupdatever'])->name('accountantupdatever');
     Route::get('/dashboard/accountant/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewaccountantResume'])->name('view.resume');
     Route::get('/dashboard/accountant/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadaccountantResume'])->name('download.resume');
     Route::post('/dashboard/check-email', [GoogleSheetController::class, 'checkEmail'])->name('check.uniqueemail');
