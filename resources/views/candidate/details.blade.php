@@ -77,7 +77,7 @@
                                         <div class="mb-20">
                                             <label for="name"
                                                 class="form-label fw-semibold text-primary-light text-sm mb-8">Full Name
-                                                <span class="text-danger-600">*</span></label>
+                                                </label>
                                             <input type="text" name="name" id="name"
                                                 class="form-control radius-8" value="{{ old('name', $candidate->Name) }}"
                                                 placeholder="Enter Full Name" required>
@@ -87,8 +87,7 @@
                                     <div class="col-sm-6">
                                         <div class="mb-20">
                                             <label for="email"
-                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Email <span
-                                                    class="text-danger-600">*</span></label>
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Email </label>
                                             <input type="email" name="email" id="email"
                                                 class="form-control radius-8" value="{{ old('email', $candidate->Email_Address) }}"
                                                 placeholder="Enter email address" required>
@@ -99,10 +98,9 @@
                                         <div class="mb-20">
                                             <label for="phone"
                                                 class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
-                                            <input type="number" name="phone" id="phone"
-                                                value="{{ old('phone', $candidate->Phone_Number) }}" min="1000000000"
-                                                max="9999999999" oninput="this.value = this.value.slice(0, 10);"
-                                                placeholder="Enter phone number" class="form-control radius-8">
+                                            <input type="text" name="name" id="name"
+                                                class="form-control radius-8" value="{{ old('name', $candidate->Phone_Number) }}"
+                                                placeholder="Enter Full Name" required>
                                         </div>
                                     </div>
 
