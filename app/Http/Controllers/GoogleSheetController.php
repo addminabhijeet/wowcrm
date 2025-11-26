@@ -4999,16 +4999,16 @@ class GoogleSheetController extends Controller
             if ($exeRemark === 'Document Send') {
                 $authUser = Auth::user();
 
-                if (preg_match('/0\|accountant$/', $updateData['created_by'])) {
+                if (preg_match('/^\d+\|accountant:\d+\|accountant$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
-                        '/0\|accountant$/',
-                        $authUser->id . '|accountant:0|trainer',
+                        '/^\d+\|accountant:\d+\|accountant$/',
+                        $authUser->id . '|accountant:0|accountant',  // adjust replacement as needed
                         $updateData['created_by']
                     );
                 }
 
-                if (strpos($updateData['created_by'], ':0|trainer') === false) {
-                    $updateData['created_by'] .= ':0|trainer';
+                if (strpos($updateData['created_by'], ':0|accountant') === false) {
+                    $updateData['created_by'] .= ':0|accountant';
                 }
             } elseif ($exeRemark === 'Ready To Paid') {
 
@@ -5020,23 +5020,6 @@ class GoogleSheetController extends Controller
 
                 if ($lastPart === $tag) {
                     $updateData['created_by'] .= ':' . $zerotag;
-                }
-            } else {
-                if (preg_match('/(\d+)\|senior/', $updateData['created_by'], $matches)) {
-                    $seniorId = $matches[1];
-                    $tag = $seniorId . '|senior';
-
-                    if (strpos($updateData['created_by'], $tag) !== false) {
-                        $updateData['created_by'] .= ':' . $tag;
-                    }
-                }
-
-                if (preg_match('/0\|accountant$/', $updateData['created_by'])) {
-                    $updateData['created_by'] = preg_replace(
-                        '/0\|accountant$/',
-                        $id . '|accountant',
-                        $updateData['created_by']
-                    );
                 }
             }
         }
