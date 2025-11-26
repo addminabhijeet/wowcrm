@@ -42,12 +42,13 @@
                                                 </td>
 
                                                 <!-- Email -->
-                                                <td>
-                                                    <span class="fw-medium text-sm text-truncate d-block"
-                                                        style="max-width: 180px;">
+                                                <td class="text-center">
+                                                    <span class="fw-medium text-sm text-truncate"
+                                                        style="max-width: 180px; display: inline-block;">
                                                         {{ $row->Email_Address ?? '-' }}
                                                     </span>
                                                 </td>
+
 
                                                 <!-- Phone -->
                                                 <td>
