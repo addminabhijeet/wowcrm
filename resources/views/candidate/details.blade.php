@@ -111,19 +111,25 @@
                             </div>
 
                             <div class="tab-pane fade" id="pills-change-passwork" role="tabpanel">
+
+                                <!-- Joined Date -->
                                 <div class="mb-20">
-                                    <label for="Date"
+                                    <label for="date"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Joined Date</label>
-                                    <input type="date" name="date" id="date" class="form-control radius-8"
-                                        value="{{ old('name', $candidate->Date) }}" placeholder="Enter Full Name" required>
+                                    <input type="date" name="Date" id="date" class="form-control radius-8"
+                                        value="{{ old('Date', $candidate->Date) }}" required>
                                 </div>
+
+                                <!-- Payment Date -->
                                 <div class="mb-20">
                                     <label for="PaymentDate"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date</label>
-                                    <input type="PaymentDate" name="PaymentDate" id="PaymentDate" class="form-control radius-8"
-                                        value="{{ old('name', $candidate->PaymentDate) }}" placeholder="PaymentDate" required>
+                                    <input type="date" name="PaymentDate" id="PaymentDate" class="form-control radius-8"
+                                        value="{{ old('PaymentDate', $candidate->PaymentDate) }}" required>
                                 </div>
+
                             </div>
+
 
                             <div class="tab-pane fade" id="pills-notification" role="tabpanel">
                                 <div
