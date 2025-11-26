@@ -75,6 +75,8 @@
                                 <th scope="col">Payment</th>
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">View</th>
+                                <th scope="col">Acceptance</th>
+                                <th scope="col">Consultation</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -337,6 +339,33 @@
                                             <a href="#" download
                                                 class="btn btn-sm btn-secondary downloadacceptancesign-btn d-none">Download
                                                 Acceptance Sign</a>
+                                        @endif
+                                    </td>
+
+                                    {{-- View (Consultation Sign) --}}
+                                    <td>
+                                        <input type="file" accept="application/pdf"
+                                            class="d-none consultationsign-input" data-key="View">
+                                        <button type="button" class="btn btn-sm btn-info upload-consultationsign-btn">
+                                            {{ !empty($row->consultationsign) ? 'Change File' : 'Upload' }}
+                                        </button>
+
+                                        @if (!empty($row->consultationsign))
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-consultationsign/' . $row->id) }}"
+                                                target="_blank"
+                                                class="btn btn-sm btn-primary viewconsultationsign-btn">View
+                                                Consultation Sign</a>
+
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-consultationsign/' . $row->id) }}"
+                                                class="btn btn-sm btn-secondary downloadconsultationsign-btn">Download
+                                                Consultation Sign</a>
+                                        @else
+                                            <a href="#" target="_blank"
+                                                class="btn btn-sm btn-primary viewconsultationsign-btn d-none">View
+                                                Consultation Sign</a>
+                                            <a href="#" download
+                                                class="btn btn-sm btn-secondary downloadconsultationsign-btn d-none">Download
+                                                Consultation Sign</a>
                                         @endif
                                     </td>
 
