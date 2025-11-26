@@ -1242,24 +1242,6 @@
                                         downloadAcceptanceBtn.classList.remove('d-none');
                                     }
 
-                                    // Acceptance
-                                    const viewAcceptancesignBtn = row.querySelector(
-                                        '.viewacceptancesign-btn');
-                                    const downloadAcceptancesignBtn = row.querySelector(
-                                        '.downloadacceptancesign-btn');
-
-                                    if (viewAcceptancesignBtn && data.acceptancesign_path) {
-                                        viewAcceptancesignBtn.href =
-                                            `/dashboard/senior/google-sheet/view-acceptancesign/${data.id}`;
-                                        viewAcceptancesignBtn.classList.remove('d-none');
-                                    }
-
-                                    if (downloadAcceptancesignBtn && data.acceptancesign_path) {
-                                        downloadAcceptancesignBtn.href =
-                                            `/dashboard/senior/google-sheet/download-acceptancesign/${data.id}`;
-                                        downloadAcceptancesignBtn.classList.remove('d-none');
-                                    }
-
                                     // Consultation
                                     const viewConsultationBtn = row.querySelector(
                                         '.viewconsultation-btn');
