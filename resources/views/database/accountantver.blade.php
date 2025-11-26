@@ -1164,12 +1164,6 @@
                         formData.append("acceptance", accInput.files[0]);
                     }
 
-                    // Acceptance Sign file
-                    let accInput = row.querySelector("input.acceptancesign-input");
-                    if (accInput && accInput.files.length > 0) {
-                        formData.append("acceptancesign", accInput.files[0]);
-                    }
-
                     // Consultation file
                     let consInput = row.querySelector("input.consultation-input");
                     if (consInput && consInput.files.length > 0) {
