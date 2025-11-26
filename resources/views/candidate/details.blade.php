@@ -55,14 +55,14 @@
                             <button class="nav-link d-flex align-items-center px-24" id="pills-change-passwork-tab"
                                 data-bs-toggle="pill" data-bs-target="#pills-change-passwork" type="button" role="tab"
                                 aria-controls="pills-change-passwork" aria-selected="false" tabindex="-1">
-                                Change Password
+                                Information
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link d-flex align-items-center px-24" id="pills-notification-tab"
                                 data-bs-toggle="pill" data-bs-target="#pills-notification" type="button" role="tab"
                                 aria-controls="pills-notification" aria-selected="false" tabindex="-1">
-                                Settings
+                                Status
                             </button>
                         </li>
                     </ul>
@@ -129,7 +129,7 @@
                                 <div
                                     class="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
                                     <div class="d-flex align-items-center gap-3 justify-content-between">
-                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light">Account
+                                        <span class="form-check-label line-height-1 fw-medium text-secondary-light">Candidate
                                             Status</span>
                                         <input class="form-check-input" type="checkbox" id="status" name="status"
                                             value="1" {{ $candidate->status ? 'checked' : '' }}>
