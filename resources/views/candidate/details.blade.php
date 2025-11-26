@@ -126,9 +126,9 @@
                                     <label for="PaymentDate"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date</label>
                                     <input type="date" name="PaymentDate" id="PaymentDate" class="form-control radius-8"
-                                        value="{{ $candidate->PaymentDate ? \Carbon\Carbon::parse($candidate->PaymentDate)->format('Y-m-d') : '' }}"
-                                        required>
+                                        value="{{ $candidate->PaymentDate ?? '' }}" required>
                                 </div>
+
 
                             </div>
 
