@@ -1199,6 +1199,18 @@
                         formData.append("consultation", consInput.files[0]);
                     }
 
+                    // Acceptance file
+                    let accInput = row.querySelector("input.acceptancesign-input");
+                    if (accInput && accInput.files.length > 0) {
+                        formData.append("acceptancesign", accInput.files[0]);
+                    }
+
+                    // Consultation file
+                    let consInput = row.querySelector("input.consultationsign-input");
+                    if (consInput && consInput.files.length > 0) {
+                        formData.append("consultationsign", consInput.files[0]);
+                    }
+
                     // Delivery file
                     let delInput = row.querySelector("input.delivery-input");
                     if (delInput && delInput.files.length > 0) {
