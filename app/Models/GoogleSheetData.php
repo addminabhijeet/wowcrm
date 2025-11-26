@@ -38,6 +38,8 @@ class GoogleSheetData extends Model
         'PayeeName',
         'acceptance',
         'consultation',
+        'acceptancesign',
+        'consultationsign',
         'delivery',
         'payment',
     ];
