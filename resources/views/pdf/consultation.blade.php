@@ -72,25 +72,37 @@
         }
     </style>
     <style>
+        /* Print styles */
         @media print {
             body * {
                 visibility: hidden;
+                /* Hide everything by default */
             }
 
-            .page-combine,
-            .page-combine * {
+            .page-container,
+            .page-container * {
                 visibility: visible;
+                /* Show only page-container and its children */
             }
 
-            .page-combine {
+            .page-container {
                 position: absolute;
                 left: 0;
                 top: 0;
-                width: 100%;
+                width: 935px;
+                /* Fixed width */
+                /* Height doubled to span two pages */
+                height: 2420px;
+                /* 2 * 1210px */
+                margin: 0;
+            }
+
+            /* Force page breaks */
+            .page-break {
+                page-break-before: always;
             }
         }
     </style>
-
     <style id="fonts2" type="text/css">
         @font-face {
             font-family: CIDFont-F1_8;
@@ -201,217 +213,77 @@
     <div class="page-combine">
         <div class="page-container">
 
-            <section class="page" style="width: 935px; height: 1210px;" aria-label="Page 1">
-                <div id="pg1Overlay"
-                    style="width:100%; height:100%; position:absolute; z-index:1; background-color:rgba(0,0,0,0); user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;">
-                </div>
-                <div id="pg1"
-                    style="user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;">
-                    <img id="pdf1" style="width:935px; height:1210px;"
-                        src="data:image/svg+xml,%3Csvg id='pdf1' width='935' height='1210' viewBox='0 0 935 1210' style='width:935px%3B height:1210px%3B z-index: 0%3B isolation: isolate%3B' version='1.1' xmlns='http://www.w3.org/2000/svg'%3E%0A%3Cdefs%3E%0A%3Cstyle%3E%0A.g0%7Bfill:%23000%3B%7D%0A.g1%7Bfill:%23A0A0A0%3B%7D%0A.g2%7Bfill:%23E3E3E3%3B%7D%0A.g3%7Bfill:%231F3864%3B%7D%0A%3C/style%3E%0A%3C/defs%3E%0A%3Cpath d='M325.4 197.8H640.9v.9H325.4Z' class='g0'/%3E%0A%3Cpath d='M143 540.7H816.9v2.2H143Z' class='g1'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 540.7H816.6v.3H143Z' class='g1'/%3E%0A%3Cpath fill-rule='evenodd' d='M816.6 540.7h.3v.3h-.3ZM143 541h.4v1.5H143Z' class='g1'/%3E%0A%3Cpath d='M816.6 541h.3v1.5h-.3Z' class='g2'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 542.5H816.6v.4H143Z' class='g2'/%3E%0A%3Cpath d='M816.6 542.5h.3v.4h-.3Z' class='g2'/%3E%0A%3Cpath fill-rule='evenodd' d='M74.1 34.5H859.5v.7H74.1Z' class='g3'/%3E%0A%3Cpath fill-rule='evenodd' d='M859.5 34.5h.5v.7h-.5ZM74.1 35.2h.7V1173.9h-.7Z' class='g3'/%3E%0A%3Cpath d='M859.5 35.2h.5V1173.9h-.5Z' class='g3'/%3E%0A%3Cpath fill-rule='evenodd' d='M74.1 1173.9H859.5v.7H74.1Z' class='g3'/%3E%0A%3Cpath d='M859.5 1173.9h.5v.7h-.5Z' class='g3'/%3E%0A%3C/svg%3E" />
-                </div>
-                <div class="text-container"><span class="t s0"
-                        style="left:566px;bottom:1130px;letter-spacing:-0.09px;word-spacing:0.17px;">Norlox Solutions
-                        Pvt. Ltd.</span>
-                    <span class="t s1" style="left:445px;bottom:69px;letter-spacing:-0.17px;word-spacing:0.15px;">Page
-                        1 of 2 </span>
-                    <span class="t s2"
-                        style="left:325px;bottom:1006px;letter-spacing:-0.13px;word-spacing:-0.08px;">CONSULTATION
-                        SERVICES AGREEMENT </span>
-                    <span class="t s3" style="left:143px;bottom:952px;letter-spacing:0.19px;word-spacing:-0.2px;">This
-                        Agreement </span><span class="t s4"
-                        style="left:255px;bottom:952px;letter-spacing:0.14px;word-spacing:0.04px;">is entered into as of
-                        {{ $paymentDate }} ("Effective Date") by and between: </span>
-                    <span class="t s5" style="left:169px;bottom:914px;"> </span><span class="t s3"
-                        style="left:195px;bottom:914px;letter-spacing:0.17px;word-spacing:0.04px;">Norlox Solutions Pvt.
-                        Ltd.</span><span class="t s4"
-                        style="left:380px;bottom:914px;letter-spacing:-0.07px;word-spacing:0.29px;">, a</span><span
-                        class="t s6"
-                        style="left:400px;bottom:915px;letter-spacing:-0.28px;word-spacing:0.1px;">Wyoming Secretary of
-                        State </span><span class="t s4"
-                        style="left:560px;bottom:914px;letter-spacing:0.12px;word-spacing:0.1px;">LLC with a principal
-                        office at 701 </span>
-                    <span class="t s4"
-                        style="left:195px;bottom:897px;letter-spacing:0.14px;word-spacing:0.09px;">Tillery Street Unit
-                        12 STE 2925 Austin, TX 78702, (“Consultant”) and </span> <span class="t s5"
-                        style="left:169px;bottom:879px;"> </span>
-                    <span class="t s4"
-                        style="left:195px;bottom:879px;letter-spacing:0.19px;word-spacing:0.04px;text-align:justify;text-justify:inter-word;display:inline-block;width:100%;"><strong>{{ $name }}</strong>
-                        , an individual with an address at {{ $Location }}</span>
-                    <span class="t s4"
-                        style="left:351px;bottom:879px;letter-spacing:0.14px;text-align:justify;text-justify:inter-word;display:inline-block;width:100%;"></span>
-                    <span class="t s4" style="left:195px;bottom:862px;letter-spacing:0.14px;word-spacing:0.12px;">
-                        ("Candidate"). </span>
-                    <span class="t s3" style="left:143px;bottom:824px;letter-spacing:0.2px;">WHEREAS</span><span
-                        class="t s4" style="left:214px;bottom:824px;letter-spacing:0.14px;word-spacing:0.04px;">,
-                        Consultant has agreed to provide consultation services to Candidate in accordance with the
-                    </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:807px;letter-spacing:0.12px;word-spacing:0.09px;">terms set forth
-                        herein; </span>
-                    <span class="t s3" style="left:143px;bottom:770px;letter-spacing:0.2px;">WHEREAS</span><span
-                        class="t s4" style="left:214px;bottom:770px;letter-spacing:0.14px;word-spacing:0.04px;">, the
-                        Consultation Fee for such services has been paid by the Candidate, located at 5737 Ivy Park
-                    </span>
-                    <span class="t s4" style="left:143px;bottom:753px;letter-spacing:0.13px;word-spacing:0.07px;">Dr,
-                        Cave Spring, VA, 24018, USA. </span>
-                    <span class="t s3"
-                        style="left:143px;bottom:715px;letter-spacing:0.24px;word-spacing:-0.22px;">NOW,
-                        THEREFORE</span><span class="t s4"
-                        style="left:275px;bottom:715px;letter-spacing:0.14px;word-spacing:0.07px;">, in consideration of
-                        the mutual covenants herein contained and for other good and </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:698px;letter-spacing:0.13px;word-spacing:0.13px;">valuable
-                        consideration, the parties hereby agree as follows: </span>
-                    <span class="t s2" style="left:143px;bottom:621px;letter-spacing:-0.07px;word-spacing:0.14px;">1.
-                        Services </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:584px;letter-spacing:0.14px;word-spacing:0.02px;">Consultant agrees to
-                        provide professional consultation services to Candidate as described in Exhibit A (the </span>
-                    <span class="t s4" style="left:143px;bottom:567px;letter-spacing:0.11px;">"Services"). </span>
-                    <span class="t s2" style="left:143px;bottom:527px;letter-spacing:-0.06px;word-spacing:-0.2px;">2.
-                        Payment </span>
-                    <span class="t s4" style="left:143px;bottom:491px;letter-spacing:0.12px;word-spacing:0.08px;">a.
-                        The total fee for the Services Fee is {{ $amount }} </span>
-                    <span class="t s4" style="left:143px;bottom:473px;letter-spacing:0.14px;word-spacing:0.03px;">b.
-                        The Fee has been paid in full by the Candidate. </span>
-                    <span class="t s4" style="left:143px;bottom:456px;letter-spacing:0.14px;word-spacing:0.03px;">c.
-                        Candidate acknowledges and agrees that all obligations, rights, and liabilities under this
-                        Agreement are </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:439px;letter-spacing:0.14px;word-spacing:0.13px;">between Consultant
-                        and Candidate exclusively. </span>
-                    <span class="t s2" style="left:143px;bottom:400px;letter-spacing:-0.11px;word-spacing:0.09px;">3.
-                        Non-Refundable Fee </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:362px;letter-spacing:0.14px;word-spacing:0.06px;">Candidate
-                        acknowledges that the Fee paid on Candidate's behalf is </span><span class="t s3"
-                        style="left:556px;bottom:362px;letter-spacing:0.18px;">non-refundable </span><span
-                        class="t s4" style="left:665px;bottom:362px;letter-spacing:0.15px;word-spacing:-0.03px;">under
-                        any </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:345px;letter-spacing:0.14px;word-spacing:0.08px;">circumstances,
-                        including but not limited to Candidate’s dissatisfaction, withdrawal, or non-participation.
-                    </span>
-                    <span class="t s2" style="left:143px;bottom:306px;letter-spacing:-0.1px;word-spacing:0.16px;">4.
-                        Confidentiality </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:269px;letter-spacing:0.14px;word-spacing:0.04px;">Consultant shall
-                        maintain the confidentiality of all information provided by Candidate during the course of the
-                    </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:252px;letter-spacing:0.14px;word-spacing:0.05px;">Services, in
-                        accordance with standard professional practices. </span>
-                </div>
+        <section class="page" style="width: 935px; height: 1210px;" aria-label="Page 1">
+            <div id="pg1Overlay" style="width:100%; height:100%; position:absolute; z-index:1; background-color:rgba(0,0,0,0); user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;"></div>
+            <div id="pg1" style="user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;"><img id="pdf1" style="width:935px; height:1210px;" src="data:image/svg+xml,%3Csvg id='pdf1' width='935' height='1210' viewBox='0 0 935 1210' style='width:935px%3B height:1210px%3B z-index: 0%3B isolation: isolate%3B' version='1.1' xmlns='http://www.w3.org/2000/svg'%3E%0A%3Cdefs%3E%0A%3Cstyle%3E%0A.g0%7Bfill:%23000%3B%7D%0A.g1%7Bfill:%23A0A0A0%3B%7D%0A.g2%7Bfill:%23E3E3E3%3B%7D%0A.g3%7Bfill:%231F3864%3B%7D%0A%3C/style%3E%0A%3C/defs%3E%0A%3Cpath d='M325.4 197.8H640.9v.9H325.4Z' class='g0'/%3E%0A%3Cpath d='M143 540.7H816.9v2.2H143Z' class='g1'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 540.7H816.6v.3H143Z' class='g1'/%3E%0A%3Cpath fill-rule='evenodd' d='M816.6 540.7h.3v.3h-.3ZM143 541h.4v1.5H143Z' class='g1'/%3E%0A%3Cpath d='M816.6 541h.3v1.5h-.3Z' class='g2'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 542.5H816.6v.4H143Z' class='g2'/%3E%0A%3Cpath d='M816.6 542.5h.3v.4h-.3Z' class='g2'/%3E%0A%3Cpath fill-rule='evenodd' d='M74.1 34.5H859.5v.7H74.1Z' class='g3'/%3E%0A%3Cpath fill-rule='evenodd' d='M859.5 34.5h.5v.7h-.5ZM74.1 35.2h.7V1173.9h-.7Z' class='g3'/%3E%0A%3Cpath d='M859.5 35.2h.5V1173.9h-.5Z' class='g3'/%3E%0A%3Cpath fill-rule='evenodd' d='M74.1 1173.9H859.5v.7H74.1Z' class='g3'/%3E%0A%3Cpath d='M859.5 1173.9h.5v.7h-.5Z' class='g3'/%3E%0A%3C/svg%3E" /></div>
+            <div class="text-container"><span class="t s0" style="left:566px;bottom:1130px;letter-spacing:-0.09px;word-spacing:0.17px;">Norlox Solutions Pvt. Ltd.</span>
+                <span class="t s1" style="left:445px;bottom:69px;letter-spacing:-0.17px;word-spacing:0.15px;">Page 1 of 2 </span>
+                <span class="t s2" style="left:325px;bottom:1006px;letter-spacing:-0.13px;word-spacing:-0.08px;">CONSULTATION SERVICES AGREEMENT </span>
+                <span class="t s3" style="left:143px;bottom:952px;letter-spacing:0.19px;word-spacing:-0.2px;">This Agreement </span><span class="t s4" style="left:255px;bottom:952px;letter-spacing:0.14px;word-spacing:0.04px;">is entered into as of {{$paymentDate}} ("Effective Date") by and between: </span>
+                <span class="t s5" style="left:169px;bottom:914px;"> </span><span class="t s3" style="left:195px;bottom:914px;letter-spacing:0.17px;word-spacing:0.04px;">Norlox Solutions Pvt. Ltd.</span><span class="t s4" style="left:380px;bottom:914px;letter-spacing:-0.07px;word-spacing:0.29px;">, a</span><span class="t s6" style="left:400px;bottom:915px;letter-spacing:-0.28px;word-spacing:0.1px;">Wyoming Secretary of State </span><span class="t s4" style="left:560px;bottom:914px;letter-spacing:0.12px;word-spacing:0.1px;">LLC with a principal office at 701  </span>
+                <span class="t s4" style="left:195px;bottom:897px;letter-spacing:0.14px;word-spacing:0.09px;">Tillery Street Unit 12 STE 2925 Austin, TX 78702, (“Consultant”) and </span>                <span class="t s5" style="left:169px;bottom:879px;"> </span>
+                <span class="t s4" style="left:195px;bottom:879px;letter-spacing:0.19px;word-spacing:0.04px;text-align:justify;text-justify:inter-word;display:inline-block;width:100%;"><strong>{{$name}}</strong> , an individual with an address at {{$Location}}</span>
+                <span class="t s4" style="left:351px;bottom:879px;letter-spacing:0.14px;text-align:justify;text-justify:inter-word;display:inline-block;width:100%;"></span>
+                <span class="t s4" style="left:195px;bottom:862px;letter-spacing:0.14px;word-spacing:0.12px;"> ("Candidate"). </span>
+                <span class="t s3" style="left:143px;bottom:824px;letter-spacing:0.2px;">WHEREAS</span><span class="t s4" style="left:214px;bottom:824px;letter-spacing:0.14px;word-spacing:0.04px;">, Consultant has agreed to provide consultation services to Candidate in accordance with the </span>
+                <span class="t s4" style="left:143px;bottom:807px;letter-spacing:0.12px;word-spacing:0.09px;">terms set forth herein; </span>
+                <span class="t s3" style="left:143px;bottom:770px;letter-spacing:0.2px;">WHEREAS</span><span class="t s4" style="left:214px;bottom:770px;letter-spacing:0.14px;word-spacing:0.04px;">, the Consultation Fee for such services has been paid by the Candidate, located at 5737 Ivy Park </span>
+                <span class="t s4" style="left:143px;bottom:753px;letter-spacing:0.13px;word-spacing:0.07px;">Dr, Cave Spring, VA, 24018, USA. </span>
+                <span class="t s3" style="left:143px;bottom:715px;letter-spacing:0.24px;word-spacing:-0.22px;">NOW, THEREFORE</span><span class="t s4" style="left:275px;bottom:715px;letter-spacing:0.14px;word-spacing:0.07px;">, in consideration of the mutual covenants herein contained and for other good and </span>
+                <span class="t s4" style="left:143px;bottom:698px;letter-spacing:0.13px;word-spacing:0.13px;">valuable consideration, the parties hereby agree as follows: </span>
+                <span class="t s2" style="left:143px;bottom:621px;letter-spacing:-0.07px;word-spacing:0.14px;">1. Services </span>
+                <span class="t s4" style="left:143px;bottom:584px;letter-spacing:0.14px;word-spacing:0.02px;">Consultant agrees to provide professional consultation services to Candidate as described in Exhibit A (the </span>
+                <span class="t s4" style="left:143px;bottom:567px;letter-spacing:0.11px;">"Services"). </span>
+                <span class="t s2" style="left:143px;bottom:527px;letter-spacing:-0.06px;word-spacing:-0.2px;">2. Payment </span>
+                <span class="t s4" style="left:143px;bottom:491px;letter-spacing:0.12px;word-spacing:0.08px;">a. The total fee for the Services Fee is {{$amount}} </span>
+                <span class="t s4" style="left:143px;bottom:473px;letter-spacing:0.14px;word-spacing:0.03px;">b. The Fee has been paid in full by the Candidate. </span>
+                <span class="t s4" style="left:143px;bottom:456px;letter-spacing:0.14px;word-spacing:0.03px;">c. Candidate acknowledges and agrees that all obligations, rights, and liabilities under this Agreement are </span>
+                <span class="t s4" style="left:143px;bottom:439px;letter-spacing:0.14px;word-spacing:0.13px;">between Consultant and Candidate exclusively. </span>
+                <span class="t s2" style="left:143px;bottom:400px;letter-spacing:-0.11px;word-spacing:0.09px;">3. Non-Refundable Fee </span>
+                <span class="t s4" style="left:143px;bottom:362px;letter-spacing:0.14px;word-spacing:0.06px;">Candidate acknowledges that the Fee paid on Candidate's behalf is </span><span class="t s3" style="left:556px;bottom:362px;letter-spacing:0.18px;">non-refundable </span><span class="t s4" style="left:665px;bottom:362px;letter-spacing:0.15px;word-spacing:-0.03px;">under any </span>
+                <span class="t s4" style="left:143px;bottom:345px;letter-spacing:0.14px;word-spacing:0.08px;">circumstances, including but not limited to Candidate’s dissatisfaction, withdrawal, or non-participation. </span>
+                <span class="t s2" style="left:143px;bottom:306px;letter-spacing:-0.1px;word-spacing:0.16px;">4. Confidentiality </span>
+                <span class="t s4" style="left:143px;bottom:269px;letter-spacing:0.14px;word-spacing:0.04px;">Consultant shall maintain the confidentiality of all information provided by Candidate during the course of the </span>
+                <span class="t s4" style="left:143px;bottom:252px;letter-spacing:0.14px;word-spacing:0.05px;">Services, in accordance with standard professional practices. </span>
+            </div>
 
         </div>
 
 
         <div class="page-container">
 
-            <section class="page" style="width: 935px; height: 1210px;" aria-label="Page 2">
-                <div id="pg2Overlay"
-                    style="width:100%; height:100%; position:absolute; z-index:1; background-color:rgba(0,0,0,0); user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;">
-                </div>
-                <div id="pg2"
-                    style="user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;">
-                    <img id="pdf2" style="width:935px; height:1210px;"
-                        src="data:image/svg+xml,%3Csvg id='pdf2' width='935' height='1210' viewBox='0 0 935 1210' style='width:935px%3B height:1210px%3B z-index: 0%3B isolation: isolate%3B' version='1.1' xmlns='http://www.w3.org/2000/svg'%3E%0A%3Cdefs%3E%0A%3CclipPath id='c0'%3E%3Cpath d='M124.2 738.2V685.5H341v52.7Z'/%3E%3C/clipPath%3E%0A%3CclipPath id='c1'%3E%3Cpath d='M124.2 743.4v-5.1H341v5.1Z'/%3E%3C/clipPath%3E%0A%3Cstyle%3E%0A.g0%7Bfill:%23A0A0A0%3B%7D%0A.g1%7Bfill:%23E3E3E3%3B%7D%0A.g2%7Bfill:%231F3864%3B%7D%0A%3C/style%3E%0A%3C/defs%3E%0A%3Cpath fill-rule='evenodd' d='M143 600.2v2.3H817v-2.3H143Z' class='g0'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 600.2H816.7v.4H143Z' class='g0'/%3E%0A%3Cpath fill-rule='evenodd' d='M816.7 600.2h.4v.4h-.4ZM143 600.6h.4v1.6H143Z' class='g0'/%3E%0A%3Cpath d='M816.7 600.6h.4v1.6h-.4Z' class='g1'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 602.2H816.7v.4H143Z' class='g1'/%3E%0A%3Cpath d='M816.7 602.2h.4v.4h-.4Z' class='g1'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 784.6v2.2H817v-2.2H143Z' class='g0'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 784.7H816.7v.3H143Z' class='g0'/%3E%0A%3Cpath fill-rule='evenodd' d='M816.7 784.7h.4v.3h-.4ZM143 785h.4v1.5H143Z' class='g0'/%3E%0A%3Cpath d='M816.7 785h.4v1.5h-.4Z' class='g1'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 786.5H816.7v.4H143Z' class='g1'/%3E%0A%3Cpath d='M816.7 786.5h.4v.4h-.4Z' class='g1'/%3E%0A%3Cimage clip-path='url(%23c0)' preserveAspectRatio='none' x='124' y='686' width='217' height='52' href='data:image/jpeg%3Bbase64%2C/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx4BBQUFBwYHDggIDh4UERQeHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHv/AABEIADQA2QMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5%2BgEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4%2BTl5ufo6ery8/T19vf4%2Bfr/2gAMAwEAAhEDEQA/APsqgAoAr6ldxWGnz306ytFBGZHEUbSOQBk4VQST7DmgErnJ2XxP8H33gqHxjY3t3daRLcLbCSGxmaRZGcIqtGF3rlio5H8SnoRQ9Gl3A7JHDIGAIBGeRg0CuZviXXtM8OaRLq2rSyxWcRUSSJA8u3JwCQgJAyRz0Hei2qQX0b7GnmgYUAZXiXxDpXh62gm1OaVTcTCC3ihgeaWaQgttSNAWY4VjwOACTwKV%2BgeYeGPEOmeI7CS90uSdo4pmglSe2kgkikXG5GSRVZSMjqO9N6AOv9e0yx13TdEuZZUvdS8z7KvkOUfYpdhvA2ghQTgkE9qFrcPM0ywAyelAFCTV7JNSsdP3SvLfRSTQNHC7xlU25JkAKr99cAkZ5xnBoAv0ALQAh4GaAMPw54q0jxBqGrWGnG8M2k3H2a8860kiVJdobaGdQG%2BVlPGeGB70dLh1sLoXirSda1zV9FsTdm80iVYb0S2kkaI7KGADsArZVlb5SeCD3o6XB6OxX17xtoGj6mdLme/vL9IhNLbadp895JFGc4Z1hRigODjdjODjNAGp4e1nTfEGjW2saPdC6sbld0UoVl3DODwwBBBBGCARigDQoAKACgAoAKACgAoAKACgAoAoeIpobfQb%2Be4ljhiS3dnd2Cqo2nkk8AVMthrc%2BbZFPhzwD4L1TTv3%2Bh%2BK7fQLa9EJ3LBqEMltsl46B0jaNj2aOPuTVvWpy%2Bd0Qvhv5HUeJfEuog%2BJbgeJ7y28YWOufZtH0NLkKs0O9BEv2f8A5arKhLGQgkZbBXZxCb09dSn19DO8TXD3ngD4g6tf%2BMb27i0/VLjT7e2e6T7OkXmxFQwxy4O7BJzg4qov4H3f6/8AAE3dyXl%2Bho%2BL/E14W8ZXS%2BK7uy8UadfCPw7pENyES5jMcZgxB/y3WZmYFiGxyAV20Q6ev6j0b8rCeJdbhtfifJZv4u1CLwxd39tDqd0upyKunX4WRls0cOPLSUY3jHynavG9fLIrUG/dudp8YpfDLHw/aa5rVzoF3JevLpOsRSxxizuEiblmk%2BUhkZ12sCG3EehpbvTcF8JxOmeMNQ1B9JtNf1u103QZtWv7a78Qaa/2ODVGijjMDCTP7sSFpQSrfM0GFbBxTWtn5frb/gi2vbyKi%2BJrZNU8KS%2BIfEedNTW9Xt9N1K4uNktxZ/ZpEjl8wYJAYlRIOoVWyc5Ktda72/VDv9ya/JkOgeMV1vS/AtgfFt1candeHb231iGLUGEgulhXasgVvkn3%2BZjo/B9OCb0b8gSs7ef4O4eHPEA0rwv4CXwjrsmpXsvhO8c2J1R7hZruK0haOIoXIBDkjaACMkcYq5r3pJdP8xRW1%2B5rafr6GTSToPju%2B1eO70K6uded70SC0ZYlZJiOls/mZTYNowW%2BXKZES0vYqN3a5kW/ibUdL0nw7cSfEO7WbxB4Hur67uruRZ0gukFr5c0cYGFwZZshRyFJOSpNNq7cRX0Uv66npPwY1Zr9NdtZLi4neyuo0dv7TOoWwJhQ/uLhvnZTncVbBUsR0xRuribs7HP%2BDfHXg7w3rXxOu9a8S6VaCDX3nMbXSeayJY227amdzHKsMAEkgjrSjrFDkvf%2BSJPDHjbwloHj74n3OseJNJswmpW8uyW7RZGCafbhtqk5YgqRgDORjrQtIu/djaba9BfBPivw74W8XeMIfFer2ejzarqS6pY3WoSiCO8tHt4VTy3fAYpsZCmcjGcc07WXL2Fu7%2BR6Z4VuNGvNCt7vQFhXTZt0kHkw%2BUjAsSWC4HBOTnHOc85oA1KACgAoAKACgAoAKACgAoAKAGuiSIUdVZWGCCMg0AMEEAjEQhjCA5ChRgc56UAOMURkEpjQyAYDbRkD0zQBGbS0KMhtodrHLDyxgn1NAD/Jh3q/lR7kGFO0ZA9BQAxrS1YMGtoWDNuYGMcn1%2BtAEkkUciFJI0dD1VlyKAMTxprNp4e0Fp3sxeTSultZWKAbrqdjhIlzwMnknooBJ4BoA4Txx4dbS/hlrs%2BpyRX/AIo8QRJp0lzt%2BVZLlhCkMIP3Ik8zgDrgsckk0Aep29vFBEEjjUDHJC4z7mjyABa2wZWFvCGTO0hBlc9cUAL5EG118mPEn3xtHzfX1oAy9T1Xw7pGp6Xp99cWdte6jI1vYQlB5kzBSzBQBnAGST0HfrQBb06%2B0u4ubywsJ7d5bB1juYosfuWZQ4VgOhKsDj3oAlawsWYs1lbEk5JMS8/pQAPY2TsWezt2YnJJiBJP5UASyQwyKqyRRuFOQGUHBoAfQAtABQAUAFABQAUAFABQAUAFAFPWprm30i7uLMQm5jhZ4hKDs3AZGcc4%2BlJuyGld2PNPCfxN1iaHwle%2BJrPRLWw8Taa1/HLb3Tq1ki24nJlDjGwLwXyAG2jHNN6NoR28njbwfHZW14/inRRBdW8lzbSfboys8UYJkdOfnVQCSRnGDS8gNu0uIbu2iubaVJoJkDxyIcq6kZBB7gimBLQAUAUtZ1bTNGsHv9Wv7axtUwGlnkCLk9Bk9z2HegDy7SfFieJfGtx4sTw9r%2Bo6FpIez0mWCz%2BQydLm42OyuzZBiAVSQFfH36ANrUNTsPGnjTwnaaXcpdabapJrlw65AyoMMCMDyD5jyNg8gwEHkUAeh0ALQBT1rUrHR9JutU1K4W3s7WJpZpG6KqjJNAHgEupXh%2BI13471mx8zWbKxW30nTZTgwXF3nyLc/wB0pCjSykdPObqEGADuPgTHa%2BFPhLaa34n1m2iu9cnk1a%2BvryRYRLJcNvUkscA%2BXsGO2KAPQNF8QaFrcTy6LrWnalHHje1pdJMFz0yVJxQA2TVpba%2B1E6jaR2Ok2dukw1Ga5QRv94yAjqgQAEs2Ac%2B1AF6wvLW/sob2xuYbm1nQSQzROHSRSMhlI4II7igCegAoAKACgAoAKACgAoAKACgAoApa7539i3v2e1ku5jA4jhjKhpGwcAFyFB%2BpApNXQ1ueG%2BA/Al7o%2BneBgvgOHwfe6DDCde1ppbNFu4o7dkmjJgkZpA74YmQADG7qBT6/Inp8zc%2BFmjajYah4gMdtHqdj4WNzpXh6FJQPOR2E7x7m%2BVduYLcE8DyWz3oXw36/5f5g/i02PULrWLHS9KhvtcuLbSUcKrC4mVVRyM7N3Qnr09KOo0Z3/CeeCf8AobdD/wDA6P8AxoAP%2BE88E/8AQ26H/wCB0f8AjQB5Z8V9U0pJNU8XaR8TNMl1COBYtJtFW2ma2mYCNfLZ9wUM5DMwXdjPzYAwAbHhrSfhPpWh2emXXjSPU0toggF34gYxsR1PlK4j5OT93nPOaAPMvBqXOheN/G134J8WeG/D1rLdXHkNqFyHgus7Hgjij3Dait5xaTB/17ABsZAB2UHiz4jXlzuuvif8LdKiRfOVbZXuPMcj/UOHkXCDn94pDH0FAGRZfEv4t2Pir%2B0NZ1D4daroNuzRtp%2BkavHDPcgg7ZVadiBg4JUstAHTDxinjLxHpTeJbjw3ofhuxc3UlpJ4ghnnurhSDDvWMFAiHLbd5ywQ9sEA2oYvhUviDWdcn8WabdXeqs5bztTjK2%2B%2BFIX8oAjaSkagtye2ccUAc34m8MfD/XrPS4734rQzz6Q6nTzcz2c1vEqoY9rW5URuSp%2B8wLAgYIHFAGLa/Cj4IHXJdX1bxxbalPcwul7GdQgtorh2wAxSAIoCBRtUDAPPJ5oAzvG/w88CReDNQg0H4l3%2BvTbEdNH1XxXi0vGXaCrlWVsmNdoy20HHHWgDrv2edV8O%2BGNE1yC41bS9C0q71V7nSdIn1WGV7GBo0BQlXZQC4dgoJwD70Aenf8J54J/6G3Q//A6P/GgA/wCE88E/9Dbof/gdH/jQAf8ACeeCf%2Bht0P8A8Do/8aAD/hPPBP8A0Nuh/wDgdH/jQAf8J54J/wCht0P/AMDo/wDGgA/4TzwT/wBDbof/AIHR/wCNAB/wnngn/obdD/8AA6P/ABoA1NF1vR9ajkk0fVLPUEiIEjW0yyBSegODxQBfoAWgAoAQ8UARXMVvdW0ttcxRTwSoUkjkUMrqRggg8EEdqAI9L0/T9LsY7HS7K2sbSIYjgt4ljjQE54VQAOSTQBZIB60AGB6UAGB6UAIQpHIFAC4HpQAYHpQAYHpQAce1ABxjIxQADB6YoAMD0oADgdcCgAwPSgAwPSgAwPSgAwPSgAwPSgAwPSgAwPSgAwPSgAwPSgAwM5xQAYFAC0AFAFDxFEs%2Bg38LNKqvbuC0cjRuPlPIZSCp9wQaibtFlQ%2BJHzv8PdT1bVPgZfWuo63q9zJp2taTHDdnUJluSlwtlLIryqwdhm5lUAn7uB2BrSStKPrYyT39D6UiAWJVGcAADJzQ9ylsPpDCgAoA8o/ai1bVdJ%2BGzS6TqN1p85lkk862kKSDybWe5Ubh2LwoGHdSw71N7SQ0rnp2nzPPZwTPjdJGrHHTJGap6MlO6LNAwoAzvEkYm0G/hZpVV7aQExyNGw%2BU8hlIIPuCDWdRtRdvMqOskeJ/DPXdaf8AZt1KafV7%2B4u4Glto7ya4Z7gLIV58wncWXzTtJ5GF9KrEPlgrf1rYhat/10PQ/gI0snwh8NXFxdXd3cXFgks011cPNI7tySWcknn3q3/l%2BSG/ia83%2BbO6pAUNc06LVLEWk093AnnRyb7adoXyjhwNykHBK4I7gkHg0AX6ACgAoAKACgAoAKACgAoAKACgAP/Z'/%3E%0A%3Cimage clip-path='url(%23c1)' preserveAspectRatio='none' x='124' y='739' width='217' height='4' href='data:image/jpeg%3Bbase64%2C/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx4BBQUFBwYHDggIDh4UERQeHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHv/AABEIAAQA2QMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5%2BgEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4%2BTl5ufo6ery8/T19vf4%2Bfr/2gAMAwEAAhEDEQA/APsqgAoAqax/yCbz/rg//oJqZ/Cyo/Ej5p8Zf8Sbwv8ACK%2BsP3Umv2Gk6dqS/wAM8cJt5omI/vowYA/3XYemNJfx2vO/4mdv3V/L9Do7m2TUvFsOvSeXDLF8QTYmGG3iCSKsbR%2BY7lTKXKDafn24/hFTT3X/AG9%2BTNJ6X%2BX6FDwz4W8NtoXw7c6Dppe48a6nFM32ZMyRr/aREbHHKAxx/KePkXjgUqevL/h/RE9Jev6j9L0qG%2B8a6N4Zjmey0tPE2vyJb28cZjRowhTajqyDHmPj5eNxxzTXT0f5ibtf1X/pJ7V4P8J6P4Y063srCIyG2EqxTzKhlRJJDI0alVAVNx4RQFAAAHAovcEcv4z0ufxF8UrLTf7ZvtMisdFlnQ2sdu5dppBG%2B4TRSKflTAwAfmbnBpWvf5fr/kVeyX9f1ucF4R02x1jSfhNaazawaothrOq6bG93EsjPDbRXkUQfIweIYyeMFlBxV7yv3X%2BREtFZd/8AMXwvoWi3uo%2BD7K70qyntbbxp4ighhkgVkSJGvSsYUjAQFVIXoCo9BSp6xT/u/qjSfX1X5FTwlZwanf2vhPyoLWxhuPFEkDR2sUjwompeWIUEqOixlWwQFB4ABAyDC1p37L/P/IHpP1f6L/M9T%2BFbvJ8BfDEkjM7t4ZtSzMckn7MvWniNpEU9/n%2Bp5h4I/c%2BMvCnh6P5dO1bTtC1S7i/v3EdldlW/OytifeMU5auS7X/FB9lef%2BZe%2BEVnaatdfDvT9UtYb6zg8EzXMUFwgkjSUzwIZAp43bSVz1AJAxk5fd/4fyLlv83%2BZS%2BGHh3Q9W8b6Nbalpdpd29tZ%2BJIIIZogyRxxatEkSAH%2BFFJCj%2BEHjFTB%2B7fyX6mctZW83%2BSHy%2BG9BsvhFreqWukWUV7/wAJdPEJ1hUOsY1wARqccIAi/KOOKraUPkVLXn%2Bf5HQ6raweH/jF4YuLSOOca/rd6Z0uI1f7PKlpIPNhfAkVmVdpDMyYJwoqYPXl8n%2BYp7X9D2amMKACgAoAKACgAoAKACgAoAD/2Q=='/%3E%0A%3Cpath fill-rule='evenodd' d='M74.1 34.6H859.5v.8H74.1Z' class='g2'/%3E%0A%3Cpath fill-rule='evenodd' d='M859.5 34.6h.7v.8h-.7ZM74.1 35.4h.7V1173.9h-.7Z' class='g2'/%3E%0A%3Cpath d='M859.5 35.4h.7V1173.9h-.7Z' class='g2'/%3E%0A%3Cpath fill-rule='evenodd' d='M74.1 1173.9H859.5v.7H74.1Z' class='g2'/%3E%0A%3Cpath d='M859.5 1173.9h.7v.7h-.7Z' class='g2'/%3E%0A%3C/svg%3E" />
-                </div>
-                <div class="text-container"><span class="t s0"
-                        style="left:566px;bottom:1130px;letter-spacing:-0.05px;word-spacing:0.13px;">Norlox Solutions
-                        Pvt. Ltd.</span>
-                    <span class="t s1"
-                        style="left:445px;bottom:69px;letter-spacing:-0.03px;word-spacing:-0.17px;">Page 2 of 2 </span>
-                    <span class="t s2"
-                        style="left:143px;bottom:1084px;letter-spacing:-0.06px;word-spacing:-0.07px;">6. Limitation of
-                        Liability </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:1047px;letter-spacing:0.15px;word-spacing:0.02px;">Consultant's
-                        liability to Candidate for any claim arising out of or relating to this Agreement shall be
-                        limited to </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:1030px;letter-spacing:0.15px;word-spacing:0.07px;">direct damages not
-                        exceeding the total amount of the Fee paid. In no event shall Consultant be liable for any
-                    </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:1013px;letter-spacing:0.15px;word-spacing:0.09px;">consequential,
-                        incidental, special, or punitive damages. </span>
-                    <span class="t s2"
-                        style="left:143px;bottom:973px;letter-spacing:-0.09px;word-spacing:0.09px;">7. Entire Agreement
-                    </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:936px;letter-spacing:0.16px;word-spacing:0.03px;">This Agreement
-                        constitutes the entire understanding between the parties and supersedes all prior </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:919px;letter-spacing:0.16px;word-spacing:0.03px;">agreements,
-                        representations, or understandings, whether written or oral. </span>
-                    <span class="t s2"
-                        style="left:143px;bottom:880px;letter-spacing:-0.06px;word-spacing:-0.1px;">8. Governing Law
-                    </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:843px;letter-spacing:0.16px;word-spacing:0.06px;">This Agreement shall
-                        be governed by and construed in accordance with the laws of the State of Texas, </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:826px;letter-spacing:0.14px;word-spacing:0.04px;">without regard to
-                        its conflict of laws principles. </span>
-                    <span class="t s2"
-                        style="left:143px;bottom:786px;letter-spacing:-0.08px;word-spacing:0.07px;">9. Dispute
-                        Resolution </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:749px;letter-spacing:0.16px;word-spacing:0.03px;">Any disputes arising
-                        out of or in connection with this Agreement shall be resolved by binding arbitration in </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:732px;letter-spacing:0.15px;word-spacing:0.11px;">Texas in accordance
-                        with the rules of the American Arbitration Association. </span>
-                    <span class="t s2"
-                        style="left:143px;bottom:692px;letter-spacing:-0.09px;word-spacing:0.16px;">10. Execution
-                    </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:655px;letter-spacing:0.16px;word-spacing:0.09px;">This Agreement may
-                        be executed electronically and in counterparts, each of which shall be deemed an </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:638px;letter-spacing:0.15px;word-spacing:0.1px;">original, and all of
-                        which together shall constitute one and the same instrument. </span>
-                    <span class="t s3" style="left:143px;bottom:563px;letter-spacing:0.24px;word-spacing:0.01px;">IN
-                        WITNESS WHEREOF</span><span class="t s4"
-                        style="left:306px;bottom:563px;letter-spacing:0.16px;word-spacing:0.04px;">, the parties hereto
-                        have executed this Agreement as of the Effective Date. </span>
-                    <span class="t s3" style="left:146px;bottom:523px;letter-spacing:0.18px;">Consultant
-                    </span><span class="t s3" style="left:549px;bottom:523px;letter-spacing:0.21px;">Candidate
-                    </span>
-                    <span class="t s4"
-                        style="left:146px;bottom:501px;letter-spacing:0.19px;word-spacing:-0.12px;color: transparent;">Norlox
-                        Solutions Pvt. Ltd.</span><span class="t s4"
-                        style="left:548px;bottom:501px;letter-spacing:0.21px;word-spacing:-0.11px;">{{ $name }}
-                    </span>
-                    <span class="t s4"
-                        style="left:146px;bottom:480px;letter-spacing:0.19px;word-spacing:0.11px;color: transparent;">By:
-                        _______________________ </span><span class="t s4"
-                        style="left:548px;bottom:480px;letter-spacing:0.19px;word-spacing:-0.04px;">By:
-                        _______________________ </span>
-                    <span class="t s4" style="left:146px;bottom:458px;letter-spacing:0.14px;">Name: </span><span
-                        class="t s4"
-                        style="left:190px;bottom:458px;letter-spacing:0.18px;word-spacing:-0.03px;">Anna Morris
-                    </span><span class="t s4" style="left:548px;bottom:458px;letter-spacing:0.21px;">Name:
-                    </span><span class="t s4"
-                        style="left:592px;bottom:458px;letter-spacing:0.19px;word-spacing:0.05px;">{{ $name }}
-                    </span>
-                    <span class="t s4" style="left:146px;bottom:437px;letter-spacing:0.09px;">Title: </span><span
-                        class="t s4"
-                        style="left:181px;bottom:437px;letter-spacing:0.17px;word-spacing:0.41px;">Accounts Manager
-                    </span>
-                    <span class="t s3"
-                        style="left:143px;bottom:379px;letter-spacing:0.17px;word-spacing:-0.04px;">Exhibit A
-                    </span><span class="t s4" style="left:210px;bottom:379px;">– </span><span class="t s7"
-                        style="left:221px;bottom:379px;letter-spacing:0.16px;word-spacing:0.03px;">Scope of Services
-                    </span>
-                    <span class="t s4"
-                        style="left:143px;bottom:362px;letter-spacing:0.17px;word-spacing:0.06px;">Consultation
-                        sessions, resume review &amp; career coaching </span>
-                </div>
+        <section class="page" style="width: 935px; height: 1210px;" aria-label="Page 2">
+            <div id="pg2Overlay" style="width:100%; height:100%; position:absolute; z-index:1; background-color:rgba(0,0,0,0); user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;"></div>
+            <div id="pg2" style="user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;"><img id="pdf2" style="width:935px; height:1210px;" src="data:image/svg+xml,%3Csvg id='pdf2' width='935' height='1210' viewBox='0 0 935 1210' style='width:935px%3B height:1210px%3B z-index: 0%3B isolation: isolate%3B' version='1.1' xmlns='http://www.w3.org/2000/svg'%3E%0A%3Cdefs%3E%0A%3CclipPath id='c0'%3E%3Cpath d='M124.2 738.2V685.5H341v52.7Z'/%3E%3C/clipPath%3E%0A%3CclipPath id='c1'%3E%3Cpath d='M124.2 743.4v-5.1H341v5.1Z'/%3E%3C/clipPath%3E%0A%3Cstyle%3E%0A.g0%7Bfill:%23A0A0A0%3B%7D%0A.g1%7Bfill:%23E3E3E3%3B%7D%0A.g2%7Bfill:%231F3864%3B%7D%0A%3C/style%3E%0A%3C/defs%3E%0A%3Cpath fill-rule='evenodd' d='M143 600.2v2.3H817v-2.3H143Z' class='g0'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 600.2H816.7v.4H143Z' class='g0'/%3E%0A%3Cpath fill-rule='evenodd' d='M816.7 600.2h.4v.4h-.4ZM143 600.6h.4v1.6H143Z' class='g0'/%3E%0A%3Cpath d='M816.7 600.6h.4v1.6h-.4Z' class='g1'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 602.2H816.7v.4H143Z' class='g1'/%3E%0A%3Cpath d='M816.7 602.2h.4v.4h-.4Z' class='g1'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 784.6v2.2H817v-2.2H143Z' class='g0'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 784.7H816.7v.3H143Z' class='g0'/%3E%0A%3Cpath fill-rule='evenodd' d='M816.7 784.7h.4v.3h-.4ZM143 785h.4v1.5H143Z' class='g0'/%3E%0A%3Cpath d='M816.7 785h.4v1.5h-.4Z' class='g1'/%3E%0A%3Cpath fill-rule='evenodd' d='M143 786.5H816.7v.4H143Z' class='g1'/%3E%0A%3Cpath d='M816.7 786.5h.4v.4h-.4Z' class='g1'/%3E%0A%3Cimage clip-path='url(%23c0)' preserveAspectRatio='none' x='124' y='686' width='217' height='52' href='data:image/jpeg%3Bbase64%2C/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx4BBQUFBwYHDggIDh4UERQeHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHv/AABEIADQA2QMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5%2BgEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4%2BTl5ufo6ery8/T19vf4%2Bfr/2gAMAwEAAhEDEQA/APsqgAoAr6ldxWGnz306ytFBGZHEUbSOQBk4VQST7DmgErnJ2XxP8H33gqHxjY3t3daRLcLbCSGxmaRZGcIqtGF3rlio5H8SnoRQ9Gl3A7JHDIGAIBGeRg0CuZviXXtM8OaRLq2rSyxWcRUSSJA8u3JwCQgJAyRz0Hei2qQX0b7GnmgYUAZXiXxDpXh62gm1OaVTcTCC3ihgeaWaQgttSNAWY4VjwOACTwKV%2BgeYeGPEOmeI7CS90uSdo4pmglSe2kgkikXG5GSRVZSMjqO9N6AOv9e0yx13TdEuZZUvdS8z7KvkOUfYpdhvA2ghQTgkE9qFrcPM0ywAyelAFCTV7JNSsdP3SvLfRSTQNHC7xlU25JkAKr99cAkZ5xnBoAv0ALQAh4GaAMPw54q0jxBqGrWGnG8M2k3H2a8860kiVJdobaGdQG%2BVlPGeGB70dLh1sLoXirSda1zV9FsTdm80iVYb0S2kkaI7KGADsArZVlb5SeCD3o6XB6OxX17xtoGj6mdLme/vL9IhNLbadp895JFGc4Z1hRigODjdjODjNAGp4e1nTfEGjW2saPdC6sbld0UoVl3DODwwBBBBGCARigDQoAKACgAoAKACgAoAKACgAoAoeIpobfQb%2Be4ljhiS3dnd2Cqo2nkk8AVMthrc%2BbZFPhzwD4L1TTv3%2Bh%2BK7fQLa9EJ3LBqEMltsl46B0jaNj2aOPuTVvWpy%2Bd0Qvhv5HUeJfEuog%2BJbgeJ7y28YWOufZtH0NLkKs0O9BEv2f8A5arKhLGQgkZbBXZxCb09dSn19DO8TXD3ngD4g6tf%2BMb27i0/VLjT7e2e6T7OkXmxFQwxy4O7BJzg4qov4H3f6/8AAE3dyXl%2Bho%2BL/E14W8ZXS%2BK7uy8UadfCPw7pENyES5jMcZgxB/y3WZmYFiGxyAV20Q6ev6j0b8rCeJdbhtfifJZv4u1CLwxd39tDqd0upyKunX4WRls0cOPLSUY3jHynavG9fLIrUG/dudp8YpfDLHw/aa5rVzoF3JevLpOsRSxxizuEiblmk%2BUhkZ12sCG3EehpbvTcF8JxOmeMNQ1B9JtNf1u103QZtWv7a78Qaa/2ODVGijjMDCTP7sSFpQSrfM0GFbBxTWtn5frb/gi2vbyKi%2BJrZNU8KS%2BIfEedNTW9Xt9N1K4uNktxZ/ZpEjl8wYJAYlRIOoVWyc5Ktda72/VDv9ya/JkOgeMV1vS/AtgfFt1candeHb231iGLUGEgulhXasgVvkn3%2BZjo/B9OCb0b8gSs7ef4O4eHPEA0rwv4CXwjrsmpXsvhO8c2J1R7hZruK0haOIoXIBDkjaACMkcYq5r3pJdP8xRW1%2B5rafr6GTSToPju%2B1eO70K6uded70SC0ZYlZJiOls/mZTYNowW%2BXKZES0vYqN3a5kW/ibUdL0nw7cSfEO7WbxB4Hur67uruRZ0gukFr5c0cYGFwZZshRyFJOSpNNq7cRX0Uv66npPwY1Zr9NdtZLi4neyuo0dv7TOoWwJhQ/uLhvnZTncVbBUsR0xRuribs7HP%2BDfHXg7w3rXxOu9a8S6VaCDX3nMbXSeayJY227amdzHKsMAEkgjrSjrFDkvf%2BSJPDHjbwloHj74n3OseJNJswmpW8uyW7RZGCafbhtqk5YgqRgDORjrQtIu/djaba9BfBPivw74W8XeMIfFer2ejzarqS6pY3WoSiCO8tHt4VTy3fAYpsZCmcjGcc07WXL2Fu7%2BR6Z4VuNGvNCt7vQFhXTZt0kHkw%2BUjAsSWC4HBOTnHOc85oA1KACgAoAKACgAoAKACgAoAKAGuiSIUdVZWGCCMg0AMEEAjEQhjCA5ChRgc56UAOMURkEpjQyAYDbRkD0zQBGbS0KMhtodrHLDyxgn1NAD/Jh3q/lR7kGFO0ZA9BQAxrS1YMGtoWDNuYGMcn1%2BtAEkkUciFJI0dD1VlyKAMTxprNp4e0Fp3sxeTSultZWKAbrqdjhIlzwMnknooBJ4BoA4Txx4dbS/hlrs%2BpyRX/AIo8QRJp0lzt%2BVZLlhCkMIP3Ik8zgDrgsckk0Aep29vFBEEjjUDHJC4z7mjyABa2wZWFvCGTO0hBlc9cUAL5EG118mPEn3xtHzfX1oAy9T1Xw7pGp6Xp99cWdte6jI1vYQlB5kzBSzBQBnAGST0HfrQBb06%2B0u4ubywsJ7d5bB1juYosfuWZQ4VgOhKsDj3oAlawsWYs1lbEk5JMS8/pQAPY2TsWezt2YnJJiBJP5UASyQwyKqyRRuFOQGUHBoAfQAtABQAUAFABQAUAFABQAUAFAFPWprm30i7uLMQm5jhZ4hKDs3AZGcc4%2BlJuyGld2PNPCfxN1iaHwle%2BJrPRLWw8Taa1/HLb3Tq1ki24nJlDjGwLwXyAG2jHNN6NoR28njbwfHZW14/inRRBdW8lzbSfboys8UYJkdOfnVQCSRnGDS8gNu0uIbu2iubaVJoJkDxyIcq6kZBB7gimBLQAUAUtZ1bTNGsHv9Wv7axtUwGlnkCLk9Bk9z2HegDy7SfFieJfGtx4sTw9r%2Bo6FpIez0mWCz%2BQydLm42OyuzZBiAVSQFfH36ANrUNTsPGnjTwnaaXcpdabapJrlw65AyoMMCMDyD5jyNg8gwEHkUAeh0ALQBT1rUrHR9JutU1K4W3s7WJpZpG6KqjJNAHgEupXh%2BI13471mx8zWbKxW30nTZTgwXF3nyLc/wB0pCjSykdPObqEGADuPgTHa%2BFPhLaa34n1m2iu9cnk1a%2BvryRYRLJcNvUkscA%2BXsGO2KAPQNF8QaFrcTy6LrWnalHHje1pdJMFz0yVJxQA2TVpba%2B1E6jaR2Ok2dukw1Ga5QRv94yAjqgQAEs2Ac%2B1AF6wvLW/sob2xuYbm1nQSQzROHSRSMhlI4II7igCegAoAKACgAoAKACgAoAKACgAoApa7539i3v2e1ku5jA4jhjKhpGwcAFyFB%2BpApNXQ1ueG%2BA/Al7o%2BneBgvgOHwfe6DDCde1ppbNFu4o7dkmjJgkZpA74YmQADG7qBT6/Inp8zc%2BFmjajYah4gMdtHqdj4WNzpXh6FJQPOR2E7x7m%2BVduYLcE8DyWz3oXw36/5f5g/i02PULrWLHS9KhvtcuLbSUcKrC4mVVRyM7N3Qnr09KOo0Z3/CeeCf8AobdD/wDA6P8AxoAP%2BE88E/8AQ26H/wCB0f8AjQB5Z8V9U0pJNU8XaR8TNMl1COBYtJtFW2ma2mYCNfLZ9wUM5DMwXdjPzYAwAbHhrSfhPpWh2emXXjSPU0toggF34gYxsR1PlK4j5OT93nPOaAPMvBqXOheN/G134J8WeG/D1rLdXHkNqFyHgus7Hgjij3Dait5xaTB/17ABsZAB2UHiz4jXlzuuvif8LdKiRfOVbZXuPMcj/UOHkXCDn94pDH0FAGRZfEv4t2Pir%2B0NZ1D4daroNuzRtp%2BkavHDPcgg7ZVadiBg4JUstAHTDxinjLxHpTeJbjw3ofhuxc3UlpJ4ghnnurhSDDvWMFAiHLbd5ywQ9sEA2oYvhUviDWdcn8WabdXeqs5bztTjK2%2B%2BFIX8oAjaSkagtye2ccUAc34m8MfD/XrPS4734rQzz6Q6nTzcz2c1vEqoY9rW5URuSp%2B8wLAgYIHFAGLa/Cj4IHXJdX1bxxbalPcwul7GdQgtorh2wAxSAIoCBRtUDAPPJ5oAzvG/w88CReDNQg0H4l3%2BvTbEdNH1XxXi0vGXaCrlWVsmNdoy20HHHWgDrv2edV8O%2BGNE1yC41bS9C0q71V7nSdIn1WGV7GBo0BQlXZQC4dgoJwD70Aenf8J54J/6G3Q//A6P/GgA/wCE88E/9Dbof/gdH/jQAf8ACeeCf%2Bht0P8A8Do/8aAD/hPPBP8A0Nuh/wDgdH/jQAf8J54J/wCht0P/AMDo/wDGgA/4TzwT/wBDbof/AIHR/wCNAB/wnngn/obdD/8AA6P/ABoA1NF1vR9ajkk0fVLPUEiIEjW0yyBSegODxQBfoAWgAoAQ8UARXMVvdW0ttcxRTwSoUkjkUMrqRggg8EEdqAI9L0/T9LsY7HS7K2sbSIYjgt4ljjQE54VQAOSTQBZIB60AGB6UAGB6UAIQpHIFAC4HpQAYHpQAYHpQAce1ABxjIxQADB6YoAMD0oADgdcCgAwPSgAwPSgAwPSgAwPSgAwPSgAwPSgAwPSgAwPSgAwPSgAwM5xQAYFAC0AFAFDxFEs%2Bg38LNKqvbuC0cjRuPlPIZSCp9wQaibtFlQ%2BJHzv8PdT1bVPgZfWuo63q9zJp2taTHDdnUJluSlwtlLIryqwdhm5lUAn7uB2BrSStKPrYyT39D6UiAWJVGcAADJzQ9ylsPpDCgAoA8o/ai1bVdJ%2BGzS6TqN1p85lkk862kKSDybWe5Ubh2LwoGHdSw71N7SQ0rnp2nzPPZwTPjdJGrHHTJGap6MlO6LNAwoAzvEkYm0G/hZpVV7aQExyNGw%2BU8hlIIPuCDWdRtRdvMqOskeJ/DPXdaf8AZt1KafV7%2B4u4Glto7ya4Z7gLIV58wncWXzTtJ5GF9KrEPlgrf1rYhat/10PQ/gI0snwh8NXFxdXd3cXFgks011cPNI7tySWcknn3q3/l%2BSG/ia83%2BbO6pAUNc06LVLEWk093AnnRyb7adoXyjhwNykHBK4I7gkHg0AX6ACgAoAKACgAoAKACgAoAKACgAP/Z'/%3E%0A%3Cimage clip-path='url(%23c1)' preserveAspectRatio='none' x='124' y='739' width='217' height='4' href='data:image/jpeg%3Bbase64%2C/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAUDBAQEAwUEBAQFBQUGBwwIBwcHBw8LCwkMEQ8SEhEPERETFhwXExQaFRERGCEYGh0dHx8fExciJCIeJBweHx4BBQUFBwYHDggIDh4UERQeHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHh4eHv/AABEIAAQA2QMBEQACEQEDEQH/xAGiAAABBQEBAQEBAQAAAAAAAAAAAQIDBAUGBwgJCgsQAAIBAwMCBAMFBQQEAAABfQECAwAEEQUSITFBBhNRYQcicRQygZGhCCNCscEVUtHwJDNicoIJChYXGBkaJSYnKCkqNDU2Nzg5OkNERUZHSElKU1RVVldYWVpjZGVmZ2hpanN0dXZ3eHl6g4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2drh4uPk5ebn6Onq8fLz9PX29/j5%2BgEAAwEBAQEBAQEBAQAAAAAAAAECAwQFBgcICQoLEQACAQIEBAMEBwUEBAABAncAAQIDEQQFITEGEkFRB2FxEyIygQgUQpGhscEJIzNS8BVictEKFiQ04SXxFxgZGiYnKCkqNTY3ODk6Q0RFRkdISUpTVFVWV1hZWmNkZWZnaGlqc3R1dnd4eXqCg4SFhoeIiYqSk5SVlpeYmZqio6Slpqeoqaqys7S1tre4ubrCw8TFxsfIycrS09TV1tfY2dri4%2BTl5ufo6ery8/T19vf4%2Bfr/2gAMAwEAAhEDEQA/APsqgAoAqax/yCbz/rg//oJqZ/Cyo/Ej5p8Zf8Sbwv8ACK%2BsP3Umv2Gk6dqS/wAM8cJt5omI/vowYA/3XYemNJfx2vO/4mdv3V/L9Do7m2TUvFsOvSeXDLF8QTYmGG3iCSKsbR%2BY7lTKXKDafn24/hFTT3X/AG9%2BTNJ6X%2BX6FDwz4W8NtoXw7c6Dppe48a6nFM32ZMyRr/aREbHHKAxx/KePkXjgUqevL/h/RE9Jev6j9L0qG%2B8a6N4Zjmey0tPE2vyJb28cZjRowhTajqyDHmPj5eNxxzTXT0f5ibtf1X/pJ7V4P8J6P4Y063srCIyG2EqxTzKhlRJJDI0alVAVNx4RQFAAAHAovcEcv4z0ufxF8UrLTf7ZvtMisdFlnQ2sdu5dppBG%2B4TRSKflTAwAfmbnBpWvf5fr/kVeyX9f1ucF4R02x1jSfhNaazawaothrOq6bG93EsjPDbRXkUQfIweIYyeMFlBxV7yv3X%2BREtFZd/8AMXwvoWi3uo%2BD7K70qyntbbxp4ighhkgVkSJGvSsYUjAQFVIXoCo9BSp6xT/u/qjSfX1X5FTwlZwanf2vhPyoLWxhuPFEkDR2sUjwompeWIUEqOixlWwQFB4ABAyDC1p37L/P/IHpP1f6L/M9T%2BFbvJ8BfDEkjM7t4ZtSzMckn7MvWniNpEU9/n%2Bp5h4I/c%2BMvCnh6P5dO1bTtC1S7i/v3EdldlW/OytifeMU5auS7X/FB9lef%2BZe%2BEVnaatdfDvT9UtYb6zg8EzXMUFwgkjSUzwIZAp43bSVz1AJAxk5fd/4fyLlv83%2BZS%2BGHh3Q9W8b6Nbalpdpd29tZ%2BJIIIZogyRxxatEkSAH%2BFFJCj%2BEHjFTB%2B7fyX6mctZW83%2BSHy%2BG9BsvhFreqWukWUV7/wAJdPEJ1hUOsY1wARqccIAi/KOOKraUPkVLXn%2Bf5HQ6raweH/jF4YuLSOOca/rd6Z0uI1f7PKlpIPNhfAkVmVdpDMyYJwoqYPXl8n%2BYp7X9D2amMKACgAoAKACgAoAKACgAoAD/2Q=='/%3E%0A%3Cpath fill-rule='evenodd' d='M74.1 34.6H859.5v.8H74.1Z' class='g2'/%3E%0A%3Cpath fill-rule='evenodd' d='M859.5 34.6h.7v.8h-.7ZM74.1 35.4h.7V1173.9h-.7Z' class='g2'/%3E%0A%3Cpath d='M859.5 35.4h.7V1173.9h-.7Z' class='g2'/%3E%0A%3Cpath fill-rule='evenodd' d='M74.1 1173.9H859.5v.7H74.1Z' class='g2'/%3E%0A%3Cpath d='M859.5 1173.9h.7v.7h-.7Z' class='g2'/%3E%0A%3C/svg%3E" /></div>
+            <div class="text-container"><span class="t s0" style="left:566px;bottom:1130px;letter-spacing:-0.05px;word-spacing:0.13px;">Norlox Solutions Pvt. Ltd.</span>
+                <span class="t s1" style="left:445px;bottom:69px;letter-spacing:-0.03px;word-spacing:-0.17px;">Page 2 of 2 </span>
+                <span class="t s2" style="left:143px;bottom:1084px;letter-spacing:-0.06px;word-spacing:-0.07px;">6. Limitation of Liability </span>
+                <span class="t s4" style="left:143px;bottom:1047px;letter-spacing:0.15px;word-spacing:0.02px;">Consultant's liability to Candidate for any claim arising out of or relating to this Agreement shall be limited to </span>
+                <span class="t s4" style="left:143px;bottom:1030px;letter-spacing:0.15px;word-spacing:0.07px;">direct damages not exceeding the total amount of the Fee paid. In no event shall Consultant be liable for any </span>
+                <span class="t s4" style="left:143px;bottom:1013px;letter-spacing:0.15px;word-spacing:0.09px;">consequential, incidental, special, or punitive damages. </span>
+                <span class="t s2" style="left:143px;bottom:973px;letter-spacing:-0.09px;word-spacing:0.09px;">7. Entire Agreement </span>
+                <span class="t s4" style="left:143px;bottom:936px;letter-spacing:0.16px;word-spacing:0.03px;">This Agreement constitutes the entire understanding between the parties and supersedes all prior </span>
+                <span class="t s4" style="left:143px;bottom:919px;letter-spacing:0.16px;word-spacing:0.03px;">agreements, representations, or understandings, whether written or oral. </span>
+                <span class="t s2" style="left:143px;bottom:880px;letter-spacing:-0.06px;word-spacing:-0.1px;">8. Governing Law </span>
+                <span class="t s4" style="left:143px;bottom:843px;letter-spacing:0.16px;word-spacing:0.06px;">This Agreement shall be governed by and construed in accordance with the laws of the State of Texas, </span>
+                <span class="t s4" style="left:143px;bottom:826px;letter-spacing:0.14px;word-spacing:0.04px;">without regard to its conflict of laws principles. </span>
+                <span class="t s2" style="left:143px;bottom:786px;letter-spacing:-0.08px;word-spacing:0.07px;">9. Dispute Resolution </span>
+                <span class="t s4" style="left:143px;bottom:749px;letter-spacing:0.16px;word-spacing:0.03px;">Any disputes arising out of or in connection with this Agreement shall be resolved by binding arbitration in </span>
+                <span class="t s4" style="left:143px;bottom:732px;letter-spacing:0.15px;word-spacing:0.11px;">Texas in accordance with the rules of the American Arbitration Association. </span>
+                <span class="t s2" style="left:143px;bottom:692px;letter-spacing:-0.09px;word-spacing:0.16px;">10. Execution </span>
+                <span class="t s4" style="left:143px;bottom:655px;letter-spacing:0.16px;word-spacing:0.09px;">This Agreement may be executed electronically and in counterparts, each of which shall be deemed an </span>
+                <span class="t s4" style="left:143px;bottom:638px;letter-spacing:0.15px;word-spacing:0.1px;">original, and all of which together shall constitute one and the same instrument. </span>
+                <span class="t s3" style="left:143px;bottom:563px;letter-spacing:0.24px;word-spacing:0.01px;">IN WITNESS WHEREOF</span><span class="t s4" style="left:306px;bottom:563px;letter-spacing:0.16px;word-spacing:0.04px;">, the parties hereto have executed this Agreement as of the Effective Date. </span>
+                <span class="t s3" style="left:146px;bottom:523px;letter-spacing:0.18px;">Consultant </span><span class="t s3" style="left:549px;bottom:523px;letter-spacing:0.21px;">Candidate </span>
+                <span class="t s4" style="left:146px;bottom:501px;letter-spacing:0.19px;word-spacing:-0.12px;color: transparent;">Norlox Solutions Pvt. Ltd.</span><span class="t s4" style="left:548px;bottom:501px;letter-spacing:0.21px;word-spacing:-0.11px;">{{$name}} </span>
+                <span class="t s4" style="left:146px;bottom:480px;letter-spacing:0.19px;word-spacing:0.11px;color: transparent;">By: _______________________ </span><span class="t s4" style="left:548px;bottom:480px;letter-spacing:0.19px;word-spacing:-0.04px;">By: _______________________ </span>
+                <span class="t s4" style="left:146px;bottom:458px;letter-spacing:0.14px;">Name: </span><span class="t s4" style="left:190px;bottom:458px;letter-spacing:0.18px;word-spacing:-0.03px;">Anna Morris </span><span class="t s4" style="left:548px;bottom:458px;letter-spacing:0.21px;">Name: </span><span class="t s4" style="left:592px;bottom:458px;letter-spacing:0.19px;word-spacing:0.05px;">{{$name}} </span>
+                <span class="t s4" style="left:146px;bottom:437px;letter-spacing:0.09px;">Title: </span><span class="t s4" style="left:181px;bottom:437px;letter-spacing:0.17px;word-spacing:0.41px;">Accounts Manager </span>
+                <span class="t s3" style="left:143px;bottom:379px;letter-spacing:0.17px;word-spacing:-0.04px;">Exhibit A </span><span class="t s4" style="left:210px;bottom:379px;">– </span><span class="t s7" style="left:221px;bottom:379px;letter-spacing:0.16px;word-spacing:0.03px;">Scope of Services </span>
+                <span class="t s4" style="left:143px;bottom:362px;letter-spacing:0.17px;word-spacing:0.06px;">Consultation sessions, resume review &amp; career coaching </span>
+            </div>
 
-        </div>
+    </div>
 
     </div>
 
@@ -490,34 +362,33 @@
             annotationsContainer.className = "annotations-container";
             annotationsContainer.style.width = metadata.bounds[pageNo - 1][0];
             annotationsContainer.style.height = metadata.bounds[pageNo - 1][1];
-            pageAnnotations.annotations.forEach(annotation => createAnnotation(annotationsContainer, annotation,
-                pageNo));
+            pageAnnotations.annotations.forEach(annotation => createAnnotation(annotationsContainer, annotation, pageNo));
             pages[pageNo - 1].appendChild(annotationsContainer);
         });
     </script>
 
     <script>
-        document.getElementById("printBtn").addEventListener("click", function() {
-            const pageContainer = document.querySelector(".page-combine");
+    document.getElementById("printBtn").addEventListener("click", function() {
+        const pageContainer = document.querySelector(".page-combine");
 
-            // Hide all other elements on the page (including the print button)
-            const bodyChildren = Array.from(document.body.children);
-            bodyChildren.forEach(el => {
-                if (el !== pageContainer) {
-                    el.style.display = 'none';
-                }
-            });
-
-            // Print only the page-container
-            window.print();
-
-            // Restore original display
-            bodyChildren.forEach(el => {
-                if (el !== pageContainer) {
-                    el.style.display = '';
-                }
-            });
+        // Hide all other elements on the page (including the print button)
+        const bodyChildren = Array.from(document.body.children);
+        bodyChildren.forEach(el => {
+            if (el !== pageContainer) {
+                el.style.display = 'none';
+            }
         });
+
+        // Print only the page-container
+        window.print();
+
+        // Restore original display
+        bodyChildren.forEach(el => {
+            if (el !== pageContainer) {
+                el.style.display = '';
+            }
+        });
+    });
     </script>
 
 
