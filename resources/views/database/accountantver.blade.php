@@ -1164,6 +1164,12 @@
                         formData.append("acceptance", accInput.files[0]);
                     }
 
+                    // Acceptance Sign file
+                    let accInput = row.querySelector("input.acceptancesign-input");
+                    if (accInput && accInput.files.length > 0) {
+                        formData.append("acceptancesign", accInput.files[0]);
+                    }
+
                     // Consultation file
                     let consInput = row.querySelector("input.consultation-input");
                     if (consInput && consInput.files.length > 0) {
@@ -1234,6 +1240,24 @@
                                         downloadAcceptanceBtn.href =
                                             `/dashboard/senior/google-sheet/download-acceptance/${data.id}`;
                                         downloadAcceptanceBtn.classList.remove('d-none');
+                                    }
+
+                                    // Acceptance
+                                    const viewAcceptancesignBtn = row.querySelector(
+                                        '.viewacceptancesign-btn');
+                                    const downloadAcceptancesignBtn = row.querySelector(
+                                        '.downloadacceptancesign-btn');
+
+                                    if (viewAcceptancesignBtn && data.acceptancesign_path) {
+                                        viewAcceptancesignBtn.href =
+                                            `/dashboard/senior/google-sheet/view-acceptancesign/${data.id}`;
+                                        viewAcceptancesignBtn.classList.remove('d-none');
+                                    }
+
+                                    if (downloadAcceptancesignBtn && data.acceptancesign_path) {
+                                        downloadAcceptancesignBtn.href =
+                                            `/dashboard/senior/google-sheet/download-acceptancesign/${data.id}`;
+                                        downloadAcceptancesignBtn.classList.remove('d-none');
                                     }
 
                                     // Consultation
