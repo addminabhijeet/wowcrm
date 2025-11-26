@@ -128,10 +128,10 @@ src: url(data:application/font-woff;charset=utf-8;base64,d09GRgABAAAAAE2MAA0AAAA
 <span class="t s8" style="left:628px;bottom:1059px;letter-spacing:0.04px;word-spacing:0.1px;">Norlox Solutions Pvt. Ltd. </span>
 <span class="t s6" style="left:109px;bottom:992px;letter-spacing:0.15px;word-spacing:-0.05px;">{{$paymentDate}} </span>
 <span class="t s6" style="left:675px;bottom:985px;letter-spacing:0.14px;word-spacing:-0.05px;">Services/goods delivered to: </span>
-<span class="t s9" style="position:absolute;right:80px;bottom:952px;letter-spacing:-0.11px;word-spacing:0.04px;display:inline-block;text-align:right;">{{$payeeName}} </span>
-<span class="t sa" style="left:688px;bottom:931px;letter-spacing:-0.12px;">{{$email}} </span>
-<span class="t sa" style="left:725px;bottom:910px;letter-spacing:-0.06px;word-spacing:-0.16px;">{{$phone_Number}} </span>
-<span class="t sa" style="left:470px; bottom:889px; letter-spacing:-0.1px; word-spacing:-0.07px; display:inline-block; min-width:350px; text-align:right;">{{$Location}}</span>
+<span class="t s9" style="position:absolute;right: 80px;bottom:952px;letter-spacing:-0.11px;word-spacing:0.04px;display:inline-block;text-align:right;">{{$payeeName}} </span>
+<span class="t sa" style="right: 80px;bottom:931px;letter-spacing:-0.12px;">{{$email}} </span>
+<span class="t sa" style="right: 80px;bottom:910px;letter-spacing:-0.06px;word-spacing:-0.16px;">{{$phone_Number}} </span>
+<span class="t sa" style="right: 80px;bottom:889px;letter-spacing:-0.1px;word-spacing:-0.07px;display:inline-block;min-width:350px;text-align:right;">{{$Location}}</span>
 
 </div>
 
