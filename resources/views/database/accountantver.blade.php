@@ -1187,9 +1187,9 @@
                     }
 
                     // Acceptance Sign file
-                    let accInput = row.querySelector("input.acceptancesign-input");
-                    if (accInput && accInput.files.length > 0) {
-                        formData.append("acceptancesign", accInput.files[0]);
+                    let accsignInput = row.querySelector("input.acceptancesign-input");
+                    if (accsignInput && accsignInput.files.length > 0) {
+                        formData.append("acceptancesign", accsignInput.files[0]);
                     }
 
                     // Consultation file
@@ -1199,9 +1199,9 @@
                     }
 
                     // Consultation Sign file
-                    let consInput = row.querySelector("input.consultationsign-input");
-                    if (consInput && consInput.files.length > 0) {
-                        formData.append("consultationsign", consInput.files[0]);
+                    let conssignInput = row.querySelector("input.consultationsign-input");
+                    if (conssignInput && conssignInput.files.length > 0) {
+                        formData.append("consultationsign", conssignInput.files[0]);
                     }
 
                     // Delivery file
@@ -1414,8 +1414,8 @@
                 // Acceptance Sign upload
                 if (e.target.matches('.upload-acceptancesign-btn')) {
                     const row = e.target.closest('tr');
-                    const accInput = row.querySelector('.acceptancesign-input');
-                    if (accInput) accInput.click();
+                    const accsignInput = row.querySelector('.acceptancesign-input');
+                    if (accsignInput) accsignInput.click();
                 }
 
                 // Consultation upload
@@ -1428,8 +1428,8 @@
                 // Consultation Sign upload
                 if (e.target.matches('.upload-consultationsign-btn')) {
                     const row = e.target.closest('tr');
-                    const consInput = row.querySelector('.consultationsign-input');
-                    if (consInput) consInput.click();
+                    const conssignInput = row.querySelector('.consultationsign-input');
+                    if (conssignInput) conssignInput.click();
                 }
 
                 // Delivery upload
