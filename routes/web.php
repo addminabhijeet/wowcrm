@@ -18,6 +18,8 @@ use App\Http\Controllers\EmailTemplateController;
 use App\Http\Controllers\TimerApiController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\PdfController;
+use App\Http\Controllers\CandidateDetailsController;
+
 
 
 
@@ -287,9 +289,11 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/seniorassociate', [DashboardController::class, 'seniorassociate'])->name('dashboard.seniorassociate');
     Route::get('/dashboard/seniorassociate/google-sheet', [GoogleSheetController::class, 'seniorassociate'])->name('google.sheet.seniorassociate');
+    Route::get('/dashboard/seniorassociate/candidate/{userId}', [CandidateDetailsController::class, 'seniorassociate'])->name('all.seniorassociate.candidate');
 
     Route::get('/dashboard/associate/google-sheet', [GoogleSheetController::class, 'associate'])->name('google.sheet.associate');
     Route::get('/dashboard/associate', [DashboardController::class, 'associate'])->name('dashboard.associate');
+    Route::get('/dashboard/associate/candidate/{userId}', [CandidateDetailsController::class, 'associate'])->name('all.associate.candidate');
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
