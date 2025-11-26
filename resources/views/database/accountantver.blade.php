@@ -68,7 +68,6 @@
                                 <th scope="col">Reference Number</th>
                                 <th scope="col">Payment Method</th>
                                 <th scope="col">Payee Name</th>
-                                <th scope="col">Generate</th>
                                 <th scope="col">Acceptance</th>
                                 <th scope="col">Consultation</th>
                                 <th scope="col">Delivery</th>
