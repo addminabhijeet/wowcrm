@@ -61,7 +61,7 @@
                                                 <td>
                                                     <a href="{{ asset($row->resume) }}" target="_blank"
                                                         class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-medium text-sm">
-                                                        View Resume
+                                                        View Details
                                                     </a>
                                                 </td>
                                             </tr>
