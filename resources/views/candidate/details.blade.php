@@ -72,27 +72,6 @@
                         @method('PUT')
                         <div class="tab-content" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="pills-edit-profile" role="tabpanel">
-                                <h6 class="text-md text-primary-light mb-16">Profile Image</h6>
-
-                                <div class="mb-24 mt-16">
-                                    <div class="avatar-upload">
-                                        <div
-                                            class="avatar-edit position-absolute bottom-0 end-0 me-24 mt-16 z-1 cursor-pointer">
-                                            <input type="file" name="image" id="imageUpload" accept=".png, .jpg, .jpeg"
-                                                hidden>
-                                            <label for="imageUpload"
-                                                class="w-32-px h-32-px d-flex justify-content-center align-items-center bg-primary-50 text-primary-600 border border-primary-600 bg-hover-primary-100 text-lg rounded-circle">
-                                                <iconify-icon icon="solar:camera-outline" class="icon"></iconify-icon>
-                                            </label>
-                                        </div>
-
-                                        <div class="avatar-preview">
-                                            <img id="imagePreview"
-                                                src="{{ $candidate->image ? asset('storage/user_images/' . $candidate->image) : asset('assets/images/user-grid/user-grid-img14.png') }}">
-                                        </div>
-                                    </div>
-                                </div>
-
                                 <div class="row">
                                     <div class="col-sm-6">
                                         <div class="mb-20">
@@ -186,13 +165,6 @@
                                         </div>
                                     </div>
 
-
-                                    <div class="d-flex align-items-center justify-content-center gap-3">
-                                        <button type="submit"
-                                            class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
-                                            Save
-                                        </button>
-                                    </div>
                                 </div>
                             </div>
 
