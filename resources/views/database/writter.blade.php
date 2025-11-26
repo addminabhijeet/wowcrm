@@ -9,57 +9,57 @@
 @section('content')
     <div class="row gy-4">
         <div class="col-12">
-            <div class="card h-100 p-0">
-                <div class="card-body p-24">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body p-4">
 
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="pills-to-do-list" role="tabpanel"
                             aria-labelledby="pills-to-do-list-tab" tabindex="0">
-                            <div class="table-responsive scroll-sm">
-                                <table class="table bordered-table sm-table mb-0 align-middle">
-                                    <thead>
+
+                            <div class="table-responsive">
+                                <table class="table table-hover table-bordered align-middle mb-0">
+                                    <thead class="table-light text-center">
                                         <tr>
-                                            <th>No.</th>
-                                            <th>Name</th>
-                                            <th>Email Address</th>
-                                            <th>Phone Number</th>
-                                            <th>View</th>
+                                            <th scope="col">No.</th>
+                                            <th scope="col">Name</th>
+                                            <th scope="col">Email Address</th>
+                                            <th scope="col">Phone Number</th>
+                                            <th scope="col">View</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
-                                        @foreach ($data as $row)
-                                            <tr>
+                                        @foreach ($data as $index => $row)
+                                            <tr class="text-center align-middle">
                                                 <!-- No -->
-                                                <td class="text-center">
-                                                    {{ $row->sheet_row_number ?? '-' }}
-                                                </td>
+                                                <td>{{ $row->sheet_row_number ?? $index + 1 }}</td>
 
                                                 <!-- Name -->
-                                                <td class="text-center">
+                                                <td>
                                                     <span class="fw-medium text-sm">
                                                         {{ $row->Name ?? '-' }}
                                                     </span>
                                                 </td>
 
                                                 <!-- Email -->
-                                                <td class="text-center">
-                                                    <span class="fw-medium text-sm">
+                                                <td>
+                                                    <span class="fw-medium text-sm text-truncate d-block"
+                                                        style="max-width: 180px;">
                                                         {{ $row->Email_Address ?? '-' }}
                                                     </span>
                                                 </td>
 
                                                 <!-- Phone -->
-                                                <td class="text-center">
+                                                <td>
                                                     <span class="fw-medium text-sm">
                                                         {{ $row->Phone_Number ?? '-' }}
                                                     </span>
                                                 </td>
 
                                                 <!-- View -->
-                                                <td class="text-center">
+                                                <td>
                                                     <a href="{{ asset($row->resume) }}" target="_blank"
-                                                        class="bg-primary-focus text-primary-main px-24 py-4 rounded-pill fw-medium text-sm">
+                                                        class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-medium text-sm">
                                                         View Resume
                                                     </a>
                                                 </td>
@@ -67,11 +67,13 @@
                                         @endforeach
                                     </tbody>
                                 </table>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
+                            </div> <!-- /.table-responsive -->
+
+                        </div> <!-- /.tab-pane -->
+                    </div> <!-- /.tab-content -->
+
+                </div> <!-- /.card-body -->
+            </div> <!-- /.card -->
+        </div> <!-- /.col-12 -->
+    </div> <!-- /.row -->
 @endsection
