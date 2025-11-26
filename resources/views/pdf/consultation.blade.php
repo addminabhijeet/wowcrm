@@ -79,13 +79,13 @@
                 /* Hide everything by default */
             }
 
-            .page-container,
-            .page-container * {
+            .page-combine,
+            .page-combine * {
                 visibility: visible;
-                /* Show only page-container and its children */
+                /* Show only page-combine and its children */
             }
 
-            .page-container {
+            .page-combine {
                 position: absolute;
                 left: 0;
                 top: 0;
