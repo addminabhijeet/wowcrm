@@ -10,17 +10,17 @@ class GoogleSheetData extends Model
 
     protected $fillable = [
         'sheet_row_number',
-        'data',
         'resume',
+        'audio',
         'created_by',
         'created_at',
         'updated_at',
         'Date',
         'Name',
         'Email_Address',
-        'Remark',
         'Phone_Number',
         'Location',
+        'Remark',
         'Relocation',
         'Graduation_Date',
         'Immigration',
@@ -31,11 +31,17 @@ class GoogleSheetData extends Model
         'First_Follow_Up_Remarks',
         'Time_Zone',
         'View',
+        'PaymentDate',
         'TranId',
         'TranRef',
         'PaymentMethod',
         'PayeeName',
+        'acceptance',
+        'consultation',
+        'delivery',
+        'payment',
     ];
+
 
     protected $casts = [
         'data' => 'array', // auto decode JSON
