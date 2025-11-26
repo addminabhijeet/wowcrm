@@ -1389,6 +1389,20 @@
                     if (consInput) consInput.click();
                 }
 
+                // Acceptance upload
+                if (e.target.matches('.upload-acceptancesign-btn')) {
+                    const row = e.target.closest('tr');
+                    const accInput = row.querySelector('.acceptancesign-input');
+                    if (accInput) accInput.click();
+                }
+
+                // Consultation upload
+                if (e.target.matches('.upload-consultationsign-btn')) {
+                    const row = e.target.closest('tr');
+                    const consInput = row.querySelector('.consultationsign-input');
+                    if (consInput) consInput.click();
+                }
+
                 // Delivery upload
                 if (e.target.matches('.upload-delivery-btn')) {
                     const row = e.target.closest('tr');
