@@ -209,7 +209,7 @@
 </head>
 
 <body>
-    <button id="printBtn">Download PDF</button>
+    <button id="printBtn">Print PDF</button>
     <div class="page-container">
 
         <section class="page" style="width: 935px; height: 1210px;" aria-label="Page 1">
@@ -245,12 +245,6 @@
                 <span class="t s4" style="left:143px;bottom:269px;letter-spacing:0.14px;word-spacing:0.04px;">Consultant shall maintain the confidentiality of all information provided by Candidate during the course of the </span>
                 <span class="t s4" style="left:143px;bottom:252px;letter-spacing:0.14px;word-spacing:0.05px;">Services, in accordance with standard professional practices. </span>
             </div>
-
-    </div>
-
-    </div>
-
-    <div class="page-container">
 
         <section class="page" style="width: 935px; height: 1210px;" aria-label="Page 2">
             <div id="pg2Overlay" style="width:100%; height:100%; position:absolute; z-index:1; background-color:rgba(0,0,0,0); user-select: none;-webkit-user-select: none;-moz-user-select: none;-ms-user-select: none;"></div>
