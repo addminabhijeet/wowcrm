@@ -59,6 +59,13 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-resume-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-resume" type="button" role="tab"
+                                aria-controls="pills-resume" aria-selected="false" tabindex="-1">
+                                Resume
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
                             <button class="nav-link d-flex align-items-center px-24" id="pills-notification-tab"
                                 data-bs-toggle="pill" data-bs-target="#pills-notification" type="button" role="tab"
                                 aria-controls="pills-notification" aria-selected="false" tabindex="-1">
@@ -107,6 +114,19 @@
                                         </div>
                                     </div>
 
+                                    <div class="col-sm-6">
+                                        <div class="mb-20">
+                                            <label for="Location"
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Location
+                                            </label>
+                                            <input type="text" name="Location" id="Location"
+                                                class="form-control radius-8"
+                                                value="{{ old('Location', $candidate->Location) }}"
+                                                placeholder="Enter Location" required>
+                                        </div>
+                                    </div>
+
+
                                 </div>
                             </div>
 
@@ -125,13 +145,32 @@
                                 <div class="mb-20">
                                     <label for="PaymentDate"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date</label>
-                                    <input type="date" name="PaymentDate" id="PaymentDate" class="form-control radius-8"
-                                        value="{{ $candidate->PaymentDate ?? '' }}" required>
+                                    <input type="date" name="PaymentDate" id="PaymentDate"
+                                        class="form-control radius-8" value="{{ $candidate->PaymentDate ?? '' }}"
+                                        required>
                                 </div>
 
 
                             </div>
 
+                            <div class="tab-pane fade" id="pills-resume" role="tabpanel">
+
+                                <!-- Resume Viewer Card -->
+                                <div class="card mb-20">
+                                    <div class="card-body p-0">
+
+                                        @if ($candidate->resume)
+                                            <iframe src="{{ asset($candidate->resume) }}"
+                                                style="width: 100%; height: 90vh; border: none;" frameborder="0">
+                                            </iframe>
+                                        @else
+                                            <p class="text-center py-4 mb-0 text-muted">No Resume Uploaded</p>
+                                        @endif
+
+                                    </div>
+                                </div>
+
+                            </div>
 
 
                             <div class="tab-pane fade" id="pills-notification" role="tabpanel">
