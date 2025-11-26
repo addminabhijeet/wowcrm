@@ -33,11 +33,11 @@
                                 <table class="table bordered-table sm-table mb-0 align-middle">
                                     <thead>
                                         <tr>
-                                            <th scope="col">No.</th>
-                                            <th scope="col">Name</th>
-                                            <th scope="col">Email Address</th>
-                                            <th scope="col">Phone Number</th>
-                                            <th scope="col">View</th>
+                                            <th>No.</th>
+                                            <th>Name</th>
+                                            <th>Email Address</th>
+                                            <th>Phone Number</th>
+                                            <th>View</th>
                                         </tr>
                                     </thead>
 
