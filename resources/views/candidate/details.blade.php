@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='View US Accounts';
+$title = $candidate->Name; 
 $subTitle = 'Super Admin';
 $script ='<script>
     // ======================== Upload Image Start =====================
