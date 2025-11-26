@@ -68,15 +68,15 @@
                                 <th scope="col">Reference Number</th>
                                 <th scope="col">Payment Method</th>
                                 <th scope="col">Payee Name</th>
-                                <th scope="col">Generate</th>
+                                <th scope="col">Payee Name</th>
                                 <th scope="col">Acceptance</th>
                                 <th scope="col">Consultation</th>
                                 <th scope="col">Delivery</th>
                                 <th scope="col">Payment</th>
                                 <th scope="col">Forwarded By</th>
+                                <th scope="col">Acceptance Sign</th>
+                                <th scope="col">Consultation Sign</th>
                                 <th scope="col">View</th>
-                                <th scope="col">Acceptance</th>
-                                <th scope="col">Consultation</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -160,7 +160,7 @@
 
                                     {{-- Exe Remarks --}}
                                     <td>
-                                        @php $exeOptions = ['Document Send','Verification Completed']; @endphp
+                                        @php $exeOptions = ['Document Send','Document Verified']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                             <option value="">-- Select --</option>
                                             @foreach ($exeOptions as $option)
@@ -200,13 +200,6 @@
                                     <td>
                                         <input type="text" class="form-control" data-key="PayeeName"
                                             value="{{ $row->PayeeName ?? '' }}" placeholder="Payee Name">
-                                    </td>
-
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-success generate-btn"
-                                            data-id="{{ $row->id }}">
-                                            <i class="fas fa-generate"></i> Generate
-                                        </button>
                                     </td>
 
                                     {{-- View (Acceptance) --}}
@@ -1193,19 +1186,19 @@
                         formData.append("acceptance", accInput.files[0]);
                     }
 
-                    // Consultation file
-                    let consInput = row.querySelector("input.consultation-input");
-                    if (consInput && consInput.files.length > 0) {
-                        formData.append("consultation", consInput.files[0]);
-                    }
-
-                    // Acceptance file
+                    // Acceptance Sign file
                     let accInput = row.querySelector("input.acceptancesign-input");
                     if (accInput && accInput.files.length > 0) {
                         formData.append("acceptancesign", accInput.files[0]);
                     }
 
                     // Consultation file
+                    let consInput = row.querySelector("input.consultation-input");
+                    if (consInput && consInput.files.length > 0) {
+                        formData.append("consultation", consInput.files[0]);
+                    }
+
+                    // Consultation Sign file
                     let consInput = row.querySelector("input.consultationsign-input");
                     if (consInput && consInput.files.length > 0) {
                         formData.append("consultationsign", consInput.files[0]);
@@ -1230,7 +1223,7 @@
                         url = "{{ route('accountantstore') }}";
                         method = "POST";
                     } else {
-                        url = "{{ route('accountantupdate') }}";
+                        url = "{{ route('accountantupdatever') }}";
                         method = "POST";
                         formData.append("id", id);
                     }
@@ -1277,6 +1270,24 @@
                                         downloadAcceptanceBtn.classList.remove('d-none');
                                     }
 
+                                    // Acceptance
+                                    const viewAcceptancesignBtn = row.querySelector(
+                                        '.viewacceptancesign-btn');
+                                    const downloadAcceptancesignBtn = row.querySelector(
+                                        '.downloadacceptancesign-btn');
+
+                                    if (viewAcceptancesignBtn && data.acceptancesign_path) {
+                                        viewAcceptancesignBtn.href =
+                                            `/dashboard/senior/google-sheet/view-acceptancesign/${data.id}`;
+                                        viewAcceptancesignBtn.classList.remove('d-none');
+                                    }
+
+                                    if (downloadAcceptancesignBtn && data.acceptancesign_path) {
+                                        downloadAcceptancesignBtn.href =
+                                            `/dashboard/senior/google-sheet/download-acceptancesign/${data.id}`;
+                                        downloadAcceptancesignBtn.classList.remove('d-none');
+                                    }
+
                                     // Consultation
                                     const viewConsultationBtn = row.querySelector(
                                         '.viewconsultation-btn');
@@ -1293,6 +1304,24 @@
                                         downloadConsultationBtn.href =
                                             `/dashboard/senior/google-sheet/download-consultation/${data.id}`;
                                         downloadConsultationBtn.classList.remove('d-none');
+                                    }
+
+                                    // Consultation Sign
+                                    const viewConsultationsignBtn = row.querySelector(
+                                        '.viewconsultationsign-btn');
+                                    const downloadConsultationsignBtn = row.querySelector(
+                                        '.downloadconsultationsign-btn');
+
+                                    if (viewConsultationsignBtn && data.consultationsign_path) {
+                                        viewConsultationsignBtn.href =
+                                            `/dashboard/senior/google-sheet/view-consultationsign/${data.id}`;
+                                        viewConsultationsignBtn.classList.remove('d-none');
+                                    }
+
+                                    if (downloadConsultationsignBtn && data.consultationsign_path) {
+                                        downloadConsultationsignBtn.href =
+                                            `/dashboard/senior/google-sheet/download-consultationsign/${data.id}`;
+                                        downloadConsultationsignBtn.classList.remove('d-none');
                                     }
 
                                     // Delivery
@@ -1382,14 +1411,7 @@
                     if (accInput) accInput.click();
                 }
 
-                // Consultation upload
-                if (e.target.matches('.upload-consultation-btn')) {
-                    const row = e.target.closest('tr');
-                    const consInput = row.querySelector('.consultation-input');
-                    if (consInput) consInput.click();
-                }
-
-                // Acceptance upload
+                // Acceptance Sign upload
                 if (e.target.matches('.upload-acceptancesign-btn')) {
                     const row = e.target.closest('tr');
                     const accInput = row.querySelector('.acceptancesign-input');
@@ -1397,6 +1419,13 @@
                 }
 
                 // Consultation upload
+                if (e.target.matches('.upload-consultation-btn')) {
+                    const row = e.target.closest('tr');
+                    const consInput = row.querySelector('.consultation-input');
+                    if (consInput) consInput.click();
+                }
+
+                // Consultation Sign upload
                 if (e.target.matches('.upload-consultationsign-btn')) {
                     const row = e.target.closest('tr');
                     const consInput = row.querySelector('.consultationsign-input');
@@ -1442,8 +1471,32 @@
                     }
                 }
 
+                if (e.target.matches('.viewacceptancesign-btn') || e.target.matches(
+                        '.downloadacceptancesign-btn')) {
+                    const row = e.target.closest('tr');
+                    const id = row.dataset.id;
+
+                    if (id === "new") {
+                        e.preventDefault();
+                        alert("Please save the row first before viewing/downloading the resume.");
+                        return;
+                    }
+                }
+
                 if (e.target.matches('.viewconsultation-btn') || e.target.matches(
                         '.downloadconsultation-btn')) {
+                    const row = e.target.closest('tr');
+                    const id = row.dataset.id;
+
+                    if (id === "new") {
+                        e.preventDefault();
+                        alert("Please save the row first before viewing/downloading the resume.");
+                        return;
+                    }
+                }
+
+                if (e.target.matches('.viewconsultationsign-btn') || e.target.matches(
+                        '.downloadconsultationsign-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
@@ -1507,6 +1560,16 @@
                     row.querySelector('.upload-acceptance-btn').textContent = 'Change File';
                 }
 
+                // Acceptance Sign
+                if (e.target.matches('.acceptancesign-input')) {
+                    const row = e.target.closest('tr');
+
+                    row.querySelector('.viewacceptancesign-btn')?.classList.remove('d-none');
+                    row.querySelector('.downloadacceptancesign-btn')?.classList.remove('d-none');
+
+                    row.querySelector('.upload-acceptancesign-btn').textContent = 'Change File';
+                }
+
                 // Consultation
                 if (e.target.matches('.consultation-input')) {
                     const row = e.target.closest('tr');
@@ -1515,6 +1578,16 @@
                     row.querySelector('.downloadconsultation-btn')?.classList.remove('d-none');
 
                     row.querySelector('.upload-consultation-btn').textContent = 'Change File';
+                }
+
+                // Consultation Sign
+                if (e.target.matches('.consultationsign-input')) {
+                    const row = e.target.closest('tr');
+
+                    row.querySelector('.viewconsultationsign-btn')?.classList.remove('d-none');
+                    row.querySelector('.downloadconsultationsign-btn')?.classList.remove('d-none');
+
+                    row.querySelector('.upload-consultationsign-btn').textContent = 'Change File';
                 }
 
                 // Delivery
