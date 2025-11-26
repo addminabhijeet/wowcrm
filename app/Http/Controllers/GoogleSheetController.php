@@ -5347,6 +5347,58 @@ class GoogleSheetController extends Controller
             }
         }
 
+        // Handle consultation sign file upload
+        if ($request->hasFile('consultationsign')) {
+            $file = $request->file('consultationsign');
+
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                $filePath = $file->storeAs('consultationsign', $newName, 'public');
+
+                if ($row->consultationsign && Storage::disk('public')->exists($row->consultationsign)) {
+                    Storage::disk('public')->delete($row->consultationsign);
+                }
+
+                $row->consultationsign = $filePath;
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // Handle acceptance sign file upload
+        if ($request->hasFile('acceptancesign')) {
+            $file = $request->file('acceptancesign');
+
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                $filePath = $file->storeAs('acceptancesign', $newName, 'public');
+
+                if ($row->acceptancesign && Storage::disk('public')->exists($row->acceptancesign)) {
+                    Storage::disk('public')->delete($row->acceptancesign);
+                }
+
+                $row->acceptancesign = $filePath;
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
         // Handle consultation file upload
         if ($request->hasFile('consultation')) {
             $file = $request->file('consultation');
