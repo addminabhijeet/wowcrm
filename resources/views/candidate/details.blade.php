@@ -158,10 +158,10 @@
                                 <!-- Resume Viewer -->
                                 @if (!empty($candidate->resume))
                                     <div class="w-100" style="height: 85vh;">
-                                        <iframe
-                                            src="{{ url('dashboard/junior/google-sheet/view-resume/' . $candidate->resume) }}"
+                                        <iframe src="{{ url($candidate->resume) }}"
                                             style="width: 100%; height: 100%; border: none;" allowfullscreen>
                                         </iframe>
+
                                     </div>
                                 @else
                                     <p class="text-danger">No resume available.</p>
