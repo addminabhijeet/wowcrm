@@ -205,7 +205,7 @@
                                         </button>
 
                                         @if (!empty($row->resume))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptance/' . $row->id) }}"
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-resume/' . $row->id) }}"
                                                 target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View
                                                 Acceptance</a>
 
