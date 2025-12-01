@@ -201,19 +201,24 @@
                                         <input type="file" accept="application/pdf" class="d-none acceptance-input"
                                             data-key="View">
                                         <button type="button" class="btn btn-sm btn-info upload-acceptance-btn">
-                                            {{ !empty($row->acceptance) ? 'Change File' : 'Upload' }}
+                                            {{ !empty($row->resume) ? 'Change File' : 'Upload' }}
                                         </button>
 
                                         @if (!empty($row->resume))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-resume/' . $row->id) }}"
-                                                target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
-                                            <a href="{{ url('dashboard/senior/google-sheet/download-resume/' . $row->id) }}"
-                                                class="btn btn-sm btn-secondary download-btn">Download</a>
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptance/' . $row->id) }}"
+                                                target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View
+                                                Acceptance</a>
+
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-acceptance/' . $row->id) }}"
+                                                class="btn btn-sm btn-secondary downloadacceptance-btn">Download
+                                                Acceptance</a>
                                         @else
                                             <a href="#" target="_blank"
-                                                class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
+                                                class="btn btn-sm btn-primary viewacceptance-btn d-none">View
+                                                Acceptance</a>
                                             <a href="#" download
-                                                class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+                                                class="btn btn-sm btn-secondary downloadacceptance-btn d-none">Download
+                                                Acceptance</a>
                                         @endif
                                     </td>
 
