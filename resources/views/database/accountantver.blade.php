@@ -1386,49 +1386,7 @@
                 }
             });
 
-            // Handle file selection
-            tableBody.addEventListener('change', function(e) {
-                const row = e.target.closest('tr');
-                let fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
-
-                // Function to handle view/download button toggle
-                function toggleButtons(viewSelector, downloadSelector, uploadSelector) {
-                    const viewBtn = row.querySelector(viewSelector);
-                    const downloadBtn = row.querySelector(downloadSelector);
-                    const uploadBtn = row.querySelector(uploadSelector);
-
-                    if (viewBtn) viewBtn.classList.remove('d-none');
-                    if (downloadBtn) downloadBtn.classList.remove('d-none');
-                    if (uploadBtn) uploadBtn.textContent = 'Change File';
-                }
-
-                if (e.target.matches('.resume-input')) {
-                    toggleButtons('.view-btn', '.download-btn', '.upload-btn');
-                    console.log('Resume file selected:', fileName);
-                }
-
-                if (e.target.matches('.acceptance-input')) {
-                    toggleButtons('.viewacceptance-btn', '.downloadacceptance-btn',
-                        '.upload-acceptance-btn');
-                    console.log('Acceptance file selected:', fileName);
-                }
-
-                if (e.target.matches('.consultation-input')) {
-                    toggleButtons('.viewconsultation-btn', '.downloadconsultation-btn',
-                        '.upload-consultation-btn');
-                    console.log('Consultation file selected:', fileName);
-                }
-
-                if (e.target.matches('.delivery-input')) {
-                    toggleButtons('.viewdelivery-btn', '.downloaddelivery-btn', '.upload-delivery-btn');
-                    console.log('Delivery file selected:', fileName);
-                }
-
-                if (e.target.matches('.payment-input')) {
-                    toggleButtons('.viewpayment-btn', '.downloadpayment-btn', '.upload-payment-btn');
-                    console.log('Payment file selected:', fileName);
-                }
-            });
+            
 
 
             // Apply initial state to all existing rows
