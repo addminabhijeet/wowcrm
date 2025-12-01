@@ -1252,20 +1252,7 @@
                                         downloadPaymentBtn.classList.remove('d-none');
                                     }
 
-                                    const viewBtn = row.querySelector('.view-btn');
-                                    const downloadBtn = row.querySelector('.download-btn');
 
-                                    if (viewBtn && data.resume_path) {
-                                        viewBtn.href =
-                                            `/dashboard/senior/google-sheet/view-resume/${data.id}`;
-                                        viewBtn.classList.remove('d-none');
-                                    }
-
-                                    if (downloadBtn && data.resume_path) {
-                                        downloadBtn.href =
-                                            `/dashboard/senior/google-sheet/download-resume/${data.id}`;
-                                        downloadBtn.classList.remove('d-none');
-                                    }
 
 
                                     // Only add new blank row if none exists
@@ -1290,7 +1277,102 @@
 
 
 
-            
+            // Handle file upload button clicks
+            tableBody.addEventListener('click', function(e) {
+                if (e.target.matches('.upload-btn')) {
+                    const row = e.target.closest('tr');
+                    const fileInput = row.querySelector('.resume-input');
+                    fileInput.click();
+                }
+
+                // Acceptance upload
+                if (e.target.matches('.upload-acceptance-btn')) {
+                    const row = e.target.closest('tr');
+                    const accInput = row.querySelector('.acceptance-input');
+                    if (accInput) accInput.click();
+                }
+
+                // Consultation upload
+                if (e.target.matches('.upload-consultation-btn')) {
+                    const row = e.target.closest('tr');
+                    const consInput = row.querySelector('.consultation-input');
+                    if (consInput) consInput.click();
+                }
+
+                // Delivery upload
+                if (e.target.matches('.upload-delivery-btn')) {
+                    const row = e.target.closest('tr');
+                    const delInput = row.querySelector('.delivery-input');
+                    if (delInput) delInput.click();
+                }
+
+                // Payment upload
+                if (e.target.matches('.upload-payment-btn')) {
+                    const row = e.target.closest('tr');
+                    const payInput = row.querySelector('.payment-input');
+                    if (payInput) payInput.click();
+                }
+
+
+                // Handle view and download buttons for unsaved rows
+                if (e.target.matches('.view-btn') || e.target.matches('.download-btn')) {
+                    const row = e.target.closest('tr');
+                    const id = row.dataset.id;
+
+                    if (id === "new") {
+                        e.preventDefault();
+                        alert("Please save the row first before viewing/downloading the Resume.");
+                        return;
+                    }
+                }
+
+                if (e.target.matches('.viewacceptance-btn') || e.target.matches(
+                        '.downloadacceptance-btn')) {
+                    const row = e.target.closest('tr');
+                    const id = row.dataset.id;
+
+                    if (id === "new") {
+                        e.preventDefault();
+                        alert("Please save the row first before viewing/downloading the Acceptance.");
+                        return;
+                    }
+                }
+
+                if (e.target.matches('.viewconsultation-btn') || e.target.matches(
+                        '.downloadconsultation-btn')) {
+                    const row = e.target.closest('tr');
+                    const id = row.dataset.id;
+
+                    if (id === "new") {
+                        e.preventDefault();
+                        alert("Please save the row first before viewing/downloading the Consultation.");
+                        return;
+                    }
+                }
+
+                if (e.target.matches('.viewdelivery-btn') || e.target.matches('.downloaddelivery-btn')) {
+                    const row = e.target.closest('tr');
+                    const id = row.dataset.id;
+
+                    if (id === "new") {
+                        e.preventDefault();
+                        alert("Please save the row first before viewing/downloading the Delivery.");
+                        return;
+                    }
+                }
+
+                if (e.target.matches('.viewpayment-btn') || e.target.matches('.downloadpayment-btn')) {
+                    const row = e.target.closest('tr');
+                    const id = row.dataset.id;
+
+                    if (id === "new") {
+                        e.preventDefault();
+                        alert("Please save the row first before viewing/downloading the Payment.");
+                        return;
+                    }
+                }
+            });
+
             // Handle file selection
             tableBody.addEventListener('change', function(e) {
                 if (e.target.matches('.resume-input')) {
