@@ -190,11 +190,11 @@
                                 <div class="mb-20">
                                     <label for="graduation"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                        Graduation
+                                        Graduation Date
                                     </label>
                                     <input type="text" name="graduation" id="graduation"
                                         class="form-control radius-8"
-                                        value="{{ old('graduation', $candidate->Graduation ?? '') }}"
+                                        value="{{ old('graduation', $candidate->Graduation_Date ?? '') }}"
                                         placeholder="Enter Graduation" required>
                                 </div>
 
@@ -241,56 +241,56 @@
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Amount (in $)
                                     </label>
                                     <input type="number" name="amount" id="amount" class="form-control radius-8"
-                                        value="{{ old('amount', $payment->amount ?? '') }}" placeholder="Enter Amount"
+                                        value="{{ old('amount', $payment->Amount ?? '') }}" placeholder="Enter Amount"
                                         required>
                                 </div>
 
                                 <div class="mb-20">
-                                    <label for="payment_date"
+                                    <label for="PaymentDate"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date
                                     </label>
-                                    <input type="date" name="payment_date" id="payment_date"
+                                    <input type="date" name="PaymentDate" id="	PaymentDate"
                                         class="form-control radius-8"
-                                        value="{{ old('payment_date', $payment->payment_date ?? '') }}" required>
+                                        value="{{ old('PaymentDate', $payment->PaymentDate ?? '') }}" required>
                                 </div>
 
                                 <div class="mb-20">
-                                    <label for="transaction_id"
+                                    <label for="TranId"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Transaction ID
                                     </label>
-                                    <input type="text" name="transaction_id" id="transaction_id"
+                                    <input type="text" name="TranId" id="TranId"
                                         class="form-control radius-8"
-                                        value="{{ old('transaction_id', $payment->transaction_id ?? '') }}"
+                                        value="{{ old('TranId', $payment->TranId ?? '') }}"
                                         placeholder="Enter Transaction ID" required>
                                 </div>
 
                                 <div class="mb-20">
-                                    <label for="reference_number"
+                                    <label for="TranRef"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Reference Number
                                     </label>
-                                    <input type="text" name="reference_number" id="reference_number"
+                                    <input type="text" name="TranRef" id="TranRef"
                                         class="form-control radius-8"
-                                        value="{{ old('reference_number', $payment->reference_number ?? '') }}"
+                                        value="{{ old('TranRef', $payment->TranRef ?? '') }}"
                                         placeholder="Enter Reference Number" required>
                                 </div>
 
                                 <div class="mb-20">
-                                    <label for="payment_method"
+                                    <label for="PaymentMethod"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Method
                                     </label>
-                                    <input type="text" name="payment_method" id="payment_method"
+                                    <input type="text" name="PaymentMethod" id="PaymentMethod"
                                         class="form-control radius-8"
-                                        value="{{ old('payment_method', $payment->payment_method ?? '') }}"
+                                        value="{{ old('PaymentMethod', $payment->PaymentMethod ?? '') }}"
                                         placeholder="Enter Payment Method" required>
                                 </div>
 
                                 <div class="mb-20">
-                                    <label for="payee_name"
+                                    <label for="PayeeName"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Payee Name
                                     </label>
-                                    <input type="text" name="payee_name" id="payee_name"
+                                    <input type="text" name="PayeeName" id="PayeeName"
                                         class="form-control radius-8"
-                                        value="{{ old('payee_name', $payment->payee_name ?? '') }}"
+                                        value="{{ old('PayeeName', $payment->PayeeName ?? '') }}"
                                         placeholder="Enter Payee Name" required>
                                 </div>
 
@@ -320,10 +320,10 @@
                                 </div>
 
                                 <div class="mb-20">
-                                    <label for="remark"
+                                    <label for="Remark"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Remark
                                     </label>
-                                    <textarea name="remark" id="remark" class="form-control radius-8" placeholder="Enter remarks" required>{{ old('remark', $candidate->remark ?? '') }}</textarea>
+                                    <textarea name="Remark" id="Remark" class="form-control radius-8" placeholder="Enter remarks" required>{{ old('remark', $candidate->remark ?? '') }}</textarea>
                                 </div>
 
 
