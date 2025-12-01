@@ -291,7 +291,8 @@
                                             <a href="#" target="_blank"
                                                 class="btn btn-sm btn-primary viewpayment-btn d-none">View Payment</a>
                                             <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download Payment</a>
+                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download
+                                                Payment</a>
                                         @endif
                                     </td>
 
@@ -801,7 +802,8 @@
                     }
                 });
 
-                cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
+                cells +=
+                    `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
                 newRow.innerHTML = cells;
                 tableBody.appendChild(newRow);
                 applyInitialState(newRow);
@@ -1332,19 +1334,19 @@
 
                     if (id === "new") {
                         e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
+                        alert("Please save the row first before viewing/downloading the Resume.");
                         return;
                     }
                 }
 
                 if (e.target.matches('.viewacceptance-btn') || e.target.matches(
-                    '.downloadacceptance-btn')) {
+                        '.downloadacceptance-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
                     if (id === "new") {
                         e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
+                        alert("Please save the row first before viewing/downloading the Acceptance.");
                         return;
                     }
                 }
@@ -1356,7 +1358,7 @@
 
                     if (id === "new") {
                         e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
+                        alert("Please save the row first before viewing/downloading the Consultation.");
                         return;
                     }
                 }
@@ -1367,7 +1369,7 @@
 
                     if (id === "new") {
                         e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
+                        alert("Please save the row first before viewing/downloading the Delivery.");
                         return;
                     }
                 }
@@ -1378,7 +1380,7 @@
 
                     if (id === "new") {
                         e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
+                        alert("Please save the row first before viewing/downloading the Payment.");
                         return;
                     }
                 }
@@ -1407,12 +1409,22 @@
                 // Acceptance
                 if (e.target.matches('.acceptance-input')) {
                     const row = e.target.closest('tr');
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
-                    row.querySelector('.viewacceptance-btn')?.classList.remove('d-none');
-                    row.querySelector('.downloadacceptance-btn')?.classList.remove('d-none');
+                    // Show view and download buttons
+                    const viewBtn = row.querySelector('.viewacceptance-btn');
+                    const downloadBtn = row.querySelector('.downloadacceptance-btn');
 
-                    row.querySelector('.upload-acceptance-btn').textContent = 'Change File';
+                    if (viewBtn) viewBtn.classList.remove('d-none');
+                    if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                    // Update button text
+                    const uploadBtn = row.querySelector('.upload-acceptance-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('Acceptance file selected:', fileName);
                 }
+
 
                 // Consultation
                 if (e.target.matches('.consultation-input')) {
