@@ -184,6 +184,14 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/senior/google-sheet/seniorstoremod', [GoogleSheetController::class, 'seniorstoremod'])->name('seniorstoremod');
     Route::get('/dashboard/senior/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewseniorResume'])->name('view.resume');
     Route::get('/dashboard/senior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadseniorResume'])->name('download.resume');
+    Route::get('/dashboard/senior/google-sheet/view-acceptance/{id}', [GoogleSheetController::class, 'viewseniorAcceptance'])->name('view.acceptance');
+    Route::get('/dashboard/senior/google-sheet/download-acceptance/{id}', [GoogleSheetController::class, 'downloadseniorAcceptance'])->name('download.acceptance');
+    Route::get('/dashboard/senior/google-sheet/view-consultation/{id}', [GoogleSheetController::class, 'viewseniorConsultation'])->name('view.consultation');
+    Route::get('/dashboard/senior/google-sheet/download-consultation/{id}', [GoogleSheetController::class, 'downloadseniorconsultation'])->name('download.consultation');
+    Route::get('/dashboard/senior/google-sheet/view-delivery/{id}', [GoogleSheetController::class, 'viewseniorDelivery'])->name('view.delivery');
+    Route::get('/dashboard/senior/google-sheet/download-delivery/{id}', [GoogleSheetController::class, 'downloadseniorDelivery'])->name('download.delivery');
+    Route::get('/dashboard/senior/google-sheet/view-payment/{id}', [GoogleSheetController::class, 'viewseniorPayment'])->name('view.payment');
+    Route::get('/dashboard/senior/google-sheet/download-payment/{id}', [GoogleSheetController::class, 'downloadseniorPayment'])->name('download.payment');
     Route::get('/dashboard/senior/google-sheet/view-audio/{id}', [GoogleSheetController::class, 'viewseniorAudio'])->name('view.audio');
     Route::get('/dashboard/senior/google-sheet/download-audio/{id}', [GoogleSheetController::class, 'downloadseniorAudio'])->name('download.audio');
     Route::get('/dashboard/senior/google-sheet/search', [GoogleSheetController::class, 'seniorSuggestions'])->name('senior.suggestions');
