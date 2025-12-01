@@ -798,7 +798,7 @@
     //     <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
     //     <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
     // </td>`;
-                    }
+                    // }
                 });
 
                 cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
