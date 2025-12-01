@@ -201,11 +201,11 @@
                                         <input type="file" accept="application/pdf" class="d-none acceptance-input"
                                             data-key="View">
                                         <button type="button" class="btn btn-sm btn-info upload-acceptance-btn">
-                                            {{ !empty($row->resume) ? 'Change File' : 'Upload' }}
+                                            {{ !empty($row->acceptance) ? 'Change File' : 'Upload' }}
                                         </button>
 
-                                        @if (!empty($row->resume))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-resume/' . $row->id) }}"
+                                        @if (!empty($row->acceptance))
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptance/' . $row->id) }}"
                                                 target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View
                                                 Acceptance</a>
 
