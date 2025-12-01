@@ -367,8 +367,9 @@
                                     <label for="created_by"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Forwarded By
                                     </label>
-                                    <textarea name="created_by" id="created_by" class="form-control radius-8" placeholder="Enter name" required>{{ old('created_by', $candidate->created_by ?? '') }}</textarea>
+                                    <textarea name="created_by" id="created_by" class="form-control radius-8" placeholder="Enter name" readonly>{{ old('created_by', $candidate->created_by ?? '') }}</textarea>
                                 </div>
+
 
 
                                 <div class="mb-20">
