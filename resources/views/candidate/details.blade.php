@@ -346,6 +346,77 @@
 
                             </div>
 
+                            <div class="tab-pane fade" id="pills-senddocument" role="tabpanel">
+
+                                <!-- Resume Viewer -->
+                                @if (!empty($candidate->acceptance))
+                                    <div class="w-100" style="height: 85vh;">
+                                        <iframe
+                                            src="{{ url('dashboard/senior/google-sheet/view-acceptance/' . $candidate->id) }}"
+                                            style="width: 100%; height: 100%; border: none;" allowfullscreen>
+                                        </iframe>
+
+                                    </div>
+                                @else
+                                    <p class="text-danger">No Acceptance available.</p>
+                                @endif
+
+                                @if (!empty($candidate->consultation))
+                                    <div class="w-100" style="height: 85vh;">
+                                        <iframe
+                                            src="{{ url('dashboard/senior/google-sheet/view-consultation/' . $candidate->id) }}"
+                                            style="width: 100%; height: 100%; border: none;" allowfullscreen>
+                                        </iframe>
+
+                                    </div>
+                                @else
+                                    <p class="text-danger">No Consultation available.</p>
+                                @endif
+
+                                @if (!empty($candidate->delivery))
+                                    <div class="w-100" style="height: 85vh;">
+                                        <iframe
+                                            src="{{ url('dashboard/senior/google-sheet/view-delivery/' . $candidate->id) }}"
+                                            style="width: 100%; height: 100%; border: none;" allowfullscreen>
+                                        </iframe>
+
+                                    </div>
+                                @else
+                                    <p class="text-danger">No Delivery available.</p>
+                                @endif
+
+                                @if (!empty($candidate->payment))
+                                    <div class="w-100" style="height: 85vh;">
+                                        <iframe
+                                            src="{{ url('dashboard/senior/google-sheet/view-payment/' . $candidate->id) }}"
+                                            style="width: 100%; height: 100%; border: none;" allowfullscreen>
+                                        </iframe>
+
+                                    </div>
+                                @else
+                                    <p class="text-danger">No Payment available.</p>
+                                @endif
+
+
+                            </div>
+
+                            <div class="tab-pane fade" id="pills-signeddocument" role="tabpanel">
+
+                                <!-- Resume Viewer -->
+                                @if (!empty($candidate->signeddocument))
+                                    <div class="w-100" style="height: 85vh;">
+                                        <iframe
+                                            src="{{ url('dashboard/senior/google-sheet/view-signeddocument/' . $candidate->id) }}"
+                                            style="width: 100%; height: 100%; border: none;" allowfullscreen>
+                                        </iframe>
+
+                                    </div>
+                                @else
+                                    <p class="text-danger">No signeddocument available.</p>
+                                @endif
+
+                            </div>
+
 
 
                             <div class="tab-pane fade" id="pills-notification" role="tabpanel">
