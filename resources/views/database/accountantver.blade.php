@@ -1412,11 +1412,11 @@
                     const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
                     // Show view and download buttons
-                    const viewBtn = row.querySelector('.viewacceptance-btn');
-                    const downloadBtn = row.querySelector('.downloadacceptance-btn');
+                    const viewAcceptanceBtn = row.querySelector('.viewacceptance-btn');
+                    const downloadAcceptanceBtn = row.querySelector('.downloadacceptance-btn');
 
-                    if (viewBtn) viewBtn.classList.remove('d-none');
-                    if (downloadBtn) downloadBtn.classList.remove('d-none');
+                    if (viewAcceptanceBtn) viewAcceptanceBtn.classList.remove('d-none');
+                    if (downloadAcceptanceBtn) downloadAcceptanceBtn.classList.remove('d-none');
 
                     // Update button text
                     const uploadBtn = row.querySelector('.upload-acceptance-btn');
