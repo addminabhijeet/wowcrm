@@ -205,11 +205,11 @@
                                         </button>
 
                                         @if (!empty($row->acceptance))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptance/' . $row->id) }}"
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptance/' . $row->acceptance) }}"
                                                 target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View
                                                 Acceptance</a>
 
-                                            <a href="{{ url('dashboard/senior/google-sheet/download-acceptance/' . $row->id) }}"
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-acceptance/' . $row->acceptance) }}"
                                                 class="btn btn-sm btn-secondary downloadacceptance-btn">Download
                                                 Acceptance</a>
                                         @else
