@@ -48,14 +48,28 @@
                             <button class="nav-link d-flex align-items-center px-24 active" id="pills-edit-profile-tab"
                                 data-bs-toggle="pill" data-bs-target="#pills-edit-profile" type="button" role="tab"
                                 aria-controls="pills-edit-profile" aria-selected="true">
-                                Edit Profile
+                                Personal Information
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-information-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-information" type="button" role="tab"
+                                aria-controls="pills-information" aria-selected="false" tabindex="-1">
+                                Educational Information
+                            </button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-payment-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-payment" type="button" role="tab"
+                                aria-controls="pills-payment" aria-selected="false" tabindex="-1">
+                                Payment Information
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
                             <button class="nav-link d-flex align-items-center px-24" id="pills-change-passwork-tab"
                                 data-bs-toggle="pill" data-bs-target="#pills-change-passwork" type="button" role="tab"
                                 aria-controls="pills-change-passwork" aria-selected="false" tabindex="-1">
-                                Information
+                                Others
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
@@ -128,6 +142,52 @@
 
 
                                 </div>
+                            </div>
+
+                            <div class="tab-pane fade" id="pills-information" role="tabpanel">
+
+                                <!-- Joined Date -->
+                                <div class="mb-20">
+                                    <label for="date"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Joined Date</label>
+                                    <input type="date" name="Date" id="date" class="form-control radius-8"
+                                        value="{{ $candidate->Date ? \Carbon\Carbon::parse($candidate->Date)->format('Y-m-d') : '' }}"
+                                        required>
+                                </div>
+
+                                <!-- Payment Date -->
+                                <div class="mb-20">
+                                    <label for="PaymentDate"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date</label>
+                                    <input type="date" name="PaymentDate" id="PaymentDate"
+                                        class="form-control radius-8" value="{{ $candidate->PaymentDate ?? '' }}"
+                                        required>
+                                </div>
+
+
+                            </div>
+
+                            <div class="tab-pane fade" id="pills-payment" role="tabpanel">
+
+                                <!-- Joined Date -->
+                                <div class="mb-20">
+                                    <label for="date"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Joined Date</label>
+                                    <input type="date" name="Date" id="date" class="form-control radius-8"
+                                        value="{{ $candidate->Date ? \Carbon\Carbon::parse($candidate->Date)->format('Y-m-d') : '' }}"
+                                        required>
+                                </div>
+
+                                <!-- Payment Date -->
+                                <div class="mb-20">
+                                    <label for="PaymentDate"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date</label>
+                                    <input type="date" name="PaymentDate" id="PaymentDate"
+                                        class="form-control radius-8" value="{{ $candidate->PaymentDate ?? '' }}"
+                                        required>
+                                </div>
+
+
                             </div>
 
                             <div class="tab-pane fade" id="pills-change-passwork" role="tabpanel">
