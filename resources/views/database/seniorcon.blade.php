@@ -56,7 +56,7 @@ $script ='<script>
                         <th scope="col">Audio</th>
                         <th scope="col">Forwarded By</th>
                         <th scope="col">View</th>
-                        <th scope="col" class="text-center">Actions</th>
+                        {{-- <th scope="col" class="text-center">Actions</th> --}}
                     </tr>
                 </thead>
                 <tbody id="sheet-table-body">
