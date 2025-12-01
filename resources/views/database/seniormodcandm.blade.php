@@ -628,18 +628,18 @@ $script ='<script>
 
         }
 
-        // function addBlankRow() {
-        //     let colKeys = [];
-        //     let firstRow = tableBody.querySelector("tr");
-        //     if (firstRow) {
-        //         firstRow.querySelectorAll("input[data-key], select[data-key]").forEach(cell => colKeys.push(cell.dataset.key));
-        //     }
+        function addBlankRow() {
+            let colKeys = [];
+            let firstRow = tableBody.querySelector("tr");
+            if (firstRow) {
+                firstRow.querySelectorAll("input[data-key], select[data-key]").forEach(cell => colKeys.push(cell.dataset.key));
+            }
 
-        //     let newRow = document.createElement("tr");
-        //     newRow.setAttribute("data-id", "new");
-        //     let cells = `<td>—</td>`;
+            let newRow = document.createElement("tr");
+            newRow.setAttribute("data-id", "new");
+            let cells = `<td>—</td>`;
 
-        //     colKeys.forEach(k => {
+            colKeys.forEach(k => {
         //         if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
         //             let opts = [];
         //             if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
@@ -674,13 +674,13 @@ $script ='<script>
         //             <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
         //         </td>`;
         //         }
-        //     });
+            });
 
         //     // cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
-        //     newRow.innerHTML = cells;
-        //     tableBody.appendChild(newRow);
-        //     applyInitialState(newRow);
-        // }
+            newRow.innerHTML = cells;
+            tableBody.appendChild(newRow);
+            applyInitialState(newRow);
+        }
 
         // Check if we need to add a blank row on page load
         // Only add if there are no existing "new" rows
