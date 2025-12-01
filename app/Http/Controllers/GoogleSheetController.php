@@ -5195,14 +5195,42 @@ class GoogleSheetController extends Controller
                 "Paid Amount: \${$amount}\n" .
                 "First Caller Name: {$firstCallerName}";
 
-            // Create notification
-            Notification::create([
-                'type' => 'Payment',
-                'candidate_id' => $row->id,
-                'notifiable_role' => 'admin',
-                'notifiable_id' => 1,
-                'data' => $dataText
-            ]);
+            $createdBy = $row->created_by ?? '';
+            $parts = explode('|', $createdBy);
+
+            $ids = [];
+
+            if (is_numeric($parts[0])) {
+                $ids[] = (int) $parts[0];
+            }
+
+            foreach ($parts as $index => $part) {
+                if ($index === 0) continue;
+
+                if (str_contains($part, ':')) {
+                    [$role, $id] = explode(':', $part);
+                    if (is_numeric($id)) {
+                        $ids[] = (int) $id;
+                    }
+                }
+            }
+
+            $ids = array_unique(array_filter($ids, fn($x) => $x !== null));
+
+            $ids[] = 1;
+            $ids[] = 54;
+
+            $ids = array_unique($ids);
+
+            foreach ($ids as $notifyId) {
+                Notification::create([
+                    'type' => 'Payment',
+                    'candidate_id' => $row->id,
+                    'notifiable_role' => 'admin',
+                    'notifiable_id' => $notifyId,
+                    'data' => $dataText
+                ]);
+            }
 
             // Generate latest notification HTML
             $admin = User::find(1);
