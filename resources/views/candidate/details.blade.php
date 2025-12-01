@@ -108,68 +108,67 @@
                         <div class="tab-content" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="pills-edit-profile" role="tabpanel">
                                 <div class="row">
-                                    <div class="col-sm-6">
-                                        <div class="mb-20">
-                                            <label for="name"
-                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Full Name
-                                            </label>
-                                            <input type="text" name="name" id="name"
-                                                class="form-control radius-8" value="{{ old('name', $candidate->Name) }}"
-                                                placeholder="Enter Full Name" required>
-                                        </div>
-                                    </div>
 
-                                    <div class="col-sm-6">
-                                        <div class="mb-20">
-                                            <label for="email"
-                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Email
-                                            </label>
-                                            <input type="email" name="email" id="email"
-                                                class="form-control radius-8"
+                                    <!-- Full Name | Email -->
+                                    <div class="col-12 d-flex mb-20 align-items-stretch">
+                                        <div class="col-sm-6">
+                                            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Full
+                                                Name</label>
+                                            <input type="text" name="name" class="form-control radius-8"
+                                                value="{{ old('name', $candidate->Name) }}" placeholder="Enter Full Name"
+                                                required>
+                                        </div>
+
+                                        <!-- Vertical Divider -->
+                                        <div class="col-auto d-flex align-items-stretch px-3">
+                                            <div style="width:1px; background:#ddd; height:100%;"></div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <label
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Email</label>
+                                            <input type="email" name="email" class="form-control radius-8"
                                                 value="{{ old('email', $candidate->Email_Address) }}"
-                                                placeholder="Enter email address" required>
+                                                placeholder="Enter Email" required>
                                         </div>
                                     </div>
 
-                                    <div class="col-sm-6">
-                                        <div class="mb-20">
-                                            <label for="phone"
+                                    <!-- Phone | Location -->
+                                    <div class="col-12 d-flex mb-20 align-items-stretch">
+                                        <div class="col-sm-6">
+                                            <label
                                                 class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
-                                            <input type="text" name="name" id="name"
-                                                class="form-control radius-8"
-                                                value="{{ old('name', $candidate->Phone_Number) }}"
-                                                placeholder="Enter Full Name" required>
+                                            <input type="text" name="phone" class="form-control radius-8"
+                                                value="{{ old('phone', $candidate->Phone_Number) }}"
+                                                placeholder="Enter Phone" required>
                                         </div>
-                                    </div>
 
-                                    <div class="col-sm-6">
-                                        <div class="mb-20">
-                                            <label for="Location"
-                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Location
-                                            </label>
-                                            <input type="text" name="Location" id="Location"
-                                                class="form-control radius-8"
+                                        <!-- Vertical Divider -->
+                                        <div class="col-auto d-flex align-items-stretch px-3">
+                                            <div style="width:1px; background:#ddd; height:100%;"></div>
+                                        </div>
+
+                                        <div class="col-sm-6">
+                                            <label
+                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Location</label>
+                                            <input type="text" name="Location" class="form-control radius-8"
                                                 value="{{ old('Location', $candidate->Location) }}"
                                                 placeholder="Enter Location" required>
                                         </div>
                                     </div>
 
                                     <!-- Time Zone -->
-                                    <div class="mb-20">
-                                        <label for="time_zone"
-                                            class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                            Time Zone
-                                        </label>
-                                        <input type="text" name="time_zone" id="time_zone"
-                                            class="form-control radius-8"
+                                    <div class="col-12 mb-20">
+                                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Time
+                                            Zone</label>
+                                        <input type="text" name="time_zone" class="form-control radius-8"
                                             value="{{ old('time_zone', $candidate->Time_Zone ?? '') }}"
                                             placeholder="Enter Time Zone" required>
                                     </div>
 
-
-
                                 </div>
                             </div>
+
 
                             <div class="tab-pane fade" id="pills-information" role="tabpanel">
 
@@ -258,8 +257,7 @@
                                     <label for="TranId"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Transaction ID
                                     </label>
-                                    <input type="text" name="TranId" id="TranId"
-                                        class="form-control radius-8"
+                                    <input type="text" name="TranId" id="TranId" class="form-control radius-8"
                                         value="{{ old('TranId', $candidate->TranId ?? '') }}"
                                         placeholder="Enter Transaction ID" required>
                                 </div>
@@ -268,8 +266,7 @@
                                     <label for="TranRef"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Reference Number
                                     </label>
-                                    <input type="text" name="TranRef" id="TranRef"
-                                        class="form-control radius-8"
+                                    <input type="text" name="TranRef" id="TranRef" class="form-control radius-8"
                                         value="{{ old('TranRef', $candidate->TranRef ?? '') }}"
                                         placeholder="Enter Reference Number" required>
                                 </div>
@@ -288,8 +285,7 @@
                                     <label for="PayeeName"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Payee Name
                                     </label>
-                                    <input type="text" name="PayeeName" id="PayeeName"
-                                        class="form-control radius-8"
+                                    <input type="text" name="PayeeName" id="PayeeName" class="form-control radius-8"
                                         value="{{ old('PayeeName', $candidate->PayeeName ?? '') }}"
                                         placeholder="Enter Payee Name" required>
                                 </div>
