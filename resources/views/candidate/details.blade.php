@@ -107,67 +107,73 @@
                         @method('PUT')
                         <div class="tab-content" id="pills-tabContent">
                             <div class="tab-pane fade show active" id="pills-edit-profile" role="tabpanel">
+
                                 <div class="row">
+                                    <div class="col-12 d-flex">
 
-                                    <!-- Full Name | Email -->
-                                    <div class="col-12 d-flex mb-20 align-items-stretch">
-                                        <div class="col-sm-6">
-                                            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Full
-                                                Name</label>
-                                            <input type="text" name="name" class="form-control radius-8"
-                                                value="{{ old('name', $candidate->Name) }}" placeholder="Enter Full Name"
-                                                required>
+                                        <!-- LEFT SIDE (Full Name + Phone) -->
+                                        <div class="flex-grow-1">
+
+                                            <div class="mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Full
+                                                    Name</label>
+                                                <input type="text" name="name" class="form-control radius-8"
+                                                    value="{{ old('name', $candidate->Name) }}"
+                                                    placeholder="Enter Full Name" required>
+                                            </div>
+
+                                            <div class="mb-20">
+                                                <label
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
+                                                <input type="text" name="phone" class="form-control radius-8"
+                                                    value="{{ old('phone', $candidate->Phone_Number) }}"
+                                                    placeholder="Enter Phone" required>
+                                            </div>
+
                                         </div>
 
-                                        <!-- Vertical Divider -->
-                                        <div class="col-auto d-flex align-items-stretch px-3">
-                                            <div style="width:1px; background:#ddd; height:100%;"></div>
+                                        <!-- SINGLE VERTICAL DIVIDER (FULL HEIGHT) -->
+                                        <div class="px-4 d-flex" style="align-items: stretch;">
+                                            <div style="width: 1px; background: #ddd; height: 100%;"></div>
                                         </div>
 
-                                        <div class="col-sm-6">
-                                            <label
-                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Email</label>
-                                            <input type="email" name="email" class="form-control radius-8"
-                                                value="{{ old('email', $candidate->Email_Address) }}"
-                                                placeholder="Enter Email" required>
+                                        <!-- RIGHT SIDE (Email + Location) -->
+                                        <div class="flex-grow-1">
+
+                                            <div class="mb-20">
+                                                <label
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Email</label>
+                                                <input type="email" name="email" class="form-control radius-8"
+                                                    value="{{ old('email', $candidate->Email_Address) }}"
+                                                    placeholder="Enter Email" required>
+                                            </div>
+
+                                            <div class="mb-20">
+                                                <label
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Location</label>
+                                                <input type="text" name="Location" class="form-control radius-8"
+                                                    value="{{ old('Location', $candidate->Location) }}"
+                                                    placeholder="Enter Location" required>
+                                            </div>
+
                                         </div>
+
                                     </div>
 
-                                    <!-- Phone | Location -->
-                                    <div class="col-12 d-flex mb-20 align-items-stretch">
-                                        <div class="col-sm-6">
-                                            <label
-                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
-                                            <input type="text" name="phone" class="form-control radius-8"
-                                                value="{{ old('phone', $candidate->Phone_Number) }}"
-                                                placeholder="Enter Phone" required>
-                                        </div>
-
-                                        <!-- Vertical Divider -->
-                                        <div class="col-auto d-flex align-items-stretch px-3">
-                                            <div style="width:1px; background:#ddd; height:100%;"></div>
-                                        </div>
-
-                                        <div class="col-sm-6">
-                                            <label
-                                                class="form-label fw-semibold text-primary-light text-sm mb-8">Location</label>
-                                            <input type="text" name="Location" class="form-control radius-8"
-                                                value="{{ old('Location', $candidate->Location) }}"
-                                                placeholder="Enter Location" required>
+                                    <!-- Time Zone (Below Full Layout) -->
+                                    <div class="col-12 mt-3">
+                                        <div class="mb-20">
+                                            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Time
+                                                Zone</label>
+                                            <input type="text" name="time_zone" class="form-control radius-8"
+                                                value="{{ old('time_zone', $candidate->Time_Zone ?? '') }}"
+                                                placeholder="Enter Time Zone" required>
                                         </div>
                                     </div>
-
-                                    <!-- Time Zone -->
-                                    <div class="col-12 mb-20">
-                                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">Time
-                                            Zone</label>
-                                        <input type="text" name="time_zone" class="form-control radius-8"
-                                            value="{{ old('time_zone', $candidate->Time_Zone ?? '') }}"
-                                            placeholder="Enter Time Zone" required>
-                                    </div>
-
                                 </div>
+
                             </div>
+
 
 
                             <div class="tab-pane fade" id="pills-information" role="tabpanel">
