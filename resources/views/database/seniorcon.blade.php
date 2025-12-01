@@ -713,7 +713,7 @@ $script ='<script>
                         // }
                     });
 
-            cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
+            // cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
             newRow.innerHTML = cells;
             tableBody.appendChild(newRow);
             applyInitialState(newRow);
