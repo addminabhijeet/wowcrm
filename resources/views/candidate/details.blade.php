@@ -238,10 +238,10 @@
 
                                 <div class="mb-20">
                                     <label for="amount"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Amount (in $)
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Amount
                                     </label>
                                     <input type="number" name="amount" id="amount" class="form-control radius-8"
-                                        value="{{ old('amount', $payment->Amount ?? '') }}" placeholder="Enter Amount"
+                                        value="{{ old('amount', $candidate->Amount ?? '') }}" placeholder="Enter Amount"
                                         required>
                                 </div>
 
@@ -251,7 +251,7 @@
                                     </label>
                                     <input type="date" name="PaymentDate" id="	PaymentDate"
                                         class="form-control radius-8"
-                                        value="{{ old('PaymentDate', $payment->PaymentDate ?? '') }}" required>
+                                        value="{{ old('PaymentDate', $candidate->PaymentDate ?? '') }}" required>
                                 </div>
 
                                 <div class="mb-20">
@@ -260,7 +260,7 @@
                                     </label>
                                     <input type="text" name="TranId" id="TranId"
                                         class="form-control radius-8"
-                                        value="{{ old('TranId', $payment->TranId ?? '') }}"
+                                        value="{{ old('TranId', $candidate->TranId ?? '') }}"
                                         placeholder="Enter Transaction ID" required>
                                 </div>
 
@@ -270,7 +270,7 @@
                                     </label>
                                     <input type="text" name="TranRef" id="TranRef"
                                         class="form-control radius-8"
-                                        value="{{ old('TranRef', $payment->TranRef ?? '') }}"
+                                        value="{{ old('TranRef', $candidate->TranRef ?? '') }}"
                                         placeholder="Enter Reference Number" required>
                                 </div>
 
@@ -280,7 +280,7 @@
                                     </label>
                                     <input type="text" name="PaymentMethod" id="PaymentMethod"
                                         class="form-control radius-8"
-                                        value="{{ old('PaymentMethod', $payment->PaymentMethod ?? '') }}"
+                                        value="{{ old('PaymentMethod', $candidate->PaymentMethod ?? '') }}"
                                         placeholder="Enter Payment Method" required>
                                 </div>
 
@@ -290,7 +290,7 @@
                                     </label>
                                     <input type="text" name="PayeeName" id="PayeeName"
                                         class="form-control radius-8"
-                                        value="{{ old('PayeeName', $payment->PayeeName ?? '') }}"
+                                        value="{{ old('PayeeName', $candidate->PayeeName ?? '') }}"
                                         placeholder="Enter Payee Name" required>
                                 </div>
 
@@ -301,29 +301,29 @@
                             <div class="tab-pane fade" id="pills-change-passwork" role="tabpanel">
 
                                 <div class="mb-20">
-                                    <label for="forwarded_by"
+                                    <label for="created_by"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Forwarded By
                                     </label>
-                                    <input type="text" name="forwarded_by" id="forwarded_by"
+                                    <input type="text" name="created_by" id="created_by"
                                         class="form-control radius-8"
-                                        value="{{ old('forwarded_by', $candidate->forwarded_by ?? '') }}"
+                                        value="{{ old('created_by', $candidate->created_by ?? '') }}"
                                         placeholder="Enter name" required>
                                 </div>
 
                                 <div class="mb-20">
-                                    <label for="first_follow_up"
+                                    <label for="First_Follow_Up_Remarks"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">1st Follow Up
                                         Remarks
                                     </label>
-                                    <textarea name="first_follow_up" id="first_follow_up" class="form-control radius-8"
-                                        placeholder="Enter 1st follow up remarks" required>{{ old('first_follow_up', $candidate->first_follow_up ?? '') }}</textarea>
+                                    <textarea name="First_Follow_Up_Remarks" id="First_Follow_Up_Remarks" class="form-control radius-8"
+                                        placeholder="Enter 1st follow up remarks" required>{{ old('First_Follow_Up_Remarks', $candidate->First_Follow_Up_Remarks ?? '') }}</textarea>
                                 </div>
 
                                 <div class="mb-20">
                                     <label for="Remark"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Remark
                                     </label>
-                                    <textarea name="Remark" id="Remark" class="form-control radius-8" placeholder="Enter remarks" required>{{ old('remark', $candidate->remark ?? '') }}</textarea>
+                                    <textarea name="Remark" id="Remark" class="form-control radius-8" placeholder="Enter Remark" required>{{ old('Remark', $candidate->Remark ?? '') }}</textarea>
                                 </div>
 
 
