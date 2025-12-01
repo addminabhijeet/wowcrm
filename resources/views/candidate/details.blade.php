@@ -140,74 +140,176 @@
                                         </div>
                                     </div>
 
+                                    <!-- Time Zone -->
+                                    <div class="mb-20">
+                                        <label for="time_zone"
+                                            class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                            Time Zone
+                                        </label>
+                                        <input type="text" name="time_zone" id="time_zone"
+                                            class="form-control radius-8"
+                                            value="{{ old('time_zone', $candidate->Time_Zone ?? '') }}"
+                                            placeholder="Enter Time Zone" required>
+                                    </div>
+
+
 
                                 </div>
                             </div>
 
                             <div class="tab-pane fade" id="pills-information" role="tabpanel">
 
-                                <!-- Joined Date -->
+
+                                <!-- Relocation -->
                                 <div class="mb-20">
-                                    <label for="date"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Joined Date</label>
-                                    <input type="date" name="Date" id="date" class="form-control radius-8"
-                                        value="{{ $candidate->Date ? \Carbon\Carbon::parse($candidate->Date)->format('Y-m-d') : '' }}"
+                                    <label for="relocation"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Relocation
+                                    </label>
+                                    <input type="text" name="relocation" id="relocation"
+                                        class="form-control radius-8"
+                                        value="{{ old('relocation', $candidate->Relocation ?? '') }}"
+                                        placeholder="Enter Relocation" required>
+                                </div>
+
+                                <!-- Graduation -->
+                                <div class="mb-20">
+                                    <label for="graduation"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Graduation
+                                    </label>
+                                    <input type="text" name="graduation" id="graduation"
+                                        class="form-control radius-8"
+                                        value="{{ old('graduation', $candidate->Graduation ?? '') }}"
+                                        placeholder="Enter Graduation" required>
+                                </div>
+
+                                <!-- Immigration -->
+                                <div class="mb-20">
+                                    <label for="immigration"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Immigration
+                                    </label>
+                                    <input type="text" name="immigration" id="immigration"
+                                        class="form-control radius-8"
+                                        value="{{ old('immigration', $candidate->Immigration ?? '') }}"
+                                        placeholder="Enter Immigration" required>
+                                </div>
+
+                                <!-- Course -->
+                                <div class="mb-20">
+                                    <label for="course" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Course
+                                    </label>
+                                    <input type="text" name="course" id="course" class="form-control radius-8"
+                                        value="{{ old('course', $candidate->Course ?? '') }}" placeholder="Enter Course"
                                         required>
                                 </div>
 
-                                <!-- Payment Date -->
+                                <!-- Qualification -->
                                 <div class="mb-20">
-                                    <label for="PaymentDate"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date</label>
-                                    <input type="date" name="PaymentDate" id="PaymentDate"
-                                        class="form-control radius-8" value="{{ $candidate->PaymentDate ?? '' }}"
-                                        required>
+                                    <label for="qualification"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Qualification
+                                    </label>
+                                    <input type="text" name="qualification" id="qualification"
+                                        class="form-control radius-8"
+                                        value="{{ old('qualification', $candidate->Qualification ?? '') }}"
+                                        placeholder="Enter Qualification" required>
                                 </div>
-
 
                             </div>
 
                             <div class="tab-pane fade" id="pills-payment" role="tabpanel">
 
-                                <!-- Joined Date -->
                                 <div class="mb-20">
-                                    <label for="date"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Joined Date</label>
-                                    <input type="date" name="Date" id="date" class="form-control radius-8"
-                                        value="{{ $candidate->Date ? \Carbon\Carbon::parse($candidate->Date)->format('Y-m-d') : '' }}"
+                                    <label for="amount"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Amount (in $)
+                                    </label>
+                                    <input type="number" name="amount" id="amount" class="form-control radius-8"
+                                        value="{{ old('amount', $payment->amount ?? '') }}" placeholder="Enter Amount"
                                         required>
                                 </div>
 
-                                <!-- Payment Date -->
                                 <div class="mb-20">
-                                    <label for="PaymentDate"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date</label>
-                                    <input type="date" name="PaymentDate" id="PaymentDate"
-                                        class="form-control radius-8" value="{{ $candidate->PaymentDate ?? '' }}"
-                                        required>
+                                    <label for="payment_date"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date
+                                    </label>
+                                    <input type="date" name="payment_date" id="payment_date"
+                                        class="form-control radius-8"
+                                        value="{{ old('payment_date', $payment->payment_date ?? '') }}" required>
                                 </div>
+
+                                <div class="mb-20">
+                                    <label for="transaction_id"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Transaction ID
+                                    </label>
+                                    <input type="text" name="transaction_id" id="transaction_id"
+                                        class="form-control radius-8"
+                                        value="{{ old('transaction_id', $payment->transaction_id ?? '') }}"
+                                        placeholder="Enter Transaction ID" required>
+                                </div>
+
+                                <div class="mb-20">
+                                    <label for="reference_number"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Reference Number
+                                    </label>
+                                    <input type="text" name="reference_number" id="reference_number"
+                                        class="form-control radius-8"
+                                        value="{{ old('reference_number', $payment->reference_number ?? '') }}"
+                                        placeholder="Enter Reference Number" required>
+                                </div>
+
+                                <div class="mb-20">
+                                    <label for="payment_method"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Method
+                                    </label>
+                                    <input type="text" name="payment_method" id="payment_method"
+                                        class="form-control radius-8"
+                                        value="{{ old('payment_method', $payment->payment_method ?? '') }}"
+                                        placeholder="Enter Payment Method" required>
+                                </div>
+
+                                <div class="mb-20">
+                                    <label for="payee_name"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payee Name
+                                    </label>
+                                    <input type="text" name="payee_name" id="payee_name"
+                                        class="form-control radius-8"
+                                        value="{{ old('payee_name', $payment->payee_name ?? '') }}"
+                                        placeholder="Enter Payee Name" required>
+                                </div>
+
 
 
                             </div>
 
                             <div class="tab-pane fade" id="pills-change-passwork" role="tabpanel">
 
-                                <!-- Joined Date -->
                                 <div class="mb-20">
-                                    <label for="date"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Joined Date</label>
-                                    <input type="date" name="Date" id="date" class="form-control radius-8"
-                                        value="{{ $candidate->Date ? \Carbon\Carbon::parse($candidate->Date)->format('Y-m-d') : '' }}"
-                                        required>
+                                    <label for="forwarded_by"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Forwarded By
+                                    </label>
+                                    <input type="text" name="forwarded_by" id="forwarded_by"
+                                        class="form-control radius-8"
+                                        value="{{ old('forwarded_by', $candidate->forwarded_by ?? '') }}"
+                                        placeholder="Enter name" required>
                                 </div>
 
-                                <!-- Payment Date -->
                                 <div class="mb-20">
-                                    <label for="PaymentDate"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date</label>
-                                    <input type="date" name="PaymentDate" id="PaymentDate"
-                                        class="form-control radius-8" value="{{ $candidate->PaymentDate ?? '' }}"
-                                        required>
+                                    <label for="first_follow_up"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">1st Follow Up
+                                        Remarks
+                                    </label>
+                                    <textarea name="first_follow_up" id="first_follow_up" class="form-control radius-8"
+                                        placeholder="Enter 1st follow up remarks" required>{{ old('first_follow_up', $candidate->first_follow_up ?? '') }}</textarea>
+                                </div>
+
+                                <div class="mb-20">
+                                    <label for="remark"
+                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Remark
+                                    </label>
+                                    <textarea name="remark" id="remark" class="form-control radius-8" placeholder="Enter remarks" required>{{ old('remark', $candidate->remark ?? '') }}</textarea>
                                 </div>
 
 
@@ -218,7 +320,7 @@
                                 <!-- Resume Viewer -->
                                 @if (!empty($candidate->resume))
                                     <div class="w-100" style="height: 85vh;">
-                                        <iframe src="{{ url($candidate->resume) }}"
+                                        <iframe src="{{ url('dashboard/senior/google-sheet/view-resume/' . $row->id) }}"
                                             style="width: 100%; height: 100%; border: none;" allowfullscreen>
                                         </iframe>
 
