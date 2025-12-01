@@ -5199,7 +5199,7 @@ class GoogleSheetController extends Controller
             Notification::create([
                 'type' => 'Payment',
                 'candidate_id' => $row->id,
-                'notifiable_role' => 'Admin',
+                'notifiable_role' => 'admin',
                 'notifiable_id' => 1,
                 'data' => $dataText
             ]);
@@ -5208,7 +5208,7 @@ class GoogleSheetController extends Controller
             $admin = User::find(1);
             $latestNotification = Notification::with(['user', 'candidate'])
                 ->where('notifiable_id', 1)
-                ->where('notifiable_role', 'Admin')
+                ->where('notifiable_role', 'admin')
                 ->latest()
                 ->first();
 
