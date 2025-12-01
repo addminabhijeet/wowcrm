@@ -80,16 +80,16 @@
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-resume-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-resume" type="button" role="tab"
-                                aria-controls="pills-resume" aria-selected="false" tabindex="-1">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-senddocument-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-senddocument" type="button" role="tab"
+                                aria-controls="pills-senddocument" aria-selected="false" tabindex="-1">
                                 Send Document
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-resume-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-resume" type="button" role="tab"
-                                aria-controls="pills-resume" aria-selected="false" tabindex="-1">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-signeddocument-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-signeddocument" type="button" role="tab"
+                                aria-controls="pills-signeddocument" aria-selected="false" tabindex="-1">
                                 Signed Document
                             </button>
                         </li>
