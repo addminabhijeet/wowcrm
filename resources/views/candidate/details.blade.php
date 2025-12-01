@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
     $title = $candidate->Name;
-    $subTitle = 'Senior Support Associate';
+    $subTitle = $candidate->sheet_row_number;
     $script = '<script>
         // ======================== Upload Image Start =====================
         function readURL(input) {
