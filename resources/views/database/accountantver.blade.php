@@ -1386,8 +1386,107 @@
                 }
             });
 
-            
+            // Handle file selection
+            tableBody.addEventListener('change', function(e) {
+                if (e.target.matches('.resume-input')) {
+                    const row = e.target.closest('tr');
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
+                    // Show view and download buttons temporarily
+                    const viewBtn = row.querySelector('.view-btn');
+                    const downloadBtn = row.querySelector('.download-btn');
+
+                    if (viewBtn) viewBtn.classList.remove('d-none');
+                    if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                    // Update button text
+                    const uploadBtn = row.querySelector('.upload-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('File selected:', fileName);
+                }
+
+                // Acceptance
+                if (e.target.matches('.acceptance-input')) {
+                    const row = e.target.closest('tr');
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+
+                    // Show view and download buttons
+                    const viewAcceptanceBtn = row.querySelector('.viewacceptance-btn');
+                    const downloadAcceptanceBtn = row.querySelector('.downloadacceptance-btn');
+
+                    if (viewAcceptanceBtn) viewAcceptanceBtn.classList.remove('d-none');
+                    if (downloadAcceptanceBtn) downloadAcceptanceBtn.classList.remove('d-none');
+
+                    // Update button text
+                    const uploadBtn = row.querySelector('.upload-acceptance-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('Acceptance file selected:', fileName);
+                }
+
+
+                // Consultation
+                if (e.target.matches('.consultation-input')) {
+                    const row = e.target.closest('tr');
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+
+                    // Show view and download buttons
+                    const viewConsultationBtn = row.querySelector('.viewconsultation-btn');
+                    const downloadConsultationBtn = row.querySelector('.downloadconsultation-btn');
+
+                    if (viewConsultationBtn) viewConsultationBtn.classList.remove('d-none');
+                    if (downloadConsultationBtn) downloadConsultationBtn.classList.remove('d-none');
+
+                    // Update upload button text
+                    const uploadBtn = row.querySelector('.upload-consultation-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('Consultation file selected:', fileName);
+                }
+
+
+                // Delivery
+                if (e.target.matches('.delivery-input')) {
+                    const row = e.target.closest('tr');
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+
+                    // Show view and download buttons
+                    const viewDeliveryBtn = row.querySelector('.viewdelivery-btn');
+                    const downloadDeliveryBtn = row.querySelector('.downloaddelivery-btn');
+
+                    if (viewDeliveryBtn) viewDeliveryBtn.classList.remove('d-none');
+                    if (downloadDeliveryBtn) downloadDeliveryBtn.classList.remove('d-none');
+
+                    // Update upload button text
+                    const uploadBtn = row.querySelector('.upload-delivery-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('Delivery file selected:', fileName);
+                }
+
+
+                // Payment
+                if (e.target.matches('.payment-input')) {
+                    const row = e.target.closest('tr');
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+
+                    // Show view and download buttons temporarily
+                    const viewPaymentBtn = row.querySelector('.viewpayment-btn');
+                    const downloadPaymentBtn = row.querySelector('.downloadpayment-btn');
+
+                    if (viewPaymentBtn) viewPaymentBtn.classList.remove('d-none');
+                    if (downloadPaymentBtn) downloadPaymentBtn.classList.remove('d-none');
+
+                    // Update button text
+                    const uploadBtn = row.querySelector('.upload-payment-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('Payment file selected:', fileName);
+                }
+
+
+            });
 
             // Apply initial state to all existing rows
             applyInitialState(document);
