@@ -241,7 +241,7 @@
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Amount
                                     </label>
                                     <input type="number" name="amount" id="amount" class="form-control radius-8"
-                                        value="{{ old('amount', $candidate->Amount ?? '') }}" placeholder="Enter Amount"
+                                        value="${{ old('amount', $candidate->Amount ?? '') }}" placeholder="Enter Amount"
                                         required>
                                 </div>
 
