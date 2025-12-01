@@ -134,8 +134,9 @@
 
                                         <!-- SINGLE VERTICAL DIVIDER (FULL HEIGHT) -->
                                         <div class="px-4 d-flex" style="align-items: stretch;">
-                                            <div style="width: 1px; background: #ddd; height: 100%;"></div>
+                                            <div style="width: 4px; background: #000; height: 100%;"></div>
                                         </div>
+
 
                                         <!-- RIGHT SIDE (Email + Location) -->
                                         <div class="flex-grow-1">
@@ -158,18 +159,29 @@
 
                                         </div>
 
+                                        <!-- SINGLE VERTICAL DIVIDER (FULL HEIGHT) -->
+                                        <div class="px-4 d-flex" style="align-items: stretch;">
+                                            <div style="width: 4px; background: #000; height: 100%;"></div>
+                                        </div>
+
+                                        <div class="flex-grow-1">
+                                            <!-- Time Zone (Below Full Layout) -->
+                                            <div class="col-12 mt-3">
+                                                <div class="mb-20">
+                                                    <label
+                                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Time
+                                                        Zone</label>
+                                                    <input type="text" name="time_zone" class="form-control radius-8"
+                                                        value="{{ old('time_zone', $candidate->Time_Zone ?? '') }}"
+                                                        placeholder="Enter Time Zone" required>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
                                     </div>
 
-                                    <!-- Time Zone (Below Full Layout) -->
-                                    <div class="col-12 mt-3">
-                                        <div class="mb-20">
-                                            <label class="form-label fw-semibold text-primary-light text-sm mb-8">Time
-                                                Zone</label>
-                                            <input type="text" name="time_zone" class="form-control radius-8"
-                                                value="{{ old('time_zone', $candidate->Time_Zone ?? '') }}"
-                                                placeholder="Enter Time Zone" required>
-                                        </div>
-                                    </div>
+
                                 </div>
 
                             </div>
