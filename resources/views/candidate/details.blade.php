@@ -165,17 +165,15 @@
                                         </div>
 
                                         <div class="flex-grow-1">
-                                            <!-- Time Zone (Below Full Layout) -->
-                                            <div class="col-12 mt-3">
-                                                <div class="mb-20">
-                                                    <label
-                                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Time
-                                                        Zone</label>
-                                                    <input type="text" name="time_zone" class="form-control radius-8"
-                                                        value="{{ old('time_zone', $candidate->Time_Zone ?? '') }}"
-                                                        placeholder="Enter Time Zone" required>
-                                                </div>
+
+                                            <div class="mb-20">
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Time
+                                                    Zone</label>
+                                                <input type="text" name="time_zone" class="form-control radius-8"
+                                                    value="{{ old('time_zone', $candidate->Time_Zone ?? '') }}"
+                                                    placeholder="Enter Time Zone" required>
                                             </div>
+
 
                                         </div>
 
