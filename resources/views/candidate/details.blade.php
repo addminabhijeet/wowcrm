@@ -169,7 +169,6 @@
 
                                     </div>
 
-
                                 </div>
 
                             </div>
@@ -177,64 +176,87 @@
 
 
                             <div class="tab-pane fade" id="pills-information" role="tabpanel">
+                                <div class="row">
+                                    <div class="col-12 d-flex">
+
+                                        <!-- LEFT SIDE (Full Name + Phone) -->
+                                        <div class="flex-grow-1">
+
+                                            <!-- Relocation -->
+                                            <div class="mb-20">
+                                                <label for="relocation"
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Relocation
+                                                </label>
+                                                <input type="text" name="relocation" id="relocation"
+                                                    class="form-control radius-8"
+                                                    value="{{ old('relocation', $candidate->Relocation ?? '') }}"
+                                                    placeholder="Enter Relocation" required>
+                                            </div>
+
+                                            <!-- Graduation -->
+                                            <div class="mb-20">
+                                                <label for="graduation"
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Graduation Date
+                                                </label>
+                                                <input type="text" name="graduation" id="graduation"
+                                                    class="form-control radius-8"
+                                                    value="{{ old('graduation', $candidate->Graduation_Date ?? '') }}"
+                                                    placeholder="Enter Graduation" required>
+                                            </div>
+
+                                            <!-- Immigration -->
+                                            <div class="mb-20">
+                                                <label for="immigration"
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Immigration
+                                                </label>
+                                                <input type="text" name="immigration" id="immigration"
+                                                    class="form-control radius-8"
+                                                    value="{{ old('immigration', $candidate->Immigration ?? '') }}"
+                                                    placeholder="Enter Immigration" required>
+                                            </div>
+
+                                        </div>
+
+                                        <!-- SINGLE VERTICAL DIVIDER (FULL HEIGHT) -->
+                                        <div class="px-4 d-flex" style="align-items: stretch;">
+                                            <div style="width: 4px; background: #000; height: 100%;"></div>
+                                        </div>
 
 
-                                <!-- Relocation -->
-                                <div class="mb-20">
-                                    <label for="relocation"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                        Relocation
-                                    </label>
-                                    <input type="text" name="relocation" id="relocation"
-                                        class="form-control radius-8"
-                                        value="{{ old('relocation', $candidate->Relocation ?? '') }}"
-                                        placeholder="Enter Relocation" required>
-                                </div>
+                                        <!-- RIGHT SIDE (Email + Location) -->
+                                        <div class="flex-grow-1">
 
-                                <!-- Graduation -->
-                                <div class="mb-20">
-                                    <label for="graduation"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                        Graduation Date
-                                    </label>
-                                    <input type="text" name="graduation" id="graduation"
-                                        class="form-control radius-8"
-                                        value="{{ old('graduation', $candidate->Graduation_Date ?? '') }}"
-                                        placeholder="Enter Graduation" required>
-                                </div>
+                                            <!-- Course -->
+                                            <div class="mb-20">
+                                                <label for="course"
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Course
+                                                </label>
+                                                <input type="text" name="course" id="course"
+                                                    class="form-control radius-8"
+                                                    value="{{ old('course', $candidate->Course ?? '') }}"
+                                                    placeholder="Enter Course" required>
+                                            </div>
 
-                                <!-- Immigration -->
-                                <div class="mb-20">
-                                    <label for="immigration"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                        Immigration
-                                    </label>
-                                    <input type="text" name="immigration" id="immigration"
-                                        class="form-control radius-8"
-                                        value="{{ old('immigration', $candidate->Immigration ?? '') }}"
-                                        placeholder="Enter Immigration" required>
-                                </div>
+                                            <!-- Qualification -->
+                                            <div class="mb-20">
+                                                <label for="qualification"
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Qualification
+                                                </label>
+                                                <input type="text" name="qualification" id="qualification"
+                                                    class="form-control radius-8"
+                                                    value="{{ old('qualification', $candidate->Qualification ?? '') }}"
+                                                    placeholder="Enter Qualification" required>
+                                            </div>
 
-                                <!-- Course -->
-                                <div class="mb-20">
-                                    <label for="course" class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                        Course
-                                    </label>
-                                    <input type="text" name="course" id="course" class="form-control radius-8"
-                                        value="{{ old('course', $candidate->Course ?? '') }}" placeholder="Enter Course"
-                                        required>
-                                </div>
+                                        </div>
 
-                                <!-- Qualification -->
-                                <div class="mb-20">
-                                    <label for="qualification"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                        Qualification
-                                    </label>
-                                    <input type="text" name="qualification" id="qualification"
-                                        class="form-control radius-8"
-                                        value="{{ old('qualification', $candidate->Qualification ?? '') }}"
-                                        placeholder="Enter Qualification" required>
+                                    </div>
+
                                 </div>
 
                             </div>
