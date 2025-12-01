@@ -13,7 +13,7 @@
     <title>{{ isset($title) ? $title : config('app.name') }}</title>
 
      <!-- Favicon -->
-    <link rel="icon" href="{{ asset('favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon">
 
     <!-- Styles and other head includes -->
     <x-head />

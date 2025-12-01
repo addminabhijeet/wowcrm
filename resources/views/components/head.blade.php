@@ -37,4 +37,6 @@
     <link rel="stylesheet" href="{{ asset('assets/css/lib/audioplayer.css') }}">
     <!-- main css -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+     <!-- Favicon -->
+    <link rel="icon" href="{{ asset('assets/images/favicon.png') }}" type="image/x-icon">
 </head>
