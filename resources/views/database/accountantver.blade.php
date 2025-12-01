@@ -204,21 +204,16 @@
                                             {{ !empty($row->acceptance) ? 'Change File' : 'Upload' }}
                                         </button>
 
-                                        @if (!empty($row->acceptance))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptance/' . $row->id) }}"
-                                                target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View
-                                                Acceptance</a>
-
-                                            <a href="{{ url('dashboard/senior/google-sheet/download-acceptance/' . $row->id) }}"
-                                                class="btn btn-sm btn-secondary downloadacceptance-btn">Download
-                                                Acceptance</a>
+                                        @if (!empty($row->resume))
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-resume/' . $row->id) }}"
+                                                target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-resume/' . $row->id) }}"
+                                                class="btn btn-sm btn-secondary download-btn">Download</a>
                                         @else
                                             <a href="#" target="_blank"
-                                                class="btn btn-sm btn-primary viewacceptance-btn d-none">View
-                                                Acceptance</a>
+                                                class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
                                             <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadacceptance-btn d-none">Download
-                                                Acceptance</a>
+                                                class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                                         @endif
                                     </td>
 
@@ -1252,7 +1247,20 @@
                                         downloadPaymentBtn.classList.remove('d-none');
                                     }
 
+                                    const viewBtn = row.querySelector('.view-btn');
+                                    const downloadBtn = row.querySelector('.download-btn');
 
+                                    if (viewBtn && data.resume_path) {
+                                        viewBtn.href =
+                                            `/dashboard/senior/google-sheet/view-resume/${data.id}`;
+                                        viewBtn.classList.remove('d-none');
+                                    }
+
+                                    if (downloadBtn && data.resume_path) {
+                                        downloadBtn.href =
+                                            `/dashboard/senior/google-sheet/download-resume/${data.id}`;
+                                        downloadBtn.classList.remove('d-none');
+                                    }
 
 
                                     // Only add new blank row if none exists
