@@ -56,7 +56,7 @@ class DashboardController extends Controller
         $admin = Auth::user();
 
         $notifications = Notification::with('candidate')
-            ->where('notifiable_role', 'Admin')
+            ->where('notifiable_role', 'admin')
             ->where('notifiable_id', $admin->id)
             ->orderBy('id', 'desc')
             ->take(10)
@@ -73,13 +73,13 @@ class DashboardController extends Controller
         // Latest notification for this admin
         $notification = Notification::with(['user', 'candidate'])
             ->where('notifiable_id', $admin->id)
-            ->where('notifiable_role', 'Admin')
+            ->where('notifiable_role', 'admin')
             ->latest('id')
             ->first();
 
         // Count unread (read_at is null)
         $unreadCount = Notification::where('notifiable_id', $admin->id)
-            ->where('notifiable_role', 'Admin')
+            ->where('notifiable_role', 'admin')
             ->whereNull('read_at')
             ->count();
 
@@ -118,7 +118,7 @@ class DashboardController extends Controller
         $now = Carbon::now();
 
         $affected = Notification::where('notifiable_id', $admin->id)
-            ->where('notifiable_role', 'Admin')
+            ->where('notifiable_role', 'admin')
             ->whereNull('read_at')
             ->update(['read_at' => $now]);
 
@@ -1235,7 +1235,7 @@ class DashboardController extends Controller
 
         // ▶️ HARD-CODED RECEIVER EMAIL (as you requested)
         $receiverEmail = "addmin.abhijeet@gmail.com";  // <-- write your receiver email here
-        
+
         // Optional email validation
         if (!filter_var($receiverEmail, FILTER_VALIDATE_EMAIL)) {
             return response()->json([
