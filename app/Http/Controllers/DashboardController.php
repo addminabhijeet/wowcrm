@@ -49,10 +49,6 @@ class DashboardController extends Controller
     {
         $users = User::where('is_deleted', 0)->get();
 
-        $newUsers = User::where('is_deleted', 0)
-            ->where('created_at', '>=', Carbon::now()->subDays(30))
-            ->get();
-
         $admin = Auth::user();
 
         $notifications = Notification::with('candidate')
@@ -62,7 +58,7 @@ class DashboardController extends Controller
             ->take(10)
             ->get();
 
-        return view('notice.veiwdetails', compact('users', 'newUsers', 'notifications'));
+        return view('notice.veiwdetails', compact('users', 'notifications'));
     }
 
 
