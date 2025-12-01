@@ -265,60 +265,98 @@
 
                             <div class="tab-pane fade" id="pills-payment" role="tabpanel">
 
-                                <div class="mb-20">
-                                    <label for="amount"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Amount
-                                    </label>
-                                    <input type="text" name="amount" id="amount" class="form-control radius-8"
-                                        value="${{ old('amount', $candidate->Amount ?? '') }}" placeholder="Enter Amount"
-                                        required>
+                                <div class="row">
+                                    <div class="col-12 d-flex">
+
+                                        <!-- LEFT SIDE (Full Name + Phone) -->
+                                        <div class="flex-grow-1">
+
+                                            <div class="mb-20">
+                                                <label for="amount"
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Amount
+                                                </label>
+                                                <input type="text" name="amount" id="amount"
+                                                    class="form-control radius-8"
+                                                    value="${{ old('amount', $candidate->Amount ?? '') }}"
+                                                    placeholder="Enter Amount" required>
+                                            </div>
+
+                                            <div class="mb-20">
+                                                <label for="PaymentDate"
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Payment
+                                                    Date
+                                                </label>
+                                                <input type="date" name="PaymentDate" id="	PaymentDate"
+                                                    class="form-control radius-8"
+                                                    value="{{ old('PaymentDate', $candidate->PaymentDate ?? '') }}"
+                                                    required>
+                                            </div>
+
+                                            <div class="mb-20">
+                                                <label for="TranId"
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Transaction
+                                                    ID
+                                                </label>
+                                                <input type="text" name="TranId" id="TranId"
+                                                    class="form-control radius-8"
+                                                    value="{{ old('TranId', $candidate->TranId ?? '') }}"
+                                                    placeholder="Enter Transaction ID" required>
+                                            </div>
+
+                                        </div>
+
+                                        <!-- SINGLE VERTICAL DIVIDER (FULL HEIGHT) -->
+                                        <div class="px-4 d-flex" style="align-items: stretch;">
+                                            <div style="width: 3px; background: #333; height: 100%;"></div>
+                                        </div>
+
+
+
+                                        <!-- RIGHT SIDE (Email + Location) -->
+                                        <div class="flex-grow-1">
+
+                                            <div class="mb-20">
+                                                <label for="TranRef"
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Reference
+                                                    Number
+                                                </label>
+                                                <input type="text" name="TranRef" id="TranRef"
+                                                    class="form-control radius-8"
+                                                    value="{{ old('TranRef', $candidate->TranRef ?? '') }}"
+                                                    placeholder="Enter Reference Number" required>
+                                            </div>
+
+                                            <div class="mb-20">
+                                                <label for="PaymentMethod"
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Payment
+                                                    Method
+                                                </label>
+                                                <input type="text" name="PaymentMethod" id="PaymentMethod"
+                                                    class="form-control radius-8"
+                                                    value="{{ old('PaymentMethod', $candidate->PaymentMethod ?? '') }}"
+                                                    placeholder="Enter Payment Method" required>
+                                            </div>
+
+                                            <div class="mb-20">
+                                                <label for="PayeeName"
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Payee
+                                                    Name
+                                                </label>
+                                                <input type="text" name="PayeeName" id="PayeeName"
+                                                    class="form-control radius-8"
+                                                    value="{{ old('PayeeName', $candidate->PayeeName ?? '') }}"
+                                                    placeholder="Enter Payee Name" required>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
                                 </div>
 
-                                <div class="mb-20">
-                                    <label for="PaymentDate"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Date
-                                    </label>
-                                    <input type="date" name="PaymentDate" id="	PaymentDate"
-                                        class="form-control radius-8"
-                                        value="{{ old('PaymentDate', $candidate->PaymentDate ?? '') }}" required>
-                                </div>
 
-                                <div class="mb-20">
-                                    <label for="TranId"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Transaction ID
-                                    </label>
-                                    <input type="text" name="TranId" id="TranId" class="form-control radius-8"
-                                        value="{{ old('TranId', $candidate->TranId ?? '') }}"
-                                        placeholder="Enter Transaction ID" required>
-                                </div>
 
-                                <div class="mb-20">
-                                    <label for="TranRef"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Reference Number
-                                    </label>
-                                    <input type="text" name="TranRef" id="TranRef" class="form-control radius-8"
-                                        value="{{ old('TranRef', $candidate->TranRef ?? '') }}"
-                                        placeholder="Enter Reference Number" required>
-                                </div>
 
-                                <div class="mb-20">
-                                    <label for="PaymentMethod"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payment Method
-                                    </label>
-                                    <input type="text" name="PaymentMethod" id="PaymentMethod"
-                                        class="form-control radius-8"
-                                        value="{{ old('PaymentMethod', $candidate->PaymentMethod ?? '') }}"
-                                        placeholder="Enter Payment Method" required>
-                                </div>
-
-                                <div class="mb-20">
-                                    <label for="PayeeName"
-                                        class="form-label fw-semibold text-primary-light text-sm mb-8">Payee Name
-                                    </label>
-                                    <input type="text" name="PayeeName" id="PayeeName" class="form-control radius-8"
-                                        value="{{ old('PayeeName', $candidate->PayeeName ?? '') }}"
-                                        placeholder="Enter Payee Name" required>
-                                </div>
 
 
 
