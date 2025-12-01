@@ -346,64 +346,106 @@
 
                             </div>
 
-                            <div class="tab-pane fade" id="pills-senddocument" role="tabpanel">
+                            <div class="tab-pane fade" id="pills-senddocument" role="tabpanel"
+                                style="padding:20px; background:#f5f7fa; border-radius:10px;">
 
                                 <!-- Acceptance -->
-                                <h5 class="fw-bold text-primary mb-3">Acceptance Document</h5>
+                                <h5
+                                    style="font-weight:700; color:#0d6efd; margin-bottom:10px; padding:10px 15px;
+               background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
+               box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                                    Acceptance Document
+                                </h5>
+
                                 @if (!empty($candidate->acceptance))
-                                    <div class="w-100 mb-4" style="height: 85vh;">
+                                    <div
+                                        style="width:100%; margin-bottom:30px; height:85vh;
+                    background:#ffffff; border-radius:10px; overflow:hidden;
+                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
                                             src="{{ url('dashboard/senior/google-sheet/view-acceptance/' . $candidate->id) }}"
-                                            style="width: 100%; height: 100%; border: none;" allowfullscreen>
+                                            style="width:100%; height:100%; border:none;" allowfullscreen>
                                         </iframe>
                                     </div>
                                 @else
-                                    <p class="text-danger mb-4">No Acceptance available.</p>
+                                    <p style="color:#dc3545; margin-bottom:30px; font-weight:600;">No Acceptance available.
+                                    </p>
                                 @endif
 
 
                                 <!-- Consultation -->
-                                <h5 class="fw-bold text-primary mb-3">Consultation Document</h5>
+                                <h5
+                                    style="font-weight:700; color:#0d6efd; margin-bottom:10px; padding:10px 15px;
+               background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
+               box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                                    Consultation Document
+                                </h5>
+
                                 @if (!empty($candidate->consultation))
-                                    <div class="w-100 mb-4" style="height: 85vh;">
+                                    <div
+                                        style="width:100%; margin-bottom:30px; height:85vh;
+                    background:#ffffff; border-radius:10px; overflow:hidden;
+                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
                                             src="{{ url('dashboard/senior/google-sheet/view-consultation/' . $candidate->id) }}"
-                                            style="width: 100%; height: 100%; border: none;" allowfullscreen>
+                                            style="width:100%; height:100%; border:none;" allowfullscreen>
                                         </iframe>
                                     </div>
                                 @else
-                                    <p class="text-danger mb-4">No Consultation available.</p>
+                                    <p style="color:#dc3545; margin-bottom:30px; font-weight:600;">No Consultation
+                                        available.</p>
                                 @endif
 
 
                                 <!-- Delivery -->
-                                <h5 class="fw-bold text-primary mb-3">Delivery Document</h5>
+                                <h5
+                                    style="font-weight:700; color:#0d6efd; margin-bottom:10px; padding:10px 15px;
+               background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
+               box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                                    Delivery Document
+                                </h5>
+
                                 @if (!empty($candidate->delivery))
-                                    <div class="w-100 mb-4" style="height: 85vh;">
+                                    <div
+                                        style="width:100%; margin-bottom:30px; height:85vh;
+                    background:#ffffff; border-radius:10px; overflow:hidden;
+                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
                                             src="{{ url('dashboard/senior/google-sheet/view-delivery/' . $candidate->id) }}"
-                                            style="width: 100%; height: 100%; border: none;" allowfullscreen>
+                                            style="width:100%; height:100%; border:none;" allowfullscreen>
                                         </iframe>
                                     </div>
                                 @else
-                                    <p class="text-danger mb-4">No Delivery available.</p>
+                                    <p style="color:#dc3545; margin-bottom:30px; font-weight:600;">No Delivery available.
+                                    </p>
                                 @endif
 
 
                                 <!-- Payment -->
-                                <h5 class="fw-bold text-primary mb-3">Payment Document</h5>
+                                <h5
+                                    style="font-weight:700; color:#0d6efd; margin-bottom:10px; padding:10px 15px;
+               background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
+               box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                                    Payment Document
+                                </h5>
+
                                 @if (!empty($candidate->payment))
-                                    <div class="w-100 mb-4" style="height: 85vh;">
+                                    <div
+                                        style="width:100%; margin-bottom:30px; height:85vh;
+                    background:#ffffff; border-radius:10px; overflow:hidden;
+                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
                                             src="{{ url('dashboard/senior/google-sheet/view-payment/' . $candidate->id) }}"
-                                            style="width: 100%; height: 100%; border: none;" allowfullscreen>
+                                            style="width:100%; height:100%; border:none;" allowfullscreen>
                                         </iframe>
                                     </div>
                                 @else
-                                    <p class="text-danger mb-4">No Payment available.</p>
+                                    <p style="color:#dc3545; margin-bottom:30px; font-weight:600;">No Payment available.
+                                    </p>
                                 @endif
 
                             </div>
+
 
 
                             <div class="tab-pane fade" id="pills-signeddocument" role="tabpanel">
