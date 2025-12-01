@@ -395,17 +395,27 @@
 
                             <div class="tab-pane fade" id="pills-resume" role="tabpanel">
 
-                                <!-- Resume Viewer -->
+                                <!-- Payment -->
+                                <h5
+                                    style="font-weight:700; color:#0d6efd; margin-bottom:10px; padding:10px 15px;
+               background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
+               box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                                    Resume
+                                </h5>
+
                                 @if (!empty($candidate->resume))
-                                    <div class="w-100" style="height: 85vh;">
+                                    <div
+                                        style="width:100%; margin-bottom:30px; height:85vh;
+                    background:#ffffff; border-radius:10px; overflow:hidden;
+                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
                                             src="{{ url('dashboard/senior/google-sheet/view-resume/' . $candidate->id) }}"
-                                            style="width: 100%; height: 100%; border: none;" allowfullscreen>
+                                            style="width:100%; height:100%; border:none;" allowfullscreen>
                                         </iframe>
-
                                     </div>
                                 @else
-                                    <p class="text-danger">No resume available.</p>
+                                    <p style="color:#dc3545; margin-bottom:30px; font-weight:600;">No resume available.
+                                    </p>
                                 @endif
 
                             </div>
