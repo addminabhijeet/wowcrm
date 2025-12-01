@@ -28,18 +28,7 @@
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
 
-                <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user"
-                    id="junior-filter">
-                    <option value="">Select IT Recruiter</option>
-                    @foreach ($juniorUsers as $junior)
-                        <option value="{{ $junior->id }}">
-                            {{ $junior->name }}
-                            @if ($junior->designation)
-                                ({{ $junior->designation }})
-                            @endif
-                        </option>
-                    @endforeach
-                </select>
+
 
 
             </div>
@@ -68,13 +57,12 @@
                                 <th scope="col">Reference Number</th>
                                 <th scope="col">Payment Method</th>
                                 <th scope="col">Payee Name</th>
+                                <th scope="col">Generate</th>
                                 <th scope="col">Acceptance</th>
                                 <th scope="col">Consultation</th>
                                 <th scope="col">Delivery</th>
                                 <th scope="col">Payment</th>
                                 <th scope="col">Forwarded By</th>
-                                <th scope="col">Acceptance Sign</th>
-                                <th scope="col">Consultation Sign</th>
                                 <th scope="col">View</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
@@ -201,6 +189,13 @@
                                             value="{{ $row->PayeeName ?? '' }}" placeholder="Payee Name">
                                     </td>
 
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-success generate-btn"
+                                            data-id="{{ $row->id }}">
+                                            <i class="fas fa-generate"></i> Generate
+                                        </button>
+                                    </td>
+
                                     {{-- View (Acceptance) --}}
                                     <td>
                                         <input type="file" accept="application/pdf" class="d-none acceptance-input"
@@ -296,8 +291,7 @@
                                             <a href="#" target="_blank"
                                                 class="btn btn-sm btn-primary viewpayment-btn d-none">View Payment</a>
                                             <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download
-                                                Payment</a>
+                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download Payment</a>
                                         @endif
                                     </td>
 
@@ -306,59 +300,6 @@
                                         <input type="text" class="form-control forwardedBy-input"
                                             data-key="forwardedBy" value="{{ $row->forwarded_by ?? '' }}"
                                             placeholder="Forwarded By" readonly>
-                                    </td>
-
-                                    {{-- View (Acceptance Sign) --}}
-                                    <td>
-                                        <input type="file" accept="application/pdf"
-                                            class="d-none acceptancesign-input" data-key="View">
-                                        <button type="button" class="btn btn-sm btn-info upload-acceptancesign-btn">
-                                            {{ !empty($row->acceptancesign) ? 'Change File' : 'Upload' }}
-                                        </button>
-
-                                        @if (!empty($row->acceptancesign))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptancesign/' . $row->id) }}"
-                                                target="_blank" class="btn btn-sm btn-primary viewacceptancesign-btn">View
-                                                Acceptance Sign</a>
-
-                                            <a href="{{ url('dashboard/senior/google-sheet/download-acceptancesign/' . $row->id) }}"
-                                                class="btn btn-sm btn-secondary downloadacceptancesign-btn">Download
-                                                Acceptance Sign</a>
-                                        @else
-                                            <a href="#" target="_blank"
-                                                class="btn btn-sm btn-primary viewacceptancesign-btn d-none">View
-                                                Acceptance Sign</a>
-                                            <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadacceptancesign-btn d-none">Download
-                                                Acceptance Sign</a>
-                                        @endif
-                                    </td>
-
-                                    {{-- View (Consultation Sign) --}}
-                                    <td>
-                                        <input type="file" accept="application/pdf"
-                                            class="d-none consultationsign-input" data-key="View">
-                                        <button type="button" class="btn btn-sm btn-info upload-consultationsign-btn">
-                                            {{ !empty($row->consultationsign) ? 'Change File' : 'Upload' }}
-                                        </button>
-
-                                        @if (!empty($row->consultationsign))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-consultationsign/' . $row->id) }}"
-                                                target="_blank"
-                                                class="btn btn-sm btn-primary viewconsultationsign-btn">View
-                                                Consultation Sign</a>
-
-                                            <a href="{{ url('dashboard/senior/google-sheet/download-consultationsign/' . $row->id) }}"
-                                                class="btn btn-sm btn-secondary downloadconsultationsign-btn">Download
-                                                Consultation Sign</a>
-                                        @else
-                                            <a href="#" target="_blank"
-                                                class="btn btn-sm btn-primary viewconsultationsign-btn d-none">View
-                                                Consultation Sign</a>
-                                            <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadconsultationsign-btn d-none">Download
-                                                Consultation Sign</a>
-                                        @endif
                                     </td>
 
                                     {{-- View (Resume) --}}
@@ -860,7 +801,7 @@
                     }
                 });
 
-                // cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
+                cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
                 newRow.innerHTML = cells;
                 tableBody.appendChild(newRow);
                 applyInitialState(newRow);
@@ -1185,22 +1126,10 @@
                         formData.append("acceptance", accInput.files[0]);
                     }
 
-                    // Acceptance Sign file
-                    let accsignInput = row.querySelector("input.acceptancesign-input");
-                    if (accsignInput && accsignInput.files.length > 0) {
-                        formData.append("acceptancesign", accsignInput.files[0]);
-                    }
-
                     // Consultation file
                     let consInput = row.querySelector("input.consultation-input");
                     if (consInput && consInput.files.length > 0) {
                         formData.append("consultation", consInput.files[0]);
-                    }
-
-                    // Consultation Sign file
-                    let conssignInput = row.querySelector("input.consultationsign-input");
-                    if (conssignInput && conssignInput.files.length > 0) {
-                        formData.append("consultationsign", conssignInput.files[0]);
                     }
 
                     // Delivery file
@@ -1269,24 +1198,6 @@
                                         downloadAcceptanceBtn.classList.remove('d-none');
                                     }
 
-                                    // Acceptance
-                                    const viewAcceptancesignBtn = row.querySelector(
-                                        '.viewacceptancesign-btn');
-                                    const downloadAcceptancesignBtn = row.querySelector(
-                                        '.downloadacceptancesign-btn');
-
-                                    if (viewAcceptancesignBtn && data.acceptancesign_path) {
-                                        viewAcceptancesignBtn.href =
-                                            `/dashboard/senior/google-sheet/view-acceptancesign/${data.id}`;
-                                        viewAcceptancesignBtn.classList.remove('d-none');
-                                    }
-
-                                    if (downloadAcceptancesignBtn && data.acceptancesign_path) {
-                                        downloadAcceptancesignBtn.href =
-                                            `/dashboard/senior/google-sheet/download-acceptancesign/${data.id}`;
-                                        downloadAcceptancesignBtn.classList.remove('d-none');
-                                    }
-
                                     // Consultation
                                     const viewConsultationBtn = row.querySelector(
                                         '.viewconsultation-btn');
@@ -1303,24 +1214,6 @@
                                         downloadConsultationBtn.href =
                                             `/dashboard/senior/google-sheet/download-consultation/${data.id}`;
                                         downloadConsultationBtn.classList.remove('d-none');
-                                    }
-
-                                    // Consultation Sign
-                                    const viewConsultationsignBtn = row.querySelector(
-                                        '.viewconsultationsign-btn');
-                                    const downloadConsultationsignBtn = row.querySelector(
-                                        '.downloadconsultationsign-btn');
-
-                                    if (viewConsultationsignBtn && data.consultationsign_path) {
-                                        viewConsultationsignBtn.href =
-                                            `/dashboard/senior/google-sheet/view-consultationsign/${data.id}`;
-                                        viewConsultationsignBtn.classList.remove('d-none');
-                                    }
-
-                                    if (downloadConsultationsignBtn && data.consultationsign_path) {
-                                        downloadConsultationsignBtn.href =
-                                            `/dashboard/senior/google-sheet/download-consultationsign/${data.id}`;
-                                        downloadConsultationsignBtn.classList.remove('d-none');
                                     }
 
                                     // Delivery
@@ -1410,25 +1303,11 @@
                     if (accInput) accInput.click();
                 }
 
-                // Acceptance Sign upload
-                if (e.target.matches('.upload-acceptancesign-btn')) {
-                    const row = e.target.closest('tr');
-                    const accsignInput = row.querySelector('.acceptancesign-input');
-                    if (accsignInput) accsignInput.click();
-                }
-
                 // Consultation upload
                 if (e.target.matches('.upload-consultation-btn')) {
                     const row = e.target.closest('tr');
                     const consInput = row.querySelector('.consultation-input');
                     if (consInput) consInput.click();
-                }
-
-                // Consultation Sign upload
-                if (e.target.matches('.upload-consultationsign-btn')) {
-                    const row = e.target.closest('tr');
-                    const conssignInput = row.querySelector('.consultationsign-input');
-                    if (conssignInput) conssignInput.click();
                 }
 
                 // Delivery upload
@@ -1459,19 +1338,7 @@
                 }
 
                 if (e.target.matches('.viewacceptance-btn') || e.target.matches(
-                        '.downloadacceptance-btn')) {
-                    const row = e.target.closest('tr');
-                    const id = row.dataset.id;
-
-                    if (id === "new") {
-                        e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
-                        return;
-                    }
-                }
-
-                if (e.target.matches('.viewacceptancesign-btn') || e.target.matches(
-                        '.downloadacceptancesign-btn')) {
+                    '.downloadacceptance-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
@@ -1484,18 +1351,6 @@
 
                 if (e.target.matches('.viewconsultation-btn') || e.target.matches(
                         '.downloadconsultation-btn')) {
-                    const row = e.target.closest('tr');
-                    const id = row.dataset.id;
-
-                    if (id === "new") {
-                        e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
-                        return;
-                    }
-                }
-
-                if (e.target.matches('.viewconsultationsign-btn') || e.target.matches(
-                        '.downloadconsultationsign-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
@@ -1552,128 +1407,42 @@
                 // Acceptance
                 if (e.target.matches('.acceptance-input')) {
                     const row = e.target.closest('tr');
-                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
-                    // Show view and download buttons temporarily
-                    const viewBtn = row.querySelector('.viewacceptance-btn');
-                    const downloadBtn = row.querySelector('.downloadacceptance-btn');
+                    row.querySelector('.viewacceptance-btn')?.classList.remove('d-none');
+                    row.querySelector('.downloadacceptance-btn')?.classList.remove('d-none');
 
-                    if (viewBtn) viewBtn.classList.remove('d-none');
-                    if (downloadBtn) downloadBtn.classList.remove('d-none');
-
-                    // Update button text
-                    const uploadBtn = row.querySelector('.upload-acceptance-btn');
-                    if (uploadBtn) uploadBtn.textContent = 'Change File';
-
-                    console.log('File selected:', fileName);
+                    row.querySelector('.upload-acceptance-btn').textContent = 'Change File';
                 }
-
-
-                // Acceptance Sign
-                if (e.target.matches('.acceptancesign-input')) {
-                    const row = e.target.closest('tr');
-
-                    // Get selected file name
-                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
-
-                    // Show view & download buttons
-                    const viewBtn = row.querySelector('.viewacceptancesign-btn');
-                    const downloadBtn = row.querySelector('.downloadacceptancesign-btn');
-
-                    if (viewBtn) viewBtn.classList.remove('d-none');
-                    if (downloadBtn) downloadBtn.classList.remove('d-none');
-
-                    // Update upload button text
-                    const uploadBtn = row.querySelector('.upload-acceptancesign-btn');
-                    if (uploadBtn) uploadBtn.textContent = 'Change File';
-
-                    // Log the selected file
-                    console.log('Acceptance sign file selected:', fileName);
-                }
-
 
                 // Consultation
                 if (e.target.matches('.consultation-input')) {
                     const row = e.target.closest('tr');
-                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
-                    // Show view & download buttons
-                    const viewBtn = row.querySelector('.viewconsultation-btn');
-                    const downloadBtn = row.querySelector('.downloadconsultation-btn');
+                    row.querySelector('.viewconsultation-btn')?.classList.remove('d-none');
+                    row.querySelector('.downloadconsultation-btn')?.classList.remove('d-none');
 
-                    if (viewBtn) viewBtn.classList.remove('d-none');
-                    if (downloadBtn) downloadBtn.classList.remove('d-none');
-
-                    // Update upload button text
-                    const uploadBtn = row.querySelector('.upload-consultation-btn');
-                    if (uploadBtn) uploadBtn.textContent = 'Change File';
-
-                    console.log('Consultation file selected:', fileName);
+                    row.querySelector('.upload-consultation-btn').textContent = 'Change File';
                 }
-
-
-                // Consultation Sign
-                if (e.target.matches('.consultationsign-input')) {
-                    const row = e.target.closest('tr');
-
-                    // Get selected file name (same as resume code)
-                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
-                    console.log('File selected:', fileName);
-
-                    // Show view & download buttons
-                    const viewBtn = row.querySelector('.viewconsultationsign-btn');
-                    const downloadBtn = row.querySelector('.downloadconsultationsign-btn');
-
-                    if (viewBtn) viewBtn.classList.remove('d-none');
-                    if (downloadBtn) downloadBtn.classList.remove('d-none');
-
-                    // Update upload button text
-                    const uploadBtn = row.querySelector('.upload-consultationsign-btn');
-                    if (uploadBtn) uploadBtn.textContent = 'Change File';
-                }
-
 
                 // Delivery
                 if (e.target.matches('.delivery-input')) {
                     const row = e.target.closest('tr');
-                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
-                    // Show view and download buttons temporarily
-                    const viewBtn = row.querySelector('.viewdelivery-btn');
-                    const downloadBtn = row.querySelector('.downloaddelivery-btn');
+                    row.querySelector('.viewdelivery-btn')?.classList.remove('d-none');
+                    row.querySelector('.downloaddelivery-btn')?.classList.remove('d-none');
 
-                    if (viewBtn) viewBtn.classList.remove('d-none');
-                    if (downloadBtn) downloadBtn.classList.remove('d-none');
-
-                    // Update button text
-                    const uploadBtn = row.querySelector('.upload-delivery-btn');
-                    if (uploadBtn) uploadBtn.textContent = 'Change File';
-
-                    console.log('Delivery file selected:', fileName);
+                    row.querySelector('.upload-delivery-btn').textContent = 'Change File';
                 }
-
 
                 // Payment
                 if (e.target.matches('.payment-input')) {
                     const row = e.target.closest('tr');
 
-                    // Get selected file name
-                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+                    row.querySelector('.viewpayment-btn')?.classList.remove('d-none');
+                    row.querySelector('.downloadpayment-btn')?.classList.remove('d-none');
 
-                    // Show view and download buttons (same as resume code)
-                    const viewBtn = row.querySelector('.viewpayment-btn');
-                    const downloadBtn = row.querySelector('.downloadpayment-btn');
-
-                    if (viewBtn) viewBtn.classList.remove('d-none');
-                    if (downloadBtn) downloadBtn.classList.remove('d-none');
-
-                    // Update upload button text
-                    const uploadBtn = row.querySelector('.upload-payment-btn');
-                    if (uploadBtn) uploadBtn.textContent = 'Change File';
-
-                    console.log('Payment file selected:', fileName);
+                    row.querySelector('.upload-payment-btn').textContent = 'Change File';
                 }
-
 
             });
 
