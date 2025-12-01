@@ -142,8 +142,9 @@
 
                                         <!-- SINGLE VERTICAL DIVIDER (FULL HEIGHT) -->
                                         <div class="px-4 d-flex" style="align-items: stretch;">
-                                            <div style="width: 4px; background: #000; height: 100%;"></div>
+                                            <div style="width: 3px; background: #333; height: 100%;"></div>
                                         </div>
+
 
 
                                         <!-- RIGHT SIDE (Email + Location) -->
@@ -222,8 +223,9 @@
 
                                         <!-- SINGLE VERTICAL DIVIDER (FULL HEIGHT) -->
                                         <div class="px-4 d-flex" style="align-items: stretch;">
-                                            <div style="width: 4px; background: #000; height: 100%;"></div>
+                                            <div style="width: 3px; background: #333; height: 100%;"></div>
                                         </div>
+
 
 
                                         <!-- RIGHT SIDE (Email + Location) -->
