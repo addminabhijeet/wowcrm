@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-    $title = $candidate->Name;($candidate->sheet_row_number)
+    $title = $candidate->Name;
     $subTitle = 'Senior Support Associate';
     $script = '<script>
         // ======================== Upload Image Start =====================
