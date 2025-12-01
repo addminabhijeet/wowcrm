@@ -320,7 +320,7 @@
                                 <!-- Resume Viewer -->
                                 @if (!empty($candidate->resume))
                                     <div class="w-100" style="height: 85vh;">
-                                        <iframe src="{{ url('dashboard/senior/google-sheet/view-resume/' . $row->id) }}"
+                                        <iframe src="{{ url('dashboard/senior/google-sheet/view-resume/' . $candidate->id) }}"
                                             style="width: 100%; height: 100%; border: none;" allowfullscreen>
                                         </iframe>
 
