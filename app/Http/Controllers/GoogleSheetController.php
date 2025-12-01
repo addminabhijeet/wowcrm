@@ -3409,6 +3409,73 @@ class GoogleSheetController extends Controller
         return response()->download($filePath, basename($filePath));
     }
 
+    public function downloadseniorAcceptance($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->acceptance) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->acceptance);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download($filePath, basename($filePath));
+    }
+    public function downloadseniorConsultation($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->consultation) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->consultation);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download($filePath, basename($filePath));
+    }
+    public function downloadseniorDelivery($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->delivery) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->delivery);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download($filePath, basename($filePath));
+    }
+    public function downloadseniorPayment($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->payment) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->payment);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download($filePath, basename($filePath));
+    }
+
+
+
     public function viewseniorAudio($id)
     {
         $row = GoogleSheetData::find($id);
