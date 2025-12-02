@@ -457,16 +457,22 @@
                                         const fp = flatpickr("#followup-calendar", {
                                             dateFormat: "Y-m-d",
                                             onChange: function(selectedDates, dateStr) {
-                                                remarkBox.value = followupData[dateStr] ? followupData[dateStr].join("\n") : "";
+                                                const selected = fp.formatDate(selectedDates[0], "Y-m-d");
+                                                remarkBox.value = followupData[selected] ? followupData[selected].join("\n") : "";
+
                                             },
                                             onDayCreate: function(dObj, dStr, fpInstance, dayElem) {
-                                                const date = dayElem.dateObj.toISOString().split("T")[0];
+                                                // Get date WITHOUT timezone issues
+                                                const date = fpInstance.formatDate(dayElem.dateObj, "Y-m-d");
+
+                                                // Mark if exists in DB list
                                                 if (followupData[date]) {
                                                     dayElem.style.background = "#ff99cc";
                                                     dayElem.style.borderRadius = "50%";
                                                     dayElem.style.fontWeight = "bold";
                                                 }
                                             }
+
                                         });
 
                                         const firstDate = Object.keys(followupData)[0];
