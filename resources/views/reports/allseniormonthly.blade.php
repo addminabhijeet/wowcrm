@@ -762,128 +762,327 @@
                         </div>
 
                         <!-- Table Section -->
-                        <div class="table-responsive">
-                            <table class="table table-hover table-bordered align-middle mb-0">
-                                <thead class="table-primary">
-                                    <tr>
-                                        <th class="fw-bold">Time Range</th>
-                                        <th class="fw-bold text-center">Called & Mailed Count</th>
-                                        <th class="fw-bold text-center">Ready To Paid Count</th>
-                                        <th class="fw-bold text-center">Other Call Count</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td>08.00AM-09.00AM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t8to9am }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r8to9am }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o8to9am }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>09.00AM-10.00AM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t9to10am }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r9to10am }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o9to10am }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>10.00AM-11.00AM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t10to11am }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r10to11am }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o10to11am }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>11.00AM-12.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r11to12pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o11to12pm }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>12.00PM-01.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t12to1pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r12to1pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o12to1pm }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>01.00PM-02.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t1to2pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r1to2pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o1to2pm }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>02.00PM-03.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t2to3pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r2to3pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o2to3pm }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>03.00PM-04.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t3to4pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r3to4pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o3to4pm }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>04.00PM-05.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t4to5pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r4to5pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o4to5pm }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>05.00PM-06.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t5to6pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r5to6pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o5to6pm }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>06.00PM-07.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t6to7pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r6to7pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o6to7pm }}</span>
-                                        </td>
-                                    </tr>
-                                    <tr>
-                                        <td>07.00PM-08.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t7to8pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $r7to8pm }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $o7to8pm }}</span>
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                        <div class="row">
+
+                            <!-- ================= FIRST TABLE : 1 - 16 ================= -->
+                            <div class="col-md-6">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered align-middle mb-0">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th class="fw-bold">Date</th>
+                                                <th class="fw-bold text-center">Called & Mailed</th>
+                                                <th class="fw-bold text-center">Other Call</th>
+                                                <th class="fw-bold text-center">Ready To Paid</th>
+                                                <!-- Replaces Transfers -->
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>01</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay1 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay1 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay1 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>02</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay2 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay2 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay2 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>03</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay3 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay3 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay3 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>04</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay4 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay4 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay4 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>05</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay5 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay5 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay5 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>06</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay6 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay6 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay6 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>07</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay7 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay7 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay7 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>08</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay8 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay8 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay8 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>09</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay9 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay9 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay9 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>10</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay10 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay10 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay10 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>11</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay11 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay11 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay11 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>12</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay12 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay12 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay12 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>13</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay13 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay13 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay13 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>14</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay14 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay14 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay14 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>15</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay15 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay15 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay15 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>16</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay16 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay16 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay16 }}</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <!-- ================= SECOND TABLE : 17 - 31 ================= -->
+                            <div class="col-md-6">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered align-middle mb-0">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th class="fw-bold">Date</th>
+                                                <th class="fw-bold text-center">Called & Mailed</th>
+                                                <th class="fw-bold text-center">Other Call</th>
+                                                <th class="fw-bold text-center">Ready To Paid</th>
+                                                <!-- Replaces Transfers -->
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>17</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay17 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay17 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay17 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>18</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay18 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay18 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay18 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>19</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay19 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay19 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay19 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>20</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay20 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay20 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay20 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>21</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay21 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay21 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay21 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>22</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay22 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay22 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay22 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>23</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay23 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay23 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay23 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>24</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay24 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay24 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay24 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>25</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay25 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay25 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay25 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>26</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay26 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay26 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay26 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>27</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay27 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay27 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay27 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>28</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay28 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay28 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay28 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>29</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay29 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay29 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay29 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>30</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay30 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay30 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay30 }}</span></td>
+                                            </tr>
+                                            <tr>
+                                                <td>31</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay31 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay31 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $rDay31 }}</span></td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
                         </div>
+
                     </div>
                 </div>
             </div>
