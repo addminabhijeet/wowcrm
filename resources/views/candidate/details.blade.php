@@ -364,10 +364,10 @@
 
                             <div class="tab-pane fade" id="pills-change-passwork" role="tabpanel">
                                 <div class="mb-20">
-                                    <label for="created_by"
+                                    <label for="forwarded_by"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Forwarded By
                                     </label>
-                                    <textarea name="created_by" id="created_by" class="form-control radius-8" placeholder="Enter name" readonly>{{ old('$forwardedBy', $candidate->$forwardedBy ?? '') }}</textarea>
+                                    <textarea name="forwarded_by" id="forwarded_by" class="form-control radius-8" placeholder="Enter name" readonly>{{ old('forwarded_by', $candidate->forwarded_by ?? '') }}</textarea>
                                 </div>
 
 
