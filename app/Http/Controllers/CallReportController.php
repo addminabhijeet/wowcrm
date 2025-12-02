@@ -293,45 +293,102 @@ class CallReportController extends Controller
             ->toArray();
 
 
-        // Initialize hour blocks (10 AM - 8 PM)
-        $t8to9am = $hourlyCalledMailed[8] ?? 0;
-        $t9to10am = $hourlyCalledMailed[9] ?? 0;
-        $t10to11am = $hourlyCalledMailed[10] ?? 0;
-        $t11to12pm = $hourlyCalledMailed[11] ?? 0;
-        $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
-        $t1to2pm   = $hourlyCalledMailed[13] ?? 0;
-        $t2to3pm   = $hourlyCalledMailed[14] ?? 0;
-        $t3to4pm   = $hourlyCalledMailed[15] ?? 0;
-        $t4to5pm   = $hourlyCalledMailed[16] ?? 0;
-        $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
-        $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
-        $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+        // --- Initialize daily variables (Day 1 - Day 31) ---
+        $tDay1  = $dailyCalledMailed[1]  ?? 0;
+        $tDay2  = $dailyCalledMailed[2]  ?? 0;
+        $tDay3  = $dailyCalledMailed[3]  ?? 0;
+        $tDay4  = $dailyCalledMailed[4]  ?? 0;
+        $tDay5  = $dailyCalledMailed[5]  ?? 0;
+        $tDay6  = $dailyCalledMailed[6]  ?? 0;
+        $tDay7  = $dailyCalledMailed[7]  ?? 0;
+        $tDay8  = $dailyCalledMailed[8]  ?? 0;
+        $tDay9  = $dailyCalledMailed[9]  ?? 0;
+        $tDay10 = $dailyCalledMailed[10] ?? 0;
+        $tDay11 = $dailyCalledMailed[11] ?? 0;
+        $tDay12 = $dailyCalledMailed[12] ?? 0;
+        $tDay13 = $dailyCalledMailed[13] ?? 0;
+        $tDay14 = $dailyCalledMailed[14] ?? 0;
+        $tDay15 = $dailyCalledMailed[15] ?? 0;
+        $tDay16 = $dailyCalledMailed[16] ?? 0;
+        $tDay17 = $dailyCalledMailed[17] ?? 0;
+        $tDay18 = $dailyCalledMailed[18] ?? 0;
+        $tDay19 = $dailyCalledMailed[19] ?? 0;
+        $tDay20 = $dailyCalledMailed[20] ?? 0;
+        $tDay21 = $dailyCalledMailed[21] ?? 0;
+        $tDay22 = $dailyCalledMailed[22] ?? 0;
+        $tDay23 = $dailyCalledMailed[23] ?? 0;
+        $tDay24 = $dailyCalledMailed[24] ?? 0;
+        $tDay25 = $dailyCalledMailed[25] ?? 0;
+        $tDay26 = $dailyCalledMailed[26] ?? 0;
+        $tDay27 = $dailyCalledMailed[27] ?? 0;
+        $tDay28 = $dailyCalledMailed[28] ?? 0;
+        $tDay29 = $dailyCalledMailed[29] ?? 0;
+        $tDay30 = $dailyCalledMailed[30] ?? 0;
+        $tDay31 = $dailyCalledMailed[31] ?? 0;
 
-        $o8to9am = $hourlyOtherCalls[8] ?? 0;
-        $o9to10am = $hourlyOtherCalls[9] ?? 0;
-        $o10to11am = $hourlyOtherCalls[10] ?? 0;
-        $o11to12pm = $hourlyOtherCalls[11] ?? 0;
-        $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
-        $o1to2pm   = $hourlyOtherCalls[13] ?? 0;
-        $o2to3pm   = $hourlyOtherCalls[14] ?? 0;
-        $o3to4pm   = $hourlyOtherCalls[15] ?? 0;
-        $o4to5pm   = $hourlyOtherCalls[16] ?? 0;
-        $o5to6pm   = $hourlyOtherCalls[17] ?? 0;
-        $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
-        $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
+        $oDay1  = $dailyOtherCalls[1]  ?? 0;
+        $oDay2  = $dailyOtherCalls[2]  ?? 0;
+        $oDay3  = $dailyOtherCalls[3]  ?? 0;
+        $oDay4  = $dailyOtherCalls[4]  ?? 0;
+        $oDay5  = $dailyOtherCalls[5]  ?? 0;
+        $oDay6  = $dailyOtherCalls[6]  ?? 0;
+        $oDay7  = $dailyOtherCalls[7]  ?? 0;
+        $oDay8  = $dailyOtherCalls[8]  ?? 0;
+        $oDay9  = $dailyOtherCalls[9]  ?? 0;
+        $oDay10 = $dailyOtherCalls[10] ?? 0;
+        $oDay11 = $dailyOtherCalls[11] ?? 0;
+        $oDay12 = $dailyOtherCalls[12] ?? 0;
+        $oDay13 = $dailyOtherCalls[13] ?? 0;
+        $oDay14 = $dailyOtherCalls[14] ?? 0;
+        $oDay15 = $dailyOtherCalls[15] ?? 0;
+        $oDay16 = $dailyOtherCalls[16] ?? 0;
+        $oDay17 = $dailyOtherCalls[17] ?? 0;
+        $oDay18 = $dailyOtherCalls[18] ?? 0;
+        $oDay19 = $dailyOtherCalls[19] ?? 0;
+        $oDay20 = $dailyOtherCalls[20] ?? 0;
+        $oDay21 = $dailyOtherCalls[21] ?? 0;
+        $oDay22 = $dailyOtherCalls[22] ?? 0;
+        $oDay23 = $dailyOtherCalls[23] ?? 0;
+        $oDay24 = $dailyOtherCalls[24] ?? 0;
+        $oDay25 = $dailyOtherCalls[25] ?? 0;
+        $oDay26 = $dailyOtherCalls[26] ?? 0;
+        $oDay27 = $dailyOtherCalls[27] ?? 0;
+        $oDay28 = $dailyOtherCalls[28] ?? 0;
+        $oDay29 = $dailyOtherCalls[29] ?? 0;
+        $oDay30 = $dailyOtherCalls[30] ?? 0;
+        $oDay31 = $dailyOtherCalls[31] ?? 0;
 
-        $r8to9am = $hourlyReadyToPaid[8] ?? 0;
-        $r9to10am = $hourlyReadyToPaid[9] ?? 0;
-        $r10to11am = $hourlyReadyToPaid[10] ?? 0;
-        $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
-        $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
-        $r1to2pm   = $hourlyReadyToPaid[13] ?? 0;
-        $r2to3pm   = $hourlyReadyToPaid[14] ?? 0;
-        $r3to4pm   = $hourlyReadyToPaid[15] ?? 0;
-        $r4to5pm   = $hourlyReadyToPaid[16] ?? 0;
-        $r5to6pm   = $hourlyReadyToPaid[17] ?? 0;
-        $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
-        $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
+        $rDay1  = $dailyReadyToPaid[1]  ?? 0;
+        $rDay2  = $dailyReadyToPaid[2]  ?? 0;
+        $rDay3  = $dailyReadyToPaid[3]  ?? 0;
+        $rDay4  = $dailyReadyToPaid[4]  ?? 0;
+        $rDay5  = $dailyReadyToPaid[5]  ?? 0;
+        $rDay6  = $dailyReadyToPaid[6]  ?? 0;
+        $rDay7  = $dailyReadyToPaid[7]  ?? 0;
+        $rDay8  = $dailyReadyToPaid[8]  ?? 0;
+        $rDay9  = $dailyReadyToPaid[9]  ?? 0;
+        $rDay10 = $dailyReadyToPaid[10] ?? 0;
+        $rDay11 = $dailyReadyToPaid[11] ?? 0;
+        $rDay12 = $dailyReadyToPaid[12] ?? 0;
+        $rDay13 = $dailyReadyToPaid[13] ?? 0;
+        $rDay14 = $dailyReadyToPaid[14] ?? 0;
+        $rDay15 = $dailyReadyToPaid[15] ?? 0;
+        $rDay16 = $dailyReadyToPaid[16] ?? 0;
+        $rDay17 = $dailyReadyToPaid[17] ?? 0;
+        $rDay18 = $dailyReadyToPaid[18] ?? 0;
+        $rDay19 = $dailyReadyToPaid[19] ?? 0;
+        $rDay20 = $dailyReadyToPaid[20] ?? 0;
+        $rDay21 = $dailyReadyToPaid[21] ?? 0;
+        $rDay22 = $dailyReadyToPaid[22] ?? 0;
+        $rDay23 = $dailyReadyToPaid[23] ?? 0;
+        $rDay24 = $dailyReadyToPaid[24] ?? 0;
+        $rDay25 = $dailyReadyToPaid[25] ?? 0;
+        $rDay26 = $dailyReadyToPaid[26] ?? 0;
+        $rDay27 = $dailyReadyToPaid[27] ?? 0;
+        $rDay28 = $dailyReadyToPaid[28] ?? 0;
+        $rDay29 = $dailyReadyToPaid[29] ?? 0;
+        $rDay30 = $dailyReadyToPaid[30] ?? 0;
+        $rDay31 = $dailyReadyToPaid[31] ?? 0;
 
         $juniorUser = $user;
 
@@ -479,8 +536,12 @@ class CallReportController extends Controller
             }
         }
 
+        $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
+
         return view('reports.seniormonthly', compact(
             'totalCalls',
+            'MAvgTotalCalls',
+            'juniorUser',
             'calledAndMailedCalls',
             'readyToPaidCalls',
             'otherCalls',
@@ -489,42 +550,106 @@ class CallReportController extends Controller
             'MreadyToPaidCalls',
             'MotherCalls',
             'selectedMonth',
-            't8to9am',
-            't9to10am',
-            't10to11am',
-            't11to12pm',
-            't12to1pm',
-            't1to2pm',
-            't2to3pm',
-            't3to4pm',
-            't4to5pm',
-            't5to6pm',
-            't6to7pm',
-            't7to8pm',
-            'o8to9am',
-            'o9to10am',
-            'o10to11am',
-            'o11to12pm',
-            'o12to1pm',
-            'o1to2pm',
-            'o2to3pm',
-            'o3to4pm',
-            'o4to5pm',
-            'o5to6pm',
-            'o6to7pm',
-            'o7to8pm',
-            'r8to9am',
-            'r9to10am',
-            'r10to11am',
-            'r11to12pm',
-            'r12to1pm',
-            'r1to2pm',
-            'r2to3pm',
-            'r3to4pm',
-            'r4to5pm',
-            'r5to6pm',
-            'r6to7pm',
-            'r7to8pm',
+
+            // --- Called & Mailed daily ---
+            'tDay1',
+            'tDay2',
+            'tDay3',
+            'tDay4',
+            'tDay5',
+            'tDay6',
+            'tDay7',
+            'tDay8',
+            'tDay9',
+            'tDay10',
+            'tDay11',
+            'tDay12',
+            'tDay13',
+            'tDay14',
+            'tDay15',
+            'tDay16',
+            'tDay17',
+            'tDay18',
+            'tDay19',
+            'tDay20',
+            'tDay21',
+            'tDay22',
+            'tDay23',
+            'tDay24',
+            'tDay25',
+            'tDay26',
+            'tDay27',
+            'tDay28',
+            'tDay29',
+            'tDay30',
+            'tDay31',
+
+            // --- Other Calls daily ---
+            'oDay1',
+            'oDay2',
+            'oDay3',
+            'oDay4',
+            'oDay5',
+            'oDay6',
+            'oDay7',
+            'oDay8',
+            'oDay9',
+            'oDay10',
+            'oDay11',
+            'oDay12',
+            'oDay13',
+            'oDay14',
+            'oDay15',
+            'oDay16',
+            'oDay17',
+            'oDay18',
+            'oDay19',
+            'oDay20',
+            'oDay21',
+            'oDay22',
+            'oDay23',
+            'oDay24',
+            'oDay25',
+            'oDay26',
+            'oDay27',
+            'oDay28',
+            'oDay29',
+            'oDay30',
+            'oDay31',
+
+            // --- Ready To Paid daily ---
+            'rDay1',
+            'rDay2',
+            'rDay3',
+            'rDay4',
+            'rDay5',
+            'rDay6',
+            'rDay7',
+            'rDay8',
+            'rDay9',
+            'rDay10',
+            'rDay11',
+            'rDay12',
+            'rDay13',
+            'rDay14',
+            'rDay15',
+            'rDay16',
+            'rDay17',
+            'rDay18',
+            'rDay19',
+            'rDay20',
+            'rDay21',
+            'rDay22',
+            'rDay23',
+            'rDay24',
+            'rDay25',
+            'rDay26',
+            'rDay27',
+            'rDay28',
+            'rDay29',
+            'rDay30',
+            'rDay31',
+
             'targetGiven',
             'targetAchieved',
             'targetYetToAchieve',
