@@ -692,51 +692,55 @@
                             </form>
                         </div>
                         <div class="row g-3 mb-4">
-                            <div class="col-md-4">
+                            <div class="col-md-3 col-sm-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-primary fs-2">
                                         <i class="bi bi-telephone-fill"></i>
                                     </div>
                                     <div>
-                                        <small class=" fw-bold d-block">Total Calls</small>
+                                        <small class="fw-bold d-block">Total Calls</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $MtotalCalls }}</h4>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+
+                            <div class="col-md-3 col-sm-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-success fs-2">
                                         <i class="bi bi-bar-chart-fill"></i>
                                     </div>
                                     <div>
-                                        <small class=" fw-bold d-block">Other Calls</small>
+                                        <small class="fw-bold d-block">Other Calls</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $MotherCalls }}</h4>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+
+                            <div class="col-md-3 col-sm-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
                                     </div>
                                     <div>
-                                        <small class=" fw-bold d-block">Called & Mailed</small>
+                                        <small class="fw-bold d-block">Called & Mailed</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
+
+                            <div class="col-md-3 col-sm-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
                                     </div>
                                     <div>
-                                        <small class=" fw-bold d-block">Per Day Calls</small>
+                                        <small class="fw-bold d-block">Per Day Calls</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $MAvgTotalCalls }}</h4>
                                     </div>
                                 </div>
                             </div>
                         </div>
+
                         <div class="table-responsive">
                             <table class="table table-hover table-bordered align-middle mb-0">
                                 <thead class="table-primary">
