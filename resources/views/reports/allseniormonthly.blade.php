@@ -715,7 +715,7 @@
 
                         <!-- Stats Section -->
                         <div class="row g-3 mb-4">
-                            <div class="col-md-3">
+                            <div class="col-md-2 col-sm-4 col-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-primary fs-2">
                                         <i class="bi bi-telephone-fill"></i>
@@ -726,7 +726,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+
+                            <div class="col-md-2 col-sm-4 col-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-success fs-2">
                                         <i class="bi bi-bar-chart-fill"></i>
@@ -737,7 +738,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+
+                            <div class="col-md-2 col-sm-4 col-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
@@ -748,7 +750,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-3">
+
+                            <div class="col-md-2 col-sm-4 col-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-info fs-2">
                                         <i class="bi bi-cash-stack"></i>
@@ -759,7 +762,20 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-md-2 col-sm-4 col-6">
+                                <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                    <div class="icon mb-2 text-warning fs-2">
+                                        <i class="bi bi-envelope-paper-fill"></i>
+                                    </div>
+                                    <div>
+                                        <small class="fw-bold d-block">Per Day Calls</small>
+                                        <h4 class="fw-bold text-dark mb-0">{{ $MAvgTotalCalls }}</h4>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
+
 
                         <!-- Table Section -->
                         <div class="row">
