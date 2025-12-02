@@ -1419,6 +1419,8 @@ class CallReportController extends Controller
             }
         }
 
+        $MAvgTotalCalls = $presentDays > 0 ? round($MtotalCalls / $presentDays, 2): 0;
+
 
 
 
@@ -1459,7 +1461,8 @@ class CallReportController extends Controller
             'presentDays',
             'absentDays',
             'workingDays',
-            'nonWorkingDays'
+            'nonWorkingDays',
+            'MAvgTotalCalls',
         ));
     }
 
