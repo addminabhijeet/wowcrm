@@ -409,20 +409,16 @@
                                         Follow Up Remarks (Calendar)
                                     </label>
 
-                                    <!-- Calendar Input -->
                                     <input type="text" id="followup-calendar" class="form-control radius-8 mb-2"
                                         placeholder="Select date">
 
-                                    <!-- Selected Remark Output -->
                                     <textarea id="followup-remark" class="form-control radius-8 mb-2" rows="4"
                                         placeholder="Select a date to view remarks"></textarea>
 
-                                    <!-- Add new remark -->
                                     <textarea id="new-remark" class="form-control radius-8 mb-2" rows="2" placeholder="Add new remark"></textarea>
                                     <button type="button" id="add-remark-btn" class="btn btn-primary mb-10">Add
                                         Remark</button>
 
-                                    <!-- Hidden for existing data -->
                                     <textarea name="followups" id="followups" class="d-none">
                                         {{ old('followups', $candidate->followups ?? '') }}
                                     </textarea>
@@ -434,55 +430,52 @@
 
                                 <script>
                                     document.addEventListener("DOMContentLoaded", function() {
-
-                                        let rawData = document.getElementById("followups").value.trim();
-                                        let entries = rawData ? rawData.split(" : ") : [];
-                                        let followupData = {};
-
-                                        // Convert DB entries to JS object
-                                        entries.forEach(entry => {
-                                            let parts = entry.split("|");
-                                            if (parts.length === 2) {
-                                                let date = parts[0].trim();
-                                                let remark = parts[1].trim();
-                                                if (!followupData[date]) followupData[date] = [];
-                                                followupData[date].push(remark);
-                                            }
-                                        });
-
                                         const remarkBox = document.getElementById("followup-remark");
                                         const newRemarkInput = document.getElementById("new-remark");
                                         const addRemarkBtn = document.getElementById("add-remark-btn");
                                         const hiddenInput = document.getElementById("followups");
 
+                                        // Parse DB followups
+                                        let rawData = document.getElementById("followups").value.trim();
+                                        let followupData = {};
+
+                                        if (rawData) {
+                                            let entries = rawData.split(" : ");
+                                            entries.forEach(entry => {
+                                                let parts = entry.split("|");
+                                                if (parts.length === 2) {
+                                                    let date = parts[0].trim();
+                                                    let remark = parts[1].trim();
+                                                    if (!followupData[date]) followupData[date] = [];
+                                                    followupData[date].push(remark);
+                                                }
+                                            });
+                                        }
+
                                         // Initialize Flatpickr
                                         const fp = flatpickr("#followup-calendar", {
                                             dateFormat: "Y-m-d",
                                             onChange: function(selectedDates, dateStr) {
-                                                if (followupData[dateStr]) {
-                                                    remarkBox.value = followupData[dateStr].join("\n");
-                                                } else {
-                                                    remarkBox.value = "";
-                                                }
+                                                remarkBox.value = followupData[dateStr] ? followupData[dateStr].join("\n") : "";
                                             },
-                                            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                                            onDayCreate: function(dObj, dStr, fpInstance, dayElem) {
                                                 const date = dayElem.dateObj.toISOString().split("T")[0];
                                                 if (followupData[date]) {
-                                                    dayElem.style.background = "#ff99cc"; // pink
+                                                    dayElem.style.background = "#ff99cc";
                                                     dayElem.style.borderRadius = "50%";
                                                     dayElem.style.fontWeight = "bold";
                                                 }
                                             }
                                         });
 
-                                        // Show first date's remarks on load
+                                        // Show first date on load
                                         const firstDate = Object.keys(followupData)[0];
                                         if (firstDate) {
-                                            remarkBox.value = followupData[firstDate].join("\n");
                                             fp.setDate(firstDate);
+                                            remarkBox.value = followupData[firstDate].join("\n");
                                         }
 
-                                        // Add new remark handler
+                                        // Add new remark dynamically
                                         addRemarkBtn.addEventListener("click", function() {
                                             const selectedDate = fp.input.value;
                                             const newRemark = newRemarkInput.value.trim();
@@ -492,38 +485,30 @@
                                                 return;
                                             }
                                             if (!newRemark) {
-                                                alert("Please enter a remark to add!");
+                                                alert("Please enter a remark!");
                                                 return;
                                             }
 
-                                            // Add remark to object
                                             if (!followupData[selectedDate]) followupData[selectedDate] = [];
                                             followupData[selectedDate].push(newRemark);
 
-                                            // Update remark display
+                                            // Update display
                                             remarkBox.value = followupData[selectedDate].join("\n");
 
-                                            // Update hidden input for DB
+                                            // Update hidden input
                                             let updatedEntries = [];
                                             for (let date in followupData) {
                                                 followupData[date].forEach(r => updatedEntries.push(`${date} | ${r}`));
                                             }
                                             hiddenInput.value = updatedEntries.join(" : ");
 
-                                            // Highlight new date
+                                            // Redraw calendar to highlight new date
                                             fp.redraw();
 
-                                            // Clear new remark input
                                             newRemarkInput.value = "";
                                         });
-
                                     });
                                 </script>
-
-
-
-
-
                             </div>
 
                             <div class="tab-pane fade" id="pills-resume" role="tabpanel">
