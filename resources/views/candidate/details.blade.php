@@ -69,7 +69,7 @@
                             <button class="nav-link d-flex align-items-center px-24" id="pills-change-passwork-tab"
                                 data-bs-toggle="pill" data-bs-target="#pills-change-passwork" type="button" role="tab"
                                 aria-controls="pills-change-passwork" aria-selected="false" tabindex="-1">
-                                Others
+                                Follow Ups
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
