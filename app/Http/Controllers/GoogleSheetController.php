@@ -3852,6 +3852,46 @@ class GoogleSheetController extends Controller
         return redirect()->route('google.sheet.junior')->with('success', 'Data fetched successfully!');
     }
 
+    public function juniorupdatetra(Request $request)
+    {
+        $id = $request->input('id');
+
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ID is required'
+            ]);
+        }
+
+        $row = GoogleSheetData::find($id);
+
+        if (!$row) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Row not found'
+            ]);
+        }
+
+        try {
+            // Update only transfer column → set 1
+            $row->transfer = 1;
+            $row->updated_at = now();
+            $row->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Transfer updated successfully',
+                'id' => $row->id
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to update transfer'
+            ]);
+        }
+    }
+
+
     public function juniorupdate(Request $request)
     {
         $id = $request->input('id');
