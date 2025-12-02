@@ -378,7 +378,7 @@
                                                     $user = $users[$item['id']] ?? null;
                                                     return $user ? $user->name : 'Unknown';
                                                 })
-                                                ->join(', ');
+                                                ->join('--> ');
                                         @endphp
 
                                         {{ $display }}
