@@ -3873,7 +3873,6 @@ class GoogleSheetController extends Controller
         }
 
         try {
-
             // Update only transfer column → set 1
             $row->transfer = 1;
             $row->updated_at = now();
@@ -3888,12 +3887,13 @@ class GoogleSheetController extends Controller
 
             return response()->json([
                 'success' => false,
-                'message' => 'Failed to update transfer',
-                'error'   => $e->getMessage(),      // 👈 CLEAR ERROR MESSAGE
-                'trace'   => $e->getTraceAsString() // 👈 OPTIONAL: FULL STACK TRACE
+                'message' => 'Error: ' . $e->getMessage(),   // ← show real error
+                'line'    => $e->getLine(),                // (optional) show line number
+                'file'    => $e->getFile()                 // (optional) show file
             ]);
         }
     }
+
 
 
 
