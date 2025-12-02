@@ -259,28 +259,28 @@ class CallReportController extends Controller
             ->count();
 
 
-        // Hour-wise "Called & Mailed" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        // Daily "Called & Mailed" counts
+        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
-        // Hour-wise "Ready To Paid" counts
-        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        // Daily "Ready To Paid" counts
+        $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Paid')
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
-        // Hour-wise "Other Calls" counts
-        $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        // Daily "Other Calls" counts
+        $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -288,8 +288,8 @@ class CallReportController extends Controller
                 $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
                     ->orWhereNull('Exe_Remarks');
             })
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
 
@@ -2049,28 +2049,28 @@ class CallReportController extends Controller
             ->count();
 
 
-        // Hour-wise "Called & Mailed" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        // Daily "Called & Mailed" counts
+        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
-        // Hour-wise "Ready To Paid" counts
-        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        // Daily "Ready To Paid" counts
+        $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Paid')
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
-        // Hour-wise "Other Calls" counts
-        $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        // Daily "Other Calls" counts
+        $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -2078,9 +2078,10 @@ class CallReportController extends Controller
                 $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
                     ->orWhereNull('Exe_Remarks');
             })
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
+
 
 
         // --- Initialize daily variables (Day 1 - Day 31) ---
