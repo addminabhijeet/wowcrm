@@ -2146,6 +2146,7 @@ class CallReportController extends Controller
 
         return view('reports.allseniormonthly', compact(
             'totalCalls',
+            'juniorUser',
             'calledAndMailedCalls',
             'readyToPaidCalls',
             'otherCalls',
