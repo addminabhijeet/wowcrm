@@ -1057,50 +1057,52 @@
 
                         </div>
 
-                        <div class="col-xxl-4 col-lg-6">
-                            <div class="card h-100 radius-8 border-0">
-                                <div class="card-body p-24">
-                                    <h6 class="fw-bold mb-1">Total Summary (From Joining)</h6>
-                                    <div class="mt-24">
-                                        <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
-                                            <div class="me-4">
-                                                <span class="text-secondary-light fw-bold mb-12 text-xl">Total Calls</span>
-                                                <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
-                                            </div>
-                                            <div id="semiCircleGauge" class="me-3"></div>
-                                        </div>
-
-                                        <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
-                                            <div>
-                                                <span class="text-secondary-light fw-bold mb-12 text-xl">Other Calls</span>
-                                                <h5 class="fw-semibold mb-0">{{ $MotherCalls }}</h5>
-                                            </div>
-                                            <div id="areaChart"></div>
-                                        </div>
-                                        <div class="d-flex align-items-center gap-1 justify-content-between">
-                                            <div>
-                                                <span class="text-secondary-light fw-bold mb-12 text-xl">Called & Mailed
-                                                    Calls</span>
-                                                <h5 class="fw-semibold mb-0">{{ $McalledAndMailedCalls }}</h5>
-                                            </div>
-                                            <div id="dailyIconBarChart"></div>
-                                        </div>
-                                    </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xxl-4 col-lg-6">
+                <div class="card h-100 radius-8 border-0">
+                    <div class="card-body p-24">
+                        <h6 class="fw-bold mb-1">Total Summary (From Joining)</h6>
+                        <div class="mt-24">
+                            <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                                <div class="me-4">
+                                    <span class="text-secondary-light fw-bold mb-12 text-xl">Total Calls</span>
+                                    <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
                                 </div>
+                                <div id="semiCircleGauge" class="me-3"></div>
+                            </div>
+
+                            <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                                <div>
+                                    <span class="text-secondary-light fw-bold mb-12 text-xl">Other Calls</span>
+                                    <h5 class="fw-semibold mb-0">{{ $MotherCalls }}</h5>
+                                </div>
+                                <div id="areaChart"></div>
+                            </div>
+                            <div class="d-flex align-items-center gap-1 justify-content-between">
+                                <div>
+                                    <span class="text-secondary-light fw-bold mb-12 text-xl">Called & Mailed Calls</span>
+                                    <h5 class="fw-semibold mb-0">{{ $McalledAndMailedCalls }}</h5>
+                                </div>
+                                <div id="dailyIconBarChart"></div>
                             </div>
                         </div>
                     </div>
                 </div>
-                <script>
-                    document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-                        const element = document.getElementById("pdfContent");
+            </div>
+        </div>
+    </div>
+    <script>
+        document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
+            const element = document.getElementById("pdfContent");
 
-                        // ✅ Clone element to apply isolated print styles
-                        const clonedElement = element.cloneNode(true);
+            // ✅ Clone element to apply isolated print styles
+            const clonedElement = element.cloneNode(true);
 
-                        // ✅ Add black & white print style dynamically (for PDF only)
-                        const printStyle = document.createElement("style");
-                        printStyle.textContent = `
+            // ✅ Add black & white print style dynamically (for PDF only)
+            const printStyle = document.createElement("style");
+            printStyle.textContent = `
         * {
             color: #000 !important;
             box-shadow: none !important;
@@ -1186,55 +1188,55 @@
             margin: 0;
         }
     `;
-                        clonedElement.prepend(printStyle);
+            clonedElement.prepend(printStyle);
 
-                        // ✅ Wait for a short time to ensure all assets/styles load
-                        await new Promise(resolve => setTimeout(resolve, 5));
+            // ✅ Wait for a short time to ensure all assets/styles load
+            await new Promise(resolve => setTimeout(resolve, 5));
 
-                        // ✅ Proper A4 PDF dimensions in pixels
-                        const a4WidthPx = 1175;
-                        const a4HeightPx = Math.round(a4WidthPx * 1.4142);
+            // ✅ Proper A4 PDF dimensions in pixels
+            const a4WidthPx = 1175;
+            const a4HeightPx = Math.round(a4WidthPx * 1.4142);
 
-                        // ✅ PDF generation options (optimized for full A4 coverage)
-                        const opt = {
-                            margin: [0, 0, 0, 0],
-                            filename: 'monthly-report.pdf',
-                            image: {
-                                type: 'jpeg',
-                                quality: 0.98
-                            },
-                            html2canvas: {
-                                scale: 3,
-                                useCORS: true,
-                                scrollY: 0,
-                                backgroundColor: "#ffffff",
-                                logging: false,
-                                letterRendering: true,
-                            },
-                            jsPDF: {
-                                unit: 'px',
-                                format: [a4WidthPx, a4HeightPx],
-                                orientation: 'portrait',
-                            },
-                            pagebreak: {
-                                mode: ['avoid-all', 'css', 'legacy']
-                            }
-                        };
+            // ✅ PDF generation options (optimized for full A4 coverage)
+            const opt = {
+                margin: [0, 0, 0, 0],
+                filename: 'monthly-report.pdf',
+                image: {
+                    type: 'jpeg',
+                    quality: 0.98
+                },
+                html2canvas: {
+                    scale: 3,
+                    useCORS: true,
+                    scrollY: 0,
+                    backgroundColor: "#ffffff",
+                    logging: false,
+                    letterRendering: true,
+                },
+                jsPDF: {
+                    unit: 'px',
+                    format: [a4WidthPx, a4HeightPx],
+                    orientation: 'portrait',
+                },
+                pagebreak: {
+                    mode: ['avoid-all', 'css', 'legacy']
+                }
+            };
 
-                        // Convert Iconify icons to inline SVG images for html2canvas visibility
-                        clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
-                            const svg = document.createElement("img");
-                            const iconName = icon.getAttribute("icon");
-                            svg.src = `https://api.iconify.design/${iconName}.svg?color=%23000`;
-                            svg.width = 34;
-                            svg.height = 34;
-                            svg.style.filter = "contrast(250%) brightness(0%)";
-                            icon.replaceWith(svg);
-                        });
+            // Convert Iconify icons to inline SVG images for html2canvas visibility
+            clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
+                const svg = document.createElement("img");
+                const iconName = icon.getAttribute("icon");
+                svg.src = `https://api.iconify.design/${iconName}.svg?color=%23000`;
+                svg.width = 34;
+                svg.height = 34;
+                svg.style.filter = "contrast(250%) brightness(0%)";
+                icon.replaceWith(svg);
+            });
 
 
-                        // ✅ Generate the full-page PDF
-                        await html2pdf().set(opt).from(clonedElement).save();
-                    });
-                </script>
-            @endsection
+            // ✅ Generate the full-page PDF
+            await html2pdf().set(opt).from(clonedElement).save();
+        });
+    </script>
+@endsection
