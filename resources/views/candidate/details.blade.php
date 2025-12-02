@@ -576,7 +576,7 @@
                                         </iframe>
                                     </div>
                                 @else
-                                    <p style="color:#dc3545; margin-bottom:30px; font-weight:600;">No resume available.
+                                    <p style="color:#dc3545; margin-bottom:30px; font-weight:600;">No updated resume available.
                                     </p>
                                 @endif
 
@@ -696,7 +696,7 @@
 
                                     </div>
                                 @else
-                                    <p class="text-danger">No signeddocument available.</p>
+                                    <p class="text-danger">No signed document available.</p>
                                 @endif
 
                             </div>
