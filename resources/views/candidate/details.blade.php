@@ -431,11 +431,12 @@
                                     document.addEventListener("DOMContentLoaded", function() {
 
                                         // Convert DB / textarea followups into usable object
-                                        let lines = document.getElementById("followups").value.trim().split("\n");
+                                        let rawData = document.getElementById("followups").value.trim();
+                                        let entries = rawData.split(" : "); // Split each followup entry
                                         let followupData = {};
 
-                                        lines.forEach(line => {
-                                            let parts = line.split("|");
+                                        entries.forEach(entry => {
+                                            let parts = entry.split("|");
 
                                             if (parts.length === 2) {
                                                 let date = parts[0].trim();
@@ -453,29 +454,35 @@
                                         // Initialize Flatpickr calendar
                                         flatpickr("#followup-calendar", {
                                             dateFormat: "Y-m-d",
-                                            enable: Object.keys(followupData), // Only allow dates that exist
+                                            enable: Object.keys(followupData), // Only allow DB dates to be selectable
                                             onChange: function(selectedDates, dateStr) {
-
                                                 if (followupData[dateStr]) {
                                                     remarkBox.value = followupData[dateStr].join("\n");
                                                 } else {
                                                     remarkBox.value = "No remark for this date.";
                                                 }
                                             },
-                                            // Highlight enabled dates
+                                            // Highlight enabled dates in pink
                                             onDayCreate: function(dObj, dStr, fp, dayElem) {
                                                 const date = dayElem.dateObj.toISOString().split("T")[0];
 
                                                 if (followupData[date]) {
-                                                    dayElem.style.background = "#ffd966";
+                                                    dayElem.style.background = "#ff99cc"; // pink color
                                                     dayElem.style.borderRadius = "50%";
                                                     dayElem.style.fontWeight = "bold";
                                                 }
                                             }
                                         });
 
+                                        // Optional: show the remark of the first date on page load
+                                        let firstDate = Object.keys(followupData)[0];
+                                        if (firstDate) {
+                                            remarkBox.value = followupData[firstDate].join("\n");
+                                        }
+
                                     });
                                 </script>
+
 
 
 
