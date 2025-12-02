@@ -768,315 +768,339 @@
                         </div>
 
 
-                        <div class="table-responsive">
-                            <table class="table table-hover table-bordered align-middle mb-0">
-                                <thead class="table-primary">
-                                    <tr>
-                                        <th class="fw-bold">Date</th>
-                                        <th class="fw-bold text-center">Called & Mailed</th>
-                                        <th class="fw-bold text-center">Other Call</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
+                        <div class="row">
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">01</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay1 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay1 }}</span>
-                                        </td>
-                                    </tr>
+                            <!-- ================= FIRST TABLE : 1 - 16 ================= -->
+                            <div class="col-md-6">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered align-middle mb-0">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th class="fw-bold">Date</th>
+                                                <th class="fw-bold text-center">Called & Mailed</th>
+                                                <th class="fw-bold text-center">Other Call</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">02</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay2 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay2 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>01</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay1 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay1 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">03</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay3 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay3 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>02</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay2 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay2 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">04</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay4 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay4 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>03</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay3 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay3 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">05</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay5 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay5 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>04</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay4 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay4 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">06</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay6 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay6 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>05</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay5 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay5 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">07</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay7 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay7 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>06</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay6 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay6 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">08</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay8 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay8 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>07</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay7 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay7 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">09</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay9 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay9 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>08</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay8 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay8 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">10</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay10 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay10 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>09</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay9 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay9 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">11</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay11 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay11 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>10</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay10 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay10 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">12</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay12 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay12 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>11</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay11 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay11 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">13</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay13 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay13 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>12</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay12 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay12 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">14</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay14 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay14 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>13</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay13 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay13 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">15</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay15 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay15 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>14</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay14 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay14 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">16</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay16 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay16 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>15</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay15 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay15 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">17</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay17 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay17 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>16</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay16 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay16 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">18</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay18 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay18 }}</span>
-                                        </td>
-                                    </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">19</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay19 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay19 }}</span>
-                                        </td>
-                                    </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">20</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay20 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay20 }}</span>
-                                        </td>
-                                    </tr>
+                            <!-- ================= SECOND TABLE : 17 - 31 ================= -->
+                            <div class="col-md-6">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered align-middle mb-0">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th class="fw-bold">Date</th>
+                                                <th class="fw-bold text-center">Called & Mailed</th>
+                                                <th class="fw-bold text-center">Other Call</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">21</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay21 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay21 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>17</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay17 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay17 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">22</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay22 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay22 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>18</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay18 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay18 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">23</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay23 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay23 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>19</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay19 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay19 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">24</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay24 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay24 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>20</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay20 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay20 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">25</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay25 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay25 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>21</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay21 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay21 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">26</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay26 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay26 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>22</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay22 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay22 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">27</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay27 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay27 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>23</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay23 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay23 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">28</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay28 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay28 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>24</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay24 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay24 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">29</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay29 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay29 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>25</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay25 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay25 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">30</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay30 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay30 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>26</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay26 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay26 }}</span></td>
+                                            </tr>
 
-                                    <tr>
-                                        <td style="white-space: nowrap;">31</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $tDay31 }}</span>
-                                        </td>
-                                        <td class="text-center"><span class="badge bg-warning">{{ $oDay31 }}</span>
-                                        </td>
-                                    </tr>
+                                            <tr>
+                                                <td>27</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay27 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay27 }}</span></td>
+                                            </tr>
 
-                                </tbody>
+                                            <tr>
+                                                <td>28</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay28 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay28 }}</span></td>
+                                            </tr>
 
-                            </table>
+                                            <tr>
+                                                <td>29</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay29 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay29 }}</span></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>30</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay30 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay30 }}</span></td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>31</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $tDay31 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $oDay31 }}</span></td>
+                                            </tr>
+
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col-xxl-4 col-lg-6">
+                            <div class="card h-100 radius-8 border-0">
+                                <div class="card-body p-24">
+                                    <h6 class="fw-bold mb-1">Total Summary (From Joining)</h6>
+                                    <div class="mt-24">
+                                        <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                                            <div class="me-4">
+                                                <span class="text-secondary-light fw-bold mb-12 text-xl">Total Calls</span>
+                                                <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
+                                            </div>
+                                            <div id="semiCircleGauge" class="me-3"></div>
+                                        </div>
+
+                                        <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                                            <div>
+                                                <span class="text-secondary-light fw-bold mb-12 text-xl">Other Calls</span>
+                                                <h5 class="fw-semibold mb-0">{{ $MotherCalls }}</h5>
+                                            </div>
+                                            <div id="areaChart"></div>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-1 justify-content-between">
+                                            <div>
+                                                <span class="text-secondary-light fw-bold mb-12 text-xl">Called & Mailed
+                                                    Calls</span>
+                                                <h5 class="fw-semibold mb-0">{{ $McalledAndMailedCalls }}</h5>
+                                            </div>
+                                            <div id="dailyIconBarChart"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-xxl-4 col-lg-6">
-                <div class="card h-100 radius-8 border-0">
-                    <div class="card-body p-24">
-                        <h6 class="fw-bold mb-1">Total Summary (From Joining)</h6>
-                        <div class="mt-24">
-                            <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
-                                <div class="me-4">
-                                    <span class="text-secondary-light fw-bold mb-12 text-xl">Total Calls</span>
-                                    <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
-                                </div>
-                                <div id="semiCircleGauge" class="me-3"></div>
-                            </div>
+                <script>
+                    document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
+                        const element = document.getElementById("pdfContent");
 
-                            <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
-                                <div>
-                                    <span class="text-secondary-light fw-bold mb-12 text-xl">Other Calls</span>
-                                    <h5 class="fw-semibold mb-0">{{ $MotherCalls }}</h5>
-                                </div>
-                                <div id="areaChart"></div>
-                            </div>
-                            <div class="d-flex align-items-center gap-1 justify-content-between">
-                                <div>
-                                    <span class="text-secondary-light fw-bold mb-12 text-xl">Called & Mailed Calls</span>
-                                    <h5 class="fw-semibold mb-0">{{ $McalledAndMailedCalls }}</h5>
-                                </div>
-                                <div id="dailyIconBarChart"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script>
-        document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-            const element = document.getElementById("pdfContent");
+                        // ✅ Clone element to apply isolated print styles
+                        const clonedElement = element.cloneNode(true);
 
-            // ✅ Clone element to apply isolated print styles
-            const clonedElement = element.cloneNode(true);
-
-            // ✅ Add black & white print style dynamically (for PDF only)
-            const printStyle = document.createElement("style");
-            printStyle.textContent = `
+                        // ✅ Add black & white print style dynamically (for PDF only)
+                        const printStyle = document.createElement("style");
+                        printStyle.textContent = `
         * {
             color: #000 !important;
             box-shadow: none !important;
@@ -1162,55 +1186,55 @@
             margin: 0;
         }
     `;
-            clonedElement.prepend(printStyle);
+                        clonedElement.prepend(printStyle);
 
-            // ✅ Wait for a short time to ensure all assets/styles load
-            await new Promise(resolve => setTimeout(resolve, 5));
+                        // ✅ Wait for a short time to ensure all assets/styles load
+                        await new Promise(resolve => setTimeout(resolve, 5));
 
-            // ✅ Proper A4 PDF dimensions in pixels
-            const a4WidthPx = 1175;
-            const a4HeightPx = Math.round(a4WidthPx * 1.4142);
+                        // ✅ Proper A4 PDF dimensions in pixels
+                        const a4WidthPx = 1175;
+                        const a4HeightPx = Math.round(a4WidthPx * 1.4142);
 
-            // ✅ PDF generation options (optimized for full A4 coverage)
-            const opt = {
-                margin: [0, 0, 0, 0],
-                filename: 'monthly-report.pdf',
-                image: {
-                    type: 'jpeg',
-                    quality: 0.98
-                },
-                html2canvas: {
-                    scale: 3,
-                    useCORS: true,
-                    scrollY: 0,
-                    backgroundColor: "#ffffff",
-                    logging: false,
-                    letterRendering: true,
-                },
-                jsPDF: {
-                    unit: 'px',
-                    format: [a4WidthPx, a4HeightPx],
-                    orientation: 'portrait',
-                },
-                pagebreak: {
-                    mode: ['avoid-all', 'css', 'legacy']
-                }
-            };
+                        // ✅ PDF generation options (optimized for full A4 coverage)
+                        const opt = {
+                            margin: [0, 0, 0, 0],
+                            filename: 'monthly-report.pdf',
+                            image: {
+                                type: 'jpeg',
+                                quality: 0.98
+                            },
+                            html2canvas: {
+                                scale: 3,
+                                useCORS: true,
+                                scrollY: 0,
+                                backgroundColor: "#ffffff",
+                                logging: false,
+                                letterRendering: true,
+                            },
+                            jsPDF: {
+                                unit: 'px',
+                                format: [a4WidthPx, a4HeightPx],
+                                orientation: 'portrait',
+                            },
+                            pagebreak: {
+                                mode: ['avoid-all', 'css', 'legacy']
+                            }
+                        };
 
-            // Convert Iconify icons to inline SVG images for html2canvas visibility
-            clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
-                const svg = document.createElement("img");
-                const iconName = icon.getAttribute("icon");
-                svg.src = `https://api.iconify.design/${iconName}.svg?color=%23000`;
-                svg.width = 34;
-                svg.height = 34;
-                svg.style.filter = "contrast(250%) brightness(0%)";
-                icon.replaceWith(svg);
-            });
+                        // Convert Iconify icons to inline SVG images for html2canvas visibility
+                        clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
+                            const svg = document.createElement("img");
+                            const iconName = icon.getAttribute("icon");
+                            svg.src = `https://api.iconify.design/${iconName}.svg?color=%23000`;
+                            svg.width = 34;
+                            svg.height = 34;
+                            svg.style.filter = "contrast(250%) brightness(0%)";
+                            icon.replaceWith(svg);
+                        });
 
 
-            // ✅ Generate the full-page PDF
-            await html2pdf().set(opt).from(clonedElement).save();
-        });
-    </script>
-@endsection
+                        // ✅ Generate the full-page PDF
+                        await html2pdf().set(opt).from(clonedElement).save();
+                    });
+                </script>
+            @endsection
