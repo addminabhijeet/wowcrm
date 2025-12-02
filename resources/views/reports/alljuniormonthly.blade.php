@@ -772,7 +772,7 @@
                             <table class="table table-hover table-bordered align-middle mb-0">
                                 <thead class="table-primary">
                                     <tr>
-                                        <th class="fw-bold">Time Range</th>
+                                        <th class="fw-bold">Date Range</th>
                                         <th class="fw-bold text-center">Called & Mailed Count</th>
                                         <th class="fw-bold text-center">Other Call Count</th>
                                     </tr>
