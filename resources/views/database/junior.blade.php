@@ -267,7 +267,7 @@
                                             <i class="fas fa-save"></i> Save
                                         </button>
 
-                                        <button class="btn btn-sm btn-warning transfer-btn"
+                                        <button class="btn btn-sm btn-warning transfers-btn"
                                             data-id="{{ $row->id }}">
                                             <i class="fas fa-exchange-alt"></i> Transfer
                                         </button>
@@ -1412,11 +1412,11 @@
     </script>
 
     <script>
-        $(document).on("click", ".transfer-btn", function() {
+        $(document).on("click", ".transfers-btn", function() {
             let id = $(this).data("id");
 
             $.ajax({
-                url: "{{ route('junior.transfer.update') }}",
+                url: "{{ route('junior.transfers.update') }}",
                 method: "POST",
                 data: {
                     id: id,
