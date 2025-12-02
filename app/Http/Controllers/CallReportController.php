@@ -1425,8 +1425,8 @@ class CallReportController extends Controller
             }
         }
 
-        $MAvgTotalCalls = $presentDays > 0 ? round($MtotalCalls / $presentDays, 2) : 0;
-        $MAvgtotaltransfers = $presentDays > 0 ? round($Mtotaltransfers / $presentDays, 2) : 0;
+        $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
+        $MAvgtotaltransfers = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
 
         return view('reports.alljuniormonthly', compact(
             'juniorUser',
