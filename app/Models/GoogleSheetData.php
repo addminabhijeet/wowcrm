@@ -42,6 +42,7 @@ class GoogleSheetData extends Model
         'consultationsign',
         'delivery',
         'payment',
+        'followup',
     ];
 
 
