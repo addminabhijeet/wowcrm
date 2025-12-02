@@ -11,18 +11,17 @@ class CandidateDetailsController extends Controller
     public function associate(Request $request, $userId)
     {
         // Get candidate
-        $candidate = GoogleSheetData::where('id', $userId)->first();
+        $candidate = GoogleSheetData::find($userId);
         if (!$candidate) {
             return redirect()->back()->with('error', 'Candidate not found.');
         }
 
-        $createdByRaw = $candidate->created_by;
+        // Parse forwarded list
+        $createdByRaw = $candidate->created_by ?? '';
         $parts = explode('|', $createdByRaw);
-
         $forwardedList = [];
 
         foreach ($parts as $part) {
-
             if (strpos($part, ':') !== false) {
                 [$role, $id] = explode(':', $part);
                 $forwardedList[] = [
@@ -37,16 +36,25 @@ class CandidateDetailsController extends Controller
             }
         }
 
-        // Fetch ALL possible users at once
-        $userIds = collect($forwardedList)
-            ->pluck('id')
-            ->filter(fn($id) => $id > 0)
-            ->unique()
-            ->toArray();
-
+        // Fetch users in one query
+        $userIds = collect($forwardedList)->pluck('id')->filter(fn($id) => $id > 0)->unique()->toArray();
         $users = \App\Models\User::whereIn('id', $userIds)->get(['id', 'name', 'role'])->keyBy('id');
+
         return view('candidate.details', compact('candidate', 'forwardedList', 'users'));
     }
+
+    // Save followups
+    public function saveFollowups(Request $request, $userId)
+    {
+        $candidate = GoogleSheetData::find($userId);
+        if (!$candidate) return redirect()->back()->with('error', 'Candidate not found.');
+
+        $candidate->followup = $request->input('followups', '');
+        $candidate->save();
+
+        return redirect()->back()->with('success', 'Follow-ups updated successfully!');
+    }
+
 
     public function seniorassociate(Request $request, $userId)
     {

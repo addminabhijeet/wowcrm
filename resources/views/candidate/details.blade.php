@@ -413,16 +413,20 @@
                                         placeholder="Select date">
 
                                     <textarea id="followup-remark" class="form-control radius-8 mb-2" rows="4"
-                                        placeholder="Select a date to view remarks"></textarea>
+                                        placeholder="Select a date to view remarks" readonly></textarea>
 
                                     <textarea id="new-remark" class="form-control radius-8 mb-2" rows="2" placeholder="Add new remark"></textarea>
                                     <button type="button" id="add-remark-btn" class="btn btn-primary mb-10">Add
                                         Remark</button>
 
-                                    <textarea name="followups" id="followups" class="d-none">
-                                        {{ old('followups', $candidate->followups ?? '') }}
-                                    </textarea>
+                                    <!-- Hidden input to store all followups for form submission -->
+                                    <textarea name="followups" id="followups" class="d-none">{{ old('followups', $candidate->followup ?? '') }}</textarea>
                                 </div>
+
+                                <link rel="stylesheet"
+                                    href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+                                <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
 
                                 <link rel="stylesheet"
                                     href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
@@ -435,8 +439,8 @@
                                         const addRemarkBtn = document.getElementById("add-remark-btn");
                                         const hiddenInput = document.getElementById("followups");
 
-                                        // Parse DB followups
-                                        let rawData = document.getElementById("followups").value.trim();
+                                        // Parse existing followups from DB
+                                        let rawData = hiddenInput.value.trim();
                                         let followupData = {};
 
                                         if (rawData) {
@@ -468,14 +472,14 @@
                                             }
                                         });
 
-                                        // Show first date on load
+                                        // Show first date on load if exists
                                         const firstDate = Object.keys(followupData)[0];
                                         if (firstDate) {
                                             fp.setDate(firstDate);
                                             remarkBox.value = followupData[firstDate].join("\n");
                                         }
 
-                                        // Add new remark dynamically
+                                        // Add new remark
                                         addRemarkBtn.addEventListener("click", function() {
                                             const selectedDate = fp.input.value;
                                             const newRemark = newRemarkInput.value.trim();
@@ -509,6 +513,7 @@
                                         });
                                     });
                                 </script>
+
                             </div>
 
                             <div class="tab-pane fade" id="pills-resume" role="tabpanel">
