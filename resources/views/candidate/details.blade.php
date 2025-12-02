@@ -404,6 +404,80 @@
                                     <textarea name="Remark" id="Remark" class="form-control radius-8" placeholder="Enter Remark" required>{{ old('Remark', $candidate->Remark ?? '') }}</textarea>
                                 </div>
 
+                                <div class="mb-20">
+                                    <label class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                        Follow Up Remarks (Calendar)
+                                    </label>
+
+                                    <!-- Calendar Input -->
+                                    <input type="text" id="followup-calendar" class="form-control radius-8 mb-10"
+                                        placeholder="Select date">
+
+                                    <!-- Selected Remark Output -->
+                                    <textarea id="followup-remark" class="form-control radius-8" rows="4" readonly
+                                        placeholder="Select a highlighted date to view remark"></textarea>
+
+                                    <!-- Hidden for existing data -->
+                                    <textarea name="followups" id="followups" class="d-none">
+                                        {{ old('followups', $candidate->followups ?? '') }}
+                                    </textarea>
+                                </div>
+
+                                <link rel="stylesheet"
+                                    href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+                                <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+                                <script>
+                                    document.addEventListener("DOMContentLoaded", function() {
+
+                                        // Convert DB / textarea followups into usable object
+                                        let lines = document.getElementById("followups").value.trim().split("\n");
+                                        let followupData = {};
+
+                                        lines.forEach(line => {
+                                            let parts = line.split("|");
+
+                                            if (parts.length === 2) {
+                                                let date = parts[0].trim();
+                                                let remark = parts[1].trim();
+
+                                                if (!followupData[date]) {
+                                                    followupData[date] = [];
+                                                }
+                                                followupData[date].push(remark);
+                                            }
+                                        });
+
+                                        let remarkBox = document.getElementById("followup-remark");
+
+                                        // Initialize Flatpickr calendar
+                                        flatpickr("#followup-calendar", {
+                                            dateFormat: "Y-m-d",
+                                            enable: Object.keys(followupData), // Only allow dates that exist
+                                            onChange: function(selectedDates, dateStr) {
+
+                                                if (followupData[dateStr]) {
+                                                    remarkBox.value = followupData[dateStr].join("\n");
+                                                } else {
+                                                    remarkBox.value = "No remark for this date.";
+                                                }
+                                            },
+                                            // Highlight enabled dates
+                                            onDayCreate: function(dObj, dStr, fp, dayElem) {
+                                                const date = dayElem.dateObj.toISOString().split("T")[0];
+
+                                                if (followupData[date]) {
+                                                    dayElem.style.background = "#ffd966";
+                                                    dayElem.style.borderRadius = "50%";
+                                                    dayElem.style.fontWeight = "bold";
+                                                }
+                                            }
+                                        });
+
+                                    });
+                                </script>
+
+
 
                             </div>
 
