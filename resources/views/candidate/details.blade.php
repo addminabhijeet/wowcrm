@@ -410,12 +410,17 @@
                                     </label>
 
                                     <!-- Calendar Input -->
-                                    <input type="text" id="followup-calendar" class="form-control radius-8 mb-10"
+                                    <input type="text" id="followup-calendar" class="form-control radius-8 mb-2"
                                         placeholder="Select date">
 
                                     <!-- Selected Remark Output -->
-                                    <textarea id="followup-remark" class="form-control radius-8" rows="4" readonly
-                                        placeholder="Select a highlighted date to view remark"></textarea>
+                                    <textarea id="followup-remark" class="form-control radius-8 mb-2" rows="4"
+                                        placeholder="Select a date to view remarks"></textarea>
+
+                                    <!-- Add new remark -->
+                                    <textarea id="new-remark" class="form-control radius-8 mb-2" rows="2" placeholder="Add new remark"></textarea>
+                                    <button type="button" id="add-remark-btn" class="btn btn-primary mb-10">Add
+                                        Remark</button>
 
                                     <!-- Hidden for existing data -->
                                     <textarea name="followups" id="followups" class="d-none">
@@ -430,58 +435,91 @@
                                 <script>
                                     document.addEventListener("DOMContentLoaded", function() {
 
-                                        // Convert DB / textarea followups into usable object
                                         let rawData = document.getElementById("followups").value.trim();
-                                        let entries = rawData.split(" : "); // Split each followup entry
+                                        let entries = rawData ? rawData.split(" : ") : [];
                                         let followupData = {};
 
+                                        // Convert DB entries to JS object
                                         entries.forEach(entry => {
                                             let parts = entry.split("|");
-
                                             if (parts.length === 2) {
                                                 let date = parts[0].trim();
                                                 let remark = parts[1].trim();
-
-                                                if (!followupData[date]) {
-                                                    followupData[date] = [];
-                                                }
+                                                if (!followupData[date]) followupData[date] = [];
                                                 followupData[date].push(remark);
                                             }
                                         });
 
-                                        let remarkBox = document.getElementById("followup-remark");
+                                        const remarkBox = document.getElementById("followup-remark");
+                                        const newRemarkInput = document.getElementById("new-remark");
+                                        const addRemarkBtn = document.getElementById("add-remark-btn");
+                                        const hiddenInput = document.getElementById("followups");
 
-                                        // Initialize Flatpickr calendar
-                                        flatpickr("#followup-calendar", {
+                                        // Initialize Flatpickr
+                                        const fp = flatpickr("#followup-calendar", {
                                             dateFormat: "Y-m-d",
-                                            enable: Object.keys(followupData), // Only allow DB dates to be selectable
                                             onChange: function(selectedDates, dateStr) {
                                                 if (followupData[dateStr]) {
                                                     remarkBox.value = followupData[dateStr].join("\n");
                                                 } else {
-                                                    remarkBox.value = "No remark for this date.";
+                                                    remarkBox.value = "";
                                                 }
                                             },
-                                            // Highlight enabled dates in pink
                                             onDayCreate: function(dObj, dStr, fp, dayElem) {
                                                 const date = dayElem.dateObj.toISOString().split("T")[0];
-
                                                 if (followupData[date]) {
-                                                    dayElem.style.background = "#ff99cc"; // pink color
+                                                    dayElem.style.background = "#ff99cc"; // pink
                                                     dayElem.style.borderRadius = "50%";
                                                     dayElem.style.fontWeight = "bold";
                                                 }
                                             }
                                         });
 
-                                        // Optional: show the remark of the first date on page load
-                                        let firstDate = Object.keys(followupData)[0];
+                                        // Show first date's remarks on load
+                                        const firstDate = Object.keys(followupData)[0];
                                         if (firstDate) {
                                             remarkBox.value = followupData[firstDate].join("\n");
+                                            fp.setDate(firstDate);
                                         }
+
+                                        // Add new remark handler
+                                        addRemarkBtn.addEventListener("click", function() {
+                                            const selectedDate = fp.input.value;
+                                            const newRemark = newRemarkInput.value.trim();
+
+                                            if (!selectedDate) {
+                                                alert("Please select a date first!");
+                                                return;
+                                            }
+                                            if (!newRemark) {
+                                                alert("Please enter a remark to add!");
+                                                return;
+                                            }
+
+                                            // Add remark to object
+                                            if (!followupData[selectedDate]) followupData[selectedDate] = [];
+                                            followupData[selectedDate].push(newRemark);
+
+                                            // Update remark display
+                                            remarkBox.value = followupData[selectedDate].join("\n");
+
+                                            // Update hidden input for DB
+                                            let updatedEntries = [];
+                                            for (let date in followupData) {
+                                                followupData[date].forEach(r => updatedEntries.push(`${date} | ${r}`));
+                                            }
+                                            hiddenInput.value = updatedEntries.join(" : ");
+
+                                            // Highlight new date
+                                            fp.redraw();
+
+                                            // Clear new remark input
+                                            newRemarkInput.value = "";
+                                        });
 
                                     });
                                 </script>
+
 
 
 
