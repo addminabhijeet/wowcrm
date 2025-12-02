@@ -3673,7 +3673,7 @@ class GoogleSheetController extends Controller
             })
                 // EXCLUSION: Do NOT show rows having more than one "|junior"
                 ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
-        });
+        })->where('transfers', '!=', 1);
 
 
         // Filter by selected junior
@@ -3681,7 +3681,7 @@ class GoogleSheetController extends Controller
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
                     ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
-            });
+            })->where('transfers', '!=', 1);
         }
 
         // Search or specific row filter
