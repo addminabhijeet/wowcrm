@@ -1205,6 +1205,12 @@ class CallReportController extends Controller
             ->whereMonth('updated_at', $month)
             ->count();
 
+        $Mtotaltransfers = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('transfers', 1)
+            ->count();
+
         // Total "Called & Mailed" calls
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
@@ -1419,10 +1425,8 @@ class CallReportController extends Controller
             }
         }
 
-        $MAvgTotalCalls = $presentDays > 0 ? round($MtotalCalls / $presentDays, 2): 0;
-
-
-
+        $MAvgTotalCalls = $presentDays > 0 ? round($MtotalCalls / $presentDays, 2) : 0;
+        $MAvgtotaltransfers = $presentDays > 0 ? round($Mtotaltransfers / $presentDays, 2) : 0;
 
         return view('reports.alljuniormonthly', compact(
             'juniorUser',
@@ -1463,6 +1467,8 @@ class CallReportController extends Controller
             'workingDays',
             'nonWorkingDays',
             'MAvgTotalCalls',
+            'Mtotaltransfers',
+            'MAvgtotaltransfers',
         ));
     }
 

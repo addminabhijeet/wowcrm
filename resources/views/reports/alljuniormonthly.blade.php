@@ -692,7 +692,8 @@
                             </form>
                         </div>
                         <div class="row g-3 mb-4">
-                            <div class="col-md-3 col-sm-6">
+
+                            <div class="col-md-2 col-sm-4 col-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-primary fs-2">
                                         <i class="bi bi-telephone-fill"></i>
@@ -704,7 +705,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3 col-sm-6">
+                            <div class="col-md-2 col-sm-4 col-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-success fs-2">
                                         <i class="bi bi-bar-chart-fill"></i>
@@ -716,7 +717,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3 col-sm-6">
+                            <div class="col-md-2 col-sm-4 col-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
@@ -728,7 +729,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3 col-sm-6">
+                            <div class="col-md-2 col-sm-4 col-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
@@ -739,7 +740,33 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="col-md-2 col-sm-4 col-6">
+                                <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                    <div class="icon mb-2 text-warning fs-2">
+                                        <i class="bi bi-envelope-paper-fill"></i>
+                                    </div>
+                                    <div>
+                                        <small class="fw-bold d-block">Total Transfers</small>
+                                        <h4 class="fw-bold text-dark mb-0">{{ $Mtotaltransfers }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2 col-sm-4 col-6">
+                                <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                    <div class="icon mb-2 text-warning fs-2">
+                                        <i class="bi bi-envelope-paper-fill"></i>
+                                    </div>
+                                    <div>
+                                        <small class="fw-bold d-block">Per Day Transfers</small>
+                                        <h4 class="fw-bold text-dark mb-0">{{ $MAvgtotaltransfers }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+
                         </div>
+
 
                         <div class="table-responsive">
                             <table class="table table-hover table-bordered align-middle mb-0">
