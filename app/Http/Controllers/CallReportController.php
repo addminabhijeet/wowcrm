@@ -2201,8 +2201,7 @@ class CallReportController extends Controller
             }
         }
 
-
-        $MAvgTotalCalls = $daysInMonth ? round($MtotalCalls / $daysInMonth, 2) : 0;
+        $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
 
         return view('reports.allseniormonthly', compact(
             'totalCalls',
