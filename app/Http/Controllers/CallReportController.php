@@ -1228,18 +1228,18 @@ class CallReportController extends Controller
             })
             ->count();
 
-        // Hour-wise "Called & Mailed" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        // --- Daily "Called & Mailed + Ready To Paid" counts ---
+        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Called & Mailed')
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
-        // Hour-wise "Other Calls" counts
-        $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        // --- Daily "Other Calls" counts ---
+        $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -1247,36 +1247,75 @@ class CallReportController extends Controller
                 $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
             })
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
-        // Initialize hour blocks (10 AM - 8 PM)
-        $t8to9am = $hourlyCalledMailed[8] ?? 0;
-        $t9to10am = $hourlyCalledMailed[9] ?? 0;
-        $t10to11am = $hourlyCalledMailed[10] ?? 0;
-        $t11to12pm = $hourlyCalledMailed[11] ?? 0;
-        $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
-        $t1to2pm   = $hourlyCalledMailed[13] ?? 0;
-        $t2to3pm   = $hourlyCalledMailed[14] ?? 0;
-        $t3to4pm   = $hourlyCalledMailed[15] ?? 0;
-        $t4to5pm   = $hourlyCalledMailed[16] ?? 0;
-        $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
-        $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
-        $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+        // --- Create daily variables 1 to 31 ---
+        $tDay1  = $dailyCalledMailed[1]  ?? 0;
+        $tDay2  = $dailyCalledMailed[2]  ?? 0;
+        $tDay3  = $dailyCalledMailed[3]  ?? 0;
+        $tDay4  = $dailyCalledMailed[4]  ?? 0;
+        $tDay5  = $dailyCalledMailed[5]  ?? 0;
+        $tDay6  = $dailyCalledMailed[6]  ?? 0;
+        $tDay7  = $dailyCalledMailed[7]  ?? 0;
+        $tDay8  = $dailyCalledMailed[8]  ?? 0;
+        $tDay9  = $dailyCalledMailed[9]  ?? 0;
+        $tDay10 = $dailyCalledMailed[10] ?? 0;
+        $tDay11 = $dailyCalledMailed[11] ?? 0;
+        $tDay12 = $dailyCalledMailed[12] ?? 0;
+        $tDay13 = $dailyCalledMailed[13] ?? 0;
+        $tDay14 = $dailyCalledMailed[14] ?? 0;
+        $tDay15 = $dailyCalledMailed[15] ?? 0;
+        $tDay16 = $dailyCalledMailed[16] ?? 0;
+        $tDay17 = $dailyCalledMailed[17] ?? 0;
+        $tDay18 = $dailyCalledMailed[18] ?? 0;
+        $tDay19 = $dailyCalledMailed[19] ?? 0;
+        $tDay20 = $dailyCalledMailed[20] ?? 0;
+        $tDay21 = $dailyCalledMailed[21] ?? 0;
+        $tDay22 = $dailyCalledMailed[22] ?? 0;
+        $tDay23 = $dailyCalledMailed[23] ?? 0;
+        $tDay24 = $dailyCalledMailed[24] ?? 0;
+        $tDay25 = $dailyCalledMailed[25] ?? 0;
+        $tDay26 = $dailyCalledMailed[26] ?? 0;
+        $tDay27 = $dailyCalledMailed[27] ?? 0;
+        $tDay28 = $dailyCalledMailed[28] ?? 0;
+        $tDay29 = $dailyCalledMailed[29] ?? 0;
+        $tDay30 = $dailyCalledMailed[30] ?? 0;
+        $tDay31 = $dailyCalledMailed[31] ?? 0;
 
-        $o8to9am = $hourlyOtherCalls[8] ?? 0;
-        $o9to10am = $hourlyOtherCalls[9] ?? 0;
-        $o10to11am = $hourlyOtherCalls[10] ?? 0;
-        $o11to12pm = $hourlyOtherCalls[11] ?? 0;
-        $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
-        $o1to2pm   = $hourlyOtherCalls[13] ?? 0;
-        $o2to3pm   = $hourlyOtherCalls[14] ?? 0;
-        $o3to4pm   = $hourlyOtherCalls[15] ?? 0;
-        $o4to5pm   = $hourlyOtherCalls[16] ?? 0;
-        $o5to6pm   = $hourlyOtherCalls[17] ?? 0;
-        $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
-        $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
+        $oDay1  = $dailyOtherCalls[1]  ?? 0;
+        $oDay2  = $dailyOtherCalls[2]  ?? 0;
+        $oDay3  = $dailyOtherCalls[3]  ?? 0;
+        $oDay4  = $dailyOtherCalls[4]  ?? 0;
+        $oDay5  = $dailyOtherCalls[5]  ?? 0;
+        $oDay6  = $dailyOtherCalls[6]  ?? 0;
+        $oDay7  = $dailyOtherCalls[7]  ?? 0;
+        $oDay8  = $dailyOtherCalls[8]  ?? 0;
+        $oDay9  = $dailyOtherCalls[9]  ?? 0;
+        $oDay10 = $dailyOtherCalls[10] ?? 0;
+        $oDay11 = $dailyOtherCalls[11] ?? 0;
+        $oDay12 = $dailyOtherCalls[12] ?? 0;
+        $oDay13 = $dailyOtherCalls[13] ?? 0;
+        $oDay14 = $dailyOtherCalls[14] ?? 0;
+        $oDay15 = $dailyOtherCalls[15] ?? 0;
+        $oDay16 = $dailyOtherCalls[16] ?? 0;
+        $oDay17 = $dailyOtherCalls[17] ?? 0;
+        $oDay18 = $dailyOtherCalls[18] ?? 0;
+        $oDay19 = $dailyOtherCalls[19] ?? 0;
+        $oDay20 = $dailyOtherCalls[20] ?? 0;
+        $oDay21 = $dailyOtherCalls[21] ?? 0;
+        $oDay22 = $dailyOtherCalls[22] ?? 0;
+        $oDay23 = $dailyOtherCalls[23] ?? 0;
+        $oDay24 = $dailyOtherCalls[24] ?? 0;
+        $oDay25 = $dailyOtherCalls[25] ?? 0;
+        $oDay26 = $dailyOtherCalls[26] ?? 0;
+        $oDay27 = $dailyOtherCalls[27] ?? 0;
+        $oDay28 = $dailyOtherCalls[28] ?? 0;
+        $oDay29 = $dailyOtherCalls[29] ?? 0;
+        $oDay30 = $dailyOtherCalls[30] ?? 0;
+        $oDay31 = $dailyOtherCalls[31] ?? 0;
+
 
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
@@ -1434,30 +1473,68 @@ class CallReportController extends Controller
             'McalledAndMailedCalls',
             'MotherCalls',
             'selectedMonth',
-            't8to9am',
-            't9to10am',
-            't10to11am',
-            't11to12pm',
-            't12to1pm',
-            't1to2pm',
-            't2to3pm',
-            't3to4pm',
-            't4to5pm',
-            't5to6pm',
-            't6to7pm',
-            't7to8pm',
-            'o8to9am',
-            'o9to10am',
-            'o10to11am',
-            'o11to12pm',
-            'o12to1pm',
-            'o1to2pm',
-            'o2to3pm',
-            'o3to4pm',
-            'o4to5pm',
-            'o5to6pm',
-            'o6to7pm',
-            'o7to8pm',
+            'tDay1',
+            'tDay2',
+            'tDay3',
+            'tDay4',
+            'tDay5',
+            'tDay6',
+            'tDay7',
+            'tDay8',
+            'tDay9',
+            'tDay10',
+            'tDay11',
+            'tDay12',
+            'tDay13',
+            'tDay14',
+            'tDay15',
+            'tDay16',
+            'tDay17',
+            'tDay18',
+            'tDay19',
+            'tDay20',
+            'tDay21',
+            'tDay22',
+            'tDay23',
+            'tDay24',
+            'tDay25',
+            'tDay26',
+            'tDay27',
+            'tDay28',
+            'tDay29',
+            'tDay30',
+            'tDay31',
+            'oDay1',
+            'oDay2',
+            'oDay3',
+            'oDay4',
+            'oDay5',
+            'oDay6',
+            'oDay7',
+            'oDay8',
+            'oDay9',
+            'oDay10',
+            'oDay11',
+            'oDay12',
+            'oDay13',
+            'oDay14',
+            'oDay15',
+            'oDay16',
+            'oDay17',
+            'oDay18',
+            'oDay19',
+            'oDay20',
+            'oDay21',
+            'oDay22',
+            'oDay23',
+            'oDay24',
+            'oDay25',
+            'oDay26',
+            'oDay27',
+            'oDay28',
+            'oDay29',
+            'oDay30',
+            'oDay31',
             'targetGiven',
             'targetAchieved',
             'targetYetToAchieve',
