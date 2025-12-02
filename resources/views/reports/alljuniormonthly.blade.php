@@ -675,7 +675,7 @@ $script = '<script>
                         <div>
                             <h5 class="fw-bold mb-1">{{ $juniorUser->name }}</h5>
                         </div>
-                        <form method="GET" action="{{ route('call.reports.juniormonthly') }}" class="d-flex align-items-center gap-2">
+                        <form method="GET" action="{{ route('call.reports.alljuniormonthly', ['userId' => request()->route('userId')]) }}" class="d-flex align-items-center gap-2">
                             <label for="selected_month" class="form-label mb-0 fw-semibold small">Select Month:</label>
                             <input type="month"
                                 name="selected_month"
