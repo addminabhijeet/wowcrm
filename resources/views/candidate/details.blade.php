@@ -426,11 +426,8 @@
                                 <link rel="stylesheet"
                                     href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
                                 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+                                <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Axios for AJAX -->
 
-
-                                <link rel="stylesheet"
-                                    href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-                                <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
                                 <script>
                                     document.addEventListener("DOMContentLoaded", function() {
@@ -439,7 +436,7 @@
                                         const addRemarkBtn = document.getElementById("add-remark-btn");
                                         const hiddenInput = document.getElementById("followups");
 
-                                        // Parse existing followups from DB
+                                        // Parse existing followups
                                         let rawData = hiddenInput.value.trim();
                                         let followupData = {};
 
@@ -472,14 +469,13 @@
                                             }
                                         });
 
-                                        // Show first date on load if exists
                                         const firstDate = Object.keys(followupData)[0];
                                         if (firstDate) {
                                             fp.setDate(firstDate);
                                             remarkBox.value = followupData[firstDate].join("\n");
                                         }
 
-                                        // Add new remark
+                                        // Add new remark via AJAX
                                         addRemarkBtn.addEventListener("click", function() {
                                             const selectedDate = fp.input.value;
                                             const newRemark = newRemarkInput.value.trim();
@@ -506,13 +502,27 @@
                                             }
                                             hiddenInput.value = updatedEntries.join(" : ");
 
-                                            // Redraw calendar to highlight new date
+                                            // Redraw calendar
                                             fp.redraw();
 
+                                            // Clear input
                                             newRemarkInput.value = "";
+
+                                            // Send AJAX request to save to DB
+                                            axios.post("{{ route('candidate.saveFollowups', $candidate->id) }}", {
+                                                    followups: hiddenInput.value
+                                                })
+                                                .then(function(response) {
+                                                    console.log('Saved successfully!');
+                                                })
+                                                .catch(function(error) {
+                                                    console.error('Error saving followups:', error);
+                                                    alert('Failed to save remark. Please try again.');
+                                                });
                                         });
                                     });
                                 </script>
+
 
                             </div>
 

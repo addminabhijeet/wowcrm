@@ -43,18 +43,16 @@ class CandidateDetailsController extends Controller
         return view('candidate.details', compact('candidate', 'forwardedList', 'users'));
     }
 
-    // Save followups
-    public function saveFollowups(Request $request, $userId)
+    public function saveFollowups(Request $request, $id)
     {
-        $candidate = GoogleSheetData::find($userId);
-        if (!$candidate) return redirect()->back()->with('error', 'Candidate not found.');
+        $candidate = GoogleSheetData::find($id);
+        if (!$candidate) return response()->json(['error' => 'Candidate not found'], 404);
 
         $candidate->followup = $request->input('followups', '');
         $candidate->save();
 
-        return redirect()->back()->with('success', 'Follow-ups updated successfully!');
+        return response()->json(['success' => true]);
     }
-
 
     public function seniorassociate(Request $request, $userId)
     {

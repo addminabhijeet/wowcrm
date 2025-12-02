@@ -241,6 +241,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/accountant/candidate/fetch', [CandidateController::class, 'accountantfetch'])->name('candidate.accountantfetch');
     Route::patch('/dashboard/accountant/candidate/pdfupdate/{id}', [CandidateController::class, 'accountantpdfupdate'])->name('candidate.accountantpdfupdate');
     Route::post('/dashboard/accountant/candidate/pdfstore', [CandidateController::class, 'accountantpdfstore'])->name('candidate.accountantpdfstore');
+    Route::post('/candidate/{id}/save-followups', [CandidateDetailsController::class, 'saveFollowups'])->name('candidate.saveFollowups');
 
     Route::get('/dashboard/admin/call-reports', [CallReportController::class, 'index'])->name('call.reports.index');
     Route::get('/dashboard/junior/call-reports', [CallReportController::class, 'junior'])->name('call.reports.junior');
