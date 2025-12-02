@@ -2036,7 +2036,8 @@ class CallReportController extends Controller
             'presentDays',
             'absentDays',
             'workingDays',
-            'nonWorkingDays'
+            'nonWorkingDays',
+            'o7to8pm'
 
         ));
     }
