@@ -380,7 +380,6 @@
                                                 })
                                                 ->join('--> ');
                                         @endphp
-
                                         {{ $display }}
                                     </textarea>
 
