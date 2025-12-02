@@ -19,26 +19,33 @@ class CandidateDetailsController extends Controller
         $createdByRaw = $candidate->created_by;
         $parts = explode('|', $createdByRaw);
 
-        $userIds = [];
+        $forwardedList = [];
 
         foreach ($parts as $part) {
+
             if (strpos($part, ':') !== false) {
-                // role:id format
                 [$role, $id] = explode(':', $part);
-                if (is_numeric($id) && $id > 0) $userIds[] = (int)$id;
+                $forwardedList[] = [
+                    'role' => $role,
+                    'id'   => is_numeric($id) ? (int)$id : null
+                ];
             } else {
-                // pure numeric id
-                if (is_numeric($part)) $userIds[] = (int)$part;
+                $forwardedList[] = [
+                    'role' => null,
+                    'id'   => is_numeric($part) ? (int)$part : null
+                ];
             }
         }
 
-        // Remove duplicates because repeated ids can exist
-        $userIds = array_unique($userIds);
+        // Fetch ALL possible users at once
+        $userIds = collect($forwardedList)
+            ->pluck('id')
+            ->filter(fn($id) => $id > 0)
+            ->unique()
+            ->toArray();
 
-        // Fetch users
-        $users = \App\Models\User::whereIn('id', $userIds)->get(['id', 'name', 'role']);
-
-        return view('candidate.details', compact('candidate', 'users'));
+        $users = \App\Models\User::whereIn('id', $userIds)->get(['id', 'name', 'role'])->keyBy('id');
+        return view('candidate.details', compact('candidate','forwardedList','users'));
     }
 
     public function seniorassociate(Request $request, $userId)

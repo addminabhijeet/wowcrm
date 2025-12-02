@@ -367,12 +367,23 @@
                                     <label for="forwarded_by"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Forwarded By
                                     </label>
+
                                     <textarea name="forwarded_by" id="forwarded_by" class="form-control radius-8" readonly>
-                                    {{ $users->map(fn($u) => $u->name . ' (' . ucfirst($u->role) . ')')->join(', ') }}
-                                    </textarea>
+                                    @php
+                                        $display = collect($forwardedList)
+                                            ->map(function ($item) use ($users) {
+                                                $user = $users[$item['id']] ?? null;
+                                                return $user
+                                                    ? $user->name . ' (' . ucfirst($user->role) . ')'
+                                                    : 'Unknown (' . ($item['role'] ?? 'N/A') . ')';
+                                            })
+                                            ->join(', ');
+                                    @endphp
 
-
+                                    {{ $display }}
+                                        </textarea>
                                 </div>
+
 
 
 
