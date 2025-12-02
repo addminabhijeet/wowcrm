@@ -371,6 +371,9 @@
                                     <textarea name="forwarded_by" id="forwarded_by" class="form-control radius-8" readonly>
                                         @php
                                             $display = collect($forwardedList)
+                                                ->filter(function ($item) {
+                                                    return !empty($item['id']); // <-- hides 0, null, etc.
+                                                })
                                                 ->map(function ($item) use ($users) {
                                                     $user = $users[$item['id']] ?? null;
                                                     return $user ? $user->name : 'Unknown';

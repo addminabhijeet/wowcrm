@@ -45,7 +45,7 @@ class CandidateDetailsController extends Controller
             ->toArray();
 
         $users = \App\Models\User::whereIn('id', $userIds)->get(['id', 'name', 'role'])->keyBy('id');
-        return view('candidate.details', compact('candidate','forwardedList','users'));
+        return view('candidate.details', compact('candidate', 'forwardedList', 'users'));
     }
 
     public function seniorassociate(Request $request, $userId)
