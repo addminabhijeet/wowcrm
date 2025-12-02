@@ -59,7 +59,7 @@
 
                                                 <!-- View -->
                                                 <td>
-                                                    <a href="{{ route('all.associate.candidate', [$row->id, $row->forwardedBy]) }}"
+                                                    <a href="{{ route('all.associate.candidate', [$row->id, $row->forwarded_by]) }}"
                                                         class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-medium text-sm">
                                                         View Details
                                                     </a>
