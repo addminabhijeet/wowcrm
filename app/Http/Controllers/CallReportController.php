@@ -1251,6 +1251,16 @@ class CallReportController extends Controller
             ->pluck('count', 'day')
             ->toArray();
 
+        // --- Daily "Transfers" counts ---
+        $dailyTransfers = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('transfers', 1)
+            ->groupBy('day')
+            ->pluck('count', 'day')
+            ->toArray();
+
         // --- Create daily variables 1 to 31 ---
         $tDay1  = $dailyCalledMailed[1]  ?? 0;
         $tDay2  = $dailyCalledMailed[2]  ?? 0;
@@ -1315,6 +1325,39 @@ class CallReportController extends Controller
         $oDay29 = $dailyOtherCalls[29] ?? 0;
         $oDay30 = $dailyOtherCalls[30] ?? 0;
         $oDay31 = $dailyOtherCalls[31] ?? 0;
+
+        $trDay1  = $dailyTransfers[1]  ?? 0;
+        $trDay2  = $dailyTransfers[2]  ?? 0;
+        $trDay3  = $dailyTransfers[3]  ?? 0;
+        $trDay4  = $dailyTransfers[4]  ?? 0;
+        $trDay5  = $dailyTransfers[5]  ?? 0;
+        $trDay6  = $dailyTransfers[6]  ?? 0;
+        $trDay7  = $dailyTransfers[7]  ?? 0;
+        $trDay8  = $dailyTransfers[8]  ?? 0;
+        $trDay9  = $dailyTransfers[9]  ?? 0;
+        $trDay10 = $dailyTransfers[10] ?? 0;
+        $trDay11 = $dailyTransfers[11] ?? 0;
+        $trDay12 = $dailyTransfers[12] ?? 0;
+        $trDay13 = $dailyTransfers[13] ?? 0;
+        $trDay14 = $dailyTransfers[14] ?? 0;
+        $trDay15 = $dailyTransfers[15] ?? 0;
+        $trDay16 = $dailyTransfers[16] ?? 0;
+        $trDay17 = $dailyTransfers[17] ?? 0;
+        $trDay18 = $dailyTransfers[18] ?? 0;
+        $trDay19 = $dailyTransfers[19] ?? 0;
+        $trDay20 = $dailyTransfers[20] ?? 0;
+        $trDay21 = $dailyTransfers[21] ?? 0;
+        $trDay22 = $dailyTransfers[22] ?? 0;
+        $trDay23 = $dailyTransfers[23] ?? 0;
+        $trDay24 = $dailyTransfers[24] ?? 0;
+        $trDay25 = $dailyTransfers[25] ?? 0;
+        $trDay26 = $dailyTransfers[26] ?? 0;
+        $trDay27 = $dailyTransfers[27] ?? 0;
+        $trDay28 = $dailyTransfers[28] ?? 0;
+        $trDay29 = $dailyTransfers[29] ?? 0;
+        $trDay30 = $dailyTransfers[30] ?? 0;
+        $trDay31 = $dailyTransfers[31] ?? 0;
+
 
 
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
@@ -1535,6 +1578,37 @@ class CallReportController extends Controller
             'oDay29',
             'oDay30',
             'oDay31',
+            'trDay1',
+            'trDay2',
+            'trDay3',
+            'trDay4',
+            'trDay5',
+            'trDay6',
+            'trDay7',
+            'trDay8',
+            'trDay9',
+            'trDay10',
+            'trDay11',
+            'trDay12',
+            'trDay13',
+            'trDay14',
+            'trDay15',
+            'trDay16',
+            'trDay17',
+            'trDay18',
+            'trDay19',
+            'trDay20',
+            'trDay21',
+            'trDay22',
+            'trDay23',
+            'trDay24',
+            'trDay25',
+            'trDay26',
+            'trDay27',
+            'trDay28',
+            'trDay29',
+            'trDay30',
+            'trDay31',
             'targetGiven',
             'targetAchieved',
             'targetYetToAchieve',
