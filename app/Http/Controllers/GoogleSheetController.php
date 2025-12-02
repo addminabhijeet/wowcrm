@@ -3873,8 +3873,8 @@ class GoogleSheetController extends Controller
         }
 
         try {
-            // Update only transfer column → set 1
-            $row->transfer = 1;
+            // Update only transfers column → set 1
+            $row->transfers = 1;
             $row->updated_at = now();
             $row->save();
 
@@ -3884,15 +3884,15 @@ class GoogleSheetController extends Controller
                 'id' => $row->id
             ]);
         } catch (\Exception $e) {
-
             return response()->json([
                 'success' => false,
-                'message' => 'Error: ' . $e->getMessage(),   // ← show real error
-                'line'    => $e->getLine(),                // (optional) show line number
-                'file'    => $e->getFile()                 // (optional) show file
+                'message' => 'Error: ' . $e->getMessage(),
+                'line'    => $e->getLine(),
+                'file'    => $e->getFile()
             ]);
         }
     }
+
 
 
 
