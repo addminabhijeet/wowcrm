@@ -133,9 +133,20 @@
                                             <div class="mb-20">
                                                 <label class="form-label fw-semibold text-primary-light text-sm mb-8">Time
                                                     Zone</label>
-                                                <input type="text" name="time_zone" class="form-control radius-8"
-                                                    value="{{ old('time_zone', $candidate->Time_Zone ?? '') }}"
-                                                    placeholder="Enter Time Zone" required>
+
+                                                @php
+                                                    $timezoneOptions = ['EST', 'CST', 'MST', 'PST'];
+                                                @endphp
+
+                                                <select name="time_zone" class="form-select radius-8" required>
+                                                    <option value="">-- Time Zone --</option>
+                                                    @foreach ($timezoneOptions as $option)
+                                                        <option value="{{ $option }}"
+                                                            {{ old('time_zone', $candidate->Time_Zone ?? '') === $option ? 'selected' : '' }}>
+                                                            {{ $option }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
 
                                         </div>
@@ -576,7 +587,8 @@
                                         </iframe>
                                     </div>
                                 @else
-                                    <p style="color:#dc3545; margin-bottom:30px; font-weight:600;">No updated resume available.
+                                    <p style="color:#dc3545; margin-bottom:30px; font-weight:600;">No updated resume
+                                        available.
                                     </p>
                                 @endif
 
@@ -721,4 +733,30 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const inputs = document.querySelectorAll(".autosave-field");
+
+            inputs.forEach(input => {
+                input.addEventListener("change", function() {
+
+                    const fieldName = this.name;
+                    const fieldValue = this.value;
+
+                    axios.post("{{ route('candidate.autoSave', $candidate->id) }}", {
+                            [fieldName]: fieldValue
+                        })
+                        .then(res => {
+                            console.log("Saved:", fieldName);
+                        })
+                        .catch(err => {
+                            console.error("Auto save failed", err);
+                            alert("Failed to save, please try again.");
+                        });
+
+                });
+            });
+        });
+    </script>
 @endsection

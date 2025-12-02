@@ -54,6 +54,21 @@ class CandidateDetailsController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function autoSave(Request $request, $id)
+    {
+        $candidate = GoogleSheetData::find($id);
+        if (!$candidate) return response()->json(['error' => 'Candidate not found'], 404);
+
+        // Update only passed values
+        foreach ($request->all() as $key => $value) {
+            $candidate->{$key} = $value;
+        }
+
+        $candidate->save();
+
+        return response()->json(['success' => true]);
+    }
+
     public function seniorassociate(Request $request, $userId)
     {
         // Get candidate
