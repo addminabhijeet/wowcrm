@@ -557,7 +557,7 @@
                             <h5 class="fw-bold mb-1">{{ $juniorUser->name }}</h5>
                         </div>
                         <form method="GET"
-                            action="{{ route('call.reports.allseniormonthly', ['userId' => request()->route('userId')]) }}"
+                            action="{{ route('call.reports.allseniormonthly') }}"
                             class="d-flex align-items-center gap-2">
                             <label for="selected_month" class="form-label mb-0 fw-semibold small">Select
                                 Month:</label>
