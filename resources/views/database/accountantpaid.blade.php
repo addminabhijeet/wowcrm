@@ -1338,13 +1338,13 @@
                 }
 
                 if (e.target.matches('.viewacceptance-btn') || e.target.matches(
-                    '.downloadacceptance-btn')) {
+                        '.downloadacceptance-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
                     if (id === "new") {
                         e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
+                        alert("Please save the row first before viewing/downloading the acceptance.");
                         return;
                     }
                 }
@@ -1356,7 +1356,7 @@
 
                     if (id === "new") {
                         e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
+                        alert("Please save the row first before viewing/downloading the consultation.");
                         return;
                     }
                 }
@@ -1367,7 +1367,7 @@
 
                     if (id === "new") {
                         e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
+                        alert("Please save the row first before viewing/downloading the delivery.");
                         return;
                     }
                 }
@@ -1378,7 +1378,7 @@
 
                     if (id === "new") {
                         e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
+                        alert("Please save the row first before viewing/downloading the payment.");
                         return;
                     }
                 }
