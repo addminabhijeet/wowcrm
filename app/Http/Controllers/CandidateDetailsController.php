@@ -59,14 +59,19 @@ class CandidateDetailsController extends Controller
         $candidate = GoogleSheetData::find($id);
         if (!$candidate) return response()->json(['error' => 'Candidate not found'], 404);
 
-        $candidate->Name        = $request->input('name', '');
-        $candidate->Phone_Number = $request->input('phone', '');
-        $candidate->Time_Zone   = $request->input('time_zone', '');
+        $candidate->Name          = $request->input('name', '');
+        $candidate->Phone_Number  = $request->input('phone', '');
+        $candidate->Time_Zone     = $request->input('time_zone', '');
+
+        // NEW FIELDS
+        $candidate->Email_Address = $request->input('email', '');
+        $candidate->Location      = $request->input('Location', '');
 
         $candidate->save();
 
         return response()->json(['success' => true]);
     }
+
 
     public function saveEdu(Request $request, $id)
     {
@@ -78,9 +83,6 @@ class CandidateDetailsController extends Controller
         $candidate->Immigration = $request->immigration;
         $candidate->Course = $request->course;
         $candidate->Qualification = $request->qualification;
-        $candidate->Name = $request->name;
-        $candidate->Phone_Number = $request->phone;
-        $candidate->Time_Zone = $request->time_zone;
 
         $candidate->save();
 

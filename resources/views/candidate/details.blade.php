@@ -151,42 +151,12 @@
                                                 </select>
                                             </div>
 
-                                            <button type="button" id="save-profile-btn" class="btn btn-success mb-10">
-                                                Save
-                                            </button>
+
 
                                         </div>
 
 
-                                        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-                                        <script>
-                                            document.addEventListener("DOMContentLoaded", function() {
-
-                                                const saveBtn = document.getElementById("save-profile-btn");
-                                                const name = document.getElementById("name");
-                                                const phone = document.getElementById("phone");
-                                                const timeZone = document.getElementById("time_zone");
-
-                                                saveBtn.addEventListener("click", function() {
-
-                                                    let data = {
-                                                        name: name.value.trim(),
-                                                        phone: phone.value.trim(),
-                                                        time_zone: timeZone.value
-                                                    };
-
-                                                    axios.post("{{ route('candidate.saveProfile', $candidate->id) }}", data)
-                                                        .then(function(response) {
-                                                            alert("Saved Successfully!");
-                                                        })
-                                                        .catch(function(error) {
-                                                            alert("Failed to save. Please try again.");
-                                                            console.error(error);
-                                                        });
-                                                });
-                                            });
-                                        </script>
 
 
 
@@ -216,6 +186,10 @@
                                                     placeholder="Enter Location" required>
                                             </div>
 
+                                            <button type="button" id="save-profile-btn" class="btn btn-success mb-10">
+                                                Save
+                                            </button>
+
                                         </div>
 
                                     </div>
@@ -223,6 +197,43 @@
                                 </div>
 
                             </div>
+
+                            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+
+                                    const saveBtn = document.getElementById("save-profile-btn");
+                                    const name = document.getElementById("name");
+                                    const phone = document.getElementById("phone");
+                                    const timeZone = document.getElementById("time_zone");
+
+                                    // NEW FIELDS
+                                    const email = document.querySelector('input[name="email"]');
+                                    const location = document.querySelector('input[name="Location"]');
+
+                                    saveBtn.addEventListener("click", function() {
+
+                                        let data = {
+                                            name: name.value.trim(),
+                                            phone: phone.value.trim(),
+                                            time_zone: timeZone.value,
+                                            email: email.value.trim(), // NEW
+                                            Location: location.value.trim() // NEW
+                                        };
+
+                                        axios.post("{{ route('candidate.saveProfile', $candidate->id) }}", data)
+                                            .then(function(response) {
+                                                alert("Saved Successfully!");
+                                            })
+                                            .catch(function(error) {
+                                                alert("Failed to save. Please try again.");
+                                                console.error(error);
+                                            });
+                                    });
+                                });
+                            </script>
+
 
 
 
