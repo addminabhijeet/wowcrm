@@ -51,7 +51,6 @@ class GoogleSheetData extends Model
     protected $casts = [
         'data' => 'array', // auto decode JSON
         'Date' => 'date',
-        'Graduation_Date' => 'date',
         'Amount' => 'decimal:2',
     ];
 
