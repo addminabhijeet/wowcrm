@@ -844,6 +844,12 @@
                     fileInput.click();
                 }
 
+                if (e.target.matches('.upload-updateresume-btn')) {
+                    const row = e.target.closest('tr');
+                    const accInput = row.querySelector('.updateresume-input');
+                    if (accInput) accInput.click();
+                }
+
                 // Handle view and download buttons for unsaved rows
                 if (e.target.matches('.view-btn') || e.target.matches('.download-btn')) {
                     const row = e.target.closest('tr');
@@ -891,11 +897,20 @@
                 }
                 if (e.target.matches('.updateresume-input')) {
                     const row = e.target.closest('tr');
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
 
-                    row.querySelector('.viewupdateresume-btn')?.classList.remove('d-none');
-                    row.querySelector('.downloadupdateresume-btn')?.classList.remove('d-none');
+                    // Show view and download buttons temporarily
+                    const viewBtn = row.querySelector('.viewupdateresume-btn');
+                    const downloadBtn = row.querySelector('.downloadupdateresume-btn');
 
-                    row.querySelector('.upload-updateresume-btn').textContent = 'Change File';
+                    if (viewBtn) viewBtn.classList.remove('d-none');
+                    if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                    // Update button text
+                    const uploadBtn = row.querySelector('.upload-updateresume-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('File selected:', fileName);
                 }
             });
 
