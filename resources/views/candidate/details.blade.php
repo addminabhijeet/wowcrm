@@ -271,15 +271,16 @@
 
                                             <!-- Graduation -->
                                             <div class="mb-20">
-                                                <label for="graduation"
+                                                <label for="GraduationDate"
                                                     class="form-label fw-semibold text-primary-light text-sm mb-8">
                                                     Graduation Date
                                                 </label>
-                                                <input type="text" name="graduation" id="graduation"
+                                                <input type="date" name="GraduationDate" id="GraduationDate"
                                                     class="form-control radius-8"
-                                                    value="{{ old('graduation', $candidate->Graduation_Date ?? '') }}"
-                                                    placeholder="Enter Graduation" required>
+                                                    value="{{ old('GraduationDate', $candidate->Graduation_Date ?? '') }}"
+                                                    required>
                                             </div>
+
 
                                             <!-- Immigration -->
                                             @php
@@ -413,9 +414,6 @@
                                             immigration: document.getElementById("immigration").value,
                                             course: document.getElementById("course").value,
                                             qualification: document.getElementById("qualification").value,
-                                            name: document.querySelector('input[name="name"]').value,
-                                            phone: document.querySelector('input[name="phone"]').value,
-                                            time_zone: document.querySelector('select[name="time_zone"]').value
                                         };
 
                                         axios.post("{{ route('candidate.saveProfile', $candidate->id) }}", payload)
@@ -931,83 +929,88 @@
     </div>
 
     <script>
-document.addEventListener("DOMContentLoaded", function () {
+        document.addEventListener("DOMContentLoaded", function() {
 
-    function initSingleLocationAutocomplete() {
-        const $input = $('input[name="Location"]');
+            function initSingleLocationAutocomplete() {
+                const $input = $('input[name="Location"]');
 
-        function applyCss(value) {
-            if (!value) {
-                $input.removeClass('valid invalid').addClass('neutral');
-            } else {
-                $input.removeClass('invalid neutral').addClass('valid');
-            }
-        }
+                function applyCss(value) {
+                    if (!value) {
+                        $input.removeClass('valid invalid').addClass('neutral');
+                    } else {
+                        $input.removeClass('invalid neutral').addClass('valid');
+                    }
+                }
 
-        // Initial CSS state
-        applyCss($input.val());
+                // Initial CSS state
+                applyCss($input.val());
 
-        $input.on('input', function () {
-            const q = $(this).val().trim();
-            applyCss(q);
+                $input.on('input', function() {
+                    const q = $(this).val().trim();
+                    applyCss(q);
 
-            if (q.length < 2) {
-                $('#location-suggestions').remove();
-                return;
-            }
+                    if (q.length < 2) {
+                        $('#location-suggestions').remove();
+                        return;
+                    }
 
-            const key = 'pk.e91481c6e5f0a93703159ae988e641a0';
+                    const key = 'pk.e91481c6e5f0a93703159ae988e641a0';
 
-            $.getJSON(`https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`)
-                .done(function (results) {
+                    $.getJSON(
+                            `https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`
+                            )
+                        .done(function(results) {
 
-                    $('#location-suggestions').remove();
-
-                    const $list =
-                        $('<div id="location-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>');
-
-                    results.forEach(r => {
-                        const addr = r.address || {};
-                        const city = addr.city || addr.town || addr.village || '';
-                        const state = addr.state || addr.region || '';
-                        const country = addr.country || '';
-                        const display = [city, state, country].filter(Boolean).join(', ');
-
-                        const item = $('<a href="#" class="list-group-item list-group-item-action"></a>')
-                            .text(display || r.display_name);
-
-                        item.on('click', function (e) {
-                            e.preventDefault();
-                            $input.val(display || r.display_name);
-                            applyCss(display || r.display_name);
-                            $input.css('background-color', '#d4edda');
                             $('#location-suggestions').remove();
-                        });
 
-                        $list.append(item);
-                    });
+                            const $list =
+                                $(
+                                    '<div id="location-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>');
 
-                    $('body').append($list);
+                            results.forEach(r => {
+                                const addr = r.address || {};
+                                const city = addr.city || addr.town || addr.village || '';
+                                const state = addr.state || addr.region || '';
+                                const country = addr.country || '';
+                                const display = [city, state, country].filter(Boolean).join(
+                                    ', ');
 
-                    const offset = $input.offset();
-                    $list.css({
-                        top: offset.top + $input.outerHeight(),
-                        left: offset.left,
-                        width: $input.outerWidth()
-                    });
+                                const item = $(
+                                        '<a href="#" class="list-group-item list-group-item-action"></a>'
+                                        )
+                                    .text(display || r.display_name);
 
-                })
-                .fail(() => $('#location-suggestions').remove());
+                                item.on('click', function(e) {
+                                    e.preventDefault();
+                                    $input.val(display || r.display_name);
+                                    applyCss(display || r.display_name);
+                                    $input.css('background-color', '#d4edda');
+                                    $('#location-suggestions').remove();
+                                });
+
+                                $list.append(item);
+                            });
+
+                            $('body').append($list);
+
+                            const offset = $input.offset();
+                            $list.css({
+                                top: offset.top + $input.outerHeight(),
+                                left: offset.left,
+                                width: $input.outerWidth()
+                            });
+
+                        })
+                        .fail(() => $('#location-suggestions').remove());
+                });
+
+                $input.on('blur', function() {
+                    setTimeout(() => $('#location-suggestions').remove(), 200);
+                });
+            }
+
+            // Initialize when page is ready
+            initSingleLocationAutocomplete();
         });
-
-        $input.on('blur', function () {
-            setTimeout(() => $('#location-suggestions').remove(), 200);
-        });
-    }
-
-    // Initialize when page is ready
-    initSingleLocationAutocomplete();
-});
-</script>
-
+    </script>
 @endsection

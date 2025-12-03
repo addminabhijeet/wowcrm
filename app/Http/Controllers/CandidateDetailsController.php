@@ -92,13 +92,32 @@ class CandidateDetailsController extends Controller
     public function savePayment(Request $request, $id)
     {
         $candidate = GoogleSheetData::find($id);
-        if (!$candidate) return response()->json(['error' => 'Candidate not found'], 404);
+        if (!$candidate) {
+            return response()->json(['error' => 'Candidate not found'], 404);
+        }
 
+        // Store raw JSON (same as before)
         $candidate->payment_data = $request->input('payment_data', '');
+
+        // Decode JSON for updating individual fields
+        $data = json_decode($candidate->payment_data, true);
+
+        if (is_array($data)) {
+
+            // Update ALL fields individually (without breaking old logic)
+            $candidate->Amount         = $data['amount']         ?? null;
+            $candidate->PaymentDate    = $data['PaymentDate']    ?? null;
+            $candidate->TranId         = $data['TranId']         ?? null;
+            $candidate->TranRef        = $data['TranRef']        ?? null;
+            $candidate->PaymentMethod  = $data['PaymentMethod']  ?? null;
+            $candidate->PayeeName      = $data['PayeeName']      ?? null;
+        }
+
         $candidate->save();
 
         return response()->json(['success' => true]);
     }
+
 
 
     public function autoSave(Request $request, $id)
