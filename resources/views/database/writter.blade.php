@@ -200,27 +200,27 @@
                                     </td>
 
                                     <td>
-                                        <input type="file" accept="application/pdf" class="d-none acceptance-input"
+                                        <input type="file" accept="application/pdf" class="d-none updateresume-input"
                                             data-key="View">
-                                        <button type="button" class="btn btn-sm btn-info upload-acceptance-btn">
-                                            {{ !empty($row->acceptance) ? 'Change File' : 'Upload' }}
+                                        <button type="button" class="btn btn-sm btn-info upload-updateresume-btn">
+                                            {{ !empty($row->updateresume) ? 'Change File' : 'Upload' }}
                                         </button>
 
-                                        @if (!empty($row->acceptance))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptance/' . $row->id) }}"
-                                                target="_blank" class="btn btn-sm btn-primary viewacceptance-btn">View
-                                                Acceptance</a>
+                                        @if (!empty($row->updateresume))
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-updateresume/' . $row->id) }}"
+                                                target="_blank" class="btn btn-sm btn-primary viewupdateresume-btn">View
+                                                Updated Resume</a>
 
-                                            <a href="{{ url('dashboard/senior/google-sheet/download-acceptance/' . $row->id) }}"
-                                                class="btn btn-sm btn-secondary downloadacceptance-btn">Download
-                                                Acceptance</a>
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-updateresume/' . $row->id) }}"
+                                                class="btn btn-sm btn-secondary downloadupdateresume-btn">Download
+                                                Updated Resume</a>
                                         @else
                                             <a href="#" target="_blank"
-                                                class="btn btn-sm btn-primary viewacceptance-btn d-none">View
-                                                Acceptance</a>
+                                                class="btn btn-sm btn-primary viewupdateresume-btn d-none">View
+                                                Update Resume</a>
                                             <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadacceptance-btn d-none">Download
-                                                Acceptance</a>
+                                                class="btn btn-sm btn-secondary downloadupdateresume-btn d-none">Download
+                                                Update Resume</a>
                                         @endif
                                     </td>
 
@@ -741,10 +741,10 @@
                         formData.append("resume", resumeInput.files[0]);
                     }
 
-                    // Acceptance file
-                    let accInput = row.querySelector("input.acceptance-input");
+                    // updateresume file
+                    let accInput = row.querySelector("input.updateresume-input");
                     if (accInput && accInput.files.length > 0) {
-                        formData.append("acceptance", accInput.files[0]);
+                        formData.append("updateresume", accInput.files[0]);
                     }
 
                     // Determine URL and method
@@ -798,21 +798,21 @@
                                         downloadBtn.classList.remove('d-none');
                                     }
 
-                                    // Acceptance
-                                    const viewAcceptanceBtn = row.querySelector('.viewacceptance-btn');
-                                    const downloadAcceptanceBtn = row.querySelector(
-                                        '.downloadacceptance-btn');
+                                    // updateresume
+                                    const viewupdateresumeBtn = row.querySelector('.viewupdateresume-btn');
+                                    const downloadupdateresumeBtn = row.querySelector(
+                                        '.downloadupdateresume-btn');
 
-                                    if (viewAcceptanceBtn && data.acceptance_path) {
-                                        viewAcceptanceBtn.href =
-                                            `/dashboard/senior/google-sheet/view-acceptance/${data.id}`;
-                                        viewAcceptanceBtn.classList.remove('d-none');
+                                    if (viewupdateresumeBtn && data.updateresume_path) {
+                                        viewupdateresumeBtn.href =
+                                            `/dashboard/senior/google-sheet/view-updateresume/${data.id}`;
+                                        viewupdateresumeBtn.classList.remove('d-none');
                                     }
 
-                                    if (downloadAcceptanceBtn && data.acceptance_path) {
-                                        downloadAcceptanceBtn.href =
-                                            `/dashboard/senior/google-sheet/download-acceptance/${data.id}`;
-                                        downloadAcceptanceBtn.classList.remove('d-none');
+                                    if (downloadupdateresumeBtn && data.updateresume_path) {
+                                        downloadupdateresumeBtn.href =
+                                            `/dashboard/senior/google-sheet/download-updateresume/${data.id}`;
+                                        downloadupdateresumeBtn.classList.remove('d-none');
                                     }
 
                                     // Only add new blank row if none exists
@@ -855,14 +855,14 @@
                     }
                 }
 
-                if (e.target.matches('.viewacceptance-btn') || e.target.matches(
-                        '.downloadacceptance-btn')) {
+                if (e.target.matches('.viewupdateresume-btn') || e.target.matches(
+                        '.downloadupdateresume-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
                     if (id === "new") {
                         e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the acceptance.");
+                        alert("Please save the row first before viewing/downloading the updateresume.");
                         return;
                     }
                 }
