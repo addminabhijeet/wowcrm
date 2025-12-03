@@ -415,7 +415,7 @@
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetGiven }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -434,7 +434,7 @@
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetAchieved }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -453,7 +453,7 @@
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetYetToAchieve }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -472,7 +472,7 @@
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $daysLeft }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -483,6 +483,7 @@
             </div>
         </div>
 
+        <!-- Total Present Days -->
         <div class="col">
             <div class="card h-100 border-0 shadow-sm"
                 style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
@@ -490,7 +491,7 @@
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Present Days</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Present Days</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $presentDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -510,7 +511,7 @@
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Absent Days</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Absent Days</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $absentDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -522,7 +523,7 @@
             </div>
         </div>
 
-        <!-- Working Days -->
+        <!-- Total Working Days -->
         <div class="col">
             <div class="card h-100 border-0 shadow-sm"
                 style="background: linear-gradient(135deg, #fff8e1, #ffecb3); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
@@ -530,7 +531,7 @@
                 onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                 <div class="card-body d-flex justify-content-between align-items-center p-4">
                     <div>
-                        <p class="mb-1 fw-semibold" style="font-size: 15px; opacity: 0.8;">Total Working Days</p>
+                        <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Working Days</p>
                         <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $workingDays }}</h3>
                     </div>
                     <div class="d-flex justify-content-center align-items-center"
@@ -543,8 +544,10 @@
 
     </div>
 
+
     <div class="row gy-4 mt-1">
 
+        <!-- ================= Left Section ================= -->
         <div class="col-xxl-8 col-lg-6">
             <div class="card h-100 border-0 shadow-sm radius-12">
                 <div class="card-body p-4">
@@ -553,9 +556,11 @@
                         <div>
                             <h5 class="fw-bold mb-1">{{ $juniorUser->name }}</h5>
                         </div>
-                        <form method="GET" action="{{ route('call.reports.seniormonthly') }}"
+                        <form method="GET"
+                            action="{{ route('call.reports.allseniormonthly', ['userId' => request()->route('userId')]) }}"
                             class="d-flex align-items-center gap-2">
-                            <label for="selected_month" class="form-label mb-0 fw-semibold small">Select Month:</label>
+                            <label for="selected_month" class="form-label mb-0 fw-semibold small">Select
+                                Month:</label>
                             <input type="month" name="selected_month" id="selected_month"
                                 value="{{ request('selected_month', date('Y-m')) }}" class="form-control form-control-sm"
                                 onchange="this.form.submit()">
@@ -948,63 +953,49 @@
                         </div>
 
                     </div>
+
                 </div>
             </div>
         </div>
 
+        <!-- ================= Right Summary ================= -->
         <div class="col-xxl-4 col-lg-6">
             <div class="card h-100 radius-8 border-0">
                 <div class="card-body p-24">
-                    <h6 class="mb-2 fw-bold text-lg">Total Summary (From Joining)</h6>
-
-                    <div class="mt-4">
-                        <!-- Total Calls -->
-                        <div
-                            class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
-                            <div>
-                                <span class="text-secondary fw-normal d-block mb-1">Total Calls (TC)</span>
+                    <h6 class="fw-bold mb-1">Total Summary (From Joining)</h6>
+                    <div class="mt-24">
+                        <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                            <div class="me-4">
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Total Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
                             </div>
-                            <div class="position-relative">
-                                <div id="semiCircleGauge"></div>
-                                <span
-                                    class="rounded-circle bg-light d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0 p-2">
-                                    <iconify-icon icon="mdi:emoji" class="text-primary fs-5"></iconify-icon>
-                                </span>
-                            </div>
+                            <div id="semiCircleGauge" class="me-3"></div>
                         </div>
 
-                        <!-- Other Calls -->
-                        <div
-                            class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
+                        <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div>
-                                <span class="text-secondary fw-normal d-block mb-1">Other Calls (OC)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Other Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
                             </div>
-                            <div id="areaChart" class="p-2"></div>
+                            <div id="areaChart"></div>
                         </div>
 
-                        <!-- Called & Mailed Calls -->
-                        <div
-                            class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
+                        <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                             <div>
-                                <span class="text-secondary fw-normal d-block mb-1">Called & Mailed Calls (C&MC)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Called & Mailed Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
                             </div>
-                            <div id="iconBarChartCmc" class="p-2"></div>
+                            <div id="iconBarChartCmc"></div>
                         </div>
 
-                        <!-- Ready To Paid Calls -->
-                        <div
-                            class="d-flex align-items-center justify-content-between p-3 border rounded-3 shadow-sm bg-white">
+                        <div class="d-flex align-items-center gap-1 justify-content-between">
                             <div>
-                                <span class="text-secondary fw-normal d-block mb-1">Ready To Paid Calls (R2P)</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Ready To Paid Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $readyToPaidCalls }}</h5>
                             </div>
-                            <div id="iconBarChartR2p" class="p-2"></div>
+                            <div id="iconBarChartR2p"></div>
                         </div>
                     </div>
-
                 </div>
             </div>
         </div>

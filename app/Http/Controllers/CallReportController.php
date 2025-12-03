@@ -203,7 +203,7 @@ class CallReportController extends Controller
         $user = Auth::user();
         $createdByKey = "{$user->id}|senior";
 
-        // Total calls for this senior (including hierarchical keys)
+                // Total calls for this senior (including hierarchical keys)
         $totalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")->count();
 
         // Total "Called & Mailed" calls
@@ -291,6 +291,7 @@ class CallReportController extends Controller
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
+
 
 
         // --- Initialize daily variables (Day 1 - Day 31) ---
@@ -392,7 +393,7 @@ class CallReportController extends Controller
 
         $juniorUser = $user;
 
-        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
+                // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
         $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
@@ -1340,7 +1341,7 @@ class CallReportController extends Controller
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+            ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
         // Total other calls (not "Called & Mailed")
@@ -1358,7 +1359,7 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+            ->where('Exe_Remarks', 'Called & Mailed')
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -1482,8 +1483,6 @@ class CallReportController extends Controller
         $trDay29 = $dailyTransfers[29] ?? 0;
         $trDay30 = $dailyTransfers[30] ?? 0;
         $trDay31 = $dailyTransfers[31] ?? 0;
-
-
 
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
@@ -2611,6 +2610,12 @@ class CallReportController extends Controller
             ->whereMonth('updated_at', $month)
             ->count();
 
+        $Mtotaltransfers = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('transfers', 1)
+            ->count();
+
         // Total "Called & Mailed" calls
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
@@ -2628,30 +2633,185 @@ class CallReportController extends Controller
             })
             ->count();
 
-        // Hour-wise "Called & Mailed" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        // --- Daily "Called & Mailed + Ready To Paid" counts ---
+        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
-        // Hour-wise "Other Calls" counts
-        $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        // --- Daily "Other Calls" counts ---
+        $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
-                $q->whereNull('Exe_Remarks')
-                    ->orWhere('Exe_Remarks', '<>', 'Called & Mailed');
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
             })
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
+        // --- Daily "Transfers" counts ---
+        $dailyTransfers = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('transfers', 1)
+            ->groupBy('day')
+            ->pluck('count', 'day')
+            ->toArray();
+
+        // --- Create daily variables 1 to 31 ---
+        $tDay1  = $dailyCalledMailed[1]  ?? 0;
+        $tDay2  = $dailyCalledMailed[2]  ?? 0;
+        $tDay3  = $dailyCalledMailed[3]  ?? 0;
+        $tDay4  = $dailyCalledMailed[4]  ?? 0;
+        $tDay5  = $dailyCalledMailed[5]  ?? 0;
+        $tDay6  = $dailyCalledMailed[6]  ?? 0;
+        $tDay7  = $dailyCalledMailed[7]  ?? 0;
+        $tDay8  = $dailyCalledMailed[8]  ?? 0;
+        $tDay9  = $dailyCalledMailed[9]  ?? 0;
+        $tDay10 = $dailyCalledMailed[10] ?? 0;
+        $tDay11 = $dailyCalledMailed[11] ?? 0;
+        $tDay12 = $dailyCalledMailed[12] ?? 0;
+        $tDay13 = $dailyCalledMailed[13] ?? 0;
+        $tDay14 = $dailyCalledMailed[14] ?? 0;
+        $tDay15 = $dailyCalledMailed[15] ?? 0;
+        $tDay16 = $dailyCalledMailed[16] ?? 0;
+        $tDay17 = $dailyCalledMailed[17] ?? 0;
+        $tDay18 = $dailyCalledMailed[18] ?? 0;
+        $tDay19 = $dailyCalledMailed[19] ?? 0;
+        $tDay20 = $dailyCalledMailed[20] ?? 0;
+        $tDay21 = $dailyCalledMailed[21] ?? 0;
+        $tDay22 = $dailyCalledMailed[22] ?? 0;
+        $tDay23 = $dailyCalledMailed[23] ?? 0;
+        $tDay24 = $dailyCalledMailed[24] ?? 0;
+        $tDay25 = $dailyCalledMailed[25] ?? 0;
+        $tDay26 = $dailyCalledMailed[26] ?? 0;
+        $tDay27 = $dailyCalledMailed[27] ?? 0;
+        $tDay28 = $dailyCalledMailed[28] ?? 0;
+        $tDay29 = $dailyCalledMailed[29] ?? 0;
+        $tDay30 = $dailyCalledMailed[30] ?? 0;
+        $tDay31 = $dailyCalledMailed[31] ?? 0;
+
+        $oDay1  = $dailyOtherCalls[1]  ?? 0;
+        $oDay2  = $dailyOtherCalls[2]  ?? 0;
+        $oDay3  = $dailyOtherCalls[3]  ?? 0;
+        $oDay4  = $dailyOtherCalls[4]  ?? 0;
+        $oDay5  = $dailyOtherCalls[5]  ?? 0;
+        $oDay6  = $dailyOtherCalls[6]  ?? 0;
+        $oDay7  = $dailyOtherCalls[7]  ?? 0;
+        $oDay8  = $dailyOtherCalls[8]  ?? 0;
+        $oDay9  = $dailyOtherCalls[9]  ?? 0;
+        $oDay10 = $dailyOtherCalls[10] ?? 0;
+        $oDay11 = $dailyOtherCalls[11] ?? 0;
+        $oDay12 = $dailyOtherCalls[12] ?? 0;
+        $oDay13 = $dailyOtherCalls[13] ?? 0;
+        $oDay14 = $dailyOtherCalls[14] ?? 0;
+        $oDay15 = $dailyOtherCalls[15] ?? 0;
+        $oDay16 = $dailyOtherCalls[16] ?? 0;
+        $oDay17 = $dailyOtherCalls[17] ?? 0;
+        $oDay18 = $dailyOtherCalls[18] ?? 0;
+        $oDay19 = $dailyOtherCalls[19] ?? 0;
+        $oDay20 = $dailyOtherCalls[20] ?? 0;
+        $oDay21 = $dailyOtherCalls[21] ?? 0;
+        $oDay22 = $dailyOtherCalls[22] ?? 0;
+        $oDay23 = $dailyOtherCalls[23] ?? 0;
+        $oDay24 = $dailyOtherCalls[24] ?? 0;
+        $oDay25 = $dailyOtherCalls[25] ?? 0;
+        $oDay26 = $dailyOtherCalls[26] ?? 0;
+        $oDay27 = $dailyOtherCalls[27] ?? 0;
+        $oDay28 = $dailyOtherCalls[28] ?? 0;
+        $oDay29 = $dailyOtherCalls[29] ?? 0;
+        $oDay30 = $dailyOtherCalls[30] ?? 0;
+        $oDay31 = $dailyOtherCalls[31] ?? 0;
+
+        $trDay1  = $dailyTransfers[1]  ?? 0;
+        $trDay2  = $dailyTransfers[2]  ?? 0;
+        $trDay3  = $dailyTransfers[3]  ?? 0;
+        $trDay4  = $dailyTransfers[4]  ?? 0;
+        $trDay5  = $dailyTransfers[5]  ?? 0;
+        $trDay6  = $dailyTransfers[6]  ?? 0;
+        $trDay7  = $dailyTransfers[7]  ?? 0;
+        $trDay8  = $dailyTransfers[8]  ?? 0;
+        $trDay9  = $dailyTransfers[9]  ?? 0;
+        $trDay10 = $dailyTransfers[10] ?? 0;
+        $trDay11 = $dailyTransfers[11] ?? 0;
+        $trDay12 = $dailyTransfers[12] ?? 0;
+        $trDay13 = $dailyTransfers[13] ?? 0;
+        $trDay14 = $dailyTransfers[14] ?? 0;
+        $trDay15 = $dailyTransfers[15] ?? 0;
+        $trDay16 = $dailyTransfers[16] ?? 0;
+        $trDay17 = $dailyTransfers[17] ?? 0;
+        $trDay18 = $dailyTransfers[18] ?? 0;
+        $trDay19 = $dailyTransfers[19] ?? 0;
+        $trDay20 = $dailyTransfers[20] ?? 0;
+        $trDay21 = $dailyTransfers[21] ?? 0;
+        $trDay22 = $dailyTransfers[22] ?? 0;
+        $trDay23 = $dailyTransfers[23] ?? 0;
+        $trDay24 = $dailyTransfers[24] ?? 0;
+        $trDay25 = $dailyTransfers[25] ?? 0;
+        $trDay26 = $dailyTransfers[26] ?? 0;
+        $trDay27 = $dailyTransfers[27] ?? 0;
+        $trDay28 = $dailyTransfers[28] ?? 0;
+        $trDay29 = $dailyTransfers[29] ?? 0;
+        $trDay30 = $dailyTransfers[30] ?? 0;
+        $trDay31 = $dailyTransfers[31] ?? 0;
+
         $juniorUser = $user;
+
+        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
+        $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
+        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+
+        // Find index of matching month (e.g., "2025-10")
+        $targetIndex = null;
+        foreach ($targetDates as $index => $date) {
+            // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
+            $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
+                ? $date
+                : Carbon::parse($date)->format('Y-m');
+
+            if ($monthPart === $selectedMonth) {
+                $targetIndex = $index;
+                break;
+            }
+        }
+
+        // Use the matching month's target, else fallback to first or 0
+        $targetGiven = isset($targetValues[$targetIndex])
+            ? (int) $targetValues[$targetIndex]
+            : ((int) ($targetValues[0] ?? 0));
+
+        // Calculate Days Left (based on matched target_date entry)
+        $matchedDate = $targetDates[$targetIndex] ?? null;
+
+        if ($matchedDate) {
+            // ✅ Handle "YYYY-MM" (month only) or full date
+            if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
+                $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
+            } else {
+                $carbonDate = Carbon::parse($matchedDate);
+            }
+
+            $diff = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
+        } else {
+            $daysLeft = 0;
+        }
+
+        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Ready To Paid')
+            ->count();
+
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         // --- Calculate Present / Absent / Working / Non-working days ---
         $events = UserTimerPause::where('user_id', $juniorUser->id)
@@ -2752,103 +2912,108 @@ class CallReportController extends Controller
             }
         }
 
-        // ---------- ✅ End of Daily Attendance Logic ----------
-
-        // Handle multiple targets and target_dates
-        $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
-        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
-
-        $targetIndex = null;
-        foreach ($targetDates as $index => $date) {
-            $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
-                ? $date
-                : \Carbon\Carbon::parse($date)->format('Y-m');
-            if ($monthPart === $selectedMonth) {
-                $targetIndex = $index;
-                break;
-            }
-        }
-
-        $targetGiven = isset($targetValues[$targetIndex])
-            ? (int) $targetValues[$targetIndex]
-            : ((int) ($targetValues[0] ?? 0));
-
-        $matchedDate = $targetDates[$targetIndex] ?? null;
-        if ($matchedDate) {
-            if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
-            } else {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate);
-            }
-            $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff));
-        } else {
-            $daysLeft = 0;
-        }
-
-        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Paid')
-            ->count();
-        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
-
-        // Initialize hour blocks (10 AM - 8 PM)
-        $t8to9am = $hourlyCalledMailed[8] ?? 0;
-        $t9to10am = $hourlyCalledMailed[9] ?? 0;
-        $t10to11am = $hourlyCalledMailed[10] ?? 0;
-        $t11to12pm = $hourlyCalledMailed[11] ?? 0;
-        $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
-        $t1to2pm   = $hourlyCalledMailed[13] ?? 0;
-        $t2to3pm   = $hourlyCalledMailed[14] ?? 0;
-        $t3to4pm   = $hourlyCalledMailed[15] ?? 0;
-        $t4to5pm   = $hourlyCalledMailed[16] ?? 0;
-        $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
-        $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
-        $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
-
-        $o8to9am = $hourlyOtherCalls[8] ?? 0;
-        $o9to10am = $hourlyOtherCalls[9] ?? 0;
-        $o10to11am = $hourlyOtherCalls[10] ?? 0;
-        $o11to12pm = $hourlyOtherCalls[11] ?? 0;
-        $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
-        $o1to2pm   = $hourlyOtherCalls[13] ?? 0;
-        $o2to3pm   = $hourlyOtherCalls[14] ?? 0;
-        $o3to4pm   = $hourlyOtherCalls[15] ?? 0;
-        $o4to5pm   = $hourlyOtherCalls[16] ?? 0;
-        $o5to6pm   = $hourlyOtherCalls[17] ?? 0;
-        $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
-        $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
+        $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
+        $MAvgtotaltransfers = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
 
         return view('reports.juniormonthly', compact(
+            'juniorUser',
             'MtotalCalls',
             'McalledAndMailedCalls',
             'MotherCalls',
             'selectedMonth',
-            't8to9am',
-            't9to10am',
-            't10to11am',
-            't11to12pm',
-            't12to1pm',
-            't1to2pm',
-            't2to3pm',
-            't3to4pm',
-            't4to5pm',
-            't5to6pm',
-            't6to7pm',
-            't7to8pm',
-            'o8to9am',
-            'o9to10am',
-            'o10to11am',
-            'o11to12pm',
-            'o12to1pm',
-            'o1to2pm',
-            'o2to3pm',
-            'o3to4pm',
-            'o4to5pm',
-            'o5to6pm',
-            'o6to7pm',
-            'o7to8pm',
+            'tDay1',
+            'tDay2',
+            'tDay3',
+            'tDay4',
+            'tDay5',
+            'tDay6',
+            'tDay7',
+            'tDay8',
+            'tDay9',
+            'tDay10',
+            'tDay11',
+            'tDay12',
+            'tDay13',
+            'tDay14',
+            'tDay15',
+            'tDay16',
+            'tDay17',
+            'tDay18',
+            'tDay19',
+            'tDay20',
+            'tDay21',
+            'tDay22',
+            'tDay23',
+            'tDay24',
+            'tDay25',
+            'tDay26',
+            'tDay27',
+            'tDay28',
+            'tDay29',
+            'tDay30',
+            'tDay31',
+            'oDay1',
+            'oDay2',
+            'oDay3',
+            'oDay4',
+            'oDay5',
+            'oDay6',
+            'oDay7',
+            'oDay8',
+            'oDay9',
+            'oDay10',
+            'oDay11',
+            'oDay12',
+            'oDay13',
+            'oDay14',
+            'oDay15',
+            'oDay16',
+            'oDay17',
+            'oDay18',
+            'oDay19',
+            'oDay20',
+            'oDay21',
+            'oDay22',
+            'oDay23',
+            'oDay24',
+            'oDay25',
+            'oDay26',
+            'oDay27',
+            'oDay28',
+            'oDay29',
+            'oDay30',
+            'oDay31',
+            'trDay1',
+            'trDay2',
+            'trDay3',
+            'trDay4',
+            'trDay5',
+            'trDay6',
+            'trDay7',
+            'trDay8',
+            'trDay9',
+            'trDay10',
+            'trDay11',
+            'trDay12',
+            'trDay13',
+            'trDay14',
+            'trDay15',
+            'trDay16',
+            'trDay17',
+            'trDay18',
+            'trDay19',
+            'trDay20',
+            'trDay21',
+            'trDay22',
+            'trDay23',
+            'trDay24',
+            'trDay25',
+            'trDay26',
+            'trDay27',
+            'trDay28',
+            'trDay29',
+            'trDay30',
+            'trDay31',
             'targetGiven',
             'targetAchieved',
             'targetYetToAchieve',
@@ -2856,7 +3021,10 @@ class CallReportController extends Controller
             'presentDays',
             'absentDays',
             'workingDays',
-            'nonWorkingDays'
+            'nonWorkingDays',
+            'MAvgTotalCalls',
+            'Mtotaltransfers',
+            'MAvgtotaltransfers',
         ));
     }
 }
