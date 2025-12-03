@@ -187,6 +187,8 @@
                                             </div>
 
                                             <div class="mb-20 d-flex flex-column">
+                                                <label
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8 w-100">&nbsp;</label>
                                                 <button type="button" id="save-profile-btn"
                                                     class="btn btn-success mb-10">
                                                     Save
