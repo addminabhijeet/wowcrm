@@ -87,6 +87,16 @@ class CandidateDetailsController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function savePayment(Request $request, $id)
+    {
+        $candidate = GoogleSheetData::find($id);
+        if (!$candidate) return response()->json(['error' => 'Candidate not found'], 404);
+
+        $candidate->payment_data = $request->input('payment_data', '');
+        $candidate->save();
+
+        return response()->json(['success' => true]);
+    }
 
 
     public function autoSave(Request $request, $id)

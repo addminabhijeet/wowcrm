@@ -374,7 +374,7 @@
                                                 </select>
                                             </div>
 
-                                            <button type="button" id="save-profile-btn" class="btn btn-success mb-10">
+                                            <button type="button" id="save-edu-btn" class="btn btn-success mb-10">
                                                 Save
                                             </button>
 
@@ -392,7 +392,7 @@
                             <script>
                                 document.addEventListener("DOMContentLoaded", function() {
 
-                                    const saveBtn = document.getElementById("save-profile-btn");
+                                    const saveBtn = document.getElementById("save-edu-btn");
 
                                     saveBtn.addEventListener("click", function() {
 
@@ -422,29 +422,29 @@
                             </script>
 
                             <div class="tab-pane fade" id="pills-payment" role="tabpanel">
-
                                 <div class="row">
                                     <div class="col-12 d-flex">
 
-                                        <!-- LEFT SIDE (Full Name + Phone) -->
+                                        <!-- LEFT SIDE (Amount + Date + Tran ID) -->
                                         <div class="flex-grow-1">
 
                                             <div class="mb-20">
                                                 <label for="amount"
-                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Amount
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Amount
                                                 </label>
                                                 <input type="text" name="amount" id="amount"
                                                     class="form-control radius-8"
-                                                    value="${{ old('amount', $candidate->Amount ?? '') }}"
+                                                    value="{{ old('amount', $candidate->Amount ?? '') }}"
                                                     placeholder="Enter Amount" required>
                                             </div>
 
                                             <div class="mb-20">
                                                 <label for="PaymentDate"
-                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Payment
-                                                    Date
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Payment Date
                                                 </label>
-                                                <input type="date" name="PaymentDate" id="	PaymentDate"
+                                                <input type="date" name="PaymentDate" id="PaymentDate"
                                                     class="form-control radius-8"
                                                     value="{{ old('PaymentDate', $candidate->PaymentDate ?? '') }}"
                                                     required>
@@ -452,8 +452,8 @@
 
                                             <div class="mb-20">
                                                 <label for="TranId"
-                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Transaction
-                                                    ID
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Transaction ID
                                                 </label>
                                                 <input type="text" name="TranId" id="TranId"
                                                     class="form-control radius-8"
@@ -463,20 +463,18 @@
 
                                         </div>
 
-                                        <!-- SINGLE VERTICAL DIVIDER (FULL HEIGHT) -->
+                                        <!-- DIVIDER -->
                                         <div class="px-4 d-flex" style="align-items: stretch;">
                                             <div style="width: 1px; background: #ccc; height: 100%;"></div>
                                         </div>
 
-
-
-                                        <!-- RIGHT SIDE (Email + Location) -->
+                                        <!-- RIGHT SIDE -->
                                         <div class="flex-grow-1">
 
                                             <div class="mb-20">
                                                 <label for="TranRef"
-                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Reference
-                                                    Number
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Reference Number
                                                 </label>
                                                 <input type="text" name="TranRef" id="TranRef"
                                                     class="form-control radius-8"
@@ -486,8 +484,8 @@
 
                                             <div class="mb-20">
                                                 <label for="PaymentMethod"
-                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Payment
-                                                    Method
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Payment Method
                                                 </label>
                                                 <input type="text" name="PaymentMethod" id="PaymentMethod"
                                                     class="form-control radius-8"
@@ -497,8 +495,8 @@
 
                                             <div class="mb-20">
                                                 <label for="PayeeName"
-                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Payee
-                                                    Name
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Payee Name
                                                 </label>
                                                 <input type="text" name="PayeeName" id="PayeeName"
                                                     class="form-control radius-8"
@@ -506,19 +504,59 @@
                                                     placeholder="Enter Payee Name" required>
                                             </div>
 
+                                            <!--  Save Button -->
+                                            <button type="button" id="save-pay-btn" class="btn btn-success mb-10">
+                                                Save
+                                            </button>
+
+                                            <!--  Hidden field (same concept as followups) -->
+                                            <textarea name="payment_data" id="payment_data" class="d-none">
+                                                {{ old('payment_data', $candidate->payment_data ?? '') }}
+                                            </textarea>
+
                                         </div>
-
                                     </div>
-
                                 </div>
-
-
-
-
-
-
-
                             </div>
+
+
+                            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+
+                                    const saveBtn = document.getElementById("save-pay-btn");
+                                    const hiddenInput = document.getElementById("payment_data");
+
+                                    //  Save Payment via AJAX (same logic style as followups)
+                                    saveBtn.addEventListener("click", function() {
+
+                                        let data = {
+                                            amount: document.getElementById("amount").value,
+                                            PaymentDate: document.getElementById("PaymentDate").value,
+                                            TranId: document.getElementById("TranId").value,
+                                            TranRef: document.getElementById("TranRef").value,
+                                            PaymentMethod: document.getElementById("PaymentMethod").value,
+                                            PayeeName: document.getElementById("PayeeName").value
+                                        };
+
+                                        // Store JSON (same principle as hidden followups)
+                                        hiddenInput.value = JSON.stringify(data);
+
+                                        axios.post("{{ route('candidate.savePayment', $candidate->id) }}", {
+                                                payment_data: hiddenInput.value
+                                            })
+                                            .then(function(response) {
+                                                alert("Payment Saved Successfully!");
+                                            })
+                                            .catch(function(error) {
+                                                console.error(error);
+                                                alert("Failed to save payment!");
+                                            });
+                                    });
+
+                                });
+                            </script>
 
                             <div class="tab-pane fade" id="pills-change-passwork" role="tabpanel">
                                 <div class="mb-20">
@@ -695,16 +733,16 @@
                                 <!-- Payment -->
                                 <h5
                                     style="font-weight:700; color:#0d6efd; margin-bottom:10px; padding:10px 15px;
-               background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
-               box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                                    background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
+                                    box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                                     Resume
                                 </h5>
 
                                 @if (!empty($candidate->resume))
                                     <div
                                         style="width:100%; margin-bottom:30px; height:85vh;
-                    background:#ffffff; border-radius:10px; overflow:hidden;
-                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
+                                    background:#ffffff; border-radius:10px; overflow:hidden;
+                                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
                                             src="{{ url('dashboard/senior/google-sheet/view-resume/' . $candidate->id) }}"
                                             style="width:100%; height:100%; border:none;" allowfullscreen>
@@ -718,16 +756,16 @@
                                 <!-- Payment -->
                                 <h5
                                     style="font-weight:700; color:#0d6efd; margin-bottom:10px; padding:10px 15px;
-               background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
-               box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                                background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
+                                box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                                     Resume Update
                                 </h5>
 
                                 @if (!empty($candidate->resumeupdate))
                                     <div
                                         style="width:100%; margin-bottom:30px; height:85vh;
-                    background:#ffffff; border-radius:10px; overflow:hidden;
-                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
+                                background:#ffffff; border-radius:10px; overflow:hidden;
+                                box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
                                             src="{{ url('dashboard/senior/google-sheet/view-resume/' . $candidate->id) }}"
                                             style="width:100%; height:100%; border:none;" allowfullscreen>
@@ -747,16 +785,16 @@
                                 <!-- Acceptance -->
                                 <h5
                                     style="font-weight:700; color:#0d6efd; margin-bottom:10px; padding:10px 15px;
-               background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
-               box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                                background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
+                                box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                                     Acceptance Document
                                 </h5>
 
                                 @if (!empty($candidate->acceptance))
                                     <div
                                         style="width:100%; margin-bottom:30px; height:85vh;
-                    background:#ffffff; border-radius:10px; overflow:hidden;
-                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
+                                background:#ffffff; border-radius:10px; overflow:hidden;
+                                box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
                                             src="{{ url('dashboard/senior/google-sheet/view-acceptance/' . $candidate->id) }}"
                                             style="width:100%; height:100%; border:none;" allowfullscreen>
@@ -771,16 +809,16 @@
                                 <!-- Consultation -->
                                 <h5
                                     style="font-weight:700; color:#0d6efd; margin-bottom:10px; padding:10px 15px;
-               background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
-               box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                                background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
+                                box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                                     Consultation Document
                                 </h5>
 
                                 @if (!empty($candidate->consultation))
                                     <div
                                         style="width:100%; margin-bottom:30px; height:85vh;
-                    background:#ffffff; border-radius:10px; overflow:hidden;
-                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
+                                background:#ffffff; border-radius:10px; overflow:hidden;
+                                box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
                                             src="{{ url('dashboard/senior/google-sheet/view-consultation/' . $candidate->id) }}"
                                             style="width:100%; height:100%; border:none;" allowfullscreen>
@@ -795,16 +833,16 @@
                                 <!-- Delivery -->
                                 <h5
                                     style="font-weight:700; color:#0d6efd; margin-bottom:10px; padding:10px 15px;
-               background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
-               box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                                background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
+                                box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                                     Delivery Document
                                 </h5>
 
                                 @if (!empty($candidate->delivery))
                                     <div
                                         style="width:100%; margin-bottom:30px; height:85vh;
-                    background:#ffffff; border-radius:10px; overflow:hidden;
-                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
+                                background:#ffffff; border-radius:10px; overflow:hidden;
+                                box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
                                             src="{{ url('dashboard/senior/google-sheet/view-delivery/' . $candidate->id) }}"
                                             style="width:100%; height:100%; border:none;" allowfullscreen>
@@ -819,16 +857,16 @@
                                 <!-- Payment -->
                                 <h5
                                     style="font-weight:700; color:#0d6efd; margin-bottom:10px; padding:10px 15px;
-               background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
-               box-shadow:0 2px 6px rgba(0,0,0,0.08);">
+                                background:#ffffff; border-left:4px solid #0d6efd; border-radius:6px;
+                                box-shadow:0 2px 6px rgba(0,0,0,0.08);">
                                     Payment Document
                                 </h5>
 
                                 @if (!empty($candidate->payment))
                                     <div
                                         style="width:100%; margin-bottom:30px; height:85vh;
-                    background:#ffffff; border-radius:10px; overflow:hidden;
-                    box-shadow:0 3px 10px rgba(0,0,0,0.12);">
+                                background:#ffffff; border-radius:10px; overflow:hidden;
+                                box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
                                             src="{{ url('dashboard/senior/google-sheet/view-payment/' . $candidate->id) }}"
                                             style="width:100%; height:100%; border:none;" allowfullscreen>
@@ -880,30 +918,4 @@
             </div>
         </div>
     </div>
-
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            const inputs = document.querySelectorAll(".autosave-field");
-
-            inputs.forEach(input => {
-                input.addEventListener("change", function() {
-
-                    const fieldName = this.name;
-                    const fieldValue = this.value;
-
-                    axios.post("{{ route('candidate.autoSave', $candidate->id) }}", {
-                            [fieldName]: fieldValue
-                        })
-                        .then(res => {
-                            console.log("Saved:", fieldName);
-                        })
-                        .catch(err => {
-                            console.error("Auto save failed", err);
-                            alert("Failed to save, please try again.");
-                        });
-
-                });
-            });
-        });
-    </script>
 @endsection

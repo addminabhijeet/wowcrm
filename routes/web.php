@@ -250,7 +250,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/candidate/{id}/save-profile', [CandidateDetailsController::class, 'saveProfile'])->name('candidate.saveProfile');
     Route::post('/candidate/{id}/autosave', [CandidateDetailsController::class, 'autoSave'])->name('candidate.autoSave');
     Route::post('/candidate/{id}/save-edu', [CandidateController::class, 'saveEdu'])->name('candidate.saveEdu');
-
+    Route::post('/candidate/{id}/save-payment', [CandidateController::class, 'savePayment'])->name('candidate.payment');
 
     Route::get('/dashboard/admin/call-reports', [CallReportController::class, 'index'])->name('call.reports.index');
     Route::get('/dashboard/junior/call-reports', [CallReportController::class, 'junior'])->name('call.reports.junior');
