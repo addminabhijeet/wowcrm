@@ -563,13 +563,33 @@
                                                 alert("Payment Saved Successfully!");
                                             })
                                             .catch(function(error) {
-                                                console.error(error.response?.data || error);
-                                                alert("Failed to save payment!");
+
+                                                console.error(error);
+
+                                                // Extract human-readable error message
+                                                let message = "Unknown error occurred.";
+
+                                                if (error.response) {
+                                                    if (typeof error.response.data === 'string') {
+                                                        message = error.response.data; // raw response
+                                                    } else if (error.response.data.message) {
+                                                        message = error.response.data.message; // Laravel message
+                                                    } else if (error.response.data.error) {
+                                                        message = error.response.data.error; // custom error
+                                                    } else {
+                                                        message = JSON.stringify(error.response.data, null, 2);
+                                                    }
+                                                } else if (error.message) {
+                                                    message = error.message;
+                                                }
+
+                                                alert("Error: " + message);
                                             });
                                     });
 
                                 });
                             </script>
+
 
 
                             <div class="tab-pane fade" id="pills-change-passwork" role="tabpanel">
