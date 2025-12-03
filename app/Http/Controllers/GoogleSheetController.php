@@ -5494,6 +5494,174 @@ class GoogleSheetController extends Controller
         }
     }
 
+    public function writterupdate(Request $request)
+    {
+        $id = $request->input('id');
+
+        if (!$id) {
+            return response()->json(['success' => false, 'message' => 'ID is required']);
+        }
+
+        $row = GoogleSheetData::find($id);
+        if (!$row) {
+            return response()->json(['success' => false, 'message' => 'Row not found']);
+        }
+
+        $rowData = json_decode($request->input('data'), true);
+        if (empty($rowData)) {
+            return response()->json(['success' => false, 'message' => 'No data provided']);
+        }
+
+        // --- Extract Email & Phone for uniqueness check ---
+        $email = $rowData['Email Address'] ?? $row->Email_Address;
+        $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
+        $name  = $rowData['Name'] ?? $row->Name;
+        $date  = $rowData['Date'] ?? $row->Date;
+
+        if (empty($name)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Name is required.'
+            ]);
+        }
+
+        if (empty($date)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Date is required.'
+            ]);
+        }
+
+        // Handle resume file upload - Save actual file content
+        if ($request->hasFile('resume')) {
+            $file = $request->file('resume');
+
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                $filePath = $file->storeAs('resumes', $newName, 'public');
+
+                if ($row->resume && Storage::disk('public')->exists($row->resume)) {
+                    Storage::disk('public')->delete($row->resume);
+                }
+
+                $row->resume = $filePath;
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // Handle updateresume file upload - Save actual file content
+        if ($request->hasFile('updateresume')) {
+            $file = $request->file('updateresume');
+
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                $filePath = $file->storeAs('updateresume', $newName, 'public');
+
+                if ($row->updateresume && Storage::disk('public')->exists($row->updateresume)) {
+                    Storage::disk('public')->delete($row->updateresume);
+                }
+
+                $row->updateresume = $filePath;
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // --- Prepare update data ---
+        $updateData = [
+            'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
+            'Name' => $rowData['Name'] ?? null,
+            'Email_Address' => $email,
+            'Phone_Number' => $phone,
+            'Location' => $rowData['Location'] ?? null,
+            'Remark' => $rowData['Remark'] ?? null,
+            'Relocation' => $rowData['Relocation'] ?? null,
+            'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
+            'Immigration' => $rowData['Immigration'] ?? null,
+            'Course' => $rowData['Course'] ?? null,
+            'Amount' => isset($rowData['Amount']) && $rowData['Amount'] !== '' ? $this->parseAmount($rowData['Amount']) : 469,
+            'Qualification' => $rowData['Qualification'] ?? null,
+            'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
+            'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
+            'Time_Zone' => $rowData['Time Zone'] ?? null,
+            'PaymentDate' => !empty($rowData['PaymentDate']) ? $this->parseDate($rowData['PaymentDate']) : null,
+            'TranId' => $rowData['TranId'] ?? null,
+            'TranRef' => $rowData['TranRef'] ?? null,
+            'PaymentMethod' => $rowData['PaymentMethod'] ?? null,
+            'PayeeName' => $rowData['PayeeName'] ?? null,
+            'updated_at' => now(),
+        ];
+
+        if ($request->hasFile('resume')) {
+            $updateData['resume'] = $row->resume;
+        }
+
+        // created_by logic preserved exactly
+        $updateData['created_by'] = $row->created_by;
+
+        if (isset($rowData['Exe Remarks'])) {
+            $exeRemark = $rowData['Exe Remarks'];
+
+            if ($exeRemark === 'Document Send') {
+                $authUser = Auth::user();
+
+                if (preg_match('/0\|accountant$/', $updateData['created_by'])) {
+                    $updateData['created_by'] = preg_replace(
+                        '/0\|accountant$/',
+                        $authUser->id . '|accountant:0|accountant',
+                        $updateData['created_by']
+                    );
+                }
+
+                if (strpos($updateData['created_by'], ':0|accountant') === false) {
+                    $updateData['created_by'] .= ':0|accountant';
+                }
+            }
+        }
+
+        foreach ($updateData as $key => $value) {
+            if ($value === '' && !in_array($key, ['Email_Address', 'Name', 'Date', 'Amount'])) {
+                $updateData[$key] = null;
+            }
+        }
+
+        try {
+            $row->update($updateData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Row updated successfully',
+                'id' => $row->id,
+                'sheet_row_number' => $row->sheet_row_number,
+                'resume_path' => !empty($row->resume) ? true : false
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),  // Show real error
+                'error_line' => $e->getLine(),  // Optional: line number
+                'error_file' => $e->getFile(),  // Optional: which file
+            ]);
+        }
+    }
+
 
     public function accountantupdatecon(Request $request)
     {
