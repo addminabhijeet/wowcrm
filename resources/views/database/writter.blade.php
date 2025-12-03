@@ -53,7 +53,8 @@
                                 <th scope="col">Qualification</th>
                                 <th scope="col">Exe Remarks</th>
                                 <th scope="col">Forwarded By</th>
-                                <th scope="col">View</th>
+                                <th scope="col">View Resume</th>
+                                <th scope="col">Update Resume</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
                         </thead>
