@@ -554,7 +554,7 @@
                                         // Store JSON (same principle as hidden followups)
                                         hiddenInput.value = JSON.stringify(data);
 
-                                        axios.post("{{ route('candidate.savePayment', $candidate->id) }}", {
+                                        axios.post("{{ route('candidate.Payment', $candidate->id) }}", {
                                                 payment_data: hiddenInput.value
                                             })
                                             .then(function(response) {
