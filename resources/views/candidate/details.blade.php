@@ -542,53 +542,32 @@
                                     saveBtn.addEventListener("click", function() {
 
                                         let data = {
-                                            amount: document.getElementById("amount").value,
+                                            Amount: document.getElementById("amount").value,
                                             PaymentDate: document.getElementById("PaymentDate").value,
                                             TranId: document.getElementById("TranId").value,
                                             TranRef: document.getElementById("TranRef").value,
                                             PaymentMethod: document.getElementById("PaymentMethod").value,
-                                            PayeeName: document.getElementById("PayeeName").value
+                                            PayeeName: document.getElementById("PayeeName").value,
                                         };
 
+                                        // store clean JSON (no whitespace/newline issues)
                                         hiddenInput.value = JSON.stringify(data);
 
                                         axios.post("{{ route('candidate.savePayment', $candidate->id) }}", {
                                                 payment_data: hiddenInput.value
-                                            }, {
-                                                headers: {
-                                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                                                }
                                             })
                                             .then(function(response) {
                                                 alert("Payment Saved Successfully!");
                                             })
                                             .catch(function(error) {
-
                                                 console.error(error);
-
-                                                // Extract human-readable error message
-                                                let message = "Unknown error occurred.";
-
-                                                if (error.response) {
-                                                    if (typeof error.response.data === 'string') {
-                                                        message = error.response.data; // raw response
-                                                    } else if (error.response.data.message) {
-                                                        message = error.response.data.message; // Laravel message
-                                                    } else if (error.response.data.error) {
-                                                        message = error.response.data.error; // custom error
-                                                    } else {
-                                                        message = JSON.stringify(error.response.data, null, 2);
-                                                    }
-                                                } else if (error.message) {
-                                                    message = error.message;
-                                                }
-
-                                                alert("Error: " + message);
+                                                alert("Failed to save payment!");
                                             });
                                     });
 
                                 });
                             </script>
+
 
 
 
