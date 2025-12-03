@@ -186,8 +186,8 @@
                                                     placeholder="Enter Location" required>
                                             </div>
 
-                                            <div class="mb-20">
-                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">&nbsp;</label>
+                                            <div class="mb-20 d-flex align-items-end">
+                                                <div class="me-2" style="flex: 0 0 150px;"></div>
                                                 <button type="button" id="save-profile-btn"
                                                     class="btn btn-success mb-10">
                                                     Save
@@ -397,8 +397,8 @@
                                             </textarea>
 
                                             <!-- Existing Save Button -->
-                                            <div class="mb-20">
-                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">&nbsp;</label>
+                                            <div class="mb-20 d-flex align-items-end">
+                                                <div class="me-2" style="flex: 0 0 150px;"></div>
                                                 <button type="button" id="save-edu-btn" class="btn btn-success mb-10">
                                                     Save
                                                 </button>
@@ -557,8 +557,8 @@
                                             </div>
 
                                             <!--  Save Button -->
-                                            <div class="mb-20">
-                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">&nbsp;</label>
+                                            <div class="mb-20 d-flex align-items-end">
+                                                <div class="me-2" style="flex: 0 0 150px;"></div>
                                                 <button type="button" id="save-pay-btn" class="btn btn-success mb-10">
                                                     Save
                                                 </button>
