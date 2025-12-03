@@ -66,9 +66,10 @@
 
                                     {{-- Date --}}
                                     <td>
-                                        <input type="text" class="form-control date-picker" data-key="Date"
+                                        <input type="text" class="form-control"
                                             value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}"
-                                            readonly>
+                                            disabled>
+                                        <input type="hidden" name="Date" value="{{ $row->Date}}">
                                     </td>
 
 
