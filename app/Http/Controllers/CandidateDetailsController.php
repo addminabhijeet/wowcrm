@@ -98,7 +98,6 @@ class CandidateDetailsController extends Controller
             'Course'          => $data['course'] ?? null,
             'Qualification'   => $data['qualification'] ?? null,
             'edu_data'        => $json, // store original JSON
-            'updated_at'      => now(),
         ];
 
         // Replace empty strings with null (same as savePayment)
@@ -148,7 +147,6 @@ class CandidateDetailsController extends Controller
             'PaymentMethod' => $data['paymentmethod'] ?? null,
             'PayeeName'     => $data['payeename'] ?? null,
             'payment_data'  => $json,  // store original json
-            'updated_at'    => now(),
         ];
 
         // Replace empty string → NULL
