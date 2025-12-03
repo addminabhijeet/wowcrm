@@ -658,14 +658,14 @@
                                         Remarks
                                     </label>
                                     <textarea name="First_Follow_Up_Remarks" id="First_Follow_Up_Remarks" class="form-control radius-8"
-                                        placeholder="Enter 1st follow up remarks" required>{{ old('First_Follow_Up_Remarks', $candidate->First_Follow_Up_Remarks ?? '') }}</textarea>
+                                        placeholder="Enter 1st follow up remarks" required readonly>{{ old('First_Follow_Up_Remarks', $candidate->First_Follow_Up_Remarks ?? '') }}</textarea>
                                 </div>
 
                                 <div class="mb-20">
                                     <label for="Remark"
                                         class="form-label fw-semibold text-primary-light text-sm mb-8">Remark
                                     </label>
-                                    <textarea name="Remark" id="Remark" class="form-control radius-8" placeholder="Enter Remark" required>{{ old('Remark', $candidate->Remark ?? '') }}</textarea>
+                                    <textarea name="Remark" id="Remark" class="form-control radius-8" placeholder="Enter Remark" required readonly>{{ old('Remark', $candidate->Remark ?? '') }}</textarea>
                                 </div>
 
                                 <div class="mb-20">
