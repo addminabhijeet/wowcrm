@@ -187,12 +187,14 @@
                                             </div>
 
                                             <div class="mb-20">
-                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">&nbsp;</label>
+                                                <label
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8 d-block">&nbsp;</label>
                                                 <button type="button" id="save-profile-btn"
                                                     class="btn btn-success mb-10">
                                                     Save
                                                 </button>
                                             </div>
+
 
                                         </div>
 
@@ -398,7 +400,8 @@
 
                                             <!-- Existing Save Button -->
                                             <div class="mb-20">
-                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">&nbsp;</label>
+                                                <label
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">&nbsp;</label>
                                                 <button type="button" id="save-edu-btn" class="btn btn-success mb-10">
                                                     Save
                                                 </button>
@@ -558,7 +561,8 @@
 
                                             <!--  Save Button -->
                                             <div class="mb-20">
-                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">&nbsp;</label>
+                                                <label
+                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">&nbsp;</label>
                                                 <button type="button" id="save-pay-btn" class="btn btn-success mb-10">
                                                     Save
                                                 </button>
