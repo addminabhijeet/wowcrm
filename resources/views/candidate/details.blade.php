@@ -93,13 +93,13 @@
                                 Signed Document
                             </button>
                         </li>
-                        <li class="nav-item" role="presentation">
+                        {{-- <li class="nav-item" role="presentation">
                             <button class="nav-link d-flex align-items-center px-24" id="pills-notification-tab"
                                 data-bs-toggle="pill" data-bs-target="#pills-notification" type="button" role="tab"
                                 aria-controls="pills-notification" aria-selected="false" tabindex="-1">
                                 Status
                             </button>
-                        </li>
+                        </li> --}}
                     </ul>
                     <form action="{{ route('users.accountant.update', $candidate->id) }}" method="POST"
                         enctype="multipart/form-data">
@@ -984,7 +984,7 @@
 
 
 
-                            <div class="tab-pane fade" id="pills-notification" role="tabpanel">
+                            {{-- <div class="tab-pane fade" id="pills-notification" role="tabpanel">
                                 <div
                                     class="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
                                     <div class="d-flex align-items-center gap-3 justify-content-between">
@@ -995,7 +995,7 @@
                                             value="1" {{ $candidate->status ? 'checked' : '' }}>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                         </div>
                     </form>
                 </div>
