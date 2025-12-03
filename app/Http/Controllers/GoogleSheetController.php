@@ -3573,6 +3573,24 @@ class GoogleSheetController extends Controller
         return response()->download($filePath, basename($filePath));
     }
 
+        // Add a method to download the PDF files
+    public function downloadseniorUpdateResume($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->resume) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->resume);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download($filePath, basename($filePath));
+    }
+
     public function downloadseniorAcceptance($id)
     {
         $row = GoogleSheetData::find($id);
