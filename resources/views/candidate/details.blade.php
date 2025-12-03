@@ -559,13 +559,13 @@
                                             </div>
 
                                             <!--  Save Button -->
-                                            <div class="mb-20 d-flex justify-content-end align-items-center">
-                                                <label
-                                                    class="form-label fw-semibold text-primary-light text-sm mb-8 d-block">&nbsp;</label>
-                                                <button type="button" id="save-pay-btn" class="btn btn-success mb-10">
-                                                    Save
-                                                </button>
-                                            </div>
+                                            <div class="mb-20 d-flex flex-column">
+    <label class="form-label fw-semibold text-primary-light text-sm mb-8 w-100">&nbsp;</label>
+    <button type="button" id="save-pay-btn" class="btn btn-success mb-10">
+        Save
+    </button>
+</div>
+
 
                                             <!--  Hidden field (same concept as followups) -->
                                             <textarea name="payment_data" id="payment_data" class="d-none">
