@@ -79,35 +79,29 @@ class CandidateDetailsController extends Controller
             return response()->json(['success' => false, 'message' => 'Candidate not found'], 404);
         }
 
-        // Prepare data
-        $relocation     = $request->input('relocation', null);
-        $graduation     = $request->input('graduation', null);
-        $immigration    = $request->input('immigration', null);
-        $course         = $request->input('course', null);
-        $qualification  = $request->input('qualification', null);
+        // Get JSON from request
+        $json = $request->input('edu_data', ''); // new JSON key, similar to payment_data
+        $data = json_decode($json, true);
 
-        // Normalize graduation date
-        if (!empty($graduation)) {
-            try {
-                $graduation = date('Y-m-d', strtotime($graduation));
-            } catch (\Exception $e) {
-                $graduation = null;
-            }
-        } else {
-            $graduation = null; // important to force NULL instead of empty string
+        if (!is_array($data)) {
+            return response()->json(['success' => false, 'message' => 'Invalid JSON received'], 422);
         }
 
-        // Prepare update array
+        // Normalize array keys to lowercase
+        $data = array_change_key_case($data, CASE_LOWER);
+
+        // Map JSON → DB with fallback NULL
         $updateData = [
-            'Relocation'      => $relocation ?: null,
-            'Graduation_Date' => $graduation,
-            'Immigration'     => $immigration ?: null,
-            'Course'          => $course ?: null,
-            'Qualification'   => $qualification ?: null,
+            'Relocation'      => $data['relocation'] ?? null,
+            'Graduation_Date' => $data['graduation'] ?? null,
+            'Immigration'     => $data['immigration'] ?? null,
+            'Course'          => $data['course'] ?? null,
+            'Qualification'   => $data['qualification'] ?? null,
+            'edu_data'        => $json, // store original JSON
             'updated_at'      => now(),
         ];
 
-        // Replace empty strings with null (like savePayment)
+        // Replace empty strings with null (same as savePayment)
         foreach ($updateData as $key => $value) {
             if ($value === '' || $value === ' ') {
                 $updateData[$key] = null;
@@ -119,6 +113,7 @@ class CandidateDetailsController extends Controller
 
         return response()->json(['success' => true, 'message' => 'Profile updated successfully']);
     }
+
 
 
 

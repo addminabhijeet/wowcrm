@@ -388,6 +388,11 @@
                                                 </select>
                                             </div>
 
+                                            <textarea name="edu_data" id="edu_data" class="d-none">
+                                                {{ old('edu_data', $candidate->edu_data ?? '') }}
+                                            </textarea>
+
+                                            <!-- Existing Save Button -->
                                             <button type="button" id="save-edu-btn" class="btn btn-success mb-10">
                                                 Save
                                             </button>
@@ -407,10 +412,12 @@
                                 document.addEventListener("DOMContentLoaded", function() {
 
                                     const saveBtn = document.getElementById("save-edu-btn");
+                                    const hiddenInput = document.getElementById("edu_data");
 
                                     saveBtn.addEventListener("click", function() {
 
-                                        let payload = {
+                                        // Collect all form values
+                                        let data = {
                                             relocation: document.getElementById("relocation").value,
                                             graduation: document.getElementById("graduation").value,
                                             immigration: document.getElementById("immigration").value,
@@ -418,13 +425,40 @@
                                             qualification: document.getElementById("qualification").value,
                                         };
 
-                                        axios.post("{{ route('candidate.saveEdu', $candidate->id) }}", payload)
+                                        // Store JSON in hidden textarea
+                                        hiddenInput.value = JSON.stringify(data);
+
+                                        // Send POST request with JSON like savePayment
+                                        axios.post("{{ route('candidate.saveEdu', $candidate->id) }}", {
+                                                edu_data: hiddenInput.value
+                                            }, {
+                                                headers: {
+                                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                                }
+                                            })
                                             .then(function(response) {
                                                 alert("Profile saved successfully!");
                                             })
                                             .catch(function(error) {
                                                 console.error(error);
-                                                alert("Failed to save profile. Please try again.");
+
+                                                // Extract human-readable error message
+                                                let message = "Unknown error occurred.";
+                                                if (error.response) {
+                                                    if (typeof error.response.data === 'string') {
+                                                        message = error.response.data;
+                                                    } else if (error.response.data.message) {
+                                                        message = error.response.data.message;
+                                                    } else if (error.response.data.error) {
+                                                        message = error.response.data.error;
+                                                    } else {
+                                                        message = JSON.stringify(error.response.data, null, 2);
+                                                    }
+                                                } else if (error.message) {
+                                                    message = error.message;
+                                                }
+
+                                                alert("Error: " + message);
                                             });
 
                                     });
