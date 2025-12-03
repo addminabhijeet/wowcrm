@@ -750,7 +750,7 @@
                     // Determine URL and method
                     let url, method;
                     if (id === "new") {
-                        url = "{{ route('accountantstore') }}";
+                        url = "{{ route('writterstore') }}";
                         method = "POST";
                     } else {
                         url = "{{ route('writterupdate') }}";
