@@ -416,7 +416,7 @@
                                             qualification: document.getElementById("qualification").value,
                                         };
 
-                                        axios.post("{{ route('candidate.saveProfile', $candidate->id) }}", payload)
+                                        axios.post("{{ route('candidate.saveEdu', $candidate->id) }}", payload)
                                             .then(function(response) {
                                                 alert("Profile saved successfully!");
                                             })
