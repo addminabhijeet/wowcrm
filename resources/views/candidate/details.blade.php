@@ -829,13 +829,13 @@
                                     Resume Update
                                 </h5>
 
-                                @if (!empty($candidate->resumeupdate))
+                                @if (!empty($candidate->updateresume))
                                     <div
                                         style="width:100%; margin-bottom:30px; height:85vh;
                                 background:#ffffff; border-radius:10px; overflow:hidden;
                                 box-shadow:0 3px 10px rgba(0,0,0,0.12);">
                                         <iframe
-                                            src="{{ url('dashboard/senior/google-sheet/view-resume/' . $candidate->id) }}"
+                                            src="{{ url('dashboard/senior/google-sheet/view-updateresume/' . $candidate->id) }}"
                                             style="width:100%; height:100%; border:none;" allowfullscreen>
                                         </iframe>
                                     </div>
