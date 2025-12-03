@@ -1089,4 +1089,92 @@
             initSingleLocationAutocomplete();
         });
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            /* -----------------------------
+                PHONE: format + validate
+            ----------------------------- */
+            const phoneInput = document.querySelector("#phone");
+            if (phoneInput) {
+                phoneInput.addEventListener("input", function(e) {
+                    const clean = e.target.value.replace(/\D/g, "");
+                    e.target.value = formatPhoneNumber(clean);
+                    validatePhoneInput(e.target);
+                });
+            }
+
+            /* -----------------------------
+                NAME: only letters + spaces
+            ----------------------------- */
+            const nameInput = document.querySelector("#name");
+            if (nameInput) {
+                nameInput.addEventListener("input", function(e) {
+                    e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                    validateNameInput(e.target);
+                });
+            }
+
+            /* -----------------------------
+                EMAIL: lowercase + validation
+            ----------------------------- */
+            const emailInput = document.querySelector("input[name='email']");
+            if (emailInput) {
+                emailInput.addEventListener("input", function(e) {
+                    e.target.value = e.target.value.toLowerCase();
+                    validateEmailInput(e.target);
+                });
+            }
+
+            /* -----------------------------
+                LOCATION: allow letters, nums, commas
+            ----------------------------- */
+            const locationInput = document.querySelector("input[name='Location']");
+            if (locationInput) {
+                locationInput.addEventListener("input", function(e) {
+                    e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s,.-]/g, "");
+                });
+            }
+
+            /* -----------------------------
+                AMOUNT: digits + 1 dot + $ prefix
+            ----------------------------- */
+            const amountInput = document.querySelector("#amount");
+            if (amountInput) {
+                amountInput.addEventListener("input", function(e) {
+                    validateAmountInput(e.target);
+                });
+            }
+
+            /* -----------------------------
+                TRANSACTION ID, REF, METHOD,
+                PAYEE NAME: restrict special chars
+            ----------------------------- */
+            ["TranId", "TranRef", "PaymentMethod", "PayeeName"].forEach(id => {
+                const el = document.querySelector("#" + id);
+                if (el) {
+                    el.addEventListener("input", function(e) {
+                        e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s\-]/g, "");
+                    });
+                }
+            });
+
+            /* -----------------------------
+                COURSE + QUALIFICATION:
+                Only valid select, so no input restriction needed
+            ----------------------------- */
+
+            /* -----------------------------
+                GRADUATION DATE: restrict letters
+            ----------------------------- */
+            const gradInput = document.querySelector("#graduation");
+            if (gradInput) {
+                gradInput.addEventListener("input", function(e) {
+                    e.target.value = e.target.value.replace(/[^0-9\/\-]/g, "");
+                });
+            }
+
+        });
+    </script>
 @endsection
