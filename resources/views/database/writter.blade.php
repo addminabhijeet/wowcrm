@@ -742,9 +742,9 @@
                     }
 
                     // updateresume file
-                    let accInput = row.querySelector("input.updateresume-input");
-                    if (accInput && accInput.files.length > 0) {
-                        formData.append("updateresume", accInput.files[0]);
+                    let updateresumeInput = row.querySelector("input.updateresume-input");
+                    if (updateresumeInput && updateresumeInput.files.length > 0) {
+                        formData.append("updateresume", updateresumeInput.files[0]);
                     }
 
                     // Determine URL and method
@@ -870,40 +870,6 @@
 
             });
 
-            // Handle file upload button clicks
-            tableBody.addEventListener('click', function(e) {
-                if (e.target.matches('.upload-updateresume-btn')) {
-                    const row = e.target.closest('tr');
-                    const fileInput = row.querySelector('.resume-input');
-                    fileInput.click();
-                }
-
-                // Handle view and download buttons for unsaved rows
-                if (e.target.matches('.viewupdateresume-btn') || e.target.matches('.downloadupdateresume-btn')) {
-                    const row = e.target.closest('tr');
-                    const id = row.dataset.id;
-
-                    if (id === "new") {
-                        e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
-                        return;
-                    }
-                }
-
-                if (e.target.matches('.viewupdateresume-btn') || e.target.matches(
-                        '.downloadupdateresume-btn')) {
-                    const row = e.target.closest('tr');
-                    const id = row.dataset.id;
-
-                    if (id === "new") {
-                        e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the updateresume.");
-                        return;
-                    }
-                }
-
-            });
-
             // Handle file selection
             tableBody.addEventListener('change', function(e) {
                 if (e.target.matches('.resume-input')) {
@@ -922,6 +888,14 @@
                     if (uploadBtn) uploadBtn.textContent = 'Change File';
 
                     console.log('File selected:', fileName);
+                }
+                if (e.target.matches('.updateresume-input')) {
+                    const row = e.target.closest('tr');
+
+                    row.querySelector('.viewupdateresume-btn')?.classList.remove('d-none');
+                    row.querySelector('.downloadupdateresume-btn')?.classList.remove('d-none');
+
+                    row.querySelector('.upload-updateresume-btn').textContent = 'Change File';
                 }
             });
 
