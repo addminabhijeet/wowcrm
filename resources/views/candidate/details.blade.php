@@ -188,7 +188,7 @@
 
                                             <div class="mb-20">
                                                 <button type="button" id="save-profile-btn"
-                                                    class="btn btn-success radius-8 w-100">
+                                                    class="btn btn-success mb-10">
                                                     Save
                                                 </button>
                                             </div>
