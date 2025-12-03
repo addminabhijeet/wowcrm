@@ -111,13 +111,13 @@
                                 <div class="row">
                                     <div class="col-12 d-flex">
 
-                                        <!-- LEFT SIDE (Full Name + Phone) -->
                                         <div class="flex-grow-1">
 
                                             <div class="mb-20">
                                                 <label class="form-label fw-semibold text-primary-light text-sm mb-8">Full
                                                     Name</label>
-                                                <input type="text" name="name" class="form-control radius-8"
+                                                <input type="text" id="name" name="name"
+                                                    class="form-control radius-8"
                                                     value="{{ old('name', $candidate->Name) }}"
                                                     placeholder="Enter Full Name" required>
                                             </div>
@@ -125,7 +125,8 @@
                                             <div class="mb-20">
                                                 <label
                                                     class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
-                                                <input type="text" name="phone" class="form-control radius-8"
+                                                <input type="text" id="phone" name="phone"
+                                                    class="form-control radius-8"
                                                     value="{{ old('phone', $candidate->Phone_Number) }}"
                                                     placeholder="Enter Phone" required>
                                             </div>
@@ -138,7 +139,8 @@
                                                     $timezoneOptions = ['EST', 'CST', 'MST', 'PST'];
                                                 @endphp
 
-                                                <select name="time_zone" class="form-select radius-8" required>
+                                                <select id="time_zone" name="time_zone" class="form-select radius-8"
+                                                    required>
                                                     <option value="">-- Time Zone --</option>
                                                     @foreach ($timezoneOptions as $option)
                                                         <option value="{{ $option }}"
@@ -149,12 +151,44 @@
                                                 </select>
                                             </div>
 
-                                            <button type="button" id="save-btn" class="btn btn-success mb-10">
+                                            <button type="button" id="save-profile-btn" class="btn btn-success mb-10">
                                                 Save
                                             </button>
 
-
                                         </div>
+
+
+                                        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+                                        <script>
+                                            document.addEventListener("DOMContentLoaded", function() {
+
+                                                const saveBtn = document.getElementById("save-profile-btn");
+                                                const name = document.getElementById("name");
+                                                const phone = document.getElementById("phone");
+                                                const timeZone = document.getElementById("time_zone");
+
+                                                saveBtn.addEventListener("click", function() {
+
+                                                    let data = {
+                                                        name: name.value.trim(),
+                                                        phone: phone.value.trim(),
+                                                        time_zone: timeZone.value
+                                                    };
+
+                                                    axios.post("{{ route('candidate.saveProfile', $candidate->id) }}", data)
+                                                        .then(function(response) {
+                                                            alert("Saved Successfully!");
+                                                        })
+                                                        .catch(function(error) {
+                                                            alert("Failed to save. Please try again.");
+                                                            console.error(error);
+                                                        });
+                                                });
+                                            });
+                                        </script>
+
+
 
                                         <!-- SINGLE VERTICAL DIVIDER (FULL HEIGHT) -->
                                         <div class="px-4 d-flex" style="align-items: stretch;">

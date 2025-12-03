@@ -54,6 +54,21 @@ class CandidateDetailsController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function saveProfile(Request $request, $id)
+    {
+        $candidate = GoogleSheetData::find($id);
+        if (!$candidate) return response()->json(['error' => 'Candidate not found'], 404);
+
+        $candidate->Name        = $request->input('name', '');
+        $candidate->Phone_Number = $request->input('phone', '');
+        $candidate->Time_Zone   = $request->input('time_zone', '');
+
+        $candidate->save();
+
+        return response()->json(['success' => true]);
+    }
+
+
     public function autoSave(Request $request, $id)
     {
         $candidate = GoogleSheetData::find($id);
