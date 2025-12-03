@@ -753,7 +753,7 @@
                         url = "{{ route('accountantstore') }}";
                         method = "POST";
                     } else {
-                        url = "{{ route('accountantupdate') }}";
+                        url = "{{ route('writterupdate') }}";
                         method = "POST";
                         formData.append("id", id);
                     }
