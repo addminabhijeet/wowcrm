@@ -72,7 +72,6 @@ class CandidateDetailsController extends Controller
         return response()->json(['success' => true]);
     }
 
-
     public function saveEdu(Request $request, $id)
     {
         $candidate = GoogleSheetData::find($id);
@@ -80,31 +79,47 @@ class CandidateDetailsController extends Controller
             return response()->json(['success' => false, 'message' => 'Candidate not found'], 404);
         }
 
-        // Get JSON-like payload
-        $data = $request->only(['relocation', 'graduation', 'immigration', 'course', 'qualification']);
+        // Prepare data
+        $relocation     = $request->input('relocation', null);
+        $graduation     = $request->input('graduation', null);
+        $immigration    = $request->input('immigration', null);
+        $course         = $request->input('course', null);
+        $qualification  = $request->input('qualification', null);
 
-        // Normalize array keys to match DB fields
-        $mappedData = [
-            'Relocation'      => $data['relocation'] ?? null,
-            'Graduation_Date' => !empty($data['graduation']) ? date('Y-m-d', strtotime($data['graduation'])) : null,
-            'Immigration'     => $data['immigration'] ?? null,
-            'Course'          => $data['course'] ?? null,
-            'Qualification'   => $data['qualification'] ?? null,
+        // Normalize graduation date
+        if (!empty($graduation)) {
+            try {
+                $graduation = date('Y-m-d', strtotime($graduation));
+            } catch (\Exception $e) {
+                $graduation = null;
+            }
+        } else {
+            $graduation = null; // important to force NULL instead of empty string
+        }
+
+        // Prepare update array
+        $updateData = [
+            'Relocation'      => $relocation ?: null,
+            'Graduation_Date' => $graduation,
+            'Immigration'     => $immigration ?: null,
+            'Course'          => $course ?: null,
+            'Qualification'   => $qualification ?: null,
             'updated_at'      => now(),
         ];
 
-        // Convert empty strings to null (just like savePayment)
-        foreach ($mappedData as $key => $value) {
+        // Replace empty strings with null (like savePayment)
+        foreach ($updateData as $key => $value) {
             if ($value === '' || $value === ' ') {
-                $mappedData[$key] = null;
+                $updateData[$key] = null;
             }
         }
 
         // Update candidate
-        $candidate->update($mappedData);
+        $candidate->update($updateData);
 
         return response()->json(['success' => true, 'message' => 'Profile updated successfully']);
     }
+
 
 
 
