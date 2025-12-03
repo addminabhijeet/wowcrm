@@ -80,38 +80,38 @@ class CandidateDetailsController extends Controller
             return response()->json(['success' => false, 'message' => 'Candidate not found'], 404);
         }
 
-        // Collect input
-        $data = [
-            'Relocation'      => $request->input('relocation', null),
-            'Graduation_Date' => $request->input('graduation', null),
-            'Immigration'     => $request->input('immigration', null),
-            'Course'          => $request->input('course', null),
-            'Qualification'   => $request->input('qualification', null),
+        // Prepare data
+        $relocation     = $request->input('relocation', null);
+        $graduation     = $request->input('graduation', null);
+        $immigration    = $request->input('immigration', null);
+        $course         = $request->input('course', null);
+        $qualification  = $request->input('qualification', null);
+
+        // Normalize graduation date
+        if (!empty($graduation)) {
+            try {
+                $graduation = date('Y-m-d', strtotime($graduation));
+            } catch (\Exception $e) {
+                $graduation = null;
+            }
+        }
+
+        // Prepare update array
+        $updateData = [
+            'Relocation'      => $relocation ?: null,
+            'Graduation_Date' => $graduation ?: null,
+            'Immigration'     => $immigration ?: null,
+            'Course'          => $course ?: null,
+            'Qualification'   => $qualification ?: null,
             'updated_at'      => now(),
         ];
 
-        // Fix graduation date format
-        if (!empty($data['Graduation_Date'])) {
-            $timestamp = strtotime($data['Graduation_Date']);
-            if ($timestamp !== false) {
-                $data['Graduation_Date'] = date('Y-m-d', $timestamp);
-            } else {
-                $data['Graduation_Date'] = null;
-            }
-        }
-
-        // Convert empty strings to null
-        foreach ($data as $key => $value) {
-            if ($value === '' || $value === ' ') {
-                $data[$key] = null;
-            }
-        }
-
         // Update candidate
-        $candidate->update($data);
+        $candidate->update($updateData);
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'message' => 'Profile updated successfully']);
     }
+
 
 
 
