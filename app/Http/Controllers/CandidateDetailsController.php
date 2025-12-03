@@ -80,9 +80,15 @@ class CandidateDetailsController extends Controller
             return response()->json(['error' => 'Candidate not found'], 404);
         }
 
-        // Update fields using input() with safe defaults
+        // Fix graduation format if needed
+        $graduation = $request->input('graduation', '');
+        if (!empty($graduation)) {
+            // Converts: 2025-12-31 or 31/12/2025 into Y-m-d
+            $graduation = date('Y-m-d', strtotime($graduation));
+        }
+
         $candidate->Relocation       = $request->input('relocation', '');
-        $candidate->Graduation_Date  = $request->input('graduation', '');
+        $candidate->Graduation_Date  = $graduation;  // <-- FIXED HERE
         $candidate->Immigration      = $request->input('immigration', '');
         $candidate->Course           = $request->input('course', '');
         $candidate->Qualification    = $request->input('qualification', '');
@@ -91,6 +97,7 @@ class CandidateDetailsController extends Controller
 
         return response()->json(['success' => true]);
     }
+
 
 
     public function savePayment(Request $request, $id)
