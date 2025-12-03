@@ -77,26 +77,42 @@ class CandidateDetailsController extends Controller
     {
         $candidate = GoogleSheetData::find($id);
         if (!$candidate) {
-            return response()->json(['error' => 'Candidate not found'], 404);
+            return response()->json(['success' => false, 'message' => 'Candidate not found'], 404);
         }
 
-        // Fix graduation format if needed
-        $graduation = $request->input('graduation', '');
-        if (!empty($graduation)) {
-            // Converts: 2025-12-31 or 31/12/2025 into Y-m-d
-            $graduation = date('Y-m-d', strtotime($graduation));
+        // Collect input
+        $data = [
+            'Relocation'      => $request->input('relocation', null),
+            'Graduation_Date' => $request->input('graduation', null),
+            'Immigration'     => $request->input('immigration', null),
+            'Course'          => $request->input('course', null),
+            'Qualification'   => $request->input('qualification', null),
+            'updated_at'      => now(),
+        ];
+
+        // Fix graduation date format
+        if (!empty($data['Graduation_Date'])) {
+            $timestamp = strtotime($data['Graduation_Date']);
+            if ($timestamp !== false) {
+                $data['Graduation_Date'] = date('Y-m-d', $timestamp);
+            } else {
+                $data['Graduation_Date'] = null;
+            }
         }
 
-        $candidate->Relocation       = $request->input('relocation', '');
-        $candidate->Graduation_Date  = $graduation;  // <-- FIXED HERE
-        $candidate->Immigration      = $request->input('immigration', '');
-        $candidate->Course           = $request->input('course', '');
-        $candidate->Qualification    = $request->input('qualification', '');
+        // Convert empty strings to null
+        foreach ($data as $key => $value) {
+            if ($value === '' || $value === ' ') {
+                $data[$key] = null;
+            }
+        }
 
-        $candidate->save();
+        // Update candidate
+        $candidate->update($data);
 
         return response()->json(['success' => true]);
     }
+
 
 
 
