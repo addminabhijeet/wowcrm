@@ -186,14 +186,13 @@
                                                     placeholder="Enter Location" required>
                                             </div>
 
-                                            <div class="mb-20">
-                                                <label
-                                                    class="form-label fw-semibold text-primary-light text-sm mb-8 d-block">&nbsp;</label>
+                                            <div class="mb-20 d-flex justify-content-end align-items-center">
                                                 <button type="button" id="save-profile-btn"
                                                     class="btn btn-success mb-10">
                                                     Save
                                                 </button>
                                             </div>
+
 
 
                                         </div>
