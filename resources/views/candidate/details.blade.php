@@ -224,7 +224,7 @@
 
                                         axios.post("{{ route('candidate.saveProfile', $candidate->id) }}", data)
                                             .then(function(response) {
-                                                alert("Saved Successfully!");
+                                                alert("Personal Saved Successfully!");
                                             })
                                             .catch(function(error) {
                                                 alert("Failed to save. Please try again.");
@@ -783,7 +783,7 @@
                                                     followups: hiddenInput.value
                                                 })
                                                 .then(function(response) {
-                                                    console.log('Saved successfully!');
+                                                    console.log(' Saved successfully!');
                                                 })
                                                 .catch(function(error) {
                                                     console.error('Error saving followups:', error);
