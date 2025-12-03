@@ -186,9 +186,12 @@
                                                     placeholder="Enter Location" required>
                                             </div>
 
-                                            <button type="button" id="save-profile-btn" class="btn btn-success mb-10">
-                                                Save
-                                            </button>
+                                            <div class="mb-20">
+                                                <button type="button" id="save-profile-btn"
+                                                    class="btn btn-success radius-8 w-100">
+                                                    Save
+                                                </button>
+                                            </div>
 
                                         </div>
 
@@ -393,9 +396,11 @@
                                             </textarea>
 
                                             <!-- Existing Save Button -->
-                                            <button type="button" id="save-edu-btn" class="btn btn-success mb-10">
-                                                Save
-                                            </button>
+                                            <div class="mb-20">
+                                                <button type="button" id="save-edu-btn" class="btn btn-success mb-10">
+                                                    Save
+                                                </button>
+                                            </div>
 
 
                                         </div>
@@ -550,9 +555,11 @@
                                             </div>
 
                                             <!--  Save Button -->
-                                            <button type="button" id="save-pay-btn" class="btn btn-success mb-10">
-                                                Save
-                                            </button>
+                                            <div class="mb-20">
+                                                <button type="button" id="save-pay-btn" class="btn btn-success mb-10">
+                                                    Save
+                                                </button>
+                                            </div>
 
                                             <!--  Hidden field (same concept as followups) -->
                                             <textarea name="payment_data" id="payment_data" class="d-none">
