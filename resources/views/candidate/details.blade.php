@@ -279,6 +279,7 @@
                                                     class="form-control radius-8"
                                                     value="{{ old('graduation', $candidate->Graduation_Date ?? '') }}"
                                                     required>
+
                                             </div>
 
 
@@ -967,7 +968,7 @@
                             const $list =
                                 $(
                                     '<div id="location-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>'
-                                    );
+                                );
 
                             results.forEach(r => {
                                 const addr = r.address || {};
