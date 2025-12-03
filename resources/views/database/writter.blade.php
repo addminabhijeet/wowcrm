@@ -71,6 +71,7 @@
                                             readonly>
                                     </td>
 
+
                                     {{-- Name --}}
                                     <td>
                                         <input type="text" class="form-control name-input" data-key="Name"
