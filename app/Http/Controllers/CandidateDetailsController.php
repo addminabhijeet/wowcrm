@@ -107,26 +107,27 @@ class CandidateDetailsController extends Controller
             return response()->json(['error' => 'Candidate not found'], 404);
         }
 
-        // Store raw JSON safely
-        $candidate->payment_data = $request->input('payment_data', '');
+        // Read raw JSON safely
+        $json = trim($request->payment_data ?? '');
+        $candidate->payment_data = $json;
 
-        // Decode JSON for individual field updates
-        $data = json_decode($candidate->payment_data, true);
+        // Decode JSON
+        $data = json_decode($json, true);
 
         if (is_array($data)) {
-
-            $candidate->Amount        = $data['amount']        ?? '';
-            $candidate->PaymentDate   = $data['PaymentDate']   ?? '';
-            $candidate->TranId        = $data['TranId']        ?? '';
-            $candidate->TranRef       = $data['TranRef']       ?? '';
-            $candidate->PaymentMethod = $data['PaymentMethod'] ?? '';
-            $candidate->PayeeName     = $data['PayeeName']     ?? '';
+            $candidate->Amount        = $data['amount']        ?? null;
+            $candidate->PaymentDate   = $data['PaymentDate']   ?? null;
+            $candidate->TranId        = $data['TranId']        ?? null;
+            $candidate->TranRef       = $data['TranRef']       ?? null;
+            $candidate->PaymentMethod = $data['PaymentMethod'] ?? null;
+            $candidate->PayeeName     = $data['PayeeName']     ?? null;
         }
 
         $candidate->save();
 
         return response()->json(['success' => true]);
     }
+
 
 
 

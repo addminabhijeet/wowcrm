@@ -539,7 +539,6 @@
                                     const saveBtn = document.getElementById("save-pay-btn");
                                     const hiddenInput = document.getElementById("payment_data");
 
-                                    //  Save Payment via AJAX (same logic style as followups)
                                     saveBtn.addEventListener("click", function() {
 
                                         let data = {
@@ -551,23 +550,27 @@
                                             PayeeName: document.getElementById("PayeeName").value
                                         };
 
-                                        // Store JSON (same principle as hidden followups)
                                         hiddenInput.value = JSON.stringify(data);
 
                                         axios.post("{{ route('candidate.savePayment', $candidate->id) }}", {
                                                 payment_data: hiddenInput.value
+                                            }, {
+                                                headers: {
+                                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                                                }
                                             })
                                             .then(function(response) {
                                                 alert("Payment Saved Successfully!");
                                             })
                                             .catch(function(error) {
-                                                console.error(error);
+                                                console.error(error.response?.data || error);
                                                 alert("Failed to save payment!");
                                             });
                                     });
 
                                 });
                             </script>
+
 
                             <div class="tab-pane fade" id="pills-change-passwork" role="tabpanel">
                                 <div class="mb-20">
