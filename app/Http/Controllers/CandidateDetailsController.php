@@ -68,6 +68,26 @@ class CandidateDetailsController extends Controller
         return response()->json(['success' => true]);
     }
 
+    public function saveEdu(Request $request, $id)
+    {
+        $candidate = GoogleSheetData::find($id);
+        if (!$candidate) return response()->json(['error' => 'Candidate not found'], 404);
+
+        $candidate->Relocation = $request->relocation;
+        $candidate->Graduation_Date = $request->graduation;
+        $candidate->Immigration = $request->immigration;
+        $candidate->Course = $request->course;
+        $candidate->Qualification = $request->qualification;
+        $candidate->Name = $request->name;
+        $candidate->Phone_Number = $request->phone;
+        $candidate->Time_Zone = $request->time_zone;
+
+        $candidate->save();
+
+        return response()->json(['success' => true]);
+    }
+
+
 
     public function autoSave(Request $request, $id)
     {

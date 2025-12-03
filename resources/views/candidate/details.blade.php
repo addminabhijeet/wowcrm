@@ -239,11 +239,24 @@
                                                     class="form-label fw-semibold text-primary-light text-sm mb-8">
                                                     Relocation
                                                 </label>
-                                                <input type="text" name="relocation" id="relocation"
-                                                    class="form-control radius-8"
-                                                    value="{{ old('relocation', $candidate->Relocation ?? '') }}"
-                                                    placeholder="Enter Relocation" required>
+
+                                                @php $relOptions = ['YES','NO']; @endphp
+
+                                                <select name="relocation" id="relocation" class="form-control radius-8"
+                                                    required>
+
+                                                    <option value="">-- Relocation --</option>
+
+                                                    @foreach ($relOptions as $option)
+                                                        <option value="{{ $option }}"
+                                                            {{ old('relocation', $candidate->Relocation ?? '') === $option ? 'selected' : '' }}>
+                                                            {{ $option }}
+                                                        </option>
+                                                    @endforeach
+
+                                                </select>
                                             </div>
+
 
                                             <!-- Graduation -->
                                             <div class="mb-20">
@@ -258,16 +271,39 @@
                                             </div>
 
                                             <!-- Immigration -->
+                                            @php
+                                                $immOptions = [
+                                                    'F1 CPT',
+                                                    'F1 OPT',
+                                                    'STEM OPT',
+                                                    'HIB',
+                                                    'B2',
+                                                    'B1',
+                                                    'H4',
+                                                    'H4 EAD',
+                                                    'GC/PR',
+                                                    'USC',
+                                                ];
+                                            @endphp
+
                                             <div class="mb-20">
                                                 <label for="immigration"
                                                     class="form-label fw-semibold text-primary-light text-sm mb-8">
                                                     Immigration
                                                 </label>
-                                                <input type="text" name="immigration" id="immigration"
-                                                    class="form-control radius-8"
-                                                    value="{{ old('immigration', $candidate->Immigration ?? '') }}"
-                                                    placeholder="Enter Immigration" required>
+
+                                                <select name="immigration" id="immigration" class="form-select radius-8"
+                                                    required>
+                                                    <option value="">-- Immigration --</option>
+                                                    @foreach ($immOptions as $option)
+                                                        <option value="{{ $option }}"
+                                                            {{ old('immigration', $candidate->Immigration ?? '') === $option ? 'selected' : '' }}>
+                                                            {{ $option }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
+
 
                                         </div>
 
@@ -287,11 +323,21 @@
                                                     class="form-label fw-semibold text-primary-light text-sm mb-8">
                                                     Course
                                                 </label>
-                                                <input type="text" name="course" id="course"
-                                                    class="form-control radius-8"
-                                                    value="{{ old('course', $candidate->Course ?? '') }}"
-                                                    placeholder="Enter Course" required>
+
+                                                @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
+
+                                                <select name="course" id="course" class="form-select radius-8"
+                                                    required>
+                                                    <option value="">-- Course --</option>
+                                                    @foreach ($courseOptions as $option)
+                                                        <option value="{{ $option }}"
+                                                            {{ old('course', $candidate->Course ?? '') === $option ? 'selected' : '' }}>
+                                                            {{ $option }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
+
 
                                             <!-- Qualification -->
                                             <div class="mb-20">
@@ -299,11 +345,39 @@
                                                     class="form-label fw-semibold text-primary-light text-sm mb-8">
                                                     Qualification
                                                 </label>
-                                                <input type="text" name="qualification" id="qualification"
-                                                    class="form-control radius-8"
-                                                    value="{{ old('qualification', $candidate->Qualification ?? '') }}"
-                                                    placeholder="Enter Qualification" required>
+
+                                                @php
+                                                    $qualificationOptions = [
+                                                        'Masters',
+                                                        'Master of Science',
+                                                        'Bachelors',
+                                                        'PG',
+                                                        'MBA',
+                                                        'PG Diploma',
+                                                        'M.Tech',
+                                                        'B.Tech',
+                                                        'MA',
+                                                        'Associate Degree',
+                                                        'Aerospace Proj. Manag.',
+                                                    ];
+                                                @endphp
+
+                                                <select name="qualification" id="qualification"
+                                                    class="form-control radius-8" required>
+                                                    <option value="">-- Qualification --</option>
+                                                    @foreach ($qualificationOptions as $option)
+                                                        <option value="{{ $option }}"
+                                                            {{ old('qualification', $candidate->Qualification ?? '') == $option ? 'selected' : '' }}>
+                                                            {{ $option }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
                                             </div>
+
+                                            <button type="button" id="save-profile-btn" class="btn btn-success mb-10">
+                                                Save
+                                            </button>
+
 
                                         </div>
 
@@ -312,6 +386,40 @@
                                 </div>
 
                             </div>
+
+                            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+
+                            <script>
+                                document.addEventListener("DOMContentLoaded", function() {
+
+                                    const saveBtn = document.getElementById("save-profile-btn");
+
+                                    saveBtn.addEventListener("click", function() {
+
+                                        let payload = {
+                                            relocation: document.getElementById("relocation").value,
+                                            graduation: document.getElementById("graduation").value,
+                                            immigration: document.getElementById("immigration").value,
+                                            course: document.getElementById("course").value,
+                                            qualification: document.getElementById("qualification").value,
+                                            name: document.querySelector('input[name="name"]').value,
+                                            phone: document.querySelector('input[name="phone"]').value,
+                                            time_zone: document.querySelector('select[name="time_zone"]').value
+                                        };
+
+                                        axios.post("{{ route('candidate.saveProfile', $candidate->id) }}", payload)
+                                            .then(function(response) {
+                                                alert("Profile saved successfully!");
+                                            })
+                                            .catch(function(error) {
+                                                console.error(error);
+                                                alert("Failed to save profile. Please try again.");
+                                            });
+
+                                    });
+
+                                });
+                            </script>
 
                             <div class="tab-pane fade" id="pills-payment" role="tabpanel">
 
