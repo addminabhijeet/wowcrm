@@ -398,7 +398,7 @@
                                             </textarea>
 
                                             <!-- Existing Save Button -->
-                                            <div class="mb-20">
+                                            <div class="mb-20 justify-content-end">
                                                 <label
                                                     class="form-label fw-semibold text-primary-light text-sm mb-8 d-block">&nbsp;</label>
                                                 <button type="button" id="save-edu-btn" class="btn btn-success mb-10">
@@ -559,7 +559,7 @@
                                             </div>
 
                                             <!--  Save Button -->
-                                            <div class="mb-20">
+                                            <div class="mb-20 justify-content-end">
                                                 <label
                                                     class="form-label fw-semibold text-primary-light text-sm mb-8 d-block">&nbsp;</label>
                                                 <button type="button" id="save-pay-btn" class="btn btn-success mb-10">
