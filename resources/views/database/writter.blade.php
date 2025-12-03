@@ -682,7 +682,7 @@
                 //     <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
                 //     <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                 // </td>`;
-                    }
+                // }
                 });
 
                 cells +=
