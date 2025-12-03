@@ -76,18 +76,22 @@ class CandidateDetailsController extends Controller
     public function saveEdu(Request $request, $id)
     {
         $candidate = GoogleSheetData::find($id);
-        if (!$candidate) return response()->json(['error' => 'Candidate not found'], 404);
+        if (!$candidate) {
+            return response()->json(['error' => 'Candidate not found'], 404);
+        }
 
-        $candidate->Relocation = $request->relocation;
-        $candidate->Graduation_Date = $request->graduation;
-        $candidate->Immigration = $request->immigration;
-        $candidate->Course = $request->course;
-        $candidate->Qualification = $request->qualification;
+        // Update fields using input() with safe defaults
+        $candidate->Relocation       = $request->input('relocation', '');
+        $candidate->Graduation_Date  = $request->input('graduation', '');
+        $candidate->Immigration      = $request->input('immigration', '');
+        $candidate->Course           = $request->input('course', '');
+        $candidate->Qualification    = $request->input('qualification', '');
 
         $candidate->save();
 
         return response()->json(['success' => true]);
     }
+
 
     public function savePayment(Request $request, $id)
     {
@@ -96,27 +100,27 @@ class CandidateDetailsController extends Controller
             return response()->json(['error' => 'Candidate not found'], 404);
         }
 
-        // Store raw JSON (same as before)
+        // Store raw JSON safely
         $candidate->payment_data = $request->input('payment_data', '');
 
-        // Decode JSON for updating individual fields
+        // Decode JSON for individual field updates
         $data = json_decode($candidate->payment_data, true);
 
         if (is_array($data)) {
 
-            // Update ALL fields individually (without breaking old logic)
-            $candidate->Amount         = $data['amount']         ?? null;
-            $candidate->PaymentDate    = $data['PaymentDate']    ?? null;
-            $candidate->TranId         = $data['TranId']         ?? null;
-            $candidate->TranRef        = $data['TranRef']        ?? null;
-            $candidate->PaymentMethod  = $data['PaymentMethod']  ?? null;
-            $candidate->PayeeName      = $data['PayeeName']      ?? null;
+            $candidate->Amount        = $data['amount']        ?? '';
+            $candidate->PaymentDate   = $data['PaymentDate']   ?? '';
+            $candidate->TranId        = $data['TranId']        ?? '';
+            $candidate->TranRef       = $data['TranRef']       ?? '';
+            $candidate->PaymentMethod = $data['PaymentMethod'] ?? '';
+            $candidate->PayeeName     = $data['PayeeName']     ?? '';
         }
 
         $candidate->save();
 
         return response()->json(['success' => true]);
     }
+
 
 
 
