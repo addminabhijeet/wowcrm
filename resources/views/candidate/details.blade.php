@@ -153,7 +153,7 @@
 
                                         <!-- SINGLE VERTICAL DIVIDER (FULL HEIGHT) -->
                                         <div class="px-4 d-flex" style="align-items: stretch;">
-                                            <div style="width: 1px; background: #333; height: 100%;"></div>
+                                            <div style="width: 1px; background: #ccc; height: 100%;"></div>
                                         </div>
 
 
