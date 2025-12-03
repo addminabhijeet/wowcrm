@@ -271,15 +271,16 @@
 
                                             <!-- Graduation -->
                                             <div class="mb-20">
-                                                <label for="GraduationDate"
+                                                <label for="graduation"
                                                     class="form-label fw-semibold text-primary-light text-sm mb-8">
                                                     Graduation Date
                                                 </label>
-                                                <input type="date" name="GraduationDate" id="GraduationDate"
+                                                <input type="date" name="graduation" id="graduation"
                                                     class="form-control radius-8"
-                                                    value="{{ old('GraduationDate', $candidate->Graduation_Date ?? '') }}"
+                                                    value="{{ old('graduation', $candidate->Graduation_Date ?? '') }}"
                                                     required>
                                             </div>
+
 
 
                                             <!-- Immigration -->
@@ -958,14 +959,15 @@
 
                     $.getJSON(
                             `https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`
-                            )
+                        )
                         .done(function(results) {
 
                             $('#location-suggestions').remove();
 
                             const $list =
                                 $(
-                                    '<div id="location-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>');
+                                    '<div id="location-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>'
+                                    );
 
                             results.forEach(r => {
                                 const addr = r.address || {};
@@ -977,7 +979,7 @@
 
                                 const item = $(
                                         '<a href="#" class="list-group-item list-group-item-action"></a>'
-                                        )
+                                    )
                                     .text(display || r.display_name);
 
                                 item.on('click', function(e) {
