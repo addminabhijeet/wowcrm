@@ -554,7 +554,7 @@
                                         // Store JSON (same principle as hidden followups)
                                         hiddenInput.value = JSON.stringify(data);
 
-                                        axios.post("{{ route('candidate.Payment', $candidate->id) }}", {
+                                        axios.post("{{ route('candidate.savePayment', $candidate->id) }}", {
                                                 payment_data: hiddenInput.value
                                             })
                                             .then(function(response) {
@@ -931,88 +931,83 @@
     </div>
 
     <script>
-        document.addEventListener("DOMContentLoaded", function() {
+document.addEventListener("DOMContentLoaded", function () {
 
-            function initSingleLocationAutocomplete() {
-                const $input = $('input[name="Location"]');
+    function initSingleLocationAutocomplete() {
+        const $input = $('input[name="Location"]');
 
-                function applyCss(value) {
-                    if (!value) {
-                        $input.removeClass('valid invalid').addClass('neutral');
-                    } else {
-                        $input.removeClass('invalid neutral').addClass('valid');
-                    }
-                }
+        function applyCss(value) {
+            if (!value) {
+                $input.removeClass('valid invalid').addClass('neutral');
+            } else {
+                $input.removeClass('invalid neutral').addClass('valid');
+            }
+        }
 
-                // Initial CSS state
-                applyCss($input.val());
+        // Initial CSS state
+        applyCss($input.val());
 
-                $input.on('input', function() {
-                    const q = $(this).val().trim();
-                    applyCss(q);
+        $input.on('input', function () {
+            const q = $(this).val().trim();
+            applyCss(q);
 
-                    if (q.length < 2) {
-                        $('#location-suggestions').remove();
-                        return;
-                    }
-
-                    const key = 'pk.e91481c6e5f0a93703159ae988e641a0';
-
-                    $.getJSON(
-                            `https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`
-                            )
-                        .done(function(results) {
-
-                            $('#location-suggestions').remove();
-
-                            const $list =
-                                $(
-                                    '<div id="location-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>');
-
-                            results.forEach(r => {
-                                const addr = r.address || {};
-                                const city = addr.city || addr.town || addr.village || '';
-                                const state = addr.state || addr.region || '';
-                                const country = addr.country || '';
-                                const display = [city, state, country].filter(Boolean).join(
-                                    ', ');
-
-                                const item = $(
-                                        '<a href="#" class="list-group-item list-group-item-action"></a>'
-                                        )
-                                    .text(display || r.display_name);
-
-                                item.on('click', function(e) {
-                                    e.preventDefault();
-                                    $input.val(display || r.display_name);
-                                    applyCss(display || r.display_name);
-                                    $input.css('background-color', '#d4edda');
-                                    $('#location-suggestions').remove();
-                                });
-
-                                $list.append(item);
-                            });
-
-                            $('body').append($list);
-
-                            const offset = $input.offset();
-                            $list.css({
-                                top: offset.top + $input.outerHeight(),
-                                left: offset.left,
-                                width: $input.outerWidth()
-                            });
-
-                        })
-                        .fail(() => $('#location-suggestions').remove());
-                });
-
-                $input.on('blur', function() {
-                    setTimeout(() => $('#location-suggestions').remove(), 200);
-                });
+            if (q.length < 2) {
+                $('#location-suggestions').remove();
+                return;
             }
 
-            // Initialize when page is ready
-            initSingleLocationAutocomplete();
+            const key = 'pk.e91481c6e5f0a93703159ae988e641a0';
+
+            $.getJSON(`https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`)
+                .done(function (results) {
+
+                    $('#location-suggestions').remove();
+
+                    const $list =
+                        $('<div id="location-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>');
+
+                    results.forEach(r => {
+                        const addr = r.address || {};
+                        const city = addr.city || addr.town || addr.village || '';
+                        const state = addr.state || addr.region || '';
+                        const country = addr.country || '';
+                        const display = [city, state, country].filter(Boolean).join(', ');
+
+                        const item = $('<a href="#" class="list-group-item list-group-item-action"></a>')
+                            .text(display || r.display_name);
+
+                        item.on('click', function (e) {
+                            e.preventDefault();
+                            $input.val(display || r.display_name);
+                            applyCss(display || r.display_name);
+                            $input.css('background-color', '#d4edda');
+                            $('#location-suggestions').remove();
+                        });
+
+                        $list.append(item);
+                    });
+
+                    $('body').append($list);
+
+                    const offset = $input.offset();
+                    $list.css({
+                        top: offset.top + $input.outerHeight(),
+                        left: offset.left,
+                        width: $input.outerWidth()
+                    });
+
+                })
+                .fail(() => $('#location-suggestions').remove());
         });
-    </script>
+
+        $input.on('blur', function () {
+            setTimeout(() => $('#location-suggestions').remove(), 200);
+        });
+    }
+
+    // Initialize when page is ready
+    initSingleLocationAutocomplete();
+});
+</script>
+
 @endsection
