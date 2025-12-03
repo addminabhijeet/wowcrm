@@ -104,32 +104,45 @@ class CandidateDetailsController extends Controller
     {
         $candidate = GoogleSheetData::find($id);
         if (!$candidate) {
-            return response()->json(['error' => 'Candidate not found'], 404);
+            return response()->json(['success' => false, 'message' => 'Candidate not found'], 404);
         }
 
-        // Get JSON safely
+        // Get JSON
         $json = $request->input('payment_data', '');
         $data = json_decode($json, true);
 
         if (!is_array($data)) {
-            return response()->json(['error' => 'Invalid JSON received'], 422);
+            return response()->json(['success' => false, 'message' => 'Invalid JSON received'], 422);
         }
 
-        // Map JSON → DB columns correctly
-        $candidate->Amount        = $data['Amount'] ?? '';
-        $candidate->PaymentDate   = $data['PaymentDate'] ?? '';
-        $candidate->TranId        = $data['TranId'] ?? '';
-        $candidate->TranRef       = $data['TranRef'] ?? '';
-        $candidate->PaymentMethod = $data['PaymentMethod'] ?? '';
-        $candidate->PayeeName     = $data['PayeeName'] ?? '';
+        // Normalize array keys to match DB structure
+        $data = array_change_key_case($data, CASE_LOWER);
 
-        // Store JSON also
-        $candidate->payment_data = $json;
+        // Map JSON → DB with fallback NULL
+        $updateData = [
+            'Amount'        => isset($data['amount']) ? $data['amount'] : null,
+            'PaymentDate'   => $data['paymentdate'] ?? null,
+            'TranId'        => $data['tranid'] ?? null,
+            'TranRef'       => $data['tranref'] ?? null,
+            'PaymentMethod' => $data['paymentmethod'] ?? null,
+            'PayeeName'     => $data['payeename'] ?? null,
+            'payment_data'  => $json,  // store original json
+            'updated_at'    => now(),
+        ];
 
-        $candidate->save();
+        // Replace empty string → NULL
+        foreach ($updateData as $key => $value) {
+            if ($value === '' || $value === ' ') {
+                $updateData[$key] = null;
+            }
+        }
+
+        // Save
+        $candidate->update($updateData);
 
         return response()->json(['success' => true]);
     }
+
 
 
 
