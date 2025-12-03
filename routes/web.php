@@ -186,6 +186,8 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/senior/google-sheet/seniorstoremod', [GoogleSheetController::class, 'seniorstoremod'])->name('seniorstoremod');
     Route::get('/dashboard/senior/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewseniorResume'])->name('view.resume');
     Route::get('/dashboard/senior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadseniorResume'])->name('download.resume');
+    Route::get('/dashboard/senior/google-sheet/view-updateresume/{id}', [GoogleSheetController::class, 'viewseniorUpdateResume'])->name('view.updateresume');
+    Route::get('/dashboard/senior/google-sheet/download-updateresume/{id}', [GoogleSheetController::class, 'downloadseniorUpdateResume'])->name('download.updateresume');
     Route::get('/dashboard/senior/google-sheet/view-acceptance/{id}', [GoogleSheetController::class, 'viewseniorAcceptance'])->name('view.acceptance');
     Route::get('/dashboard/senior/google-sheet/download-acceptance/{id}', [GoogleSheetController::class, 'downloadseniorAcceptance'])->name('download.acceptance');
     Route::get('/dashboard/senior/google-sheet/view-consultation/{id}', [GoogleSheetController::class, 'viewseniorConsultation'])->name('view.consultation');
