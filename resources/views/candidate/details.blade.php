@@ -427,8 +427,10 @@
                                         placeholder="Select a date to view remarks" readonly></textarea>
 
                                     <textarea id="new-remark" class="form-control radius-8 mb-2" rows="2" placeholder="Add new remark"></textarea>
-                                    <button type="button" id="add-remark-btn" class="btn btn-primary mb-10">Add
-                                        Remark</button>
+                                    <button type="button" id="save-btn" class="btn btn-success mb-10">
+                                        Save
+                                    </button>
+
 
                                     <!-- Hidden input to store all followups for form submission -->
                                     <textarea name="followups" id="followups" class="d-none">{{ old('followups', $candidate->followup ?? '') }}</textarea>
