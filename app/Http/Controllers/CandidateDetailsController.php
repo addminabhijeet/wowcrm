@@ -148,48 +148,85 @@ class CandidateDetailsController extends Controller
     public function saveEdu(Request $request, $id)
     {
         $candidate = GoogleSheetData::find($id);
-        if (!$candidate) return response()->json(['error' => 'Candidate not found'], 404);
+        if (!$candidate) {
+            return response()->json(['success' => false, 'message' => 'Candidate not found'], 404);
+        }
 
-        // 1️⃣ Collect original values BEFORE update
+        // -------------------------------
+        // 1. Collect original values BEFORE update
+        // -------------------------------
         $original = $candidate->only([
-            'Education',
-            'University',
-            'Year_of_Passing'
+            'Relocation',
+            'Graduation_Date',
+            'Immigration',
+            'Course',
+            'Qualification'
         ]);
 
-        // 2️⃣ Existing logic (DO NOT MODIFY)
-        $candidate->Education       = $request->input('Education', '');
-        $candidate->University      = $request->input('University', '');
-        $candidate->Year_of_Passing = $request->input('Year_of_Passing', '');
+        // -------------------------------
+        // 2. Your existing logic (untouched)
+        // -------------------------------
+        $json = $request->input('edu_data', '');
+        $data = json_decode($json, true);
 
-        // 3️⃣ Detect changes and prepare messages
+        if (!is_array($data)) {
+            return response()->json(['success' => false, 'message' => 'Invalid JSON received'], 422);
+        }
+
+        $data = array_change_key_case($data, CASE_LOWER);
+
+        $updateData = [
+            'Relocation'      => $data['relocation'] ?? null,
+            'Graduation_Date' => $data['graduation'] ?? null,
+            'Immigration'     => $data['immigration'] ?? null,
+            'Course'          => $data['course'] ?? null,
+            'Qualification'   => $data['qualification'] ?? null,
+            'edu_data'        => $json,
+        ];
+
+        foreach ($updateData as $key => $value) {
+            if ($value === '' || $value === ' ') {
+                $updateData[$key] = null;
+            }
+        }
+
+        // -------------------------------
+        // 3. Detect Changes (same style as saveProfile)
+        // -------------------------------
         $changes = [];
         $fields = [
-            'Education'       => 'Education',
-            'University'      => 'University / College',
-            'Year_of_Passing' => 'Year of Passing'
+            'Relocation'      => 'Relocation Preference',
+            'Graduation_Date' => 'Graduation Date',
+            'Immigration'     => 'Immigration Status',
+            'Course'          => 'Course',
+            'Qualification'   => 'Qualification'
         ];
 
         foreach ($fields as $key => $label) {
             $old = $original[$key] ?? '';
-            $new = $candidate->$key ?? '';
+            $new = $updateData[$key] ?? '';
 
-            if ($old !== $new) {
+            if ($old != $new) {
                 $changes[] = "[" . now()->format('Y-m-d H:i:s') . "] $label changed from '$old' to '$new'";
             }
         }
 
-        // 4️⃣ Append to educhanges log (without removing existing log)
+        // -------------------------------
+        // 4. Append change log
+        // -------------------------------
         if (!empty($changes)) {
             $existingLog = $candidate->educhanges ?? '';
             $newLogEntry = implode("\n", $changes);
+
             $candidate->educhanges = trim($existingLog . "\n" . $newLogEntry);
         }
 
-        // 5️⃣ Save normally
-        $candidate->save();
+        // -------------------------------
+        // 5. Save updated data
+        // -------------------------------
+        $candidate->update($updateData);
 
-        return response()->json(['success' => true]);
+        return response()->json(['success' => true, 'message' => 'Profile updated successfully']);
     }
 
 
@@ -206,17 +243,7 @@ class CandidateDetailsController extends Controller
             return response()->json(['success' => false, 'message' => 'Candidate not found'], 404);
         }
 
-        // ---- 1. Capture original values BEFORE update ----
-        $original = $candidate->only([
-            'Amount',
-            'PaymentDate',
-            'TranId',
-            'TranRef',
-            'PaymentMethod',
-            'PayeeName'
-        ]);
-
-        // ---- 2. Get JSON ----
+        // Get JSON
         $json = $request->input('payment_data', '');
         $data = json_decode($json, true);
 
@@ -224,62 +251,32 @@ class CandidateDetailsController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid JSON received'], 422);
         }
 
-        // Normalize keys
+        // Normalize array keys to match DB structure
         $data = array_change_key_case($data, CASE_LOWER);
 
-        // ---- 3. Map JSON → DB fields (existing logic untouched) ----
+        // Map JSON → DB with fallback NULL
         $updateData = [
-            'Amount'        => $data['amount'] ?? null,
+            'Amount'        => isset($data['amount']) ? $data['amount'] : null,
             'PaymentDate'   => $data['paymentdate'] ?? null,
             'TranId'        => $data['tranid'] ?? null,
             'TranRef'       => $data['tranref'] ?? null,
             'PaymentMethod' => $data['paymentmethod'] ?? null,
             'PayeeName'     => $data['payeename'] ?? null,
-            'payment_data'  => $json,
+            'payment_data'  => $json,  // store original json
         ];
 
-        // Empty string → NULL
+        // Replace empty string → NULL
         foreach ($updateData as $key => $value) {
             if ($value === '' || $value === ' ') {
                 $updateData[$key] = null;
             }
         }
 
-        // ---- 4. Detect Changes ----
-        $changes = [];
-
-        $labels = [
-            'Amount'        => 'Amount',
-            'PaymentDate'   => 'Payment Date',
-            'TranId'        => 'Transaction ID',
-            'TranRef'       => 'Transaction Ref',
-            'PaymentMethod' => 'Payment Method',
-            'PayeeName'     => 'Payee Name'
-        ];
-
-        foreach ($labels as $key => $label) {
-            $old = $original[$key] ?? '';
-            $new = $updateData[$key] ?? '';
-
-            if ($old != $new) {
-                $changes[] = "[" . now()->format('Y-m-d H:i:s') . "] $label changed from '$old' to '$new'";
-            }
-        }
-
-        // ---- 5. Append to paychanges field ----
-        if (!empty($changes)) {
-            $existingLog = $candidate->paychanges ?? '';
-            $newLogEntry = implode("\n", $changes);
-
-            $updateData['paychanges'] = trim($existingLog . "\n" . $newLogEntry);
-        }
-
-        // ---- 6. Save (original logic preserved) ----
+        // Save
         $candidate->update($updateData);
 
         return response()->json(['success' => true]);
     }
-
 
 
 
