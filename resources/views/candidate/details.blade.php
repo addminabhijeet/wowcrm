@@ -1110,11 +1110,13 @@
             ----------------------------- */
             const nameInput = document.querySelector("#name");
             if (nameInput) {
+                validateNameInput(nameInput); // initial validation
                 nameInput.addEventListener("input", function(e) {
-                    e.target.value = e.target.value.replace(/[^a-zA-Z\s]/g, "");
+                    e.target.value = e.target.value.toLowerCase().replace(/[^a-zA-Z\s]/g, "");
                     validateNameInput(e.target);
                 });
             }
+
 
             /* -----------------------------
                 EMAIL: lowercase + validation
@@ -1130,15 +1132,12 @@
             /* -----------------------------
                 LOCATION: allow letters, nums, commas
             ----------------------------- */
-            const nameInput = document.querySelector("#name");
-            if (nameInput) {
-                validateNameInput(nameInput); // initial validation
-                nameInput.addEventListener("input", function(e) {
-                    e.target.value = e.target.value.toLowerCase().replace(/[^a-zA-Z\s]/g, "");
-                    validateNameInput(e.target);
+            const locationInput = document.querySelector("input[name='Location']");
+            if (locationInput) {
+                locationInput.addEventListener("input", function(e) {
+                    e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s,.-]/g, "");
                 });
             }
-
 
             /* -----------------------------
                 AMOUNT: digits + 1 dot + $ prefix
