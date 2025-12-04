@@ -93,13 +93,13 @@
                                 Signed Document
                             </button>
                         </li>
-                        {{-- <li class="nav-item" role="presentation">
+                        <li class="nav-item" role="presentation">
                             <button class="nav-link d-flex align-items-center px-24" id="pills-notification-tab"
                                 data-bs-toggle="pill" data-bs-target="#pills-notification" type="button" role="tab"
                                 aria-controls="pills-notification" aria-selected="false" tabindex="-1">
                                 Status
                             </button>
-                        </li> --}}
+                        </li>
                     </ul>
                     <form action="{{ route('users.accountant.update', $candidate->id) }}" method="POST"
                         enctype="multipart/form-data">
@@ -150,9 +150,6 @@
                                                     @endforeach
                                                 </select>
                                             </div>
-
-
-
                                         </div>
 
 
@@ -194,13 +191,58 @@
                                                     Save
                                                 </button>
                                             </div>
-
-
-
                                         </div>
-
                                     </div>
+                                </div>
 
+                                <div class="col-lg-6">
+                                    <div class="card h-100 p-0">
+                                        <div class="card-header border-bottom bg-base py-16 px-24">
+                                            <h6 class="text-lg fw-semibold mb-0">Changes History</h6>
+                                        </div>
+                                        <div class="card-body p-24 d-flex flex-column gap-4">
+                                            <div class="alert alert-primary bg-transparent text-primary-600 border-primary-600 px-24 py-11 mb-0 fw-semibold text-lg radius-8 d-flex align-items-center justify-content-between"
+                                                role="alert">
+                                                This is a Primary alert
+                                                <button class="remove-button text-primary-600 text-xxl line-height-1">
+                                                    <iconify-icon icon="iconamoon:sign-times-light"
+                                                        class="icon"></iconify-icon>
+                                                </button>
+                                            </div>
+                                            <div class="alert alert-lilac bg-transparent text-lilac-600 border-lilac-600 px-24 py-11 mb-0 fw-semibold text-lg radius-8 d-flex align-items-center justify-content-between"
+                                                role="alert">
+                                                This is a Secondary alert
+                                                <button class="remove-button text-lilac-600 text-xxl line-height-1">
+                                                    <iconify-icon icon="iconamoon:sign-times-light"
+                                                        class="icon"></iconify-icon>
+                                                </button>
+                                            </div>
+                                            <div class="alert alert-warning bg-transparent text-warning-600 border-warning-600 px-24 py-11 mb-0 fw-semibold text-lg radius-8 d-flex align-items-center justify-content-between"
+                                                role="alert">
+                                                This is a Warning alert
+                                                <button class="remove-button text-warning-600 text-xxl line-height-1">
+                                                    <iconify-icon icon="iconamoon:sign-times-light"
+                                                        class="icon"></iconify-icon>
+                                                </button>
+                                            </div>
+                                            <div class="alert alert-info bg-transparent text-info-600 border-info-600 px-24 py-11 mb-0 fw-semibold text-lg radius-8 d-flex align-items-center justify-content-between"
+                                                role="alert">
+                                                This is a Info alert
+                                                <button class="remove-button text-info-600 text-xxl line-height-1">
+                                                    <iconify-icon icon="iconamoon:sign-times-light"
+                                                        class="icon"></iconify-icon>
+                                                </button>
+                                            </div>
+                                            <div class="alert alert-danger bg-transparent text-danger-600 border-danger-600 px-24 py-11 mb-0 fw-semibold text-lg radius-8 d-flex align-items-center justify-content-between"
+                                                role="alert">
+                                                This is a Danger alert
+                                                <button class="remove-button text-danger-600 text-xxl line-height-1">
+                                                    <iconify-icon icon="iconamoon:sign-times-light"
+                                                        class="icon"></iconify-icon>
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
 
                             </div>
@@ -984,7 +1026,7 @@
 
 
 
-                            {{-- <div class="tab-pane fade" id="pills-notification" role="tabpanel">
+                            <div class="tab-pane fade" id="pills-notification" role="tabpanel">
                                 <div
                                     class="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
                                     <div class="d-flex align-items-center gap-3 justify-content-between">
@@ -995,7 +1037,7 @@
                                             value="1" {{ $candidate->status ? 'checked' : '' }}>
                                     </div>
                                 </div>
-                            </div> --}}
+                            </div>
                         </div>
                     </form>
                 </div>
