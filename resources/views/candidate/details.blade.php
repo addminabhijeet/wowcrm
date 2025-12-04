@@ -195,13 +195,13 @@
                                     </div>
                                 </div>
 
-                                <div class="col-lg-6">
+                                <div class="col-lg-6 w-100">
                                     <div class="card h-100 p-0">
                                         <div class="card-header border-bottom bg-base py-16 px-24">
                                             <h6 class="text-lg fw-semibold mb-0">Changes History</h6>
                                         </div>
                                         <div class="card-body p-24 d-flex flex-column gap-4">
-                                            
+
                                             <div class="alert alert-info bg-transparent text-info-600 border-info-600 px-24 py-11 mb-0 fw-semibold text-lg radius-8 d-flex align-items-center justify-content-between"
                                                 role="alert">
                                                 This is a Info alert
@@ -214,6 +214,7 @@
                                         </div>
                                     </div>
                                 </div>
+
                             </div>
 
 
