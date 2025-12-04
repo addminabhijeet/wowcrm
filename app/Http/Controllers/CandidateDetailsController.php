@@ -95,18 +95,55 @@ class CandidateDetailsController extends Controller
         $candidate = GoogleSheetData::find($id);
         if (!$candidate) return response()->json(['error' => 'Candidate not found'], 404);
 
+        // Collect original values BEFORE update
+        $original = $candidate->only([
+            'Name',
+            'Phone_Number',
+            'Time_Zone',
+            'Email_Address',
+            'Location'
+        ]);
+
+        // Apply updates (existing logic untouched)
         $candidate->Name          = $request->input('name', '');
         $candidate->Phone_Number  = $request->input('phone', '');
         $candidate->Time_Zone     = $request->input('time_zone', '');
-
-        // NEW FIELDS
         $candidate->Email_Address = $request->input('email', '');
         $candidate->Location      = $request->input('Location', '');
 
+        // Detect Changes
+        $changes = [];
+        $fields = [
+            'Name'          => 'Full Name',
+            'Phone_Number'  => 'Phone Number',
+            'Time_Zone'     => 'Time Zone',
+            'Email_Address' => 'Email Address',
+            'Location'      => 'Location'
+        ];
+
+        foreach ($fields as $key => $label) {
+            $old = $original[$key] ?? '';
+            $new = $candidate->$key ?? '';
+
+            if ($old !== $new) {
+                $changes[] = "[" . now()->format('Y-m-d H:i:s') . "] $label changed from '$old' to '$new'";
+            }
+        }
+
+        // Append to profilechanges
+        if (!empty($changes)) {
+            $existingLog = $candidate->profilechanges ?? '';
+            $newLogEntry = implode("\n", $changes);
+
+            $candidate->profilechanges = trim($existingLog . "\n" . $newLogEntry);
+        }
+
+        // Save as usual (existing logic)
         $candidate->save();
 
         return response()->json(['success' => true]);
     }
+
 
     public function saveEdu(Request $request, $id)
     {
