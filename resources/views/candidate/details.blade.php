@@ -321,7 +321,7 @@
                                                     'F1 CPT',
                                                     'F1 OPT',
                                                     'STEM OPT',
-                                                    'HIB',
+                                                    'H1B',
                                                     'B2',
                                                     'B1',
                                                     'H4',

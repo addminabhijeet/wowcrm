@@ -89,7 +89,7 @@
 
                 {{-- Immigration --}}
                 <td>
-                    @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','HIB','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
+                    @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
                     <select class="form-select dynamic-dropdown" data-key="Immigration">
                         <option value="">--Immigration --</option>
                         @foreach($immOptions as $option)
