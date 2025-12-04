@@ -3573,7 +3573,7 @@ class GoogleSheetController extends Controller
         return response()->download($filePath, basename($filePath));
     }
 
-        // Add a method to download the PDF files
+    // Add a method to download the PDF files
     public function downloadseniorUpdateResume($id)
     {
         $row = GoogleSheetData::find($id);
@@ -5103,11 +5103,7 @@ class GoogleSheetController extends Controller
 
         // Save candidate
         $candidate->save();
-
-        return response()->json([
-            'success' => true,
-            'message' => 'Candidate added successfully.'
-        ]);
+        return redirect()->back()->with('success', 'Candidate added successfully.');
     }
 
 
