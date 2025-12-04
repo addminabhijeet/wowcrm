@@ -540,10 +540,14 @@
                                                     class="form-label fw-semibold text-primary-light text-sm mb-8">
                                                     Amount
                                                 </label>
-                                                <input type="text" name="amount" id="amount"
-                                                    class="form-control radius-8"
-                                                    value="{{ old('amount', $candidate->Amount ?? '') }}"
-                                                    placeholder="Enter Amount" required>
+                                                <div class="input-group">
+                                                    <span class="input-group-text">$</span>
+                                                    <input type="text" name="amount" id="amount"
+                                                        class="form-control radius-8"
+                                                        value="{{ old('amount', $candidate->Amount ?? '') }}"
+                                                        placeholder="Enter Amount" required>
+                                                </div>
+
                                             </div>
 
                                             <div class="mb-20">
