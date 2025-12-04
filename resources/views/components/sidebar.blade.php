@@ -60,8 +60,7 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.junior.candm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database Sheet
-                                C&M</a></li>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Called & Mailed</a></li>
                     </ul>
                 </li>
 

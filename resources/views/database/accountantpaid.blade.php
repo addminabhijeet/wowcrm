@@ -742,7 +742,7 @@
     //                         'Did Not Connect', 'Others', 'Payment Completed', 'VM', 'Busy'
     //                     ];
     //                     if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'HIB', 'B2', 'B1',
-    //                         'H4', 'H4 EAD', 'GC/PR', 'USC'
+    //                         'H4', 'H4 EAD', 'GC/PR', 'GC EAD','USC'
     //                     ];
     //                     if (k === 'Relocation') opts = ['YES', 'NO'];
     //                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
