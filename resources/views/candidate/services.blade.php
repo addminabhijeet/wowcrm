@@ -87,7 +87,7 @@
                                         <div class="px-4 d-flex" style="align-items: stretch;">
                                             <div style="width: 1px; background: #ccc; height: 100%;"></div>
                                         </div>
-                                        <p class="text-danger">No LinkedIn Profile available.</p>
+                                        <p class="text-danger">No Cover Letter available.</p>
 
                                     </div>
 
@@ -106,7 +106,7 @@
                                         <div class="px-4 d-flex" style="align-items: stretch;">
                                             <div style="width: 1px; background: #ccc; height: 100%;"></div>
                                         </div>
-                                        <p class="text-danger">No Cover letter available.</p>
+                                        <p class="text-danger">No LinkedIn available.</p>
                                     </div>
 
                                 </div>
