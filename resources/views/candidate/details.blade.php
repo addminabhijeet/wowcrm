@@ -439,6 +439,33 @@
 
                                 </div>
 
+                                <div class="col-lg-6 w-100 text-xs">
+                                    <div class="card h-100 p-0">
+                                        <div class="card-header border-bottom bg-base py-16 px-24">
+                                            <h6 class="text-sm fw-semibold mb-0">Changes History</h6>
+                                        </div>
+
+                                        <div class="card-body p-24 d-flex flex-column gap-4">
+
+                                            @php
+                                                $logs = $candidate->educhanges
+                                                    ? explode("\n", trim($candidate->educhanges))
+                                                    : [];
+                                            @endphp
+
+                                            @foreach ($logs as $log)
+                                                @if (trim($log) !== '')
+                                                    <div class="alert alert-info bg-transparent text-info-600 border-info-600 px-24 py-11 mb-0 fw-semibold text-xs radius-8 d-flex align-items-center justify-content-between"
+                                                        role="alert">
+                                                        {{ $log }}
+                                                    </div>
+                                                @endif
+                                            @endforeach
+
+                                        </div>
+                                    </div>
+                                </div>
+
                             </div>
 
                             <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
@@ -598,6 +625,33 @@
                                             <textarea name="payment_data" id="payment_data" class="d-none">
                                                 {{ old('payment_data', $candidate->payment_data ?? '') }}
                                             </textarea>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-6 w-100 text-xs">
+                                    <div class="card h-100 p-0">
+                                        <div class="card-header border-bottom bg-base py-16 px-24">
+                                            <h6 class="text-sm fw-semibold mb-0">Changes History</h6>
+                                        </div>
+
+                                        <div class="card-body p-24 d-flex flex-column gap-4">
+
+                                            @php
+                                                $logs = $candidate->paychanges
+                                                    ? explode("\n", trim($candidate->paychanges))
+                                                    : [];
+                                            @endphp
+
+                                            @foreach ($logs as $log)
+                                                @if (trim($log) !== '')
+                                                    <div class="alert alert-info bg-transparent text-info-600 border-info-600 px-24 py-11 mb-0 fw-semibold text-xs radius-8 d-flex align-items-center justify-content-between"
+                                                        role="alert">
+                                                        {{ $log }}
+                                                    </div>
+                                                @endif
+                                            @endforeach
 
                                         </div>
                                     </div>
