@@ -205,10 +205,6 @@
                                             <div class="alert alert-info bg-transparent text-info-600 border-info-600 px-24 py-11 mb-0 fw-semibold text-xs radius-8 d-flex align-items-center justify-content-between"
                                                 role="alert">
                                                 {{$candidate->profilechanges}}
-                                                <button class="remove-button text-info-600 text-lg line-height-1">
-                                                    <iconify-icon icon="iconamoon:sign-times-light"
-                                                        class="icon"></iconify-icon>
-                                                </button>
                                             </div>
 
                                         </div>
