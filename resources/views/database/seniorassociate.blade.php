@@ -173,26 +173,23 @@
 
                         if (response.success === true) {
 
-                            // Show success message clearly
                             $("#candidateError")
                                 .removeClass("d-none alert-danger")
                                 .addClass("alert-success")
                                 .html(response.message);
 
-                            // Close the modal after 1 sec
                             setTimeout(function() {
                                 $("#addCandidateModal").modal("hide");
 
-                                // Reload page after modal closes
                                 setTimeout(function() {
                                     location.reload();
                                 }, 500);
 
                             }, 1000);
                         }
-                    }
+                    },
 
-                    error: function(xhr) {
+                    error: function(xhr) { // <-- This comma was missing in your code
                         let errorText = "Something went wrong. Please try again.";
 
                         if (xhr.responseJSON && xhr.responseJSON.message) {
@@ -200,10 +197,12 @@
                         }
 
                         $("#candidateError")
-                            .removeClass("d-none")
+                            .removeClass("d-none alert-success")
+                            .addClass("alert-danger")
                             .html(errorText);
                     }
                 });
+
             });
 
         });
