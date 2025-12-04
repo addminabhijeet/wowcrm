@@ -17,6 +17,13 @@
                             aria-labelledby="pills-to-do-list-tab" tabindex="0">
 
                             <div class="table-responsive">
+                                <div class="d-flex justify-content-end mb-3">
+                                    <a href="{{ route('candidate.add') }}"
+                                        class="btn btn-success rounded-pill px-4 py-2 fw-medium text-sm">
+                                        Add Candidate
+                                    </a>
+                                </div>
+
                                 <table class="table table-hover table-bordered align-middle mb-0">
                                     <thead class="table-light text-center">
                                         <tr>
@@ -50,7 +57,6 @@
                                                     </span>
                                                 </td>
 
-
                                                 <!-- Phone -->
                                                 <td>
                                                     <span class="fw-medium text-sm">
@@ -64,20 +70,20 @@
                                                         class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-medium text-sm">
                                                         View Details
                                                     </a>
-
                                                 </td>
 
+                                                <!-- Services -->
                                                 <td>
                                                     <a href="{{ route('all.associate.services', [$row->id, $row->forwarded_by]) }}"
                                                         class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-medium text-sm">
                                                         Services Details
                                                     </a>
-
                                                 </td>
                                             </tr>
                                         @endforeach
                                     </tbody>
                                 </table>
+
                             </div> <!-- /.table-responsive -->
 
                         </div> <!-- /.tab-pane -->
