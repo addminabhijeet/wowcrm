@@ -5078,6 +5078,39 @@ class GoogleSheetController extends Controller
         return view('database.seniorassociate', compact('data'));
     }
 
+    public function candidateStore(Request $request)
+    {
+        // Validate required fields
+        $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|max:255',
+            'phone' => 'required|string|max:20',
+        ]);
+
+        // Create new candidate
+        $candidate = new GoogleSheetData();
+
+        $candidate->Name          = $request->input('name', '');
+        $candidate->Email_Address = $request->input('email', '');
+        $candidate->Phone_Number  = $request->input('phone', '');
+
+        // Set default values like your Google Sheet data rows
+        $candidate->Time_Zone = '';
+        $candidate->Location  = '';
+
+        // Insert created_by string exactly as given
+        $candidate->created_by = '0|senior:0|accountant:0|senior:0|accountant:0|accountant:0|trainer:0|accountant';
+
+        // Save candidate
+        $candidate->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Candidate added successfully.'
+        ]);
+    }
+
+
     public function writter(Request $request)
     {
         $authUser = Auth::user();
