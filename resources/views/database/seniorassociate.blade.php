@@ -97,6 +97,7 @@
     </div> <!-- /.row -->
 
     <!-- Add Candidate Modal -->
+    <!-- Add Candidate Modal -->
     <div class="modal fade" id="addCandidateModal" tabindex="-1" aria-labelledby="addCandidateModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
@@ -106,12 +107,14 @@
                     <h5 class="modal-title" id="addCandidateModalLabel">Add New Candidate</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div id="candidateError" class="alert alert-danger d-none"></div>
 
                 <form id="addCandidateForm" action="{{ route('all.associate.add') }}" method="POST">
                     @csrf
 
                     <div class="modal-body">
+
+                        <!-- Error Message -->
+                        <div id="candidateError" class="alert alert-danger d-none mb-3"></div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Name</label>
@@ -141,17 +144,18 @@
         </div>
     </div>
 
+
     <script>
         $(document).ready(function() {
 
             $("#addCandidateForm").on("submit", function(e) {
-                e.preventDefault(); // stop normal form submit
+                e.preventDefault();
 
                 let form = $(this);
                 let url = form.attr("action");
                 let formData = form.serialize();
 
-                $("#candidateError").addClass("d-none").html(""); // hide previous errors
+                $("#candidateError").addClass("d-none").html("");
 
                 $.ajax({
                     type: "POST",
@@ -160,7 +164,6 @@
                     success: function(response) {
 
                         if (response.success === false) {
-                            // Show duplicate message
                             $("#candidateError")
                                 .removeClass("d-none")
                                 .html(response.message);
@@ -168,10 +171,7 @@
                         }
 
                         if (response.success === true) {
-                            // Close modal
                             $("#addCandidateModal").modal("hide");
-
-                            // optional: refresh page
                             location.reload();
                         }
                     },
