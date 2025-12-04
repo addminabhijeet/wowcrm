@@ -5161,7 +5161,6 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Candidate added successfully.');
     }
 
 
