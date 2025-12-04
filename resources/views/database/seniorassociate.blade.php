@@ -107,7 +107,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <form action="{{ route('candidate.store') }}" method="POST">
+                <form action="" method="POST">
                     @csrf
 
                     <div class="modal-body">
