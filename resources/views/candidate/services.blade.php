@@ -45,64 +45,35 @@
 
                     <ul class="nav border-gradient-tab nav-pills mb-20 d-inline-flex" id="pills-tab" role="tablist">
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24 active" id="pills-edit-profile-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-edit-profile" type="button" role="tab"
-                                aria-controls="pills-edit-profile" aria-selected="true">
-                                Personal Information
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-information-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-information" type="button" role="tab"
-                                aria-controls="pills-information" aria-selected="false" tabindex="-1">
-                                Educational Information
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-payment-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-payment" type="button" role="tab"
-                                aria-controls="pills-payment" aria-selected="false" tabindex="-1">
-                                Payment Information
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-change-passwork-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-change-passwork" type="button" role="tab"
-                                aria-controls="pills-change-passwork" aria-selected="false" tabindex="-1">
-                                Follow Ups
-                            </button>
-                        </li>
-                        <li class="nav-item" role="presentation">
                             <button class="nav-link d-flex align-items-center px-24" id="pills-resume-tab"
                                 data-bs-toggle="pill" data-bs-target="#pills-resume" type="button" role="tab"
                                 aria-controls="pills-resume" aria-selected="false" tabindex="-1">
-                                Resume
+                                Resume Improvement
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-senddocument-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-senddocument" type="button" role="tab"
-                                aria-controls="pills-senddocument" aria-selected="false" tabindex="-1">
-                                Send Document
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-linkedin-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-linkedin" type="button" role="tab"
+                                aria-controls="pills-linkedin" aria-selected="false" tabindex="-1">
+                                LinkedIn Profile
                             </button>
                         </li>
                         <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-signeddocument-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-signeddocument" type="button" role="tab"
-                                aria-controls="pills-signeddocument" aria-selected="false" tabindex="-1">
-                                Signed Document
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-coverletter-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-coverletter" type="button" role="tab"
+                                aria-controls="pills-coverletter" aria-selected="false" tabindex="-1">
+                                Cover letter
                             </button>
                         </li>
-                        {{-- <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center px-24" id="pills-notification-tab"
-                                data-bs-toggle="pill" data-bs-target="#pills-notification" type="button" role="tab"
-                                aria-controls="pills-notification" aria-selected="false" tabindex="-1">
-                                Status
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link d-flex align-items-center px-24" id="pills-digitalcard-tab"
+                                data-bs-toggle="pill" data-bs-target="#pills-digitalcard" type="button" role="tab"
+                                aria-controls="pills-digitalcard" aria-selected="false" tabindex="-1">
+                                Digital Card
                             </button>
-                        </li> --}}
+                        </li>
                     </ul>
-                    <form action="{{ route('users.accountant.update', $candidate->id) }}" method="POST"
-                        enctype="multipart/form-data">
+                    <form action="" method="POST" enctype="multipart/form-data">
                         @csrf
                         @method('PUT')
                         <div class="tab-content" id="pills-tabContent">
@@ -204,42 +175,6 @@
                                 </div>
 
                             </div>
-
-                            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-                            <script>
-                                document.addEventListener("DOMContentLoaded", function() {
-
-                                    const saveBtn = document.getElementById("save-profile-btn");
-                                    const name = document.getElementById("name");
-                                    const phone = document.getElementById("phone");
-                                    const timeZone = document.getElementById("time_zone");
-
-                                    // NEW FIELDS
-                                    const email = document.querySelector('input[name="email"]');
-                                    const location = document.querySelector('input[name="Location"]');
-
-                                    saveBtn.addEventListener("click", function() {
-
-                                        let data = {
-                                            name: name.value.trim(),
-                                            phone: phone.value.trim(),
-                                            time_zone: timeZone.value,
-                                            email: email.value.trim(), // NEW
-                                            Location: location.value.trim() // NEW
-                                        };
-
-                                        axios.post("{{ route('candidate.saveProfile', $candidate->id) }}", data)
-                                            .then(function(response) {
-                                                alert("Personal Saved Successfully!");
-                                            })
-                                            .catch(function(error) {
-                                                alert("Failed to save. Please try again.");
-                                                console.error(error);
-                                            });
-                                    });
-                                });
-                            </script>
 
 
 
@@ -417,65 +352,7 @@
 
                             </div>
 
-                            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
-                            <script>
-                                document.addEventListener("DOMContentLoaded", function() {
-
-                                    const saveBtn = document.getElementById("save-edu-btn");
-                                    const hiddenInput = document.getElementById("edu_data");
-
-                                    saveBtn.addEventListener("click", function() {
-
-                                        // Collect all form values
-                                        let data = {
-                                            relocation: document.getElementById("relocation").value,
-                                            graduation: document.getElementById("graduation").value,
-                                            immigration: document.getElementById("immigration").value,
-                                            course: document.getElementById("course").value,
-                                            qualification: document.getElementById("qualification").value,
-                                        };
-
-                                        // Store JSON in hidden textarea
-                                        hiddenInput.value = JSON.stringify(data);
-
-                                        // Send POST request with JSON like savePayment
-                                        axios.post("{{ route('candidate.saveEdu', $candidate->id) }}", {
-                                                edu_data: hiddenInput.value
-                                            }, {
-                                                headers: {
-                                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                                                }
-                                            })
-                                            .then(function(response) {
-                                                alert("Profile saved successfully!");
-                                            })
-                                            .catch(function(error) {
-                                                console.error(error);
-
-                                                // Extract human-readable error message
-                                                let message = "Unknown error occurred.";
-                                                if (error.response) {
-                                                    if (typeof error.response.data === 'string') {
-                                                        message = error.response.data;
-                                                    } else if (error.response.data.message) {
-                                                        message = error.response.data.message;
-                                                    } else if (error.response.data.error) {
-                                                        message = error.response.data.error;
-                                                    } else {
-                                                        message = JSON.stringify(error.response.data, null, 2);
-                                                    }
-                                                } else if (error.message) {
-                                                    message = error.message;
-                                                }
-
-                                                alert("Error: " + message);
-                                            });
-
-                                    });
-
-                                });
-                            </script>
 
                             <div class="tab-pane fade" id="pills-payment" role="tabpanel">
                                 <div class="row">
@@ -581,65 +458,6 @@
                             </div>
 
 
-                            <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-
-                            <script>
-                                document.addEventListener("DOMContentLoaded", function() {
-
-                                    const saveBtn = document.getElementById("save-pay-btn");
-                                    const hiddenInput = document.getElementById("payment_data");
-
-                                    saveBtn.addEventListener("click", function() {
-
-                                        let data = {
-                                            amount: document.getElementById("amount").value,
-                                            PaymentDate: document.getElementById("PaymentDate").value,
-                                            TranId: document.getElementById("TranId").value,
-                                            TranRef: document.getElementById("TranRef").value,
-                                            PaymentMethod: document.getElementById("PaymentMethod").value,
-                                            PayeeName: document.getElementById("PayeeName").value
-                                        };
-
-                                        hiddenInput.value = JSON.stringify(data);
-
-                                        axios.post("{{ route('candidate.savePayment', $candidate->id) }}", {
-                                                payment_data: hiddenInput.value
-                                            }, {
-                                                headers: {
-                                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
-                                                }
-                                            })
-                                            .then(function(response) {
-                                                alert("Payment Saved Successfully!");
-                                            })
-                                            .catch(function(error) {
-
-                                                console.error(error);
-
-                                                // Extract human-readable error message
-                                                let message = "Unknown error occurred.";
-
-                                                if (error.response) {
-                                                    if (typeof error.response.data === 'string') {
-                                                        message = error.response.data; // raw response
-                                                    } else if (error.response.data.message) {
-                                                        message = error.response.data.message; // Laravel message
-                                                    } else if (error.response.data.error) {
-                                                        message = error.response.data.error; // custom error
-                                                    } else {
-                                                        message = JSON.stringify(error.response.data, null, 2);
-                                                    }
-                                                } else if (error.message) {
-                                                    message = error.message;
-                                                }
-
-                                                alert("Error: " + message);
-                                            });
-                                    });
-
-                                });
-                            </script>
-
 
 
                             <div class="tab-pane fade" id="pills-change-passwork" role="tabpanel">
@@ -705,110 +523,6 @@
 
                                 <link rel="stylesheet"
                                     href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
-                                <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-                                <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script> <!-- Axios for AJAX -->
-
-
-                                <script>
-                                    document.addEventListener("DOMContentLoaded", function() {
-                                        const remarkBox = document.getElementById("followup-remark");
-                                        const newRemarkInput = document.getElementById("new-remark");
-                                        const addRemarkBtn = document.getElementById("add-remark-btn");
-                                        const hiddenInput = document.getElementById("followups");
-
-                                        // Parse existing followups
-                                        let rawData = hiddenInput.value.trim();
-                                        let followupData = {};
-
-                                        if (rawData) {
-                                            let entries = rawData.split(" : ");
-                                            entries.forEach(entry => {
-                                                let parts = entry.split("|");
-                                                if (parts.length === 2) {
-                                                    let date = parts[0].trim();
-                                                    let remark = parts[1].trim();
-                                                    if (!followupData[date]) followupData[date] = [];
-                                                    followupData[date].push(remark);
-                                                }
-                                            });
-                                        }
-
-                                        // Initialize Flatpickr
-                                        const fp = flatpickr("#followup-calendar", {
-                                            dateFormat: "Y-m-d",
-                                            onChange: function(selectedDates, dateStr) {
-                                                const selected = fp.formatDate(selectedDates[0], "Y-m-d");
-                                                remarkBox.value = followupData[selected] ? followupData[selected].join("\n") : "";
-
-                                            },
-                                            onDayCreate: function(dObj, dStr, fpInstance, dayElem) {
-                                                // Get date WITHOUT timezone issues
-                                                const date = fpInstance.formatDate(dayElem.dateObj, "Y-m-d");
-
-                                                // Mark if exists in DB list
-                                                if (followupData[date]) {
-                                                    dayElem.style.background = "#ff99cc";
-                                                    dayElem.style.borderRadius = "50%";
-                                                    dayElem.style.fontWeight = "bold";
-                                                }
-                                            }
-
-                                        });
-
-                                        const firstDate = Object.keys(followupData)[0];
-                                        if (firstDate) {
-                                            fp.setDate(firstDate);
-                                            remarkBox.value = followupData[firstDate].join("\n");
-                                        }
-
-                                        // Add new remark via AJAX
-                                        addRemarkBtn.addEventListener("click", function() {
-                                            const selectedDate = fp.input.value;
-                                            const newRemark = newRemarkInput.value.trim();
-
-                                            if (!selectedDate) {
-                                                alert("Please select a date first!");
-                                                return;
-                                            }
-                                            if (!newRemark) {
-                                                alert("Please enter a remark!");
-                                                return;
-                                            }
-
-                                            if (!followupData[selectedDate]) followupData[selectedDate] = [];
-                                            followupData[selectedDate].push(newRemark);
-
-                                            // Update display
-                                            remarkBox.value = followupData[selectedDate].join("\n");
-
-                                            // Update hidden input
-                                            let updatedEntries = [];
-                                            for (let date in followupData) {
-                                                followupData[date].forEach(r => updatedEntries.push(`${date} | ${r}`));
-                                            }
-                                            hiddenInput.value = updatedEntries.join(" : ");
-
-                                            // Redraw calendar
-                                            fp.redraw();
-
-                                            // Clear input
-                                            newRemarkInput.value = "";
-
-                                            // Send AJAX request to save to DB
-                                            axios.post("{{ route('candidate.saveFollowups', $candidate->id) }}", {
-                                                    followups: hiddenInput.value
-                                                })
-                                                .then(function(response) {
-                                                    console.log(' Saved successfully!');
-                                                })
-                                                .catch(function(error) {
-                                                    console.error('Error saving followups:', error);
-                                                    alert('Failed to save remark. Please try again.');
-                                                });
-                                        });
-                                    });
-                                </script>
-
 
                             </div>
 
@@ -981,21 +695,6 @@
                                 @endif
 
                             </div>
-
-
-
-                            {{-- <div class="tab-pane fade" id="pills-notification" role="tabpanel">
-                                <div
-                                    class="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                    <div class="d-flex align-items-center gap-3 justify-content-between">
-                                        <span
-                                            class="form-check-label line-height-1 fw-medium text-secondary-light">Candidate
-                                            Status</span>
-                                        <input class="form-check-input" type="checkbox" id="status" name="status"
-                                            value="1" {{ $candidate->status ? 'checked' : '' }}>
-                                    </div>
-                                </div>
-                            </div> --}}
                         </div>
                     </form>
                 </div>
