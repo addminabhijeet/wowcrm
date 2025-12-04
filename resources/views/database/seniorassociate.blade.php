@@ -25,6 +25,7 @@
                                             <th scope="col" class="text-center">Email Address</th>
                                             <th scope="col" class="text-center">Phone Number</th>
                                             <th scope="col" class="text-center">View</th>
+                                            <th scope="col" class="text-center">Services</th>
                                         </tr>
                                     </thead>
 
@@ -62,6 +63,14 @@
                                                     <a href="{{ route('all.associate.candidate', [$row->id, $row->forwarded_by]) }}"
                                                         class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-medium text-sm">
                                                         View Details
+                                                    </a>
+
+                                                </td>
+
+                                                <td>
+                                                    <a href="{{ route('all.associate.services', [$row->id, $row->forwarded_by]) }}"
+                                                        class="btn btn-sm btn-primary rounded-pill px-3 py-1 fw-medium text-sm">
+                                                        Services Details
                                                     </a>
 
                                                 </td>

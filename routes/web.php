@@ -311,6 +311,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/associate/google-sheet', [GoogleSheetController::class, 'associate'])->name('google.sheet.associate');
     Route::get('/dashboard/associate', [DashboardController::class, 'associate'])->name('dashboard.associate');
+    Route::get('/dashboard/associate/candidate/services/{userId}/{forwardedBy}', [CandidateDetailsController::class, 'associateservices'])->name('all.associate.services');
     Route::get('/dashboard/associate/candidate/{userId}/{forwardedBy}', [CandidateDetailsController::class, 'associate'])->name('all.associate.candidate');
 });
 
