@@ -40,7 +40,14 @@
             </div>
         </div>
         <div class="card-body p-24">
-            <div class="table-responsive scroll-sm">
+            <!-- Extra Scroll Bar Above -->
+            <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
+                <div id="top-scroll" style="width: max-content; height: 20px;"></div>
+            </div>
+
+            <!-- Main Table Scroll -->
+            <div class="table-responsive scroll-sm" id="bottom-scroll-wrapper">
+
                 @if ($data->isEmpty())
                     <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
                 @else
@@ -685,7 +692,7 @@
                             'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'
                         ];
                         if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
-                            'H4', 'H4 EAD', 'GC/PR', 'GC EAD','USC'
+                            'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC'
                         ];
                         if (k === 'Relocation') opts = ['YES', 'NO'];
                         if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
@@ -1436,6 +1443,24 @@
         });
     </script>
 
+    <script>
+        const topScrollWrapper = document.getElementById("top-scroll-wrapper");
+        const bottomScrollWrapper = document.getElementById("bottom-scroll-wrapper");
+        const mainTable = document.getElementById("main-table");
+        const topScroll = document.getElementById("top-scroll");
+
+        // Set top scroll width same as table
+        topScroll.style.width = mainTable.scrollWidth + "px";
+
+        // Sync scrolling
+        topScrollWrapper.addEventListener("scroll", function() {
+            bottomScrollWrapper.scrollLeft = topScrollWrapper.scrollLeft;
+        });
+
+        bottomScrollWrapper.addEventListener("scroll", function() {
+            topScrollWrapper.scrollLeft = bottomScrollWrapper.scrollLeft;
+        });
+    </script>
 
 
 @endsection
