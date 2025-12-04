@@ -106,8 +106,9 @@
                     <h5 class="modal-title" id="addCandidateModalLabel">Add New Candidate</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
+                <div id="candidateError" class="alert alert-danger d-none"></div>
 
-                <form action="{{ route('all.associate.add') }}" method="POST">
+                <form id="addCandidateForm" action="{{ route('all.associate.add') }}" method="POST">
                     @csrf
 
                     <div class="modal-body">
@@ -139,4 +140,55 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $(document).ready(function() {
+
+            $("#addCandidateForm").on("submit", function(e) {
+                e.preventDefault(); // stop normal form submit
+
+                let form = $(this);
+                let url = form.attr("action");
+                let formData = form.serialize();
+
+                $("#candidateError").addClass("d-none").html(""); // hide previous errors
+
+                $.ajax({
+                    type: "POST",
+                    url: url,
+                    data: formData,
+                    success: function(response) {
+
+                        if (response.success === false) {
+                            // Show duplicate message
+                            $("#candidateError")
+                                .removeClass("d-none")
+                                .html(response.message);
+                            return;
+                        }
+
+                        if (response.success === true) {
+                            // Close modal
+                            $("#addCandidateModal").modal("hide");
+
+                            // optional: refresh page
+                            location.reload();
+                        }
+                    },
+                    error: function(xhr) {
+                        let errorText = "Something went wrong. Please try again.";
+
+                        if (xhr.responseJSON && xhr.responseJSON.message) {
+                            errorText = xhr.responseJSON.message;
+                        }
+
+                        $("#candidateError")
+                            .removeClass("d-none")
+                            .html(errorText);
+                    }
+                });
+            });
+
+        });
+    </script>
 @endsection
