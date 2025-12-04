@@ -145,7 +145,7 @@ class CandidateDetailsController extends Controller
     }
 
 
-    public function saveEducation(Request $request, $id)
+    public function saveEdu(Request $request, $id)
     {
         $candidate = GoogleSheetData::find($id);
         if (!$candidate) return response()->json(['error' => 'Candidate not found'], 404);
