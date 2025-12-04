@@ -11,6 +11,21 @@
 
 @section('content')
 
+    <style>
+        #top-scroll-wrapper {
+            height: 16px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            background: transparent;
+        }
+
+        #top-scroll {
+            height: 1px;
+            background: transparent;
+        }
+    </style>
+
+
     <div class="card h-100 p-0 radius-12">
         <div
             class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
@@ -41,12 +56,14 @@
         </div>
         <div class="card-body p-24">
             <!-- Extra Scroll Bar Above -->
-            <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
-                <div id="top-scroll" style="width: max-content; height: 20px;"></div>
+            <!-- Extra Scroll Bar Above -->
+            <div class="table-responsive mb-2" id="top-scroll-wrapper">
+                <div id="top-scroll"></div>
             </div>
 
             <!-- Main Table Scroll -->
-            <div class="table-responsive scroll-sm" id="bottom-scroll-wrapper">
+            <div class="table-responsive" id="bottom-scroll-wrapper">
+
 
                 @if ($data->isEmpty())
                     <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
@@ -1444,23 +1461,28 @@
     </script>
 
     <script>
-        const topScrollWrapper = document.getElementById("top-scroll-wrapper");
-        const bottomScrollWrapper = document.getElementById("bottom-scroll-wrapper");
-        const mainTable = document.getElementById("main-table");
-        const topScroll = document.getElementById("top-scroll");
+        document.addEventListener("DOMContentLoaded", function() {
+            const topScrollWrapper = document.getElementById("top-scroll-wrapper");
+            const bottomScrollWrapper = document.getElementById("bottom-scroll-wrapper");
+            const mainTable = document.getElementById("main-table");
+            const topScroll = document.getElementById("top-scroll");
 
-        // Set top scroll width same as table
-        topScroll.style.width = mainTable.scrollWidth + "px";
+            // Make sure the table exists before setting width
+            if (mainTable) {
+                topScroll.style.width = mainTable.scrollWidth + "px";
+            }
 
-        // Sync scrolling
-        topScrollWrapper.addEventListener("scroll", function() {
-            bottomScrollWrapper.scrollLeft = topScrollWrapper.scrollLeft;
-        });
+            // Sync scrollbars
+            topScrollWrapper.addEventListener("scroll", function() {
+                bottomScrollWrapper.scrollLeft = topScrollWrapper.scrollLeft;
+            });
 
-        bottomScrollWrapper.addEventListener("scroll", function() {
-            topScrollWrapper.scrollLeft = bottomScrollWrapper.scrollLeft;
+            bottomScrollWrapper.addEventListener("scroll", function() {
+                topScrollWrapper.scrollLeft = bottomScrollWrapper.scrollLeft;
+            });
         });
     </script>
+
 
 
 @endsection
