@@ -148,7 +148,7 @@ $script ='<script>
                         <td>
                             @php
                             $qualificationOptions = [
-                            'Masters','Master of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.'];
+                            'Masters','Masters of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.'];
                             @endphp
 
                             <select class="form-select dynamic-dropdown" data-key="Qualification">
@@ -349,7 +349,7 @@ $script ='<script>
         };
         const qualificationColors = {
             'Masters': '#e2f0d9',
-            'Master of Science': '#cce5ff',
+            'Masters of Science': '#cce5ff',
             'Bachelors': '#e2f0d9',
             'PG': '#cce5ff',
             'MBA': '#e2f0d9',
@@ -620,7 +620,7 @@ $script ='<script>
             colKeys.forEach(k => {
                 if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
                     let opts = [];
-                    if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
+                    if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
                     if (k === 'Exe Remarks') opts = ['Ready To Paid', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'Payment Completed', 'VM', 'Busy'];
                     if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1', 'H4', 'H4 EAD', 'GC EAD','GC/PR', 'USC'];
                     if (k === 'Relocation') opts = ['YES', 'NO'];

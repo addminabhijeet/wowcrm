@@ -153,7 +153,7 @@ $script ='<script>
                         <td>
                             @php
                             $qualificationOptions = [
-                            'Masters','Master of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.'];
+                            'Masters','Masters of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.'];
                             @endphp
 
                             <select class="form-select dynamic-dropdown" data-key="Qualification">
@@ -353,7 +353,7 @@ $script ='<script>
         };
         const qualificationColors = {
             'Masters': '#e2f0d9',
-            'Master of Science': '#cce5ff',
+            'Masters of Science': '#cce5ff',
             'Bachelors': '#e2f0d9',
             'PG': '#cce5ff',
             'MBA': '#e2f0d9',

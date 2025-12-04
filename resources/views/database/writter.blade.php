@@ -116,7 +116,7 @@
                                         @php
                                             $qualificationOptions = [
                                                 'Masters',
-                                                'Master of Science',
+                                                'Masters of Science',
                                                 'Bachelors',
                                                 'PG',
                                                 'MBA',
@@ -351,7 +351,7 @@
             };
             const qualificationColors = {
                 'Masters': '#e2f0d9',
-                'Master of Science': '#cce5ff',
+                'Masters of Science': '#cce5ff',
                 'Bachelors': '#e2f0d9',
                 'PG': '#cce5ff',
                 'MBA': '#e2f0d9',
@@ -636,7 +636,7 @@
                     //             'Time Zone', 'Qualification'
                     //         ].includes(k)) {
                     //         let opts = [];
-                    //         if (k === 'Qualification') opts = ['Masters', 'Master of Science', 'Bachelors',
+                    //         if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors',
                     //             'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
                     //             'Aerospace Proj. Manag.'
                     //         ];

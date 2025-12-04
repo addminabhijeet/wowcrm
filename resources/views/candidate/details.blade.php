@@ -394,7 +394,7 @@
                                                 @php
                                                     $qualificationOptions = [
                                                         'Masters',
-                                                        'Master of Science',
+                                                        'Masters of Science',
                                                         'Bachelors',
                                                         'PG',
                                                         'MBA',

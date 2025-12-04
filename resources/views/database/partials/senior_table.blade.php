@@ -123,7 +123,7 @@
                 <td>
                     @php
                     $qualificationOptions = [
-                    'Masters','Master of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.'];
+                    'Masters','Masters of Science','Bachelors','PG','MBA','PG Diploma','M.Tech','B.Tech','MA','Associate Degree','Aerospace Proj. Manag.'];
                     @endphp
 
                     <select class="form-select dynamic-dropdown" data-key="Qualification">
