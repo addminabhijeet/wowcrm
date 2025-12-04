@@ -307,13 +307,13 @@ class CandidateDetailsController extends Controller
         }
 
         // ---------------------------------------------------
-        // 3. Append to profilechanges
+        // 3. Append to paychanges
         // ---------------------------------------------------
         if (!empty($changes)) {
-            $existingLog = $candidate->profilechanges ?? '';
+            $existingLog = $candidate->paychanges ?? '';
             $newLogEntry = implode("\n", $changes);
 
-            $candidate->profilechanges = trim($existingLog . "\n" . $newLogEntry);
+            $candidate->paychanges = trim($existingLog . "\n" . $newLogEntry);
         }
 
         // ---------------------------------------------------
