@@ -200,16 +200,28 @@
                                         <div class="card-header border-bottom bg-base py-16 px-24">
                                             <h6 class="text-sm fw-semibold mb-0">Changes History</h6>
                                         </div>
+
                                         <div class="card-body p-24 d-flex flex-column gap-4">
 
-                                            <div class="alert alert-info bg-transparent text-info-600 border-info-600 px-24 py-11 mb-0 fw-semibold text-xs radius-8 d-flex align-items-center justify-content-between"
-                                                role="alert">
-                                                {{$candidate->profilechanges}}
-                                            </div>
+                                            @php
+                                                $logs = $candidate->profilechanges
+                                                    ? explode("\n", trim($candidate->profilechanges))
+                                                    : [];
+                                            @endphp
+
+                                            @foreach ($logs as $log)
+                                                @if (trim($log) !== '')
+                                                    <div class="alert alert-info bg-transparent text-info-600 border-info-600 px-24 py-11 mb-0 fw-semibold text-xs radius-8 d-flex align-items-center justify-content-between"
+                                                        role="alert">
+                                                        {{ $log }}
+                                                    </div>
+                                                @endif
+                                            @endforeach
 
                                         </div>
                                     </div>
                                 </div>
+
 
 
 
