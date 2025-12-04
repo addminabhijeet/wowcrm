@@ -5087,62 +5087,83 @@ class GoogleSheetController extends Controller
             'phone' => 'required|string|max:20',
         ]);
 
-        $name  = $request->input('name');
-        $email = $request->input('email');
-        $phone = $request->input('phone');
+        $email = $request->email;
+        $phone = $request->phone;
 
-        // Check for duplicate Email
+        // --------------------------
+        // CHECK DUPLICATE EMAIL
+        // --------------------------
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
             if ($emailExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Email address already exists in records.',
-                ]);
+                // If AJAX -> return JSON
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Email address already exists in records.'
+                    ]);
+                }
+
+                // Normal request -> redirect back
+                return redirect()->back()->with('error', 'Email address already exists in records.');
             }
         }
 
-        // Check for duplicate Phone
+        // --------------------------
+        // CHECK DUPLICATE PHONE
+        // --------------------------
         if (!empty($phone)) {
             $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
             if ($phoneExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Phone number already exists in records.',
-                ]);
+                if ($request->ajax()) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Phone number already exists in records.'
+                    ]);
+                }
+
+                return redirect()->back()->with('error', 'Phone number already exists in records.');
             }
         }
 
-        // Generate next sheet row number
-        $maxRow  = GoogleSheetData::max('sheet_row_number') ?? 0;
+        // Get next serial number
+        $maxRow = GoogleSheetData::max('sheet_row_number') ?? 0;
         $nextRow = $maxRow + 1;
 
         // Create new candidate
         $candidate = new GoogleSheetData();
+
+        // Assign sheet serial number
         $candidate->sheet_row_number = $nextRow;
 
-        // Assign values
-        $candidate->Name          = $name;
-        $candidate->Email_Address = $email;
-        $candidate->Phone_Number  = $phone;
+        $candidate->Name          = $request->input('name', '');
+        $candidate->Email_Address = $request->input('email', '');
+        $candidate->Phone_Number  = $request->input('phone', '');
 
         // Default values
         $candidate->Time_Zone = '';
         $candidate->Location  = '';
 
-        // Insert created_by with exact string
+        // created_by static value
         $candidate->created_by = '0|senior:0|accountant:0|senior:0|accountant:0|accountant:0|trainer:0|accountant';
 
-        // Save
+        // Save data
         $candidate->save();
 
-        // Return success response
-        return response()->json([
-            'success' => true,
-            'message' => 'Candidate added successfully.',
-            'data'    => $candidate
-        ]);
+        // --------------------------
+        // SUCCESS RESPONSE HANDLING
+        // --------------------------
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Candidate added successfully.',
+                'data'    => $candidate
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Candidate added successfully.');
     }
+
 
 
 
