@@ -5087,8 +5087,15 @@ class GoogleSheetController extends Controller
             'phone' => 'required|string|max:20',
         ]);
 
+        // Get next serial number
+        $maxRow = GoogleSheetData::max('sheet_row_number') ?? 0;
+        $nextRow = $maxRow + 1;
+
         // Create new candidate
         $candidate = new GoogleSheetData();
+
+        // Assign sheet serial number
+        $candidate->sheet_row_number = $nextRow;
 
         $candidate->Name          = $request->input('name', '');
         $candidate->Email_Address = $request->input('email', '');
@@ -5103,8 +5110,10 @@ class GoogleSheetController extends Controller
 
         // Save candidate
         $candidate->save();
+
         return redirect()->back()->with('success', 'Candidate added successfully.');
     }
+
 
 
     public function writter(Request $request)
