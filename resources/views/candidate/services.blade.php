@@ -77,7 +77,7 @@
                         @csrf
                         @method('PUT')
                         <div class="tab-content" id="pills-tabContent">
-                            <div class="tab-pane fade show active" id="pills-edit-coverletter" role="tabpanel">
+                            <div class="tab-pane fade " id="pills-coverletter" role="tabpanel">
 
                                 <div class="row">
                                     <div class="col-12 d-flex">
