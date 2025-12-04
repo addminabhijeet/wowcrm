@@ -18,7 +18,7 @@
 
                             <div class="table-responsive">
                                 <div class="d-flex justify-content-end mb-3">
-                                    <a href="{{ route('candidate.add') }}"
+                                    <a href=""
                                         class="btn btn-success rounded-pill px-4 py-2 fw-medium text-sm">
                                         Add Candidate
                                     </a>
