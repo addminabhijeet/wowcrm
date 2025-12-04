@@ -114,7 +114,7 @@
                     <div class="modal-body">
 
                         <!-- Error Message -->
-                        <div id="candidateError" class="alert alert-danger d-none mb-3"></div>
+                        <div id="candidateError" class="alert d-none mb-3"></div>
 
                         <div class="mb-3">
                             <label class="form-label fw-semibold">Name</label>
@@ -165,16 +165,33 @@
 
                         if (response.success === false) {
                             $("#candidateError")
-                                .removeClass("d-none")
+                                .removeClass("d-none alert-success")
+                                .addClass("alert-danger")
                                 .html(response.message);
                             return;
                         }
 
                         if (response.success === true) {
-                            $("#addCandidateModal").modal("hide");
-                            location.reload();
+
+                            // Show success message clearly
+                            $("#candidateError")
+                                .removeClass("d-none alert-danger")
+                                .addClass("alert-success")
+                                .html(response.message);
+
+                            // Close the modal after 1 sec
+                            setTimeout(function() {
+                                $("#addCandidateModal").modal("hide");
+
+                                // Reload page after modal closes
+                                setTimeout(function() {
+                                    location.reload();
+                                }, 500);
+
+                            }, 1000);
                         }
-                    },
+                    }
+
                     error: function(xhr) {
                         let errorText = "Something went wrong. Please try again.";
 
