@@ -75,7 +75,7 @@ class CandidateDetailsController extends Controller
         $userIds = collect($forwardedList)->pluck('id')->filter(fn($id) => $id > 0)->unique()->toArray();
         $users = \App\Models\User::whereIn('id', $userIds)->get(['id', 'name', 'role'])->keyBy('id');
 
-        return view('candidate.details', compact('candidate', 'forwardedList', 'users'));
+        return view('candidate.services', compact('candidate', 'forwardedList', 'users'));
     }
 
 
