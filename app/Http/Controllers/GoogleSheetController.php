@@ -5080,87 +5080,46 @@ class GoogleSheetController extends Controller
 
     public function candidateStore(Request $request)
     {
-        // Validate required fields
+        // Validate
         $request->validate([
             'name'  => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:20',
         ]);
 
-        $email = $request->email;
-        $phone = $request->phone;
-
-        // --------------------------
-        // CHECK DUPLICATE EMAIL
-        // --------------------------
-        if (!empty($email)) {
-            $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
-            if ($emailExists) {
-                // If AJAX -> return JSON
-                if ($request->ajax()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Email address already exists in records.'
-                    ]);
-                }
-
-                // Normal request -> redirect back
-                return redirect()->back()->with('error', 'Email address already exists in records.');
-            }
-        }
-
-        // --------------------------
-        // CHECK DUPLICATE PHONE
-        // --------------------------
-        if (!empty($phone)) {
-            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
-            if ($phoneExists) {
-                if ($request->ajax()) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Phone number already exists in records.'
-                    ]);
-                }
-
-                return redirect()->back()->with('error', 'Phone number already exists in records.');
-            }
-        }
-
-        // Get next serial number
-        $maxRow = GoogleSheetData::max('sheet_row_number') ?? 0;
-        $nextRow = $maxRow + 1;
-
-        // Create new candidate
-        $candidate = new GoogleSheetData();
-
-        // Assign sheet serial number
-        $candidate->sheet_row_number = $nextRow;
-
-        $candidate->Name          = $request->input('name', '');
-        $candidate->Email_Address = $request->input('email', '');
-        $candidate->Phone_Number  = $request->input('phone', '');
-
-        // Default values
-        $candidate->Time_Zone = '';
-        $candidate->Location  = '';
-
-        // created_by static value
-        $candidate->created_by = '0|senior:0|accountant:0|senior:0|accountant:0|accountant:0|trainer:0|accountant';
-
-        // Save data
-        $candidate->save();
-
-        // --------------------------
-        // SUCCESS RESPONSE HANDLING
-        // --------------------------
-        if ($request->ajax()) {
+        // Check duplicate email
+        if (GoogleSheetData::where('Email_Address', $request->email)->exists()) {
             return response()->json([
-                'success' => true,
-                'message' => 'Candidate added successfully.',
-                'data'    => $candidate
+                'success' => false,
+                'message' => 'Email address already exists.'
             ]);
         }
 
+        // Check duplicate phone
+        if (GoogleSheetData::where('Phone_Number', $request->phone)->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Phone number already exists.'
+            ]);
+        }
+
+        // Auto serial number
+        $nextRow = (GoogleSheetData::max('sheet_row_number') ?? 0) + 1;
+
+        // Create entry
+        $candidate = GoogleSheetData::create([
+            'sheet_row_number' => $nextRow,
+            'Name'             => $request->name,
+            'Email_Address'    => $request->email,
+            'Phone_Number'     => $request->phone,
+            'created_by'       => '0|senior:0|accountant:0|senior:0|accountant:0|accountant:0|trainer:0|accountant'
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Candidate added successfully.',
+            'data'    => $candidate
+        ]);
     }
 
 

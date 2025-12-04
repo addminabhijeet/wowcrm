@@ -155,7 +155,10 @@
                 let url = form.attr("action");
                 let formData = form.serialize();
 
-                $("#candidateError").addClass("d-none").html("");
+                $("#candidateError")
+                    .removeClass("alert-danger alert-success")
+                    .addClass("d-none")
+                    .html("");
 
                 $.ajax({
                     type: "POST",
@@ -163,6 +166,7 @@
                     data: formData,
                     success: function(response) {
 
+                        // ❌ Error Message
                         if (response.success === false) {
                             $("#candidateError")
                                 .removeClass("d-none alert-success")
@@ -171,26 +175,20 @@
                             return;
                         }
 
+                        // ✅ Success Message
                         if (response.success === true) {
-
                             $("#candidateError")
                                 .removeClass("d-none alert-danger")
                                 .addClass("alert-success")
                                 .html(response.message);
 
-                            setTimeout(function() {
-                                $("#addCandidateModal").modal("hide");
-
-                                setTimeout(function() {
-                                    location.reload();
-                                }, 500);
-
-                            }, 1000);
+                            // Clear form (optional)
+                            form.trigger("reset");
                         }
                     },
 
-                    error: function(xhr) { // <-- This comma was missing in your code
-                        let errorText = "Something went wrong. Please try again.";
+                    error: function(xhr) {
+                        let errorText = "Something went wrong.";
 
                         if (xhr.responseJSON && xhr.responseJSON.message) {
                             errorText = xhr.responseJSON.message;
@@ -202,7 +200,6 @@
                             .html(errorText);
                     }
                 });
-
             });
 
         });
