@@ -243,7 +243,19 @@ class CandidateDetailsController extends Controller
             return response()->json(['success' => false, 'message' => 'Candidate not found'], 404);
         }
 
-        // Get JSON
+        // ---------------------------------------------------
+        // 1. Collect original values BEFORE update (same logic as saveProfile)
+        // ---------------------------------------------------
+        $original = $candidate->only([
+            'Amount',
+            'PaymentDate',
+            'TranId',
+            'TranRef',
+            'PaymentMethod',
+            'PayeeName'
+        ]);
+
+        // Get payment JSON
         $json = $request->input('payment_data', '');
         $data = json_decode($json, true);
 
@@ -251,18 +263,18 @@ class CandidateDetailsController extends Controller
             return response()->json(['success' => false, 'message' => 'Invalid JSON received'], 422);
         }
 
-        // Normalize array keys to match DB structure
+        // Normalize array keys to lowercase
         $data = array_change_key_case($data, CASE_LOWER);
 
-        // Map JSON → DB with fallback NULL
+        // Map JSON → DB fields
         $updateData = [
-            'Amount'        => isset($data['amount']) ? $data['amount'] : null,
+            'Amount'        => $data['amount'] ?? null,
             'PaymentDate'   => $data['paymentdate'] ?? null,
             'TranId'        => $data['tranid'] ?? null,
             'TranRef'       => $data['tranref'] ?? null,
             'PaymentMethod' => $data['paymentmethod'] ?? null,
             'PayeeName'     => $data['payeename'] ?? null,
-            'payment_data'  => $json,  // store original json
+            'payment_data'  => $json,
         ];
 
         // Replace empty string → NULL
@@ -272,7 +284,41 @@ class CandidateDetailsController extends Controller
             }
         }
 
-        // Save
+        // ---------------------------------------------------
+        // 2. Detect changes BEFORE saving (same method as saveProfile)
+        // ---------------------------------------------------
+        $changes = [];
+        $fields = [
+            'Amount'        => 'Amount',
+            'PaymentDate'   => 'Payment Date',
+            'TranId'        => 'Transaction ID',
+            'TranRef'       => 'Transaction Ref',
+            'PaymentMethod' => 'Payment Method',
+            'PayeeName'     => 'Payee Name',
+        ];
+
+        foreach ($fields as $key => $label) {
+            $old = $original[$key] ?? '';
+            $new = $updateData[$key] ?? '';
+
+            if ($old !== $new) {
+                $changes[] = "[" . now()->format('Y-m-d H:i:s') . "] $label changed from '$old' to '$new'";
+            }
+        }
+
+        // ---------------------------------------------------
+        // 3. Append to profilechanges
+        // ---------------------------------------------------
+        if (!empty($changes)) {
+            $existingLog = $candidate->profilechanges ?? '';
+            $newLogEntry = implode("\n", $changes);
+
+            $candidate->profilechanges = trim($existingLog . "\n" . $newLogEntry);
+        }
+
+        // ---------------------------------------------------
+        // 4. Save (existing logic untouched)
+        // ---------------------------------------------------
         $candidate->update($updateData);
 
         return response()->json(['success' => true]);
