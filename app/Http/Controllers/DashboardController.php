@@ -61,19 +61,19 @@ class DashboardController extends Controller
         return view('notice.veiwdetails', compact('users', 'notifications'));
     }
 
-
     public function latestNotification()
     {
         $admin = Auth::user();
 
-        // Latest notification
+        // Fetch the latest **unread** notification
         $notification = Notification::with(['user', 'candidate'])
             ->where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
+            ->whereNull('read_at') // Only unread
             ->latest('id')
             ->first();
 
-        // Unread count (before update)
+        // Unread count
         $unreadCount = Notification::where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
             ->whereNull('read_at')
@@ -84,20 +84,6 @@ class DashboardController extends Controller
                 'status' => false,
                 'unread_count' => $unreadCount
             ]);
-        }
-
-        /**
-         * 🔥 IMPORTANT:
-         * If this notification is unread, mark it as read NOW
-         * so dropdown does not show repeatedly.
-         */
-        if (is_null($notification->read_at)) {
-            $notification->update([
-                'read_at' => now()
-            ]);
-
-            // After marking read → unread count becomes 0
-            $unreadCount = max(0, $unreadCount - 1);
         }
 
         // Prepare view HTML
@@ -119,6 +105,7 @@ class DashboardController extends Controller
             'unread_count' => $unreadCount
         ]);
     }
+
 
 
     public function markAllRead(Request $request)
