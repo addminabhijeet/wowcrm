@@ -66,14 +66,14 @@ class DashboardController extends Controller
     {
         $admin = Auth::user();
 
-        // Latest notification
+        // Latest notification for this admin
         $notification = Notification::with(['user', 'candidate'])
             ->where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
             ->latest('id')
             ->first();
 
-        // Unread count (before update)
+        // Count unread (read_at is null)
         $unreadCount = Notification::where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
             ->whereNull('read_at')
@@ -84,20 +84,6 @@ class DashboardController extends Controller
                 'status' => false,
                 'unread_count' => $unreadCount
             ]);
-        }
-
-        /**
-         * 🔥 IMPORTANT:
-         * If this notification is unread, mark it as read NOW
-         * so dropdown does not show repeatedly.
-         */
-        if (is_null($notification->read_at)) {
-            $notification->update([
-                'read_at' => now()
-            ]);
-
-            // After marking read → unread count becomes 0
-            $unreadCount = max(0, $unreadCount - 1);
         }
 
         // Prepare view HTML
@@ -116,10 +102,9 @@ class DashboardController extends Controller
             'html' => $html,
             'id' => $notification->id,
             'created_at' => $notification->created_at->timestamp,
-            'unread_count' => $unreadCount
+            'unread_count' => $unreadCount,
         ]);
     }
-
 
     public function markAllRead(Request $request)
     {
