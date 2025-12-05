@@ -718,7 +718,9 @@
                     // 🚀 ONLY show dropdown if BOTH are new:
                     // 1. ID changed
                     // 2. timestamp is newer
-                    if (lastNotificationId != latestId && lastNotificationTime != latestTime) {
+                    if (response.unread_count > 0 &&
+                        (lastNotificationId != latestId || lastNotificationTime != latestTime)) {
+
 
                         // Save ID + timestamp
                         localStorage.setItem("last_notification_id", latestId);
