@@ -136,7 +136,7 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniortra') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Transfers Call</a>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Transfered Call</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
@@ -151,7 +151,7 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorcon') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Confirmation Call</a>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Verification Call</a>
                         </li>
                     </ul>
                 </li>
