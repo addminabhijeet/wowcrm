@@ -12,19 +12,23 @@
 @section('content')
 
     <style>
-        #top-scroll-wrapper {
-            height: 30px;
-            /* IMPORTANT: gives space for scrollbar */
-            overflow-x: scroll;
-            overflow-y: hidden;
+        #top-scroll-wrapper::-webkit-scrollbar {
+            height: 8px;
+            /* scrollbar height */
         }
 
-        #top-scroll {
-            height: 1px;
-            /* invisible bar */
+        #top-scroll-wrapper::-webkit-scrollbar-track {
+            background: #00000033;
+            /* light black track */
+        }
+
+        #top-scroll-wrapper::-webkit-scrollbar-thumb {
             background: black;
+            /* black scrollbar thumb */
+            border-radius: 10px;
         }
     </style>
+
 
 
 
