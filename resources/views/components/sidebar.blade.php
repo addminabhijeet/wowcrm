@@ -60,7 +60,8 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.junior.candm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Called & Mailed</a></li>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Called & Mailed</a>
+                        </li>
                     </ul>
                 </li>
 
@@ -129,7 +130,8 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormod') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Modified Call</a>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Other
+                                Disposition</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
@@ -139,8 +141,8 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormodcandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Modified Called &
-                                Mailed</a></li>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Other
+                                Disposition C&M</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorpaid') }}"><i
