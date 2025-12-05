@@ -143,7 +143,7 @@ class DashboardController extends Controller
             'message' => 'Marked as read',
             'unread_count' => 0,
             'latest_id' => $latest->id ?? null,
-            'latest_time' => $latest->created_at ?? null
+            'latest_time' => $latest->created_at ? $latest->created_at->timestamp : null
         ]);
     }
 

@@ -773,8 +773,9 @@
                             localStorage.setItem("last_notification_id", json.latest_id);
                         }
                         if (json.latest_time) {
-                            localStorage.setItem("last_notification_time", json.latest_time);
+                            localStorage.setItem("last_notification_time", Number(json.latest_time));
                         }
+
                     }
                 });
         }
