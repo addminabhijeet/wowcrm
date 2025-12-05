@@ -767,6 +767,14 @@
                 .then(json => {
                     if (json.status) {
                         setBadge(0);
+
+                        // Save latest ID so popup NEVER reopens
+                        if (json.latest_id) {
+                            localStorage.setItem("last_notification_id", json.latest_id);
+                        }
+                        if (json.latest_time) {
+                            localStorage.setItem("last_notification_time", json.latest_time);
+                        }
                     }
                 });
         }

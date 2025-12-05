@@ -109,23 +109,28 @@ class DashboardController extends Controller
     public function markAllRead(Request $request)
     {
         $admin = Auth::user();
-
-        // Update read_at for all unread notifications for this admin
         $now = Carbon::now();
 
-        $affected = Notification::where('notifiable_id', $admin->id)
+        // Update unread notifications
+        Notification::where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
             ->whereNull('read_at')
             ->update(['read_at' => $now]);
 
+        // Get latest notification for this admin AFTER marking as read
+        $latest = Notification::where('notifiable_id', $admin->id)
+            ->where('notifiable_role', 'admin')
+            ->latest()
+            ->first();
+
         return response()->json([
             'status' => true,
             'message' => 'Marked as read',
-            'updated' => $affected,
             'unread_count' => 0,
+            'latest_id' => $latest->id ?? null,
+            'latest_time' => $latest->created_at ?? null
         ]);
     }
-
 
 
     public function junior()
