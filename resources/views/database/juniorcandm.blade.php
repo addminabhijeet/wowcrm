@@ -33,7 +33,14 @@
             </div>
         </div>
         <div class="card-body p-24">
-            <div class="table-responsive scroll-sm">
+            <!-- Extra Scroll Bar Above -->
+            <!-- Extra Scroll Bar Above -->
+            <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
+                <div id="top-scroll"></div>
+            </div>
+
+            <!-- Main Table Scroll -->
+            <div class="table-responsive scroll-sm" id="bottom-scroll-wrapper">
                 @if ($data->isEmpty())
                     <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
                 @else
