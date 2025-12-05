@@ -11,23 +11,7 @@
 
 @section('content')
 
-    <style>
-        #top-scroll-wrapper::-webkit-scrollbar {
-            height: 8px;
-            /* scrollbar height */
-        }
 
-        #top-scroll-wrapper::-webkit-scrollbar-track {
-            background: #00000033;
-            /* light black track */
-        }
-
-        #top-scroll-wrapper::-webkit-scrollbar-thumb {
-            background: black;
-            /* black scrollbar thumb */
-            border-radius: 10px;
-        }
-    </style>
 
 
 
