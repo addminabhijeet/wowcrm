@@ -20,7 +20,6 @@
                 @unless (in_array(auth()->user()->role, [
                         'admin',
                         'career',
-                        'associate',
                         'trainer',
                         'support',
                         'accountant',
