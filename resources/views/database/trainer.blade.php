@@ -298,7 +298,8 @@
                                             <a href="#" target="_blank"
                                                 class="btn btn-sm btn-primary viewpayment-btn d-none">View Payment</a>
                                             <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download Payment</a>
+                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download
+                                                Payment</a>
                                         @endif
                                     </td>
 
@@ -396,6 +397,17 @@
             color: #6c757d;
             display: block;
             margin-top: 2px;
+        }
+
+        #top-scroll-wrapper {
+            overflow-x: scroll;
+            overflow-y: hidden;
+            height: 20px;
+        }
+
+        #top-scroll {
+            height: 1px;
+            /* required */
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
@@ -749,7 +761,7 @@
                             'Did Not Connect', 'Others', 'Payment Completed', 'VM', 'Busy'
                         ];
                         if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
-                            'H4', 'H4 EAD', 'GC/PR','GC EAD', 'USC'
+                            'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC'
                         ];
                         if (k === 'Relocation') opts = ['YES', 'NO'];
                         if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
@@ -1345,7 +1357,7 @@
                 }
 
                 if (e.target.matches('.viewacceptance-btn') || e.target.matches(
-                    '.downloadacceptance-btn')) {
+                        '.downloadacceptance-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
@@ -1973,6 +1985,42 @@
                     }, 500); // 500ms debounce
                 }
             });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const topScrollWrapper = document.getElementById("top-scroll-wrapper");
+            const topScroll = document.getElementById("top-scroll");
+            const bottomScrollWrapper = document.getElementById("bottom-scroll-wrapper");
+
+            function updateTopScrollWidth() {
+                const table = bottomScrollWrapper.querySelector("table");
+                if (table) {
+                    topScroll.style.width = table.scrollWidth + "px";
+                }
+            }
+
+            // Sync: top → bottom
+            topScrollWrapper.addEventListener("scroll", function() {
+                bottomScrollWrapper.scrollLeft = topScrollWrapper.scrollLeft;
+            });
+
+            // Sync: bottom → top
+            bottomScrollWrapper.addEventListener("scroll", function() {
+                topScrollWrapper.scrollLeft = bottomScrollWrapper.scrollLeft;
+            });
+
+            // Resize after pagination or DOM update
+            const observer = new MutationObserver(updateTopScrollWidth);
+            observer.observe(bottomScrollWrapper, {
+                childList: true,
+                subtree: true
+            });
+
+            // Initial load
+            updateTopScrollWidth();
         });
     </script>
 

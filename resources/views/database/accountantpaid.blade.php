@@ -398,6 +398,17 @@
             display: block;
             margin-top: 2px;
         }
+
+        #top-scroll-wrapper {
+            overflow-x: scroll;
+            overflow-y: hidden;
+            height: 20px;
+        }
+
+        #top-scroll {
+            height: 1px;
+            /* required */
+        }
     </style>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -1974,6 +1985,42 @@
                     }, 500); // 500ms debounce
                 }
             });
+        });
+    </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const topScrollWrapper = document.getElementById("top-scroll-wrapper");
+            const topScroll = document.getElementById("top-scroll");
+            const bottomScrollWrapper = document.getElementById("bottom-scroll-wrapper");
+
+            function updateTopScrollWidth() {
+                const table = bottomScrollWrapper.querySelector("table");
+                if (table) {
+                    topScroll.style.width = table.scrollWidth + "px";
+                }
+            }
+
+            // Sync: top → bottom
+            topScrollWrapper.addEventListener("scroll", function() {
+                bottomScrollWrapper.scrollLeft = topScrollWrapper.scrollLeft;
+            });
+
+            // Sync: bottom → top
+            bottomScrollWrapper.addEventListener("scroll", function() {
+                topScrollWrapper.scrollLeft = bottomScrollWrapper.scrollLeft;
+            });
+
+            // Resize after pagination or DOM update
+            const observer = new MutationObserver(updateTopScrollWidth);
+            observer.observe(bottomScrollWrapper, {
+                childList: true,
+                subtree: true
+            });
+
+            // Initial load
+            updateTopScrollWidth();
         });
     </script>
 

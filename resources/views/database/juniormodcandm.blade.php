@@ -536,7 +536,7 @@
 
             function initDatePickers(context = document) {
                 const laravelToday =
-                "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
+                    "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
 
                 context.querySelectorAll('input.date-picker').forEach(input => {
                     const key = input.dataset.key;
@@ -593,12 +593,12 @@
                         const key = 'pk.e91481c6e5f0a93703159ae988e641a0';
                         $.getJSON(
                                 `https://us1.locationiq.com/v1/autocomplete.php?key=${key}&q=${encodeURIComponent(q)}&limit=5&dedupe=1&normalizecity=1&accept-language=en`
-                                )
+                            )
                             .done(function(results) {
                                 $('#loc-suggestions').remove();
                                 const $list = $(
                                     '<div id="loc-suggestions" class="list-group" style="position:absolute; z-index:9999; max-height:200px; overflow:auto;"></div>'
-                                    );
+                                );
 
                                 results.forEach(r => {
                                     const addr = r.address || {};
@@ -611,12 +611,12 @@
 
                                     const item = $(
                                         '<a href="#" class="list-group-item list-group-item-action"></a>'
-                                        ).text(display || r.display_name);
+                                    ).text(display || r.display_name);
                                     item.on('click', function(e) {
                                         e.preventDefault();
                                         $input.val(display || r.display_name);
                                         applyCss(display || r
-                                        .display_name); // Apply valid class
+                                            .display_name); // Apply valid class
                                         $input.css('background-color',
                                             '#d4edda'); // optional highlight
                                         $('#loc-suggestions').remove();
@@ -763,10 +763,10 @@
                     let rowData = {};
                     let remarkInput = row.querySelector(
                         'input[data-key="Remark"], select[data-key="Remark"], textarea[data-key="Remark"]'
-                        );
+                    );
                     let followUpInput = row.querySelector(
                         'input[data-key="1st Follow Up Remarks"], select[data-key="1st Follow Up Remarks"], textarea[data-key="1st Follow Up Remarks"]'
-                        );
+                    );
 
                     if (remarkInput) {
                         rowData["Remark"] = remarkInput.value;
@@ -1083,6 +1083,17 @@
             scrollbar-color: #666 #f1f1f1;
             /* thumb + track */
         }
+
+        #top-scroll-wrapper {
+            overflow-x: scroll;
+            overflow-y: hidden;
+            height: 20px;
+        }
+
+        #top-scroll {
+            height: 1px;
+            /* required */
+        }
     </style>
 
     <script>
@@ -1381,5 +1392,42 @@
             });
         });
     </script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const topScrollWrapper = document.getElementById("top-scroll-wrapper");
+            const topScroll = document.getElementById("top-scroll");
+            const bottomScrollWrapper = document.getElementById("bottom-scroll-wrapper");
+
+            function updateTopScrollWidth() {
+                const table = bottomScrollWrapper.querySelector("table");
+                if (table) {
+                    topScroll.style.width = table.scrollWidth + "px";
+                }
+            }
+
+            // Sync: top → bottom
+            topScrollWrapper.addEventListener("scroll", function() {
+                bottomScrollWrapper.scrollLeft = topScrollWrapper.scrollLeft;
+            });
+
+            // Sync: bottom → top
+            bottomScrollWrapper.addEventListener("scroll", function() {
+                topScrollWrapper.scrollLeft = bottomScrollWrapper.scrollLeft;
+            });
+
+            // Resize after pagination or DOM update
+            const observer = new MutationObserver(updateTopScrollWidth);
+            observer.observe(bottomScrollWrapper, {
+                childList: true,
+                subtree: true
+            });
+
+            // Initial load
+            updateTopScrollWidth();
+        });
+    </script>
+
 
 @endsection
