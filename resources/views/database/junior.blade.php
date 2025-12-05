@@ -13,17 +13,19 @@
 
     <style>
         #top-scroll-wrapper {
-            height: 16px;
-            overflow-x: auto;
+            height: 30px;
+            /* IMPORTANT: gives space for scrollbar */
+            overflow-x: scroll;
             overflow-y: hidden;
-            background: transparent;
         }
 
         #top-scroll {
             height: 1px;
+            /* invisible bar */
             background: transparent;
         }
     </style>
+
 
 
     <div class="card h-100 p-0 radius-12">
@@ -57,12 +59,12 @@
         <div class="card-body p-24">
             <!-- Extra Scroll Bar Above -->
             <!-- Extra Scroll Bar Above -->
-            <div class="table-responsive mb-2" id="top-scroll-wrapper">
+            <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
                 <div id="top-scroll"></div>
             </div>
 
             <!-- Main Table Scroll -->
-            <div class="table-responsive" id="bottom-scroll-wrapper">
+            <div class="table-responsive scroll-sm" id="bottom-scroll-wrapper">
 
 
                 @if ($data->isEmpty())
