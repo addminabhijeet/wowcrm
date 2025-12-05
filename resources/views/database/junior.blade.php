@@ -372,7 +372,7 @@
 
             const exeColors = {
                 'Called & Mailed': '#d4edda',
-                'Ready To Paid': '#d4edda',
+                'Ready To Pay': '#d4edda',
                 'Not Connected': '#f8d7da',
                 'Did Not Pickup': '#d4edda',
                 'Not Interested': '#f8d7da',

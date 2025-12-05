@@ -144,7 +144,7 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorpaid') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Paid</a>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Pay</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
@@ -220,7 +220,7 @@
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.accountantcon') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Paid</a>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Pay</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">

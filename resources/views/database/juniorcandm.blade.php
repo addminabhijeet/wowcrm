@@ -179,7 +179,7 @@ $script ='<script>
                         {{-- Exe Remarks --}}
                         <td>
                             @php
-                            $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Paid','VM','Busy'];
+                            $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy'];
                             @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
                                 <option value="">-- Exe Remarks --</option>
@@ -315,7 +315,7 @@ $script ='<script>
 
         const exeColors = {
             'Called & Mailed': '#d4edda',
-            'Ready To Paid': '#d4edda',
+            'Ready To Pay': '#d4edda',
             'Not Connected': '#f8d7da',
             'Did Not Pickup': '#d4edda',
             'Not Interested': '#f8d7da',

@@ -34,9 +34,9 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
-        // Total "Ready To Paid" calls
+        // Total "Ready To Pay" calls
         $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
         // Total other calls (excluding Called & Mailed)
@@ -60,12 +60,12 @@ class CallReportController extends Controller
         // Selected date totals
         $StotalCalls = $tquery->count();
         $ScalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
-        $SreadyToPaidCalls = (clone $tquery)->where('Exe_Remarks', 'Ready To Paid')->count();
+        $SreadyToPaidCalls = (clone $tquery)->where('Exe_Remarks', 'Ready To Pay')->count();
         $SotherCalls = (clone $tquery)
             ->where(function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
-                        ->where('Exe_Remarks', '<>', 'Ready To Paid');
+                        ->where('Exe_Remarks', '<>', 'Ready To Pay');
                 })
                     ->orWhereNull('Exe_Remarks');
             })
@@ -82,11 +82,11 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Hour-wise "Ready To Paid" counts
+        // Hour-wise "Ready To Pay" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereDate('created_at', $selectedDate)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -98,7 +98,7 @@ class CallReportController extends Controller
             ->where(function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
-                        ->where('Exe_Remarks', '<>', 'Ready To Paid');
+                        ->where('Exe_Remarks', '<>', 'Ready To Pay');
                 })
                     ->orWhereNull('Exe_Remarks');
             })
@@ -208,12 +208,12 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+            ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
             ->count();
 
-        // Total "Ready To Paid" calls
+        // Total "Ready To Pay" calls
         $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
         // Total other calls (excluding Called & Mailed)
@@ -241,19 +241,19 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
-        // Total "Ready To Paid" calls
+        // Total "Ready To Pay" calls
         $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
-        // Total other calls (not "Called & Mailed" or "Ready To Paid")
+        // Total other calls (not "Called & Mailed" or "Ready To Pay")
         $MotherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
-                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
                     ->orWhereNull('Exe_Remarks');
             })
             ->count();
@@ -269,12 +269,12 @@ class CallReportController extends Controller
             ->pluck('count', 'day')
             ->toArray();
 
-        // Daily "Ready To Paid" counts
+        // Daily "Ready To Pay" counts
         $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -285,7 +285,7 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
-                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
                     ->orWhereNull('Exe_Remarks');
             })
             ->groupBy('day')
@@ -434,7 +434,7 @@ class CallReportController extends Controller
         $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
@@ -618,7 +618,7 @@ class CallReportController extends Controller
             'oDay30',
             'oDay31',
 
-            // --- Ready To Paid daily ---
+            // --- Ready To Pay daily ---
             'rDay1',
             'rDay2',
             'rDay3',
@@ -716,7 +716,7 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls for this junior
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
             ->count();
 
 
@@ -1002,15 +1002,15 @@ class CallReportController extends Controller
         // Total calls for this junior (including hierarchical keys)
         $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
 
-        // Total "Ready To Paid" calls for this junior
+        // Total "Ready To Pay" calls for this junior
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
         // Total other calls for this junior
         $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '<>', 'Ready To Paid')
+                $q->where('Exe_Remarks', '<>', 'Ready To Pay')
                     ->orWhereNull('Exe_Remarks');
             })
             ->count();
@@ -1035,22 +1035,22 @@ class CallReportController extends Controller
         $StotalCalls = $query->count();
 
         $ScalledAndMailedCalls = (clone $query)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
         $SotherCalls = (clone $query)
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '<>', 'Ready To Paid')
+                $q->where('Exe_Remarks', '<>', 'Ready To Pay')
                     ->orWhereNull('Exe_Remarks');
             })
             ->count();
 
 
-        // Hour-wise "Ready To Paid" counts
+        // Hour-wise "Ready To Pay" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -1059,7 +1059,7 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '<>', 'Ready To Paid')
+                $q->where('Exe_Remarks', '<>', 'Ready To Pay')
                     ->orWhereNull('Exe_Remarks');
             })
             ->groupBy('hour')
@@ -1146,12 +1146,12 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+            ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
             ->count();
 
-        // Total "Ready To Paid" calls
+        // Total "Ready To Pay" calls
         $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
         // Total other calls (excluding Called & Mailed)
@@ -1175,12 +1175,12 @@ class CallReportController extends Controller
         // Selected date totals
         $StotalCalls = $tquery->count();
         $ScalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
-        $SreadyToPaidCalls = (clone $tquery)->where('Exe_Remarks', 'Ready To Paid')->count();
+        $SreadyToPaidCalls = (clone $tquery)->where('Exe_Remarks', 'Ready To Pay')->count();
         $SotherCalls = (clone $tquery)
             ->where(function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
-                        ->where('Exe_Remarks', '<>', 'Ready To Paid');
+                        ->where('Exe_Remarks', '<>', 'Ready To Pay');
                 })
                     ->orWhereNull('Exe_Remarks');
             })
@@ -1197,11 +1197,11 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Hour-wise "Ready To Paid" counts
+        // Hour-wise "Ready To Pay" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -1213,7 +1213,7 @@ class CallReportController extends Controller
             ->where(function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
-                        ->where('Exe_Remarks', '<>', 'Ready To Paid');
+                        ->where('Exe_Remarks', '<>', 'Ready To Pay');
                 })
                     ->orWhereNull('Exe_Remarks');
             })
@@ -1354,7 +1354,7 @@ class CallReportController extends Controller
             })
             ->count();
 
-        // --- Daily "Called & Mailed + Ready To Paid" counts ---
+        // --- Daily "Called & Mailed + Ready To Pay" counts ---
         $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
@@ -1527,7 +1527,7 @@ class CallReportController extends Controller
         $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
@@ -1764,30 +1764,30 @@ class CallReportController extends Controller
             ->whereMonth('updated_at', $month)
             ->count();
 
-        // Total "Ready To Paid" calls
+        // Total "Ready To Pay" calls
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
-        // Total other calls (not "Ready To Paid")
+        // Total other calls (not "Ready To Pay")
         $MotherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '<>', 'Ready To Paid')
+                $q->where('Exe_Remarks', '<>', 'Ready To Pay')
                     ->orWhereNull('Exe_Remarks');
             })
             ->count();
 
 
-        // Hour-wise "Ready To Paid" counts
+        // Hour-wise "Ready To Pay" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -1798,7 +1798,7 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '<>', 'Ready To Paid')
+                $q->where('Exe_Remarks', '<>', 'Ready To Pay')
                     ->orWhereNull('Exe_Remarks');
             })
             ->groupBy('hour')
@@ -1997,12 +1997,12 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+            ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
             ->count();
 
-        // Total "Ready To Paid" calls
+        // Total "Ready To Pay" calls
         $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
         // Total other calls (excluding Called & Mailed)
@@ -2030,19 +2030,19 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
-        // Total "Ready To Paid" calls
+        // Total "Ready To Pay" calls
         $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
-        // Total other calls (not "Called & Mailed" or "Ready To Paid")
+        // Total other calls (not "Called & Mailed" or "Ready To Pay")
         $MotherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
-                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
                     ->orWhereNull('Exe_Remarks');
             })
             ->count();
@@ -2058,12 +2058,12 @@ class CallReportController extends Controller
             ->pluck('count', 'day')
             ->toArray();
 
-        // Daily "Ready To Paid" counts
+        // Daily "Ready To Pay" counts
         $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -2074,7 +2074,7 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
-                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
                     ->orWhereNull('Exe_Remarks');
             })
             ->groupBy('day')
@@ -2223,7 +2223,7 @@ class CallReportController extends Controller
         $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
@@ -2407,7 +2407,7 @@ class CallReportController extends Controller
             'oDay30',
             'oDay31',
 
-            // --- Ready To Paid daily ---
+            // --- Ready To Pay daily ---
             'rDay1',
             'rDay2',
             'rDay3',
@@ -2467,7 +2467,7 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls for this junior
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Paid'])
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
             ->count();
 
         // Total other calls for this junior
@@ -2633,7 +2633,7 @@ class CallReportController extends Controller
             })
             ->count();
 
-        // --- Daily "Called & Mailed + Ready To Paid" counts ---
+        // --- Daily "Called & Mailed + Ready To Pay" counts ---
         $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
@@ -2808,7 +2808,7 @@ class CallReportController extends Controller
         $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Paid')
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);

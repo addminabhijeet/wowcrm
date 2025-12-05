@@ -1809,7 +1809,7 @@ class GoogleSheetController extends Controller
         if (isset($rowData['Exe Remarks'])) {
             $exeRemark = $rowData['Exe Remarks'];
 
-            if ($exeRemark === 'Ready To Paid') {
+            if ($exeRemark === 'Ready To Pay') {
                 $authUser = Auth::user();
 
                 // Replace "0|senior" with "auth_id|senior:0|accountant"
@@ -2128,7 +2128,7 @@ class GoogleSheetController extends Controller
         if (isset($rowData['Exe Remarks'])) {
             $exeRemark = $rowData['Exe Remarks'];
 
-            if ($exeRemark === 'Ready To Paid') {
+            if ($exeRemark === 'Ready To Pay') {
                 $authUser = Auth::user();
 
                 // Ensure ":0|accountant" exists at the end if missing
@@ -2771,7 +2771,7 @@ class GoogleSheetController extends Controller
         // Set created_by conditionally based on Exe_Remarks
         if ($exeRemarksValue === 'Called & Mailed') {
             $record->created_by = $user->id . '|senior:0|senior';
-        } elseif ($exeRemarksValue === 'Ready To Paid') {
+        } elseif ($exeRemarksValue === 'Ready To Pay') {
             $record->created_by = $user->id . '|senior:0|accountant';
         } else {
             $record->created_by = $user->id . '|senior';
@@ -3049,7 +3049,7 @@ class GoogleSheetController extends Controller
         // Set created_by conditionally based on Exe_Remarks
         if ($exeRemarksValue === 'Called & Mailed') {
             $record->created_by = $user->id . '|senior:0|senior';
-        } elseif ($exeRemarksValue === 'Ready To Paid') {
+        } elseif ($exeRemarksValue === 'Ready To Pay') {
             $record->created_by = $user->id . '|senior:0|accountant';
         } else {
             $record->created_by = $user->id . '|senior';
@@ -5892,7 +5892,7 @@ class GoogleSheetController extends Controller
                 if (strpos($updateData['created_by'], ':0|senior') === false) {
                     $updateData['created_by'] .= ':0|senior';
                 }
-            } elseif ($exeRemark === 'Ready To Paid') {
+            } elseif ($exeRemark === 'Ready To Pay') {
 
                 $tag = $id . '|accountant';
                 $zerotag = '0|accountant';
@@ -6466,7 +6466,7 @@ class GoogleSheetController extends Controller
         }
 
         // Set created_by conditionally based on Exe_Remarks
-        if ($exeRemarksValue === 'Ready To Paid') {
+        if ($exeRemarksValue === 'Ready To Pay') {
             $record->created_by = $user->id . '|accountant:0|accountant';
         } elseif ($exeRemarksValue === 'Payment Completed') {
             $record->created_by = $user->id . '|accountant:0|trainer';
@@ -6510,8 +6510,8 @@ class GoogleSheetController extends Controller
 
         // --- Email logic ---
         $mailMessage = 'No email sent.';
-        // --- Send Email if Exe_Remarks is "Ready To Paid" ---
-        if ($exeRemarksValue === 'Ready To Paid' && !empty($email)) {
+        // --- Send Email if Exe_Remarks is "Ready To Pay" ---
+        if ($exeRemarksValue === 'Ready To Pay' && !empty($email)) {
             try {
                 $smtp = SmtpSetting::where('user_id', $user->id)->first();
                 if (!$smtp) {
@@ -7317,7 +7317,7 @@ class GoogleSheetController extends Controller
         }
 
         // Set created_by conditionally based on Exe_Remarks
-        if ($exeRemarksValue === 'Ready To Paid') {
+        if ($exeRemarksValue === 'Ready To Pay') {
             $record->created_by = $user->id . '|trainer:0|trainer';
         } elseif ($exeRemarksValue === 'Payment Completed') {
             $record->created_by = $user->id . '|trainer:0|completed';
@@ -7361,8 +7361,8 @@ class GoogleSheetController extends Controller
 
         // --- Email logic ---
         $mailMessage = 'No email sent.';
-        // --- Send Email if Exe_Remarks is "Ready To Paid" ---
-        if ($exeRemarksValue === 'Ready To Paid' && !empty($email)) {
+        // --- Send Email if Exe_Remarks is "Ready To Pay" ---
+        if ($exeRemarksValue === 'Ready To Pay' && !empty($email)) {
             try {
                 $smtp = SmtpSetting::where('user_id', $user->id)->first();
                 if (!$smtp) {

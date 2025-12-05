@@ -457,7 +457,7 @@
             const tableBody = document.getElementById("sheet-table-body");
 
             const exeColors = {
-                'Ready To Paid': '#d4edda',
+                'Ready To Pay': '#d4edda',
                 'Payment Completed': '#d4edda',
                 'Not Connected': '#f8d7da',
                 'Did Not Pickup': '#d4edda',
@@ -797,7 +797,7 @@
                             'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
                             'Aerospace Proj. Manag.'
                         ];
-                        if (k === 'Exe Remarks') opts = ['Ready To Paid', 'Not Interested', 'Not Connected',
+                        if (k === 'Exe Remarks') opts = ['Ready To Pay', 'Not Interested', 'Not Connected',
                             'Did Not Connect', 'Others', 'Payment Completed', 'VM', 'Busy'
                         ];
                         if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',

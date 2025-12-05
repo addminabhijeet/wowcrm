@@ -611,7 +611,7 @@
                                     <i class="bi bi-cash-stack"></i>
                                 </div>
                                 <div>
-                                    <small class="fw-bold d-block">Ready To Paid</small>
+                                    <small class="fw-bold d-block">Ready To Pay</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MreadyToPaidCalls }}</h4>
                                 </div>
                             </div>
@@ -644,7 +644,7 @@
                                             <th class="fw-bold">Date</th>
                                             <th class="fw-bold text-center">Called & Mailed</th>
                                             <th class="fw-bold text-center">Other Call</th>
-                                            <th class="fw-bold text-center">Ready To Paid</th>
+                                            <th class="fw-bold text-center">Ready To Pay</th>
                                             <!-- Replaces Transfers -->
                                         </tr>
                                     </thead>
@@ -807,7 +807,7 @@
                                             <th class="fw-bold">Date</th>
                                             <th class="fw-bold text-center">Called & Mailed</th>
                                             <th class="fw-bold text-center">Other Call</th>
-                                            <th class="fw-bold text-center">Ready To Paid</th>
+                                            <th class="fw-bold text-center">Ready To Pay</th>
                                             <!-- Replaces Transfers -->
                                         </tr>
                                     </thead>
@@ -990,7 +990,7 @@
 
                         <div class="d-flex align-items-center gap-1 justify-content-between">
                             <div>
-                                <span class="text-secondary-light fw-bold mb-12 text-xl">Ready To Paid Calls</span>
+                                <span class="text-secondary-light fw-bold mb-12 text-xl">Ready To Pay Calls</span>
                                 <h5 class="fw-semibold mb-0">{{ $readyToPaidCalls }}</h5>
                             </div>
                             <div id="iconBarChartR2p"></div>

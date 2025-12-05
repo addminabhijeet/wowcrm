@@ -564,7 +564,7 @@ $script = '<script>
                                 <i class="bi bi-envelope-paper-fill"></i>
                             </div>
                             <div>
-                                <small class="text-muted d-block">Ready To Paid Calls (R2P)</small>
+                                <small class="text-muted d-block">Ready To Pay Calls (R2P)</small>
                                 <h4 class="fw-bold text-dark mb-0">{{ $SreadyToPaidCalls }}</h4>
                             </div>
                         </div>
@@ -578,7 +578,7 @@ $script = '<script>
                             <tr>
                                 <th class="fw-semibold">⏰ Time Range</th>
                                 <th class="fw-semibold text-center">📊 Called & Mailed Count</th>
-                                <th class="fw-semibold text-center">📊 Ready To Paid Count</th>
+                                <th class="fw-semibold text-center">📊 Ready To Pay Count</th>
                                 <th class="fw-semibold text-center">📊 Other Call Count</th>
                             </tr>
                         </thead>
@@ -702,10 +702,10 @@ $script = '<script>
                         <div id="iconBarChartCmc" class="p-2"></div>
                     </div>
 
-                    <!-- Ready To Paid Calls -->
+                    <!-- Ready To Pay Calls -->
                     <div class="d-flex align-items-center justify-content-between p-3 border rounded-3 shadow-sm bg-white">
                         <div>
-                            <span class="text-secondary fw-normal d-block mb-1">Ready To Paid Calls (R2P)</span>
+                            <span class="text-secondary fw-normal d-block mb-1">Ready To Pay Calls (R2P)</span>
                             <h5 class="fw-semibold mb-0">{{ $readyToPaidCalls }}</h5>
                         </div>
                         <div id="iconBarChartR2p" class="p-2"></div>

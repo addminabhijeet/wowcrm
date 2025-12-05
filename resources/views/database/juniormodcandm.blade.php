@@ -178,7 +178,7 @@ $script ='<script>
                         {{-- Exe Remarks --}}
                         <td>
                             @php
-                            $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Paid','VM','Busy'];
+                            $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy'];
                             @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
                                 <option value="">-- Exe Remarks --</option>
@@ -316,12 +316,12 @@ $script ='<script>
 
         const exeColors = {
             'Called & Mailed': '#d4edda',
-            'Ready To Paid': '#d4edda',
+            'Ready To Pay': '#d4edda',
             'Not Connected': '#f8d7da',
             'Did Not Pickup': '#d4edda',
             'Not Interested': '#f8d7da',
             'Others': '#d1ecf1',
-            'Ready To Paid': '#e2e3e5',
+            'Ready To Pay': '#e2e3e5',
             'VM': '#fff3cd',
             'Busy': '#cce5ff'
         };
@@ -638,7 +638,7 @@ $script ='<script>
         //         if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
         //             let opts = [];
         //             if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
-        //             if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'Ready To Paid', 'VM', 'Busy'];
+        //             if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'Ready To Pay', 'VM', 'Busy'];
         //             if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR','GC EAD', 'USC'];
         //             if (k === 'Relocation') opts = ['YES', 'NO'];
         //             if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];

@@ -122,7 +122,7 @@ $script ='<script>
 
                         {{-- Exe Remarks --}}
                         <td>
-                            @php $exeOptions = ['Ready To Paid','Payment Completed']; @endphp
+                            @php $exeOptions = ['Ready To Pay','Payment Completed']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                 <option value="">-- Select --</option>
                                 @foreach($exeOptions as $option)
@@ -229,7 +229,7 @@ $script ='<script>
         const tableBody = document.getElementById("sheet-table-body");
 
         const exeColors = {
-            'Ready To Paid': '#d4edda',
+            'Ready To Pay': '#d4edda',
             'Payment Completed': '#d4edda',
             'Not Connected': '#f8d7da',
             'Did Not Pickup': '#d4edda',
@@ -552,7 +552,7 @@ $script ='<script>
                 if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course', 'Time Zone', 'Qualification'].includes(k)) {
                     let opts = [];
                     if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors', 'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree', 'Aerospace Proj. Manag.'];
-                    if (k === 'Exe Remarks') opts = ['Ready To Paid', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'Payment Completed', 'VM', 'Busy'];
+                    if (k === 'Exe Remarks') opts = ['Ready To Pay', 'Not Interested', 'Not Connected', 'Did Not Connect', 'Others', 'Payment Completed', 'VM', 'Busy'];
                     if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR','GC EAD', 'USC'];
                     if (k === 'Relocation') opts = ['YES', 'NO'];
                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"];

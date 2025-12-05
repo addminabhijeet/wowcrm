@@ -138,7 +138,7 @@
 
                 {{-- Exe Remarks --}}
                 <td>
-                    @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Paid','VM','Busy']; @endphp
+                    @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy']; @endphp
                     <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                         <option value="">-- Exe Remarks --</option>
                         @foreach($exeOptions as $option)
