@@ -22,7 +22,7 @@
         #top-scroll {
             height: 1px;
             /* invisible bar */
-            background: transparent;
+            background: black;
         }
     </style>
 
