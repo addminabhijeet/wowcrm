@@ -1083,6 +1083,43 @@
         });
     </script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const topScrollWrapper = document.getElementById("top-scroll-wrapper");
+            const topScroll = document.getElementById("top-scroll");
+            const bottomScrollWrapper = document.getElementById("bottom-scroll-wrapper");
+
+            function updateTopScrollWidth() {
+                const table = bottomScrollWrapper.querySelector("table");
+                if (table) {
+                    topScroll.style.width = table.scrollWidth + "px";
+                }
+            }
+
+            // Sync: top → bottom
+            topScrollWrapper.addEventListener("scroll", function() {
+                bottomScrollWrapper.scrollLeft = topScrollWrapper.scrollLeft;
+            });
+
+            // Sync: bottom → top
+            bottomScrollWrapper.addEventListener("scroll", function() {
+                topScrollWrapper.scrollLeft = bottomScrollWrapper.scrollLeft;
+            });
+
+            // Resize after pagination or DOM update
+            const observer = new MutationObserver(updateTopScrollWidth);
+            observer.observe(bottomScrollWrapper, {
+                childList: true,
+                subtree: true
+            });
+
+            // Initial load
+            updateTopScrollWidth();
+        });
+    </script>
+
+
     <style>
         .scroll-sm {
             overflow-x: scroll;
@@ -1125,6 +1162,17 @@
             /* thicker style */
             scrollbar-color: #666 #f1f1f1;
             /* thumb + track */
+        }
+
+        #top-scroll-wrapper {
+            overflow-x: scroll;
+            overflow-y: hidden;
+            height: 20px;
+        }
+
+        #top-scroll {
+            height: 1px;
+            /* required */
         }
     </style>
 
