@@ -45,8 +45,15 @@
             </div>
         </div>
 
-        <div class="card-body p-24" id="senior-table-wrapper">
-            <div class="table-responsive scroll-sm">
+        <div class="card-body p-24">
+            <!-- Extra Scroll Bar Above -->
+            <!-- Extra Scroll Bar Above -->
+            <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
+                <div id="top-scroll"></div>
+            </div>
+
+            <!-- Main Table Scroll -->
+            <div class="table-responsive scroll-sm" id="bottom-scroll-wrapper">
                 @if ($data->isEmpty())
                     <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
                 @else
@@ -302,7 +309,8 @@
                                             <a href="#" target="_blank"
                                                 class="btn btn-sm btn-primary viewpayment-btn d-none">View Payment</a>
                                             <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download Payment</a>
+                                                class="btn btn-sm btn-secondary downloadpayment-btn d-none">Download
+                                                Payment</a>
                                         @endif
                                     </td>
 
@@ -753,7 +761,7 @@
                             'Did Not Connect', 'Others', 'Payment Completed', 'VM', 'Busy'
                         ];
                         if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
-                            'H4', 'H4 EAD', 'GC/PR','GC EAD', 'USC'
+                            'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC'
                         ];
                         if (k === 'Relocation') opts = ['YES', 'NO'];
                         if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
@@ -1349,7 +1357,7 @@
                 }
 
                 if (e.target.matches('.viewacceptance-btn') || e.target.matches(
-                    '.downloadacceptance-btn')) {
+                        '.downloadacceptance-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
