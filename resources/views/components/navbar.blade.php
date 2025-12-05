@@ -755,7 +755,7 @@
         }
 
 
-        function markAllAsRead() {
+        function markAllRead() {
             fetch("{{ route('admin.notifications.markallread') }}", {
                     method: "POST",
                     credentials: "same-origin",
@@ -786,14 +786,14 @@
         // Mark on dropdown open
         if (dropdownBtn) {
             dropdownBtn.addEventListener("show.bs.dropdown", () => {
-                setTimeout(() => markAllAsRead(), 300);
+                setTimeout(() => markAllRead(), 300);
             });
         }
 
         if (markAllBtn) {
             markAllBtn.addEventListener("click", (e) => {
                 e.preventDefault();
-                markAllAsRead();
+                markAllRead();
             });
         }
 
