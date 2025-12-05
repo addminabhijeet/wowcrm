@@ -737,7 +737,7 @@
                         dropdown.show();
 
                         if (dropdownTimer) clearTimeout(dropdownTimer);
-                        dropdownTimer = setTimeout(() => dropdown.hide(), 30000);
+                        dropdownTimer = setTimeout(() => dropdown.hide(), 8000);
 
                         return;
                     }
