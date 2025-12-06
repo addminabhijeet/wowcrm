@@ -65,19 +65,18 @@ class DashboardController extends Controller
     {
         $admin = Auth::user();
 
-        // Fetch the latest **unread** notification
-        $notification = Notification::with(['user', 'candidate'])
-            ->where('notifiable_id', $admin->id)
-            ->where('notifiable_role', 'admin')
-            ->whereNull('read_at') // Only unread
-            ->latest('id')
-            ->first();
-
-        // Unread count
+        // unread count should stay as is
         $unreadCount = Notification::where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
             ->whereNull('read_at')
             ->count();
+
+        // FIX: Fetch latest notification, NOT only unread
+        $notification = Notification::with(['user', 'candidate'])
+            ->where('notifiable_id', $admin->id)
+            ->where('notifiable_role', 'admin')
+            ->latest('id')
+            ->first();
 
         if (!$notification) {
             return response()->json([
@@ -86,7 +85,7 @@ class DashboardController extends Controller
             ]);
         }
 
-        // Prepare view HTML
+        // Prepare the HTML
         $html = view('notice.partials.single-notification', [
             'msg' => $notification->data,
             'userName' => $notification->user->name ?? 'Unknown User',
@@ -105,6 +104,7 @@ class DashboardController extends Controller
             'unread_count' => $unreadCount
         ]);
     }
+
 
 
 
