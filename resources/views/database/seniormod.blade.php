@@ -67,7 +67,7 @@
                     <table class="table bordered-table sm-table mb-0">
                         <thead>
                             <tr>
-                                <th scope="col">Row #</th>
+                                <th scope="col">Row</th>
                                 <th scope="col">Date</th>
                                 <th scope="col">Name</th>
                                 <th scope="col">Email Address</th>

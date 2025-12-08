@@ -56,21 +56,21 @@
                     <table class="table bordered-table sm-table mb-0">
                         <thead>
                             <tr>
-                                <th scope="col">Row #</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email Address</th>
-                                <th scope="col">Phone Number</th>
-                                <th scope="col">Location</th>
+                                <th scope="col" class="text-center">Row</th>
+                                <th scope="col" class="text-center">Date</th>
+                                <th scope="col" class="text-center">Name</th>
+                                <th scope="col" class="text-center">Email Address</th>
+                                <th scope="col" class="text-center">Phone Number</th>
+                                <th scope="col" class="text-center">Location</th>
 
-                                <th scope="col">Amount</th>
-                                <th scope="col">Qualification</th>
+                                <th scope="col" class="text-center">Amount</th>
+                                <th scope="col" class="text-center">Qualification</th>
 
-                                <th scope="col">Forwarded By</th>
-                                <th scope="col">View Resume</th>
-                                <th scope="col">Update Resume</th>
-                                <th scope="col">Remark</th>
-                                <th scope="col">Status</th>
+                                <th scope="col" class="text-center">Forwarded By</th>
+                                <th scope="col" class="text-center">View Resume</th>
+                                <th scope="col" class="text-center">Update Resume</th>
+                                <th scope="col" class="text-center">Remark</th>
+                                <th scope="col" class="text-center">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
                         </thead>
