@@ -1,7 +1,14 @@
 @extends('layout.layout')
 @php
     $title = 'Users Grid';
-    $subTitle = 'Database';
+    $role = auth()->user()->role ?? '';
+    if ($role === 'admin') {
+        $subTitle = 'Super Admin';
+    } elseif ($role === 'operation') {
+        $subTitle = 'Operation Manager';
+    } else {
+        $subTitle = 'role';
+    }
     $script = '<script>
         $(".remove-item-btn").on("click", function() {
             $(this).closest("tr").addClass("d-none")
@@ -78,7 +85,7 @@
                                 <th scope="col">Time Zone</th>
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">View</th>
-                                 <th scope="col">Status</th>
+                                <th scope="col">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
                         </thead>

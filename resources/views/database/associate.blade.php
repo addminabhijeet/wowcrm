@@ -2,7 +2,14 @@
 
 @php
     $title = 'Database -> Candidate Details';
-    $subTitle = 'Senior Support Associate';
+    $role = auth()->user()->role ?? '';
+    if ($role === 'admin') {
+        $subTitle = 'Super Admin';
+    } elseif ($role === 'operation') {
+        $subTitle = 'Operation Manager';
+    } else {
+        $subTitle = 'role';
+    }
     $script = '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 @endphp
 
