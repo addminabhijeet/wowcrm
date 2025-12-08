@@ -90,7 +90,11 @@
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">View</th>
                                 <th scope="col">Status</th>
-                                <th scope="col" class="text-center">Actions</th>
+                                @auth
+                                    @if (auth()->user()->role !== 'operation')
+                                        <th scope="col" class="text-center">Actions</th>
+                                    @endif
+                                @endauth
                             </tr>
                         </thead>
                         <tbody id="sheet-table-body">
@@ -352,11 +356,16 @@
                                         @endif
                                     </td>
 
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
-                                            <i class="fas fa-save"></i> Save
-                                        </button>
-                                    </td>
+                                    @auth
+                                        @if (auth()->user()->role !== 'operation')
+                                            <td class="text-center">
+                                                <button class="btn btn-sm btn-success save-btn"
+                                                    data-id="{{ $row->id }}">
+                                                    <i class="fas fa-save"></i> Save
+                                                </button>
+                                            </td>
+                                        @endif
+                                    @endauth
                                 </tr>
                             @endforeach
                         </tbody>
