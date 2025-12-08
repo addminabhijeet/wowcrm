@@ -118,7 +118,7 @@ class DashboardController extends Controller
         Notification::where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
             ->whereNull('read_at')
-            ->update(['read_at' => now()]);
+            ->update(['read_at' => now(),'updated_at' => now()]);
 
         // First, try to fetch latest UNREAD (there will be none right after update)
         $latestUnread = Notification::where('notifiable_id', $admin->id)
