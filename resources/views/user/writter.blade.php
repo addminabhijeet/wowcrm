@@ -2,7 +2,13 @@
 
 @php
 $title='Users -> Resume Writter';
-$subTitle = 'Super Admin';
+if($role === 'admin'){
+    $subTitle = 'Super Admin';
+} elseif ($role === 'operation') {
+    $subTitle = 'Operation Manager';
+} else{
+    $subTitle = 'role';
+}
 $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 @endphp
 

@@ -1,7 +1,13 @@
 @extends('layout.layout')
 @php
 $title='View US Accounts';
-$subTitle = 'Super Admin';
+if($role === 'admin'){
+    $subTitle = 'Super Admin';
+} elseif ($role === 'operation') {
+    $subTitle = 'Operation Manager';
+} else{
+    $subTitle = 'role';
+}
 $script ='<script>
     // ======================== Upload Image Start =====================
     function readURL(input) {

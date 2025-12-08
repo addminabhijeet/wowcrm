@@ -1,7 +1,13 @@
 @extends('layout.layout')
 @php
 $title='Add User';
-$subTitle = 'Super Admin';
+if($role === 'admin'){
+    $subTitle = 'Super Admin';
+} elseif ($role === 'operation') {
+    $subTitle = 'Operation Manager';
+} else{
+    $subTitle = 'role';
+}
 $script = '<script>
     // ================== Image Upload Js Start ===========================
     function readURL(input) {
@@ -78,7 +84,7 @@ $script = '<script>
                                 <select name="designation" id="designation" class="form-control radius-8 form-select" required>
                                     <option value="">Select Designation</option>
                                     <option value="Candidate">Candidate</option>
-                                   
+
                                 </select>
                             </div>
 
@@ -116,7 +122,7 @@ $script = '<script>
                             </div>
 
                             <div class="d-flex align-items-center justify-content-center gap-3">
-            
+
                                 <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
                                     Save
                                 </button>

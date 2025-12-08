@@ -1,7 +1,13 @@
 @extends('layout.layout')
 @php
 $title='Add Resume Writter';
-$subTitle = 'Super Admin';
+if($role === 'admin'){
+    $subTitle = 'Super Admin';
+} elseif ($role === 'operation') {
+    $subTitle = 'Operation Manager';
+} else{
+    $subTitle = 'role';
+}
 $script = '<script>
     // ================== Image Upload Js Start ===========================
     function readURL(input) {
@@ -77,7 +83,7 @@ $script = '<script>
                                 </label>
                                 <select name="designation" id="designation" class="form-control radius-8 form-select" required>
                                     <option value="">Select Designation</option>
-                                    
+
                                     <option value="Caller">Caller</option>
                                 </select>
                             </div>
