@@ -114,35 +114,30 @@ class DashboardController extends Controller
     {
         $admin = Auth::user();
 
-        // Mark unread notifications as read
+        // Mark all unread notifications as read
         Notification::where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
             ->whereNull('read_at')
-            ->update(['read_at' => now(),'updated_at' => now()]);
+            ->update([
+                'read_at' => now(),
+                'updated_at' => now()
+            ]);
 
-        // First, try to fetch latest UNREAD (there will be none right after update)
-        $latestUnread = Notification::where('notifiable_id', $admin->id)
+        // Get the latest notification to store its ID/time
+        $latest = Notification::where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
-            ->whereNull('read_at')
-            ->latest()
+            ->latest('updated_at') // or 'created_at'
             ->first();
-
-        // If no unread exists → get latest READ so frontend stores a timestamp
-        $latestAny = Notification::where('notifiable_id', $admin->id)
-            ->where('notifiable_role', 'admin')
-            ->latest()
-            ->first();
-
-        $latest = $latestUnread ?: $latestAny;
 
         return response()->json([
             'status' => true,
-            'message' => 'Marked as read',
+            'message' => 'Marked all as read',
             'unread_count' => 0,
             'latest_id' => $latest->id ?? null,
             'latest_time' => $latest?->created_at?->timestamp
         ]);
     }
+
 
 
 

@@ -757,7 +757,7 @@
 
         function markAllRead() {
             fetch("{{ route('admin.notifications.markallread') }}", {
-                    method: "POST",
+                    method: "PUT", // Match the route
                     credentials: "same-origin",
                     headers: {
                         "Content-Type": "application/json",
@@ -777,10 +777,11 @@
                         if (json.latest_time) {
                             localStorage.setItem("last_notification_time", Number(json.latest_time));
                         }
-
                     }
-                });
+                })
+                .catch(err => console.error('Error marking notifications as read:', err));
         }
+
 
 
         // Mark on dropdown open
