@@ -526,17 +526,102 @@
                 </li>
 
                 <li class="dropdown">
-                    <a href="javascript:void(0)">
-                        <iconify-icon icon="fluent:database-20-regular" class="menu-icon"></iconify-icon>
-                        <span>Database</span>
-                    </a>
+
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.index') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.junior.candm') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Called &
+                                Mailed</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniormod') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Other
+                                Disposition</a>
+                        </li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniorcandm') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Called &
+                                Mailed</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniorpaid') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Pay</a>
+                        </li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniorcon') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Verification
+                                Call</a>
+                        </li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.accountant') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Payment
+                                Completed</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.accountantver') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Status Pending</a>
+                        </li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.accountantpaid') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Status Completed</a>
+                        </li>
+                    </ul>
+                </li>
+
+                <li class="dropdown">
+
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.index') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.junior.candm') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Called &
+                                Mailed</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniormod') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Other
+                                Disposition</a>
+                        </li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniorcandm') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Called &
+                                Mailed</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniorpaid') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Pay</a>
+                        </li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniorcon') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Verification
+                                Call</a>
+                        </li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.accountant') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Payment
+                                Completed</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.accountantver') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Status Pending</a>
+                        </li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.accountantpaid') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Status Completed</a>
+                        </li>
                     </ul>
                 </li>
 
