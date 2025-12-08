@@ -449,7 +449,7 @@
                         <span>Dashboard</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('dashboard.admin') }}"><i
+                        <li><a href="{{ route('dashboard.operation') }}"><i
                                     class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Dashboard</a></li>
                     </ul>
                 </li>
