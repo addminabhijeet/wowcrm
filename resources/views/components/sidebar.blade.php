@@ -538,7 +538,7 @@
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.junior.candm') }}"><i
+                        <li><a href="{{ route('google.sheet.senior') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Called &
                                 Mailed</a></li>
                     </ul>
