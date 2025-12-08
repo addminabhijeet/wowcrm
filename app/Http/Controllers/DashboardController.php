@@ -113,29 +113,37 @@ class DashboardController extends Controller
     public function markAllRead(Request $request)
     {
         $admin = Auth::user();
-        $now = Carbon::now();
 
-        // Update unread notifications
+        // Mark unread notifications as read
         Notification::where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
             ->whereNull('read_at')
-            ->update(['read_at' => $now]);
+            ->update(['read_at' => now()]);
 
-        // NEW: Fetch latest UNREAD notification only (after update this will be none)
-        $latest = Notification::where('notifiable_id', $admin->id)
+        // First, try to fetch latest UNREAD (there will be none right after update)
+        $latestUnread = Notification::where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
-            ->whereNull('read_at')   // ← added (only unread)
+            ->whereNull('read_at')
             ->latest()
             ->first();
+
+        // If no unread exists → get latest READ so frontend stores a timestamp
+        $latestAny = Notification::where('notifiable_id', $admin->id)
+            ->where('notifiable_role', 'admin')
+            ->latest()
+            ->first();
+
+        $latest = $latestUnread ?: $latestAny;
 
         return response()->json([
             'status' => true,
             'message' => 'Marked as read',
             'unread_count' => 0,
             'latest_id' => $latest->id ?? null,
-            'latest_time' => $latest->created_at ? $latest->created_at->timestamp : null
+            'latest_time' => $latest?->created_at?->timestamp
         ]);
     }
+
 
 
 
