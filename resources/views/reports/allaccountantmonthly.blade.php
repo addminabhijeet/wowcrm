@@ -419,10 +419,9 @@
                 <div class="card-body p-4">
                     <!-- Header -->
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
-                        <div>
-                            <h5 class="fw-bold mb-1">Monthly Call Report</h5>
-
-                        </div>
+                             <div>
+                                <h5 class="fw-bold mb-1">{{ $juniorUser->name }}</h5>
+                            </div>
                         <form method="GET" action="{{ route('call.reports.juniormonthly') }}"
                             class="d-flex align-items-center gap-2">
                             <label for="selected_month" class="form-label mb-0 fw-semibold small">Select Month:</label>
