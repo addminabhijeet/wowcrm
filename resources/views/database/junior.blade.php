@@ -701,7 +701,7 @@
                 let cells = `<td>—</td>`;
 
                 colKeys.forEach(k => {
-                    if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
+                    if (['Status', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
                             'Time Zone', 'Qualification'
                         ].includes(k)) {
                         let opts = [];
