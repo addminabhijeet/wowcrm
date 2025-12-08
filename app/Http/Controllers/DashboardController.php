@@ -826,7 +826,7 @@ class DashboardController extends Controller
         ));
     }
 
-    public function writter()
+    public function writer()
     {
         // Fetch timer settings dynamically
         $settings = TimerSetting::first();
@@ -850,7 +850,7 @@ class DashboardController extends Controller
             $button_status     = $timer->button_status ?? 1;
         }
 
-        return view('dashboard.writter', compact(
+        return view('dashboard.writer', compact(
             'remaining_seconds',
             'elapsed_seconds',
             'status',

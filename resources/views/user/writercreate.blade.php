@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='Add Resume Writter';
+$title='Add Resume Writer';
 $role = auth()->user()->role ?? '';
 if($role === 'admin'){
     $subTitle = 'Super Admin';
@@ -38,7 +38,7 @@ $script = '<script>
                 <div class="card border">
                     <div class="card-body">
                         <h6 class="text-md text-primary-light mb-16">Profile Image</h6>
-                        <form action="{{ route('users.writter.store') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('users.writer.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
 
                             <!-- Upload Image Start -->
@@ -95,7 +95,7 @@ $script = '<script>
                                 </label>
                                 <select name="role" id="role" class="form-control radius-8 form-select" disabled>
                                     <option value="junior">IT Recruiter</option>
-                                    <option value="writter" selected>Resume Writter</option>
+                                    <option value="writer" selected>Resume Writer</option>
                                     <option value="admin">Admin</option>
                                     <option value="customer">Customer</option>
                                     <option value="accountant">Support</option>

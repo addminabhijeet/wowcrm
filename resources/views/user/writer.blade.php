@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @php
-$title='Users -> Resume Writter';
+$title='Users -> Resume Writer';
 $role = auth()->user()->role ?? '';
 if($role === 'admin'){
     $subTitle = 'Super Admin';
@@ -29,9 +29,9 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                             </button>
                         </li>
                     </ul>
-                    <a  href="{{ route('users.writter.create') }}" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
+                    <a  href="{{ route('users.writer.create') }}" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
                         <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                        Add New Resume Writter
+                        Add New Resume Writer
                     </a>
                 </div>
 
@@ -67,17 +67,17 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                         <!-- Role -->
                                         <td class="text-center">
                                             <span class="bg-primary-focus text-primary-main px-24 py-4 rounded-pill fw-medium text-sm">
-                                                {{ $user->role === 'writter' ? 'Resume Writter' : ucfirst($user->role) }}
+                                                {{ $user->role === 'writer' ? 'Resume Writer' : ucfirst($user->role) }}
                                             </span>
                                         </td>
 
                                         <!-- Edit -->
                                         <td class="text-center">
                                             <div class="d-flex align-items-center gap-10 justify-content-center">
-                                                <a href="{{ route('users.writter.edit', $user->id) }}" class="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle">
+                                                <a href="{{ route('users.writer.edit', $user->id) }}" class="bg-success-focus text-success-600 bg-hover-success-200 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle">
                                                     <iconify-icon icon="lucide:edit" class="menu-icon"></iconify-icon>
                                                 </a>
-                                                <a href="{{ route('users.writter.destroy', $user->id) }}" class="remove-item-btn bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle">
+                                                <a href="{{ route('users.writer.destroy', $user->id) }}" class="remove-item-btn bg-danger-focus bg-hover-danger-200 text-danger-600 fw-medium w-40-px h-40-px d-flex justify-content-center align-items-center rounded-circle">
                                                     <iconify-icon icon="fluent:delete-24-regular" class="menu-icon"></iconify-icon>
                                                 </a>
                                             </div>

@@ -1158,12 +1158,12 @@ class UserController extends Controller
     }
 
 
-    public function writter()
+    public function writer()
     {
-        $users = User::where('role', 'writter')
+        $users = User::where('role', 'writer')
             ->where('is_deleted', 0)
             ->get();
-        return view('user.writter', compact('users'));
+        return view('user.writer', compact('users'));
     }
 
     public function writtercreate()
@@ -1206,7 +1206,7 @@ class UserController extends Controller
         $validated['password'] = Hash::make($validated['password']);
 
         User::create($validated);
-        return redirect()->route("users.writter")
+        return redirect()->route("users.writer")
             ->with('success', ' added successfully!');
     }
 
@@ -1228,7 +1228,7 @@ class UserController extends Controller
             'email'       => 'required|email|unique:users,email,' . $user->id,
             'phone'       => 'nullable|string|max:20',
             'designation' => 'nullable|string',
-            'role'        => 'required|string|in:junior,admin,writter,customer,accountant',
+            'role'        => 'required|string|in:junior,admin,writer,customer,accountant',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'password'    => 'nullable|string|min:6|confirmed',
         ]);
@@ -1269,7 +1269,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users.writter.edit", $user->id)
+        return redirect()->route("users.writer.edit", $user->id)
             ->with('success', ' updated successfully!');
     }
 
@@ -1282,7 +1282,7 @@ class UserController extends Controller
         $user->is_deleted = 1; // Mark as deleted
         $user->save();
 
-        return redirect()->route("users.writter")
+        return redirect()->route("users.writer")
             ->with('success',  ' deleted successfully!');
     }
 }

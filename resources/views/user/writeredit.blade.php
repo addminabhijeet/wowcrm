@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='View Resume Writter';
+$title='View Resume Writer';
 $role = auth()->user()->role ?? '';
 if($role === 'admin'){
     $subTitle = 'Super Admin';
@@ -74,13 +74,13 @@ $script ='<script>
                         <li class="d-flex align-items-center gap-1 mb-12">
                             <span class="w-30 text-md fw-semibold text-primary-light"> Role</span>
                             <span class="w-70 text-secondary-light fw-medium">
-                                : {{ $user->role === 'writter' ? 'Resume Writter' : $user->role }}
+                                : {{ $user->role === 'writer' ? 'Resume Writer' : $user->role }}
                             </span>
 
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
                             <span class="w-30 text-md fw-semibold text-primary-light"> Designation</span>
-                            <span class="w-70 text-secondary-light fw-medium">: {{ $user->designation === 'Writter' ? 'Resume Writter' : $user->designation}}</span>
+                            <span class="w-70 text-secondary-light fw-medium">: {{ $user->designation === 'Writer' ? 'Resume Writer' : $user->designation}}</span>
                         </li>
 
                     </ul>
@@ -111,7 +111,7 @@ $script ='<script>
                         </button>
                     </li>
                 </ul>
-                <form action="{{ route('users.writter.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('users.writer.update', $user->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="tab-content" id="pills-tabContent">
@@ -170,7 +170,7 @@ $script ='<script>
                                         <select name="role" id="role" class="form-control radius-8 form-select" required>
                                             <option value="" disabled>Select Role</option>
                                             <option value="junior" {{ $user->role == 'junior' ? 'selected' : '' }}>IT Recruiter</option>
-                                            <option value="writter" {{ $user->role == 'writter' ? 'selected' : '' }}>Resume Writter</option>
+                                            <option value="writer" {{ $user->role == 'writer' ? 'selected' : '' }}>Resume Writer</option>
                                             <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
                                             <option value="candidate" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
                                             <option value="accountant" {{ $user->role == 'accountant' ? 'selected' : '' }}>Support</option>
@@ -189,7 +189,7 @@ $script ='<script>
                                             <option value="Admin" {{ $user->designation == 'Admin' ? 'selected' : '' }}>Admin</option>
                                             <option value="Candidate" {{ $user->designation == 'Candidate' ? 'selected' : '' }}>Candidate</option>
                                             <option value="Junior" {{ $user->designation == 'Junior' ? 'selected' : '' }}>IT Recruiter</option>
-                                            <option value="Writter" {{ $user->designation == 'Writter' ? 'selected' : '' }}>Resume Writter</option>
+                                            <option value="Writer" {{ $user->designation == 'Writer' ? 'selected' : '' }}>Resume Writer</option>
                                             <option value="Trainer" {{ $user->designation == 'Trainer' ? 'selected' : '' }}>Trainer</option>
                                         </select>
                                     </div>

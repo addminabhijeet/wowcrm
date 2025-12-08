@@ -317,8 +317,8 @@
                                 Associate</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('users.writter') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Resume Writter</a>
+                        <li><a href="{{ route('users.writer') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Resume Writer</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
@@ -488,8 +488,8 @@
                                 Associate</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('users.writter') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Resume Writter</a>
+                        <li><a href="{{ route('users.writer') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Resume Writer</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
@@ -688,14 +688,14 @@
             @endif
 
             {{-- ================= Career Builder ================= --}}
-            @if ($role === 'writter')
+            @if ($role === 'writer')
                 <li class="dropdown">
                     <a href="javascript:void(0)">
                         <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
                         <span>Dashboard</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('dashboard.writter') }}"><i
+                        <li><a href="{{ route('dashboard.writer') }}"><i
                                     class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
                     </ul>
                 </li>
@@ -706,7 +706,7 @@
                         <span>Database</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.writter') }}"><i
+                        <li><a href="{{ route('google.sheet.writer') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
                     </ul>
                 </li>

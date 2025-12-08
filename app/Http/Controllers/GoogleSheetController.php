@@ -5126,7 +5126,7 @@ class GoogleSheetController extends Controller
 
 
 
-    public function writter(Request $request)
+    public function writer(Request $request)
     {
         $authUser = Auth::user();
         $search = $request->input('search');
@@ -5195,7 +5195,7 @@ class GoogleSheetController extends Controller
             return view('database.partials.senior_table', compact('data'))->render();
         }
 
-        return view('database.writter', compact('data'));
+        return view('database.writer', compact('data'));
     }
 
 

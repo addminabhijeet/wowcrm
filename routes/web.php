@@ -95,12 +95,12 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/admin/support/update/{id}', [UserController::class, 'supportupdate'])->name('users.support.update');
     Route::get('/dashboard/admin/support/update/{id}', [UserController::class, 'supportdestroy'])->name('users.support.destroy');
 
-    Route::get('/dashboard/admin/writter', [UserController::class, 'writter'])->name('users.writter');
-    Route::get('/dashboard/admin/writter/create', [UserController::class, 'writtercreate'])->name('users.writter.create');
-    Route::post('/dashboard/admin/writter/store', [UserController::class, 'writterstore'])->name('users.writter.store');
-    Route::get('/dashboard/admin/writter/{id}/edit', [UserController::class, 'writteredit'])->name('users.writter.edit');
-    Route::put('/dashboard/admin/writter/update/{id}', [UserController::class, 'writterupdate'])->name('users.writter.update');
-    Route::get('/dashboard/admin/writter/update/{id}', [UserController::class, 'writterdestroy'])->name('users.writter.destroy');
+    Route::get('/dashboard/admin/writer', [UserController::class, 'writer'])->name('users.writer');
+    Route::get('/dashboard/admin/writer/create', [UserController::class, 'writtercreate'])->name('users.writer.create');
+    Route::post('/dashboard/admin/writer/store', [UserController::class, 'writterstore'])->name('users.writer.store');
+    Route::get('/dashboard/admin/writer/{id}/edit', [UserController::class, 'writteredit'])->name('users.writer.edit');
+    Route::put('/dashboard/admin/writer/update/{id}', [UserController::class, 'writterupdate'])->name('users.writer.update');
+    Route::get('/dashboard/admin/writer/update/{id}', [UserController::class, 'writterdestroy'])->name('users.writer.destroy');
 
     Route::get('/dashboard/admin/customer', [UserController::class, 'customer'])->name('users.customer');
     Route::get('/dashboard/admin/customer/create', [UserController::class, 'customercreate'])->name('users.customer.create');
@@ -119,7 +119,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/accountant', [DashboardController::class, 'accountant'])->name('dashboard.accountant');
     Route::get('/dashboard/trainer', [DashboardController::class, 'trainer'])->name('dashboard.trainer');
     Route::get('/dashboard/support', [DashboardController::class, 'support'])->name('dashboard.support');
-    Route::get('/dashboard/writter', [DashboardController::class, 'writter'])->name('dashboard.writter');
+    Route::get('/dashboard/writer', [DashboardController::class, 'writer'])->name('dashboard.writer');
     Route::get('/dashboard/resource', [DashboardController::class, 'resource'])->name('dashboard.resource');
     Route::get('/dashboard/operation', [DashboardController::class, 'operation'])->name('dashboard.operation');
     Route::get('/button/status', [DashboardController::class, 'getButtonStatus'])->name('button.status');
@@ -165,7 +165,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/senior/google-sheet', [GoogleSheetController::class, 'senior'])->name('google.sheet.senior');
     Route::get('/dashboard/career/google-sheet', [GoogleSheetController::class, 'career'])->name('google.sheet.career');
-    Route::get('/dashboard/writter/google-sheet', [GoogleSheetController::class, 'writter'])->name('google.sheet.writter');
+    Route::get('/dashboard/writer/google-sheet', [GoogleSheetController::class, 'writer'])->name('google.sheet.writer');
     Route::get('/dashboard/senior/google-sheet-candm', [GoogleSheetController::class, 'seniorcandm'])->name('google.sheet.seniorcandm');
     Route::get('/dashboard/senior/google-sheet-mod', [GoogleSheetController::class, 'seniormod'])->name('google.sheet.seniormod');
     Route::get('/dashboard/senior/google-sheet-tra', [GoogleSheetController::class, 'seniortra'])->name('google.sheet.seniortra');
