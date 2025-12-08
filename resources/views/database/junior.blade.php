@@ -701,7 +701,7 @@
                 let cells = `<td>—</td>`;
 
                 colKeys.forEach(k => {
-                    if (['Status', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
+                    if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
                             'Time Zone', 'Qualification'
                         ].includes(k)) {
                         let opts = [];
@@ -709,7 +709,7 @@
                             'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
                             'Aerospace Proj. Manag.'
                         ];
-                        if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested',
+                        if (k === 'Status') opts = ['Called & Mailed', 'Not Interested',
                             'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'
                         ];
                         if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
