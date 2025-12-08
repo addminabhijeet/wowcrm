@@ -1,6 +1,7 @@
 @extends('layout.layout')
 @php
 $title='Add User';
+$role = auth()->user()->role ?? '';
 if($role === 'admin'){
     $subTitle = 'Super Admin';
 } elseif ($role === 'operation') {

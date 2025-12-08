@@ -2,6 +2,7 @@
 
 @php
 $title='Users -> Senior Support Associate';
+$role = auth()->user()->role ?? '';
 if($role === 'admin'){
     $subTitle = 'Super Admin';
 } elseif ($role === 'operation') {
