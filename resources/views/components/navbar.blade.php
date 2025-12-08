@@ -787,7 +787,7 @@
         // Mark on dropdown open
         if (dropdownBtn) {
             dropdownBtn.addEventListener("show.bs.dropdown", () => {
-                setTimeout(() => markAllRead(), 300);
+                setTimeout(() => markAllRead(), 8000);
             });
         }
 
