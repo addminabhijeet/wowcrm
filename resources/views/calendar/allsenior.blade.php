@@ -2,7 +2,14 @@
 
 @php
     $title = 'Users -> IT Senior Recruiter';
-    $subTitle = 'Super Admin';
+    $role = auth()->user()->role ?? '';
+    if ($role === 'admin') {
+        $subTitle = 'Super Admin';
+    } elseif ($role === 'operation') {
+        $subTitle = 'Operation Manager';
+    } else {
+        $subTitle = 'role';
+    }
 @endphp
 
 @section('content')
@@ -294,7 +301,7 @@
 
                                 const nextEvent = next.cells[0]?.textContent.trim();
                                 const nextDuration = parseTimeToSeconds(next.cells[2]?.textContent
-                                .trim());
+                                    .trim());
                                 const nextTime = next.cells[1]?.textContent.trim().split(' - ').pop();
 
                                 if (nextEvent === currEvent) {
