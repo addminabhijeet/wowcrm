@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='Add US Accounts';
+$title='Add Operation Manager';
 $role = auth()->user()->role ?? '';
 if($role === 'admin'){
     $subTitle = 'Super Admin';
@@ -38,7 +38,7 @@ $script = '<script>
                 <div class="card border">
                     <div class="card-body">
                         <h6 class="text-md text-primary-light mb-16">Profile Image</h6>
-                        <form action="{{ route('users.accountant.store') }}" method="POST" enctype="multipart/form-data">
+                        <form action="{{ route('users.operation.store') }}" method="POST" enctype="multipart/form-data">
                             @csrf
 
                             <!-- Upload Image Start -->
@@ -84,7 +84,7 @@ $script = '<script>
                                 </label>
                                 <select name="designation" id="designation" class="form-control radius-8 form-select" required>
                                     <option value="">Select Designation</option>
-                                    <option value="accountant">US Accounts</option>
+                                    <option value="operation">Operation Manager</option>
 
                                 </select>
                             </div>
@@ -98,7 +98,7 @@ $script = '<script>
                                     <option value="senior">IT Senior Recruiter</option>
                                     <option value="admin">Admin</option>
                                     <option value="customer">Customer</option>
-                                    <option value="accountant" selected>US Accounts</option>
+                                    <option value="operation" selected>Operation Manager</option>
                                 </select>
                                 <!-- Hidden input to submit the value -->
                                 <input type="hidden" name="role" value="junior">
