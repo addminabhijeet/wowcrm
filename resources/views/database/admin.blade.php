@@ -74,7 +74,7 @@
                                 <th scope="col">Email Address</th>
                                 <th scope="col">Phone Number</th>
                                 <th scope="col">Location</th>
-                                <th scope="col">Remark</th>
+
                                 <th scope="col">Relocation</th>
                                 <th scope="col">Graduation Date</th>
                                 <th scope="col">Immigration</th>
@@ -86,6 +86,7 @@
                                 <th scope="col">Time Zone</th>
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">View</th>
+                                 <th scope="col">Remark</th>
                                 <th scope="col">Status</th>
                                 <!-- <th scope="col" class="text-center">Actions</th> -->
                             </tr>
