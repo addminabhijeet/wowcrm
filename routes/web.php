@@ -109,7 +109,7 @@ Route::middleware(['auth'])->group(function () {
     Route::put('/dashboard/admin/customer/update/{id}', [UserController::class, 'customerupdate'])->name('users.customer.update');
     Route::get('/dashboard/admin/customer/destroy/{id}', [UserController::class, 'customerdestroy'])->name('users.customer.destroy');
     Route::get('/dashboard/admin/latest-notification', [DashboardController::class, 'latestNotification'])->name('admin.latest.notification');
-    Route::get('/dashboard/admin/latest-markallread', [DashboardController::class, 'markAllRead'])->name('admin.notifications.markallread');
+    Route::put('/dashboard/admin/latest-markallread', [DashboardController::class, 'markAllRead'])->name('admin.notifications.markallread');
     Route::get('/dashboard/notification', [DashboardController::class, 'adminnotification'])->name('admin.notifications');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
     Route::get('/dashboard/junior', [DashboardController::class, 'junior'])->name('dashboard.junior');
