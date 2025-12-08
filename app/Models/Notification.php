@@ -19,9 +19,6 @@ class Notification extends Model
         'read_at',
     ];
 
-    protected $casts = [
-        'read_at' => 'datetime',
-    ];
 
     public function user()
     {
