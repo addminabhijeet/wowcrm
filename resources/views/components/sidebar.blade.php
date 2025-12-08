@@ -529,7 +529,7 @@
 
                     <a href="javascript:void(0)">
                         <iconify-icon icon="fluent:document-20-regular" class="menu-icon"></iconify-icon>
-                        <span>Sr IT Recruiter Database</span>
+                        <span>IT Recruiter Database</span>
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormod') }}"><i
