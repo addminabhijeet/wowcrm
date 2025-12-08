@@ -71,10 +71,11 @@ class DashboardController extends Controller
             ->whereNull('read_at')
             ->count();
 
-        // FIX: Fetch latest notification, NOT only unread
+        // NEW: Fetch latest UNREAD notification only.
         $notification = Notification::with(['user', 'candidate'])
             ->where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
+            ->whereNull('read_at')                // ← added condition
             ->latest('id')
             ->first();
 
@@ -104,6 +105,7 @@ class DashboardController extends Controller
             'unread_count' => $unreadCount
         ]);
     }
+
 
 
 
