@@ -109,11 +109,7 @@
                                             value="{{ $row->Location ?? '' }}" placeholder="Type location">
                                     </td>
 
-                                    {{-- Remark --}}
-                                    <td>
-                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
-                                    </td>
+
 
                                     {{-- Amount --}}
                                     <td>
@@ -193,7 +189,11 @@
                                             @endforeach
                                         </select>
                                     </td>
-
+                                    {{-- Remark --}}
+                                    <td>
+                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                                    </td>
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
                                             <i class="fas fa-save"></i> Save

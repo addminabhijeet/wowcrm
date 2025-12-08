@@ -126,11 +126,7 @@
                                             value="{{ $row->Location ?? '' }}" placeholder="Type location">
                                     </td>
 
-                                    {{-- Remark --}}
-                                    <td>
-                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
-                                    </td>
+
 
                                     {{-- Relocation --}}
                                     <td>
@@ -275,6 +271,9 @@
                                                 class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                                         @endif
                                     </td>
+
+
+
 
                                     {{-- Exe Remarks --}}
                                     <td>
