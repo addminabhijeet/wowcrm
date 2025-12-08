@@ -106,7 +106,7 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-
+        $juniorUser = $user;
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t8to9am = $hourlyCalledMailed[8] ?? 0;
@@ -150,6 +150,7 @@ class CallReportController extends Controller
 
         return view('reports.senior', compact(
             'totalCalls',
+            'juniorUser',
             'calledAndMailedCalls',
             'readyToPaidCalls',
             'otherCalls',
@@ -203,7 +204,7 @@ class CallReportController extends Controller
         $user = Auth::user();
         $createdByKey = "{$user->id}|senior";
 
-                // Total calls for this senior (including hierarchical keys)
+        // Total calls for this senior (including hierarchical keys)
         $totalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")->count();
 
         // Total "Called & Mailed" calls
@@ -393,7 +394,7 @@ class CallReportController extends Controller
 
         $juniorUser = $user;
 
-                // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
+        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
         $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
