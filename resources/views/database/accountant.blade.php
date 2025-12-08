@@ -345,7 +345,7 @@
                                             value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
-                                    {{-- Exe Remarks --}}
+                                    {{-- Status --}}
                                     <td>
                                         @php $exeOptions = ['Document Send','Verification Completed']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks">

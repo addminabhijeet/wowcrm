@@ -261,11 +261,11 @@
                                         @endif
                                     </td>
 
-                                    {{-- Exe Remarks --}}
+                                    {{-- Status --}}
                                     <td>
                                         @php $exeOptions = ['Called & Mailed','Ready To Pay','Not Interested','Others','N/A','VM','Busy']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                            <option value="">-- Select --</option>
+                                            <option value="">-- Select Status--</option>
                                             @foreach ($exeOptions as $option)
                                                 <option value="{{ $option }}"
                                                     {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>

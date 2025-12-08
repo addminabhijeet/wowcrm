@@ -262,7 +262,7 @@
                                                 class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                                         @endif
                                     </td>
-                                    {{-- Exe Remarks --}}
+                                    {{-- Status --}}
                                     <td>
                                         @php
                                             $exeOptions = [

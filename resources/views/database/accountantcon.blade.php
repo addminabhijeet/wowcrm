@@ -174,18 +174,18 @@
                                                 class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                                         @endif
                                     </td>
-                                    
+
                                     {{-- Remark --}}
                                     <td>
                                         <input type="text" class="form-control remark-autocomplete" data-key="Remark"
                                             value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
-                                    {{-- Exe Remarks --}}
+                                    {{-- Status --}}
                                     <td>
                                         @php $exeOptions = ['Ready To Pay','Payment Completed']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                            <option value="">-- Select --</option>
+                                            <option value="">-- Select Status--</option>
                                             @foreach ($exeOptions as $option)
                                                 <option value="{{ $option }}"
                                                     {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>

@@ -210,11 +210,11 @@
                                     class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                             @endif
                         </td>
-                        {{-- Exe Remarks --}}
+                        {{-- Status --}}
                         <td>
                             @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                <option value="">-- Exe Remarks --</option>
+                                <option value="">-- Status --</option>
                                 @foreach ($exeOptions as $option)
                                     <option value="{{ $option }}"
                                         {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>

@@ -276,7 +276,7 @@
                                             value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
-                                    {{-- Exe Remarks --}}
+                                    {{-- Status --}}
                                     <td>
                                         @php
                                             $exeOptions = [

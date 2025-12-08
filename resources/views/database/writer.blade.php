@@ -216,7 +216,7 @@
                                             value="{{ $row->Remark ?? '' }}" placeholder="Type remark" readonly>
                                     </td>
 
-                                    {{-- Exe Remarks --}}
+                                    {{-- Status --}}
                                     <td>
                                         @php
                                             $exeOptions = [
@@ -232,7 +232,7 @@
                                         @endphp
 
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
-                                            <option value="">-- Select --</option>
+                                            <option value="">-- Select Status--</option>
                                             @foreach ($exeOptions as $option)
                                                 <option value="{{ $option }}"
                                                     {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>

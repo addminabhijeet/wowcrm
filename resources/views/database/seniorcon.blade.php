@@ -303,7 +303,7 @@
                                             value="{{ $row->Remark ?? '' }}">
                                     </td>
 
-                                    {{-- Exe Remarks --}}
+                                    {{-- Status --}}
                                     <td>
                                         @php $exeOptions = ['Verification Completed','Payment Completed']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
