@@ -18,13 +18,17 @@
 
                             <div class="table-responsive">
                                 <!-- Add Candidate Button -->
-                                <div class="d-flex justify-content-end mb-3">
-                                    <button type="button" class="btn btn-success rounded-pill px-4 py-2 fw-medium text-sm"
-                                        data-bs-toggle="modal" data-bs-target="#addCandidateModal">
-                                        Add Candidate
-                                    </button>
-                                </div>
-
+                                @auth
+                                    @if (auth()->user()->role !== 'operation')
+                                        <div class="d-flex justify-content-end mb-3">
+                                            <button type="button"
+                                                class="btn btn-success rounded-pill px-4 py-2 fw-medium text-sm"
+                                                data-bs-toggle="modal" data-bs-target="#addCandidateModal">
+                                                Add Candidate
+                                            </button>
+                                        </div>
+                                    @endif
+                                @endauth
 
                                 <table class="table table-hover table-bordered align-middle mb-0">
                                     <thead class="table-light text-center">
