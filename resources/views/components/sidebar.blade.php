@@ -526,6 +526,12 @@
                 </li>
 
                 <li class="dropdown">
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniormod') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Other
+                                Disposition</a>
+                        </li>
+                    </ul>
                     <a href="javascript:void(0)">
                         <iconify-icon icon="fluent:document-20-regular" class="menu-icon"></iconify-icon>
                         <span>All Other Database</span>
@@ -534,12 +540,6 @@
                         <li><a href="{{ route('google.sheet.junior.candm') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Called &
                                 Mailed</a></li>
-                    </ul>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.seniormod') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Other
-                                Disposition</a>
-                        </li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorcandm') }}"><i
