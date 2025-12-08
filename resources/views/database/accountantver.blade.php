@@ -67,31 +67,32 @@
                     <table class="table bordered-table sm-table mb-0">
                         <thead>
                             <tr>
-                                <th scope="col">Row #</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email Address</th>
-                                <th scope="col">Phone Number</th>
-                                <th scope="col">Location</th>
+                                <th scope="col" class="text-center">Row</th>
+                                <th scope="col" class="text-center">Date</th>
+                                <th scope="col" class="text-center">Name</th>
+                                <th scope="col" class="text-center">Email Address</th>
+                                <th scope="col" class="text-center">Phone Number</th>
+                                <th scope="col" class="text-center">Phone Number</th>
+                                <th scope="col" class="text-center">Location</th>
 
-                                <th scope="col">Amount</th>
-                                <th scope="col">Qualification</th>
+                                <th scope="col" class="text-center">Amount</th>
+                                <th scope="col" class="text-center">Qualification</th>
 
-                                <th scope="col">Payment Date</th>
-                                <th scope="col">Transaction ID</th>
-                                <th scope="col">Reference Number</th>
-                                <th scope="col">Payment Method</th>
-                                <th scope="col">Payee Name</th>
-                                <th scope="col">Acceptance</th>
-                                <th scope="col">Consultation</th>
-                                <th scope="col">Delivery</th>
-                                <th scope="col">Payment</th>
-                                <th scope="col">Forwarded By</th>
-                                <th scope="col">Acceptance Sign</th>
-                                <th scope="col">Consultation Sign</th>
-                                <th scope="col">View</th>
-                                <th scope="col">Status</th>
-                                <th scope="col">Remark</th>
+                                <th scope="col" class="text-center">Payment Date</th>
+                                <th scope="col" class="text-center">Transaction ID</th>
+                                <th scope="col" class="text-center">Reference Number</th>
+                                <th scope="col" class="text-center">Payment Method</th>
+                                <th scope="col" class="text-center">Payee Name</th>
+                                <th scope="col" class="text-center">Acceptance</th>
+                                <th scope="col" class="text-center">Consultation</th>
+                                <th scope="col" class="text-center">Delivery</th>
+                                <th scope="col" class="text-center">Payment</th>
+                                <th scope="col" class="text-center">Forwarded By</th>
+                                <th scope="col" class="text-center">Acceptance Sign</th>
+                                <th scope="col" class="text-center">Consultation Sign</th>
+                                <th scope="col" class="text-center">View</th>
+                                <th scope="col" class="text-center">Status</th>
+                                <th scope="col" class="text-center">Remark</th>
                                 @auth
                                     @if (auth()->user()->role !== 'operation')
                                         <th scope="col" class="text-center">Actions</th>
