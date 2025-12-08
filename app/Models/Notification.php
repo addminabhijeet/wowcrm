@@ -20,7 +20,6 @@ class Notification extends Model
     ];
 
     protected $casts = [
-        'data' => 'string',   // Change to 'array' if JSON
         'read_at' => 'datetime',
     ];
 
