@@ -583,7 +583,7 @@
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorassociate') }}"><i
-                                    class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Dashboard</a></li>
+                                    class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Operation</a></li>
                     </ul>
                 </li>
 
