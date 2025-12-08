@@ -1,7 +1,14 @@
 @extends('layout.layout')
 @php
     $title = 'Call Report';
-    $subTitle = 'Called and Mailed Report';
+    $role = auth()->user()->role ?? '';
+    if ($role === 'admin') {
+        $subTitle = 'Super Admin';
+    } elseif ($role === 'operation') {
+        $subTitle = 'Operation Manager';
+    } else {
+        $subTitle = 'role';
+    }
     $script = '<script>
         var options = {
             series: [{
@@ -556,8 +563,7 @@
                         <div>
                             <h5 class="fw-bold mb-1">{{ $juniorUser->name }}</h5>
                         </div>
-                        <form method="GET"
-                            action="{{ route('call.reports.seniormonthly') }}"
+                        <form method="GET" action="{{ route('call.reports.seniormonthly') }}"
                             class="d-flex align-items-center gap-2">
                             <label for="selected_month" class="form-label mb-0 fw-semibold small">Select
                                 Month:</label>

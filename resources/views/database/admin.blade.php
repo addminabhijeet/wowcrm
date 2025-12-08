@@ -1,7 +1,14 @@
 @extends('layout.layout')
 @php
     $title = 'Database -> All Called and Mailed';
-    $subTitle = 'Super Admin';
+    $role = auth()->user()->role ?? '';
+    if ($role === 'admin') {
+        $subTitle = 'Super Admin';
+    } elseif ($role === 'operation') {
+        $subTitle = 'Operation Manager';
+    } else {
+        $subTitle = 'role';
+    }
     $script = '<script>
         $(".remove-item-btn").on("click", function() {
             $(this).closest("tr").addClass("d-none")
@@ -269,7 +276,7 @@
                                         @endif
                                     </td>
 
-                                                                        {{-- Exe Remarks --}}
+                                    {{-- Exe Remarks --}}
                                     <td>
                                         @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks">

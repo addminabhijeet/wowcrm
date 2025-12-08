@@ -1,7 +1,14 @@
 @extends('layout.layout')
 @php
     $title = 'Report -> IT Recruiter';
-    $subTitle = 'Super Admin';
+    $role = auth()->user()->role ?? '';
+    if ($role === 'admin') {
+        $subTitle = 'Super Admin';
+    } elseif ($role === 'operation') {
+        $subTitle = 'Operation Manager';
+    } else {
+        $subTitle = 'role';
+    }
     $script = '<script>
         var options = {
             series: [{
