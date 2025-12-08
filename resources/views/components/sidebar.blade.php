@@ -529,7 +529,7 @@
 
                     <a href="javascript:void(0)">
                         <iconify-icon icon="fluent:document-20-regular" class="menu-icon"></iconify-icon>
-                        <span>All Other Database</span>
+                        <span>Sr IT Recruiter Database</span>
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormod') }}"><i
@@ -579,11 +579,11 @@
 
                     <a href="javascript:void(0)">
                         <iconify-icon icon="fluent:document-20-regular" class="menu-icon"></iconify-icon>
-                        <span>Self Database</span>
+                        <span>Sr Support Database</span>
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorassociate') }}"><i
-                                    class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Operation</a></li>
+                                    class="ri-circle-fill circle-icon text-warning-main w-auto"></i>Support</a></li>
                     </ul>
                 </li>
 
