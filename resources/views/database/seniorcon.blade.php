@@ -59,7 +59,7 @@
                                 <th scope="col">Email Address</th>
                                 <th scope="col">Phone Number</th>
                                 <th scope="col">Location</th>
-                                <th scope="col">Remark</th>
+
                                 <th scope="col">Relocation</th>
                                 <th scope="col">Graduation Date</th>
                                 <th scope="col">Immigration</th>
@@ -72,6 +72,7 @@
                                 <th scope="col">Audio</th>
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">View</th>
+                                <th scope="col">Remark</th>
                                 <th scope="col">Status</th>
                                 @auth
                                     @if (auth()->user()->role !== 'operation')
@@ -116,14 +117,7 @@
                                             value="{{ $row->Location ?? '' }}" placeholder="Type location">
                                     </td>
 
-                                    {{-- Remark --}}
-                                    <td>
-                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
 
-                                        <input type="hidden" name="Remark" class="remark-hidden"
-                                            value="{{ $row->Remark ?? '' }}">
-                                    </td>
 
 
                                     {{-- Relocation --}}
@@ -300,11 +294,20 @@
                                         @endif
                                     </td>
 
+                                    {{-- Remark --}}
+                                    <td>
+                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+
+                                        <input type="hidden" name="Remark" class="remark-hidden"
+                                            value="{{ $row->Remark ?? '' }}">
+                                    </td>
+
                                     {{-- Exe Remarks --}}
                                     <td>
                                         @php $exeOptions = ['Verification Completed','Payment Completed']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                            <option value="">-- Exe Remarks --</option>
+                                            <option value="">-- Status --</option>
                                             @foreach ($exeOptions as $option)
                                                 <option value="{{ $option }}"
                                                     {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>

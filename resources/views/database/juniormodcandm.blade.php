@@ -62,7 +62,7 @@
                                 <th scope="col">Email Address</th>
                                 <th scope="col">Phone Number</th>
                                 <th scope="col">Location</th>
-                                <th scope="col">Remark</th>
+
                                 <th scope="col">Relocation</th>
                                 <th scope="col">Graduation Date</th>
                                 <th scope="col">Immigration</th>
@@ -74,6 +74,7 @@
                                 <th scope="col">Time Zone</th>
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">View</th>
+                                <th scope="col">Remark</th>
                                 <th scope="col">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
@@ -116,11 +117,7 @@
                                             value="{{ $row->Location ?? '' }}" placeholder="Type location" readonly>
                                     </td>
 
-                                    {{-- Remark --}}
-                                    <td>
-                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
-                                    </td>
+
 
                                     {{-- Relocation --}}
                                     <td>
@@ -267,6 +264,12 @@
                                         @endif
                                     </td>
 
+                                    {{-- Remark --}}
+                                    <td>
+                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                                    </td>
+
                                     {{-- Exe Remarks --}}
                                     <td>
                                         @php
@@ -282,7 +285,7 @@
                                             ];
                                         @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
-                                            <option value="">-- Exe Remarks --</option>
+                                            <option value="">-- Status --</option>
                                             @foreach ($exeOptions as $option)
                                                 <option value="{{ $option }}"
                                                     {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
@@ -291,6 +294,8 @@
                                             @endforeach
                                         </select>
                                     </td>
+
+
 
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">

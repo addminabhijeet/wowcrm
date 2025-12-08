@@ -316,19 +316,7 @@
                                             placeholder="Forwarded By" readonly>
                                     </td>
 
-                                    {{-- Exe Remarks --}}
-                                    <td>
-                                        @php $exeOptions = ['Document Send','Verification Completed']; @endphp
-                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                            <option value="">-- Select --</option>
-                                            @foreach ($exeOptions as $option)
-                                                <option value="{{ $option }}"
-                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
-                                                    {{ $option }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
+
 
                                     {{-- View (Resume) --}}
                                     <td>
@@ -355,6 +343,20 @@
                                     <td>
                                         <input type="text" class="form-control remark-autocomplete" data-key="Remark"
                                             value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                                    </td>
+
+                                    {{-- Exe Remarks --}}
+                                    <td>
+                                        @php $exeOptions = ['Document Send','Verification Completed']; @endphp
+                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
+                                            <option value="">-- Select Status --</option>
+                                            @foreach ($exeOptions as $option)
+                                                <option value="{{ $option }}"
+                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
+                                                    {{ $option }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </td>
 
                                     @auth

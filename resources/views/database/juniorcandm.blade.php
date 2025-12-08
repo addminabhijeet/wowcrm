@@ -277,7 +277,7 @@
                                             ];
                                         @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
-                                            <option value="">-- Exe Remarks --</option>
+                                            <option value="">-- Status --</option>
                                             @foreach ($exeOptions as $option)
                                                 <option value="{{ $option }}"
                                                     {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>

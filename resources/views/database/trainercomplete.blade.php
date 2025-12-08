@@ -51,7 +51,7 @@
                                 <th scope="col">Email Address</th>
                                 <th scope="col">Phone Number</th>
                                 <th scope="col">Location</th>
-                                <th scope="col">Remark</th>
+
                                 <th scope="col">Relocation</th>
                                 <th scope="col">Graduation Date</th>
                                 <th scope="col">Immigration</th>
@@ -62,7 +62,9 @@
                                 <th scope="col">1st Follow Up Remarks</th>
                                 <th scope="col">Time Zone</th>
                                 <th scope="col">Forwarded By</th>
+
                                 <th scope="col">View</th>
+                                <th scope="col">Remark</th>
                                 <th scope="col">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
@@ -103,11 +105,7 @@
                                             value="{{ $row->Location ?? '' }}" placeholder="Type location">
                                     </td>
 
-                                    {{-- Remark --}}
-                                    <td>
-                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
-                                    </td>
+
 
                                     {{-- Relocation --}}
                                     <td>
@@ -227,9 +225,8 @@
 
                                     {{-- Forwarded By --}}
                                     <td>
-                                        <input type="text" class="form-control forwardedBy-input"
-                                            data-key="forwardedBy" value="{{ $row->forwarded_by ?? '' }}"
-                                            placeholder="Forwarded By" readonly>
+                                        <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
+                                            value="{{ $row->forwarded_by ?? '' }}" placeholder="Forwarded By" readonly>
                                     </td>
 
                                     {{-- View (Resume) --}}
@@ -251,6 +248,12 @@
                                             <a href="#" download
                                                 class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                                         @endif
+                                    </td>
+
+                                    {{-- Remark --}}
+                                    <td>
+                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
                                     {{-- Exe Remarks --}}

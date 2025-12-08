@@ -62,13 +62,14 @@
                                 <th scope="col">Email Address</th>
                                 <th scope="col">Phone Number</th>
                                 <th scope="col">Location</th>
-                                <th scope="col">Remark</th>
+
                                 <th scope="col">Amount</th>
                                 <th scope="col">Qualification</th>
 
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">View Resume</th>
                                 <th scope="col">Update Resume</th>
+                                <th scope="col">Remark</th>
                                 <th scope="col">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
@@ -113,11 +114,6 @@
                                             value="{{ $row->Location ?? '' }}" placeholder="Type location" readonly>
                                     </td>
 
-                                    {{-- Remark --}}
-                                    <td>
-                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark" readonly>
-                                    </td>
 
                                     {{-- Amount --}}
                                     <td>
@@ -211,6 +207,13 @@
                                                 class="btn btn-sm btn-secondary downloadupdateresume-btn d-none">Download
                                                 Update Resume</a>
                                         @endif
+                                    </td>
+
+
+                                    {{-- Remark --}}
+                                    <td>
+                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark" readonly>
                                     </td>
 
                                     {{-- Exe Remarks --}}
