@@ -121,9 +121,10 @@ class DashboardController extends Controller
             ->whereNull('read_at')
             ->update(['read_at' => $now]);
 
-        // Get latest notification for this admin AFTER marking as read
+        // NEW: Fetch latest UNREAD notification only (after update this will be none)
         $latest = Notification::where('notifiable_id', $admin->id)
             ->where('notifiable_role', 'admin')
+            ->whereNull('read_at')   // ← added (only unread)
             ->latest()
             ->first();
 
@@ -135,6 +136,7 @@ class DashboardController extends Controller
             'latest_time' => $latest->created_at ? $latest->created_at->timestamp : null
         ]);
     }
+
 
 
     public function junior()
