@@ -1,7 +1,14 @@
 @extends('layout.layout')
 @php
 $title='Target -> Edit';
-$subTitle = 'Super Admin';
+$role = auth()->user()->role ?? '';
+if($role === 'admin'){
+    $subTitle = 'Super Admin';
+} elseif ($role === 'operation') {
+    $subTitle = 'Operation Manager';
+} else{
+    $subTitle = 'role';
+}
 $script = '<script>
     $(".remove-item-btn").on("click", function() {
         $(this).closest("tr").addClass("d-none")
@@ -61,9 +68,9 @@ $script = '<script>
                         <td>{{ $user->name }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{
-                                $user->role === 'junior' ? 'IT Recruiter' : 
-                                ($user->role === 'senior' ? 'IT Senior Recruiter' : 
-                                ($user->role === 'accountant' ? 'Support' : $user->role)) 
+                                $user->role === 'junior' ? 'IT Recruiter' :
+                                ($user->role === 'senior' ? 'IT Senior Recruiter' :
+                                ($user->role === 'accountant' ? 'Support' : $user->role))
                             }}
                         </td>
 
