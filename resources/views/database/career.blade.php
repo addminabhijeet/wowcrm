@@ -73,11 +73,12 @@
                                 <th scope="col">Course</th>
                                 <th scope="col">Amount</th>
                                 <th scope="col">Qualification</th>
-                                <th scope="col">Status</th>
+
                                 <th scope="col">1st Follow Up Remarks</th>
                                 <th scope="col">Time Zone</th>
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">View</th>
+                                <th scope="col">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -207,19 +208,7 @@
                                         </select>
                                     </td>
 
-                                    {{-- Exe Remarks --}}
-                                    <td>
-                                        @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy']; @endphp
-                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                            <option value="">-- Exe Remarks --</option>
-                                            @foreach ($exeOptions as $option)
-                                                <option value="{{ $option }}"
-                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
-                                                    {{ $option }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
+
 
                                     {{-- 1st Follow Up Remarks --}}
                                     <td>
@@ -277,6 +266,20 @@
                                             <a href="#" download
                                                 class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                                         @endif
+                                    </td>
+
+                                    {{-- Exe Remarks --}}
+                                    <td>
+                                        @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy']; @endphp
+                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
+                                            <option value="">-- Exe Remarks --</option>
+                                            @foreach ($exeOptions as $option)
+                                                <option value="{{ $option }}"
+                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
+                                                    {{ $option }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </td>
                                 </tr>
                             @endforeach

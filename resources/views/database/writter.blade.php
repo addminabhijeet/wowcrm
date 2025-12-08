@@ -58,10 +58,11 @@
                                 <th scope="col">Remark</th>
                                 <th scope="col">Amount</th>
                                 <th scope="col">Qualification</th>
-                                <th scope="col">Status</th>
+
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">View Resume</th>
                                 <th scope="col">Update Resume</th>
+                                <th scope="col">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -151,34 +152,6 @@
                                     </td>
 
 
-                                    {{-- Exe Remarks --}}
-                                    <td>
-                                        @php
-                                            $exeOptions = [
-                                                'Ready To Pay',
-                                                'Not Interested',
-                                                'Not Connected',
-                                                'Did Not Pickup',
-                                                'Others',
-                                                'Payment Completed',
-                                                'VM',
-                                                'Busy',
-                                            ];
-                                        @endphp
-
-                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
-                                            <option value="">-- Select --</option>
-                                            @foreach ($exeOptions as $option)
-                                                <option value="{{ $option }}"
-                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
-                                                    {{ $option }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-
-                                        <!-- Hidden field to submit value -->
-                                        <input type="hidden" name="Exe_Remarks" value="{{ $row->Exe_Remarks }}">
-                                    </td>
 
 
                                     {{-- Forwarded By --}}
@@ -232,6 +205,36 @@
                                                 Update Resume</a>
                                         @endif
                                     </td>
+
+                                    {{-- Exe Remarks --}}
+                                    <td>
+                                        @php
+                                            $exeOptions = [
+                                                'Ready To Pay',
+                                                'Not Interested',
+                                                'Not Connected',
+                                                'Did Not Pickup',
+                                                'Others',
+                                                'Payment Completed',
+                                                'VM',
+                                                'Busy',
+                                            ];
+                                        @endphp
+
+                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
+                                            <option value="">-- Select --</option>
+                                            @foreach ($exeOptions as $option)
+                                                <option value="{{ $option }}"
+                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
+                                                    {{ $option }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        <!-- Hidden field to submit value -->
+                                        <input type="hidden" name="Exe_Remarks" value="{{ $row->Exe_Remarks }}">
+                                    </td>
+
 
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">

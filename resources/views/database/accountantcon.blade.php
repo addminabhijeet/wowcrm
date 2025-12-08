@@ -58,9 +58,10 @@
                                 <th scope="col">Remark</th>
                                 <th scope="col">Amount</th>
                                 <th scope="col">Qualification</th>
-                                <th scope="col">Status</th>
+
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">View</th>
+                                <th scope="col">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -142,19 +143,6 @@
                                         </select>
                                     </td>
 
-                                    {{-- Exe Remarks --}}
-                                    <td>
-                                        @php $exeOptions = ['Ready To Pay','Payment Completed']; @endphp
-                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                            <option value="">-- Select --</option>
-                                            @foreach ($exeOptions as $option)
-                                                <option value="{{ $option }}"
-                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
-                                                    {{ $option }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
 
                                     {{-- Forwarded By --}}
                                     <td>
@@ -181,6 +169,21 @@
                                             <a href="#" download
                                                 class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                                         @endif
+                                    </td>
+
+
+                                    {{-- Exe Remarks --}}
+                                    <td>
+                                        @php $exeOptions = ['Ready To Pay','Payment Completed']; @endphp
+                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
+                                            <option value="">-- Select --</option>
+                                            @foreach ($exeOptions as $option)
+                                                <option value="{{ $option }}"
+                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
+                                                    {{ $option }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </td>
 
                                     <td class="text-center">

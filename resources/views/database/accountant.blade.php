@@ -69,7 +69,7 @@
                                 <th scope="col">Remark</th>
                                 <th scope="col">Amount</th>
                                 <th scope="col">Qualification</th>
-                                <th scope="col">Status</th>
+
                                 <th scope="col">Payment Date</th>
                                 <th scope="col">Transaction ID</th>
                                 <th scope="col">Reference Number</th>
@@ -82,6 +82,7 @@
                                 <th scope="col">Payment</th>
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">View</th>
+                                <th scope="col">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -163,19 +164,7 @@
                                         </select>
                                     </td>
 
-                                    {{-- Exe Remarks --}}
-                                    <td>
-                                        @php $exeOptions = ['Document Send','Verification Completed']; @endphp
-                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                            <option value="">-- Select --</option>
-                                            @foreach ($exeOptions as $option)
-                                                <option value="{{ $option }}"
-                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
-                                                    {{ $option }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
+
 
                                     {{-- Payment Date --}}
                                     <td>
@@ -319,6 +308,20 @@
                                         <input type="text" class="form-control forwardedBy-input"
                                             data-key="forwardedBy" value="{{ $row->forwarded_by ?? '' }}"
                                             placeholder="Forwarded By" readonly>
+                                    </td>
+
+                                    {{-- Exe Remarks --}}
+                                    <td>
+                                        @php $exeOptions = ['Document Send','Verification Completed']; @endphp
+                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
+                                            <option value="">-- Select --</option>
+                                            @foreach ($exeOptions as $option)
+                                                <option value="{{ $option }}"
+                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
+                                                    {{ $option }}
+                                                </option>
+                                            @endforeach
+                                        </select>
                                     </td>
 
                                     {{-- View (Resume) --}}
