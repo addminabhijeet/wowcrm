@@ -59,7 +59,7 @@
                                 <th scope="col">Course</th>
                                 <th scope="col">Amount</th>
                                 <th scope="col">Qualification</th>
-                                <th scope="col">Exe Remarks</th>
+                                <th scope="col">Status</th>
                                 <th scope="col">1st Follow Up Remarks</th>
                                 <th scope="col">Time Zone</th>
                                 <th scope="col">Audio</th>
