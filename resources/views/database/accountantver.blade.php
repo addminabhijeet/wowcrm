@@ -72,7 +72,6 @@
                                 <th scope="col" class="text-center">Name</th>
                                 <th scope="col" class="text-center">Email Address</th>
                                 <th scope="col" class="text-center">Phone Number</th>
-                                <th scope="col" class="text-center">Phone Number</th>
                                 <th scope="col" class="text-center">Location</th>
 
                                 <th scope="col" class="text-center">Amount</th>
