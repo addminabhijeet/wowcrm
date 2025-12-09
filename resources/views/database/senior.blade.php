@@ -1,7 +1,14 @@
 @extends('layout.layout')
 @php
     $title = 'Users Grid';
-    $subTitle = 'Database';
+    $role = auth()->user()->role ?? '';
+    if ($role === 'admin') {
+        $subTitle = 'Super Admin';
+    } elseif ($role === 'operation') {
+        $subTitle = 'Operation Manager';
+    } else {
+        $subTitle = 'role';
+    }
     $script = '<script>
         $(".remove-item-btn").on("click", function() {
             $(this).closest("tr").addClass("d-none")
@@ -45,7 +52,7 @@
             </div>
         </div>
 
-        <div class="card-body p-24">
+        <div class="card-body p-24" id="senior-table-wrapper">
             <!-- Extra Scroll Bar Above -->
             <!-- Extra Scroll Bar Above -->
             <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
@@ -60,25 +67,31 @@
                     <table class="table bordered-table sm-table mb-0">
                         <thead>
                             <tr>
-                                <th scope="col">Row #</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email Address</th>
-                                <th scope="col">Phone Number</th>
-                                <th scope="col">Location</th>
-                                <th scope="col">Remark</th>
-                                <th scope="col">Relocation</th>
-                                <th scope="col">Graduation Date</th>
-                                <th scope="col">Immigration</th>
-                                <th scope="col">Course</th>
-                                <th scope="col">Amount</th>
-                                <th scope="col">Qualification</th>
-                                <th scope="col">Exe Remarks</th>
-                                <th scope="col">1st Follow Up Remarks</th>
-                                <th scope="col">Time Zone</th>
-                                <th scope="col">Forwarded By</th>
-                                <th scope="col">View</th>
-                                <th scope="col" class="text-center">Actions</th>
+                                <th scope="col" class="text-center">Row</th>
+                                <th scope="col" class="text-center">Date</th>
+                                <th scope="col" class="text-center">Name</th>
+                                <th scope="col" class="text-center">Email Address</th>
+                                <th scope="col" class="text-center">Phone Number</th>
+                                <th scope="col" class="text-center">Location</th>
+
+                                <th scope="col" class="text-center">Relocation</th>
+                                <th scope="col" class="text-center">Graduation Date</th>
+                                <th scope="col" class="text-center">Immigration</th>
+                                <th scope="col" class="text-center">Course</th>
+                                <th scope="col" class="text-center">Amount</th>
+                                <th scope="col" class="text-center">Qualification</th>
+
+                                <th scope="col" class="text-center">1st Follow Up Remarks</th>
+                                <th scope="col" class="text-center">Time Zone</th>
+                                <th scope="col" class="text-center">Forwarded By</th>
+                                <th scope="col" class="text-center">View</th>
+                                <th scope="col" class="text-center">Remark</th>
+                                <th scope="col" class="text-center">Status</th>
+                                @auth
+                                    @if (auth()->user()->role !== 'operation')
+                                        <th scope="col" class="text-center">Actions</th>
+                                    @endif
+                                @endauth
                             </tr>
                         </thead>
                         <tbody id="sheet-table-body">
@@ -117,11 +130,7 @@
                                             value="{{ $row->Location ?? '' }}" placeholder="Type location">
                                     </td>
 
-                                    {{-- Remark --}}
-                                    <td>
-                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
-                                    </td>
+
 
                                     {{-- Relocation --}}
                                     <td>
@@ -207,19 +216,7 @@
                                         </select>
                                     </td>
 
-                                    {{-- Exe Remarks --}}
-                                    <td>
-                                        @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy']; @endphp
-                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                            <option value="">-- Exe Remarks --</option>
-                                            @foreach ($exeOptions as $option)
-                                                <option value="{{ $option }}"
-                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
-                                                    {{ $option }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
+
 
                                     {{-- 1st Follow Up Remarks --}}
                                     <td>
@@ -281,11 +278,37 @@
                                         @endif
                                     </td>
 
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
-                                            <i class="fas fa-save"></i> Save
-                                        </button>
+                                    {{-- Remark --}}
+                                    <td>
+                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
+
+
+                                    {{-- Status --}}
+                                    <td>
+                                        @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy']; @endphp
+                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
+                                            <option value="">-- Status --</option>
+                                            @foreach ($exeOptions as $option)
+                                                <option value="{{ $option }}"
+                                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
+                                                    {{ $option }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
+
+                                    @auth
+                                        @if (auth()->user()->role !== 'operation')
+                                            <td class="text-center">
+                                                <button class="btn btn-sm btn-success save-btn"
+                                                    data-id="{{ $row->id }}">
+                                                    <i class="fas fa-save"></i> Save
+                                                </button>
+                                            </td>
+                                        @endif
+                                    @endauth
                                 </tr>
                             @endforeach
                         </tbody>
