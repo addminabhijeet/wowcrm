@@ -87,11 +87,8 @@
                                 <th scope="col" class="text-center">View</th>
                                 <th scope="col" class="text-center">Remark</th>
                                 <th scope="col" class="text-center">Status</th>
-                                @auth
-                                    @if (!in_array(auth()->user()->role, ['operation', 'admin']))
-                                        <th scope="col" class="text-center">Actions</th>
-                                    @endif
-                                @endauth
+                                <th scope="col" class="text-center">Actions</th>
+
                             </tr>
                         </thead>
                         <tbody id="sheet-table-body">
@@ -299,16 +296,12 @@
                                         </select>
                                     </td>
 
-                                    @auth
-                                        @if (!in_array(auth()->user()->role, ['operation', 'admin']))
-                                            <td class="text-center">
-                                                <button class="btn btn-sm btn-success save-btn"
-                                                    data-id="{{ $row->id }}">
-                                                    <i class="fas fa-save"></i> Save
-                                                </button>
-                                            </td>
-                                        @endif
-                                    @endauth
+
+                                    <td class="text-center">
+                                        <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
+                                            <i class="fas fa-save"></i> Save
+                                        </button>
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
