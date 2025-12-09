@@ -31,7 +31,7 @@ $script ='<script>
                 @foreach ($juniorUsers as $junior)
                 <option value="{{ $junior->id }}">
                     {{ $junior->name }}
-                    @if($junior->designation) ({{ $junior->designation }}) @endif
+                    @if($junior->gender) ({{ $junior->gender }}) @endif
                 </option>
                 @endforeach
             </select>

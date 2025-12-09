@@ -79,11 +79,11 @@ $script = '<script>
                             </div>
 
                             <div class="mb-20">
-                                <label for="designation" class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                    Designation <span class="text-danger-600">*</span>
+                                <label for="gender" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                    gender <span class="text-danger-600">*</span>
                                 </label>
-                                <select name="designation" id="designation" class="form-control radius-8 form-select" required>
-                                    <option value="">Select Designation</option>
+                                <select name="gender" id="gender" class="form-control radius-8 form-select" required>
+                                    <option value="">Select gender</option>
                                     <option value="Admin">Admin</option>
 
                                 </select>

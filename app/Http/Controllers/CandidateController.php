@@ -104,7 +104,7 @@ class CandidateController extends Controller
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
 
 
         // Handle AJAX request for both search and pagination

@@ -43,8 +43,8 @@
                     @foreach ($juniorUsers as $junior)
                         <option value="{{ $junior->id }}">
                             {{ $junior->name }}
-                            @if ($junior->designation)
-                                ({{ $junior->designation }})
+                            @if ($junior->gender)
+                                ({{ $junior->gender }})
                             @endif
                         </option>
                     @endforeach

@@ -79,8 +79,8 @@ $script ='<script>
 
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
-                            <span class="w-30 text-md fw-semibold text-primary-light"> Designation</span>
-                            <span class="w-70 text-secondary-light fw-medium">: {{ $user->designation === 'Writer' ? 'Resume Writer' : $user->designation}}</span>
+                            <span class="w-30 text-md fw-semibold text-primary-light"> gender</span>
+                            <span class="w-70 text-secondary-light fw-medium">: {{ $user->gender === 'Writer' ? 'Resume Writer' : $user->gender}}</span>
                         </li>
 
                     </ul>
@@ -180,17 +180,17 @@ $script ='<script>
 
                                 <div class="col-sm-6">
                                     <div class="mb-20">
-                                        <label for="designation" class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                            Designation <span class="text-danger-600">*</span>
+                                        <label for="gender" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                            gender <span class="text-danger-600">*</span>
                                         </label>
-                                        <select name="designation" id="designation" class="form-control radius-8 form-select" required>
-                                            <option value="" disabled {{ !$user->designation ? 'selected' : '' }}>Select Designation</option>
-                                            <option value="Accountant" {{ $user->designation == 'Accountant' ? 'selected' : '' }}>Support</option>
-                                            <option value="Admin" {{ $user->designation == 'Admin' ? 'selected' : '' }}>Admin</option>
-                                            <option value="Candidate" {{ $user->designation == 'Candidate' ? 'selected' : '' }}>Candidate</option>
-                                            <option value="Junior" {{ $user->designation == 'Junior' ? 'selected' : '' }}>IT Recruiter</option>
-                                            <option value="Writer" {{ $user->designation == 'Writer' ? 'selected' : '' }}>Resume Writer</option>
-                                            <option value="Trainer" {{ $user->designation == 'Trainer' ? 'selected' : '' }}>Trainer</option>
+                                        <select name="gender" id="gender" class="form-control radius-8 form-select" required>
+                                            <option value="" disabled {{ !$user->gender ? 'selected' : '' }}>Select gender</option>
+                                            <option value="Accountant" {{ $user->gender == 'Accountant' ? 'selected' : '' }}>Support</option>
+                                            <option value="Admin" {{ $user->gender == 'Admin' ? 'selected' : '' }}>Admin</option>
+                                            <option value="Candidate" {{ $user->gender == 'Candidate' ? 'selected' : '' }}>Candidate</option>
+                                            <option value="Junior" {{ $user->gender == 'Junior' ? 'selected' : '' }}>IT Recruiter</option>
+                                            <option value="Writer" {{ $user->gender == 'Writer' ? 'selected' : '' }}>Resume Writer</option>
+                                            <option value="Trainer" {{ $user->gender == 'Trainer' ? 'selected' : '' }}>Trainer</option>
                                         </select>
                                     </div>
                                 </div>

@@ -97,7 +97,7 @@ class GoogleSheetController extends Controller
             ->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
 
         // ✅ For AJAX pagination, return only table partial
         if ($request->ajax()) {
@@ -587,7 +587,7 @@ class GoogleSheetController extends Controller
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
 
         // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
@@ -684,7 +684,7 @@ class GoogleSheetController extends Controller
             ->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
 
         if ($request->ajax()) {
             return view(
@@ -959,7 +959,7 @@ class GoogleSheetController extends Controller
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
 
         // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
@@ -1064,7 +1064,7 @@ class GoogleSheetController extends Controller
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
 
         // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
@@ -3832,7 +3832,7 @@ class GoogleSheetController extends Controller
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
 
         // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
@@ -4750,7 +4750,7 @@ class GoogleSheetController extends Controller
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
 
 
         // Handle AJAX request for both search and pagination
@@ -4851,7 +4851,7 @@ class GoogleSheetController extends Controller
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
 
 
         // Handle AJAX request for both search and pagination
@@ -5294,7 +5294,7 @@ class GoogleSheetController extends Controller
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
 
 
         // Handle AJAX request for both search and pagination
@@ -6741,7 +6741,7 @@ class GoogleSheetController extends Controller
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'designation']);
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
 
 
         // Handle AJAX request for both search and pagination
