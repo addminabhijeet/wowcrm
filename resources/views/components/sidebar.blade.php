@@ -570,7 +570,7 @@
                 <li class="dropdown">
 
                     <a href="javascript:void(0)">
-                        <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                        <iconify-icon icon="fluent:database-20-regular" class="menu-icon"></iconify-icon>
                         <span>IT Recruiter Database</span>
                     </a>
                     <ul class="sidebar-submenu">
@@ -620,7 +620,7 @@
                 <li class="dropdown">
 
                     <a href="javascript:void(0)">
-                        <iconify-icon icon="solar:home-smile-angle-outline" class="menu-icon"></iconify-icon>
+                        <iconify-icon icon="fluent:database-20-regular" class="menu-icon"></iconify-icon>
                         <span>Sr Support Database</span>
                     </a>
                     <ul class="sidebar-submenu">
