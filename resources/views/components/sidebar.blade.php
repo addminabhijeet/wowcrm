@@ -293,6 +293,10 @@
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Admin</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
+                        <li><a href="{{ route('users.operation') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Operation</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
                         <li><a href="{{ route('users.junior') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter</a>
                         </li>
