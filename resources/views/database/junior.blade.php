@@ -51,7 +51,7 @@
                 </select>
             </div>
         </div>
-        <div class="card-body p-24">
+        <div class="card-body p-24" id="senior-table-wrapper">
             <!-- Extra Scroll Bar Above -->
             <!-- Extra Scroll Bar Above -->
             <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
