@@ -89,7 +89,7 @@
                                 <th scope="col">Remark</th>
                                 <th scope="col">Status</th>
                                 @auth
-                                    @if (in_array(auth()->user()->role, ['admin', 'operation']))
+                                    @if (!in_array(auth()->user()->role, ['operation', 'admin']))
                                         <th scope="col" class="text-center">Actions</th>
                                     @endif
                                 @endauth
@@ -303,7 +303,7 @@
                                         </select>
                                     </td>
                                     @auth
-                                        @if (in_array(auth()->user()->role, ['admin', 'operation']))
+                                        @if (!in_array(auth()->user()->role, ['operation', 'admin']))
                                             <td class="text-center">
                                                 <button class="btn btn-sm btn-success save-btn"
                                                     data-id="{{ $row->id }}">
