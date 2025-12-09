@@ -5,25 +5,26 @@
         <table class="table bordered-table sm-table mb-0">
             <thead>
                 <tr>
-                    <th scope="col">Row</th>
-                    <th scope="col">Date</th>
-                    <th scope="col">Name</th>
-                    <th scope="col">Email Address</th>
-                    <th scope="col">Phone Number</th>
-                    <th scope="col">Location</th>
-                    <th scope="col">Remark</th>
-                    <th scope="col">Relocation</th>
-                    <th scope="col">Graduation Date</th>
-                    <th scope="col">Immigration</th>
-                    <th scope="col">Course</th>
-                    <th scope="col">Amount</th>
-                    <th scope="col">Qualification</th>
+                    <th scope="col" class="text-center">Row</th>
+                    <th scope="col" class="text-center">Date</th>
+                    <th scope="col" class="text-center">Name</th>
+                    <th scope="col" class="text-center">Email Address</th>
+                    <th scope="col" class="text-center">Phone Number</th>
+                    <th scope="col" class="text-center">Location</th>
 
-                    <th scope="col">1st Follow Up Remarks</th>
-                    <th scope="col">Time Zone</th>
-                    <th scope="col">Forwarded By</th>
-                    <th scope="col">View</th>
-                    <th scope="col">Status</th>
+                    <th scope="col" class="text-center">Relocation</th>
+                    <th scope="col" class="text-center">Graduation Date</th>
+                    <th scope="col" class="text-center">Immigration</th>
+                    <th scope="col" class="text-center">Course</th>
+                    <th scope="col" class="text-center">Amount</th>
+                    <th scope="col" class="text-center">Qualification</th>
+
+                    <th scope="col" class="text-center">1st Follow Up Remarks</th>
+                    <th scope="col" class="text-center">Time Zone</th>
+                    <th scope="col" class="text-center">Forwarded By</th>
+                    <th scope="col" class="text-center">View</th>
+                    <th scope="col" class="text-center">Remark</th>
+                    <th scope="col" class="text-center">Status</th>
                     <th scope="col" class="text-center">Actions</th>
                 </tr>
             </thead>
@@ -63,11 +64,7 @@
                                 value="{{ $row->Location ?? '' }}" placeholder="Type location">
                         </td>
 
-                        {{-- Remark --}}
-                        <td>
-                            <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                                value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
-                        </td>
+
 
                         {{-- Relocation --}}
                         <td>
@@ -193,23 +190,34 @@
 
                         {{-- View (Resume) --}}
                         <td>
-                            <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
+                            <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input"
+                                data-key="View">
+
                             <button type="button" class="btn btn-sm btn-info upload-btn">
                                 {{ !empty($row->resume) ? 'Change File' : 'Upload' }}
                             </button>
 
                             @if (!empty($row->resume))
-                                <a href="{{ url('dashboard/senior/google-sheet/view-resume/' . $row->id) }}"
-                                    target="_blank" class="btn btn-sm btn-primary view-btn">View PDF</a>
-                                <a href="{{ url('dashboard/senior/google-sheet/download-resume/' . $row->id) }}"
+                                <a href="{{ url('dashboard/junior/google-sheet/view-resume/' . $row->id) }}"
+                                    target="_blank" class="btn btn-sm btn-primary view-btn">View File</a>
+
+                                <a href="{{ url('dashboard/junior/google-sheet/download-resume/' . $row->id) }}"
                                     class="btn btn-sm btn-secondary download-btn">Download</a>
                             @else
                                 <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View
-                                    PDF</a>
+                                    File</a>
                                 <a href="#" download
                                     class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                             @endif
                         </td>
+
+                        {{-- Remark --}}
+                        <td>
+                            <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                        </td>
+
+
                         {{-- Status --}}
                         <td>
                             @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy']; @endphp
