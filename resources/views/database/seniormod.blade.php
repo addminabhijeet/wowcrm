@@ -89,7 +89,7 @@
                                 <th scope="col">Remark</th>
                                 <th scope="col">Status</th>
                                 @auth
-                                    @if (auth()->user()->role !== 'operation')
+                                    @if (in_array(auth()->user()->role, ['admin', 'operation']))
                                         <th scope="col" class="text-center">Actions</th>
                                     @endif
                                 @endauth
