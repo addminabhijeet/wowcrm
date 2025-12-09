@@ -303,7 +303,7 @@
                                         </select>
                                     </td>
                                     @auth
-                                        @if (auth()->user()->role !== 'operation')
+                                        @if (in_array(auth()->user()->role, ['admin', 'operation']))
                                             <td class="text-center">
                                                 <button class="btn btn-sm btn-success save-btn"
                                                     data-id="{{ $row->id }}">
