@@ -333,9 +333,10 @@
             color: #6c757d;
         }
 
-        .pagination{
-            margin-left: 280px; 
-        }
+.pagination {
+    text-align: right;
+}
+
 
 
         select.dynamic-dropdown {
