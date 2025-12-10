@@ -333,7 +333,7 @@
             color: #6c757d;
         }
 
-.d-none.flex-sm-fill.d-sm-flex .pagination {
+.pagination {
     margin-left: auto !important;
 }
 
