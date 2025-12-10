@@ -333,24 +333,17 @@
             color: #6c757d;
         }
 
-        /* Target the outer container exactly */
-        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center {
-            display: flex !important;
-            justify-content: space-between !important;
-            width: 100% !important;
-        }
-
-        /* Force the left text block to left-most */
-        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center>div:first-child {
-            margin-right: auto !important;
+        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between>div:first-child {
+            flex-grow: 1 !important;
             text-align: left !important;
         }
 
-        /* Force the pagination block to right-most */
-        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center>div:last-child {
+        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between>div:last-child {
+            flex-grow: 0 !important;
             margin-left: auto !important;
             text-align: right !important;
         }
+
 
         select.dynamic-dropdown {
             min-width: 160px;
