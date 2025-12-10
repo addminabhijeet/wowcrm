@@ -73,7 +73,7 @@
                                 <th scope="col" class="text-center">Forwarded By</th>
                                 <th scope="col" class="text-center">View</th>
                                 <th scope="col" class="text-center">Remark</th>
-                                <th scope="col"  class="text-center">Status</th>
+                                <th scope="col" class="text-center">Status</th>
                                 @auth
                                     @if (!in_array(auth()->user()->role, ['operation', 'admin']))
                                         <th scope="col" class="text-center">Actions</th>
@@ -349,6 +349,11 @@
         .input-hint {
             font-size: .85rem;
             color: #6c757d;
+        }
+
+        .pagination {
+            margin-left: 40px;
+            /* adjust as needed */
         }
 
         select.dynamic-dropdown {

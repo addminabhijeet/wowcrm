@@ -131,8 +131,9 @@
 
                                     {{-- Location --}}
                                     <td>
-                                        <input type="text" class="form-control location-autocomplete" data-key="Location"
-                                            value="{{ $row->Location ?? '' }}" placeholder="Type location">
+                                        <input type="text" class="form-control location-autocomplete"
+                                            data-key="Location" value="{{ $row->Location ?? '' }}"
+                                            placeholder="Type location">
                                     </td>
 
 
@@ -440,6 +441,12 @@
             font-size: .85rem;
             color: #6c757d;
         }
+
+        .pagination {
+            margin-left: 40px;
+            /* adjust as needed */
+        }
+
 
         select.dynamic-dropdown {
             min-width: 160px;

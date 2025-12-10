@@ -225,8 +225,9 @@
 
                                     {{-- Forwarded By --}}
                                     <td>
-                                        <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
-                                            value="{{ $row->forwarded_by ?? '' }}" placeholder="Forwarded By" readonly>
+                                        <input type="text" class="form-control forwardedBy-input"
+                                            data-key="forwardedBy" value="{{ $row->forwarded_by ?? '' }}"
+                                            placeholder="Forwarded By" readonly>
                                     </td>
 
                                     {{-- View (Resume) --}}
@@ -298,6 +299,12 @@
             font-size: .85rem;
             color: #6c757d;
         }
+
+        .pagination {
+            margin-left: 40px;
+            /* adjust as needed */
+        }
+
 
         select.dynamic-dropdown {
             min-width: 160px;
