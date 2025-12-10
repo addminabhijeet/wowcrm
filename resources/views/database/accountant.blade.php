@@ -396,7 +396,7 @@
         }
 
         .pagination {
-            margin-left: 40px;
+            margin-left: 280px;
             /* adjust as needed */
         }
 
