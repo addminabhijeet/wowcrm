@@ -10,6 +10,28 @@
     ">
         <div id="top-scroll" style="height: 1px;"></div>
     </div>
+    <script>
+        $(document).ready(function() {
+            // Set top-scroll width equal to table width
+            function syncTopScroll() {
+                var tableWidth = $('#sheet-table')[0].scrollWidth;
+                $('#top-scroll').width(tableWidth);
+            }
+
+            syncTopScroll(); // initial sync
+            $(window).resize(syncTopScroll); // update on window resize
+
+            // Scroll table when top-scroll is moved
+            $('#top-scroll-wrapper').on('scroll', function() {
+                $('.table-responsive.scroll-sm').scrollLeft($(this).scrollLeft());
+            });
+
+            // Scroll top-scroll when table is scrolled
+            $('.table-responsive.scroll-sm').on('scroll', function() {
+                $('#top-scroll-wrapper').scrollLeft($(this).scrollLeft());
+            });
+        });
+    </script>
 
     <div class="table-responsive scroll-sm">
 
@@ -304,28 +326,6 @@
                             // Show file input when clicking upload
                             $('.upload-btn').click(function() {
                                 $(this).closest('td').find('input.resume-input').click();
-                            });
-                        });
-                    </script>
-                    <script>
-                        $(document).ready(function() {
-                            // Set top-scroll width equal to table width
-                            function syncTopScroll() {
-                                var tableWidth = $('#sheet-table')[0].scrollWidth;
-                                $('#top-scroll').width(tableWidth);
-                            }
-
-                            syncTopScroll(); // initial sync
-                            $(window).resize(syncTopScroll); // update on window resize
-
-                            // Scroll table when top-scroll is moved
-                            $('#top-scroll-wrapper').on('scroll', function() {
-                                $('.table-responsive.scroll-sm').scrollLeft($(this).scrollLeft());
-                            });
-
-                            // Scroll top-scroll when table is scrolled
-                            $('.table-responsive.scroll-sm').on('scroll', function() {
-                                $('#top-scroll-wrapper').scrollLeft($(this).scrollLeft());
                             });
                         });
                     </script>
