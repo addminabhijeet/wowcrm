@@ -3,7 +3,7 @@
 @else
     <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper"
         style="
-        overflow-x: scroll;
+        overflow-x: auto;
         overflow-y: hidden;
         scrollbar-gutter: stable;
         height: 20px;
@@ -12,7 +12,29 @@
     </div>
 
     <div class="table-responsive scroll-sm">
-        <table class="table bordered-table sm-table mb-0">
+        <script>
+    $(document).ready(function() {
+        // Set top-scroll width equal to table width
+        function syncTopScroll() {
+            var tableWidth = $('#sheet-table')[0].scrollWidth;
+            $('#top-scroll').width(tableWidth);
+        }
+
+        syncTopScroll(); // initial sync
+        $(window).resize(syncTopScroll); // update on window resize
+
+        // Scroll table when top-scroll is moved
+        $('#top-scroll-wrapper').on('scroll', function() {
+            $('.table-responsive.scroll-sm').scrollLeft($(this).scrollLeft());
+        });
+
+        // Scroll top-scroll when table is scrolled
+        $('.table-responsive.scroll-sm').on('scroll', function() {
+            $('#top-scroll-wrapper').scrollLeft($(this).scrollLeft());
+        });
+    });
+</script>
+        <table class="table bordered-table sm-table mb-0" id="sheet-table">
             <thead>
                 <tr>
                     <th scope="col" class="text-center">Row</th>
