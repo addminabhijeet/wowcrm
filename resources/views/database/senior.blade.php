@@ -333,20 +333,7 @@
             color: #6c757d;
         }
 
-.d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between {
-    width: 100% !important;
-    display: flex !important;
-}
-
-.d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between > div:first-child {
-    flex: 1 !important;
-}
-
-.d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between > div:last-child {
-    flex: 0 !important;
-    margin-left: auto !important;
-}
-
+.pagination{ margin-left: 280px; }
 
 
         select.dynamic-dropdown {
