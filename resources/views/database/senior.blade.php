@@ -344,6 +344,20 @@
         }
 
 
+        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between {
+            justify-content: space-between !important;
+            width: 100%;
+        }
+
+        /* Force first div to left */
+        .d-none.flex-sm-fill.d-sm-flex>div:first-child {
+            margin-right: auto;
+        }
+
+        /* Force second div (pagination) to right */
+        .d-none.flex-sm-fill.d-sm-flex>div:last-child {
+            margin-left: auto;
+        }
 
 
 
