@@ -333,12 +333,15 @@
             color: #6c757d;
         }
 
-        .pagination {
-            margin-left: 0 !important;
-            margin-right: auto !important;
+        nav ul.pagination {
+            display: flex !important;
             justify-content: flex-start !important;
+            margin-left: 0 !important;
         }
 
+        nav .d-flex {
+            justify-content: flex-start !important;
+        }
 
 
 
