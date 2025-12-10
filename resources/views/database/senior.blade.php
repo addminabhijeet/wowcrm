@@ -333,7 +333,7 @@
             color: #6c757d;
         }
 
-        nav ul.pagination {
+        .pagination {
             display: flex;
             justify-content: flex-end;
         }
