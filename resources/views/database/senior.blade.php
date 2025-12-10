@@ -333,7 +333,10 @@
             color: #6c757d;
         }
 
-.pagination{ margin-left: 280px; }
+.d-none.flex-sm-fill.d-sm-flex .pagination {
+    margin-left: auto !important;
+}
+
 
 
         select.dynamic-dropdown {
