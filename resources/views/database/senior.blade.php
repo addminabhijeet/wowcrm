@@ -333,33 +333,24 @@
             color: #6c757d;
         }
 
-        nav ul.pagination {
+        /* Target the outer container exactly */
+        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center {
             display: flex !important;
-            justify-content: flex-start !important;
-            margin-left: 0 !important;
-        }
-
-        nav .d-flex {
-            justify-content: flex-start !important;
-        }
-
-
-        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between {
             justify-content: space-between !important;
-            width: 100%;
+            width: 100% !important;
         }
 
-        /* Force first div to left */
-        .d-none.flex-sm-fill.d-sm-flex>div:first-child {
-            margin-right: auto;
+        /* Force the left text block to left-most */
+        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center>div:first-child {
+            margin-right: auto !important;
+            text-align: left !important;
         }
 
-        /* Force second div (pagination) to right */
-        .d-none.flex-sm-fill.d-sm-flex>div:last-child {
-            margin-left: auto;
+        /* Force the pagination block to right-most */
+        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center>div:last-child {
+            margin-left: auto !important;
+            text-align: right !important;
         }
-
-
 
         select.dynamic-dropdown {
             min-width: 160px;
