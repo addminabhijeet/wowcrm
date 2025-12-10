@@ -3,7 +3,7 @@
             </div>
 
             <!-- Main Table Scroll -->
-            
+
 
                 @if ($data->isEmpty())
                     <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
@@ -326,3 +326,93 @@
                 </div>
             @endif
             </div>
+                <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const topScrollWrapper = document.getElementById("top-scroll-wrapper");
+            const topScroll = document.getElementById("top-scroll");
+            const bottomScrollWrapper = document.getElementById("bottom-scroll-wrapper");
+
+            function updateTopScrollWidth() {
+                const table = bottomScrollWrapper.querySelector("table");
+                if (table) {
+                    topScroll.style.width = table.scrollWidth + "px";
+                }
+            }
+
+            // Sync: top → bottom
+            topScrollWrapper.addEventListener("scroll", function() {
+                bottomScrollWrapper.scrollLeft = topScrollWrapper.scrollLeft;
+            });
+
+            // Sync: bottom → top
+            bottomScrollWrapper.addEventListener("scroll", function() {
+                topScrollWrapper.scrollLeft = bottomScrollWrapper.scrollLeft;
+            });
+
+            // Resize after pagination or DOM update
+            const observer = new MutationObserver(updateTopScrollWidth);
+            observer.observe(bottomScrollWrapper, {
+                childList: true,
+                subtree: true
+            });
+
+            // Initial load
+            updateTopScrollWidth();
+        });
+    </script>
+    <style>
+        .scroll-sm {
+            overflow-x: scroll;
+            overflow-y: hidden;
+            /* always show scrollbar */
+            scrollbar-gutter: stable;
+            /* prevent layout shift */
+        }
+
+        /* === Chrome, Edge, Safari === */
+        .scroll-sm::-webkit-scrollbar {
+            height: 36px;
+            /* horizontal scrollbar thickness */
+            width: 0;
+            /* vertical scrollbar thickness */
+        }
+
+        .scroll-sm::-webkit-scrollbar-thumb {
+            background: linear-gradient(135deg, #888, #666);
+            border-radius: 18px;
+            /* rounded ends */
+            border: 6px solid #f1f1f1;
+            /* gives space inside thumb */
+            transition: background 0.3s, border-color 0.3s, height 0.3s;
+        }
+
+        .scroll-sm::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(135deg, #555, #333);
+            border-color: #e0e0e0;
+        }
+
+        .scroll-sm::-webkit-scrollbar-track {
+            background-color: #f1f1f1;
+            border-radius: 18px;
+        }
+
+        /* === Firefox === */
+        .scroll-sm {
+            scrollbar-width: auto;
+            /* thicker style */
+            scrollbar-color: #666 #f1f1f1;
+            /* thumb + track */
+        }
+
+        #top-scroll-wrapper {
+            overflow-x: scroll;
+            overflow-y: hidden;
+            height: 20px;
+        }
+
+        #top-scroll {
+            height: 1px;
+            /* required */
+        }
+    </style>
