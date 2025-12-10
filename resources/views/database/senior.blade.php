@@ -334,9 +334,9 @@
         }
 
         .pagination {
-            display: flex;
-            justify-content: flex-end;
+            margin-left: auto !important;
         }
+
 
 
 
