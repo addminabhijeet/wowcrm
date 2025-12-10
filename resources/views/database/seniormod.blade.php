@@ -336,6 +336,12 @@
             color: #6c757d;
         }
 
+        .pagination {
+            margin-left: 280px;
+            /* adjust as needed */
+        }
+
+
         select.dynamic-dropdown {
             min-width: 160px;
         }
