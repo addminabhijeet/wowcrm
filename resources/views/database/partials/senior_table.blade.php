@@ -1,9 +1,16 @@
 @if ($data->isEmpty())
     <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
 @else
-    <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
-        <div id="top-scroll"></div>
+    <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper"
+        style="
+        overflow-x: scroll;
+        overflow-y: hidden;
+        scrollbar-gutter: stable;
+        height: 20px;
+    ">
+        <div id="top-scroll" style="height: 1px;"></div>
     </div>
+
     <div class="table-responsive scroll-sm">
         <table class="table bordered-table sm-table mb-0">
             <thead>
