@@ -333,16 +333,20 @@
             color: #6c757d;
         }
 
-        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between>div:first-child {
-            flex-grow: 1 !important;
-            text-align: left !important;
-        }
+.d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between {
+    width: 100% !important;
+    display: flex !important;
+}
 
-        .d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between>div:last-child {
-            flex-grow: 0 !important;
-            margin-left: auto !important;
-            text-align: right !important;
-        }
+.d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between > div:first-child {
+    flex: 1 !important;
+}
+
+.d-none.flex-sm-fill.d-sm-flex.align-items-sm-center.justify-content-sm-between > div:last-child {
+    flex: 0 !important;
+    margin-left: auto !important;
+}
+
 
 
         select.dynamic-dropdown {
