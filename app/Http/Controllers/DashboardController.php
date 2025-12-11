@@ -417,9 +417,10 @@ class DashboardController extends Controller
                 'pause_type'        => 'resume',
             ];
 
-            if ($user->role === 'senior') {
+            if (in_array($user->role, ['senior', 'associate'])) {
                 $timerData['button_status'] = '1';
             }
+
 
             $timer = UserTimerLog::create($timerData);
 
