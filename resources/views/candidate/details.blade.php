@@ -124,32 +124,7 @@
                                                     placeholder="Enter Full Name" required>
                                             </div>
 
-                                            <script>
-                                                document.addEventListener("DOMContentLoaded", function() {
-                                                    const nameInput = document.querySelector("#name");
 
-                                                    if (nameInput) {
-                                                        nameInput.addEventListener("input", function(e) {
-                                                            let v = e.target.value;
-
-                                                            // Allow only letters + spaces
-                                                            v = v.replace(/[^a-zA-Z\s]/g, "");
-
-                                                            // Capitalize first letter of each word
-                                                            v = v.replace(/\b\w/g, function(ch) {
-                                                                return ch.toUpperCase();
-                                                            });
-
-                                                            // Lowercase the rest
-                                                            v = v.replace(/\B\w/g, function(ch) {
-                                                                return ch.toLowerCase();
-                                                            });
-
-                                                            e.target.value = v;
-                                                        });
-                                                    }
-                                                });
-                                            </script>
 
 
 
@@ -733,6 +708,43 @@
                                                     value="{{ old('PayeeName', $candidate->PayeeName ?? '') }}"
                                                     placeholder="Enter Payee Name" required>
                                             </div>
+
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+
+                                                    function formatName(input) {
+                                                        let v = input.value;
+
+                                                        // Allow only letters + spaces
+                                                        v = v.replace(/[^a-zA-Z\s]/g, "");
+
+                                                        // Capitalize first letter of each word
+                                                        v = v.replace(/\b\w/g, ch => ch.toUpperCase());
+
+                                                        // Lowercase other characters
+                                                        v = v.replace(/\B\w/g, ch => ch.toLowerCase());
+
+                                                        input.value = v;
+                                                    }
+
+                                                    const nameInput = document.querySelector("#name");
+                                                    const payeeInput = document.querySelector("#PayeeName");
+
+                                                    if (nameInput) {
+                                                        nameInput.addEventListener("input", function(e) {
+                                                            formatName(e.target);
+                                                        });
+                                                    }
+
+                                                    if (payeeInput) {
+                                                        payeeInput.addEventListener("input", function(e) {
+                                                            formatName(e.target);
+                                                        });
+                                                    }
+
+                                                });
+                                            </script>
+
 
                                             <!--  Save Button -->
                                             {{-- <div class="mb-20 d-flex flex-column">
