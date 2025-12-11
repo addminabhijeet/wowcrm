@@ -199,6 +199,160 @@
                                     </div>
                                 </div>
 
+                                <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            /* ------------------------------------
+                ORIGINAL FUNCTIONALITY (UNTOUCHED)
+            ------------------------------------ */
+
+            /* PHONE */
+            const phoneInput = document.querySelector("#phone");
+            if (phoneInput) {
+                phoneInput.addEventListener("input", function(e) {
+                    const clean = e.target.value.replace(/\D/g, "");
+                    e.target.value = formatPhoneNumber(clean);
+                    validatePhoneInput(e.target);
+                });
+            }
+
+            /* NAME */
+            const nameInput = document.querySelector("#name");
+            if (nameInput) {
+                validateNameInput(nameInput);
+
+                nameInput.addEventListener("input", function(e) {
+                    let v = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                    v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+                    e.target.value = v;
+                    validateNameInput(e.target);
+                });
+            }
+
+            /* EMAIL */
+            const emailInput = document.querySelector("input[name='email']");
+            if (emailInput) {
+                emailInput.addEventListener("input", function(e) {
+                    e.target.value = e.target.value.toLowerCase();
+                    validateEmailInput(e.target);
+                });
+            }
+
+            /* LOCATION */
+            const locationInput = document.querySelector("input[name='Location']");
+            if (locationInput) {
+                locationInput.addEventListener("input", function(e) {
+                    e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s,.-]/g, "");
+                });
+            }
+
+            /* AMOUNT */
+            const amountInput = document.querySelector("#amount");
+            if (amountInput) {
+                amountInput.addEventListener("input", function(e) {
+                    validateAmountInput(e.target);
+                });
+            }
+
+            /* TRAN ID, REF, METHOD, PAYEE */
+            ["TranId", "TranRef", "PaymentMethod", "PayeeName"].forEach(id => {
+                const el = document.querySelector("#" + id);
+                if (el) {
+                    el.addEventListener("input", function(e) {
+                        e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s\-]/g, "");
+                    });
+                }
+            });
+
+            /* GRADUATION DATE */
+            const gradInput = document.querySelector("#graduation");
+            if (gradInput) {
+                gradInput.addEventListener("input", function(e) {
+                    e.target.value = e.target.value.replace(/[^0-9\/\-]/g, "");
+                });
+            }
+
+
+
+            /* ------------------------------------------------
+                NEW FUNCTIONALITY: SAME AS tableBody LISTENER
+            ------------------------------------------------ */
+            document.addEventListener("input", function(e) {
+
+                /* phone-input */
+                if (e.target.matches("input.phone-input")) {
+                    e.target.value = formatPhoneNumber(e.target.value.replace(/\D/g, ""));
+                    validatePhoneInput(e.target);
+                }
+
+                /* email-input */
+                if (e.target.matches("input.email-input")) {
+                    e.target.value = e.target.value.toLowerCase();
+                    validateEmailInput(e.target);
+                }
+
+                /* name-input */
+                if (e.target.matches("input.name-input")) {
+                    let v = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                    v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+                    e.target.value = v;
+                    validateNameInput(e.target);
+                }
+            });
+
+
+
+            /* ------------------------------------------------
+                applyInitialState()  (FULLY MATCHING YOUR EXAMPLE)
+            ------------------------------------------------ */
+            window.applyInitialState = function(context = document) {
+
+                context.querySelectorAll('select.dynamic-dropdown')
+                    .forEach(s => updateSelectColor(s));
+
+                initDatePickers(context);
+                initLocationAutocomplete(context);
+
+                /* amount-input */
+                context.querySelectorAll('input.amount-input').forEach(i => {
+                    validateAmountInput(i);
+                    i.addEventListener("input", () => validateAmountInput(i));
+                });
+
+                /* phone-input */
+                context.querySelectorAll('input.phone-input').forEach(i => {
+                    i.value = formatPhoneNumber(i.value);
+                    validatePhoneInput(i);
+                    i.addEventListener("input", () => {
+                        i.value = formatPhoneNumber(i.value);
+                        validatePhoneInput(i);
+                    });
+                });
+
+                /* email-input */
+                context.querySelectorAll('input.email-input').forEach(i => {
+                    validateEmailInput(i);
+                    i.addEventListener("input", () => {
+                        i.value = i.value.toLowerCase();
+                        validateEmailInput(i);
+                    });
+                });
+
+                /* name-input */
+                context.querySelectorAll('input.name-input').forEach(i => {
+                    validateNameInput(i);
+                    i.addEventListener("input", () => {
+                        let v = i.value.replace(/[^a-zA-Z\s]/g, '');
+                        v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+                        i.value = v;
+                        validateNameInput(i);
+                    });
+                });
+            };
+
+        });
+    </script>
+
                                 <div class="col-lg-6 w-100 text-xs">
                                     <div class="card h-100 p-0">
                                         <div class="card-header border-bottom bg-base py-16 px-24">
@@ -1176,157 +1330,5 @@
         });
     </script>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
 
-            /* ------------------------------------
-                ORIGINAL FUNCTIONALITY (UNTOUCHED)
-            ------------------------------------ */
-
-            /* PHONE */
-            const phoneInput = document.querySelector("#phone");
-            if (phoneInput) {
-                phoneInput.addEventListener("input", function(e) {
-                    const clean = e.target.value.replace(/\D/g, "");
-                    e.target.value = formatPhoneNumber(clean);
-                    validatePhoneInput(e.target);
-                });
-            }
-
-            /* NAME */
-            const nameInput = document.querySelector("#name");
-            if (nameInput) {
-                validateNameInput(nameInput);
-
-                nameInput.addEventListener("input", function(e) {
-                    let v = e.target.value.replace(/[^a-zA-Z\s]/g, '');
-                    v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-                    e.target.value = v;
-                    validateNameInput(e.target);
-                });
-            }
-
-            /* EMAIL */
-            const emailInput = document.querySelector("input[name='email']");
-            if (emailInput) {
-                emailInput.addEventListener("input", function(e) {
-                    e.target.value = e.target.value.toLowerCase();
-                    validateEmailInput(e.target);
-                });
-            }
-
-            /* LOCATION */
-            const locationInput = document.querySelector("input[name='Location']");
-            if (locationInput) {
-                locationInput.addEventListener("input", function(e) {
-                    e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s,.-]/g, "");
-                });
-            }
-
-            /* AMOUNT */
-            const amountInput = document.querySelector("#amount");
-            if (amountInput) {
-                amountInput.addEventListener("input", function(e) {
-                    validateAmountInput(e.target);
-                });
-            }
-
-            /* TRAN ID, REF, METHOD, PAYEE */
-            ["TranId", "TranRef", "PaymentMethod", "PayeeName"].forEach(id => {
-                const el = document.querySelector("#" + id);
-                if (el) {
-                    el.addEventListener("input", function(e) {
-                        e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s\-]/g, "");
-                    });
-                }
-            });
-
-            /* GRADUATION DATE */
-            const gradInput = document.querySelector("#graduation");
-            if (gradInput) {
-                gradInput.addEventListener("input", function(e) {
-                    e.target.value = e.target.value.replace(/[^0-9\/\-]/g, "");
-                });
-            }
-
-
-
-            /* ------------------------------------------------
-                NEW FUNCTIONALITY: SAME AS tableBody LISTENER
-            ------------------------------------------------ */
-            document.addEventListener("input", function(e) {
-
-                /* phone-input */
-                if (e.target.matches("input.phone-input")) {
-                    e.target.value = formatPhoneNumber(e.target.value.replace(/\D/g, ""));
-                    validatePhoneInput(e.target);
-                }
-
-                /* email-input */
-                if (e.target.matches("input.email-input")) {
-                    e.target.value = e.target.value.toLowerCase();
-                    validateEmailInput(e.target);
-                }
-
-                /* name-input */
-                if (e.target.matches("input.name-input")) {
-                    let v = e.target.value.replace(/[^a-zA-Z\s]/g, '');
-                    v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-                    e.target.value = v;
-                    validateNameInput(e.target);
-                }
-            });
-
-
-
-            /* ------------------------------------------------
-                applyInitialState()  (FULLY MATCHING YOUR EXAMPLE)
-            ------------------------------------------------ */
-            window.applyInitialState = function(context = document) {
-
-                context.querySelectorAll('select.dynamic-dropdown')
-                    .forEach(s => updateSelectColor(s));
-
-                initDatePickers(context);
-                initLocationAutocomplete(context);
-
-                /* amount-input */
-                context.querySelectorAll('input.amount-input').forEach(i => {
-                    validateAmountInput(i);
-                    i.addEventListener("input", () => validateAmountInput(i));
-                });
-
-                /* phone-input */
-                context.querySelectorAll('input.phone-input').forEach(i => {
-                    i.value = formatPhoneNumber(i.value);
-                    validatePhoneInput(i);
-                    i.addEventListener("input", () => {
-                        i.value = formatPhoneNumber(i.value);
-                        validatePhoneInput(i);
-                    });
-                });
-
-                /* email-input */
-                context.querySelectorAll('input.email-input').forEach(i => {
-                    validateEmailInput(i);
-                    i.addEventListener("input", () => {
-                        i.value = i.value.toLowerCase();
-                        validateEmailInput(i);
-                    });
-                });
-
-                /* name-input */
-                context.querySelectorAll('input.name-input').forEach(i => {
-                    validateNameInput(i);
-                    i.addEventListener("input", () => {
-                        let v = i.value.replace(/[^a-zA-Z\s]/g, '');
-                        v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-                        i.value = v;
-                        validateNameInput(i);
-                    });
-                });
-            };
-
-        });
-    </script>
 @endsection
