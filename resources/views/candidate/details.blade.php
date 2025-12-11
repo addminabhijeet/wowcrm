@@ -164,6 +164,34 @@
                                                     placeholder="Enter Phone" required>
                                             </div>
 
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+
+                                                    const phoneInput = document.querySelector("#phone");
+
+                                                    if (phoneInput) {
+                                                        phoneInput.addEventListener("input", function(e) {
+                                                            let v = e.target.value.replace(/\D/g, ""); // Only numbers
+
+                                                            // Limit to 10 digits
+                                                            if (v.length > 10) v = v.slice(0, 10);
+
+                                                            // Add formatting: XXX-XXX-XXXX
+                                                            if (v.length > 6) {
+                                                                v = v.replace(/(\d{3})(\d{3})(\d{1,4})/, "$1-$2-$3");
+                                                            } else if (v.length > 3) {
+                                                                v = v.replace(/(\d{3})(\d{1,3})/, "$1-$2");
+                                                            }
+
+                                                            e.target.value = v;
+                                                        });
+                                                    }
+
+                                                });
+                                            </script>
+
+
+
                                             <!-- TIME ZONE -->
                                             <div class="mb-20">
                                                 <label class="form-label fw-semibold text-primary-light text-sm mb-8">
