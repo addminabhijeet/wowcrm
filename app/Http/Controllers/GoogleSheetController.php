@@ -982,15 +982,14 @@ class GoogleSheetController extends Controller
 
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
             $q->where('created_by', $authUser->id . '|junior')
-                ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior'])
+
                 ->orWhere('created_by', 'LIKE', $userPattern);
         })->where('transfers', 1);
 
         // Filter by selected junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
-                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                    ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$juniorUserId . '|junior', $juniorUserId . '|junior']);
+                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
             })->where('transfers', 1);
         }
 
