@@ -206,6 +206,32 @@
                                                     placeholder="Enter Email" required>
                                             </div>
 
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+
+                                                    const emailInput = document.querySelector(".email-input");
+
+                                                    if (emailInput) {
+                                                        emailInput.addEventListener("input", function(e) {
+                                                            let v = e.target.value;
+
+                                                            // Convert to lowercase
+                                                            v = v.toLowerCase();
+
+                                                            // Allow only valid email characters
+                                                            v = v.replace(/[^a-z0-9@._-]/g, "");
+
+                                                            // Remove spaces
+                                                            v = v.replace(/\s+/g, "");
+
+                                                            e.target.value = v;
+                                                        });
+                                                    }
+
+                                                });
+                                            </script>
+
+
                                             <!-- LOCATION -->
                                             <div class="mb-20">
                                                 <label class="form-label fw-semibold text-primary-light text-sm mb-8">
