@@ -654,18 +654,18 @@
                                                             // Allow only numbers
                                                             v = v.replace(/\D/g, "");
 
-                                                            // Convert to number safely
-                                                            let num = parseInt(v || "0");
+                                                            // Limit to 4 digits only
+                                                            if (v.length > 4) {
+                                                                v = v.slice(0, 4);
+                                                            }
 
-                                                            // Restrict max to 5000
-                                                            if (num > 5000) num = 5000;
-
-                                                            e.target.value = num === 0 ? "" : num;
+                                                            e.target.value = v;
                                                         });
                                                     }
 
                                                 });
                                             </script>
+
 
 
 
