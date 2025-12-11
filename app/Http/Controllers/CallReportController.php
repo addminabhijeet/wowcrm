@@ -1808,7 +1808,7 @@ class CallReportController extends Controller
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
-
+        $juniorUser = $accountantUser;
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t8to9am = $hourlyCalledMailed[8] ?? 0;
