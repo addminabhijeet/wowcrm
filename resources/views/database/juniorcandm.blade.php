@@ -86,7 +86,7 @@
                                     <td>
                                         <input type="text" class="form-control date-picker" data-key="Date"
                                             value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}"
-                                            readonly style="background-color: #f8f9fa; cursor: not-allowed;">
+                                            readonly >
                                     </td>
 
 
@@ -557,8 +557,6 @@
                                         $input.val(display || r.display_name);
                                         applyCss(display || r
                                             .display_name); // Apply valid class
-                                        $input.css('background-color',
-                                            '#d4edda'); // optional highlight
                                         $('#loc-suggestions').remove();
                                     });
                                     $list.append(item);
@@ -1243,18 +1241,18 @@
                                     input.classList.remove('is-valid');
                                     hint.textContent =
                                         'This email already exists in the database.';
-                                    hint.style.color = 'red';
+
                                 } else {
                                     input.classList.remove('is-invalid');
                                     input.classList.add('is-valid');
                                     hint.textContent = 'Email available.';
-                                    hint.style.color = 'green';
+
                                 }
                             })
                             .catch(error => {
                                 console.error('Email check failed:', error);
                                 hint.textContent = '⚠️ Server error. Try again.';
-                                hint.style.color = 'orange';
+                               
                             });
 
                     }, 500); // 500ms debounce
