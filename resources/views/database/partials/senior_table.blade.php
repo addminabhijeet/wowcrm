@@ -266,12 +266,17 @@
                             </select>
                         </td>
 
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
-                                <i class="fas fa-save"></i> Save
-                            </button>
-                        </td>
+                        @auth
+                            @if (!in_array(auth()->user()->role, ['operation','admin']))
+                                <td class="text-center">
+                                    <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
+                                        <i class="fas fa-save"></i> Save
+                                    </button>
+                                </td>
+                            @endif
+                        @endauth
                     </tr>
+
                     <script>
                         $(document).ready(function() {
                             $('.save-btn').click(function() {
