@@ -503,7 +503,85 @@
         document.addEventListener("DOMContentLoaded", function() {
             const tableBody = document.getElementById("sheet-table-body");
 
+            const exeColors = {
+                'Ready To Pay': '#d4edda',
+                'Payment Completed': '#d4edda',
+                'Not Connected': '#f8d7da',
+                'Did Not Pickup': '#d4edda',
+                'Not Interested': '#f8d7da',
+                'Others': '#d1ecf1',
+                'Payment Completed': '#e2e3e5',
+                'VM': '#fff3cd',
+                'Busy': '#cce5ff'
+            };
+            const immColors = {
+                'F1 CPT': '#d1ecf1',
+                'F1 OPT': '#cce5ff',
+                'STEM OPT': '#d4edda',
+                'H1B': '#fff3cd',
+                'B2': '#e2e3e5',
+                'B1': '#f8d7da',
+                'H4': '#ffe5b4',
+                'H4 EAD': '#e6ccff',
+                'GC/PR': '#d0f0c0',
+                'USC': '#f5c6cb'
+            };
 
+            const relColors = {
+                'YES': '#d4edda',
+                'NO': '#f8d7da'
+            };
+            const followColors = {
+                'Interested': '#d4edda',
+                'Doubt need Clarification': '#fff3cd',
+                'Money Issue': '#f8d7da',
+                'Not Interested': '#f8d7da',
+                "Don't Call": '#e2e3e5'
+            };
+            const courseColors = {
+                'BA': '#e2f0d9',
+                'SAS': '#d1ecf1',
+                'JAVA': '#cce5ff',
+                'QA': '#fff3cd',
+                'SQL': '#fbe7d0',
+                'PYTHON': '#d4edda',
+                'DOT NET': '#f8d7da'
+            };
+            const timezoneColors = {
+                'EST': '#e2f0d9',
+                'CST': '#d1ecf1',
+                'MST': '#cce5ff',
+                'PST': '#fff3cd'
+            };
+            const qualificationColors = {
+                'Masters': '#e2f0d9',
+                'Masters of Science': '#cce5ff',
+                'Bachelors': '#e2f0d9',
+                'PG': '#cce5ff',
+                'MBA': '#e2f0d9',
+                'PG Diploma': '#e2f0d9',
+                'M.Tech': '#cce5ff',
+                'B.Tech': '#e2f0d9',
+                'MA': '#e2f0d9',
+                'Associate Degree': '#cce5ff',
+                'Aerospace Proj. Manag.': '#e2f0d9',
+            };
+            const dateColor = "#e0f7fa";
+            const amountColors = "#e0f7fa";
+
+            function updateSelectColor(select) {
+                const val = select.value;
+                const key = select.dataset.key;
+                let color = '#ffffff';
+                if (key === 'Exe Remarks') color = exeColors[val] || color;
+                else if (key === 'Immigration') color = immColors[val] || color;
+                else if (key === 'Relocation') color = relColors[val] || color;
+                else if (key === '1st Follow Up Remarks') color = followColors[val] || color;
+                else if (key === 'Course') color = courseColors[val] || color;
+                else if (key === 'Time Zone') color = timezoneColors[val] || color;
+                else if (key === 'Qualification') color = qualificationColors[val] || color;
+                select.style.backgroundColor = color;
+            }
 
             function formatPhoneNumber(value) {
                 const digits = value.replace(/\D/g, "").slice(0, 10);
@@ -605,7 +683,7 @@
 
             function initDatePickers(context = document) {
                 const laravelToday =
-                    "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}";
+                    "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
 
                 context.querySelectorAll('input.date-picker').forEach(input => {
                     const key = input.dataset.key;
@@ -613,22 +691,22 @@
                         dateFormat: "m/d/Y",
                         allowInput: true,
                         onChange: function(selectedDates, dateStr) {
-                            // override existing color logic without removing it
-                            input.style.backgroundColor = 'transparent';
+                            input.style.backgroundColor = dateStr ? dateColor : '#fff';
                         },
                         onReady: function(selectedDates, dateStr) {
-                            if (input.value) input.style.backgroundColor = 'transparent';
+                            if (input.value) input.style.backgroundColor = dateColor;
                         }
                     };
 
-                    if (key === "Graduation Date") opts.maxDate = laravelToday;
+                    // ✅ Use Laravel's timezone-based today
+                    if (key === "Date") opts.maxDate = laravelToday;
                     if (key === "Date") opts.minDate = laravelToday;
 
                     flatpickr(input, opts);
 
                     input.addEventListener('blur', function() {
                         if (input.value && !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(input.value)) {
-                            input.style.backgroundColor = 'transparent';
+                            input.style.backgroundColor = '#fff';
                         }
                     });
                 });
