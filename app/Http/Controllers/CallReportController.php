@@ -2530,7 +2530,7 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-
+        $juniorUser = $user;
 
         // Initialize hour blocks (8 PM - 6 AM)
         $t8to9am = $hourlyCalledMailed[8] ?? 0;
@@ -2563,6 +2563,7 @@ class CallReportController extends Controller
             'totalCalls',
             'calledAndMailedCalls',
             'otherCalls',
+            'juniorUser',
             'StotalCalls',
             'ScalledAndMailedCalls',
             'SotherCalls',
