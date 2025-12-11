@@ -1191,14 +1191,15 @@
                 });
             }
 
-            /* -----------------------------
-                NAME: only letters + spaces
-            ----------------------------- */
             const nameInput = document.querySelector("#name");
             if (nameInput) {
                 validateNameInput(nameInput); // initial validation
+
                 nameInput.addEventListener("input", function(e) {
-                    e.target.value = e.target.value.toLowerCase().replace(/[^a-zA-Z\s]/g, "");
+                    let v = e.target.value.replace(/[^a-zA-Z\s]/g, ''); // remove invalid chars
+                    v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()); // capitalize words
+                    e.target.value = v;
+
                     validateNameInput(e.target);
                 });
             }
