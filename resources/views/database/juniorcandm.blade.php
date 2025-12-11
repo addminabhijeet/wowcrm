@@ -1163,20 +1163,6 @@
             animation: highlightFlash 0.5s ease-in-out;
         }
 
-        @keyframes highlightFlash {
-            0% {
-                background-color: #fff3b0;
-            }
-
-            50% {
-                background-color: #fff59d;
-            }
-
-            100% {
-                background-color: transparent;
-            }
-        }
-
         /* Mouse-drag cursor */
         .scroll-sm.dragging {
             cursor: grabbing;
@@ -1252,7 +1238,7 @@
                             .catch(error => {
                                 console.error('Email check failed:', error);
                                 hint.textContent = '⚠️ Server error. Try again.';
-                               
+
                             });
 
                     }, 500); // 500ms debounce
