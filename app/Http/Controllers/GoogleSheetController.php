@@ -772,6 +772,80 @@ class GoogleSheetController extends Controller
         return view('database.seniorcandm', compact('data'));
     }
 
+    public function senioradmincandm(Request $request)
+    {
+        // Create a dummy object with id = 32 (without touching your inner logic)
+        $authUser = (object)['id' => 32];
+
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+
+        // SUBSTRING_INDEX-based filter with second part check
+        $query = GoogleSheetData::where(function ($q) use ($authUser) {
+            $seniorPart = $authUser->id . '|senior';
+
+            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart])
+                ->whereRaw("
+              LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) >= 1
+              AND
+              SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'
+          ");
+        });
+
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $data = $query->orderBy('Date', 'desc')->paginate(10);
+
+        // Map forwarded_by dynamically for multiple creators
+        $data->getCollection()->transform(function ($item) use ($authUser) {
+
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+
+                $names = [];
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        if ($request->ajax()) {
+            return view('database.partials.senior_table', compact('data'))->render();
+        }
+
+        return view('database.seniorcandm', compact('data'));
+    }
+
+
     public function seniormodcandm(Request $request)
     {
         $authUser = Auth::user();
