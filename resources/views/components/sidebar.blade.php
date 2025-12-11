@@ -778,7 +778,7 @@
                         <span>Database</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.career') }}"><i
+                        <li><a href="{{ route('google.sheet.associate') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
                     </ul>
                 </li>
