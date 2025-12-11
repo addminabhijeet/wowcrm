@@ -1838,7 +1838,7 @@ class CallReportController extends Controller
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
 
         return view('reports.allaccountantmonthly', compact(
-            'accountantUser',
+            'juniorUser',
             'MtotalCalls',
             'McalledAndMailedCalls',
             'MotherCalls',
