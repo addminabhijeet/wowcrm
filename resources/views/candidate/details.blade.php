@@ -640,8 +640,34 @@
                                                         value="{{ old('amount', $candidate->Amount ?? '') }}"
                                                         placeholder="Enter Amount" required>
                                                 </div>
-
                                             </div>
+
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+
+                                                    const amountInput = document.querySelector("#amount");
+
+                                                    if (amountInput) {
+                                                        amountInput.addEventListener("input", function(e) {
+                                                            let v = e.target.value;
+
+                                                            // Allow only numbers
+                                                            v = v.replace(/\D/g, "");
+
+                                                            // Convert to number safely
+                                                            let num = parseInt(v || "0");
+
+                                                            // Restrict max to 5000
+                                                            if (num > 5000) num = 5000;
+
+                                                            e.target.value = num === 0 ? "" : num;
+                                                        });
+                                                    }
+
+                                                });
+                                            </script>
+
+
 
                                             <div class="mb-20">
                                                 <label for="PaymentDate"
