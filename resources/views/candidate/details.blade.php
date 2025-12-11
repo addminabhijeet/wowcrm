@@ -124,6 +124,35 @@
                                                     placeholder="Enter Full Name" required>
                                             </div>
 
+                                            <script>
+                                                document.addEventListener("DOMContentLoaded", function() {
+                                                    const nameInput = document.querySelector("#name");
+
+                                                    if (nameInput) {
+                                                        nameInput.addEventListener("input", function(e) {
+                                                            let v = e.target.value;
+
+                                                            // Allow only letters + spaces
+                                                            v = v.replace(/[^a-zA-Z\s]/g, "");
+
+                                                            // Capitalize first letter of each word
+                                                            v = v.replace(/\b\w/g, function(ch) {
+                                                                return ch.toUpperCase();
+                                                            });
+
+                                                            // Lowercase the rest
+                                                            v = v.replace(/\B\w/g, function(ch) {
+                                                                return ch.toLowerCase();
+                                                            });
+
+                                                            e.target.value = v;
+                                                        });
+                                                    }
+                                                });
+                                            </script>
+
+
+
                                             <!-- PHONE -->
                                             <div class="mb-20">
                                                 <label class="form-label fw-semibold text-primary-light text-sm mb-8">
@@ -204,7 +233,7 @@
                                 </div>
 
 
-                                
+
                                 <div class="col-lg-6 w-100 text-xs">
                                     <div class="card h-100 p-0">
                                         <div class="card-header border-bottom bg-base py-16 px-24">
