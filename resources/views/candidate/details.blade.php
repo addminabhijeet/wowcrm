@@ -1193,87 +1193,16 @@
 
             const nameInput = document.querySelector("#name");
             if (nameInput) {
-                // helper: sanitize + capitalize
-                function formatNameValue(raw) {
-                    // remove any non-letters/spaces, collapse multiple spaces, trim ends
-                    let v = raw.replace(/[^a-zA-Z\s]/g, " ").replace(/\s+/g, " ").trim();
+                validateNameInput(nameInput); // initial validation
 
-                    if (v.length === 0) return "";
-
-                    // lowercase then capitalize first letter of each word
-                    v = v.toLowerCase().replace(/\b[a-z]/g, c => c.toUpperCase());
-                    return v;
-                }
-
-                // try to preserve caret position reasonably after transform
-                function setValuePreserveCaret(el, newValue, oldSelectionStart) {
-                    const oldValue = el.value;
-                    el.value = newValue;
-
-                    // compute new caret position: keep at same index if lengths same,
-                    // otherwise clamp to new length.
-                    let pos = oldSelectionStart;
-                    if (pos == null) pos = newValue.length;
-                    if (pos > newValue.length) pos = newValue.length;
-                    try {
-                        el.setSelectionRange(pos, pos);
-                    } catch (e) {
-                        // ignore if not supported
-                    }
-                }
-
-                // initial formatting (if prefilled)
-                if (nameInput.value) {
-                    nameInput.value = formatNameValue(nameInput.value);
-                }
-                if (typeof validateNameInput === "function") validateNameInput(nameInput);
-
-                // input handler: sanitize + capitalize as user types
                 nameInput.addEventListener("input", function(e) {
-                    const el = e.target;
-                    const oldSel = el.selectionStart;
-                    const formatted = formatNameValue(el.value);
+                    let v = e.target.value.replace(/[^a-zA-Z\s]/g, ''); // remove non-letters
+                    v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase()); // capitalize words
+                    e.target.value = v;
 
-                    // If formatted differs, update and try to keep caret
-                    if (formatted !== el.value) {
-                        setValuePreserveCaret(el, formatted, oldSel);
-                    } else {
-                        // value same but ensure single spaces, etc.
-                        el.value = formatted;
-                    }
-
-                    if (typeof validateNameInput === "function") validateNameInput(el);
-                });
-
-                // handle paste: sanitize pasted content before it lands
-                nameInput.addEventListener("paste", function(e) {
-                    e.preventDefault();
-                    const text = (e.clipboardData || window.clipboardData).getData("text");
-                    const cleaned = formatNameValue(text);
-                    const el = e.target;
-                    // insert cleaned text at caret position
-                    const start = el.selectionStart || 0;
-                    const end = el.selectionEnd || 0;
-                    const newVal = (el.value.slice(0, start) + (start && el.value[start - 1] !== ' ' ? ' ' :
-                        '') + cleaned + el.value.slice(end)).replace(/\s+/g, " ").trim();
-                    el.value = newVal;
-                    // place caret after inserted text
-                    const caretPos = Math.min(start + cleaned.length + 1, el.value.length);
-                    try {
-                        el.setSelectionRange(caretPos, caretPos);
-                    } catch (err) {}
-                    if (typeof validateNameInput === "function") validateNameInput(el);
-                });
-
-                // blur: final tidy up (ensures first letter capitalized if user leaves)
-                nameInput.addEventListener("blur", function(e) {
-                    const el = e.target;
-                    el.value = formatNameValue(el.value);
-                    if (typeof validateNameInput === "function") validateNameInput(el);
+                    validateNameInput(e.target);
                 });
             }
-
-
             /* -----------------------------
                 EMAIL: lowercase + validation
             ----------------------------- */
