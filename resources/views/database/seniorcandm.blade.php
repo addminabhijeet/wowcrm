@@ -324,7 +324,6 @@
     <style>
         .input-hint {
             font-size: .85rem;
-            color: #6c757d;
         }
 
         .pagination {
@@ -337,36 +336,14 @@
             min-width: 160px;
         }
 
-        input.valid {
-            background-color: #d4edda;
-        }
-
-        input.invalid {
-            background-color: #f8d7da;
-        }
-
-        input.neutral {
-            background-color: #ffffff;
-        }
-
-        select.neutral {
-            background-color: #ffffff;
-        }
-
-        select.valid {
-            background-color: #d4edda;
-        }
-
         .phone-hint {
             font-size: .8rem;
-            color: #6c757d;
             margin-top: 3px;
             display: block;
         }
 
         .small-hint {
             font-size: .8rem;
-            color: #6c757d;
             display: block;
             margin-top: 2px;
         }
@@ -572,8 +549,6 @@
                                         $input.val(display || r.display_name);
                                         applyCss(display || r
                                             .display_name); // Apply valid class
-                                        $input.css('background-color',
-                                            '#d4edda'); // optional highlight
                                         $('#loc-suggestions').remove();
                                     });
                                     $list.append(item);
@@ -865,37 +840,17 @@
     <style>
         .input-hint {
             font-size: .85rem;
-            color: #6c757d;
         }
 
         select.dynamic-dropdown {
             min-width: 160px;
         }
 
-        input.valid {
-            background-color: #d4edda;
-        }
 
-        input.invalid {
-            background-color: #f8d7da;
-        }
-
-        input.neutral {
-            background-color: #ffffff;
-        }
-
-        select.neutral {
-            background-color: #ffffff;
-        }
-
-        select.valid {
-            background-color: #d4edda;
-        }
 
         .phone-hint,
         .small-hint {
             font-size: .8rem;
-            color: #6c757d;
             display: block;
             margin-top: 2px;
         }
@@ -1036,7 +991,6 @@
         }
 
         .scroll-sm::-webkit-scrollbar-thumb {
-            background: linear-gradient(135deg, #888, #666);
             border-radius: 18px;
             /* rounded ends */
             border: 6px solid #f1f1f1;
@@ -1044,22 +998,14 @@
             transition: background 0.3s, border-color 0.3s, height 0.3s;
         }
 
-        .scroll-sm::-webkit-scrollbar-thumb:hover {
-            background: linear-gradient(135deg, #555, #333);
-            border-color: #e0e0e0;
-        }
 
         .scroll-sm::-webkit-scrollbar-track {
-            background-color: #f1f1f1;
             border-radius: 18px;
         }
 
         /* === Firefox === */
         .scroll-sm {
             scrollbar-width: auto;
-            /* thicker style */
-            scrollbar-color: #666 #f1f1f1;
-            /* thumb + track */
         }
     </style>
 
@@ -1243,20 +1189,6 @@
         /* Highlight focused field briefly */
         .focus-highlight {
             animation: highlightFlash 0.5s ease-in-out;
-        }
-
-        @keyframes highlightFlash {
-            0% {
-                background-color: #fff3b0;
-            }
-
-            50% {
-                background-color: #fff59d;
-            }
-
-            100% {
-                background-color: transparent;
-            }
         }
 
         /* Mouse-drag cursor */
