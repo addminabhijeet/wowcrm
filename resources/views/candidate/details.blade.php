@@ -113,34 +113,40 @@
 
                                         <div class="flex-grow-1">
 
+                                            <!-- NAME -->
                                             <div class="mb-20">
-                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Full
-                                                    Name</label>
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Full Name
+                                                </label>
                                                 <input type="text" id="name" name="name"
-                                                    class="form-control radius-8"
+                                                    class="form-control radius-8 name-input"
                                                     value="{{ old('name', $candidate->Name) }}"
                                                     placeholder="Enter Full Name" required>
                                             </div>
 
+                                            <!-- PHONE -->
                                             <div class="mb-20">
-                                                <label
-                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Phone
+                                                </label>
                                                 <input type="text" id="phone" name="phone"
-                                                    class="form-control radius-8"
+                                                    class="form-control radius-8 phone-input"
                                                     value="{{ old('phone', $candidate->Phone_Number) }}"
                                                     placeholder="Enter Phone" required>
                                             </div>
 
+                                            <!-- TIME ZONE -->
                                             <div class="mb-20">
-                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">Time
-                                                    Zone</label>
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Time Zone
+                                                </label>
 
                                                 @php
                                                     $timezoneOptions = ['EST', 'CST', 'MST', 'PST'];
                                                 @endphp
 
-                                                <select id="time_zone" name="time_zone" class="form-select radius-8"
-                                                    required>
+                                                <select id="time_zone" name="time_zone"
+                                                    class="form-select radius-8 dynamic-dropdown" required>
                                                     <option value="">-- Time Zone --</option>
                                                     @foreach ($timezoneOptions as $option)
                                                         <option value="{{ $option }}"
@@ -152,32 +158,30 @@
                                             </div>
                                         </div>
 
-
-
-
-
-
-                                        <!-- SINGLE VERTICAL DIVIDER (FULL HEIGHT) -->
+                                        <!-- VERTICAL DIVIDER -->
                                         <div class="px-4 d-flex" style="align-items: stretch;">
                                             <div style="width: 1px; background: #ccc; height: 100%;"></div>
                                         </div>
 
-
-
-                                        <!-- RIGHT SIDE (Email + Location) -->
+                                        <!-- RIGHT SIDE -->
                                         <div class="flex-grow-1">
 
+                                            <!-- EMAIL -->
                                             <div class="mb-20">
-                                                <label
-                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Email</label>
-                                                <input type="email" name="email" class="form-control radius-8"
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Email
+                                                </label>
+                                                <input type="email" name="email"
+                                                    class="form-control radius-8 email-input"
                                                     value="{{ old('email', $candidate->Email_Address) }}"
                                                     placeholder="Enter Email" required>
                                             </div>
 
+                                            <!-- LOCATION -->
                                             <div class="mb-20">
-                                                <label
-                                                    class="form-label fw-semibold text-primary-light text-sm mb-8">Location</label>
+                                                <label class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                                    Location
+                                                </label>
                                                 <input type="text" name="Location" class="form-control radius-8"
                                                     value="{{ old('Location', $candidate->Location) }}"
                                                     placeholder="Enter Location" required>
@@ -199,159 +203,160 @@
                                     </div>
                                 </div>
 
+
                                 <script>
-        document.addEventListener("DOMContentLoaded", function() {
+                                    document.addEventListener("DOMContentLoaded", function() {
 
-            /* ------------------------------------
-                ORIGINAL FUNCTIONALITY (UNTOUCHED)
-            ------------------------------------ */
+                                        /* ------------------------------------
+                                            ORIGINAL FUNCTIONALITY (UNTOUCHED)
+                                        ------------------------------------ */
 
-            /* PHONE */
-            const phoneInput = document.querySelector("#phone");
-            if (phoneInput) {
-                phoneInput.addEventListener("input", function(e) {
-                    const clean = e.target.value.replace(/\D/g, "");
-                    e.target.value = formatPhoneNumber(clean);
-                    validatePhoneInput(e.target);
-                });
-            }
+                                        /* PHONE */
+                                        const phoneInput = document.querySelector("#phone");
+                                        if (phoneInput) {
+                                            phoneInput.addEventListener("input", function(e) {
+                                                const clean = e.target.value.replace(/\D/g, "");
+                                                e.target.value = formatPhoneNumber(clean);
+                                                validatePhoneInput(e.target);
+                                            });
+                                        }
 
-            /* NAME */
-            const nameInput = document.querySelector("#name");
-            if (nameInput) {
-                validateNameInput(nameInput);
+                                        /* NAME */
+                                        const nameInput = document.querySelector("#name");
+                                        if (nameInput) {
+                                            validateNameInput(nameInput);
 
-                nameInput.addEventListener("input", function(e) {
-                    let v = e.target.value.replace(/[^a-zA-Z\s]/g, '');
-                    v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-                    e.target.value = v;
-                    validateNameInput(e.target);
-                });
-            }
+                                            nameInput.addEventListener("input", function(e) {
+                                                let v = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                                                v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+                                                e.target.value = v;
+                                                validateNameInput(e.target);
+                                            });
+                                        }
 
-            /* EMAIL */
-            const emailInput = document.querySelector("input[name='email']");
-            if (emailInput) {
-                emailInput.addEventListener("input", function(e) {
-                    e.target.value = e.target.value.toLowerCase();
-                    validateEmailInput(e.target);
-                });
-            }
+                                        /* EMAIL */
+                                        const emailInput = document.querySelector("input[name='email']");
+                                        if (emailInput) {
+                                            emailInput.addEventListener("input", function(e) {
+                                                e.target.value = e.target.value.toLowerCase();
+                                                validateEmailInput(e.target);
+                                            });
+                                        }
 
-            /* LOCATION */
-            const locationInput = document.querySelector("input[name='Location']");
-            if (locationInput) {
-                locationInput.addEventListener("input", function(e) {
-                    e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s,.-]/g, "");
-                });
-            }
+                                        /* LOCATION */
+                                        const locationInput = document.querySelector("input[name='Location']");
+                                        if (locationInput) {
+                                            locationInput.addEventListener("input", function(e) {
+                                                e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s,.-]/g, "");
+                                            });
+                                        }
 
-            /* AMOUNT */
-            const amountInput = document.querySelector("#amount");
-            if (amountInput) {
-                amountInput.addEventListener("input", function(e) {
-                    validateAmountInput(e.target);
-                });
-            }
+                                        /* AMOUNT */
+                                        const amountInput = document.querySelector("#amount");
+                                        if (amountInput) {
+                                            amountInput.addEventListener("input", function(e) {
+                                                validateAmountInput(e.target);
+                                            });
+                                        }
 
-            /* TRAN ID, REF, METHOD, PAYEE */
-            ["TranId", "TranRef", "PaymentMethod", "PayeeName"].forEach(id => {
-                const el = document.querySelector("#" + id);
-                if (el) {
-                    el.addEventListener("input", function(e) {
-                        e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s\-]/g, "");
-                    });
-                }
-            });
+                                        /* TRAN ID, REF, METHOD, PAYEE */
+                                        ["TranId", "TranRef", "PaymentMethod", "PayeeName"].forEach(id => {
+                                            const el = document.querySelector("#" + id);
+                                            if (el) {
+                                                el.addEventListener("input", function(e) {
+                                                    e.target.value = e.target.value.replace(/[^a-zA-Z0-9\s\-]/g, "");
+                                                });
+                                            }
+                                        });
 
-            /* GRADUATION DATE */
-            const gradInput = document.querySelector("#graduation");
-            if (gradInput) {
-                gradInput.addEventListener("input", function(e) {
-                    e.target.value = e.target.value.replace(/[^0-9\/\-]/g, "");
-                });
-            }
-
-
-
-            /* ------------------------------------------------
-                NEW FUNCTIONALITY: SAME AS tableBody LISTENER
-            ------------------------------------------------ */
-            document.addEventListener("input", function(e) {
-
-                /* phone-input */
-                if (e.target.matches("input.phone-input")) {
-                    e.target.value = formatPhoneNumber(e.target.value.replace(/\D/g, ""));
-                    validatePhoneInput(e.target);
-                }
-
-                /* email-input */
-                if (e.target.matches("input.email-input")) {
-                    e.target.value = e.target.value.toLowerCase();
-                    validateEmailInput(e.target);
-                }
-
-                /* name-input */
-                if (e.target.matches("input.name-input")) {
-                    let v = e.target.value.replace(/[^a-zA-Z\s]/g, '');
-                    v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-                    e.target.value = v;
-                    validateNameInput(e.target);
-                }
-            });
+                                        /* GRADUATION DATE */
+                                        const gradInput = document.querySelector("#graduation");
+                                        if (gradInput) {
+                                            gradInput.addEventListener("input", function(e) {
+                                                e.target.value = e.target.value.replace(/[^0-9\/\-]/g, "");
+                                            });
+                                        }
 
 
 
-            /* ------------------------------------------------
-                applyInitialState()  (FULLY MATCHING YOUR EXAMPLE)
-            ------------------------------------------------ */
-            window.applyInitialState = function(context = document) {
+                                        /* ------------------------------------------------
+                                            NEW FUNCTIONALITY: SAME AS tableBody LISTENER
+                                        ------------------------------------------------ */
+                                        document.addEventListener("input", function(e) {
 
-                context.querySelectorAll('select.dynamic-dropdown')
-                    .forEach(s => updateSelectColor(s));
+                                            /* phone-input */
+                                            if (e.target.matches("input.phone-input")) {
+                                                e.target.value = formatPhoneNumber(e.target.value.replace(/\D/g, ""));
+                                                validatePhoneInput(e.target);
+                                            }
 
-                initDatePickers(context);
-                initLocationAutocomplete(context);
+                                            /* email-input */
+                                            if (e.target.matches("input.email-input")) {
+                                                e.target.value = e.target.value.toLowerCase();
+                                                validateEmailInput(e.target);
+                                            }
 
-                /* amount-input */
-                context.querySelectorAll('input.amount-input').forEach(i => {
-                    validateAmountInput(i);
-                    i.addEventListener("input", () => validateAmountInput(i));
-                });
+                                            /* name-input */
+                                            if (e.target.matches("input.name-input")) {
+                                                let v = e.target.value.replace(/[^a-zA-Z\s]/g, '');
+                                                v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+                                                e.target.value = v;
+                                                validateNameInput(e.target);
+                                            }
+                                        });
 
-                /* phone-input */
-                context.querySelectorAll('input.phone-input').forEach(i => {
-                    i.value = formatPhoneNumber(i.value);
-                    validatePhoneInput(i);
-                    i.addEventListener("input", () => {
-                        i.value = formatPhoneNumber(i.value);
-                        validatePhoneInput(i);
-                    });
-                });
 
-                /* email-input */
-                context.querySelectorAll('input.email-input').forEach(i => {
-                    validateEmailInput(i);
-                    i.addEventListener("input", () => {
-                        i.value = i.value.toLowerCase();
-                        validateEmailInput(i);
-                    });
-                });
 
-                /* name-input */
-                context.querySelectorAll('input.name-input').forEach(i => {
-                    validateNameInput(i);
-                    i.addEventListener("input", () => {
-                        let v = i.value.replace(/[^a-zA-Z\s]/g, '');
-                        v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
-                        i.value = v;
-                        validateNameInput(i);
-                    });
-                });
-            };
+                                        /* ------------------------------------------------
+                                            applyInitialState()  (FULLY MATCHING YOUR EXAMPLE)
+                                        ------------------------------------------------ */
+                                        window.applyInitialState = function(context = document) {
 
-        });
-    </script>
+                                            context.querySelectorAll('select.dynamic-dropdown')
+                                                .forEach(s => updateSelectColor(s));
+
+                                            initDatePickers(context);
+                                            initLocationAutocomplete(context);
+
+                                            /* amount-input */
+                                            context.querySelectorAll('input.amount-input').forEach(i => {
+                                                validateAmountInput(i);
+                                                i.addEventListener("input", () => validateAmountInput(i));
+                                            });
+
+                                            /* phone-input */
+                                            context.querySelectorAll('input.phone-input').forEach(i => {
+                                                i.value = formatPhoneNumber(i.value);
+                                                validatePhoneInput(i);
+                                                i.addEventListener("input", () => {
+                                                    i.value = formatPhoneNumber(i.value);
+                                                    validatePhoneInput(i);
+                                                });
+                                            });
+
+                                            /* email-input */
+                                            context.querySelectorAll('input.email-input').forEach(i => {
+                                                validateEmailInput(i);
+                                                i.addEventListener("input", () => {
+                                                    i.value = i.value.toLowerCase();
+                                                    validateEmailInput(i);
+                                                });
+                                            });
+
+                                            /* name-input */
+                                            context.querySelectorAll('input.name-input').forEach(i => {
+                                                validateNameInput(i);
+                                                i.addEventListener("input", () => {
+                                                    let v = i.value.replace(/[^a-zA-Z\s]/g, '');
+                                                    v = v.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
+                                                    i.value = v;
+                                                    validateNameInput(i);
+                                                });
+                                            });
+                                        };
+
+                                    });
+                                </script>
 
                                 <div class="col-lg-6 w-100 text-xs">
                                     <div class="card h-100 p-0">
@@ -1329,6 +1334,4 @@
             initSingleLocationAutocomplete();
         });
     </script>
-
-
 @endsection
