@@ -368,7 +368,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             const tableBody = document.getElementById("sheet-table-body");
 
-        
+
             function formatPhoneNumber(value) {
                 const digits = value.replace(/\D/g, "").slice(0, 10);
                 const part1 = digits.slice(0, 3),
@@ -468,28 +468,36 @@
 
 
             function initDatePickers(context = document) {
+                const laravelToday =
+                    "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}";
+
                 context.querySelectorAll('input.date-picker').forEach(input => {
                     const key = input.dataset.key;
                     const opts = {
                         dateFormat: "m/d/Y",
                         allowInput: true,
                         onChange: function(selectedDates, dateStr) {
-                            input.style.backgroundColor = dateStr ? dateColor : '#fff';
+                            // override existing color logic without removing it
+                            input.style.backgroundColor = 'transparent';
                         },
                         onReady: function(selectedDates, dateStr) {
-                            if (input.value) input.style.backgroundColor = dateColor;
+                            if (input.value) input.style.backgroundColor = 'transparent';
                         }
                     };
-                    if (key === "Graduation Date") opts.maxDate = "today";
-                    if (key === "Date") opts.minDate = "today";
+
+                    if (key === "Graduation Date") opts.maxDate = laravelToday;
+                    if (key === "Date") opts.minDate = laravelToday;
+
                     flatpickr(input, opts);
+
                     input.addEventListener('blur', function() {
                         if (input.value && !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(input.value)) {
-                            input.style.backgroundColor = '#fff';
+                            input.style.backgroundColor = 'transparent';
                         }
                     });
                 });
             }
+
 
             function initLocationAutocomplete(context = document) {
                 $(context).find('input.location-autocomplete').each(function() {

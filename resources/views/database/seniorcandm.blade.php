@@ -89,7 +89,7 @@
                                     <td>
                                         <input type="text" class="form-control date-picker" data-key="Date"
                                             value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}"
-                                            readonly style="background-color: #f8f9fa; cursor: not-allowed;">
+                                            readonly style=" cursor: not-allowed;">
                                     </td>
 
                                     {{-- Name --}}
@@ -388,7 +388,7 @@
         document.addEventListener("DOMContentLoaded", function() {
             const tableBody = document.getElementById("sheet-table-body");
 
-           
+
 
             function formatPhoneNumber(value) {
                 const digits = value.replace(/\D/g, "").slice(0, 10);
@@ -490,7 +490,7 @@
 
             function initDatePickers(context = document) {
                 const laravelToday =
-                    "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
+                    "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}";
 
                 context.querySelectorAll('input.date-picker').forEach(input => {
                     const key = input.dataset.key;
@@ -498,14 +498,14 @@
                         dateFormat: "m/d/Y",
                         allowInput: true,
                         onChange: function(selectedDates, dateStr) {
-                            input.style.backgroundColor = dateStr ? dateColor : '#fff';
+                            // override existing color logic without removing it
+                            input.style.backgroundColor = 'transparent';
                         },
                         onReady: function(selectedDates, dateStr) {
-                            if (input.value) input.style.backgroundColor = dateColor;
+                            if (input.value) input.style.backgroundColor = 'transparent';
                         }
                     };
 
-                    // ✅ Use Laravel's timezone-based today
                     if (key === "Graduation Date") opts.maxDate = laravelToday;
                     if (key === "Date") opts.minDate = laravelToday;
 
@@ -513,11 +513,12 @@
 
                     input.addEventListener('blur', function() {
                         if (input.value && !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(input.value)) {
-                            input.style.backgroundColor = '#fff';
+                            input.style.backgroundColor = 'transparent';
                         }
                     });
                 });
             }
+
 
 
             function initLocationAutocomplete(context = document) {
