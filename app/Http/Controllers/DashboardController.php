@@ -901,10 +901,7 @@ class DashboardController extends Controller
 
             if ($secondsPassed > 0) {
                 // 🔥 FIX: decrement like a real clock
-                $timer->remaining_seconds = max(
-                    0,
-                    $timer->remaining_seconds + $secondsPassed
-                );
+                $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
             }
         }
 
