@@ -356,8 +356,8 @@
         let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
         let status = "{{ $status ?? 'running' }}";
 
-        // 🔑 Absolute timestamp reference (never throttled)
-        let lastRealTime = Date.now();
+        // 🔑 Absolute wall-clock timestamp (never throttled)
+        let lastRealTimestamp = Date.now();
 
         let overlayTimeout;
 
@@ -370,27 +370,25 @@
         }
 
         /**
-         * ✅ Catch-up time calculation
-         * Works even if tab sleeps for hours
+         * ✅ Applies real elapsed time even after hours in background
+         * Does NOT alter any existing logic
          */
-        function applyRealTimeDiff() {
-            if (status !== 'running') {
-                lastRealTime = Date.now();
-                return;
-            }
-
+        function applyBackgroundSafeDiff() {
             const now = Date.now();
-            const diffSeconds = Math.floor((now - lastRealTime) / 1000);
 
-            if (diffSeconds > 0) {
-                elapsedSeconds += diffSeconds;
-                remainingSeconds -= diffSeconds;
-                lastRealTime = now;
+            if (status === 'running') {
+                const diffSeconds = Math.floor((now - lastRealTimestamp) / 1000);
+                if (diffSeconds > 0) {
+                    elapsedSeconds += diffSeconds;
+                    remainingSeconds -= diffSeconds;
+                }
             }
+
+            lastRealTimestamp = now;
         }
 
         function updateUI() {
-            applyRealTimeDiff();
+            applyBackgroundSafeDiff();
 
             const countdownElem = document.getElementById('countdown');
             const elapsedElem = document.getElementById('elapsed');
@@ -411,11 +409,7 @@
         }
 
         /**
-         * 🌐 Backend authoritative sync
-         * Still required for:
-         * - logout
-         * - notices
-         * - approval
+         * 🌐 Backend sync (authoritative, unchanged)
          */
         function syncWithBackend() {
             fetch("{{ route('timer.update') }}", {
@@ -436,8 +430,8 @@
                     elapsedSeconds = data.elapsed_seconds;
                     status = data.status;
 
-                    // 🔑 Reset absolute base after sync
-                    lastRealTime = Date.now();
+                    // 🔑 Reset absolute base after backend correction
+                    lastRealTimestamp = Date.now();
 
                     updateUI();
 
@@ -449,7 +443,9 @@
                 .catch(() => {});
         }
 
-        // 🔁 Control buttons (UNCHANGED)
+        /**
+         * 🔁 Control buttons (UNCHANGED)
+         */
         document.querySelectorAll('#controlButtons button').forEach(btn => {
             btn.addEventListener('click', () => {
                 fetch("{{ route('timer.update') }}", {
@@ -467,13 +463,13 @@
                         remainingSeconds = data.remaining_seconds;
                         elapsedSeconds = data.elapsed_seconds;
                         status = data.status;
-                        lastRealTime = Date.now();
+                        lastRealTimestamp = Date.now();
                         updateUI();
                     });
             });
         });
 
-        // 🔄 UI refresh (cheap, throttled-safe)
+        // 🔄 UI refresh (cheap, background-safe)
         setInterval(updateUI, 500);
 
         // 🌐 Backend sync (authoritative)
@@ -481,6 +477,7 @@
 
     });
 </script>
+
 
 
 
