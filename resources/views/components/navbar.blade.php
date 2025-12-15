@@ -344,54 +344,36 @@
         pointer-events: auto;
     }
 </style>
+
 <div id="statusOverlay"></div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        let backendSyncInterval = null;
-        let uiInterval = null;
-
+        // ===============================
+        // Timer Variables
+        // ===============================
+        let backendSyncInterval;
         let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
         let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
         let status = "{{ $status ?? 'running' }}";
 
-        // 🔑 Absolute real timestamp (background safe)
-        let lastRealTimestamp = Date.now();
         let overlayTimeout;
 
+        // ===============================
+        // Helper Functions
+        // ===============================
         function formatTime(sec) {
-            sec = Math.max(0, Math.floor(sec));
+            sec = Math.floor(sec);
             const h = Math.floor(sec / 3600);
             const m = Math.floor((sec % 3600) / 60);
             const s = sec % 60;
-            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
-        }
-
-        /**
-         * ✅ Applies real elapsed time even after hours in background
-         * (LOGIC UNCHANGED)
-         */
-        function applyBackgroundSafeDiff() {
-            const now = Date.now();
-
-            if (status === 'running') {
-                const diffSeconds = Math.floor((now - lastRealTimestamp) / 1000);
-                if (diffSeconds > 0) {
-                    elapsedSeconds += diffSeconds;
-                    remainingSeconds -= diffSeconds;
-                }
-            }
-
-            lastRealTimestamp = now;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
 
         function updateUI() {
-            applyBackgroundSafeDiff();
-
             const countdownElem = document.getElementById('countdown');
             const elapsedElem = document.getElementById('elapsed');
-
             if (countdownElem) countdownElem.innerText = formatTime(remainingSeconds);
             if (elapsedElem) elapsedElem.innerText = formatTime(elapsedSeconds);
         }
@@ -399,19 +381,18 @@
         function showOverlay(message) {
             const overlay = document.getElementById('statusOverlay');
             if (!overlay) return;
-
             overlay.innerText = message;
             overlay.classList.add('show');
-
             clearTimeout(overlayTimeout);
             overlayTimeout = setTimeout(() => {
                 overlay.classList.remove('show');
             }, 3000);
         }
 
-        /**
-         * 🌐 Backend sync (UNCHANGED LOGIC)
-         */
+        // ===============================
+        // Backend Sync
+        // ===============================
+
         function syncWithBackend() {
             fetch("{{ route('timer.update') }}", {
                     method: "POST",
@@ -425,98 +406,76 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                    if (!data.success) return;
+                    if (!data.success) {
+                        console.warn("[Sync] No success response");
+                        return;
+                    }
+
+                    if (data.notice_status === 1 && data.message) {
+                        showOverlay(data.message);
+                    }
 
                     remainingSeconds = data.remaining_seconds;
                     elapsedSeconds = data.elapsed_seconds;
                     status = data.status;
-
-                    // 🔑 Reset absolute base after backend correction
-                    lastRealTimestamp = Date.now();
-
                     updateUI();
 
                     if (data.logout) {
-                        stopBackendSync();
-                        alert("Your 9-hour work session has ended.");
+                        console.warn("[Sync] Work session ended. Logging out...");
+                        clearInterval(backendSyncInterval);
+                        const userRole = "{{ auth()->user()->role }}";
+                        if (userRole !== 'accountant') {
+                            alert("Your 9-hour work session has ended.");
+                        }
                     }
                 })
-                .catch(() => {});
+                .catch(err => console.error("[Sync] Timer sync failed:", err));
         }
 
-        /**
-         * ▶️ Start backend sync ONLY when tab is active
-         */
-        function startBackendSync() {
-            if (!backendSyncInterval) {
-                backendSyncInterval = setInterval(syncWithBackend, 1000);
-            }
-        }
-
-        /**
-         * ⏸ Stop backend sync when tab is inactive
-         */
-        function stopBackendSync() {
-            if (backendSyncInterval) {
-                clearInterval(backendSyncInterval);
-                backendSyncInterval = null;
-            }
-        }
-
-        /**
-         * 👁 Tab visibility handler (NEW)
-         */
-        document.addEventListener('visibilitychange', () => {
-            if (document.visibilityState === 'visible') {
-                lastRealTimestamp = Date.now();
-                startBackendSync();
-            } else {
-                stopBackendSync();
-            }
-        });
-
-        /**
-         * 🔁 Control buttons (UNCHANGED)
-         */
-        document.querySelectorAll('#controlButtons button').forEach(btn => {
-            btn.addEventListener('click', () => {
-                fetch("{{ route('timer.update') }}", {
-                        method: "POST",
-                        headers: {
-                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            action: btn.dataset.type
+        // ===============================
+        // Control Buttons (Pause/Resume/etc)
+        // ===============================
+        const controlButtonsContainer = document.getElementById('controlButtons');
+        if (controlButtonsContainer) {
+            controlButtonsContainer.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    const type = btn.getAttribute('data-type');
+                    fetch("{{ route('timer.update') }}", {
+                            method: "POST",
+                            headers: {
+                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                                "Content-Type": "application/json"
+                            },
+                            body: JSON.stringify({
+                                action: type
+                            })
                         })
-                    })
-                    .then(res => res.json())
-                    .then(data => {
-                        remainingSeconds = data.remaining_seconds;
-                        elapsedSeconds = data.elapsed_seconds;
-                        status = data.status;
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.success === false && data.notice_status === 1) {
+                                showOverlay(data.message ||
+                                    "Please wait for senior to enable.");
+                                return;
+                            }
 
-                        lastRealTimestamp = Date.now();
-                        updateUI();
-                    });
+                            remainingSeconds = data.remaining_seconds;
+                            elapsedSeconds = data.elapsed_seconds;
+                            status = data.status;
+                            updateUI();
+                        })
+                        .catch(err => console.error("[Action] Failed to send:", err));
+                });
             });
-        });
-
-        /**
-         * 🔄 UI refresh (cheap, always safe)
-         */
-        uiInterval = setInterval(updateUI, 500);
-
-        /**
-         * ▶️ Initial state
-         */
-        if (document.visibilityState === 'visible') {
-            startBackendSync();
         }
+
+        // ===============================
+        // Initialize Timer
+        // ===============================
+        updateUI();
+        backendSyncInterval = setInterval(syncWithBackend, 1000);
 
     });
 </script>
-
 
 
 
