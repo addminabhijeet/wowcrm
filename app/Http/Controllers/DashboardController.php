@@ -892,11 +892,24 @@ class DashboardController extends Controller
 
         $workDaySeconds = $timerSetting->work_day_seconds;
 
-        // Update remaining seconds if timer is running
+        // REAL wall-clock based decrement (background safe)
         if ($timer->status === 'running') {
-            $secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
+
+            $lastDecrement = $timer->last_decrement ?? $timer->start_time;
+
+            $secondsPassed = $currentTime->diffInSeconds($lastDecrement);
+
+            if ($secondsPassed > 0) {
+                $timer->remaining_seconds = max(
+                    0,
+                    $timer->remaining_seconds - $secondsPassed
+                );
+            }
         }
+
+        // Always update real timestamp
+        $timer->last_decrement = $currentTime;
+
 
         // Store previous status before any change
         $previousStatus = $timer->status;
