@@ -315,9 +315,7 @@
                                     <td>
                                         <input type="file" accept="audio/*" class="d-none audio-input"
                                             data-key="Audio">
-                                        <button type="button" class="btn btn-sm btn-warning upload-audio-btn">
-                                            {{ !empty($row->audio) ? 'Change Audio' : 'Upload Audio' }}
-                                        </button>
+                                        
 
                                         @if (!empty($row->audio))
                                             <a href="{{ url('dashboard/senior/google-sheet/view-audio/' . $row->id) }}"
