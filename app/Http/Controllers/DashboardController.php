@@ -1289,10 +1289,12 @@ class DashboardController extends Controller
     private function validateSmtpConnection($smtp)
     {
         try {
+            $useSsl = strtolower($smtp->encryption) === 'ssl';
+
             $transport = new EsmtpTransport(
                 $smtp->host,
                 (int) $smtp->port,
-                in_array($smtp->encryption, ['ssl', 'tls'])
+                $useSsl
             );
 
             if (!empty($smtp->username)) {
@@ -1300,7 +1302,7 @@ class DashboardController extends Controller
                 $transport->setPassword(decrypt($smtp->password));
             }
 
-            // This line actually tests the SMTP connection
+            // Actual SMTP handshake test
             $transport->start();
 
             return true;
@@ -1308,8 +1310,6 @@ class DashboardController extends Controller
             throw new \Exception('SMTP connection failed: ' . $e->getMessage());
         }
     }
-
-
 
     public function test(Request $request, $smtpId)
     {
