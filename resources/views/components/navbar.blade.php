@@ -356,8 +356,8 @@
         let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
         let status = "{{ $status ?? 'running' }}";
 
-        // ✅ Absolute timestamp (never throttled)
-        let lastServerSyncAt = Date.now();
+        // 🔑 Absolute timestamp reference (never throttled)
+        let lastRealTime = Date.now();
 
         let overlayTimeout;
 
@@ -369,21 +369,28 @@
             return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
         }
 
-        function calculateTimeDiff() {
-            if (status !== 'running') return;
+        /**
+         * ✅ Catch-up time calculation
+         * Works even if tab sleeps for hours
+         */
+        function applyRealTimeDiff() {
+            if (status !== 'running') {
+                lastRealTime = Date.now();
+                return;
+            }
 
             const now = Date.now();
-            const diffSeconds = Math.floor((now - lastServerSyncAt) / 1000);
+            const diffSeconds = Math.floor((now - lastRealTime) / 1000);
 
             if (diffSeconds > 0) {
                 elapsedSeconds += diffSeconds;
                 remainingSeconds -= diffSeconds;
-                lastServerSyncAt = now;
+                lastRealTime = now;
             }
         }
 
         function updateUI() {
-            calculateTimeDiff();
+            applyRealTimeDiff();
 
             const countdownElem = document.getElementById('countdown');
             const elapsedElem = document.getElementById('elapsed');
@@ -403,6 +410,13 @@
             }, 3000);
         }
 
+        /**
+         * 🌐 Backend authoritative sync
+         * Still required for:
+         * - logout
+         * - notices
+         * - approval
+         */
         function syncWithBackend() {
             fetch("{{ route('timer.update') }}", {
                     method: "POST",
@@ -422,8 +436,8 @@
                     elapsedSeconds = data.elapsed_seconds;
                     status = data.status;
 
-                    // 🔑 Reset absolute base
-                    lastServerSyncAt = Date.now();
+                    // 🔑 Reset absolute base after sync
+                    lastRealTime = Date.now();
 
                     updateUI();
 
@@ -431,10 +445,11 @@
                         clearInterval(backendSyncInterval);
                         alert("Your 9-hour work session has ended.");
                     }
-                });
+                })
+                .catch(() => {});
         }
 
-        // 🔁 Buttons unchanged
+        // 🔁 Control buttons (UNCHANGED)
         document.querySelectorAll('#controlButtons button').forEach(btn => {
             btn.addEventListener('click', () => {
                 fetch("{{ route('timer.update') }}", {
@@ -452,21 +467,20 @@
                         remainingSeconds = data.remaining_seconds;
                         elapsedSeconds = data.elapsed_seconds;
                         status = data.status;
-                        lastServerSyncAt = Date.now();
+                        lastRealTime = Date.now();
                         updateUI();
                     });
             });
         });
 
-        // 🔄 UI updates (cheap)
+        // 🔄 UI refresh (cheap, throttled-safe)
         setInterval(updateUI, 500);
 
-        // 🌐 Backend authoritative sync
+        // 🌐 Backend sync (authoritative)
         backendSyncInterval = setInterval(syncWithBackend, 1000);
 
     });
 </script>
-
 
 
 
