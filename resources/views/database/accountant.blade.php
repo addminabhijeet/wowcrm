@@ -1337,6 +1337,21 @@
                                         downloadPaymentBtn.classList.remove('d-none');
                                     }
 
+                                    const playBtn = row.querySelector('.play-audio-btn');
+                                    const downloadAudioBtn = row.querySelector('.download-audio-btn');
+
+                                    if (playBtn && data.audio_path) {
+                                        playBtn.href =
+                                            `/dashboard/senior/google-sheet/view-audio/${data.id}`;
+                                        playBtn.classList.remove('d-none');
+                                    }
+
+                                    if (downloadAudioBtn && data.audio_path) {
+                                        downloadAudioBtn.href =
+                                            `/dashboard/senior/google-sheet/download-audio/${data.id}`;
+                                        downloadAudioBtn.classList.remove('d-none');
+                                    }
+
                                     const viewBtn = row.querySelector('.view-btn');
                                     const downloadBtn = row.querySelector('.download-btn');
 
