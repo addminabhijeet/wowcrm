@@ -1333,21 +1333,23 @@ class DashboardController extends Controller
         $messageBody = "Hi Test,\n\nThis is a test email sent to verify SMTP configuration.\n\nBest,\nYour App";
 
         try {
-            app()->forgetInstance('mail.manager');
-            app()->forgetInstance('mailer');
-
             Mail::raw($messageBody, function ($message) use ($testEmail, $subject) {
                 $message->to($testEmail)->subject($subject);
             });
 
             return response()->json([
                 'status' => 'success',
-                'message' => "Test email sent successfully to {$testEmail}!"
+                'message' => "✅ Test email sent successfully to {$testEmail}!"
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => '❌ Failed to send test email: ' . $e->getMessage(),
+                'debug' => [
+                    'file' => $e->getFile(),
+                    'line' => $e->getLine(),
+                    'trace' => $e->getTraceAsString(),
+                ],
             ]);
         }
     }
