@@ -344,21 +344,20 @@
         pointer-events: auto;
     }
 </style>
-
 <div id="statusOverlay"></div>
 
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        let backendSyncInterval;
+        let backendSyncInterval = null;
+        let uiInterval = null;
 
         let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
         let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
         let status = "{{ $status ?? 'running' }}";
 
-        // 🔑 Absolute wall-clock timestamp (never throttled)
+        // 🔑 Absolute real timestamp (background safe)
         let lastRealTimestamp = Date.now();
-
         let overlayTimeout;
 
         function formatTime(sec) {
@@ -371,7 +370,7 @@
 
         /**
          * ✅ Applies real elapsed time even after hours in background
-         * Does NOT alter any existing logic
+         * (LOGIC UNCHANGED)
          */
         function applyBackgroundSafeDiff() {
             const now = Date.now();
@@ -400,8 +399,10 @@
         function showOverlay(message) {
             const overlay = document.getElementById('statusOverlay');
             if (!overlay) return;
+
             overlay.innerText = message;
             overlay.classList.add('show');
+
             clearTimeout(overlayTimeout);
             overlayTimeout = setTimeout(() => {
                 overlay.classList.remove('show');
@@ -409,7 +410,7 @@
         }
 
         /**
-         * 🌐 Backend sync (authoritative, unchanged)
+         * 🌐 Backend sync (UNCHANGED LOGIC)
          */
         function syncWithBackend() {
             fetch("{{ route('timer.update') }}", {
@@ -436,12 +437,43 @@
                     updateUI();
 
                     if (data.logout) {
-                        clearInterval(backendSyncInterval);
+                        stopBackendSync();
                         alert("Your 9-hour work session has ended.");
                     }
                 })
                 .catch(() => {});
         }
+
+        /**
+         * ▶️ Start backend sync ONLY when tab is active
+         */
+        function startBackendSync() {
+            if (!backendSyncInterval) {
+                backendSyncInterval = setInterval(syncWithBackend, 1000);
+            }
+        }
+
+        /**
+         * ⏸ Stop backend sync when tab is inactive
+         */
+        function stopBackendSync() {
+            if (backendSyncInterval) {
+                clearInterval(backendSyncInterval);
+                backendSyncInterval = null;
+            }
+        }
+
+        /**
+         * 👁 Tab visibility handler (NEW)
+         */
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                lastRealTimestamp = Date.now();
+                startBackendSync();
+            } else {
+                stopBackendSync();
+            }
+        });
 
         /**
          * 🔁 Control buttons (UNCHANGED)
@@ -463,17 +495,24 @@
                         remainingSeconds = data.remaining_seconds;
                         elapsedSeconds = data.elapsed_seconds;
                         status = data.status;
+
                         lastRealTimestamp = Date.now();
                         updateUI();
                     });
             });
         });
 
-        // 🔄 UI refresh (cheap, background-safe)
-        setInterval(updateUI, 500);
+        /**
+         * 🔄 UI refresh (cheap, always safe)
+         */
+        uiInterval = setInterval(updateUI, 500);
 
-        // 🌐 Backend sync (authoritative)
-        backendSyncInterval = setInterval(syncWithBackend, 1000);
+        /**
+         * ▶️ Initial state
+         */
+        if (document.visibilityState === 'visible') {
+            startBackendSync();
+        }
 
     });
 </script>
