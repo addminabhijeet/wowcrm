@@ -15,6 +15,8 @@ use App\Models\Notification;
 use Illuminate\Support\Facades\Mail;
 use App\Models\SmtpSetting;
 use Carbon\Carbon;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
+use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 
 class DashboardController extends Controller
@@ -1284,6 +1286,30 @@ class DashboardController extends Controller
     }
 
 
+    private function validateSmtpConnection($smtp)
+    {
+        try {
+            $transport = new EsmtpTransport(
+                $smtp->host,
+                (int) $smtp->port,
+                in_array($smtp->encryption, ['ssl', 'tls'])
+            );
+
+            if (!empty($smtp->username)) {
+                $transport->setUsername($smtp->username);
+                $transport->setPassword(decrypt($smtp->password));
+            }
+
+            // This line actually tests the SMTP connection
+            $transport->start();
+
+            return true;
+        } catch (\Throwable $e) {
+            throw new \Exception('SMTP connection failed: ' . $e->getMessage());
+        }
+    }
+
+
 
     public function test(Request $request, $smtpId)
     {
@@ -1333,16 +1359,35 @@ class DashboardController extends Controller
         $messageBody = "Hi Test,\n\nThis is a test email sent to verify SMTP configuration.\n\nBest,\nYour App";
 
         try {
+            // Validate SMTP first
+            $this->validateSmtpConnection($smtp);
+
+            // Reset mailer cache
             app()->forgetInstance('mail.manager');
             app()->forgetInstance('mailer');
 
-            Mail::raw($messageBody, function ($message) use ($testEmail, $subject) {
-                $message->to($testEmail)->subject($subject);
-            });
+            $attempts = 0;
+            $maxAttempts = 3;
+            $sent = false;
+
+            while ($attempts < $maxAttempts && !$sent) {
+                try {
+                    Mail::raw($messageBody, function ($message) use ($testEmail, $subject) {
+                        $message->to($testEmail)->subject($subject);
+                    });
+                    $sent = true;
+                } catch (\Exception $e) {
+                    $attempts++;
+                    if ($attempts >= $maxAttempts) {
+                        throw $e;
+                    }
+                    sleep(1); // short delay before retry
+                }
+            }
 
             return response()->json([
                 'status' => 'success',
-                'message' => "Test email sent successfully to {$testEmail}!"
+                'message' => "✅ Test email sent successfully to {$testEmail}!"
             ]);
         } catch (\Exception $e) {
             return response()->json([
