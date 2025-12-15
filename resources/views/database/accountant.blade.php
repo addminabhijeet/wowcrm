@@ -87,6 +87,7 @@
                                 <th scope="col" class="text-center">Consultation</th>
                                 <th scope="col" class="text-center">Delivery</th>
                                 <th scope="col" class="text-center">Payment</th>
+                                <th scope="col" class="text-center">Audio</th>
                                 <th scope="col" class="text-center">Forwarded By</th>
                                 <th scope="col" class="text-center">View</th>
                                 <th scope="col" class="text-center">Remark</th>
@@ -314,6 +315,9 @@
                                     <td>
                                         <input type="file" accept="audio/*" class="d-none audio-input"
                                             data-key="Audio">
+                                        <button type="button" class="btn btn-sm btn-warning upload-audio-btn">
+                                            {{ !empty($row->audio) ? 'Change Audio' : 'Upload Audio' }}
+                                        </button>
 
                                         @if (!empty($row->audio))
                                             <a href="{{ url('dashboard/senior/google-sheet/view-audio/' . $row->id) }}"
