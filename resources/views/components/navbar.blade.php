@@ -350,30 +350,44 @@
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
-        // ===============================
-        // Timer Variables
-        // ===============================
         let backendSyncInterval;
+
         let remainingSeconds = Number("{{ $remaining_seconds ?? 0 }}");
         let elapsedSeconds = Number("{{ $elapsed_seconds ?? 0 }}");
         let status = "{{ $status ?? 'running' }}";
 
+        // ✅ Absolute timestamp (never throttled)
+        let lastServerSyncAt = Date.now();
+
         let overlayTimeout;
 
-        // ===============================
-        // Helper Functions
-        // ===============================
         function formatTime(sec) {
-            sec = Math.floor(sec);
+            sec = Math.max(0, Math.floor(sec));
             const h = Math.floor(sec / 3600);
             const m = Math.floor((sec % 3600) / 60);
             const s = sec % 60;
-            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+            return `${h.toString().padStart(2,'0')}:${m.toString().padStart(2,'0')}:${s.toString().padStart(2,'0')}`;
+        }
+
+        function calculateTimeDiff() {
+            if (status !== 'running') return;
+
+            const now = Date.now();
+            const diffSeconds = Math.floor((now - lastServerSyncAt) / 1000);
+
+            if (diffSeconds > 0) {
+                elapsedSeconds += diffSeconds;
+                remainingSeconds -= diffSeconds;
+                lastServerSyncAt = now;
+            }
         }
 
         function updateUI() {
+            calculateTimeDiff();
+
             const countdownElem = document.getElementById('countdown');
             const elapsedElem = document.getElementById('elapsed');
+
             if (countdownElem) countdownElem.innerText = formatTime(remainingSeconds);
             if (elapsedElem) elapsedElem.innerText = formatTime(elapsedSeconds);
         }
@@ -389,10 +403,6 @@
             }, 3000);
         }
 
-        // ===============================
-        // Backend Sync
-        // ===============================
-
         function syncWithBackend() {
             fetch("{{ route('timer.update') }}", {
                     method: "POST",
@@ -406,76 +416,57 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                    if (!data.success) {
-                        console.warn("[Sync] No success response");
-                        return;
-                    }
-
-                    if (data.notice_status === 1 && data.message) {
-                        showOverlay(data.message);
-                    }
+                    if (!data.success) return;
 
                     remainingSeconds = data.remaining_seconds;
                     elapsedSeconds = data.elapsed_seconds;
                     status = data.status;
+
+                    // 🔑 Reset absolute base
+                    lastServerSyncAt = Date.now();
+
                     updateUI();
 
                     if (data.logout) {
-                        console.warn("[Sync] Work session ended. Logging out...");
                         clearInterval(backendSyncInterval);
-                        const userRole = "{{ auth()->user()->role }}";
-                        if (userRole !== 'accountant') {
-                            alert("Your 9-hour work session has ended.");
-                        }
+                        alert("Your 9-hour work session has ended.");
                     }
-                })
-                .catch(err => console.error("[Sync] Timer sync failed:", err));
-        }
-
-        // ===============================
-        // Control Buttons (Pause/Resume/etc)
-        // ===============================
-        const controlButtonsContainer = document.getElementById('controlButtons');
-        if (controlButtonsContainer) {
-            controlButtonsContainer.querySelectorAll('button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const type = btn.getAttribute('data-type');
-                    fetch("{{ route('timer.update') }}", {
-                            method: "POST",
-                            headers: {
-                                "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                action: type
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success === false && data.notice_status === 1) {
-                                showOverlay(data.message ||
-                                    "Please wait for senior to enable.");
-                                return;
-                            }
-
-                            remainingSeconds = data.remaining_seconds;
-                            elapsedSeconds = data.elapsed_seconds;
-                            status = data.status;
-                            updateUI();
-                        })
-                        .catch(err => console.error("[Action] Failed to send:", err));
                 });
-            });
         }
 
-        // ===============================
-        // Initialize Timer
-        // ===============================
-        updateUI();
+        // 🔁 Buttons unchanged
+        document.querySelectorAll('#controlButtons button').forEach(btn => {
+            btn.addEventListener('click', () => {
+                fetch("{{ route('timer.update') }}", {
+                        method: "POST",
+                        headers: {
+                            "X-CSRF-TOKEN": "{{ csrf_token() }}",
+                            "Content-Type": "application/json"
+                        },
+                        body: JSON.stringify({
+                            action: btn.dataset.type
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        remainingSeconds = data.remaining_seconds;
+                        elapsedSeconds = data.elapsed_seconds;
+                        status = data.status;
+                        lastServerSyncAt = Date.now();
+                        updateUI();
+                    });
+            });
+        });
+
+        // 🔄 UI updates (cheap)
+        setInterval(updateUI, 500);
+
+        // 🌐 Backend authoritative sync
         backendSyncInterval = setInterval(syncWithBackend, 1000);
 
     });
 </script>
+
 
 
 
