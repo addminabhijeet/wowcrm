@@ -310,6 +310,33 @@
                                         @endif
                                     </td>
 
+                                    {{-- Audio (New Column) --}}
+                                    <td>
+                                        <input type="file" accept="audio/*" class="d-none audio-input"
+                                            data-key="Audio">
+                                        <button type="button" class="btn btn-sm btn-warning upload-audio-btn">
+                                            {{ !empty($row->audio) ? 'Change Audio' : 'Upload Audio' }}
+                                        </button>
+
+                                        @if (!empty($row->audio))
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-audio/' . $row->id) }}"
+                                                target="_blank" class="btn btn-sm btn-primary play-audio-btn">
+                                                Play Audio
+                                            </a>
+
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-audio/' . $row->id) }}"
+                                                class="btn btn-sm btn-secondary download-audio-btn">
+                                                Download
+                                            </a>
+                                        @else
+                                            <a href="#" target="_blank"
+                                                class="btn btn-sm btn-primary play-audio-btn d-none">Play Audio</a>
+
+                                            <a href="#" download
+                                                class="btn btn-sm btn-secondary download-audio-btn d-none">Download</a>
+                                        @endif
+                                    </td>
+
                                     {{-- Forwarded By --}}
                                     <td>
                                         <input type="text" class="form-control forwardedBy-input"
