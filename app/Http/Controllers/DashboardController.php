@@ -899,7 +899,7 @@ class DashboardController extends Controller
                 // Decrease remaining_seconds once
                 $timer->remaining_seconds = max(
                     0,
-                    $timer->remaining_seconds - $currentTime
+                     $currentTime - $timer->remaining_seconds
                 );
 
                 // CRITICAL FIX: prevent double subtraction
