@@ -892,10 +892,13 @@ class DashboardController extends Controller
 
         $workDaySeconds = $timerSetting->work_day_seconds;
 
-        // Update remaining seconds if timer is running
         if ($timer->status === 'running') {
             $secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
+            if ($secondsPassed > 3) {
+                $timer->remaining_seconds = max(0, $timer->remaining_seconds - $secondsPassed);
+            } else {
+                $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
+            }
         }
 
         // Store previous status before any change
