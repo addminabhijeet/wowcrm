@@ -475,50 +475,6 @@
         backendSyncInterval = setInterval(syncWithBackend, 1000);
 
     });
-
-    let inactivityStart = null;
-
-    document.addEventListener("visibilitychange", function () {
-
-        // Chrome/tab goes inactive
-        if (document.hidden) {
-            inactivityStart = Date.now();
-
-            fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    action: "inactive"
-                })
-            });
-
-        }
-        // Chrome/tab becomes active again
-        else {
-            if (!inactivityStart) return;
-
-            const inactiveSeconds = Math.floor(
-                (Date.now() - inactivityStart) / 1000
-            );
-
-            inactivityStart = null;
-
-            fetch("{{ route('timer.update') }}", {
-                method: "POST",
-                headers: {
-                    "X-CSRF-TOKEN": "{{ csrf_token() }}",
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({
-                    action: "active",
-                    inactive_seconds: inactiveSeconds
-                })
-            });
-        }
-    });
 </script>
 
 

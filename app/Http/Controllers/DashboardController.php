@@ -871,8 +871,6 @@ class DashboardController extends Controller
 
     public function updateTimer(Request $request)
     {
-
-
         $userId = $request->input('user_id');
         $user = $userId ? User::find($userId) : Auth::user();
         $action = $request->input('action');
@@ -890,32 +888,6 @@ class DashboardController extends Controller
         $timerSetting = TimerSetting::first();
         if (!$timerSetting) {
             return response()->json(['error' => 'Timer settings not configured'], 500);
-        }
-
-        if ($action === 'inactive') {
-
-            // Mark when Chrome went inactive
-            $timer->last_decrement = now();
-            $timer->save();
-        }
-
-        if (
-            $action === 'active' &&
-            $timer->last_decrement &&
-            $timer->status === 'running'
-        ) {
-            $inactiveGap = $currentTime->diffInSeconds($timer->last_decrement);
-
-            if ($inactiveGap > 0) {
-                $timer->remaining_seconds = max(
-                    0,
-                    $timer->remaining_seconds - $inactiveGap
-                );
-
-                // Clear after applying once
-                $timer->last_decrement = null;
-                $timer->save();
-            }
         }
 
         $workDaySeconds = $timerSetting->work_day_seconds;
