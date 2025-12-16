@@ -1,16 +1,16 @@
 @extends('layout.layout')
 
 @php
-$title = 'Users -> Support';
-$role = auth()->user()->role ?? '';
-if($role === 'admin'){
-$subTitle = 'Super Admin';
-} elseif ($role === 'operation') {
-$subTitle = 'Operation Manager';
-} else{
-$subTitle = 'role';
-}
-
+    $title = 'Users -> Support';
+    $role = auth()->user()->role ?? '';
+    if ($role === 'admin') {
+        $subTitle = 'Super Admin';
+    } elseif ($role === 'operation') {
+        $subTitle = 'Operation Manager';
+    } else {
+        $subTitle = 'role';
+    }
+@endphp
 @section('content')
     <div class="row gy-4">
         <div class="col-12">
@@ -299,7 +299,7 @@ $subTitle = 'role';
 
                                 const nextEvent = next.cells[0]?.textContent.trim();
                                 const nextDuration = parseTimeToSeconds(next.cells[2]?.textContent
-                                .trim());
+                                    .trim());
                                 const nextTime = next.cells[1]?.textContent.trim().split(' - ').pop();
 
                                 if (nextEvent === currEvent) {

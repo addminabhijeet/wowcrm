@@ -301,7 +301,7 @@
 
                                 const nextEvent = next.cells[0]?.textContent.trim();
                                 const nextDuration = parseTimeToSeconds(next.cells[2]?.textContent
-                                .trim());
+                                    .trim());
                                 const nextTime = next.cells[1]?.textContent.trim().split(' - ').pop();
 
                                 if (nextEvent === currEvent) {
