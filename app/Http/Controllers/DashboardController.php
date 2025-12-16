@@ -881,6 +881,7 @@ class DashboardController extends Controller
             return response()->json(['error' => 'Timer not found'], 404);
         }
 
+        // Current time
         $currentTime = now();
 
         // Fetch work day duration from settings
@@ -891,32 +892,6 @@ class DashboardController extends Controller
 
         $workDaySeconds = $timerSetting->work_day_seconds;
 
-        /*
-    |--------------------------------------------------------------------------
-    | 🔧 INACTIVE TIME CORRECTION (ADD-ON ONLY)
-    |--------------------------------------------------------------------------
-    | Infer background/inactive time using updated_at timestamp.
-    | Expected tick interval ≈ 1–2 seconds.
-    | Any excess gap is treated as inactive time and subtracted once.
-    */
-        if ($timer->status === 'running') {
-            $gapSeconds = $currentTime->diffInSeconds($timer->updated_at);
-
-            // Allow normal tick jitter (3 seconds grace)
-            if ($gapSeconds > 3) {
-                $inactiveSeconds = $gapSeconds - 1; // subtract only actual inactive time
-                $timer->remaining_seconds = max(
-                    0,
-                    $timer->remaining_seconds - $inactiveSeconds
-                );
-            }
-        }
-
-        /*
-    |--------------------------------------------------------------------------
-    | ⏱ EXISTING TIMER DECREMENT LOGIC (UNCHANGED)
-    |--------------------------------------------------------------------------
-    */
         if ($timer->status === 'running') {
             $secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
             if ($secondsPassed > 3) {
@@ -926,7 +901,7 @@ class DashboardController extends Controller
             }
         }
 
-        // Store previous status
+        // Store previous status before any change
         $previousStatus = $timer->status;
         $previousPauseType = $timer->pause_type;
 
@@ -936,12 +911,14 @@ class DashboardController extends Controller
                 ->latest('id')
                 ->first();
 
+            // Only create if values differ from last
             if (
                 !$lastPause ||
                 $lastPause->status !== $status ||
                 $lastPause->pause_type !== $pauseType ||
                 $lastPause->remaining_seconds != $remainingSeconds
             ) {
+
                 UserTimerPause::create([
                     'user_timer_log_id' => $timer->id,
                     'user_id'           => $user->id,
@@ -953,15 +930,10 @@ class DashboardController extends Controller
             }
         };
 
-        /*
-    |--------------------------------------------------------------------------
-    | ▶ RESUME LOGIC (UNCHANGED)
-    |--------------------------------------------------------------------------
-    */
         if ($action === 'resume' || $action === 'resumebreak') {
             if ($timer->status === 'paused' && in_array($timer->pause_type, ['break', 'lunch', 'tea'])) {
                 if ($action !== 'resumebreak') {
-                    return;
+                    return; // silently skip if normal resume is triggered
                 }
             }
 
@@ -986,12 +958,6 @@ class DashboardController extends Controller
             if ($previousStatus === 'paused') {
                 $createPauseIfChanged('running', 'resume', $timer->remaining_seconds);
             }
-
-            /*
-    |--------------------------------------------------------------------------
-    | ⏸ BREAK / LUNCH / TEA LOGIC (UNCHANGED)
-    |--------------------------------------------------------------------------
-    */
         } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
             $timer->status = 'paused';
             $timer->pause_type = $action;
@@ -1011,12 +977,6 @@ class DashboardController extends Controller
             }
 
             $createPauseIfChanged('paused', $action, $timer->remaining_seconds);
-
-            /*
-    |--------------------------------------------------------------------------
-    | 🚫 INACTIVE (NO TICK / BACKGROUND)
-    |--------------------------------------------------------------------------
-    */
         } elseif ($action !== 'tick') {
             $timer->status = 'paused';
             $timer->pause_type = 'inactive';
@@ -1039,12 +999,15 @@ class DashboardController extends Controller
             }
         }
 
-        // Save timer
+
+        // Update timestamp and save
         $timer->updated_at = $currentTime;
         $timer->save();
 
+        // Calculate elapsed time
         $elapsedSeconds = max(0, $workDaySeconds - $timer->remaining_seconds);
 
+        // Return response
         return response()->json([
             'success'           => true,
             'remaining_seconds' => $timer->remaining_seconds,
@@ -1055,7 +1018,6 @@ class DashboardController extends Controller
             'logout'            => $timer->remaining_seconds <= 0
         ]);
     }
-
 
 
 
