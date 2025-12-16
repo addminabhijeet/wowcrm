@@ -897,7 +897,11 @@ class DashboardController extends Controller
             $secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
             $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
             if ($isInactive) {
+                // Chrome/tab inactive → set timestamp
                 $timer->last_decrement = $currentTime;
+            } else {
+                // Chrome/tab active → reset last_decrement
+                $timer->last_decrement = null;
             }
         }
 
