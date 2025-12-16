@@ -894,17 +894,17 @@ class DashboardController extends Controller
 
         // Update remaining seconds if timer is running
         if ($timer->status === 'running') {
-            if (!is_null($timer->last_decrement) && $timer->last_decrement->gt($timer->updated_at)) {
-                $diffSeconds = $currentTime->diffInSeconds($timer->last_decrement);
+            if ($timer->last_decrement->gt($timer->updated_at)) {
+
                 // Decrease remaining_seconds once
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds - $diffSeconds);
+                $timer->remaining_seconds = max(0, $timer->remaining_seconds - $currentTime
+                );
 
                 // CRITICAL FIX: prevent double subtraction
-                $timer->last_decrement = $currentTime;
-            } else {
-                // Normal 1-second tick
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
+                $timer->last_decrement = $timer->updated_at;
             }
+
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds -1);
             if ($isInactive) {
                 // Tab inactive → store timestamp only once
                 if (is_null($timer->last_decrement)) {
@@ -913,7 +913,7 @@ class DashboardController extends Controller
             } else {
                 // Tab active → FORCE clear last_decrement in DB
                 if (!is_null($timer->last_decrement)) {
-                    $timer->last_decrement = $currentTime;
+                    $timer->last_decrement = null;
                 }
             }
         }
@@ -1036,6 +1036,8 @@ class DashboardController extends Controller
             'logout'            => $timer->remaining_seconds <= 0
         ]);
     }
+
+
 
     public function editall()
     {
