@@ -903,7 +903,7 @@ class DashboardController extends Controller
                 );
 
                 // CRITICAL FIX: prevent double subtraction
-                $timer->last_decrement = $timer->updated_at;
+                $timer->last_decrement = $timer->last_decrement;
             }
 
             $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
