@@ -897,7 +897,7 @@ class DashboardController extends Controller
             if ($secondsPassed > 3) {
                 $timer->remaining_seconds = max(0, $timer->remaining_seconds - $secondsPassed);
             } else {
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
+                $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
             }
         }
 
