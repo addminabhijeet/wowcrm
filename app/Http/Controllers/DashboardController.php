@@ -894,8 +894,17 @@ class DashboardController extends Controller
 
         // Update remaining seconds if timer is running
         if ($timer->status === 'running') {
-            $secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
+
+            if (!$timer->last_decrement) {
+                $timer->last_decrement = $currentTime;
+            }
+            $secondsPassed = $currentTime->diffInSeconds(
+                \Carbon\Carbon::parse($timer->last_decrement)
+            );
+            if ($secondsPassed >= 2) {
+                $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
+                $timer->last_decrement = $currentTime;
+            }
         }
 
         // Store previous status before any change
@@ -936,6 +945,7 @@ class DashboardController extends Controller
 
             $timer->status = 'running';
             $timer->pause_type = 'resume';
+            $timer->last_decrement = $currentTime;
 
             $latestLog = UserTimerLog::where('user_id', $user->id)
                 ->whereNotIn('pause_type', ['lunch', 'break', 'tea'])
@@ -958,6 +968,7 @@ class DashboardController extends Controller
         } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
             $timer->status = 'paused';
             $timer->pause_type = $action;
+            $timer->last_decrement = null;
 
             $latestLog = UserTimerLog::where('user_id', $user->id)
                 ->latest('id')
@@ -977,6 +988,7 @@ class DashboardController extends Controller
         } elseif ($action !== 'tick') {
             $timer->status = 'paused';
             $timer->pause_type = 'inactive';
+            $timer->last_decrement = null;
 
             $latestLog = UserTimerLog::where('user_id', $user->id)
                 ->latest('id')
