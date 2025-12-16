@@ -897,7 +897,9 @@ class DashboardController extends Controller
             if (!is_null($timer->last_decrement) && $timer->last_decrement->gt($timer->updated_at)) {
 
                 // Decrease remaining_seconds once
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds - $currentTime
+                $timer->remaining_seconds = max(
+                    0,
+                    $timer->remaining_seconds - $currentTime
                 );
 
                 // CRITICAL FIX: prevent double subtraction
