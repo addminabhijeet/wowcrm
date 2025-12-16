@@ -359,6 +359,7 @@
         let status = "{{ $status ?? 'running' }}";
 
         let overlayTimeout;
+        let isInactive = false;
 
         // ===============================
         // Helper Functions
@@ -389,6 +390,10 @@
             }, 3000);
         }
 
+        document.addEventListener('visibilitychange', function() {
+            isInactive = document.hidden;
+        });
+
         // ===============================
         // Backend Sync
         // ===============================
@@ -401,7 +406,8 @@
                         "Content-Type": "application/json"
                     },
                     body: JSON.stringify({
-                        action: 'tick'
+                        action: 'tick',
+                        is_inactive: isInactive
                     })
                 })
                 .then(res => res.json())

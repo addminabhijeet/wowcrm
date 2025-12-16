@@ -874,7 +874,7 @@ class DashboardController extends Controller
         $userId = $request->input('user_id');
         $user = $userId ? User::find($userId) : Auth::user();
         $action = $request->input('action');
-
+        $isInactive = $request->boolean('is_inactive', false);
         // Get the latest timer log for the user
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
         if (!$timer) {
@@ -896,7 +896,11 @@ class DashboardController extends Controller
         if ($timer->status === 'running') {
             $secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
             $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
+            if ($isInactive) {
+                $timer->last_decrement = $currentTime;
+            }
         }
+
 
         // Store previous status before any change
         $previousStatus = $timer->status;
