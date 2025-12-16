@@ -908,7 +908,7 @@ class DashboardController extends Controller
                 $timer->last_decrement = $timer->updated_at;
             }
 
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
+            $timer->remaining_seconds = max(0, $timer->remaining_seconds -1);
             if ($isInactive) {
                 // Tab inactive → store timestamp only once
                 if (is_null($timer->last_decrement)) {
