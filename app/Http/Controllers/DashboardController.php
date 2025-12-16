@@ -894,7 +894,7 @@ class DashboardController extends Controller
 
         // Update remaining seconds if timer is running
         if ($timer->status === 'running') {
-            if ($timer->last_decrement->gt($timer->updated_at)) {
+            if (!is_null($timer->last_decrement) && $timer->last_decrement->gt($timer->updated_at)) {
 
                 // Decrease remaining_seconds once
                 $timer->remaining_seconds = max(0, $timer->remaining_seconds - $currentTime
@@ -905,7 +905,6 @@ class DashboardController extends Controller
             }
 
             $timer->remaining_seconds = max(0, $timer->remaining_seconds -1);
-            
             if ($isInactive) {
                 // Tab inactive → store timestamp only once
                 if (is_null($timer->last_decrement)) {
