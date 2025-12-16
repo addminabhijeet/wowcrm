@@ -915,7 +915,7 @@ class DashboardController extends Controller
             } else {
                 // Tab active → FORCE clear last_decrement in DB
                 if (!is_null($timer->last_decrement)) {
-                    $timer->last_decrement = null;
+                    $timer->last_decrement = $timer->updated_at;
                 }
             }
         }
