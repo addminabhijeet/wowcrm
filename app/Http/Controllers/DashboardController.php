@@ -892,30 +892,26 @@ class DashboardController extends Controller
 
         $workDaySeconds = $timerSetting->work_day_seconds;
 
-        // Update remaining seconds if timer is running
         if ($timer->status === 'running') {
-            if (!is_null($timer->last_decrement) && $timer->last_decrement->gt($timer->updated_at)) {
 
-                // Decrease remaining_seconds once
-                $timer->remaining_seconds = max(
-                    0,
-                    $timer->remaining_seconds - $currentTime
-                );
-
-                // CRITICAL FIX: prevent double subtraction
-                $timer->last_decrement = $timer->updated_at;
+            // Initialize last_decrement if NULL
+            if (is_null($timer->last_decrement)) {
+                $timer->last_decrement = $timer->updated_at ?? $currentTime;
             }
 
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds -1);
-            if ($isInactive) {
-                // Tab inactive → store timestamp only once
-                if (is_null($timer->last_decrement)) {
+            // Only decrement when tab is ACTIVE
+            if (!$isInactive) {
+
+                $diffSeconds = $currentTime->diffInSeconds($timer->last_decrement);
+
+                if ($diffSeconds > 0) {
+                    $timer->remaining_seconds = max(
+                        0,
+                        $timer->remaining_seconds - $diffSeconds
+                    );
+
+                    // ✅ Update last_decrement ONLY after decrement
                     $timer->last_decrement = $currentTime;
-                }
-            } else {
-                // Tab active → FORCE clear last_decrement in DB
-                if (!is_null($timer->last_decrement)) {
-                    $timer->last_decrement = $timer->updated_at;
                 }
             }
         }
