@@ -902,8 +902,8 @@ class DashboardController extends Controller
                 $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
 
                 // Decrement exactly 1 second per tick
-                if ($elapsed >= 1/60) {
-                    $timer->remaining_seconds = max(
+                if ($elapsed >= 1) {
+                    $timer->remaining_seconds = min(
                         0,
                         $timer->remaining_seconds - 60
                     );
