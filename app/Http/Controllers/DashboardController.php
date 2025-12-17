@@ -908,7 +908,7 @@ class DashboardController extends Controller
             if ($isInactive) {
                 // Tab inactive → store timestamp only once
                 if (is_null($timer->last_decrement)) {
-                    $timer->last_decrement = $currentTime;
+                    $timer->last_decrement = $timer->updated_at;
                 }
             } else {
                 // Tab active → FORCE clear last_decrement in DB
