@@ -900,9 +900,18 @@ class DashboardController extends Controller
                 $timer->last_decrement->diffInSeconds($timer->updated_at) > 3
             ) {
                 $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
-                $right = $elapsed /2;
-                // Decrease remaining_seconds once
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
+
+                // Decrement exactly 1 second per tick
+                if ($elapsed >= 1) {
+                    $timer->remaining_seconds = max(
+                        0,
+                        $timer->remaining_seconds - 1
+                    );
+
+                    // Move last_decrement forward by exactly 1 second
+                    $timer->last_decrement = $timer->last_decrement->addSeconds(1);
+                }
+
 
                 // CRITICAL FIX: prevent double subtraction
                 $timer->last_decrement = $timer->updated_at;
