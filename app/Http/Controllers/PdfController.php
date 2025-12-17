@@ -26,7 +26,7 @@ class PdfController extends Controller
         $Location     = $request->input('Location');
         $phone_Number = $request->input('Phone_Number');
 
-        return view('pdf.acceptance', compact(
+        return view('pdf.preacceptance', compact(
             'name',
             'email',
             'amount',
@@ -62,7 +62,7 @@ class PdfController extends Controller
         $payeeName     = $request->input('payeeName');
         $Location     = $request->input('Location');
         $phone_Number     = $request->input('Phone_Number');
-        
+
 
         return view('pdf.consultation', compact(
             'name',
@@ -100,7 +100,7 @@ class PdfController extends Controller
         $Location     = $request->input('Location');
         $phone_Number     = $request->input('Phone_Number');
 
-        return view('pdf.delivery', compact(
+        return view('pdf.predelivery', compact(
             'name',
             'email',
             'amount',
@@ -138,7 +138,7 @@ class PdfController extends Controller
         $Location     = $request->input('Location');
         $phone_Number     = $request->input('Phone_Number');
 
-        return view('pdf.payment', compact(
+        return view('pdf.prepayment', compact(
             'name',
             'email',
             'amount',
