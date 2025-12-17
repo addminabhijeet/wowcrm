@@ -67,7 +67,7 @@
                                 <th scope="col" class="text-center">Qualification</th>
 
                                 <th scope="col" class="text-center">Payment Date</th>
-                                <th scope="col" class="text-center">Transaction ID</th>
+                                <th scope="col" class="text-center">Account No.</th>
                                 <th scope="col" class="text-center">Reference Number</th>
                                 <th scope="col" class="text-center">Payment Method</th>
                                 <th scope="col" class="text-center">Payee Name</th>
@@ -168,7 +168,7 @@
 
                                     {{-- TranId --}}
                                     <td>
-                                        <input type="text" class="form-control" data-key="TranId"
+                                        <input type="number" class="form-control" data-key="TranId"
                                             value="{{ $row->TranId ?? '' }}" placeholder="Transaction ID">
                                     </td>
 
