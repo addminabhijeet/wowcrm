@@ -909,7 +909,7 @@ class DashboardController extends Controller
                     );
 
                     // Move last_decrement forward by exactly 1 second
-                    $timer->last_decrement = $timer->last_decrement->addSeconds(1);
+                    $timer->last_decrement = $currentTime;
                 }
             } else {
                 $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
