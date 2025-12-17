@@ -900,10 +900,11 @@ class DashboardController extends Controller
                 $timer->remaining_seconds = max(0, $timer->remaining_seconds - $elapsed);
 
                 // CRITICAL FIX: prevent double subtraction
-                $timer->last_decrement = $timer->last_decrement;
+                $timer->last_decrement = $timer->updated_at;
+            } else {
+                $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
             }
 
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
             if ($isInactive) {
                 // Tab inactive → store timestamp only once
                 if (is_null($timer->last_decrement)) {
