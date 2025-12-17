@@ -169,7 +169,7 @@
                                     {{-- TranId --}}
                                     <td>
                                         <input type="number" class="form-control" data-key="TranId"
-                                            value="{{ $row->TranId ?? '' }}" placeholder="Transaction ID">
+                                            value="{{ $row->TranId ?? '' }}" placeholder="Account No.">
                                     </td>
 
                                     {{-- TranRef --}}
