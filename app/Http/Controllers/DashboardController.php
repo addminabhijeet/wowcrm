@@ -905,11 +905,8 @@ class DashboardController extends Controller
                 if ($elapsed >= 1) {
                     $timer->remaining_seconds = max(
                         0,
-                        $timer->remaining_seconds - 1
+                        $timer->remaining_seconds - 60
                     );
-
-                    // Move last_decrement forward by exactly 1 second
-                    $timer->last_decrement = $currentTime;
                 }
             } else {
                 $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
