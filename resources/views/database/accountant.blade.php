@@ -78,7 +78,7 @@
                                 <th scope="col" class="text-center">Qualification</th>
 
                                 <th scope="col" class="text-center">Payment Date</th>
-                                <th scope="col" class="text-center">Transaction ID</th>
+                                <th scope="col" class="text-center">Account No.</th>
                                 <th scope="col" class="text-center">Reference Number</th>
                                 <th scope="col" class="text-center">Payment Method</th>
                                 <th scope="col" class="text-center">Payee Name</th>
@@ -183,7 +183,7 @@
                                     {{-- TranId --}}
                                     <td>
                                         <input type="text" class="form-control" data-key="TranId"
-                                            value="{{ $row->TranId ?? '' }}" placeholder="Transaction ID">
+                                            value="{{ $row->TranId ?? '' }}" placeholder="Account No.">
                                     </td>
 
                                     {{-- TranRef --}}
@@ -315,7 +315,7 @@
                                     <td>
                                         <input type="file" accept="audio/*" class="d-none audio-input"
                                             data-key="Audio">
-                                        
+
 
                                         @if (!empty($row->audio))
                                             <a href="{{ url('dashboard/senior/google-sheet/view-audio/' . $row->id) }}"
