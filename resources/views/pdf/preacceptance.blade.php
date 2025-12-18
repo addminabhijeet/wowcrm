@@ -388,7 +388,7 @@ document.getElementById('printBtn').addEventListener('click', function () {
                 margin: 10mm 20mm 10mm 20mm;
             }
             body {
-                margin: 0;
+                margin: 10mm 20mm 10mm 20mm;
             }
         }
     `;
