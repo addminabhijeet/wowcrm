@@ -88,6 +88,8 @@
                                 <th scope="col" class="text-center">Payment</th>
                                 <th scope="col" class="text-center">Forwarded By</th>
                                 <th scope="col" class="text-center">Acceptance Sign</th>
+                                <th scope="col" class="text-center">Delivery Sign</th>
+                                <th scope="col" class="text-center">Payment Sign</th>
 
                                 <th scope="col" class="text-center">View</th>
                                 <th scope="col" class="text-center">Status</th>
