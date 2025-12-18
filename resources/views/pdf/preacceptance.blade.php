@@ -384,11 +384,12 @@ document.getElementById('printBtn').addEventListener('click', function () {
         @media print {
             @page {
                 size: A4;
-                /* top right bottom left */
-                margin: 10mm 20mm 10mm 20mm;
+                margin: 0;
             }
             body {
-                margin: 10mm 20mm 10mm 20mm;
+                padding: 20mm 0; /* top & bottom space */
+                margin: 0;
+                box-sizing: border-box;
             }
         }
     `;
@@ -404,6 +405,7 @@ document.getElementById('printBtn').addEventListener('click', function () {
     window.location.reload();
 });
 </script>
+
 
 	</body>
 </html>
