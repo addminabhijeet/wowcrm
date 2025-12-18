@@ -388,11 +388,6 @@ document.getElementById('printBtn').addEventListener('click', function () {
             }
             body {
                 margin: 0;
-            }
-            .print-blank {
-                height: 40mm; /* white space top & bottom */
-                width: 100%;
-            }
         }
     `;
     document.head.appendChild(style);
