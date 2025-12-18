@@ -371,7 +371,7 @@
 				</div>
 			</div>
 		</div>
-        <script>
+                <script>
 document.getElementById('printBtn').addEventListener('click', function () {
 
     // Create A4 print style dynamically
