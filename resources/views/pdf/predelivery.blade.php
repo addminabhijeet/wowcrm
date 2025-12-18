@@ -332,37 +332,41 @@ document.getElementById('printBtn').addEventListener('click', function () {
                 margin: 10mm;
             }
 
-            /* Hide everything */
-            body * {
-                visibility: hidden !important;
-                background: transparent !important;
+            body {
+                margin: 0;
             }
 
-            /* Show only print content */
-            .pdf24_02,
-            .pdf24_02 * {
-                visibility: visible !important;
-            }
-
-            /* Keep original backgrounds of print content */
-            .pdf24_02 * {
-                background: inherit !important;
-            }
-
-            /* Position correctly for print */
+            /* Extend height and allow page breaking */
             .pdf24_02 {
-                position: absolute;
-                left: 0;
-                top: 0;
-                width: 100%;
+                height: auto !important;
+                min-height: 297mm;
+                page-break-after: auto;
+                page-break-inside: avoid;
+            }
+
+            .pdf24_view {
+                transform: scale(1) !important;
+            }
+
+            img {
+                max-width: 100%;
+                height: auto;
             }
         }
     `;
     document.head.appendChild(style);
 
+    const printContent = document.querySelector('.pdf24_view').parentElement;
+    const originalContent = document.body.innerHTML;
+
+    document.body.innerHTML = printContent.outerHTML;
     window.print();
+    document.body.innerHTML = originalContent;
+
+    window.location.reload();
 });
 </script>
+
 
 
 
