@@ -339,7 +339,7 @@
 					<div class="pdf24_01" style="left:39.42em;top:9.3208em;"><span class="pdf24_15 pdf24_13 pdf24_16" style="word-spacing:0.0064em;">{{$paymentDate}} &nbsp;</span></div>
 					<div class="pdf24_01" style="left:3.92em;top:10.2453em;"><span class="pdf24_17 pdf24_08 pdf24_18" style="word-spacing:-0.005em;">{{$payeeName}} &nbsp;</span></div>
 					<div class="pdf24_01" style="left:3.92em;top:11.8539em;"><a href="mailto:parvkhandelwal15@gmail.com" target="_blank"><span class="pdf24_14 pdf24_13 pdf24_19">{{$email}} &nbsp;</span></a></div>
-					<div class="pdf24_01" style="left:3.92em;top:13.2939em;"><span class="pdf24_14 pdf24_13 pdf24_20" style="word-spacing:-0.008em;">{{$phone_Number}} &nbsp;</span></div>
+					<div class="pdf24_01" style="left:3.92em;top:13.2939em;"><span class="pdf24_14 pdf24_13 pdf24_20" style="word-spacing:-0.008em;">+1{{$phone_Number}} &nbsp;</span></div>
 					<div class="pdf24_01" style="left:3.92em;top:14.7339em;"><span class="pdf24_14 pdf24_13 pdf24_21" style="word-spacing:-0.007em;">{{$Location}} &nbsp;</span></div>
 					<div class="pdf24_01" style="left:4.59em;top:18.2079em;"><span class="pdf24_22 pdf24_08 pdf24_23" style="word-spacing:-0.0034em;">SL. NO. &nbsp;</span></div>
 					<div class="pdf24_01" style="left:17.79em;top:18.2079em;"><span class="pdf24_22 pdf24_08 pdf24_24">DESCRIPTION &nbsp;</span></div>
