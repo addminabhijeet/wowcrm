@@ -81,14 +81,14 @@
                                 <th scope="col" class="text-center">Account No</th>
                                 <th scope="col" class="text-center">Reference Number</th>
                                 <th scope="col" class="text-center">Payment Method</th>
-                                <th scope="col" class="text-center">Payee Name</th>
+                                <th scope="col" class="text-center">Payer Name</th>
                                 <th scope="col" class="text-center">Acceptance</th>
 
                                 <th scope="col" class="text-center">Delivery</th>
                                 <th scope="col" class="text-center">Payment</th>
                                 <th scope="col" class="text-center">Forwarded By</th>
                                 <th scope="col" class="text-center">Acceptance Sign</th>
-                              
+
                                 <th scope="col" class="text-center">View</th>
                                 <th scope="col" class="text-center">Status</th>
                                 <th scope="col" class="text-center">Remark</th>
@@ -200,10 +200,10 @@
                                             value="{{ $row->PaymentMethod ?? '' }}" placeholder="Payment Method">
                                     </td>
 
-                                    {{-- Payee Name --}}
+                                    {{-- Payer Name --}}
                                     <td>
                                         <input type="text" class="form-control" data-key="PayeeName"
-                                            value="{{ $row->PayeeName ?? '' }}" placeholder="Payee Name">
+                                            value="{{ $row->PayeeName ?? '' }}" placeholder="Payer Name">
                                     </td>
 
                                     {{-- View (Acceptance) --}}

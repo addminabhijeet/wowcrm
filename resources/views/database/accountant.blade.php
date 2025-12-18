@@ -81,7 +81,7 @@
                                 <th scope="col" class="text-center">Account No</th>
                                 <th scope="col" class="text-center">Reference Number</th>
                                 <th scope="col" class="text-center">Payment Method</th>
-                                <th scope="col" class="text-center">Payee Name</th>
+                                <th scope="col" class="text-center">Payer Name</th>
                                 <th scope="col" class="text-center">Generate</th>
                                 <th scope="col" class="text-center">Acceptance</th>
 
@@ -198,10 +198,10 @@
                                             value="{{ $row->PaymentMethod ?? '' }}" placeholder="Payment Method">
                                     </td>
 
-                                    {{-- Payee Name --}}
+                                    {{-- Payer Name --}}
                                     <td>
                                         <input type="text" class="form-control" data-key="PayeeName"
-                                            value="{{ $row->PayeeName ?? '' }}" placeholder="Payee Name">
+                                            value="{{ $row->PayeeName ?? '' }}" placeholder="Payer Name">
                                     </td>
 
                                     <td class="text-center">

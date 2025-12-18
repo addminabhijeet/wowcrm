@@ -70,7 +70,7 @@
                                 <th scope="col" class="text-center">Transaction ID</th>
                                 <th scope="col" class="text-center">Reference Number</th>
                                 <th scope="col" class="text-center">Payment Method</th>
-                                <th scope="col" class="text-center">Payee Name</th>
+                                <th scope="col" class="text-center">Payer Name</th>
                                 <th scope="col" class="text-center">Generate</th>
                                 <th scope="col" class="text-center">Acceptance</th>
                                 <th scope="col" class="text-center">Consultation</th>
@@ -183,10 +183,10 @@
                                             value="{{ $row->PaymentMethod ?? '' }}" placeholder="Payment Method">
                                     </td>
 
-                                    {{-- Payee Name --}}
+                                    {{-- Payer Name --}}
                                     <td>
                                         <input type="text" class="form-control" data-key="PayeeName"
-                                            value="{{ $row->PayeeName ?? '' }}" placeholder="Payee Name">
+                                            value="{{ $row->PayeeName ?? '' }}" placeholder="Payer Name">
                                     </td>
 
                                     <td class="text-center">
@@ -745,9 +745,9 @@
                     } else if (k === 'Payment Method') {
                         cells +=
                             `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payment Method"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Payee Name') {
+                    } else if (k === 'Payer Name') {
                         cells +=
-                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payee Name"><span class="small-hint"></span></td>`;
+                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payer Name"><span class="small-hint"></span></td>`;
                     } else if (k === 'forwardedBy') {
                         cells +=
                             `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
