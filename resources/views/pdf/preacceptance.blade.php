@@ -385,7 +385,7 @@ document.getElementById('printBtn').addEventListener('click', function () {
             @page {
                 size: A4;
                 /* top right bottom left */
-                margin: 10mm 20mm 10mm 20mm;
+                margin: 10mm 40mm 10mm 40mm;
             }
             body {
                 margin: 0;
