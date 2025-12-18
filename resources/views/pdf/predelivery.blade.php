@@ -321,27 +321,18 @@
 			</div>
 		</div>
 <script>
-    document.getElementById("printBtn").addEventListener("click", function() {
-        const pageContainer = document.querySelector(".pdf24_ pdf24_02");
+document.getElementById('printBtn').addEventListener('click', function () {
+    const printContent = document.querySelector('.pdf24_view').parentElement;
+    const originalContent = document.body.innerHTML;
 
-        // Hide all other elements on the page (including the print button)
-        const bodyChildren = Array.from(document.body.children);
-        bodyChildren.forEach(el => {
-            if (el !== pageContainer) {
-                el.style.display = 'none';
-            }
-        });
+    document.body.innerHTML = printContent.outerHTML;
+    window.print();
+    document.body.innerHTML = originalContent;
 
-        // Print only the page-container
-        window.print();
-
-        // Restore original display
-        bodyChildren.forEach(el => {
-            if (el !== pageContainer) {
-                el.style.display = '';
-            }
-        });
-    });
+    // Reload scripts/styles after restoring DOM
+    window.location.reload();
+});
 </script>
+
 	</body>
 </html>
