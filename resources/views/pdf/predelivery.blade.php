@@ -322,6 +322,22 @@
 		</div>
 <script>
 document.getElementById('printBtn').addEventListener('click', function () {
+
+    // Create A4 print style dynamically
+    const style = document.createElement('style');
+    style.innerHTML = `
+        @media print {
+            @page {
+                size: A4;
+                margin: 10mm;
+            }
+            body {
+                margin: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
     const printContent = document.querySelector('.pdf24_view').parentElement;
     const originalContent = document.body.innerHTML;
 
@@ -329,10 +345,10 @@ document.getElementById('printBtn').addEventListener('click', function () {
     window.print();
     document.body.innerHTML = originalContent;
 
-    // Reload scripts/styles after restoring DOM
     window.location.reload();
 });
 </script>
+
 
 	</body>
 </html>
