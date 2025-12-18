@@ -78,12 +78,12 @@
                                 <th scope="col" class="text-center">Qualification</th>
 
                                 <th scope="col" class="text-center">Payment Date</th>
-                                <th scope="col" class="text-center">Transaction ID</th>
+                                <th scope="col" class="text-center">Account No</th>
                                 <th scope="col" class="text-center">Reference Number</th>
                                 <th scope="col" class="text-center">Payment Method</th>
                                 <th scope="col" class="text-center">Payee Name</th>
                                 <th scope="col" class="text-center">Acceptance</th>
-                                <th scope="col" class="text-center">Consultation</th>
+
                                 <th scope="col" class="text-center">Delivery</th>
                                 <th scope="col" class="text-center">Payment</th>
                                 <th scope="col" class="text-center">Forwarded By</th>
@@ -182,10 +182,10 @@
                                             value="{{ $row->PaymentDate ? \Carbon\Carbon::parse($row->PaymentDate)->format('m/d/Y') : '' }}">
                                     </td>
 
-                                    {{-- TranId --}}
+                                    {{-- Account No --}}
                                     <td>
                                         <input type="text" class="form-control" data-key="TranId"
-                                            value="{{ $row->TranId ?? '' }}" placeholder="Transaction ID">
+                                            value="{{ $row->TranId ?? '' }}" placeholder="Account No">
                                     </td>
 
                                     {{-- TranRef --}}
@@ -232,31 +232,6 @@
                                         @endif
                                     </td>
 
-                                    {{-- View (Consultation) --}}
-                                    <td>
-                                        <input type="file" accept="application/pdf" class="d-none consultation-input"
-                                            data-key="View">
-                                        <button type="button" class="btn btn-sm btn-info upload-consultation-btn">
-                                            {{ !empty($row->consultation) ? 'Change File' : 'Upload' }}
-                                        </button>
-
-                                        @if (!empty($row->consultation))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-consultation/' . $row->id) }}"
-                                                target="_blank" class="btn btn-sm btn-primary viewconsultation-btn">View
-                                                Consultation</a>
-
-                                            <a href="{{ url('dashboard/senior/google-sheet/download-consultation/' . $row->id) }}"
-                                                class="btn btn-sm btn-secondary downloadconsultation-btn">Download
-                                                Consultation</a>
-                                        @else
-                                            <a href="#" target="_blank"
-                                                class="btn btn-sm btn-primary viewconsultation-btn d-none">View
-                                                Consultation</a>
-                                            <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadconsultation-btn d-none">Download
-                                                Consultation</a>
-                                        @endif
-                                    </td>
 
                                     {{-- View (Delivery) --}}
                                     <td>
@@ -339,32 +314,7 @@
                                         @endif
                                     </td>
 
-                                    {{-- View (Consultation Sign) --}}
-                                    <td>
-                                        <input type="file" accept="application/pdf"
-                                            class="d-none consultationsign-input" data-key="View">
-                                        <button type="button" class="btn btn-sm btn-info upload-consultationsign-btn">
-                                            {{ !empty($row->consultationsign) ? 'Change File' : 'Upload' }}
-                                        </button>
 
-                                        @if (!empty($row->consultationsign))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-consultationsign/' . $row->id) }}"
-                                                target="_blank"
-                                                class="btn btn-sm btn-primary viewconsultationsign-btn">View
-                                                Consultation Sign</a>
-
-                                            <a href="{{ url('dashboard/senior/google-sheet/download-consultationsign/' . $row->id) }}"
-                                                class="btn btn-sm btn-secondary downloadconsultationsign-btn">Download
-                                                Consultation Sign</a>
-                                        @else
-                                            <a href="#" target="_blank"
-                                                class="btn btn-sm btn-primary viewconsultationsign-btn d-none">View
-                                                Consultation Sign</a>
-                                            <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadconsultationsign-btn d-none">Download
-                                                Consultation Sign</a>
-                                        @endif
-                                    </td>
 
                                     {{-- View (Resume) --}}
                                     <td>
@@ -836,75 +786,75 @@
                 let cells = `<td>—</td>`;
 
                 colKeys.forEach(k => {
-                    if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
-                            'Time Zone', 'Qualification'
-                        ].includes(k)) {
-                        let opts = [];
-                        if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors',
-                            'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
-                            'Aerospace Proj. Manag.'
-                        ];
-                        if (k === 'Exe Remarks') opts = ['Ready To Pay', 'Not Interested', 'Not Connected',
-                            'Did Not Connect', 'Others', 'Payment Completed', 'VM', 'Busy'
-                        ];
-                        if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
-                            'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC'
-                        ];
-                        if (k === 'Relocation') opts = ['YES', 'NO'];
-                        if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
-                            'Money Issue', 'Not Interested', "Don't Call"
-                        ];
-                        if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
-                        if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
-                        cells +=
-                            `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
-                    } else if (k === 'Amount') {
-                        cells +=
-                            `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount (469)"></td>`;
-                    } else if (k === 'Location') {
-                        cells +=
-                            `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Remark') {
-                        cells +=
-                            `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Date' || k === 'Graduation Date') {
-                        cells +=
-                            `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Phone Number') {
-                        cells +=
-                            `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
-                    } else if (k === 'Email Address') {
-                        cells +=
-                            `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Name') {
-                        cells +=
-                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Payment Date') {
-                        cells +=
-                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payment Date"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Transaction ID') {
-                        cells +=
-                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Transaction ID"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Reference Number') {
-                        cells +=
-                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Reference Number"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Payment Method') {
-                        cells +=
-                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payment Method"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Payee Name') {
-                        cells +=
-                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payee Name"><span class="small-hint"></span></td>`;
-                    } else if (k === 'forwardedBy') {
-                        cells +=
-                            `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
-                    } else if (k === 'View') {
-                        cells += `<td>
-        <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input" data-key="View">
-        <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-        <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
-        <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-    </td>`;
-                    }
+    //                 if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
+    //                         'Time Zone', 'Qualification'
+    //                     ].includes(k)) {
+    //                     let opts = [];
+    //                     if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors',
+    //                         'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
+    //                         'Aerospace Proj. Manag.'
+    //                     ];
+    //                     if (k === 'Exe Remarks') opts = ['Ready To Pay', 'Not Interested', 'Not Connected',
+    //                         'Did Not Connect', 'Others', 'Payment Completed', 'VM', 'Busy'
+    //                     ];
+    //                     if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
+    //                         'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC'
+    //                     ];
+    //                     if (k === 'Relocation') opts = ['YES', 'NO'];
+    //                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
+    //                         'Money Issue', 'Not Interested', "Don't Call"
+    //                     ];
+    //                     if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+    //                     if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
+    //                     cells +=
+    //                         `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
+    //                 } else if (k === 'Amount') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount (469)"></td>`;
+    //                 } else if (k === 'Location') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Remark') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Date' || k === 'Graduation Date') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Phone Number') {
+    //                     cells +=
+    //                         `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
+    //                 } else if (k === 'Email Address') {
+    //                     cells +=
+    //                         `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Name') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Payment Date') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payment Date"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Transaction ID') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Transaction ID"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Reference Number') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Reference Number"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Payment Method') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payment Method"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Payee Name') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payee Name"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'forwardedBy') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'View') {
+    //                     cells += `<td>
+    //     <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input" data-key="View">
+    //     <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+    //     <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
+    //     <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+    // </td>`;
+    //                 }
                 });
 
                 // cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
