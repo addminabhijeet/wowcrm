@@ -952,14 +952,14 @@
     ">
 
         <!-- SINGLE IFRAME CARD -->
-<div style="background:#fff; padding:16px; border-radius:8px;">
-    <h4 style="margin-bottom:10px;">Acceptance Form</h4>
-
+<div style="padding:0; margin:0;">
     <iframe
         src="{{ route('pdf.acceptance') }}?${queryParams}"
-        style="width:100%; height:1200px; border:none;">
+        style="width:100%; height:1200px; border:0; display:block;">
     </iframe>
 </div>
+
+
 
 
         <div style="background:#fff; padding:18px; border-radius:12px; max-width:1010px;
