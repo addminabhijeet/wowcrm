@@ -78,7 +78,7 @@
                                 <th scope="col" class="text-center">Qualification</th>
 
                                 <th scope="col" class="text-center">Payment Date</th>
-                                <th scope="col" class="text-center">Account No.</th>
+                                <th scope="col" class="text-center">Account No</th>
                                 <th scope="col" class="text-center">Reference Number</th>
                                 <th scope="col" class="text-center">Payment Method</th>
                                 <th scope="col" class="text-center">Payee Name</th>
@@ -180,7 +180,7 @@
                                             value="{{ $row->PaymentDate ? \Carbon\Carbon::parse($row->PaymentDate)->format('m/d/Y') : '' }}">
                                     </td>
 
-                                    {{-- TranId --}}
+                                    {{-- Account No --}}
                                     <td>
                                         <input type="text" class="form-control" data-key="TranId"
                                             value="{{ $row->TranId ?? '' }}" placeholder="Account No.">
@@ -238,7 +238,7 @@
                                     </td>
 
                                     {{-- View (Consultation) --}}
-                                    <td>
+                                    {{-- <td>
                                         <input type="file" accept="application/pdf" class="d-none consultation-input"
                                             data-key="View">
                                         <button type="button" class="btn btn-sm btn-info upload-consultation-btn">
@@ -261,7 +261,7 @@
                                                 class="btn btn-sm btn-secondary downloadconsultation-btn d-none">Download
                                                 Consultation</a>
                                         @endif
-                                    </td>
+                                    </td> --}}
 
                                     {{-- View (Delivery) --}}
                                     <td>
@@ -662,7 +662,7 @@
 
             function initDatePickers(context = document) {
                 const laravelToday =
-                    "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
+                    "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}";
 
                 context.querySelectorAll('input.date-picker').forEach(input => {
                     const key = input.dataset.key;
@@ -677,7 +677,7 @@
                         }
                     };
 
-                    // ✅ Use Laravel's timezone-based today
+                  
                     if (key === "Date") opts.maxDate = laravelToday;
                     if (key === "Date") opts.minDate = laravelToday;
 
@@ -861,9 +861,9 @@
                     } else if (k === 'Payment Date') {
                         cells +=
                             `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payment Date"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Transaction ID') {
+                    } else if (k === 'Account No') {
                         cells +=
-                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Transaction ID"><span class="small-hint"></span></td>`;
+                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Account No"><span class="small-hint"></span></td>`;
                     } else if (k === 'Reference Number') {
                         cells +=
                             `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Reference Number"><span class="small-hint"></span></td>`;
