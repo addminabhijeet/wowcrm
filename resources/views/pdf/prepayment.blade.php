@@ -371,33 +371,44 @@
 				</div>
 			</div>
 		</div>
-                <script>
+               <script>
 document.getElementById('printBtn').addEventListener('click', function () {
 
-    // Create A4 print style dynamically
+    // Print styles
     const style = document.createElement('style');
     style.innerHTML = `
         @media print {
             @page {
                 size: A4;
-                margin: 10mm;
+                margin: 0;
             }
             body {
                 margin: 0;
+            }
+            .print-blank {
+                height: 40mm; /* white space top & bottom */
+                width: 100%;
             }
         }
     `;
     document.head.appendChild(style);
 
-    const printContent = document.querySelector('.pdf24_view').parentElement;
+    const printWrapper = document.querySelector('.pdf24_'); // outer wrapper
     const originalContent = document.body.innerHTML;
 
-    document.body.innerHTML = printContent.outerHTML;
-    window.print();
-    document.body.innerHTML = originalContent;
+    // Inject real blank space before & after content
+    document.body.innerHTML = `
+        <div class="print-blank"></div>
+        ${printWrapper.outerHTML}
+        <div class="print-blank"></div>
+    `;
 
+    window.print();
+
+    document.body.innerHTML = originalContent;
     window.location.reload();
 });
 </script>
+
 	</body>
 </html>
