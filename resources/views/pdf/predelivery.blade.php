@@ -323,7 +323,7 @@
 <script>
 document.getElementById('printBtn').addEventListener('click', function () {
 
-    // Inject print-only styles
+    // Inject print-only CSS
     const style = document.createElement('style');
     style.innerHTML = `
         @media print {
@@ -338,22 +338,17 @@ document.getElementById('printBtn').addEventListener('click', function () {
                 background: transparent !important;
             }
 
-            /* Show only print content */
-            .pdf24_02,
-            .pdf24_02 * {
+            /* Show only PDF content */
+            .pdf24_view,
+            .pdf24_view * {
                 visibility: visible !important;
             }
 
-            /* Keep original backgrounds of print content */
-            .pdf24_02 * {
-                background: inherit !important;
-            }
-
-            /* Position correctly for print */
-            .pdf24_02 {
+            /* Ensure correct positioning */
+            .pdf24_view {
                 position: absolute;
-                left: 0;
                 top: 0;
+                left: 0;
                 width: 100%;
             }
         }
@@ -363,7 +358,6 @@ document.getElementById('printBtn').addEventListener('click', function () {
     window.print();
 });
 </script>
-
 
 
 
