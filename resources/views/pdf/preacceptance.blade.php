@@ -384,7 +384,8 @@ document.getElementById('printBtn').addEventListener('click', function () {
         @media print {
             @page {
                 size: A4;
-                margin: 10mm;
+                /* top right bottom left */
+                margin: 10mm 20mm 10mm 20mm;
             }
             body {
                 margin: 0;
@@ -403,5 +404,6 @@ document.getElementById('printBtn').addEventListener('click', function () {
     window.location.reload();
 });
 </script>
+
 	</body>
 </html>
