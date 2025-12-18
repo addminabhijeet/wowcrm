@@ -701,12 +701,12 @@
                                             <div class="mb-20">
                                                 <label for="PayeeName"
                                                     class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                                    Payer Name
+                                                    Payor Name
                                                 </label>
                                                 <input type="text" name="PayeeName" id="PayeeName"
                                                     class="form-control radius-8"
                                                     value="{{ old('PayeeName', $candidate->PayeeName ?? '') }}"
-                                                    placeholder="Enter Payer Name" required>
+                                                    placeholder="Enter Payor Name" required>
                                             </div>
 
                                             <script>

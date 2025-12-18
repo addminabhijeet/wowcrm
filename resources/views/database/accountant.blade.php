@@ -81,7 +81,7 @@
                                 <th scope="col" class="text-center">Account No</th>
                                 <th scope="col" class="text-center">Reference Number</th>
                                 <th scope="col" class="text-center">Payment Method</th>
-                                <th scope="col" class="text-center">Payer Name</th>
+                                <th scope="col" class="text-center">Payor Name</th>
                                 <th scope="col" class="text-center">Generate</th>
                                 <th scope="col" class="text-center">Acceptance</th>
 
@@ -198,10 +198,10 @@
                                             value="{{ $row->PaymentMethod ?? '' }}" placeholder="Payment Method">
                                     </td>
 
-                                    {{-- Payer Name --}}
+                                    {{-- Payor Name --}}
                                     <td>
                                         <input type="text" class="form-control" data-key="PayeeName"
-                                            value="{{ $row->PayeeName ?? '' }}" placeholder="Payer Name">
+                                            value="{{ $row->PayeeName ?? '' }}" placeholder="Payor Name">
                                     </td>
 
                                     <td class="text-center">
@@ -1073,7 +1073,7 @@
                                                 return;
                                             }
 
-                                           
+
                                             let rowData = {};
                                             row.querySelectorAll(
                                                     "input[data-key], select[data-key]")
