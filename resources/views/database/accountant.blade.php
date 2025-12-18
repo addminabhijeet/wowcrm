@@ -84,7 +84,7 @@
                                 <th scope="col" class="text-center">Payee Name</th>
                                 <th scope="col" class="text-center">Generate</th>
                                 <th scope="col" class="text-center">Acceptance</th>
-                
+
                                 <th scope="col" class="text-center">Delivery</th>
                                 <th scope="col" class="text-center">Payment</th>
                                 <th scope="col" class="text-center">Audio</th>
@@ -237,32 +237,7 @@
                                         @endif
                                     </td>
 
-                                    {{-- View (Consultation) --}}
-                                    {{-- <td>
-                                        <input type="file" accept="application/pdf" class="d-none consultation-input"
-                                            data-key="View">
-                                        <button type="button" class="btn btn-sm btn-info upload-consultation-btn">
-                                            {{ !empty($row->consultation) ? 'Change File' : 'Upload' }}
-                                        </button>
-
-                                        @if (!empty($row->consultation))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-consultation/' . $row->id) }}"
-                                                target="_blank" class="btn btn-sm btn-primary viewconsultation-btn">View
-                                                Consultation</a>
-
-                                            <a href="{{ url('dashboard/senior/google-sheet/download-consultation/' . $row->id) }}"
-                                                class="btn btn-sm btn-secondary downloadconsultation-btn">Download
-                                                Consultation</a>
-                                        @else
-                                            <a href="#" target="_blank"
-                                                class="btn btn-sm btn-primary viewconsultation-btn d-none">View
-                                                Consultation</a>
-                                            <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadconsultation-btn d-none">Download
-                                                Consultation</a>
-                                        @endif
-                                    </td> --}}
-
+                                    
                                     {{-- View (Delivery) --}}
                                     <td>
                                         <input type="file" accept="application/pdf" class="d-none delivery-input"
