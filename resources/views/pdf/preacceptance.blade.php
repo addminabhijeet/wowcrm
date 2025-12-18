@@ -378,19 +378,17 @@
         <script>
 document.getElementById('printBtn').addEventListener('click', function () {
 
-    // Print style
+    // Create A4 print style dynamically
     const style = document.createElement('style');
     style.innerHTML = `
         @media print {
             @page {
                 size: A4;
-                margin: 0;
+                /* top right bottom left */
+                margin: 10mm 20mm 10mm 20mm;
             }
             body {
                 margin: 0;
-            }
-            .print-spacer {
-                height: 20mm; /* blank space */
             }
         }
     `;
@@ -399,20 +397,13 @@ document.getElementById('printBtn').addEventListener('click', function () {
     const printContent = document.querySelector('.pdf24_view').parentElement;
     const originalContent = document.body.innerHTML;
 
-    // Add blank content before & after
-    document.body.innerHTML = `
-        <div class="print-spacer"></div>
-        ${printContent.outerHTML}
-        <div class="print-spacer"></div>
-    `;
-
+    document.body.innerHTML = printContent.outerHTML;
     window.print();
     document.body.innerHTML = originalContent;
+
     window.location.reload();
 });
 </script>
-
-
 
 	</body>
 </html>
