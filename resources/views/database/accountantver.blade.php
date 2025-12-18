@@ -1696,8 +1696,8 @@
                 }
 
 
-                // Consultation Sign
-                if (e.target.matches('.consultationsign-input')) {
+                // Payment Sign
+                if (e.target.matches('.paymentsign-input')) {
                     const row = e.target.closest('tr');
 
                     // Get selected file name (same as resume code)
@@ -1705,14 +1705,14 @@
                     console.log('File selected:', fileName);
 
                     // Show view & download buttons
-                    const viewBtn = row.querySelector('.viewconsultationsign-btn');
-                    const downloadBtn = row.querySelector('.downloadconsultationsign-btn');
+                    const viewBtn = row.querySelector('.viewpaymentsign-btn');
+                    const downloadBtn = row.querySelector('.downloadpaymentsign-btn');
 
                     if (viewBtn) viewBtn.classList.remove('d-none');
                     if (downloadBtn) downloadBtn.classList.remove('d-none');
 
                     // Update upload button text
-                    const uploadBtn = row.querySelector('.upload-consultationsign-btn');
+                    const uploadBtn = row.querySelector('.upload-paymentsign-btn');
                     if (uploadBtn) uploadBtn.textContent = 'Change File';
                 }
 
@@ -1731,6 +1731,25 @@
 
                     // Update button text
                     const uploadBtn = row.querySelector('.upload-delivery-btn');
+                    if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                    console.log('Delivery file selected:', fileName);
+                }
+
+                                // Delivery
+                if (e.target.matches('.deliverysign-input')) {
+                    const row = e.target.closest('tr');
+                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+
+                    // Show view and download buttons temporarily
+                    const viewBtn = row.querySelector('.viewdeliverysign-btn');
+                    const downloadBtn = row.querySelector('.downloaddeliverysign-btn');
+
+                    if (viewBtn) viewBtn.classList.remove('d-none');
+                    if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                    // Update button text
+                    const uploadBtn = row.querySelector('.upload-deliverysign-btn');
                     if (uploadBtn) uploadBtn.textContent = 'Change File';
 
                     console.log('Delivery file selected:', fileName);
