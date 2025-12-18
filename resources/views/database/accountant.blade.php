@@ -861,8 +861,7 @@
     //                 }
                 });
 
-                 cells +=
-                // `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
+                // cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
                 newRow.innerHTML = cells;
                 tableBody.appendChild(newRow);
                 applyInitialState(newRow);
@@ -973,27 +972,34 @@
 
         <div style="background:#fff; padding:18px; border-radius:12px; max-width:1010px;
             box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
-border-radius:12px; max-width:1010px;
-            box-shadow:0 4px 18px             border:1px solid #eee;">
-            <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Acceptance Form</h4>
+            <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Payment Form</h4>
             <iframe
-                src="{{ route('pdf.acceptance') }}?${queryParams}"
+                src="{{ route('pdf.payment') }}?${queryParams}"
                 style="width:100%; height:1270px; border:0; border-radius:10px;">
             </iframe>
         </div>
 
-        <div style="background:#fff; padding:18px; border-radius:12px; max-width:1010px;
-             border:1px solid #eee;">
-            <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Delivery Form</h4>
-            <iframe
-                src="{{ route('pdf.delivery') }}?${queryParams}"
-                style="width:100%; height:1270px; border:0; border-radius:10px;">
-            </iframe>
-        </div>
+    </div>
+</div>
 
-        <div style="background:#fff; padding:18px; border-radius:12px; max-width:1010px;
-             border:1px solid #eee;">
-{ route('pdf.acceptance') }}?${queryParams}`,
+        `;
+
+                    // SweetAlert Modal
+                    Swal.fire({
+                        title: '<span style="font-size:20px; font-weight:bold;">Preview & Confirm Before Mail</span>',
+                        html: previewHTML,
+                        showCancelButton: true,
+                        cancelButtonText: 'OK',
+                        confirmButtonColor: '#28a745',
+                        cancelButtonColor: '#dc3545',
+                        width: '1200px',
+                        padding: '20px'
+                    }).then((result) => {
+
+                        if (result.isConfirmed) {
+
+                            const pdfUrls = [
+                                `{{ route('pdf.acceptance') }}?${queryParams}`,
                                 `{{ route('pdf.consultation') }}?${queryParams}`,
                                 `{{ route('pdf.delivery') }}?${queryParams}`,
                                 `{{ route('pdf.payment') }}?${queryParams}`
