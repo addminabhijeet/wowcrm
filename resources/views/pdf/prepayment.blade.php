@@ -386,7 +386,7 @@ document.getElementById('printBtn').addEventListener('click', function () {
                 margin: 0;
             }
             .print-blank {
-                height: 40mm; /* white space top & bottom */
+                height: 20mm; /* white space top & bottom */
                 width: 100%;
             }
         }
