@@ -971,6 +971,8 @@
         </div>
 
         <div style="background:#fff; padding:18px; border-radius:12px; max-width:1010px;
+            box-shadow:0 4px 18px rgba(0,0,0,0.08); border:1px solid #eee;">
+border-radius:12px; max-width:1010px;
             box-shadow:0 4px 18px             border:1px solid #eee;">
             <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Acceptance Form</h4>
             <iframe
