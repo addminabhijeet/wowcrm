@@ -322,7 +322,7 @@
 		</div>
 <script>
     document.getElementById("printBtn").addEventListener("click", function() {
-        const pageContainer = document.querySelector(".page-container");
+        const pageContainer = document.querySelector(".pdf24_ pdf24_02");
 
         // Hide all other elements on the page (including the print button)
         const bodyChildren = Array.from(document.body.children);
