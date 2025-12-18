@@ -2,10 +2,11 @@
 <html>
 	<head>
 		<meta charset="utf-8" />
-		<title>
-		</title>
-		
-	<STYLE> 
+		<title></title>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+	<STYLE>
  .pdf24_ sup {
 	vertical-align: baseline;
 	position: relative;
@@ -341,7 +342,7 @@
 	margin: 20px auto !important;
 }
 
-</STYLE> 
+</STYLE>
 </head>
 	<body>
 		<div class="pdf24_ pdf24_02">
@@ -351,22 +352,22 @@
 			<div class="pdf24_view">
 				<div class="pdf24_05 pdf24_06">
 					<div class="pdf24_01" style="left:4.4998em;top:6.4733em;"><span class="pdf24_07 pdf24_08 pdf24_09" style="word-spacing:-0.0357em;">NORLOX SOLUTIONS PVT. LTD. &nbsp;</span></div>
-					<div class="pdf24_01 pdf24_10" style="left:4.5em;top:14.9199em;"><span class="pdf24_11 pdf24_12 pdf24_13" style="word-spacing:-0.0022em;">December 10, 2025 &nbsp;</span></div>
+					<div class="pdf24_01 pdf24_10" style="left:4.5em;top:14.9199em;"><span class="pdf24_11 pdf24_12 pdf24_13" style="word-spacing:-0.0022em;">{{$paymentDate}} &nbsp;</span></div>
 					<div class="pdf24_01" style="left:18.08em;top:18.6604em;"><span class="pdf24_14 pdf24_12 pdf24_15" style="word-spacing:0.0006em;">To Whom It May Concern &nbsp;</span></div>
-					<div class="pdf24_01" style="left:4.5em;top:21.3216em;"><span class="pdf24_16 pdf24_12 pdf24_17" style="word-spacing:0.0111em;">As per this document, I, Parv Khandelwal, hereby declare and attest that I have paid $469.00 in total to &nbsp;</span></div>
+					<div class="pdf24_01" style="left:4.5em;top:21.3216em;"><span class="pdf24_16 pdf24_12 pdf24_17" style="word-spacing:0.0111em;">As per this document, I, {{$name}}, hereby declare and attest that I have paid {{$amount}} in total to &nbsp;</span></div>
 					<div class="pdf24_01" style="left:4.5em;top:22.4916em;"><span class="pdf24_16 pdf24_12 pdf24_18" style="word-spacing:-0.0205em;">Norlox Solutions Pvt. Ltd. for Worksho</span><span class="pdf24_16 pdf24_12 pdf24_19">p</span><span class="pdf24_16 pdf24_12 pdf24_20">&amp;</span><span class="pdf24_16 pdf24_12 pdf24_21">C</span><span class="pdf24_16 pdf24_12 pdf24_22" style="word-spacing:0.001em;">onsulting Fees through Domestic Wire Transfer to their &nbsp;</span></div>
 					<div class="pdf24_01" style="left:4.5em;top:23.6716em;z-index:263;"><span class="pdf24_16 pdf24_12 pdf24_23" style="word-spacing:0.0004em;">Community Federal Savings Bank account (Account Number: 8337747208). &nbsp;</span></div>
 					<div class="pdf24_01" style="left:4.5em;top:26.1316em;"><span class="pdf24_16 pdf24_12 pdf24_24" style="word-spacing:-0.0447em;">Norlox Solutions Pvt. Ltd. had provided me with digital goods/services online, and I received the item &nbsp;</span></div>
 					<div class="pdf24_01" style="left:4.5em;top:27.3016em;"><span class="pdf24_16 pdf24_12 pdf24_25" style="word-spacing:0.0027em;">accordingly in proper condition. &nbsp;</span></div>
-					<div class="pdf24_01" style="left:4.5em;top:29.7816em;"><span class="pdf24_16 pdf24_12 pdf24_26" style="word-spacing:-0.0092em;">I understand and agree that this $469.00 is a non-refundable amount and an irreversible transaction &nbsp;</span></div>
+					<div class="pdf24_01" style="left:4.5em;top:29.7816em;"><span class="pdf24_16 pdf24_12 pdf24_26" style="word-spacing:-0.0092em;">I understand and agree that this {{$amount}} is a non-refundable amount and an irreversible transaction &nbsp;</span></div>
 					<div class="pdf24_01" style="left:4.5em;top:30.9816em;"><span class="pdf24_16 pdf24_12 pdf24_27" style="word-spacing:-0.0432em;">because there is no return policy for digital products or services. &nbsp;</span></div>
 					<div class="pdf24_01" style="left:4.5em;top:33.4816em;"><span class="pdf24_16 pdf24_12 pdf24_28" style="word-spacing:-0.0437em;">I also declare that I will never dispute this transaction with my financial institution or card issuing &nbsp;</span></div>
 					<div class="pdf24_01" style="left:4.5em;top:34.6916em;"><span class="pdf24_16 pdf24_12 pdf24_29">bank. &nbsp;</span></div>
 					<div class="pdf24_01 pdf24_30" style="left:4.4998em;top:37.1119em;"><span class="pdf24_31 pdf24_12 pdf24_32" style="word-spacing:0.0246em;">Transaction </span><span class="pdf24_33 pdf24_12 pdf24_34">Details &nbsp;</span></div>
-					<div class="pdf24_01" style="left:4.5em;top:39.5328em;"><span class="pdf24_35 pdf24_12 pdf24_36" style="word-spacing:0.0334em;">Account Holder’s Name: </span><span class="pdf24_37 pdf24_12 pdf24_38" style="word-spacing:-0.0047em;">Parv Khandelwal &nbsp;</span></div>
-					<div class="pdf24_01" style="left:4.5em;top:40.5228em;"><span class="pdf24_35 pdf24_12 pdf24_39" style="word-spacing:0.0484em;">Account Holder’s Email: </span><a href="mailto:parvkhandelwal15@gmail.com" target="_blank"><span class="pdf24_37 pdf24_12 pdf24_40">parvkhandelwal15@gmail.com &nbsp;</span></a></div>
-					<div class="pdf24_01" style="left:4.5em;top:41.5228em;"><span class="pdf24_35 pdf24_12 pdf24_41" style="word-spacing:-0.0033em;">Account Holder’s Address: </span><span class="pdf24_37 pdf24_12 pdf24_42" style="word-spacing:-0.0032em;">1717 S Dorsey Ln., Murietta Apartments, Tempe, AZ, 85281, USA &nbsp;</span></div>
-					<div class="pdf24_01" style="left:4.5em;top:42.5128em;"><span class="pdf24_35 pdf24_12 pdf24_40" style="word-spacing:0.0075em;">Transaction Reference/Confirmation Number: </span><span class="pdf24_37 pdf24_12 pdf24_43">VKFUTAZT9 &nbsp;</span></div>
+					<div class="pdf24_01" style="left:4.5em;top:39.5328em;"><span class="pdf24_35 pdf24_12 pdf24_36" style="word-spacing:0.0334em;">Account Holder’s Name: </span><span class="pdf24_37 pdf24_12 pdf24_38" style="word-spacing:-0.0047em;">{{$name}} &nbsp;</span></div>
+					<div class="pdf24_01" style="left:4.5em;top:40.5228em;"><span class="pdf24_35 pdf24_12 pdf24_39" style="word-spacing:0.0484em;">Account Holder’s Email: </span><a href="mailto:parvkhandelwal15@gmail.com" target="_blank"><span class="pdf24_37 pdf24_12 pdf24_40">{{$email}} &nbsp;</span></a></div>
+					<div class="pdf24_01" style="left:4.5em;top:41.5228em;"><span class="pdf24_35 pdf24_12 pdf24_41" style="word-spacing:-0.0033em;">Account Holder’s Address: </span><span class="pdf24_37 pdf24_12 pdf24_42" style="word-spacing:-0.0032em;">{{$Location}} &nbsp;</span></div>
+					<div class="pdf24_01" style="left:4.5em;top:42.5128em;"><span class="pdf24_35 pdf24_12 pdf24_40" style="word-spacing:0.0075em;">Transaction Reference/Confirmation Number: </span><span class="pdf24_37 pdf24_12 pdf24_43">{{$tranRef}} &nbsp;</span></div>
 					<div class="pdf24_01" style="left:4.58em;top:45.8416em;"><span class="pdf24_16 pdf24_12 pdf24_44" style="word-spacing:-0.0116em;">Customer Name: &nbsp;</span></div>
 					<div class="pdf24_01" style="left:4.58em;top:48.3316em;"><span class="pdf24_16 pdf24_12 pdf24_45" style="word-spacing:-0.0126em;">Customer Signature: &nbsp;</span></div>
 					<div class="pdf24_01" style="left:4.58em;top:50.8416em;"><span class="pdf24_16 pdf24_12 pdf24_46">Date: &nbsp;</span></div>
