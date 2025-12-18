@@ -323,7 +323,7 @@
 <script>
 document.getElementById('printBtn').addEventListener('click', function () {
 
-    // Create A4 print style dynamically
+    // Inject print-only CSS
     const style = document.createElement('style');
     style.innerHTML = `
         @media print {
@@ -331,23 +331,34 @@ document.getElementById('printBtn').addEventListener('click', function () {
                 size: A4;
                 margin: 10mm;
             }
-            body {
-                margin: 0;
+
+            /* Hide everything */
+            body * {
+                visibility: hidden !important;
+                background: transparent !important;
+            }
+
+            /* Show only PDF content */
+            .pdf24_view,
+            .pdf24_view * {
+                visibility: visible !important;
+            }
+
+            /* Ensure correct positioning */
+            .pdf24_view {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
             }
         }
     `;
     document.head.appendChild(style);
 
-    const printContent = document.querySelector('.pdf24_view').parentElement;
-    const originalContent = document.body.innerHTML;
-
-    document.body.innerHTML = printContent.outerHTML;
     window.print();
-    document.body.innerHTML = originalContent;
-
-    window.location.reload();
 });
 </script>
+
 
 
 	</body>
