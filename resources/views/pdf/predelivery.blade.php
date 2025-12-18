@@ -296,7 +296,7 @@
 					<div class="pdf24_01" style="right:3.8em;top:13.7079em;"><span class="pdf24_16 pdf24_08 pdf24_15" style="word-spacing:0.001em;">{{$payeeName}} &nbsp;</span></div>
 					<div class="pdf24_01" style="right:3.8em;top:14.8139em;"><span class="pdf24_12 pdf24_13 pdf24_17">{{$email}} &nbsp;</span></a></div>
 					<div class="pdf24_01" style="right:3.8em;top:15.9239em;"><span class="pdf24_12 pdf24_13 pdf24_18" style="word-spacing:-0.008em;">{{$phone_Number}} &nbsp;</span></div>
-					<div class="pdf24_01" style="right:22.98em;top:17.0439em;"><span class="pdf24_12 pdf24_13 pdf24_19" style="word-spacing:-0.007em;">{{$Location}} &nbsp;</span></div>
+					<div class="pdf24_01" style="right:3.8em;top:17.0439em;"><span class="pdf24_12 pdf24_13 pdf24_19" style="word-spacing:-0.007em;">{{$Location}} &nbsp;</span></div>
 					<div class="pdf24_01" style="left:10.19em;top:23.1279em;"><span class="pdf24_20 pdf24_08 pdf24_21" style="word-spacing:-0.0124em;">DELIVERY METHOD &nbsp;</span></div>
 					<div class="pdf24_01" style="left:31.88em;top:23.1279em;"><span class="pdf24_20 pdf24_08 pdf24_22" style="word-spacing:-0.0106em;">TRANSACTION ID &nbsp;</span></div>
 					<div class="pdf24_01" style="left:13.45em;top:24.9577em;"><span class="pdf24_23 pdf24_13 pdf24_24">{{$paymentMethod}} &nbsp;</span></div>
