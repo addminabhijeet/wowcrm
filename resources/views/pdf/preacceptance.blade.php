@@ -384,11 +384,10 @@ document.getElementById('printBtn').addEventListener('click', function () {
         @media print {
             @page {
                 size: A4;
-                /* top right bottom left */
-                margin: 10mm 40mm 10mm 40mm;
             }
             body {
-                margin: 0;
+                /* top right bottom left */
+                margin: 50mm 10mm 50mm 10mm;
             }
         }
     `;
