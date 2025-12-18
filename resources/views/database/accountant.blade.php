@@ -84,7 +84,7 @@
                                 <th scope="col" class="text-center">Payee Name</th>
                                 <th scope="col" class="text-center">Generate</th>
                                 <th scope="col" class="text-center">Acceptance</th>
-                                <th scope="col" class="text-center">Consultation</th>
+                
                                 <th scope="col" class="text-center">Delivery</th>
                                 <th scope="col" class="text-center">Payment</th>
                                 <th scope="col" class="text-center">Audio</th>
