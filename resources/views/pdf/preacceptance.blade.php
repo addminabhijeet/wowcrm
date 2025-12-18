@@ -338,8 +338,10 @@
 }
 
  body > div {
-	box-shadow: 0 0 5px rgba(0,0,0,0.3) !important;
-	margin: 20px auto !important;
+	box-shadow: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
+	border: none !important;
 }
 
 </STYLE>
