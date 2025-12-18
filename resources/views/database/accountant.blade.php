@@ -957,7 +957,7 @@
             <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Acceptance Form</h4>
             <iframe
                 src="{{ route('pdf.acceptance') }}?${queryParams}"
-                style="width:100%; height:1270px; border:0; border-radius:10px;">
+                style=" width:100%;aspect-ratio: 1 / 1.414;max-width: 794px;border:0;border-radius:8px;display:block;margin:auto;">
             </iframe>
         </div>
 
@@ -966,7 +966,7 @@
             <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Delivery Form</h4>
             <iframe
                 src="{{ route('pdf.delivery') }}?${queryParams}"
-                style="width:100%; height:1270px; border:0; border-radius:10px;">
+                 style=" width:100%;aspect-ratio: 1 / 1.414;max-width: 794px;border:0;border-radius:8px;display:block;margin:auto;">
             </iframe>
         </div>
 
@@ -975,7 +975,7 @@
             <h4 style="margin:0 0 12px; font-size:17px; color:#444;">Payment Form</h4>
             <iframe
                 src="{{ route('pdf.payment') }}?${queryParams}"
-                style="width:100%; height:1270px; border:0; border-radius:10px;">
+                 style=" width:100%;aspect-ratio: 1 / 1.414;max-width: 794px;border:0;border-radius:8px;display:block;margin:auto;">
             </iframe>
         </div>
 
