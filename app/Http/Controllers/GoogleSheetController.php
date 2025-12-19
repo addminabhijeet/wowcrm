@@ -6571,11 +6571,11 @@ class GoogleSheetController extends Controller
             try {
                 $filePath = $file->storeAs('paymentsign', $newName, 'public');
 
-                if ($row->payment && Storage::disk('public')->exists($row->payment)) {
-                    Storage::disk('public')->delete($row->payment);
+                if ($row->paymentsign && Storage::disk('public')->exists($row->paymentsign)) {
+                    Storage::disk('public')->delete($row->paymentsign);
                 }
 
-                $row->payment = $filePath;
+                $row->paymentsign = $filePath;
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
