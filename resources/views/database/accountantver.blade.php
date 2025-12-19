@@ -317,8 +317,8 @@
 
                                     {{-- View (Delivery Sign) --}}
                                     <td>
-                                        <input type="file" accept="application/pdf"
-                                            class="d-none deliverysign-input" data-key="View">
+                                        <input type="file" accept="application/pdf" class="d-none deliverysign-input"
+                                            data-key="View">
                                         <button type="button" class="btn btn-sm btn-info upload-deliverysign-btn">
                                             {{ !empty($row->deliverysign) ? 'Change File' : 'Upload' }}
                                         </button>
@@ -343,8 +343,8 @@
 
                                     {{-- View (Payment Sign) --}}
                                     <td>
-                                        <input type="file" accept="application/pdf"
-                                            class="d-none paymentsign-input" data-key="View">
+                                        <input type="file" accept="application/pdf" class="d-none paymentsign-input"
+                                            data-key="View">
                                         <button type="button" class="btn btn-sm btn-info upload-paymentsign-btn">
                                             {{ !empty($row->paymentsign) ? 'Change File' : 'Upload' }}
                                         </button>
@@ -1402,7 +1402,8 @@
                                     }
 
                                     // Delivery Sign
-                                    const viewDeliverysignBtn = row.querySelector('.viewdeliverysign-btn');
+                                    const viewDeliverysignBtn = row.querySelector(
+                                        '.viewdeliverysign-btn');
                                     const downloadDeliverysignBtn = row.querySelector(
                                         '.downloaddeliverysign-btn');
 
@@ -1436,7 +1437,8 @@
                                     }
 
                                     // Payment Sign
-                                    const viewPaymentsignBtn = row.querySelector('.viewpaymentsign-btn');
+                                    const viewPaymentsignBtn = row.querySelector(
+                                        '.viewpaymentsign-btn');
                                     const downloadPaymentsignBtn = row.querySelector(
                                         '.downloadpaymentsign-btn');
 
@@ -1533,11 +1535,25 @@
                     if (delInput) delInput.click();
                 }
 
+                // Delivery Sign upload
+                if (e.target.matches('.upload-deliverysign-btn')) {
+                    const row = e.target.closest('tr');
+                    const delsignInput = row.querySelector('.deliverysign-input');
+                    if (delsignInput) delsignInput.click();
+                }
+
                 // Payment upload
                 if (e.target.matches('.upload-payment-btn')) {
                     const row = e.target.closest('tr');
                     const payInput = row.querySelector('.payment-input');
                     if (payInput) payInput.click();
+                }
+
+                // Payment Sign
+                if (e.target.matches('.upload-paymentsign-btn')) {
+                    const row = e.target.closest('tr');
+                    const paysignInput = row.querySelector('.paymentsign-input');
+                    if (paysignInput) paysignInput.click();
                 }
 
 
@@ -1612,7 +1628,29 @@
                     }
                 }
 
+                if (e.target.matches('.viewdeliverysign-btn') || e.target.matches('.downloaddeliverysign-btn')) {
+                    const row = e.target.closest('tr');
+                    const id = row.dataset.id;
+
+                    if (id === "new") {
+                        e.preventDefault();
+                        alert("Please save the row first before viewing/downloading the resume.");
+                        return;
+                    }
+                }
+
                 if (e.target.matches('.viewpayment-btn') || e.target.matches('.downloadpayment-btn')) {
+                    const row = e.target.closest('tr');
+                    const id = row.dataset.id;
+
+                    if (id === "new") {
+                        e.preventDefault();
+                        alert("Please save the row first before viewing/downloading the resume.");
+                        return;
+                    }
+                }
+
+                if (e.target.matches('.viewpaymentsign-btn') || e.target.matches('.downloadpaymentsign-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
