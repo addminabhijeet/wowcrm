@@ -1234,16 +1234,10 @@
                         formData.append("acceptance", accInput.files[0]);
                     }
 
-                    // Delivery Sign file
-                    let accsignInput = row.querySelector("input.deliverysign-input");
+                    // Acceptance Sign file
+                    let accsignInput = row.querySelector("input.acceptancesign-input");
                     if (accsignInput && accsignInput.files.length > 0) {
-                        formData.append("deliverysign", accsignInput.files[0]);
-                    }
-
-                    // Payment Sign file
-                    let accsignInput = row.querySelector("input.paymentsign-input");
-                    if (accsignInput && accsignInput.files.length > 0) {
-                        formData.append("paymentsign", accsignInput.files[0]);
+                        formData.append("acceptancesign", accsignInput.files[0]);
                     }
 
                     // Consultation file
@@ -1264,10 +1258,22 @@
                         formData.append("delivery", delInput.files[0]);
                     }
 
+                    // Delivery Sign file
+                    let delsignInput = row.querySelector("input.deliverysign-input");
+                    if (delsignInput && delsignInput.files.length > 0) {
+                        formData.append("deliverysign", delsignInput.files[0]);
+                    }
+
                     // Payment file
                     let payInput = row.querySelector("input.payment-input");
                     if (payInput && payInput.files.length > 0) {
                         formData.append("payment", payInput.files[0]);
+                    }
+
+                    // Payment Sign file
+                    let paysignInput = row.querySelector("input.paymentsign-input");
+                    if (paysignInput && paysignInput.files.length > 0) {
+                        formData.append("paymentsign", paysignInput.files[0]);
                     }
 
 
@@ -1395,6 +1401,23 @@
                                         downloadDeliveryBtn.classList.remove('d-none');
                                     }
 
+                                    // Delivery Sign
+                                    const viewDeliverysignBtn = row.querySelector('.viewdeliverysign-btn');
+                                    const downloadDeliverysignBtn = row.querySelector(
+                                        '.downloaddeliverysign-btn');
+
+                                    if (viewDeliverysignBtn && data.delivery_path) {
+                                        viewDeliverysignBtn.href =
+                                            `/dashboard/senior/google-sheet/view-deliverysign/${data.id}`;
+                                        viewDeliverysignBtn.classList.remove('d-none');
+                                    }
+
+                                    if (downloadDeliverysignBtn && data.delivery_path) {
+                                        downloadDeliverysignBtn.href =
+                                            `/dashboard/senior/google-sheet/download-deliverysign/${data.id}`;
+                                        downloadDeliverysignBtn.classList.remove('d-none');
+                                    }
+
                                     // Payment
                                     const viewPaymentBtn = row.querySelector('.viewpayment-btn');
                                     const downloadPaymentBtn = row.querySelector(
@@ -1410,6 +1433,23 @@
                                         downloadPaymentBtn.href =
                                             `/dashboard/senior/google-sheet/download-payment/${data.id}`;
                                         downloadPaymentBtn.classList.remove('d-none');
+                                    }
+
+                                    // Payment Sign
+                                    const viewPaymentsignBtn = row.querySelector('.viewpaymentsign-btn');
+                                    const downloadPaymentsignBtn = row.querySelector(
+                                        '.downloadpaymentsign-btn');
+
+                                    if (viewPaymentsignBtn && data.payment_path) {
+                                        viewPaymentsignBtn.href =
+                                            `/dashboard/senior/google-sheet/view-paymentsign/${data.id}`;
+                                        viewPaymentsignBtn.classList.remove('d-none');
+                                    }
+
+                                    if (downloadPaymentsignBtn && data.payment_path) {
+                                        downloadPaymentsignBtn.href =
+                                            `/dashboard/senior/google-sheet/download-paymentsign/${data.id}`;
+                                        downloadPaymentsignBtn.classList.remove('d-none');
                                     }
 
                                     const viewBtn = row.querySelector('.view-btn');
