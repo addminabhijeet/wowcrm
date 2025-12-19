@@ -6468,6 +6468,58 @@ class GoogleSheetController extends Controller
             }
         }
 
+        // Handle deliverysign file upload
+        if ($request->hasFile('deliverysign')) {
+            $file = $request->file('deliverysign');
+
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                $filePath = $file->storeAs('deliverysign', $newName, 'public');
+
+                if ($row->deliverysign && Storage::disk('public')->exists($row->deliverysign)) {
+                    Storage::disk('public')->delete($row->deliverysign);
+                }
+
+                $row->deliverysign = $filePath;
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
+        // Handle payment file upload
+        if ($request->hasFile('paymentsign')) {
+            $file = $request->file('paymentsign');
+
+            if ($file->getMimeType() !== 'application/pdf') {
+                return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
+            }
+
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                $filePath = $file->storeAs('paymentsign', $newName, 'public');
+
+                if ($row->payment && Storage::disk('public')->exists($row->payment)) {
+                    Storage::disk('public')->delete($row->payment);
+                }
+
+                $row->payment = $filePath;
+            } catch (\Exception $e) {
+                return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+            }
+        }
+
         // --- Prepare update data ---
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
