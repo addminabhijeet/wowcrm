@@ -225,7 +225,7 @@
                                         @endif
                                     </td>
 
-                                    
+
 
                                     {{-- View (Delivery) --}}
                                     <td>
@@ -274,6 +274,87 @@
                                                 Payment</a>
                                         @endif
                                     </td>
+
+                                    {{-- View (Acceptance Sign) --}}
+                                    <td>
+                                        <input type="file" accept="application/pdf"
+                                            class="d-none acceptancesign-input" data-key="View">
+                                        <button type="button" class="btn btn-sm btn-info upload-acceptancesign-btn">
+                                            {{ !empty($row->acceptancesign) ? 'Change File' : 'Upload' }}
+                                        </button>
+
+                                        @if (!empty($row->acceptancesign))
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-acceptancesign/' . $row->id) }}"
+                                                target="_blank" class="btn btn-sm btn-primary viewacceptancesign-btn">View
+                                                Acceptance Sign</a>
+
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-acceptancesign/' . $row->id) }}"
+                                                class="btn btn-sm btn-secondary downloadacceptancesign-btn">Download
+                                                Acceptance Sign</a>
+                                        @else
+                                            <a href="#" target="_blank"
+                                                class="btn btn-sm btn-primary viewacceptancesign-btn d-none">View
+                                                Acceptance Sign</a>
+                                            <a href="#" download
+                                                class="btn btn-sm btn-secondary downloadacceptancesign-btn d-none">Download
+                                                Acceptance Sign</a>
+                                        @endif
+                                    </td>
+
+                                    {{-- View (Delivery Sign) --}}
+                                    <td>
+                                        <input type="file" accept=".pdf,.doc,.docx" class="d-none deliverysign-input"
+                                            data-key="View">
+
+                                        <button type="button" class="btn btn-sm btn-info upload-deliverysign-btn">
+                                            {{ !empty($row->deliverysign) ? 'Change File' : 'Upload' }}
+                                        </button>
+
+                                        @if (!empty($row->deliverysign))
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-deliverysign/' . $row->id) }}"
+                                                target="_blank" class="btn btn-sm btn-primary viewdeliverysign-btn">View
+                                                Delivery Sign</a>
+
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-deliverysign/' . $row->id) }}"
+                                                class="btn btn-sm btn-secondary downloaddeliverysign-btn">Download
+                                                Delivery Sign</a>
+                                        @else
+                                            <a href="#" target="_blank"
+                                                class="btn btn-sm btn-primary viewdeliverysign-btn d-none">View
+                                                Delivery Sign</a>
+                                            <a href="#" download
+                                                class="btn btn-sm btn-secondary downloaddeliverysign-btn d-none">Download
+                                                Delivery Sign</a>
+                                        @endif
+                                    </td>
+
+                                    {{-- View (Payment Sign) --}}
+                                    <td>
+                                        <input type="file" accept=".pdf,.doc,.docx" class="d-none paymentsign-input"
+                                            data-key="View">
+
+                                        <button type="button" class="btn btn-sm btn-info upload-paymentsign-btn">
+                                            {{ !empty($row->paymentsign) ? 'Change File' : 'Upload' }}
+                                        </button>
+
+                                        @if (!empty($row->paymentsign))
+                                            <a href="{{ url('dashboard/senior/google-sheet/view-paymentsign/' . $row->id) }}"
+                                                target="_blank" class="btn btn-sm btn-primary viewpaymentsign-btn">View
+                                                Payment Sign</a>
+
+                                            <a href="{{ url('dashboard/senior/google-sheet/download-paymentsign/' . $row->id) }}"
+                                                class="btn btn-sm btn-secondary downloadpaymentsign-btn">Download
+                                                Payment Sign</a>
+                                        @else
+                                            <a href="#" target="_blank"
+                                                class="btn btn-sm btn-primary viewpaymentsign-btn d-none">View
+                                                Payment Sign</a>
+                                            <a href="#" download
+                                                class="btn btn-sm btn-secondary downloadpaymentsign-btn d-none">Download
+                                                Payment Sign</a>
+                                        @endif
+                                    </td>
+
 
                                     {{-- Forwarded By --}}
                                     <td>
