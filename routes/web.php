@@ -190,7 +190,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/google-sheet/view-updateresume/{id}', [GoogleSheetController::class, 'viewseniorUpdateResume'])->name('view.updateresume');
     Route::get('/dashboard/senior/google-sheet/download-updateresume/{id}', [GoogleSheetController::class, 'downloadseniorUpdateResume'])->name('download.updateresume');
     Route::get('/dashboard/senior/google-sheet/view-acceptance/{id}', [GoogleSheetController::class, 'viewseniorAcceptance'])->name('view.acceptance');
+    Route::get('/dashboard/senior/google-sheet/view-acceptancesign/{id}', [GoogleSheetController::class, 'viewseniorAcceptanceSign'])->name('view.acceptancesign');
     Route::get('/dashboard/senior/google-sheet/download-acceptance/{id}', [GoogleSheetController::class, 'downloadseniorAcceptance'])->name('download.acceptance');
+    Route::get('/dashboard/senior/google-sheet/download-acceptancesign/{id}', [GoogleSheetController::class, 'downloadseniorAcceptanceSign'])->name('download.acceptancesign');
     Route::get('/dashboard/senior/google-sheet/view-consultation/{id}', [GoogleSheetController::class, 'viewseniorConsultation'])->name('view.consultation');
     Route::get('/dashboard/senior/google-sheet/download-consultation/{id}', [GoogleSheetController::class, 'downloadseniorconsultation'])->name('download.consultation');
     Route::get('/dashboard/senior/google-sheet/view-delivery/{id}', [GoogleSheetController::class, 'viewseniorDelivery'])->name('view.delivery');
