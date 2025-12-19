@@ -3397,15 +3397,17 @@ class GoogleSheetController extends Controller
         abort(415, 'Unsupported file format');
     }
 
-    public function viewseniorAcceptance($id)
+
+
+    public function viewseniorAcceptanceSign($id)
     {
         $row = GoogleSheetData::find($id);
 
-        if (!$row || !$row->acceptance) {
+        if (!$row || !$row->acceptancesign) {
             abort(404);
         }
 
-        $filePath = storage_path('app/public/' . $row->acceptance);
+        $filePath = storage_path('app/public/' . $row->acceptancesign);
 
         if (!file_exists($filePath)) {
             abort(404);
