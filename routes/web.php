@@ -167,7 +167,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/career/google-sheet', [GoogleSheetController::class, 'career'])->name('google.sheet.career');
     Route::get('/dashboard/writer/google-sheet', [GoogleSheetController::class, 'writer'])->name('google.sheet.writer');
     Route::get('/dashboard/senior/google-sheet-candm', [GoogleSheetController::class, 'seniorcandm'])->name('google.sheet.seniorcandm');
-        Route::get('/dashboard/senior/google-sheet-admincandm', [GoogleSheetController::class, 'senioradmincandm'])->name('google.sheet.senioradmincandm');
+    Route::get('/dashboard/senior/google-sheet-admincandm', [GoogleSheetController::class, 'senioradmincandm'])->name('google.sheet.senioradmincandm');
     Route::get('/dashboard/senior/google-sheet-mod', [GoogleSheetController::class, 'seniormod'])->name('google.sheet.seniormod');
     Route::get('/dashboard/senior/google-sheet-tra', [GoogleSheetController::class, 'seniortra'])->name('google.sheet.seniortra');
     Route::post('/junior/transfers-update', [GoogleSheetController::class, 'juniorupdatetra'])->name('junior.transfers.update');
@@ -195,8 +195,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/google-sheet/download-acceptancesign/{id}', [GoogleSheetController::class, 'downloadseniorAcceptanceSign'])->name('download.acceptancesign');
     Route::get('/dashboard/senior/google-sheet/view-consultation/{id}', [GoogleSheetController::class, 'viewseniorConsultation'])->name('view.consultation');
     Route::get('/dashboard/senior/google-sheet/download-consultation/{id}', [GoogleSheetController::class, 'downloadseniorconsultation'])->name('download.consultation');
-    Route::get('/dashboard/senior/google-sheet/view-delivery/{id}', [GoogleSheetController::class, 'viewseniorDelivery'])->name('view.delivery');
+    Route::get('/dashboard/senior/google-sheet/view-delivery/{id}', [GoogleSheetController::class, 'viewseniorDeliverySign'])->name('view.delivery');
     Route::get('/dashboard/senior/google-sheet/download-delivery/{id}', [GoogleSheetController::class, 'downloadseniorDelivery'])->name('download.delivery');
+    Route::get('/dashboard/senior/google-sheet/view-deliverysign/{id}', [GoogleSheetController::class, 'viewseniorDeliverySign'])->name('view.deliverysign');
+    Route::get('/dashboard/senior/google-sheet/download-deliverysign/{id}', [GoogleSheetController::class, 'downloadseniorDeliverySign'])->name('download.deliverysign');
     Route::get('/dashboard/senior/google-sheet/view-payment/{id}', [GoogleSheetController::class, 'viewseniorPayment'])->name('view.payment');
     Route::get('/dashboard/senior/google-sheet/download-payment/{id}', [GoogleSheetController::class, 'downloadseniorPayment'])->name('download.payment');
     Route::get('/dashboard/senior/google-sheet/view-audio/{id}', [GoogleSheetController::class, 'viewseniorAudio'])->name('view.audio');
@@ -316,8 +318,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/associate', [DashboardController::class, 'associate'])->name('dashboard.associate');
     Route::get('/dashboard/associate/candidate/services/{userId}/{forwardedBy}', [CandidateDetailsController::class, 'associateservices'])->name('all.associate.services');
     Route::get('/dashboard/associate/candidate/{userId}/{forwardedBy}', [CandidateDetailsController::class, 'associate'])->name('all.associate.candidate');
-    Route::post('/dashboard/associate/candidateadd',[GoogleSheetController::class, 'candidateStore'])->name('all.associate.add');
-
+    Route::post('/dashboard/associate/candidateadd', [GoogleSheetController::class, 'candidateStore'])->name('all.associate.add');
 });
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
