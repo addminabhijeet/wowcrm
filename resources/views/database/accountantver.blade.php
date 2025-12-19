@@ -317,8 +317,9 @@
 
                                     {{-- View (Delivery Sign) --}}
                                     <td>
-                                        <input type="file" accept="application/pdf" class="d-none deliverysign-input"
+                                        <input type="file" accept=".pdf,.doc,.docx" class="d-none deliverysign-input"
                                             data-key="View">
+
                                         <button type="button" class="btn btn-sm btn-info upload-deliverysign-btn">
                                             {{ !empty($row->deliverysign) ? 'Change File' : 'Upload' }}
                                         </button>
@@ -343,8 +344,9 @@
 
                                     {{-- View (Payment Sign) --}}
                                     <td>
-                                        <input type="file" accept="application/pdf" class="d-none paymentsign-input"
+                                        <input type="file" accept=".pdf,.doc,.docx" class="d-none paymentsign-input"
                                             data-key="View">
+
                                         <button type="button" class="btn btn-sm btn-info upload-paymentsign-btn">
                                             {{ !empty($row->paymentsign) ? 'Change File' : 'Upload' }}
                                         </button>
@@ -1407,13 +1409,13 @@
                                     const downloadDeliverysignBtn = row.querySelector(
                                         '.downloaddeliverysign-btn');
 
-                                    if (viewDeliverysignBtn && data.delivery_path) {
+                                    if (viewDeliverysignBtn && data.deliverysign_path) {
                                         viewDeliverysignBtn.href =
                                             `/dashboard/senior/google-sheet/view-deliverysign/${data.id}`;
                                         viewDeliverysignBtn.classList.remove('d-none');
                                     }
 
-                                    if (downloadDeliverysignBtn && data.delivery_path) {
+                                    if (downloadDeliverysignBtn && data.deliverysign_path) {
                                         downloadDeliverysignBtn.href =
                                             `/dashboard/senior/google-sheet/download-deliverysign/${data.id}`;
                                         downloadDeliverysignBtn.classList.remove('d-none');
@@ -1442,13 +1444,13 @@
                                     const downloadPaymentsignBtn = row.querySelector(
                                         '.downloadpaymentsign-btn');
 
-                                    if (viewPaymentsignBtn && data.payment_path) {
+                                    if (viewPaymentsignBtn && data.paymentsign_path) {
                                         viewPaymentsignBtn.href =
                                             `/dashboard/senior/google-sheet/view-paymentsign/${data.id}`;
                                         viewPaymentsignBtn.classList.remove('d-none');
                                     }
 
-                                    if (downloadPaymentsignBtn && data.payment_path) {
+                                    if (downloadPaymentsignBtn && data.paymentsign_path) {
                                         downloadPaymentsignBtn.href =
                                             `/dashboard/senior/google-sheet/download-paymentsign/${data.id}`;
                                         downloadPaymentsignBtn.classList.remove('d-none');
@@ -1628,7 +1630,8 @@
                     }
                 }
 
-                if (e.target.matches('.viewdeliverysign-btn') || e.target.matches('.downloaddeliverysign-btn')) {
+                if (e.target.matches('.viewdeliverysign-btn') || e.target.matches(
+                        '.downloaddeliverysign-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
@@ -1650,7 +1653,8 @@
                     }
                 }
 
-                if (e.target.matches('.viewpaymentsign-btn') || e.target.matches('.downloadpaymentsign-btn')) {
+                if (e.target.matches('.viewpaymentsign-btn') || e.target.matches(
+                        '.downloadpaymentsign-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
