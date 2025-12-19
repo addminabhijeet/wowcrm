@@ -3571,6 +3571,64 @@ class GoogleSheetController extends Controller
         abort(415, 'Unsupported file format');
     }
 
+    public function viewseniorDeliverySign($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->deliverysign) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->deliverysign);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        // --- If already PDF, return directly ---
+        if ($extension === 'pdf') {
+            return response()->file($filePath, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
+            ]);
+        }
+
+        // --- Convert DOC/DOCX to PDF ---
+        if (in_array($extension, ['doc', 'docx'])) {
+
+            // Load Word file using PHPWord
+            $phpWord = IOFactory::load($filePath);
+
+            // Create a temporary HTML file from Word content
+            $tempHtml = storage_path('app/temp_' . time() . '.html');
+            $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
+            $htmlWriter->save($tempHtml);
+
+            // Convert HTML to PDF via Dompdf
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf($options);
+            $dompdf->loadHtml(file_get_contents($tempHtml));
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            // Output PDF content
+            $pdfOutput = $dompdf->output();
+
+            // Remove temp HTML
+            unlink($tempHtml);
+
+            return response($pdfOutput, 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . pathinfo($filePath, PATHINFO_FILENAME) . '.pdf"');
+        }
+
+        abort(415, 'Unsupported file format');
+    }
+
     public function viewseniorPayment($id)
     {
         $row = GoogleSheetData::find($id);
@@ -3580,6 +3638,64 @@ class GoogleSheetController extends Controller
         }
 
         $filePath = storage_path('app/public/' . $row->payment);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
+
+        // --- If already PDF, return directly ---
+        if ($extension === 'pdf') {
+            return response()->file($filePath, [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
+            ]);
+        }
+
+        // --- Convert DOC/DOCX to PDF ---
+        if (in_array($extension, ['doc', 'docx'])) {
+
+            // Load Word file using PHPWord
+            $phpWord = IOFactory::load($filePath);
+
+            // Create a temporary HTML file from Word content
+            $tempHtml = storage_path('app/temp_' . time() . '.html');
+            $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
+            $htmlWriter->save($tempHtml);
+
+            // Convert HTML to PDF via Dompdf
+            $options = new Options();
+            $options->set('isRemoteEnabled', true);
+
+            $dompdf = new Dompdf($options);
+            $dompdf->loadHtml(file_get_contents($tempHtml));
+            $dompdf->setPaper('A4', 'portrait');
+            $dompdf->render();
+
+            // Output PDF content
+            $pdfOutput = $dompdf->output();
+
+            // Remove temp HTML
+            unlink($tempHtml);
+
+            return response($pdfOutput, 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="' . pathinfo($filePath, PATHINFO_FILENAME) . '.pdf"');
+        }
+
+        abort(415, 'Unsupported file format');
+    }
+
+    public function viewseniorPaymentSign($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->paymentsign) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->paymentsign);
 
         if (!file_exists($filePath)) {
             abort(404);
@@ -3713,6 +3829,22 @@ class GoogleSheetController extends Controller
 
         return response()->download($filePath, basename($filePath));
     }
+    public function downloadseniorDeliverySign($id)
+    {
+        $row = GoogleSheetData::find($id);
+
+        if (!$row || !$row->deliverysign) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->deliverysign);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download($filePath, basename($filePath));
+    }
     public function downloadseniorPayment($id)
     {
         $row = GoogleSheetData::find($id);
@@ -3729,7 +3861,22 @@ class GoogleSheetController extends Controller
 
         return response()->download($filePath, basename($filePath));
     }
+    public function downloadseniorPaymentSign($id)
+    {
+        $row = GoogleSheetData::find($id);
 
+        if (!$row || !$row->paymentsign) {
+            abort(404);
+        }
+
+        $filePath = storage_path('app/public/' . $row->paymentsign);
+
+        if (!file_exists($filePath)) {
+            abort(404);
+        }
+
+        return response()->download($filePath, basename($filePath));
+    }
 
 
     public function viewseniorAudio($id)
