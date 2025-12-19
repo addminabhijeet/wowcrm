@@ -81,15 +81,13 @@
                                 <th scope="col" class="text-center">Account No</th>
                                 <th scope="col" class="text-center">Reference Number</th>
                                 <th scope="col" class="text-center">Payment Method</th>
-                                <th scope="col" class="text-center">Payor Name</th>
+                                <th scope="col" class="text-center">Payer Name</th>
                                 <th scope="col" class="text-center">Acceptance</th>
 
                                 <th scope="col" class="text-center">Delivery</th>
                                 <th scope="col" class="text-center">Payment</th>
                                 <th scope="col" class="text-center">Forwarded By</th>
                                 <th scope="col" class="text-center">Acceptance Sign</th>
-                                <th scope="col" class="text-center">Delivery Sign</th>
-                                <th scope="col" class="text-center">Payment Sign</th>
 
                                 <th scope="col" class="text-center">View</th>
                                 <th scope="col" class="text-center">Status</th>
@@ -133,8 +131,9 @@
 
                                     {{-- Location --}}
                                     <td>
-                                        <input type="text" class="form-control location-autocomplete" data-key="Location"
-                                            value="{{ $row->Location ?? '' }}" placeholder="Type location">
+                                        <input type="text" class="form-control location-autocomplete"
+                                            data-key="Location" value="{{ $row->Location ?? '' }}"
+                                            placeholder="Type location">
                                     </td>
 
 
@@ -201,10 +200,10 @@
                                             value="{{ $row->PaymentMethod ?? '' }}" placeholder="Payment Method">
                                     </td>
 
-                                    {{-- Payor Name --}}
+                                    {{-- Payer Name --}}
                                     <td>
                                         <input type="text" class="form-control" data-key="PayeeName"
-                                            value="{{ $row->PayeeName ?? '' }}" placeholder="Payor Name">
+                                            value="{{ $row->PayeeName ?? '' }}" placeholder="Payer Name">
                                     </td>
 
                                     {{-- View (Acceptance) --}}
@@ -312,58 +311,6 @@
                                             <a href="#" download
                                                 class="btn btn-sm btn-secondary downloadacceptancesign-btn d-none">Download
                                                 Acceptance Sign</a>
-                                        @endif
-                                    </td>
-
-                                    {{-- View (Delivery Sign) --}}
-                                    <td>
-                                        <input type="file" accept="application/pdf" class="d-none deliverysign-input"
-                                            data-key="View">
-                                        <button type="button" class="btn btn-sm btn-info upload-deliverysign-btn">
-                                            {{ !empty($row->deliverysign) ? 'Change File' : 'Upload' }}
-                                        </button>
-
-                                        @if (!empty($row->deliverysign))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-deliverysign/' . $row->id) }}"
-                                                target="_blank" class="btn btn-sm btn-primary viewdeliverysign-btn">View
-                                                Delivery Sign</a>
-
-                                            <a href="{{ url('dashboard/senior/google-sheet/download-deliverysign/' . $row->id) }}"
-                                                class="btn btn-sm btn-secondary downloaddeliverysign-btn">Download
-                                                Delivery Sign</a>
-                                        @else
-                                            <a href="#" target="_blank"
-                                                class="btn btn-sm btn-primary viewdeliverysign-btn d-none">View
-                                                Delivery Sign</a>
-                                            <a href="#" download
-                                                class="btn btn-sm btn-secondary downloaddeliverysign-btn d-none">Download
-                                                Delivery Sign</a>
-                                        @endif
-                                    </td>
-
-                                    {{-- View (Payment Sign) --}}
-                                    <td>
-                                        <input type="file" accept="application/pdf" class="d-none paymentsign-input"
-                                            data-key="View">
-                                        <button type="button" class="btn btn-sm btn-info upload-paymentsign-btn">
-                                            {{ !empty($row->paymentsign) ? 'Change File' : 'Upload' }}
-                                        </button>
-
-                                        @if (!empty($row->paymentsign))
-                                            <a href="{{ url('dashboard/senior/google-sheet/view-paymentsign/' . $row->id) }}"
-                                                target="_blank" class="btn btn-sm btn-primary viewpaymentsign-btn">View
-                                                Payment Sign</a>
-
-                                            <a href="{{ url('dashboard/senior/google-sheet/download-paymentsign/' . $row->id) }}"
-                                                class="btn btn-sm btn-secondary downloadpaymentsign-btn">Download
-                                                Payment Sign</a>
-                                        @else
-                                            <a href="#" target="_blank"
-                                                class="btn btn-sm btn-primary viewpaymentsign-btn d-none">View
-                                                Payment Sign</a>
-                                            <a href="#" download
-                                                class="btn btn-sm btn-secondary downloadpaymentsign-btn d-none">Download
-                                                Payment Sign</a>
                                         @endif
                                     </td>
 
@@ -839,79 +786,78 @@
                 let cells = `<td>—</td>`;
 
                 colKeys.forEach(k => {
-                    //                 if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
-                    //                         'Time Zone', 'Qualification'
-                    //                     ].includes(k)) {
-                    //                     let opts = [];
-                    //                     if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors',
-                    //                         'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
-                    //                         'Aerospace Proj. Manag.'
-                    //                     ];
-                    //                     if (k === 'Exe Remarks') opts = ['Ready To Pay', 'Not Interested', 'Not Connected',
-                    //                         'Did Not Connect', 'Others', 'Payment Completed', 'VM', 'Busy'
-                    //                     ];
-                    //                     if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
-                    //                         'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC'
-                    //                     ];
-                    //                     if (k === 'Relocation') opts = ['YES', 'NO'];
-                    //                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
-                    //                         'Money Issue', 'Not Interested', "Don't Call"
-                    //                     ];
-                    //                     if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
-                    //                     if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
-                    //                     cells +=
-                    //                         `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
-                    //                 } else if (k === 'Amount') {
-                    //                     cells +=
-                    //                         `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount (469)"></td>`;
-                    //                 } else if (k === 'Location') {
-                    //                     cells +=
-                    //                         `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
-                    //                 } else if (k === 'Remark') {
-                    //                     cells +=
-                    //                         `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
-                    //                 } else if (k === 'Date' || k === 'Graduation Date') {
-                    //                     cells +=
-                    //                         `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
-                    //                 } else if (k === 'Phone Number') {
-                    //                     cells +=
-                    //                         `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
-                    //                 } else if (k === 'Email Address') {
-                    //                     cells +=
-                    //                         `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
-                    //                 } else if (k === 'Name') {
-                    //                     cells +=
-                    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                    //                 } else if (k === 'Payment Date') {
-                    //                     cells +=
-                    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payment Date"><span class="small-hint"></span></td>`;
-                    //                 } else if (k === 'Transaction ID') {
-                    //                     cells +=
-                    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Transaction ID"><span class="small-hint"></span></td>`;
-                    //                 } else if (k === 'Reference Number') {
-                    //                     cells +=
-                    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Reference Number"><span class="small-hint"></span></td>`;
-                    //                 } else if (k === 'Payment Method') {
-                    //                     cells +=
-                    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payment Method"><span class="small-hint"></span></td>`;
-                    //                 } else if (k === 'Payee Name') {
-                    //                     cells +=
-                    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payee Name"><span class="small-hint"></span></td>`;
-                    //                 } else if (k === 'forwardedBy') {
-                    //                     cells +=
-                    //                         `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
-                    //                 } else if (k === 'View') {
-                    //                     cells += `<td>
-                //     <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input" data-key="View">
-                //     <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-                //     <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
-                //     <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-                // </td>`;
-                    //                 }
+    //                 if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
+    //                         'Time Zone', 'Qualification'
+    //                     ].includes(k)) {
+    //                     let opts = [];
+    //                     if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors',
+    //                         'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
+    //                         'Aerospace Proj. Manag.'
+    //                     ];
+    //                     if (k === 'Exe Remarks') opts = ['Ready To Pay', 'Not Interested', 'Not Connected',
+    //                         'Did Not Connect', 'Others', 'Payment Completed', 'VM', 'Busy'
+    //                     ];
+    //                     if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
+    //                         'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC'
+    //                     ];
+    //                     if (k === 'Relocation') opts = ['YES', 'NO'];
+    //                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
+    //                         'Money Issue', 'Not Interested', "Don't Call"
+    //                     ];
+    //                     if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+    //                     if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
+    //                     cells +=
+    //                         `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
+    //                 } else if (k === 'Amount') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount (469)"></td>`;
+    //                 } else if (k === 'Location') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Remark') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Date' || k === 'Graduation Date') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Phone Number') {
+    //                     cells +=
+    //                         `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
+    //                 } else if (k === 'Email Address') {
+    //                     cells +=
+    //                         `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Name') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Payment Date') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payment Date"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Transaction ID') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Transaction ID"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Reference Number') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Reference Number"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Payment Method') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payment Method"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'Payee Name') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Payee Name"><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'forwardedBy') {
+    //                     cells +=
+    //                         `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
+    //                 } else if (k === 'View') {
+    //                     cells += `<td>
+    //     <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input" data-key="View">
+    //     <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+    //     <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
+    //     <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+    // </td>`;
+    //                 }
                 });
 
-                cells +=
-                // `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
+                // cells += `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
                 newRow.innerHTML = cells;
                 tableBody.appendChild(newRow);
                 applyInitialState(newRow);
@@ -1242,18 +1188,6 @@
                         formData.append("acceptancesign", accsignInput.files[0]);
                     }
 
-                    // Delivery Sign file
-                    let accsignInput = row.querySelector("input.deliverysign-input");
-                    if (accsignInput && accsignInput.files.length > 0) {
-                        formData.append("deliverysign", accsignInput.files[0]);
-                    }
-
-                    // Payment Sign file
-                    let accsignInput = row.querySelector("input.paymentsign-input");
-                    if (accsignInput && accsignInput.files.length > 0) {
-                        formData.append("paymentsign", accsignInput.files[0]);
-                    }
-
                     // Consultation file
                     let consInput = row.querySelector("input.consultation-input");
                     if (consInput && consInput.files.length > 0) {
@@ -1533,32 +1467,8 @@
                     }
                 }
 
-                if (e.target.matches('.viewdeliverysign-btn') || e.target.matches(
-                        '.downloaddeliverysign-btn')) {
-                    const row = e.target.closest('tr');
-                    const id = row.dataset.id;
-
-                    if (id === "new") {
-                        e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
-                        return;
-                    }
-                }
-
                 if (e.target.matches('.viewacceptancesign-btn') || e.target.matches(
                         '.downloadacceptancesign-btn')) {
-                    const row = e.target.closest('tr');
-                    const id = row.dataset.id;
-
-                    if (id === "new") {
-                        e.preventDefault();
-                        alert("Please save the row first before viewing/downloading the resume.");
-                        return;
-                    }
-                }
-
-                if (e.target.matches('.viewpaymentsign-btn') || e.target.matches(
-                        '.downloadpaymentsign-btn')) {
                     const row = e.target.closest('tr');
                     const id = row.dataset.id;
 
@@ -1699,8 +1609,8 @@
                 }
 
 
-                // Payment Sign
-                if (e.target.matches('.paymentsign-input')) {
+                // Consultation Sign
+                if (e.target.matches('.consultationsign-input')) {
                     const row = e.target.closest('tr');
 
                     // Get selected file name (same as resume code)
@@ -1708,14 +1618,14 @@
                     console.log('File selected:', fileName);
 
                     // Show view & download buttons
-                    const viewBtn = row.querySelector('.viewpaymentsign-btn');
-                    const downloadBtn = row.querySelector('.downloadpaymentsign-btn');
+                    const viewBtn = row.querySelector('.viewconsultationsign-btn');
+                    const downloadBtn = row.querySelector('.downloadconsultationsign-btn');
 
                     if (viewBtn) viewBtn.classList.remove('d-none');
                     if (downloadBtn) downloadBtn.classList.remove('d-none');
 
                     // Update upload button text
-                    const uploadBtn = row.querySelector('.upload-paymentsign-btn');
+                    const uploadBtn = row.querySelector('.upload-consultationsign-btn');
                     if (uploadBtn) uploadBtn.textContent = 'Change File';
                 }
 
@@ -1734,25 +1644,6 @@
 
                     // Update button text
                     const uploadBtn = row.querySelector('.upload-delivery-btn');
-                    if (uploadBtn) uploadBtn.textContent = 'Change File';
-
-                    console.log('Delivery file selected:', fileName);
-                }
-
-                                // Delivery
-                if (e.target.matches('.deliverysign-input')) {
-                    const row = e.target.closest('tr');
-                    const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
-
-                    // Show view and download buttons temporarily
-                    const viewBtn = row.querySelector('.viewdeliverysign-btn');
-                    const downloadBtn = row.querySelector('.downloaddeliverysign-btn');
-
-                    if (viewBtn) viewBtn.classList.remove('d-none');
-                    if (downloadBtn) downloadBtn.classList.remove('d-none');
-
-                    // Update button text
-                    const uploadBtn = row.querySelector('.upload-deliverysign-btn');
                     if (uploadBtn) uploadBtn.textContent = 'Change File';
 
                     console.log('Delivery file selected:', fileName);
