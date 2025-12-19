@@ -827,6 +827,43 @@
 
             }
 
+            // Delivery Sign
+            if (e.target.matches('.deliverysign-input')) {
+                const row = e.target.closest('tr');
+
+                const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+
+                const viewBtn = row.querySelector('.viewdeliverysign-btn');
+                const downloadBtn = row.querySelector('.downloaddeliverysign-btn');
+
+                if (viewBtn) viewBtn.classList.remove('d-none');
+                if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                const uploadBtn = row.querySelector('.upload-deliverysign-btn');
+                if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                console.log('Delivery sign file selected:', fileName);
+            }
+
+            // Payment Sign
+            if (e.target.matches('.paymentsign-input')) {
+                const row = e.target.closest('tr');
+
+                const fileName = e.target.files[0] ? e.target.files[0].name : 'No file selected';
+
+                const viewBtn = row.querySelector('.viewpaymentsign-btn');
+                const downloadBtn = row.querySelector('.downloadpaymentsign-btn');
+
+                if (viewBtn) viewBtn.classList.remove('d-none');
+                if (downloadBtn) downloadBtn.classList.remove('d-none');
+
+                const uploadBtn = row.querySelector('.upload-paymentsign-btn');
+                if (uploadBtn) uploadBtn.textContent = 'Change File';
+
+                console.log('Payment sign file selected:', fileName);
+            }
+
+
             function addBlankRow() {
                 let colKeys = [];
                 let firstRow = tableBody.querySelector("tr");
