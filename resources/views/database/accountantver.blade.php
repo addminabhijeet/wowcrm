@@ -1234,10 +1234,16 @@
                         formData.append("acceptance", accInput.files[0]);
                     }
 
-                    // Acceptance Sign file
-                    let accsignInput = row.querySelector("input.acceptancesign-input");
+                    // Delivery Sign file
+                    let accsignInput = row.querySelector("input.deliverysign-input");
                     if (accsignInput && accsignInput.files.length > 0) {
-                        formData.append("acceptancesign", accsignInput.files[0]);
+                        formData.append("deliverysign", accsignInput.files[0]);
+                    }
+
+                    // Payment Sign file
+                    let accsignInput = row.querySelector("input.paymentsign-input");
+                    if (accsignInput && accsignInput.files.length > 0) {
+                        formData.append("paymentsign", accsignInput.files[0]);
                     }
 
                     // Consultation file
