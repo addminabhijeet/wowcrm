@@ -200,6 +200,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/google-sheet/view-deliverysign/{id}', [GoogleSheetController::class, 'viewseniorDeliverySign'])->name('view.deliverysign');
     Route::get('/dashboard/senior/google-sheet/download-deliverysign/{id}', [GoogleSheetController::class, 'downloadseniorDeliverySign'])->name('download.deliverysign');
     Route::get('/dashboard/senior/google-sheet/view-payment/{id}', [GoogleSheetController::class, 'viewseniorPayment'])->name('view.payment');
+    Route::get('/dashboard/senior/google-sheet/view-paymentsign/{id}', [GoogleSheetController::class, 'viewseniorPaymentSign'])->name('view.paymentsign');
     Route::get('/dashboard/senior/google-sheet/download-payment/{id}', [GoogleSheetController::class, 'downloadseniorPayment'])->name('download.payment');
     Route::get('/dashboard/senior/google-sheet/view-audio/{id}', [GoogleSheetController::class, 'viewseniorAudio'])->name('view.audio');
     Route::get('/dashboard/senior/google-sheet/download-audio/{id}', [GoogleSheetController::class, 'downloadseniorAudio'])->name('download.audio');
