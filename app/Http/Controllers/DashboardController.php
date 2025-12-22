@@ -414,6 +414,7 @@ class DashboardController extends Controller
                 'user_id'           => $user->id,
                 'login_id'          => $user->id,
                 'start_time'        => now(),
+                'last_decrement'    => now(),
                 'remaining_seconds' => $workDaySeconds,
                 'status'            => 'running',
                 'pause_type'        => 'resume',
