@@ -891,14 +891,10 @@ class DashboardController extends Controller
 
         /*
     |--------------------------------------------------------------------------
-    | COUNTDOWN (UNCHANGED)
+    | COUNTDOWN (UNCHANGED LOGIC)
     |--------------------------------------------------------------------------
     */
-        if ($timer->status === 'running') {
-
-            if (is_null($timer->last_tick_at)) {
-                $timer->last_tick_at = $currentTime;
-            }
+        if ($timer->status === 'running' && !is_null($timer->last_tick_at)) {
 
             $elapsedSeconds = $timer->last_tick_at->diffInSeconds($currentTime);
 
@@ -942,14 +938,18 @@ class DashboardController extends Controller
 
         /*
     |--------------------------------------------------------------------------
-    | ACTION HANDLING (FIXED, LOGIC PRESERVED)
+    | ACTION HANDLING (LOGIC PRESERVED)
     |--------------------------------------------------------------------------
     */
         if ($action === 'resume' || $action === 'resumebreak') {
 
+            // 🔑 ONLY reset when coming from paused
+            if ($timer->status !== 'running') {
+                $timer->last_tick_at = $currentTime;
+            }
+
             $timer->status     = 'running';
             $timer->pause_type = 'resume';
-            $timer->last_tick_at = $currentTime;
 
             $createPauseIfChanged('running', 'resume', $timer->remaining_seconds);
         } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
@@ -961,18 +961,19 @@ class DashboardController extends Controller
             $createPauseIfChanged('paused', $action, $timer->remaining_seconds);
         } elseif ($action !== 'tick') {
 
-            /*
-        |--------------------------------------------------
-        | INACTIVE ≠ PAUSE (FIX)
-        |--------------------------------------------------
-        | Timer keeps running
-        | Only mark inactivity for reporting
-        */
+            // INACTIVE ≠ PAUSE
             if ($timer->status === 'running') {
                 $timer->pause_type = 'inactive';
-                // DO NOT touch status
-                // DO NOT touch last_tick_at
             }
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | SAFETY INIT (FIRST RUN)
+    |--------------------------------------------------------------------------
+    */
+        if ($timer->status === 'running' && is_null($timer->last_tick_at)) {
+            $timer->last_tick_at = $currentTime;
         }
 
         /*
@@ -995,6 +996,7 @@ class DashboardController extends Controller
             'logout'            => $timer->remaining_seconds <= 0
         ]);
     }
+
 
 
     public function editall()
