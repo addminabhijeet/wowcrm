@@ -874,7 +874,7 @@ class DashboardController extends Controller
         $userId = $request->input('user_id');
         $user = $userId ? User::find($userId) : Auth::user();
         $action = $request->input('action');
-
+        $isInactive = $request->boolean('is_inactive', false);
         // Get the latest timer log for the user
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
         if (!$timer) {
@@ -894,9 +894,37 @@ class DashboardController extends Controller
 
         // Update remaining seconds if timer is running
         if ($timer->status === 'running') {
-            $secondsPassed = $currentTime->diffInSeconds($timer->updated_at);
-            $timer->remaining_seconds = max(0, $timer->remaining_seconds + ($secondsPassed / 2));
+            if (
+                $timer->last_decrement &&
+                $timer->updated_at->gt($timer->last_decrement) &&
+                $timer->last_decrement->diffInSeconds($timer->updated_at) > 3
+            ) {
+                $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
+
+                // Decrement exactly 1 second per tick
+                if ($elapsed >= 1) {
+                    $timer->remaining_seconds = min(
+                        0,
+                        $timer->remaining_seconds - 60
+                    );
+                }
+            } else {
+                $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
+            }
+
+            if ($isInactive) {
+                // Tab inactive → store timestamp only once
+                if (is_null($timer->last_decrement)) {
+                    $timer->last_decrement = $timer->updated_at;
+                }
+            } else {
+                // Tab active → FORCE clear last_decrement in DB
+                if (!is_null($timer->last_decrement)) {
+                    $timer->last_decrement = $timer->updated_at;
+                }
+            }
         }
+
 
         // Store previous status before any change
         $previousStatus = $timer->status;
@@ -1015,6 +1043,7 @@ class DashboardController extends Controller
             'logout'            => $timer->remaining_seconds <= 0
         ]);
     }
+
 
 
 
