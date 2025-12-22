@@ -897,7 +897,7 @@ class DashboardController extends Controller
             if (
                 $timer->last_decrement &&
                 $timer->updated_at->gt($timer->last_decrement) &&
-                $timer->last_decrement->diffInSeconds($timer->updated_at) > 3
+                $timer->last_decrement->diffInSeconds($timer->updated_at) > 60
             ) {
                 $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
 
