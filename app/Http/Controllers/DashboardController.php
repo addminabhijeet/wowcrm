@@ -895,11 +895,11 @@ class DashboardController extends Controller
         // Update remaining seconds if timer is running
         if ($timer->status === 'running') {
             if (
-                $timer->last_decrement &&
-                $timer->updated_at->gt($timer->last_decrement) &&
-                $timer->last_decrement->diffInSeconds($timer->updated_at) > 3
+                $timer->last_tick_at &&
+                $timer->updated_at->gt($timer->last_tick_at) &&
+                $timer->last_tick_at->diffInSeconds($timer->updated_at) > 3
             ) {
-                $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
+                $elapsed = $timer->last_tick_at->diffInSeconds($currentTime);
 
                 // Decrement exactly 1 second per tick
                 if ($elapsed >= 1) {
@@ -914,13 +914,13 @@ class DashboardController extends Controller
 
             if ($isInactive) {
                 // Tab inactive → store timestamp only once
-                if (is_null($timer->last_decrement)) {
-                    $timer->last_decrement = $timer->updated_at;
+                if (is_null($timer->last_tick_at)) {
+                    $timer->last_tick_at = $timer->updated_at;
                 }
             } else {
-                // Tab active → FORCE clear last_decrement in DB
-                if (!is_null($timer->last_decrement)) {
-                    $timer->last_decrement = $timer->updated_at;
+                // Tab active → FORCE clear last_tick_at in DB
+                if (!is_null($timer->last_tick_at)) {
+                    $timer->last_tick_at = $timer->updated_at;
                 }
             }
         }
