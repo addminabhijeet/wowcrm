@@ -894,14 +894,6 @@ class DashboardController extends Controller
 
         // Update remaining seconds if timer is running
         if ($timer->status === 'running') {
-            // Determine if we are in the first 60 seconds of inactivity
-            // Convert isInactive boolean to a Carbon timestamp for firstMinute check
-            $inactiveSince = $isInactive ? $timer->last_decrement ?? $timer->updated_at : null;
-
-            // Determine if we are in the first 60 seconds of inactivity
-            $firstMinute = $inactiveSince && $inactiveSince->diffInSeconds($currentTime) <= 60;
-
-
             if (
                 $timer->last_decrement &&
                 $timer->updated_at->gt($timer->last_decrement) &&
@@ -909,19 +901,24 @@ class DashboardController extends Controller
             ) {
                 $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
 
-                // Decrement exactly 1 second per tick if in first minute of inactivity
+                // Decrement exactly 1 second per tick
                 if ($elapsed >= 1) {
-                    $decrementValue = $firstMinute ? 1 : 60;
-
                     $timer->remaining_seconds = max(
                         0,
-                        $timer->remaining_seconds - $decrementValue
+                        $timer->remaining_seconds - 60
                     );
                 }
             } else {
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
-            }
+                $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
 
+                // Decrement exactly 1 second per tick
+                if ($elapsed >= 1) {
+                    $timer->remaining_seconds = max(
+                        0,
+                        $timer->remaining_seconds - 1
+                    );
+                }
+            }
 
             if ($isInactive) {
                 // Tab inactive → store timestamp only once
