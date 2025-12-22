@@ -894,22 +894,24 @@ class DashboardController extends Controller
 
         // Update remaining seconds if timer is running
         if ($timer->status === 'running') {
-            if (
-                $timer->last_decrement &&
-                $timer->updated_at->gt($timer->last_decrement) &&
-                $timer->last_decrement->diffInSeconds($timer->updated_at) > 3
-            ) {
-                $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
+            if (!$isInactive) {
+                if (
+                    $timer->last_decrement &&
+                    $timer->updated_at->gt($timer->last_decrement) &&
+                    $timer->last_decrement->diffInSeconds($timer->updated_at) > 3
+                ) {
+                    $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
 
-                // Decrement exactly 1 second per tick
-                if ($elapsed >= 1) {
-                    $timer->remaining_seconds = max(
-                        0,
-                        $timer->remaining_seconds - 60
-                    );
+                    // Decrement exactly 1 second per tick
+                    if ($elapsed >= 1) {
+                        $timer->remaining_seconds = max(
+                            0,
+                            $timer->remaining_seconds - 60
+                        );
+                    }
+                } else {
+                    $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
                 }
-            } else {
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
             }
 
             if ($isInactive) {
