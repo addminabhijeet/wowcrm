@@ -891,31 +891,29 @@ class DashboardController extends Controller
 
         /*
     |--------------------------------------------------------------------------
-    | SAFETY INIT (FIRST RUN ONLY)
-    |--------------------------------------------------------------------------
-    | Must happen BEFORE countdown
-    */
-        if ($timer->status === 'running' && is_null($timer->last_tick_at)) {
-            $timer->last_tick_at = $currentTime;
-        }
-
-        /*
-    |--------------------------------------------------------------------------
-    | COUNTDOWN (UNCHANGED LOGIC)
+    | COUNTDOWN (UNCHANGED LOGIC BUT FIXED FOR MINIMUM 1 SECOND)
     |--------------------------------------------------------------------------
     */
-        if ($timer->status === 'running' && !is_null($timer->last_tick_at)) {
+        if ($timer->status === 'running') {
 
-            $elapsedSeconds = $timer->last_tick_at->diffInSeconds($currentTime);
-
-            if ($elapsedSeconds > 0) {
-                $timer->remaining_seconds = max(
-                    0,
-                    $timer->remaining_seconds - $elapsedSeconds
-                );
-
+            // Safety init for first run
+            if (is_null($timer->last_tick_at)) {
                 $timer->last_tick_at = $currentTime;
             }
+
+            // Calculate elapsed seconds
+            $elapsedSeconds = $timer->last_tick_at->diffInSeconds($currentTime);
+
+            // ✅ Force minimum 1 second decrement to prevent freezing
+            $elapsedSeconds = max(1, $elapsedSeconds);
+
+            $timer->remaining_seconds = max(
+                0,
+                $timer->remaining_seconds - $elapsedSeconds
+            );
+
+            // Move reference forward
+            $timer->last_tick_at = $currentTime;
         }
 
         /*
@@ -953,6 +951,7 @@ class DashboardController extends Controller
     */
         if ($action === 'resume' || $action === 'resumebreak') {
 
+            // 🔑 Only reset last_tick_at when coming from paused state
             if ($timer->status !== 'running') {
                 $timer->last_tick_at = $currentTime;
             }
@@ -965,7 +964,7 @@ class DashboardController extends Controller
 
             $timer->status     = 'paused';
             $timer->pause_type = $action;
-            $timer->last_tick_at = null;
+            $timer->last_tick_at = null; // freeze countdown
 
             $createPauseIfChanged('paused', $action, $timer->remaining_seconds);
         } elseif ($action !== 'tick') {
@@ -973,6 +972,8 @@ class DashboardController extends Controller
             // INACTIVE ≠ PAUSE
             if ($timer->status === 'running') {
                 $timer->pause_type = 'inactive';
+                // Status remains running
+                // last_tick_at remains unchanged
             }
         }
 
