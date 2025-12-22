@@ -891,11 +891,58 @@ class DashboardController extends Controller
 
         /*
     |--------------------------------------------------------------------------
-    | COUNTDOWN (UNCHANGED LOGIC)
+    | ACTION HANDLING (STATE TRANSITIONS FIRST)
     |--------------------------------------------------------------------------
     */
-        if ($timer->status === 'running' && !is_null($timer->last_tick_at)) {
+        if ($action === 'resume' || $action === 'resumebreak') {
 
+            if ($timer->status !== 'running') {
+                // transition paused → running
+                $timer->last_tick_at = $currentTime;
+            }
+
+            $timer->status     = 'running';
+            $timer->pause_type = 'resume';
+
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
+                'user_id'           => $user->id,
+                'status'            => 'running',
+                'pause_type'        => 'resume',
+                'remaining_seconds' => $timer->remaining_seconds,
+                'event_time'        => $currentTime,
+            ]);
+        } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
+
+            $timer->status       = 'paused';
+            $timer->pause_type   = $action;
+            $timer->last_tick_at = null;
+
+            UserTimerPause::create([
+                'user_timer_log_id' => $timer->id,
+                'user_id'           => $user->id,
+                'status'            => 'paused',
+                'pause_type'        => $action,
+                'remaining_seconds' => $timer->remaining_seconds,
+                'event_time'        => $currentTime,
+            ]);
+        } elseif ($action !== 'tick') {
+
+            // INACTIVE ≠ PAUSE
+            if ($timer->status === 'running') {
+                $timer->pause_type = 'inactive';
+            }
+        }
+
+        /*
+    |--------------------------------------------------------------------------
+    | COUNTDOWN (PURE TIME MATH ONLY)
+    |--------------------------------------------------------------------------
+    */
+        if (
+            $timer->status === 'running' &&
+            !is_null($timer->last_tick_at)
+        ) {
             $elapsedSeconds = $timer->last_tick_at->diffInSeconds($currentTime);
 
             if ($elapsedSeconds > 0) {
@@ -910,69 +957,13 @@ class DashboardController extends Controller
 
         /*
     |--------------------------------------------------------------------------
-    | PAUSE HISTORY HELPER (UNCHANGED)
+    | FIRST-RUN SAFETY (ONLY ONCE)
     |--------------------------------------------------------------------------
     */
-        $createPauseIfChanged = function ($status, $pauseType, $remainingSeconds) use ($timer, $user) {
-
-            $lastPause = UserTimerPause::where('user_id', $user->id)
-                ->latest('id')
-                ->first();
-
-            if (
-                !$lastPause ||
-                $lastPause->status !== $status ||
-                $lastPause->pause_type !== $pauseType ||
-                $lastPause->remaining_seconds != $remainingSeconds
-            ) {
-                UserTimerPause::create([
-                    'user_timer_log_id' => $timer->id,
-                    'user_id'           => $user->id,
-                    'status'            => $status,
-                    'pause_type'        => $pauseType,
-                    'remaining_seconds' => $remainingSeconds,
-                    'event_time'        => now(),
-                ]);
-            }
-        };
-
-        /*
-    |--------------------------------------------------------------------------
-    | ACTION HANDLING (LOGIC PRESERVED)
-    |--------------------------------------------------------------------------
-    */
-        if ($action === 'resume' || $action === 'resumebreak') {
-
-            // 🔑 ONLY reset when coming from paused
-            if ($timer->status !== 'running') {
-                $timer->last_tick_at = $currentTime;
-            }
-
-            $timer->status     = 'running';
-            $timer->pause_type = 'resume';
-
-            $createPauseIfChanged('running', 'resume', $timer->remaining_seconds);
-        } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
-
-            $timer->status     = 'paused';
-            $timer->pause_type = $action;
-            $timer->last_tick_at = null;
-
-            $createPauseIfChanged('paused', $action, $timer->remaining_seconds);
-        } elseif ($action !== 'tick') {
-
-            // INACTIVE ≠ PAUSE
-            if ($timer->status === 'running') {
-                $timer->pause_type = 'inactive';
-            }
-        }
-
-        /*
-    |--------------------------------------------------------------------------
-    | SAFETY INIT (FIRST RUN)
-    |--------------------------------------------------------------------------
-    */
-        if ($timer->status === 'running' && is_null($timer->last_tick_at)) {
+        if (
+            $timer->status === 'running' &&
+            is_null($timer->last_tick_at)
+        ) {
             $timer->last_tick_at = $currentTime;
         }
 
@@ -984,10 +975,13 @@ class DashboardController extends Controller
         $timer->updated_at = $currentTime;
         $timer->save();
 
-        $elapsedSeconds = max(0, $workDaySeconds - $timer->remaining_seconds);
+        $elapsedSeconds = max(
+            0,
+            $workDaySeconds - $timer->remaining_seconds
+        );
 
         return response()->json([
-            'success'           => true,
+            'success'            => true,
             'remaining_seconds' => $timer->remaining_seconds,
             'elapsed_seconds'   => $elapsedSeconds,
             'status'            => $timer->status,
