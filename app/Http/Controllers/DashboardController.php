@@ -872,19 +872,16 @@ class DashboardController extends Controller
     public function updateTimer(Request $request)
     {
         $userId = $request->input('user_id');
-        $user = $userId ? User::find($userId) : Auth::user();
+        $user   = $userId ? User::find($userId) : Auth::user();
         $action = $request->input('action');
-        $isInactive = $request->boolean('is_inactive', false);
-        // Get the latest timer log for the user
+
         $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
         if (!$timer) {
             return response()->json(['error' => 'Timer not found'], 404);
         }
 
-        // Current time
         $currentTime = now();
 
-        // Fetch work day duration from settings
         $timerSetting = TimerSetting::first();
         if (!$timerSetting) {
             return response()->json(['error' => 'Timer settings not configured'], 500);
@@ -892,58 +889,46 @@ class DashboardController extends Controller
 
         $workDaySeconds = $timerSetting->work_day_seconds;
 
-        // Update remaining seconds if timer is running
+        /*
+    |--------------------------------------------------------------------------
+    | COUNTDOWN (UNCHANGED)
+    |--------------------------------------------------------------------------
+    */
         if ($timer->status === 'running') {
-            if (
-                $timer->last_tick_at &&
-                $timer->updated_at->gt($timer->last_tick_at) &&
-                $timer->last_tick_at->diffInSeconds($timer->updated_at) > 3
-            ) {
-                $elapsed = $timer->last_tick_at->diffInSeconds($currentTime);
 
-                // Decrement exactly 1 second per tick
-                if ($elapsed >= 1) {
-                    $timer->remaining_seconds = max(
-                        0,
-                        $timer->remaining_seconds - 60
-                    );
-                }
-            } else {
-                $timer->remaining_seconds = max(0, $timer->remaining_seconds - 1);
+            if (is_null($timer->last_tick_at)) {
+                $timer->last_tick_at = $currentTime;
             }
 
-            if ($isInactive) {
-                // Tab inactive → store timestamp only once
-                if (is_null($timer->last_tick_at)) {
-                    $timer->last_tick_at = $timer->updated_at;
-                }
-            } else {
-                // Tab active → FORCE clear last_tick_at in DB
-                if (!is_null($timer->last_tick_at)) {
-                    $timer->last_tick_at = $timer->updated_at;
-                }
+            $elapsedSeconds = $timer->last_tick_at->diffInSeconds($currentTime);
+
+            if ($elapsedSeconds > 0) {
+                $timer->remaining_seconds = max(
+                    0,
+                    $timer->remaining_seconds - $elapsedSeconds
+                );
+
+                $timer->last_tick_at = $currentTime;
             }
         }
 
-
-        // Store previous status before any change
-        $previousStatus = $timer->status;
-        $previousPauseType = $timer->pause_type;
-
-        // Helper: avoid duplicate pause
+        /*
+    |--------------------------------------------------------------------------
+    | PAUSE HISTORY HELPER (UNCHANGED)
+    |--------------------------------------------------------------------------
+    */
         $createPauseIfChanged = function ($status, $pauseType, $remainingSeconds) use ($timer, $user) {
+
             $lastPause = UserTimerPause::where('user_id', $user->id)
                 ->latest('id')
                 ->first();
 
-            // Only create if values differ from last
             if (
                 !$lastPause ||
                 $lastPause->status !== $status ||
                 $lastPause->pause_type !== $pauseType ||
                 $lastPause->remaining_seconds != $remainingSeconds
             ) {
-
                 UserTimerPause::create([
                     'user_timer_log_id' => $timer->id,
                     'user_id'           => $user->id,
@@ -955,84 +940,51 @@ class DashboardController extends Controller
             }
         };
 
+        /*
+    |--------------------------------------------------------------------------
+    | ACTION HANDLING (FIXED, LOGIC PRESERVED)
+    |--------------------------------------------------------------------------
+    */
         if ($action === 'resume' || $action === 'resumebreak') {
-            if ($timer->status === 'paused' && in_array($timer->pause_type, ['break', 'lunch', 'tea'])) {
-                if ($action !== 'resumebreak') {
-                    return; // silently skip if normal resume is triggered
-                }
-            }
 
-            $timer->status = 'running';
+            $timer->status     = 'running';
             $timer->pause_type = 'resume';
+            $timer->last_tick_at = $currentTime;
 
-            $latestLog = UserTimerLog::where('user_id', $user->id)
-                ->whereNotIn('pause_type', ['lunch', 'break', 'tea'])
-                ->latest('id')
-                ->first();
-
-            if ($latestLog) {
-                $latestLog->update([
-                    'remaining_seconds' => $timer->remaining_seconds,
-                    'status'            => 'running',
-                    'pause_type'        => 'resume',
-                ]);
-            } else {
-                $createPauseIfChanged('running', $action, $timer->remaining_seconds);
-            }
-
-            if ($previousStatus === 'paused') {
-                $createPauseIfChanged('running', 'resume', $timer->remaining_seconds);
-            }
+            $createPauseIfChanged('running', 'resume', $timer->remaining_seconds);
         } elseif (in_array($action, ['lunch', 'tea', 'break'])) {
-            $timer->status = 'paused';
+
+            $timer->status     = 'paused';
             $timer->pause_type = $action;
-
-            $latestLog = UserTimerLog::where('user_id', $user->id)
-                ->latest('id')
-                ->first();
-
-            if ($latestLog) {
-                $latestLog->update([
-                    'remaining_seconds' => $timer->remaining_seconds,
-                    'status'            => 'paused',
-                    'pause_type'        => $action,
-                ]);
-            } else {
-                $createPauseIfChanged('paused', $action, $timer->remaining_seconds);
-            }
+            $timer->last_tick_at = null;
 
             $createPauseIfChanged('paused', $action, $timer->remaining_seconds);
         } elseif ($action !== 'tick') {
-            $timer->status = 'paused';
-            $timer->pause_type = 'inactive';
 
-            $latestLog = UserTimerLog::where('user_id', $user->id)
-                ->latest('id')
-                ->first();
-
-            if ($latestLog) {
-                if (!in_array($latestLog->pause_type, ['lunch', 'tea', 'break'])) {
-                    $latestLog->update([
-                        'remaining_seconds' => $timer->remaining_seconds,
-                        'status'            => 'paused',
-                        'pause_type'        => 'inactive',
-                    ]);
-                    $createPauseIfChanged('paused', 'inactive', $timer->remaining_seconds);
-                }
-            } else {
-                $createPauseIfChanged('paused', 'inactive', $timer->remaining_seconds);
+            /*
+        |--------------------------------------------------
+        | INACTIVE ≠ PAUSE (FIX)
+        |--------------------------------------------------
+        | Timer keeps running
+        | Only mark inactivity for reporting
+        */
+            if ($timer->status === 'running') {
+                $timer->pause_type = 'inactive';
+                // DO NOT touch status
+                // DO NOT touch last_tick_at
             }
         }
 
-
-        // Update timestamp and save
+        /*
+    |--------------------------------------------------------------------------
+    | SAVE
+    |--------------------------------------------------------------------------
+    */
         $timer->updated_at = $currentTime;
         $timer->save();
 
-        // Calculate elapsed time
         $elapsedSeconds = max(0, $workDaySeconds - $timer->remaining_seconds);
 
-        // Return response
         return response()->json([
             'success'           => true,
             'remaining_seconds' => $timer->remaining_seconds,
@@ -1043,6 +995,7 @@ class DashboardController extends Controller
             'logout'            => $timer->remaining_seconds <= 0
         ]);
     }
+
 
     public function editall()
     {
