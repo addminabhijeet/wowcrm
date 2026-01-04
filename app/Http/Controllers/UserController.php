@@ -227,14 +227,17 @@ class UserController extends Controller
 
         /* ================= IMAGE UPLOAD FIX ================= */
 
+        /* ================= IMAGE UPLOAD FIX ================= */
+
         if ($request->hasFile('image')) {
             $file = $request->file('image');
 
-            $uploadPath = 'user_images';
+            // ✅ Correct storage path
+            $uploadPath = storage_path('app/public/user_images');
 
-            // ✅ Ensure directory exists
-            if (!File::exists(public_path($uploadPath))) {
-                File::makeDirectory(public_path($uploadPath), 0755, true);
+            // Ensure directory exists
+            if (!File::exists($uploadPath)) {
+                File::makeDirectory($uploadPath, 0755, true);
             }
 
             $timestamp = now()->format('Ymd_His');
@@ -243,19 +246,20 @@ class UserController extends Controller
             $newName   = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // ✅ Laravel-safe upload (FIX)
-                $file->storeAs($uploadPath, $newName, 'public');
+                $file->move($uploadPath, $newName);
 
                 // ✅ Delete old image safely
-                if ($user->image && File::exists(public_path($user->image))) {
-                    File::delete(public_path($user->image));
+                if ($user->image && File::exists(storage_path('app/public/' . $user->image))) {
+                    File::delete(storage_path('app/public/' . $user->image));
                 }
 
-                $validated['image'] = $uploadPath . '/' . $newName;
+                // ✅ Store relative path only
+                $validated['image'] = 'user_images/' . $newName;
             } catch (\Exception $e) {
                 return back()->with('error', 'Image upload failed: ' . $e->getMessage());
             }
         }
+
 
 
         /* ================= PASSWORD HANDLING ================= */
