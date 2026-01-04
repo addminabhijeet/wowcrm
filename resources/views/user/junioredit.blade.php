@@ -182,23 +182,7 @@ $script ='<script>
                                     </div>
                                 </div>
 
-                                <div class="col-sm-6">
-                                    <div class="mb-20">
-                                        <label for="gender" class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                            gender <span class="text-danger-600">*</span>
-                                        </label>
-                                        <select name="gender" id="gender" class="form-control radius-8 form-select" required>
-                                            <option value="" disabled {{ !$user->gender ? 'selected' : '' }}>Select gender</option>
-                                            <option value="Accountant" {{ $user->gender == 'Accountant' ? 'selected' : '' }}>Support</option>
-                                            <option value="Admin" {{ $user->gender == 'Admin' ? 'selected' : '' }}>Admin</option>
-                                            <option value="Candidate" {{ $user->gender == 'Candidate' ? 'selected' : '' }}>Candidate</option>
-                                            <option value="Junior" {{ $user->gender == 'Junior' ? 'selected' : '' }}>IT Recruiter</option>
-                                            <option value="Senior" {{ $user->gender == 'Senior' ? 'selected' : '' }}>IT Senior Recruiter</option>
-                                            <option value="Trainer" {{ $user->gender == 'Trainer' ? 'selected' : '' }}>Trainer</option>
-                                            <option value="Caller" {{ $user->gender == 'Caller' ? 'selected' : '' }}>Caller</option>
-                                        </select>
-                                    </div>
-                                </div>
+                                
 
 
                                 <div class="d-flex align-items-center justify-content-center gap-3">
