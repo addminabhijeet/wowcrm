@@ -230,7 +230,7 @@ class UserController extends Controller
         if ($request->hasFile('image')) {
             $file = $request->file('image');
 
-            $uploadPath = 'user_images';
+            $uploadPath = 'assets/images/user-grid';
 
             // ✅ Ensure directory exists
             if (!File::exists(public_path($uploadPath))) {
