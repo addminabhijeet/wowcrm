@@ -269,7 +269,7 @@
                 <div class="dropdown">
                     <button class="d-flex justify-content-center align-items-center rounded-circle" type="button"
                         data-bs-toggle="dropdown">
-                        <img src="{{ Auth::user()->name }}" alt="image"
+                        <img src="{{ Auth::user()->image ? asset('storage/app/public/' . Auth::user()->image) : asset('assets/images/user-grid/user-grid-bg1.png') }}" alt="image"
                             class="w-40-px h-40-px object-fit-cover rounded-circle">
                     </button>
                     <div class="dropdown-menu to-top dropdown-menu-sm">
