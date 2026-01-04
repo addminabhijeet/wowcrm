@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 
 class UserController extends Controller
@@ -225,40 +226,45 @@ class UserController extends Controller
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
-        // Handle Image Upload directly to public/user_images
+        /* ================= IMAGE UPLOAD FIX ================= */
+
         if ($request->hasFile('image')) {
             $file = $request->file('image');
 
-            // Generate unique filename
+            $uploadPath = public_path('user_images');
+
+            // ✅ Ensure directory exists
+            if (!File::exists($uploadPath)) {
+                File::makeDirectory($uploadPath, 0755, true);
+            }
+
             $timestamp = now()->format('Ymd_His');
-            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
-            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+            $newName   = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Move file directly to public/user_images
-                $file->move(public_path('user_images'), $newName);
+                $file->move($uploadPath, $newName);
 
-                // Delete old image if exists
-                if ($user->image && file_exists(public_path($user->image))) {
-                    unlink(public_path($user->image));
+                // ✅ Delete old image safely
+                if ($user->image && File::exists(public_path($user->image))) {
+                    File::delete(public_path($user->image));
                 }
 
-                // Store relative path for asset()
                 $validated['image'] = 'user_images/' . $newName;
             } catch (\Exception $e) {
                 return back()->with('error', 'Image upload failed: ' . $e->getMessage());
             }
         }
 
-        // Handle password
+        /* ================= PASSWORD HANDLING ================= */
+
         if (!empty($request->password)) {
             $validated['password'] = Hash::make($request->password);
         } else {
             unset($validated['password']);
         }
 
-        // Update user
         $user->update($validated);
 
         return redirect()
