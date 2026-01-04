@@ -220,7 +220,6 @@ class UserController extends Controller
             'email'       => 'required|email|unique:users,email,' . $user->id,
             'phone'       => 'nullable|string|max:20',
             'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
-            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'password'    => 'nullable|string|min:6|confirmed',
         ]);
 
