@@ -365,18 +365,18 @@
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormod') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Call
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Call
                                 Disposition</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.senior') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Called &
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Called &
                                 Mailed</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.senioradmincandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Called &
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter Called &
                                 Mailed</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
