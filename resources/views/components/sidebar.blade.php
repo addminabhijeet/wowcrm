@@ -120,7 +120,7 @@
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.senior') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Called &
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Called &
                                 Mailed</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
@@ -130,7 +130,7 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormod') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Other
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Other
                                 Disposition</a>
                         </li>
                     </ul>
@@ -141,7 +141,7 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormodcandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Other
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Other
                                 Disposition C&M</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
@@ -579,18 +579,18 @@
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormod') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Other
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Other
                                 Disposition</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.senior') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Junior Called &
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Called &
                                 Mailed</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorcandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Called &
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter Called &
                                 Mailed</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
