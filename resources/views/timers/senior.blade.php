@@ -57,7 +57,9 @@
                 @foreach ($timers as $timer)
                     <div class="col-xxl-3 col-md-6 user-grid-card">
                         <div class="position-relative border radius-16 overflow-hidden" style="padding-top: 30px;">
-                            <img src="{{ asset('assets/images/user-grid/user-grid.png') }}"
+                            <img src="{{ $timer['image']
+                                ? asset('assets/images/user-grid/user-grid.png')
+                                : asset('assets/images/user-grid/user-grid-bg1.png') }}"
                                 class="w-100 object-fit-cover" alt="">
 
                             <div class="ps-16 pb-16 pe-16 text-center mt--50">
@@ -329,7 +331,7 @@
                                         .remaining_seconds;
                                     timerWidget.dataset.elapsedSeconds = data.elapsed_seconds;
                                     updateUI(userId,
-                                    data); // assume updateUI handles per-user updates
+                                        data); // assume updateUI handles per-user updates
 
                                     // 🔹 Update card background based on status
                                     const card = timerWidget.closest('.user-grid-card');
@@ -599,7 +601,7 @@
                     "{{ route('ajax.login') }}";
 
                 console.log("Button clicked for user:", userId, "Action:", actionType, "URL:",
-                url); // debug
+                    url); // debug
 
                 $.ajax({
                     url: url,
@@ -740,10 +742,10 @@
                         .then(res => res.json())
                         .then(data => {
                             const resumeBtn = container.querySelector(
-                            'button[data-type="resumebreak"]');
+                                'button[data-type="resumebreak"]');
                             const pauseBtns = container.querySelectorAll(
                                 'button[data-type="lunch"], button[data-type="tea"], button[data-type="break"]'
-                                );
+                            );
 
                             // ✅ Existing logic untouched
                             if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data
