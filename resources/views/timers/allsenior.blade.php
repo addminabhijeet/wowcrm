@@ -57,8 +57,7 @@
                 @foreach ($timers as $timer)
                     <div class="col-xxl-3 col-md-6 user-grid-card">
                         <div class="position-relative border radius-16 overflow-hidden" style="padding-top: 30px;">
-                            <img src="{{ asset('assets/images/user-grid/user-grid-bg1.png') }}"
-                                class="w-100 object-fit-cover" alt="">
+                           
 
                             <div class="ps-16 pb-16 pe-16 text-center mt--50">
                                 <img src="{{ $timer['image'] ? asset('assets/images/user-grid/' . $timer['image']) : asset('assets/images/user-grid/user-grid-bg1.png') }}"
