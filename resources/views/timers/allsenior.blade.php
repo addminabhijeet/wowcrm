@@ -61,7 +61,7 @@
                                 class="w-100 object-fit-cover" alt="">
 
                             <div class="ps-16 pb-16 pe-16 text-center mt--50">
-                                <img src="{{ $timer['image'] ? asset('storage/app/public/' . $timer['image']) : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                                <img src="{{ $timer['image'] ? asset('assets/images/user-grid/' . $timer['image']) : asset('assets/images/user-grid/user-grid-bg1.png') }}"
                                     class="border br-white border-width-2-px w-100-px h-100-px rounded-circle object-fit-cover"
                                     alt="">
                                 <h6 class="text-lg mb-0 mt-4">{{ $timer['name'] }}</h6>
