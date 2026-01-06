@@ -35,7 +35,7 @@
                                             <tr>
                                                 <td>01</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -45,7 +45,7 @@
                                             <tr>
                                                 <td>02</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -56,7 +56,7 @@
                                             <tr>
                                                 <td>03</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -67,7 +67,7 @@
                                             <tr>
                                                 <td>04</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -78,7 +78,7 @@
                                             <tr>
                                                 <td>05</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -89,7 +89,7 @@
                                             <tr>
                                                 <td>06</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -100,7 +100,7 @@
                                             <tr>
                                                 <td>07</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -111,7 +111,7 @@
                                             <tr>
                                                 <td>08</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -122,7 +122,7 @@
                                             <tr>
                                                 <td>09</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -133,7 +133,7 @@
                                             <tr>
                                                 <td>10</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -144,7 +144,7 @@
                                             <tr>
                                                 <td>11</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -155,7 +155,7 @@
                                             <tr>
                                                 <td>12</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -166,7 +166,7 @@
                                             <tr>
                                                 <td>13</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -177,7 +177,7 @@
                                             <tr>
                                                 <td>14</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -188,7 +188,7 @@
                                             <tr>
                                                 <td>15</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -199,7 +199,7 @@
                                             <tr>
                                                 <td>16</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -229,7 +229,7 @@
                                             <tr>
                                                 <td>17</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -240,7 +240,7 @@
                                             <tr>
                                                 <td>18</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -251,7 +251,7 @@
                                             <tr>
                                                 <td>19</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -262,7 +262,7 @@
                                             <tr>
                                                 <td>20</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -273,7 +273,7 @@
                                             <tr>
                                                 <td>21</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -284,7 +284,7 @@
                                             <tr>
                                                 <td>22</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -295,7 +295,7 @@
                                             <tr>
                                                 <td>23</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -306,7 +306,7 @@
                                             <tr>
                                                 <td>24</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -317,7 +317,7 @@
                                             <tr>
                                                 <td>25</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -328,7 +328,7 @@
                                             <tr>
                                                 <td>26</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -339,7 +339,7 @@
                                             <tr>
                                                 <td>27</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -350,7 +350,7 @@
                                             <tr>
                                                 <td>28</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -361,7 +361,7 @@
                                             <tr>
                                                 <td>29</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -372,7 +372,7 @@
                                             <tr>
                                                 <td>30</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
@@ -383,7 +383,7 @@
                                             <tr>
                                                 <td>31</td>
                                                 <td class="text-center">
-                                                    <span class="badge bg-info"> Day1 </span>
+
                                                     <div class="form-check d-inline-block ms-2">
                                                         <input class="form-check-input" type="checkbox">
                                                     </div>
