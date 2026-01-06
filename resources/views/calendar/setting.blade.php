@@ -1,7 +1,7 @@
 @extends('layout.layout')
 
 @php
-    $title = 'Calendar';
+    $title = 'Calendar Setting';
     $role = auth()->user()->role ?? '';
     if ($role === 'admin') {
         $subTitle = 'Super Admin';
