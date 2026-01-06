@@ -577,12 +577,7 @@ class CalendarController extends Controller
 
     public function setting(Request $request)
     {
-        // Fetch all users with role 'junior'
-        $juniorUsers = User::where('role', 'junior')
-        ->where('is_deleted', 0)
-        ->get();
-
         // Pass users to the view
-        return view('calendar.setting', compact('juniorUsers'));
+        return view('calendar.setting');
     }
 }
