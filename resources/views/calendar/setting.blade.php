@@ -16,18 +16,13 @@
     <div id="pdfContent">
         <div class="row mb-3">
             <div class="col-md-4">
-                <label class="fw-bold mb-1">Select Month & Year</label>
+                <label for="calendarPicker" class="fw-bold mb-1">
+                    Select Month & Year
+                </label>
 
-                <div class="input-group">
-                    <input type="text" id="calendarPicker" class="form-control" placeholder="Select Month" readonly>
-                    <button class="btn btn-primary" type="button" id="openCalendar">
-                        Select
-                    </button>
-                </div>
+                <input type="month" id="calendarPicker" class="form-control" placeholder="Select Month">
             </div>
-
         </div>
-
 
         <div class="row gy-4 mt-1">
             <div class="col-12">
