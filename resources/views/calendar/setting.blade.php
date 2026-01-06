@@ -27,9 +27,7 @@
                                         <thead class="table-primary">
                                             <tr>
                                                 <th class="fw-bold">Date</th>
-                                                <th class="fw-bold text-center">Called & Mailed</th>
-                                                <th class="fw-bold text-center">Other Call</th>
-                                                <th class="fw-bold text-center">Transfers</th> <!-- New Column -->
+                                                <th class="fw-bold text-center">Holiday</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -164,9 +162,7 @@
                                         <thead class="table-primary">
                                             <tr>
                                                 <th class="fw-bold">Date</th>
-                                                <th class="fw-bold text-center">Called & Mailed</th>
-                                                <th class="fw-bold text-center">Other Call</th>
-                                                <th class="fw-bold text-center">Transfers</th> <!-- New Column -->
+                                                <th class="fw-bold text-center">Holiday</th>
                                             </tr>
                                         </thead>
                                         <tbody>
