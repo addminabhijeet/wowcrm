@@ -1,4 +1,17 @@
 @extends('layout.layout')
+
+@php
+    $title = 'Calendar';
+    $role = auth()->user()->role ?? '';
+    if ($role === 'admin') {
+        $subTitle = 'Super Admin';
+    } elseif ($role === 'operation') {
+        $subTitle = 'Operation Manager';
+    } else {
+        $subTitle = 'role';
+    }
+@endphp
+
 @section('content')
     <div id="pdfContent">
         <div class="row gy-4 mt-1">
