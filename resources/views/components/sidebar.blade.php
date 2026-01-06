@@ -356,6 +356,12 @@
                                     class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Trainer Calendar</a>
                         </li>
                     </ul>
+
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('calendar.setting') }}"><i
+                                    class="ri-circle-fill circle-icon text-danger-main w-auto"></i>Calendar Setting</a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="dropdown">
@@ -371,12 +377,14 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.senior') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Called &
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Called
+                                &
                                 Mailed</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.senioradmincandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter Called &
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter
+                                Called &
                                 Mailed</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
@@ -585,12 +593,14 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.senior') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Called &
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Called
+                                &
                                 Mailed</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorcandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter Called &
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter
+                                Called &
                                 Mailed</a></li>
                     </ul>
                     <ul class="sidebar-submenu">

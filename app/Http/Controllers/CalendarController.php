@@ -121,7 +121,7 @@ class CalendarController extends Controller
     public function allTrainerlist(Request $request)
     {
         // Fetch all users with role 'trainer'
-        $trainerUsers = User::where('role', 'trainer')        
+        $trainerUsers = User::where('role', 'trainer')
         ->where('is_deleted', 0)
         ->get();
 
@@ -132,7 +132,7 @@ class CalendarController extends Controller
     public function allAccountantlist(Request $request)
     {
         // Fetch all users with role 'accountant'
-        $accountantUsers = User::where('role', 'accountant')        
+        $accountantUsers = User::where('role', 'accountant')
         ->where('is_deleted', 0)
         ->get();
 
@@ -143,7 +143,7 @@ class CalendarController extends Controller
     public function allAdminlist(Request $request)
     {
         // Fetch all users with role 'trainer'
-        $adminUsers = User::where('role', 'admin')        
+        $adminUsers = User::where('role', 'admin')
         ->where('is_deleted', 0)
         ->get();
 
@@ -154,7 +154,7 @@ class CalendarController extends Controller
     public function allSeniorlist(Request $request)
     {
         // Fetch all users with role 'senior'
-        $seniorUsers = User::where('role', 'senior')        
+        $seniorUsers = User::where('role', 'senior')
         ->where('is_deleted', 0)
         ->get();
 
@@ -573,5 +573,16 @@ class CalendarController extends Controller
         });
 
         return response()->json($eventsData);
+    }
+
+    public function setting(Request $request)
+    {
+        // Fetch all users with role 'junior'
+        $juniorUsers = User::where('role', 'junior')
+        ->where('is_deleted', 0)
+        ->get();
+
+        // Pass users to the view
+        return view('calendar.setting', compact('juniorUsers'));
     }
 }
