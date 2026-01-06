@@ -474,17 +474,28 @@
         function attachCheckboxEvents() {
             document.querySelectorAll('.holiday-checkbox').forEach(cb => {
                 cb.addEventListener('change', function() {
+
                     fetch('/holiday/save', {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                        },
-                        body: JSON.stringify({
-                            date: this.dataset.date,
-                            is_holiday: this.checked ? 1 : 0
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': document
+                                    .querySelector('meta[name="csrf-token"]')
+                                    .getAttribute('content')
+                            },
+                            body: JSON.stringify({
+                                date: this.dataset.date,
+                                is_holiday: this.checked ? 1 : 0
+                            })
                         })
-                    });
+                        .then(res => res.json())
+                        .then(data => {
+                            console.log('Saved:', data);
+                        })
+                        .catch(err => {
+                            console.error('Error:', err);
+                        });
+
                 });
             });
         }
