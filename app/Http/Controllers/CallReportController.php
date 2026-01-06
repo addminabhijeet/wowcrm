@@ -538,6 +538,21 @@ class CallReportController extends Controller
             }
         }
 
+        // --- Remove future working days from absentDays ---
+        $today = now()->startOfDay();
+
+        $futureWorkingDays = 0;
+
+        foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
+            if ($day->greaterThan($today) && !$day->isWeekend()) {
+                $futureWorkingDays++;
+            }
+        }
+
+        // Subtract future working days from absent
+        $absentDays = max(0, $absentDays - $futureWorkingDays);
+
         $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
 
         return view('reports.seniormonthly', compact(
@@ -3142,6 +3157,20 @@ class CallReportController extends Controller
             }
         }
 
+        // --- Remove future working days from absentDays ---
+        $today = now()->startOfDay();
+
+        $futureWorkingDays = 0;
+
+        foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
+            if ($day->greaterThan($today) && !$day->isWeekend()) {
+                $futureWorkingDays++;
+            }
+        }
+
+        // Subtract future working days from absent
+        $absentDays = max(0, $absentDays - $futureWorkingDays);
         $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
         $MAvgtotaltransfers = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
 
