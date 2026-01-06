@@ -146,7 +146,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/calendar/alltrainerevents/{userId}', [CalendarController::class, 'getallTrainerEvents'])->name('calendar.allTrainerEvents');
     Route::get('/dashboard/senior/calendar/events', [CalendarController::class, 'SeniorEvents'])->name('calendar.seniorEvents');
     Route::post('/dashboard/calendar/update-status', [CalendarController::class, 'updateStatus'])->name('calendar.updateStatus');
-    Route::post('/dashboard/calendar/setting', [CalendarController::class, 'setting'])->name('calendar.setting');
+    Route::get('/dashboard/calendar/setting', [CalendarController::class, 'setting'])->name('calendar.setting');
 
     Route::get('/dashboard/admin/calendar/', [CalendarController::class, 'adminUser'])->name('calendar.adminUser');
     Route::get('/dashboard/accountant/calendar/', [CalendarController::class, 'accountantUser'])->name('calendar.accountantUser');
