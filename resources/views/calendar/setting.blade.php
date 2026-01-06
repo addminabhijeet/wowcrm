@@ -15,15 +15,11 @@
 @section('content')
     <div id="pdfContent">
         <div class="row mb-3">
-    <div class="col-md-4">
-        <label class="fw-bold mb-1">Select Month & Year</label>
-        <input type="text"
-               id="calendarPicker"
-               class="form-control"
-               placeholder="Select Month"
-               readonly>
-    </div>
-</div>
+            <div class="col-md-4">
+                <label class="fw-bold mb-1">Select Month & Year</label>
+                <input type="text" id="calendarPicker" class="form-control" placeholder="Select Month" readonly>
+            </div>
+        </div>
 
 
         <div class="row gy-4 mt-1">
@@ -486,4 +482,9 @@
             });
         }
     </script>
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 @endsection
