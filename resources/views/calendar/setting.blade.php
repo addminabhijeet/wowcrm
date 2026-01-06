@@ -15,31 +15,16 @@
 @section('content')
     <div id="pdfContent">
         <div class="row mb-3">
-            <div class="col-md-3">
-                <select id="monthSelect" class="form-select">
-                    <option value="0">January</option>
-                    <option value="1">February</option>
-                    <option value="2">March</option>
-                    <option value="3">April</option>
-                    <option value="4">May</option>
-                    <option value="5">June</option>
-                    <option value="6">July</option>
-                    <option value="7">August</option>
-                    <option value="8">September</option>
-                    <option value="9">October</option>
-                    <option value="10">November</option>
-                    <option value="11">December</option>
-                </select>
-            </div>
+    <div class="col-md-4">
+        <label class="fw-bold mb-1">Select Month & Year</label>
+        <input type="text"
+               id="calendarPicker"
+               class="form-control"
+               placeholder="Select Month"
+               readonly>
+    </div>
+</div>
 
-            <div class="col-md-3">
-                <select id="yearSelect" class="form-select">
-                    @for ($y = date('Y') - 2; $y <= date('Y') + 5; $y++)
-                        <option value="{{ $y }}">{{ $y }}</option>
-                    @endfor
-                </select>
-            </div>
-        </div>
 
         <div class="row gy-4 mt-1">
             <div class="col-12">
@@ -447,22 +432,26 @@
     </script>
 
     <script>
-        const monthSelect = document.getElementById('monthSelect');
-        const yearSelect = document.getElementById('yearSelect');
-        const tableBody = document.getElementById('dateTableBody');
+        $('#calendarPicker').datepicker({
+            format: "MM yyyy",
+            minViewMode: 1,
+            autoclose: true
+        }).on('changeDate', function(e) {
+            generateDates(e.date);
+        });
 
-        function generateDates() {
-            tableBody.innerHTML = '';
-
-            const month = parseInt(monthSelect.value);
-            const year = parseInt(yearSelect.value);
-
+        function generateDates(selectedDate) {
+            const month = selectedDate.getMonth();
+            const year = selectedDate.getFullYear();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+            const tbody = document.getElementById('dateTableBody');
+            tbody.innerHTML = '';
 
             for (let day = 17; day <= daysInMonth; day++) {
                 const fullDate = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
 
-                tableBody.innerHTML += `
+                tbody.innerHTML += `
             <tr>
                 <td>${day}</td>
                 <td class="text-center">
@@ -480,8 +469,8 @@
         }
 
         function attachCheckboxEvents() {
-            document.querySelectorAll('.holiday-checkbox').forEach(checkbox => {
-                checkbox.addEventListener('change', function() {
+            document.querySelectorAll('.holiday-checkbox').forEach(cb => {
+                cb.addEventListener('change', function() {
                     fetch('/holiday/save', {
                         method: 'POST',
                         headers: {
@@ -496,13 +485,5 @@
                 });
             });
         }
-
-        monthSelect.addEventListener('change', generateDates);
-        yearSelect.addEventListener('change', generateDates);
-
-        // Initial load
-        monthSelect.value = new Date().getMonth();
-        yearSelect.value = new Date().getFullYear();
-        generateDates();
     </script>
 @endsection
