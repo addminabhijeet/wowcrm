@@ -1,4 +1,5 @@
-
+@extends('layout.layout')
+@section('content')
     <div id="pdfContent">
         <div class="row gy-4 mt-1">
             <div class="col-xxl-8 col-lg-6">
@@ -362,3 +363,4 @@
         </div>
     </div>
 
+@endsection
