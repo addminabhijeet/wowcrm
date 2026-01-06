@@ -1,6 +1,5 @@
 @extends('layout.layout')
 
-@endphp
 
     <div id="pdfContent">
         <div class="row gy-4 mt-1">
@@ -365,4 +364,4 @@
         </div>
     </div>
 
-@endsection
+
