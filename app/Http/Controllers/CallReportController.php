@@ -2431,6 +2431,11 @@ class CallReportController extends Controller
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
+            if ($day->isFuture()) {
+                continue;
+            }
+            
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
