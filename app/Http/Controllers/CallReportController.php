@@ -1744,7 +1744,7 @@ class CallReportController extends Controller
 
         $presentDays = 0;
         $halfDays = 0;
-        $tabsentDays = 0;
+        $absentDays = 0;
         $workingDays = 0;
         $nonWorkingDays = 0;
 
@@ -1763,7 +1763,7 @@ class CallReportController extends Controller
             // For all other days (Mon–Fri)
             if ($dailyEvents->isEmpty()) {
                 // ✅ No events on a working day = absent
-                $tabsentDays++;
+                $absentDays++;
                 $workingDays++;
                 continue;
             }
@@ -1820,13 +1820,29 @@ class CallReportController extends Controller
             } elseif ($activeWorkSec >= (4 * 3600)) {
                 $halfDays++;
             } else {
-                $tabsentDays++;
+                $absentDays++;
             }
         }
 
+        // --- Remove future working days from absentDays ---
+        $today = now()->startOfDay();
+
+        $futureWorkingDays = 0;
+
+        foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
+            if ($day->greaterThan($today) && !$day->isWeekend()) {
+                $futureWorkingDays++;
+            }
+        }
+
+        // Subtract future working days from absent
+        $absentDays = max(0, $absentDays - $futureWorkingDays);
+
+
         $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
         $MAvgtotaltransfers = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
-        $absentDays = $workingDays - $presentDays;
+
         return view('reports.alljuniormonthly', compact(
             'juniorUser',
             'MtotalCalls',
