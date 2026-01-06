@@ -895,44 +895,37 @@ class DashboardController extends Controller
 
         // Update remaining seconds if timer is running
         if ($timer->status === 'running') {
+
+            // Always calculate elapsed from server timestamps
+            $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
+
             if (
                 $timer->last_decrement &&
                 $timer->updated_at->gt($timer->last_decrement) &&
                 $timer->last_decrement->diffInSeconds($timer->updated_at) > 60
             ) {
-                $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
-
-                // Decrement exactly 1 second per tick
                 if ($elapsed >= 1) {
                     $timer->remaining_seconds = max(
                         0,
                         $timer->remaining_seconds - 60
                     );
+
+                    // VPS fix: advance decrement timestamp
+                    $timer->last_decrement = $currentTime;
                 }
             } else {
-                $elapsed = $timer->last_decrement->diffInSeconds($currentTime);
-
-                // Decrement exactly 1 second per tick
                 if ($elapsed >= 1) {
                     $timer->remaining_seconds = max(
                         0,
                         $timer->remaining_seconds - 1
                     );
-                }
-            }
 
-            if ($isInactive) {
-                // Tab inactive → store timestamp only once
-                if (is_null($timer->last_decrement)) {
-                    $timer->last_decrement = $timer->updated_at;
-                }
-            } else {
-                // Tab active → FORCE clear last_decrement in DB
-                if (!is_null($timer->last_decrement)) {
-                    $timer->last_decrement = $timer->updated_at;
+                    // VPS fix: advance decrement timestamp
+                    $timer->last_decrement = $currentTime;
                 }
             }
         }
+
 
 
         // Store previous status before any change
