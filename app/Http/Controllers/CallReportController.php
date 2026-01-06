@@ -2435,7 +2435,7 @@ class CallReportController extends Controller
             if ($day->isFuture()) {
                 continue;
             }
-            
+
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
@@ -2509,6 +2509,21 @@ class CallReportController extends Controller
             }
         }
 
+        // --- Remove future working days from absentDays ---
+        $today = now()->startOfDay();
+
+        $futureWorkingDays = 0;
+
+        foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
+            if ($day->greaterThan($today) && !$day->isWeekend()) {
+                $futureWorkingDays++;
+            }
+        }
+
+        // Subtract future working days from absent
+        $absentDays = max(0, $absentDays - $futureWorkingDays);
+        
         $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
 
         return view('reports.allseniormonthly', compact(
