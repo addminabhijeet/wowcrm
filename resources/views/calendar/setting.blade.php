@@ -483,9 +483,10 @@
     </script>
     <script>
         document.getElementById('openCalendar').addEventListener('click', function() {
-            document.getElementById('calendarPicker').focus();
+            $('#calendarPicker').datepicker('show');
         });
     </script>
+
 
 
     <link rel="stylesheet"
