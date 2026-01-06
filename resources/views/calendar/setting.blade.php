@@ -423,19 +423,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/js/bootstrap-datepicker.min.js"></script>
 
     <script>
+        $('#calendarPicker').datepicker({
+            format: "dd MM yyyy", // full date
+            autoclose: true,
+            todayHighlight: true
+        }).on('changeDate', function(e) {
+            generateDates(e.date);
+        });
+    </script>
+
+    <script>
         document.getElementById('openCalendar').addEventListener('click', function() {
             $('#calendarPicker').datepicker('show');
         });
     </script>
-    <script>
-        $('#calendarPicker').datepicker({
-            format: "MM yyyy",
-            minViewMode: 1,
-            autoclose: true
-        }).on('changeDate', function(e) {
-            generateDates(e.date);
-        });
 
+    <script>
         function generateDates(selectedDate) {
             const month = selectedDate.getMonth() + 1;
             const year = selectedDate.getFullYear();
