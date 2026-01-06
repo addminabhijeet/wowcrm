@@ -1,4 +1,3 @@
-@extends('layout.layout')
 
     <div id="pdfContent">
         <div class="row gy-4 mt-1">
