@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\UserTimerPause;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 class CalendarController extends Controller
 {
@@ -110,8 +111,8 @@ class CalendarController extends Controller
     {
         // Fetch all users with role 'junior'
         $juniorUsers = User::where('role', 'junior')
-        ->where('is_deleted', 0)
-        ->get();
+            ->where('is_deleted', 0)
+            ->get();
 
 
         // Pass users to the view
@@ -122,8 +123,8 @@ class CalendarController extends Controller
     {
         // Fetch all users with role 'trainer'
         $trainerUsers = User::where('role', 'trainer')
-        ->where('is_deleted', 0)
-        ->get();
+            ->where('is_deleted', 0)
+            ->get();
 
         // Pass users to the view
         return view('calendar.alltrainerlist', compact('trainerUsers'));
@@ -133,8 +134,8 @@ class CalendarController extends Controller
     {
         // Fetch all users with role 'accountant'
         $accountantUsers = User::where('role', 'accountant')
-        ->where('is_deleted', 0)
-        ->get();
+            ->where('is_deleted', 0)
+            ->get();
 
         // Pass users to the view
         return view('calendar.allaccountantlist', compact('accountantUsers'));
@@ -144,8 +145,8 @@ class CalendarController extends Controller
     {
         // Fetch all users with role 'trainer'
         $adminUsers = User::where('role', 'admin')
-        ->where('is_deleted', 0)
-        ->get();
+            ->where('is_deleted', 0)
+            ->get();
 
         // Pass users to the view
         return view('calendar.alladminlist', compact('adminUsers'));
@@ -155,8 +156,8 @@ class CalendarController extends Controller
     {
         // Fetch all users with role 'senior'
         $seniorUsers = User::where('role', 'senior')
-        ->where('is_deleted', 0)
-        ->get();
+            ->where('is_deleted', 0)
+            ->get();
 
         // Pass users to the view
         return view('calendar.allseniorlist', compact('seniorUsers'));
@@ -186,8 +187,8 @@ class CalendarController extends Controller
 
         // ✅ Fetch the junior user details
         $junior = User::where('id', $user_id)
-              ->where('is_deleted', 0)
-              ->first();
+            ->where('is_deleted', 0)
+            ->first();
 
 
         if (!$junior) {
@@ -296,9 +297,9 @@ class CalendarController extends Controller
         }
 
         // ✅ Fetch the trainer user details
-      $trainer = User::where('id', $user_id)
-        ->where('is_deleted', 0)
-        ->first();
+        $trainer = User::where('id', $user_id)
+            ->where('is_deleted', 0)
+            ->first();
 
 
         if (!$trainer) {
@@ -403,10 +404,10 @@ class CalendarController extends Controller
     {
         // ✅ Fetch the junior user
         $junior = User::where([
-                ['id', '=', $userId],
-                ['role', '=', 'junior'],
-                ['is_deleted', '=', 0],
-            ])->first();
+            ['id', '=', $userId],
+            ['role', '=', 'junior'],
+            ['is_deleted', '=', 0],
+        ])->first();
 
 
         if (!$junior) {
@@ -579,5 +580,15 @@ class CalendarController extends Controller
     {
         // Pass users to the view
         return view('calendar.setting');
+    }
+
+    public function saveHoliday(Request $request)
+    {
+        DB::table('holidays')->updateOrInsert(
+            ['holiday_date' => $request->date],
+            ['is_holiday' => $request->is_holiday]
+        );
+
+        return response()->json(['status' => 'success']);
     }
 }

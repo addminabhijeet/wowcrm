@@ -400,4 +400,22 @@
             </div>
         </div>
     </div>
+    <script>
+        document.querySelectorAll('.holiday-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+
+                fetch('/holiday/save', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        date: this.dataset.date,
+                        is_holiday: this.checked ? 1 : 0
+                    })
+                });
+            });
+        });
+    </script>
 @endsection
