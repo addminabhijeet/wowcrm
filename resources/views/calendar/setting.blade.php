@@ -17,8 +17,15 @@
         <div class="row mb-3">
             <div class="col-md-4">
                 <label class="fw-bold mb-1">Select Month & Year</label>
-                <input type="text" id="calendarPicker" class="form-control" placeholder="Select Month" readonly>
+
+                <div class="input-group">
+                    <input type="text" id="calendarPicker" class="form-control" placeholder="Select Month" readonly>
+                    <button class="btn btn-primary" type="button" id="openCalendar">
+                        Select
+                    </button>
+                </div>
             </div>
+
         </div>
 
 
@@ -475,6 +482,11 @@
         }
     </script>
 
+    <script>
+        document.getElementById('openCalendar').addEventListener('click', function() {
+            $('#calendarPicker').datepicker('show');
+        });
+    </script>
 
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
