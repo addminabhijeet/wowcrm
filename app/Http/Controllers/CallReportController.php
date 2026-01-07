@@ -795,7 +795,13 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-
+        $hourlyTransfers = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate)
+            ->where('transfers', 1)
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t8to9am = $hourlyCalledMailed[8] ?? 0;
@@ -810,6 +816,19 @@ class CallReportController extends Controller
         $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+
+        $tr8to9am = $hourlyTransfer[8] ?? 0;
+        $tr9to10am = $hourlyTransfer[9] ?? 0;
+        $tr10to11am = $hourlyTransfer[10] ?? 0;
+        $tr11to12pm = $hourlyTransfer[11] ?? 0;
+        $tr12to1pm  = $hourlyTransfer[12] ?? 0;
+        $tr1to2pm   = $hourlyTransfer[13] ?? 0;
+        $tr2to3pm   = $hourlyTransfer[14] ?? 0;
+        $tr3to4pm   = $hourlyTransfer[15] ?? 0;
+        $tr4to5pm   = $hourlyTransfer[16] ?? 0;
+        $tr5to6pm   = $hourlyTransfer[17] ?? 0;
+        $tr6to7pm   = $hourlyTransfer[18] ?? 0;
+        $tr7to8pm   = $hourlyTransfer[19] ?? 0;
 
         $o8to9am = $hourlyOtherCalls[8] ?? 0;
         $o9to10am = $hourlyOtherCalls[9] ?? 0;

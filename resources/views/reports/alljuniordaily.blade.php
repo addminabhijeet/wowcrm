@@ -555,8 +555,8 @@
             <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
         </button>
     </div>
-    <div id="pdfContent">
 
+    <div id="pdfContent">
         <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
@@ -747,6 +747,7 @@
                                         <th class="fw-semibold">Time Range</th>
                                         <th class="fw-semibold text-center">Called & Mailed Count</th>
                                         <th class="fw-semibold text-center">Other Call Count</th>
+                                        <th class="fw-semibold text-center">Transfers</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -756,12 +757,16 @@
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o8to9am }}</span>
                                         </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr8to9am }}</span>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">09.00AM-10.00AM</td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t9to10am }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o9to10am }}</span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr9to10am }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -770,12 +775,16 @@
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o10to11am }}</span>
                                         </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr10to11am }}</span>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">11.00AM-12.00PM</td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o11to12pm }}</span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr11to12pm }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -784,12 +793,16 @@
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o12to1pm }}</span>
                                         </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr12to1pm }}</span>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">01.00PM-02.00PM</td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t1to2pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o1to2pm }}</span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr1to2pm }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -798,12 +811,16 @@
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o2to3pm }}</span>
                                         </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr2to3pm }}</span>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">03.00PM-04.00PM</td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t3to4pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o3to4pm }}</span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr3to4pm }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -812,12 +829,16 @@
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o4to5pm }}</span>
                                         </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr4to5pm }}</span>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">05.00PM-06.00PM</td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t5to6pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o5to6pm }}</span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr5to6pm }}</span>
                                         </td>
                                     </tr>
                                     <tr>
@@ -826,12 +847,16 @@
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o6to7pm }}</span>
                                         </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr6to7pm }}</span>
+                                        </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">07.00PM-08.00PM</td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t7to8pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o7to8pm }}</span>
+                                        </td>
+                                        <td class="text-center"><span class="badge bg-warning">{{ $tr7to8pm }}</span>
                                         </td>
                                     </tr>
                                 </tbody>

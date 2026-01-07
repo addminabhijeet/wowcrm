@@ -555,6 +555,7 @@
             <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
         </button>
     </div>
+    
     <div id="pdfContent">
         <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
             <div class="col">
