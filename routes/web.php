@@ -217,6 +217,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/junior/google-sheet', [GoogleSheetController::class, 'junior'])->name('google.sheet.junior');
     Route::get('/dashboard/junior/google-sheet-candm', [GoogleSheetController::class, 'juniorcandm'])->name('google.sheet.junior.candm');
+        Route::get('/dashboard/junior/google-sheet-tra', [GoogleSheetController::class, 'juniortra'])->name('google.sheet.junior.tra');
     Route::get('/dashboard/junior/google-sheet-modcandm', [GoogleSheetController::class, 'juniormodcandm'])->name('google.sheet.juniormodcandm');
     Route::post('/dashboard/junior/google-sheet-candm-update', [GoogleSheetController::class, 'juniorcandmupdate'])->name('juniorcandmupdate');
     Route::post('/dashboard/senior/google-sheet-candm-update', [GoogleSheetController::class, 'seniorcandmupdate'])->name('seniorcandmupdate');
