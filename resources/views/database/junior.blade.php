@@ -295,10 +295,10 @@
                                             <i class="fas fa-save"></i> Save
                                         </button>
 
-                                        <button class="btn btn-sm btn-warning transfers-btn"
+                                        {{-- <button class="btn btn-sm btn-warning transfers-btn"
                                             data-id="{{ $row->id }}">
                                             <i class="fas fa-exchange-alt"></i> Transfer
-                                        </button>
+                                        </button> --}}
 
 
                                     </td>
@@ -1493,7 +1493,7 @@
         });
     </script>
 
-    <script>
+    {{-- <script>
         $(document).on("click", ".transfers-btn", function() {
             let id = $(this).data("id");
 
@@ -1516,7 +1516,7 @@
                 }
             });
         });
-    </script>
+    </script> --}}
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
