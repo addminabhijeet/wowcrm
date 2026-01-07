@@ -774,6 +774,12 @@ class CallReportController extends Controller
             })
             ->count();
 
+        $Stotaltransfers = (clone $query)
+            ->where(function ($q) {
+                $q->where('transfers', 1);
+            })
+            ->count();
+
 
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
@@ -1027,6 +1033,7 @@ class CallReportController extends Controller
             'otherCalls',
             'juniorUser',
             'StotalCalls',
+            'Stotaltransfers',
             'ScalledAndMailedCalls',
             'SotherCalls',
             'selectedDate',
