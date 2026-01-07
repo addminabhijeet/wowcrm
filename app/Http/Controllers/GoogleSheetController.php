@@ -4142,7 +4142,7 @@ class GoogleSheetController extends Controller
             ->orderBy('Date', 'desc')
             ->paginate(10);
 
-        return view('database.juniortra', compact('data'));
+        return view('database.juniorcandm', compact('data'));
     }
 
     public function juniortra()
@@ -4162,7 +4162,7 @@ class GoogleSheetController extends Controller
             ->orderBy('Date', 'desc')
             ->paginate(10);
 
-        return view('database.juniorcandm', compact('data'));
+        return view('database.juniortra', compact('data'));
     }
 
 
