@@ -445,6 +445,7 @@
     </script>
 
 
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date(TODAY_DATE); // from controller
