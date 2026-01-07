@@ -703,7 +703,9 @@
                         </div>
 
                         <!-- Stats Section -->
-                        <div class="row g-3 mb-4 flex-nowrap overflow-auto">
+
+                        <div class="row g-3 mb-4 row-cols-4">
+
                             <div class="col-md-4">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-primary fs-2">
@@ -715,7 +717,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-md-4">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-success fs-2">
@@ -727,7 +728,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-md-4">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
@@ -739,7 +739,6 @@
                                     </div>
                                 </div>
                             </div>
-
                             <div class="col-md-2 col-sm-4 col-6">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
@@ -752,7 +751,6 @@
                                 </div>
                             </div>
                         </div>
-
 
                         <!-- Table Section -->
                         <div class="table-responsive">
