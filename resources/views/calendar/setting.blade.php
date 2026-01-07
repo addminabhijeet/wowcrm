@@ -429,13 +429,21 @@
 
     <script>
         $('#calendarPicker').datepicker({
-            format: "dd MM yyyy", // full date
+            format: "dd MM yyyy",
             autoclose: true,
             todayHighlight: true
         }).on('changeDate', function(e) {
-            generateDates(e.date);
+
+            const year = e.date.getFullYear();
+            const month = e.date.getMonth() + 1;
+
+            loadHolidays(year, month, () => {
+                generateDates(e.date);
+            });
+
         });
     </script>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
