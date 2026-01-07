@@ -744,9 +744,9 @@
                             <table class="table table-hover table-bordered align-middle mb-0">
                                 <thead class="table-primary">
                                     <tr>
-                                        <th class="fw-semibold">⏰ Time Range</th>
-                                        <th class="fw-semibold text-center">📊 Called & Mailed Count</th>
-                                        <th class="fw-semibold text-center">📊 Other Call Count</th>
+                                        <th class="fw-semibold">Time Range</th>
+                                        <th class="fw-semibold text-center">Called & Mailed Count</th>
+                                        <th class="fw-semibold text-center">Other Call Count</th>
                                     </tr>
                                 </thead>
                                 <tbody>
