@@ -712,7 +712,7 @@
                                         <i class="bi bi-telephone-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Total Calls (TC)</small>
+                                        <small class="text-muted d-block">Total Calls</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $StotalCalls }}</h4>
                                     </div>
                                 </div>
@@ -723,7 +723,7 @@
                                         <i class="bi bi-bar-chart-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Other Calls (OC)</small>
+                                        <small class="text-muted d-block">Other Calls</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $SotherCalls }}</h4>
                                     </div>
                                 </div>
@@ -734,7 +734,7 @@
                                         <i class="bi bi-envelope-paper-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Called & Mailed (C&MC)</small>
+                                        <small class="text-muted d-block">Called & Mailed</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
                                     </div>
                                 </div>
