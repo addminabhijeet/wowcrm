@@ -723,10 +723,6 @@ class CallReportController extends Controller
             ->firstOrFail();
         $createdByKey = "{$juniorUser->id}|junior";
 
-        // Selected month (default current month in YYYY-MM)
-        $selectedMonth = $request->input('selected_month', date('Y-m'));
-        [$year, $month] = explode('-', $selectedMonth);
-
         // Total calls for this junior (including hierarchical keys)
         $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
 
@@ -734,7 +730,6 @@ class CallReportController extends Controller
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
             ->count();
-
 
         // Total other calls for this junior
         $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
@@ -755,6 +750,8 @@ class CallReportController extends Controller
 
         // Selected date (default today)
         $selectedDate = $request->input('selected_date', date('Y-m-d'));
+        $selectedMonth = date('Y-m', strtotime($selectedDate));
+        [$year, $month] = explode('-', $selectedMonth);
 
         // Base query filtered by this junior and date
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
