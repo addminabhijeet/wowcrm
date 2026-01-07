@@ -293,6 +293,10 @@
                                         <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
                                             <i class="fas fa-save"></i> Save
                                         </button>
+                                        <button class="btn btn-sm btn-warning transfers-btn"
+                                            data-id="{{ $row->id }}">
+                                            <i class="fas fa-exchange-alt"></i> Transfer
+                                        </button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -1380,5 +1384,29 @@
     </script>
 
 
+    <script>
+        $(document).on("click", ".transfers-btn", function() {
+            let id = $(this).data("id");
+
+            $.ajax({
+                url: "{{ route('junior.transfers.update') }}",
+                method: "POST",
+                data: {
+                    id: id,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(res) {
+                    if (res.success) {
+                        alert("Transfer Updated!");
+                    } else {
+                        alert(res.message);
+                    }
+                },
+                error: function() {
+                    alert("Something went wrong!");
+                }
+            });
+        });
+    </script>
 
 @endsection
