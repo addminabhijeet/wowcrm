@@ -4132,23 +4132,19 @@ class GoogleSheetController extends Controller
 
         $data = GoogleSheetData::where(function ($q) use ($juniorPart) {
             // Check first segment is junior
-            $q->whereRaw(
-                "SUBSTRING_INDEX(created_by, ':', 1) = ?",
-                [$juniorPart]
-            );
+            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$juniorPart]);
         })
             ->where(function ($q) {
                 // Check second segment is senior (any ID or 0)
-                $q->whereRaw(
-                    "SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'"
-                );
+                $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
             })
-            ->where('transfer', 0) // ✅ show only records where transfer = 0
+            ->where('transfers', 0) // ✅ show only transfer = 0
             ->orderBy('Date', 'desc')
             ->paginate(10);
 
         return view('database.juniorcandm', compact('data'));
     }
+
 
 
 
