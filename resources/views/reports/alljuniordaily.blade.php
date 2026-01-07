@@ -752,61 +752,71 @@
                                 <tbody>
                                     <tr>
                                         <td style="white-space: nowrap;">08.00AM-09.00AM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t8to9am }}</span></td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $t8to9am }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o8to9am }}</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">09.00AM-10.00AM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t9to10am }}</span></td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $t9to10am }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o9to10am }}</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">10.00AM-11.00AM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t10to11am }}</span></td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $t10to11am }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o10to11am }}</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">11.00AM-12.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span></td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o11to12pm }}</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">12.00PM-01.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t12to1pm }}</span></td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $t12to1pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o12to1pm }}</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">01.00PM-02.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t1to2pm }}</span></td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $t1to2pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o1to2pm }}</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">02.00PM-03.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t2to3pm }}</span></td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $t2to3pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o2to3pm }}</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">03.00PM-04.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t3to4pm }}</span></td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $t3to4pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o3to4pm }}</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">04.00PM-05.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t4to5pm }}</span></td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $t4to5pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o4to5pm }}</span>
                                         </td>
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">05.00PM-06.00PM</td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t5to6pm }}</span></td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $t5to6pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-warning">{{ $o5to6pm }}</span>
                                         </td>
                                     </tr>
@@ -874,4 +884,150 @@
             </div>
         </div>
     </div>
+    <script>
+        document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
+            const element = document.getElementById("pdfContent");
+
+            // ✅ Clone element to apply isolated print styles
+            const clonedElement = element.cloneNode(true);
+
+            // ✅ Add black & white print style dynamically (for PDF only)
+            const printStyle = document.createElement("style");
+            printStyle.textContent = `
+        * {
+            color: #000 !important;
+            box-shadow: none !important;
+            text-shadow: none !important;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            filter: contrast(250%) brightness(0%) !important;
+        }
+        body { background: #fff !important; margin: 0 !important; }
+        h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
+            color: #000 !important;
+            font-weight: 800 !important;
+            filter: contrast(250%) brightness(0%) !important;
+        }
+        .icon-wrapper {
+            background: #fff !important;
+            border: 2px solid #000 !important;
+            border-radius: 50% !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+        }
+        iconify-icon,
+        i,
+        .icon-wrapper iconify-icon {
+            color: #000 !important;
+            filter: grayscale(100%) contrast(200%) brightness(0%) !important;
+        }
+        [style*="background: linear-gradient"],
+        [style*="background-color"] {
+            background: #fff !important;
+        }
+        .card {
+            background: #fff !important;
+            border: 2px solid #000 !important;
+            color: #000 !important;
+            box-shadow: none !important;
+            transition: none !important;
+            filter: contrast(250%) brightness(0%) !important;
+        }
+        [onmouseover], [onmouseout] {
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        table, th, td {
+            border: 2px solid #000 !important;
+            color: #000 !important;
+            font-weight: 800 !important;
+            background: #fff !important;
+            -webkit-text-stroke: 0.3px #000 !important;
+            filter: contrast(250%) brightness(0%) !important;
+        }
+        .badge {
+            background: #ddd !important;
+            color: #000 !important;
+            font-weight: 900 !important;
+            border: 2px solid #000 !important;
+            padding: 4px 8px !important;
+            filter: contrast(250%) brightness(0%) !important;
+        }
+        i, iconify-icon {
+            color: #000 !important;
+            filter: contrast(250%) brightness(0%) !important;
+        }
+        input, select, label {
+            color: #000 !important;
+            font-weight: 800 !important;
+            -webkit-text-stroke: 0.2px #000 !important;
+            filter: contrast(250%) brightness(0%) !important;
+        }
+        #semiCircleGauge, #areaChart, #dailyIconBarChart {
+            background: #fff !important;
+            min-height: 80px !important;
+            filter: contrast(250%) brightness(0%) !important;
+        }
+        .card-body, .row, .col {
+            padding: 10px !important;
+            margin: 0 !important;
+            filter: contrast(250%) brightness(0%) !important;
+        }
+        @page {
+            size: A4 portrait;
+            margin: 0;
+        }
+    `;
+            clonedElement.prepend(printStyle);
+
+            // ✅ Wait for a short time to ensure all assets/styles load
+            await new Promise(resolve => setTimeout(resolve, 5));
+
+            // ✅ Proper A4 PDF dimensions in pixels
+            const a4WidthPx = 1175;
+            const a4HeightPx = Math.round(a4WidthPx * 1.4142);
+
+            // ✅ PDF generation options (optimized for full A4 coverage)
+            const opt = {
+                margin: [0, 0, 0, 0],
+                filename: 'monthly-report.pdf',
+                image: {
+                    type: 'jpeg',
+                    quality: 0.98
+                },
+                html2canvas: {
+                    scale: 3,
+                    useCORS: true,
+                    scrollY: 0,
+                    backgroundColor: "#ffffff",
+                    logging: false,
+                    letterRendering: true,
+                },
+                jsPDF: {
+                    unit: 'px',
+                    format: [a4WidthPx, a4HeightPx],
+                    orientation: 'portrait',
+                },
+                pagebreak: {
+                    mode: ['avoid-all', 'css', 'legacy']
+                }
+            };
+
+            // Convert Iconify icons to inline SVG images for html2canvas visibility
+            clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
+                const svg = document.createElement("img");
+                const iconName = icon.getAttribute("icon");
+                svg.src = `https://api.iconify.design/${iconName}.svg?color=%23000`;
+                svg.width = 34;
+                svg.height = 34;
+                svg.style.filter = "contrast(250%) brightness(0%)";
+                icon.replaceWith(svg);
+            });
+
+
+            // ✅ Generate the full-page PDF
+            await html2pdf().set(opt).from(clonedElement).save();
+        });
+    </script>
 @endsection
