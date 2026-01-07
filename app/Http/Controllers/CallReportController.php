@@ -820,18 +820,18 @@ class CallReportController extends Controller
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
 
-        $tr8to9am = $hourlyTransfer[8] ?? 0;
-        $tr9to10am = $hourlyTransfer[9] ?? 0;
-        $tr10to11am = $hourlyTransfer[10] ?? 0;
-        $tr11to12pm = $hourlyTransfer[11] ?? 0;
-        $tr12to1pm  = $hourlyTransfer[12] ?? 0;
-        $tr1to2pm   = $hourlyTransfer[13] ?? 0;
-        $tr2to3pm   = $hourlyTransfer[14] ?? 0;
-        $tr3to4pm   = $hourlyTransfer[15] ?? 0;
-        $tr4to5pm   = $hourlyTransfer[16] ?? 0;
-        $tr5to6pm   = $hourlyTransfer[17] ?? 0;
-        $tr6to7pm   = $hourlyTransfer[18] ?? 0;
-        $tr7to8pm   = $hourlyTransfer[19] ?? 0;
+        $tr8to9am  = $hourlyTransfers[8]  ?? 0;
+        $tr9to10am = $hourlyTransfers[9]  ?? 0;
+        $tr10to11am = $hourlyTransfers[10] ?? 0;
+        $tr11to12pm = $hourlyTransfers[11] ?? 0;
+        $tr12to1pm = $hourlyTransfers[12] ?? 0;
+        $tr1to2pm  = $hourlyTransfers[13] ?? 0;
+        $tr2to3pm  = $hourlyTransfers[14] ?? 0;
+        $tr3to4pm  = $hourlyTransfers[15] ?? 0;
+        $tr4to5pm  = $hourlyTransfers[16] ?? 0;
+        $tr5to6pm  = $hourlyTransfers[17] ?? 0;
+        $tr6to7pm  = $hourlyTransfers[18] ?? 0;
+        $tr7to8pm  = $hourlyTransfers[19] ?? 0;
 
         $o8to9am = $hourlyOtherCalls[8] ?? 0;
         $o9to10am = $hourlyOtherCalls[9] ?? 0;
