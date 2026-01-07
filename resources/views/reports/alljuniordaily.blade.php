@@ -745,8 +745,8 @@
                                 <thead class="table-primary">
                                     <tr>
                                         <th class="fw-bold">Time Range</th>
-                                        <th class="fw-bold text-center">Called & Mailed Count</th>
-                                        <th class="fw-bold text-center">Other Call Count</th>
+                                        <th class="fw-bold text-center">Called & Mailed</th>
+                                        <th class="fw-bold text-center">Other Call</th>
                                         <th class="fw-bold text-center">Transfers</th>
                                     </tr>
                                 </thead>
