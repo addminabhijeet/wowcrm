@@ -579,7 +579,8 @@ class CalendarController extends Controller
 
     public function setting(Request $request)
     {
-        $holidays = Holiday::pluck('is_holiday', 'holiday_date');
+        $holidays = Holiday::pluck('is_holiday', 'holiday_date')->toArray();
+
         return view('calendar.setting', compact('holidays'));
     }
 

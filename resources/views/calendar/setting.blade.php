@@ -20,7 +20,7 @@
                     Select Month & Year
                 </label>
 
-                <input type="month" id="calendarPicker" class="form-control" placeholder="Select Month">
+                <input type="month" id="calendarPicker" class="form-control">
             </div>
         </div>
 
@@ -416,6 +416,7 @@
         const HOLIDAYS = @json($holidays);
     </script>
 
+
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 
@@ -435,6 +436,21 @@
         document.getElementById('openCalendar').addEventListener('click', function() {
             $('#calendarPicker').datepicker('show');
         });
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            const monthValue = today.toISOString().slice(0, 7);
+
+            const picker = document.getElementById('calendarPicker');
+            picker.value = monthValue;
+
+            generateDates(today);
+
+            picker.addEventListener('change', function() {
+                const [year, month] = this.value.split('-');
+                generateDates(new Date(year, month - 1, 1));
+            });
+        });
     </script>
 
     <script>
@@ -451,7 +467,7 @@
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const fullDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                const isChecked = HOLIDAYS[fullDate] ? 'checked' : '';
+                const checked = HOLIDAYS[fullDate] == 1 ? 'checked' : '';
 
                 const row = `
             <tr>
@@ -461,17 +477,15 @@
                         <input class="form-check-input holiday-checkbox"
                                type="checkbox"
                                data-date="${fullDate}"
-                               ${isChecked}>
+                               ${checked}>
                     </div>
                 </td>
             </tr>
         `;
 
-                if (day <= 16) {
-                    firstHalf.insertAdjacentHTML('beforeend', row);
-                } else {
+                day <= 16 ?
+                    firstHalf.insertAdjacentHTML('beforeend', row) :
                     secondHalf.insertAdjacentHTML('beforeend', row);
-                }
             }
 
             attachCheckboxEvents();
