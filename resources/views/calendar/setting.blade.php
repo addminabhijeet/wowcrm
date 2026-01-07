@@ -416,6 +416,11 @@
         const HOLIDAYS = @json($holidays);
     </script>
 
+    <script>
+        const TODAY_DATE = "{{ $today }}";
+    </script>
+
+
 
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
@@ -433,13 +438,9 @@
     </script>
 
     <script>
-        document.getElementById('openCalendar').addEventListener('click', function() {
-            $('#calendarPicker').datepicker('show');
-        });
-
         document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date();
-            const monthValue = today.toISOString().slice(0, 7);
+            const today = new Date(TODAY_DATE); // from controller
+            const monthValue = TODAY_DATE.slice(0, 7);
 
             const picker = document.getElementById('calendarPicker');
             picker.value = monthValue;

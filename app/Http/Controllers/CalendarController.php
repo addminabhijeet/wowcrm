@@ -580,8 +580,9 @@ class CalendarController extends Controller
     public function setting(Request $request)
     {
         $holidays = Holiday::pluck('is_holiday', 'holiday_date')->toArray();
+        $today = now()->toDateString(); // YYYY-MM-DD
 
-        return view('calendar.setting', compact('holidays'));
+        return view('calendar.setting', compact('holidays', 'today'));
     }
 
 
