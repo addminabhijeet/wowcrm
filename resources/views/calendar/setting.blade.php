@@ -412,6 +412,10 @@
             </div>
         </div>
     </div>
+    <script>
+        const HOLIDAYS = @json($holidays);
+    </script>
+
     <link rel="stylesheet"
         href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
 
@@ -447,19 +451,21 @@
 
             for (let day = 1; day <= daysInMonth; day++) {
                 const fullDate = `${year}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+                const isChecked = HOLIDAYS[fullDate] ? 'checked' : '';
 
                 const row = `
-                <tr>
-                    <td>${String(day).padStart(2, '0')}</td>
-                    <td class="text-center">
-                        <div class="form-check d-inline-block ms-2">
-                            <input class="form-check-input holiday-checkbox"
-                                   type="checkbox"
-                                   data-date="${fullDate}">
-                        </div>
-                    </td>
-                </tr>
-            `;
+            <tr>
+                <td>${String(day).padStart(2, '0')}</td>
+                <td class="text-center">
+                    <div class="form-check d-inline-block ms-2">
+                        <input class="form-check-input holiday-checkbox"
+                               type="checkbox"
+                               data-date="${fullDate}"
+                               ${isChecked}>
+                    </div>
+                </td>
+            </tr>
+        `;
 
                 if (day <= 16) {
                     firstHalf.insertAdjacentHTML('beforeend', row);
@@ -476,25 +482,19 @@
                 cb.addEventListener('change', function() {
 
                     fetch('/holiday/save', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                                'X-CSRF-TOKEN': document
-                                    .querySelector('meta[name="csrf-token"]')
-                                    .getAttribute('content')
-                            },
-                            body: JSON.stringify({
-                                date: this.dataset.date,
-                                is_holiday: this.checked ? 1 : 0
-                            })
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': document
+                                .querySelector('meta[name="csrf-token"]')
+                                .getAttribute('content')
+                        },
+                        body: JSON.stringify({
+                            date: this.dataset.date,
+                            is_holiday: this.checked ? 1 : 0
                         })
-                        .then(res => res.json())
-                        .then(data => {
-                            console.log('Saved:', data);
-                        })
-                        .catch(err => {
-                            console.error('Error:', err);
-                        });
+                    });
+
 
                 });
             });

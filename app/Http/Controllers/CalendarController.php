@@ -8,6 +8,7 @@ use Carbon\Carbon;
 use App\Models\UserTimerPause;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use App\Models\Holiday;
 use Illuminate\Support\Facades\DB;
 
 class CalendarController extends Controller
@@ -578,15 +579,16 @@ class CalendarController extends Controller
 
     public function setting(Request $request)
     {
-        // Pass users to the view
-        return view('calendar.setting');
+        $holidays = Holiday::pluck('is_holiday', 'holiday_date');
+        return view('calendar.setting', compact('holidays'));
     }
+
 
     public function saveHoliday(Request $request)
     {
-        DB::table('holidays')->updateOrInsert(
+        Holiday::updateOrInsert(
             ['holiday_date' => $request->date],
-            ['is_holiday' => $request->is_holiday]
+            ['is_holiday' => (bool) $request->is_holiday]
         );
 
         return response()->json(['status' => 'success']);
