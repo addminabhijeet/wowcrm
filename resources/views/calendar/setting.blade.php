@@ -413,7 +413,7 @@
         </div>
     </div>
     <script>
-        const HOLIDAYS = @json($holidays);
+        let HOLIDAYS = @json($holidays);
     </script>
 
     <script>
@@ -449,8 +449,12 @@
 
             picker.addEventListener('change', function() {
                 const [year, month] = this.value.split('-');
-                generateDates(new Date(year, month - 1, 1));
+
+                loadHolidays(year, month, () => {
+                    generateDates(new Date(year, month - 1, 1));
+                });
             });
+
         });
     </script>
 
@@ -513,6 +517,29 @@
 
                 });
             });
+        }
+    </script>
+
+    <script>
+        function loadHolidays(year, month, callback) {
+            fetch('/holiday/by-month', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': document
+                            .querySelector('meta[name="csrf-token"]')
+                            .getAttribute('content')
+                    },
+                    body: JSON.stringify({
+                        year,
+                        month
+                    })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    HOLIDAYS = data; // overwrite holidays safely
+                    callback();
+                });
         }
     </script>
 @endsection

@@ -585,6 +585,18 @@ class CalendarController extends Controller
         return view('calendar.setting', compact('holidays', 'today'));
     }
 
+    public function getHolidaysByMonth(Request $request)
+    {
+        $year  = $request->year;
+        $month = $request->month;
+
+        $holidays = Holiday::whereYear('holiday_date', $year)
+            ->whereMonth('holiday_date', $month)
+            ->pluck('is_holiday', 'holiday_date')
+            ->toArray();
+
+        return response()->json($holidays);
+    }
 
     public function saveHoliday(Request $request)
     {
