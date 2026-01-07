@@ -63,6 +63,11 @@
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Follow Up</a>
                         </li>
                     </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.junior.tra') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Transfers</a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="dropdown">
@@ -151,7 +156,8 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorcon') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Verification Call</a>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Verification
+                                Call</a>
                         </li>
                     </ul>
                 </li>
