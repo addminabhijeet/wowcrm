@@ -90,7 +90,7 @@
                                 <th scope="col" class="text-center">Acceptance Sign</th>
                                 <th scope="col" class="text-center">Delivery Sign</th>
                                 <th scope="col" class="text-center">Payment Sign</th>
-                                <th scope="col" class="text-center">View</th>
+                                <th scope="col" class="text-center">Resume</th>
                                 <th scope="col" class="text-center">Status</th>
                                 <th scope="col" class="text-center">Remark</th>
                                 @auth

@@ -74,7 +74,7 @@
                                 <th scope="col" class="text-center">Time Zone</th>
                                 <th scope="col" class="text-center">Forwarded By</th>
                                 <th scope="col" class="text-center">Remark</th>
-                                <th scope="col" class="text-center">View</th>
+                                <th scope="col" class="text-center">Resume</th>
                                 <th scope="col" class="text-center">Status</th>
                                 @auth
                                     @if (auth()->user()->role !== 'operation')

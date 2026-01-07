@@ -41,7 +41,7 @@
                                             <th scope="col" class="text-center">Name</th>
                                             <th scope="col" class="text-center">Email Address</th>
                                             <th scope="col" class="text-center">Phone Number</th>
-                                            <th scope="col" class="text-center">View</th>
+                                            <th scope="col" class="text-center">Resume</th>
                                             <th scope="col" class="text-center">Services</th>
                                         </tr>
                                     </thead>

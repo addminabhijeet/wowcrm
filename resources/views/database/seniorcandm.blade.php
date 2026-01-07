@@ -73,7 +73,7 @@
                                 <th scope="col">1st Follow Up Remarks</th>
                                 <th scope="col">Time Zone</th>
                                 <th scope="col">Forwarded By</th>
-                                <th scope="col">View</th>
+                                <th scope="col">Resume</th>
                                 <th scope="col">Remark</th>
                                 <th scope="col">Status</th>
                                 <th scope="col" class="text-center">Actions</th>

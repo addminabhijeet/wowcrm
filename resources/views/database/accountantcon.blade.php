@@ -67,7 +67,7 @@
                                 <th scope="col" class="text-center">Qualification</th>
 
                                 <th scope="col" class="text-center">Forwarded By</th>
-                                <th scope="col" class="text-center">View</th>
+                                <th scope="col" class="text-center">Resume</th>
                                 <th scope="col" class="text-center">Remark</th>
                                 <th scope="col" class="text-center">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
