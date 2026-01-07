@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\GoogleSheetData;
 use App\Models\User;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Carbon\CarbonPeriod;
 use Carbon\Carbon;
 use App\Models\UserTimerPause;
+use App\Models\Holiday;
 
 
 
@@ -806,6 +806,13 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
+        $holidayDates = Holiday::whereYear('holiday_date', $year)
+            ->whereMonth('holiday_date', $month)
+            ->where('is_holiday', 1)
+            ->pluck('holiday_date')
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
+
         // Initialize hour blocks (10 AM - 8 PM)
         $t8to9am = $hourlyCalledMailed[8] ?? 0;
         $t9to10am = $hourlyCalledMailed[9] ?? 0;
@@ -937,7 +944,7 @@ class CallReportController extends Controller
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
             // Consider only Saturday/Sunday as non-working days
-            if ($day->isWeekend()) { // Saturday or Sunday
+            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
                 $nonWorkingDays++;
                 continue;
             }
@@ -1013,7 +1020,13 @@ class CallReportController extends Controller
 
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
-            if ($day->greaterThan($today) && !$day->isWeekend()) {
+            $dateStr = $day->format('Y-m-d');
+
+            if (
+                $day->greaterThan($today) &&
+                !$day->isWeekend() &&
+                !in_array($dateStr, $holidayDates)
+            ) {
                 $futureWorkingDays++;
             }
         }
