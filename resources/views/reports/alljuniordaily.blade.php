@@ -739,7 +739,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-md-2 col-sm-4 col-6">
+                            <div class="col-md-4">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
