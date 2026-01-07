@@ -147,7 +147,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/calendar/events', [CalendarController::class, 'SeniorEvents'])->name('calendar.seniorEvents');
     Route::post('/dashboard/calendar/update-status', [CalendarController::class, 'updateStatus'])->name('calendar.updateStatus');
     Route::get('/dashboard/calendar/setting', [CalendarController::class, 'setting'])->name('calendar.setting');
-    Route::post('/holiday/save', [CalendarController::class, 'saveHoliday']);
+    Route::post('/holiday/save', [CalendarController::class, 'saveHoliday'])->name('calendar.holiday');
 
     Route::get('/dashboard/admin/calendar/', [CalendarController::class, 'adminUser'])->name('calendar.adminUser');
     Route::get('/dashboard/accountant/calendar/', [CalendarController::class, 'accountantUser'])->name('calendar.accountantUser');
