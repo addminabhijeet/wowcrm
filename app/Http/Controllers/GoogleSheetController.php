@@ -2063,15 +2063,18 @@ class GoogleSheetController extends Controller
             }
 
             return response()->json([
-                'success' => false,
-                'message' => $e->getMessage(), // ✅ exact DB error
-                // Optional (more readable):
-                // 'db_error' => $e->errorInfo
+                'success' => true,
+                'message' => 'Row updated successfully',
+                'id' => $row->id,
+                'sheet_row_number' => $row->sheet_row_number,
+                'resume_path' => !empty($row->resume) ? true : false,
+                'mail_message' => $mailMessage
             ]);
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Fill Full Detail to Save.'
+                'message' => $e->getMessage(), // shows exact database error
+                // 'db_error' => $e->errorInfo ?? null, // optional, for MySQL detailed error
             ]);
         }
     }
