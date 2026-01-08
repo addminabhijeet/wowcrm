@@ -734,10 +734,10 @@
                             `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount(469)"></td>`;
                     } else if (k === 'Location') {
                         cells +=
-                            `<td><textarea type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
+                            `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
                     } else if (k === 'Remark') {
                         cells +=
-                            `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"></textarea><span class="small-hint"></span></td>`;
+                            `<td><textarea type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"></textarea><span class="small-hint"></span></td>`;
                     } else if (k === 'Date' || k === 'Graduation Date') {
                         cells +=
                             `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
