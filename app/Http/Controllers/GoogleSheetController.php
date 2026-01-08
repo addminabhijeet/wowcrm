@@ -1870,8 +1870,8 @@ class GoogleSheetController extends Controller
             'Email_Address' => $email, // keep original email
             'Phone_Number' => $phone,  // keep original phone
             'Location' => $rowData['Location'] ?? null,
-            'Remark' => array_key_exists('Remark', $rowData)? trim($rowData['Remark']): $row->Remark,
-            'TransferRemark' => array_key_exists('TransferRemark', $rowData)? trim($rowData['TransferRemark']): $row->TransferRemark,
+            'Remark' => $rowData['Remark'] ?? null,
+            'TransferRemark' => $rowData['TransferRemark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
