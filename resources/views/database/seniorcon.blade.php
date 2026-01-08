@@ -69,6 +69,7 @@
                                 <th scope="col" class="text-center">Forwarded By</th>
                                 <th scope="col" class="text-center">Resume</th>
                                 <th scope="col" class="text-center">Remark</th>
+                                <th scope="col" class="text-center">Transfer Remark</th>
                                 <th scope="col" class="text-center">Status</th>
                                 @auth
                                     @if (!in_array(auth()->user()->role, ['operation', 'admin']))
@@ -291,13 +292,15 @@
                                     </td>
 
                                     {{-- Remark --}}
-
                                     <td>
                                         <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="2">{{ $row->Remark ?? '' }}</textarea>
-
-
                                         <input type="hidden" name="Remark" class="remark-hidden"
                                             value="{{ $row->Remark ?? '' }}">
+                                    </td>
+
+                                    {{-- TransferRemark --}}
+                                    <td>
+                                        <textarea class="form-control remark-autocomplete" data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
                                     </td>
 
                                     {{-- Status --}}
