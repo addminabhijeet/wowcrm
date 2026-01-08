@@ -270,9 +270,9 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="2">{{ $row->Remark ?? '' }}</textarea>
+                                        <textarea type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark"></textarea>
                                     </td>
-
 
                                     {{-- Status --}}
                                     <td>
@@ -736,7 +736,8 @@
                         cells +=
                             `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
                     } else if (k === 'Remark') {
-                        cells += `<td><textarea class="form-control remark-autocomplete" data-key="${k}" placeholder="Remark" rows="2"></textarea><span class="small-hint"></span></td>`;
+                        cells +=
+                            `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
                     } else if (k === 'Date' || k === 'Graduation Date') {
                         cells +=
                             `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
