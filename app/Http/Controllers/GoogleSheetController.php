@@ -2073,8 +2073,7 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(), // shows exact database error
-                // 'db_error' => $e->errorInfo ?? null, // optional, for MySQL detailed error
+                'message' => 'Fill Full Detail to Save.'
             ]);
         }
     }
