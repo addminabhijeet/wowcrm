@@ -128,11 +128,11 @@
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Called &
                                 Mailed</a></li>
                     </ul>
-                    <ul class="sidebar-submenu">
+                    {{-- <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorcandm') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self Called &
                                 Mailed</a></li>
-                    </ul>
+                    </ul> --}}
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormod') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Other
@@ -146,8 +146,7 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormodcandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Other
-                                Disposition C&M</a></li>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Follow Up</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorpaid') }}"><i
