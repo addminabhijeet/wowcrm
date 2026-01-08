@@ -280,9 +280,9 @@
                                     </td>
 
                                     {{-- TransferRemark --}}
-                                    <td>
-                                        <textarea class="form-control remark-autocomplete" data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
-                                    </td>
+                                    <textarea class="form-control remark-autocomplete data-field" data-key="TransferRemark" placeholder="Type remark"
+                                        rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
+
 
 
                                     {{-- Status --}}
