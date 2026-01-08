@@ -83,7 +83,6 @@
 
                                 <th scope="col">Resume</th>
                                 <th scope="col">Remark</th>
-                                <th scope="col">Transfer Remark</th>
                                 <th scope="col">Status</th>
                                 @auth
                                     @if (!in_array(auth()->user()->role, ['operation', 'admin']))
