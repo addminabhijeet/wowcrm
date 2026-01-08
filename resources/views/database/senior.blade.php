@@ -279,7 +279,7 @@
                                         <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="2">{{ $row->Remark ?? '' }}</textarea>
                                     </td>
 
-                                    {{-- Remark --}}
+                                    {{-- TransferRemark --}}
                                     <td>
                                         <textarea class="form-control remark-autocomplete" data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
                                     </td>

@@ -83,6 +83,7 @@
 
                                 <th scope="col">Resume</th>
                                 <th scope="col">Remark</th>
+                                <th scope="col">Transfer Remark</th>
                                 <th scope="col">Status</th>
                                 @auth
                                     @if (!in_array(auth()->user()->role, ['operation', 'admin']))
@@ -278,10 +279,7 @@
 
                                     {{-- Remark --}}
                                     <td>
-
                                         <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="2">{{ $row->Remark ?? '' }}</textarea>
-
-
                                         <input type="hidden" name="Remark" class="remark-hidden"
                                             value="{{ $row->Remark ?? '' }}">
                                     </td>
