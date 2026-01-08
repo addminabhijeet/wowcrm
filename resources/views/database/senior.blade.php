@@ -287,7 +287,7 @@
 
                                     {{-- Status --}}
                                     <td>
-                                        @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy']; @endphp
+                                        @php $exeOptions = ['Called & Mailed','Not Interested','Interested','Others','Ready To Pay','VM','Busy']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                             <option value="">-- Status --</option>
                                             @foreach ($exeOptions as $option)
