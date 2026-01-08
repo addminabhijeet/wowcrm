@@ -1168,8 +1168,12 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // ✅ Properly map frontend keys to DB columns
+        // Properly map frontend keys to DB columns
         $updateData = [];
+
+        if (array_key_exists('TransferRemark', $rowData)) {
+            $updateData['TransferRemark'] = trim($rowData['TransferRemark']);
+        }
 
         if (array_key_exists('Remark', $rowData)) {
             $updateData['Remark'] = trim($rowData['Remark']);
@@ -1179,11 +1183,18 @@ class GoogleSheetController extends Controller
             $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
         }
 
-        // ✅ Make "Remark" mandatory
+        // Make "Remark" mandatory
         if (!isset($updateData['Remark']) || $updateData['Remark'] === '') {
             return response()->json([
                 'success' => false,
                 'message' => 'Remark field is required before updating.'
+            ]);
+        }
+
+        if (!isset($updateData['TransferRemark']) || $updateData['TransferRemark'] === '') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Transfer Remark field is required before updating.'
             ]);
         }
 
@@ -1860,6 +1871,7 @@ class GoogleSheetController extends Controller
             'Phone_Number' => $phone,  // keep original phone
             'Location' => $rowData['Location'] ?? null,
             'Remark' => $rowData['Remark'] ?? null,
+            'TransferRemark' => $rowData['TransferRemark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
@@ -2179,6 +2191,7 @@ class GoogleSheetController extends Controller
             'Phone_Number' => $phone,  // keep original phone
             'Location' => $rowData['Location'] ?? null,
             'Remark' => $rowData['Remark'] ?? null,
+            'TransferRemark' => $rowData['TransferRemark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
