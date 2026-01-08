@@ -70,6 +70,7 @@
                                 <th scope="col" class="text-center">Forwarded By</th>
                                 <th scope="col" class="text-center">Remark</th>
                                 <th scope="col" class="text-center">Resume</th>
+                                <th scope="col" class="text-center">Transfer Remark</th>
                                 <th scope="col" class="text-center">Status</th>
                                 @auth
                                     @if (auth()->user()->role !== 'operation')
@@ -267,7 +268,14 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="2">{{ $row->Remark ?? '' }}</textarea>
+                                        <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark"
+                                        rows="2">{{ $row->Remark ?? '' }}</textarea>
+                                    </td>
+
+                                    {{-- TransferRemark --}}
+                                    <td>
+                                        <textarea class="form-control remark-autocomplete" data-key="TransferRemark" placeholder="Type remark"
+                                            rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
                                     </td>
 
                                     {{-- Status --}}
