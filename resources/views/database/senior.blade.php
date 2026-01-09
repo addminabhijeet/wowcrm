@@ -1534,25 +1534,36 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            const form = document.querySelector('form'); // use form ID if available
+            const form = document.querySelector('form');
             if (!form) return;
 
+            function syncTextareaToHidden(textarea) {
+                const td = textarea.closest('td');
+                if (!td) return;
+
+                const hiddenInput = td.querySelector('input.remark-hidden');
+                if (!hiddenInput) return;
+
+                // Store FULL textarea text
+                hiddenInput.value = textarea.value;
+            }
+
+            // 🔁 Sync while typing (real-time)
+            document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
+                textarea.addEventListener('input', function() {
+                    syncTextareaToHidden(textarea);
+                });
+            });
+
+            // 🛡️ Final sync before submit
             form.addEventListener('submit', function() {
-
                 document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
-
-                    // Find the hidden input inside the SAME <td>
-                    const td = textarea.closest('td');
-                    if (!td) return;
-
-                    const hiddenInput = td.querySelector('input.remark-hidden');
-                    if (!hiddenInput) return;
-
-                    hiddenInput.value = textarea.value;
+                    syncTextareaToHidden(textarea);
                 });
             });
         });
     </script>
+
 
 
 
