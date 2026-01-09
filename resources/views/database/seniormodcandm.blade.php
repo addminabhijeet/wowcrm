@@ -68,8 +68,8 @@
                                 <th scope="col" class="text-center">1st Follow Up Remarks</th>
 
                                 <th scope="col" class="text-center">Forwarded By</th>
+                                 <th scope="col" class="text-center">Resume</th>
                                 <th scope="col" class="text-center">Remark</th>
-                                <th scope="col" class="text-center">Resume</th>
                                 <th scope="col" class="text-center">Transfer Remark</th>
                                 <th scope="col" class="text-center">Status</th>
                                 @auth
