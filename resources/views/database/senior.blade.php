@@ -276,10 +276,11 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete"
-                                            placeholder="Type remark" rows="2">{{ $row->Remark ?? '' }}</textarea>
+                                        <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
+                                            rows="2">{{ $row->Remark ?? '' }}</textarea>
 
-                                        <input type="text" name="Remark" class="form-control remark-autocomplete remark-hidden" data-key="Remark"
+                                        <input type="text" name="Remark"
+                                            class="form-control remark-autocomplete remark-hidden" data-key="Remark"
                                             value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
@@ -288,8 +289,10 @@
                                         <textarea type="text" name="TransferRemark_hidden" class="form-control transferremark-autocomplete data-field"
                                             data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
 
-                                        <input type="text" name="TransferRemark" class="form-control transferremark-autocomplete transferremark-hidden" data-key="TransferRemark"
-                                            value="{{ $row->TransferRemark ?? '' }}" placeholder="Type TransferRemark">
+                                        <input type="text" name="TransferRemark"
+                                            class="form-control transferremark-autocomplete transferremark-hidden"
+                                            data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}"
+                                            placeholder="Type TransferRemark">
                                     </td>
 
 
@@ -1596,91 +1599,91 @@
 
         });
     </script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-    const form = document.querySelector('form');
-    if (!form) return;
+            const form = document.querySelector('form');
+            if (!form) return;
 
-    form.addEventListener('submit', function () {
+            form.addEventListener('submit', function() {
 
-        document.querySelectorAll('textarea.remark-autocomplete').forEach(function (textarea) {
+                document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
 
-            const td = textarea.closest('td');
-            if (!td) return;
+                    const td = textarea.closest('td');
+                    if (!td) return;
 
-            const textareaName = textarea.getAttribute('name');
-            if (!textareaName) return;
+                    const textareaName = textarea.getAttribute('name');
+                    if (!textareaName) return;
 
-            const inputName = textareaName.replace('_hidden', '');
+                    const inputName = textareaName.replace('_hidden', '');
 
-            // ✅ Works for BOTH text & hidden inputs
-            const input = td.querySelector('input[name="' + inputName + '"]');
+                    // ✅ Works for BOTH text & hidden inputs
+                    const input = td.querySelector('input[name="' + inputName + '"]');
 
-            if (input) {
-                input.value = textarea.value.trim();
-            }
+                    if (input) {
+                        input.value = textarea.value.trim();
+                    }
+                });
+
+            });
+
         });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-    });
+            const form = document.querySelector('form');
+            if (!form) return;
 
-});
-</script>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+            form.addEventListener('submit', function() {
 
-    const form = document.querySelector('form');
-    if (!form) return;
+                document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
 
-    form.addEventListener('submit', function () {
+                    const textareaName = textarea.getAttribute('name');
+                    if (!textareaName || !textareaName.endsWith('_hidden')) return;
 
-        document.querySelectorAll('textarea.remark-autocomplete').forEach(function (textarea) {
+                    const inputName = textareaName.replace('_hidden', '');
 
-            const textareaName = textarea.getAttribute('name');
-            if (!textareaName || !textareaName.endsWith('_hidden')) return;
+                    // 🔹 GLOBAL search (not just TD — important)
+                    const input = form.querySelector('input[name="' + inputName + '"]');
 
-            const inputName = textareaName.replace('_hidden', '');
+                    if (input) {
+                        input.value = textarea.value;
+                    }
+                });
 
-            // 🔹 GLOBAL search (not just TD — important)
-            const input = form.querySelector('input[name="' + inputName + '"]');
-
-            if (input) {
-                input.value = textarea.value;
-            }
+            }, true); // 🔥 capture phase to run FIRST
         });
-
-    }, true); // 🔥 capture phase to run FIRST
-});
-</script>
+    </script>
 
 
-<script>
-document.addEventListener('DOMContentLoaded', function () {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
-    const form = document.querySelector('form');
-    if (!form) return;
+            const form = document.querySelector('form');
+            if (!form) return;
 
-    // 🔥 Run BEFORE any other submit handlers
-    form.addEventListener('submit', function () {
+            // 🔥 Run BEFORE any other submit handlers
+            form.addEventListener('submit', function() {
 
-        document.querySelectorAll('textarea.remark-autocomplete').forEach(function (textarea) {
+                document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
 
-            const textareaName = textarea.getAttribute('name');
-            if (!textareaName || !textareaName.endsWith('_hidden')) return;
+                    const textareaName = textarea.getAttribute('name');
+                    if (!textareaName || !textareaName.endsWith('_hidden')) return;
 
-            const inputName = textareaName.replace('_hidden', '');
+                    const inputName = textareaName.replace('_hidden', '');
 
-            // ✅ global lookup (important)
-            const input = form.querySelector('input[name="' + inputName + '"]');
+                    // ✅ global lookup (important)
+                    const input = form.querySelector('input[name="' + inputName + '"]');
 
-            if (input) {
-                input.value = textarea.value;
-            }
+                    if (input) {
+                        input.value = textarea.value;
+                    }
+                });
+
+            }, true); // 👈 capture phase (runs FIRST)
         });
-
-    }, true); // 👈 capture phase (runs FIRST)
-});
-</script>
+    </script>
 
 
 
