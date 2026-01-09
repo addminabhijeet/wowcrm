@@ -1538,41 +1538,44 @@
     </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-
             const form = document.querySelector('form');
             if (!form) return;
 
-            function syncTextareaToHidden(textarea) {
+            // Function to sync a textarea to its corresponding input
+            function syncTextareaToInput(textarea) {
                 const td = textarea.closest('td');
                 if (!td) return;
 
-                // 👉 Get textarea name and map to hidden input name
                 const textareaName = textarea.getAttribute('name');
                 if (!textareaName) return;
 
-                const hiddenName = textareaName.replace('_hidden', '');
-                const hiddenInput = td.querySelector('input[type="hidden"][name="' + hiddenName + '"]');
-                if (!hiddenInput) return;
+                // Map _hidden textarea to input with same name minus _hidden
+                const inputName = textareaName.replace('_hidden', '');
+                const input = td.querySelector('input[name="' + inputName + '"]');
+                if (!input) return;
 
-                // Store FULL textarea text
-                hiddenInput.value = textarea.value;
+                input.value = textarea.value;
             }
 
-            // 🔁 Sync while typing (real-time)
-            document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
-                textarea.addEventListener('input', function() {
-                    syncTextareaToHidden(textarea);
+            // 🔁 Real-time sync on input for all textareas
+            document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                function(textarea) {
+                    textarea.addEventListener('input', function() {
+                        syncTextareaToInput(textarea);
+                    });
                 });
-            });
 
-            // 🛡️ Final sync before submit
+            // 🛡️ Ensure sync before form submit
             form.addEventListener('submit', function() {
-                document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
-                    syncTextareaToHidden(textarea);
-                });
+                document.querySelectorAll(
+                    'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                    function(textarea) {
+                        syncTextareaToInput(textarea);
+                    });
             });
         });
     </script>
+
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
@@ -1629,7 +1632,7 @@
 
         });
     </script>
-    
+
 
 
 @endsection
