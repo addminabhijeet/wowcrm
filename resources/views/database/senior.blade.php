@@ -1569,6 +1569,31 @@
         });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
+
+                textarea.addEventListener('input', function() {
+
+                    const td = textarea.closest('td');
+                    if (!td) return;
+
+                    const textareaName = textarea.getAttribute('name');
+                    if (!textareaName) return;
+
+                    const inputName = textareaName.replace('_hidden', '');
+                    const input = td.querySelector('input[name="' + inputName + '"]');
+
+                    if (input) {
+                        input.value = textarea.value;
+                    }
+                });
+
+            });
+
+        });
+    </script>
 
 
 
