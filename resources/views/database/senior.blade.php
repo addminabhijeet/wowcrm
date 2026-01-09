@@ -1594,6 +1594,38 @@
 
         });
     </script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+
+    const form = document.querySelector('form');
+    if (!form) return;
+
+    form.addEventListener('submit', function () {
+
+        document.querySelectorAll('textarea.remark-autocomplete').forEach(function (textarea) {
+
+            const td = textarea.closest('td');
+            if (!td) return;
+
+            const textareaName = textarea.getAttribute('name');
+            if (!textareaName) return;
+
+            const inputName = textareaName.replace('_hidden', '');
+
+            // ✅ Works for BOTH text & hidden inputs
+            const input = td.querySelector('input[name="' + inputName + '"]');
+
+            if (input) {
+                input.value = textarea.value.trim();
+            }
+        });
+
+    });
+
+});
+</script>
+
+
 
 
 
