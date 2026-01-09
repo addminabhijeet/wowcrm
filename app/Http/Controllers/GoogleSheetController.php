@@ -1055,9 +1055,21 @@ class GoogleSheetController extends Controller
         $userPattern = "%" . $authUser->id . "|junior";
 
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
-            $q->where('created_by', $authUser->id . '|junior')
-                ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior'])
-                ->orWhere('created_by', 'LIKE', $userPattern);
+
+            // 🔹 Existing logic (unchanged)
+            $q->where(function ($sub) use ($authUser, $userPattern) {
+                $sub->where('created_by', $authUser->id . '|junior')
+                    ->whereRaw(
+                        "RIGHT(created_by, LENGTH(?)) = ?",
+                        [$authUser->id . '|junior', $authUser->id . '|junior']
+                    )
+                    ->orWhere('created_by', 'LIKE', $userPattern);
+            })
+
+                // 🔹 ADDITION: allow `junior:senior` format
+                ->orWhereRaw(
+                    "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior$'"
+                );
         })->where('transfers', 1);
 
         // Filter by selected junior
