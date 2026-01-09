@@ -76,9 +76,9 @@
                                 <th scope="col">Course</th>
                                 <th scope="col">Amount</th>
                                 <th scope="col">Qualification</th>
-
-                                <th scope="col">1st Follow Up Remarks</th>
                                 <th scope="col">Time Zone</th>
+                                <th scope="col">1st Follow Up Remarks</th>
+
                                 <th scope="col">Forwarded By</th>
 
                                 <th scope="col">Resume</th>
@@ -214,7 +214,19 @@
                                         </select>
                                     </td>
 
-
+                                    {{-- Time Zone --}}
+                                    <td>
+                                        @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
+                                        <select class="form-select dynamic-dropdown" data-key="Time Zone">
+                                            <option value="">-- Time Zone --</option>
+                                            @foreach ($timezoneOptions as $option)
+                                                <option value="{{ $option }}"
+                                                    {{ $row->Time_Zone === $option ? 'selected' : '' }}>
+                                                    {{ $option }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
 
                                     {{-- 1st Follow Up Remarks --}}
                                     <td>
@@ -232,19 +244,7 @@
 
 
 
-                                    {{-- Time Zone --}}
-                                    <td>
-                                        @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
-                                        <select class="form-select dynamic-dropdown" data-key="Time Zone">
-                                            <option value="">-- Time Zone --</option>
-                                            @foreach ($timezoneOptions as $option)
-                                                <option value="{{ $option }}"
-                                                    {{ $row->Time_Zone === $option ? 'selected' : '' }}>
-                                                    {{ $option }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
+
 
                                     {{-- Forwarded By --}}
                                     <td>
@@ -278,9 +278,12 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="2">{{ $row->Remark ?? '' }}</textarea>
-                                        <input type="hidden" name="Remark" class="remark-hidden"
-                                            value="{{ $row->Remark ?? '' }}">
+                                        <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
+                                            rows="2">{{ $row->Remark ?? '' }}</textarea>
+
+                                        <input type="hidden" name="Remark"
+                                            class="form-control remark-autocomplete remark-hidden" data-key="Remark"
+                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
 
@@ -1523,5 +1526,45 @@
         });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            if (!form) return;
+
+            // Function to sync a textarea to its corresponding input
+            function syncTextareaToInput(textarea) {
+                const td = textarea.closest('td');
+                if (!td) return;
+
+                const textareaName = textarea.getAttribute('name');
+                if (!textareaName) return;
+
+                // Map _hidden textarea to input with same name minus _hidden
+                const inputName = textareaName.replace('_hidden', '');
+                const input = td.querySelector('input[name="' + inputName + '"]');
+                if (!input) return;
+
+                // Trim value before assigning
+                input.value = textarea.value.trim();
+            }
+
+            // 🔁 Real-time sync on input for all textareas with *_autocomplete class
+            document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                function(textarea) {
+                    textarea.addEventListener('input', function() {
+                        syncTextareaToInput(textarea);
+                    });
+                });
+
+            // 🛡️ Final sync before form submit
+            form.addEventListener('submit', function() {
+                document.querySelectorAll(
+                    'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                    function(textarea) {
+                        syncTextareaToInput(textarea);
+                    });
+            });
+        });
+    </script>
 
 @endsection

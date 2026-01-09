@@ -293,14 +293,23 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="2">{{ $row->Remark ?? '' }}</textarea>
-                                        <input type="hidden" name="Remark" class="remark-hidden"
-                                            value="{{ $row->Remark ?? '' }}">
+                                        <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
+                                            rows="2">{{ $row->Remark ?? '' }}</textarea>
+
+                                        <input type="hidden" name="Remark"
+                                            class="form-control remark-autocomplete remark-hidden" data-key="Remark"
+                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
                                     {{-- TransferRemark --}}
                                     <td>
-                                        <textarea class="form-control remark-autocomplete" data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
+                                        <textarea type="text" name="TransferRemark_hidden" class="form-control transferremark-autocomplete data-field"
+                                            data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
+
+                                        <input type="hidden" name="TransferRemark"
+                                            class="form-control transferremark-autocomplete transferremark-hidden"
+                                            data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}"
+                                            placeholder="Type TransferRemark">
                                     </td>
 
                                     {{-- Status --}}
@@ -1532,5 +1541,44 @@
         });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            if (!form) return;
 
+            // Function to sync a textarea to its corresponding input
+            function syncTextareaToInput(textarea) {
+                const td = textarea.closest('td');
+                if (!td) return;
+
+                const textareaName = textarea.getAttribute('name');
+                if (!textareaName) return;
+
+                // Map _hidden textarea to input with same name minus _hidden
+                const inputName = textareaName.replace('_hidden', '');
+                const input = td.querySelector('input[name="' + inputName + '"]');
+                if (!input) return;
+
+                // Trim value before assigning
+                input.value = textarea.value.trim();
+            }
+
+            // 🔁 Real-time sync on input for all textareas with *_autocomplete class
+            document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                function(textarea) {
+                    textarea.addEventListener('input', function() {
+                        syncTextareaToInput(textarea);
+                    });
+                });
+
+            // 🛡️ Final sync before form submit
+            form.addEventListener('submit', function() {
+                document.querySelectorAll(
+                    'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                    function(textarea) {
+                        syncTextareaToInput(textarea);
+                    });
+            });
+        });
+    </script>
 @endsection
