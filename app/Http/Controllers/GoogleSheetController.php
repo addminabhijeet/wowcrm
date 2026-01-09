@@ -505,7 +505,7 @@ class GoogleSheetController extends Controller
             })
                 // EXCLUSION: Do NOT show rows having more than one "|senior"
                 ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
-        });
+        })->where('transfers', '!=', 1);
 
 
         // Filter by selected junior
