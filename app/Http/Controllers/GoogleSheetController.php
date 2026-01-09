@@ -2191,6 +2191,7 @@ class GoogleSheetController extends Controller
             'Phone_Number' => $phone,  // keep original phone
             'Location' => $rowData['Location'] ?? null,
             'Remark' => $rowData['Remark'] ?? null,
+            'TransferRemark' => $rowData['TransferRemark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
@@ -2546,6 +2547,7 @@ class GoogleSheetController extends Controller
             'Phone_Number' => $phone,  // keep original phone
             'Location' => $rowData['Location'] ?? null,
             'Remark' => $rowData['Remark'] ?? null,
+            'TransferRemark' => $rowData['TransferRemark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
