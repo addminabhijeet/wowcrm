@@ -1183,20 +1183,20 @@ class GoogleSheetController extends Controller
             $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
         }
 
-        // Make "Remark" mandatory
-        if (!isset($updateData['Remark']) || $updateData['Remark'] === '') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Remark field is required before updating.'
-            ]);
-        }
 
-        if (!isset($updateData['TransferRemark']) || $updateData['TransferRemark'] === '') {
-            return response()->json([
-                'success' => false,
-                'message' => 'Transfer Remark field is required before updating.'
-            ]);
-        }
+        // if (!isset($updateData['Remark']) || $updateData['Remark'] === '') {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Remark field is required before updating.'
+        //     ]);
+        // }
+
+        // if (!isset($updateData['TransferRemark']) || $updateData['TransferRemark'] === '') {
+        //     return response()->json([
+        //         'success' => false,
+        //         'message' => 'Transfer Remark field is required before updating.'
+        //     ]);
+        // }
 
         if (empty($updateData)) {
             return response()->json(['success' => false, 'message' => 'No valid fields to update']);
