@@ -1541,7 +1541,12 @@
                 const td = textarea.closest('td');
                 if (!td) return;
 
-                const hiddenInput = td.querySelector('input.remark-hidden');
+                // 👉 Get textarea name and map to hidden input name
+                const textareaName = textarea.getAttribute('name');
+                if (!textareaName) return;
+
+                const hiddenName = textareaName.replace('_hidden', '');
+                const hiddenInput = td.querySelector('input[type="hidden"][name="' + hiddenName + '"]');
                 if (!hiddenInput) return;
 
                 // Store FULL textarea text
@@ -1563,6 +1568,7 @@
             });
         });
     </script>
+
 
 
 
