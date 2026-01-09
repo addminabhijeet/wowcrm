@@ -714,7 +714,7 @@ class GoogleSheetController extends Controller
               AND
               SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'
           ");
-        });
+        })->where('transfers', 0);
 
         if ($rowId) {
             $query->where('id', $rowId);
