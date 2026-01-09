@@ -68,7 +68,7 @@
                                 <th scope="col" class="text-center">1st Follow Up Remarks</th>
 
                                 <th scope="col" class="text-center">Forwarded By</th>
-                                 <th scope="col" class="text-center">Resume</th>
+                                <th scope="col" class="text-center">Resume</th>
                                 <th scope="col" class="text-center">Remark</th>
                                 <th scope="col" class="text-center">Transfer Remark</th>
                                 <th scope="col" class="text-center">Status</th>
@@ -737,12 +737,18 @@
                     let remarkInput = row.querySelector(
                         'input[data-key="Remark"], select[data-key="Remark"], textarea[data-key="Remark"]'
                     );
+                    let TransferRemarkInput = row.querySelector(
+                        'input[data-key="TransferRemark"], select[data-key="TransferRemark"], textarea[data-key="TransferRemark"]'
+                    );
                     let followUpInput = row.querySelector(
                         'input[data-key="1st Follow Up Remarks"], select[data-key="1st Follow Up Remarks"], textarea[data-key="1st Follow Up Remarks"]'
                     );
 
                     if (remarkInput) {
                         rowData["Remark"] = remarkInput.value;
+                    }
+                    if (TransferRemarkInput) {
+                        rowData["TransferRemark"] = TransferRemarkInput.value;
                     }
                     if (followUpInput) {
                         rowData["1st Follow Up Remarks"] = followUpInput.value;
