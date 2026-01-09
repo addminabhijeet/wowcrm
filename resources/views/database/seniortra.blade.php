@@ -70,6 +70,7 @@
                                 <th scope="col">Forwarded By</th>
                                 <th scope="col">Resume</th>
                                 <th scope="col">Remark</th>
+                                <th scope="col">Transfer Remark</th>
                                 <th scope="col">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
                             </tr>
@@ -268,6 +269,17 @@
                                         <input type="hidden" name="Remark"
                                             class="form-control remark-autocomplete remark-hidden" data-key="Remark"
                                             value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                                    </td>
+
+                                                                        {{-- TransferRemark --}}
+                                    <td>
+                                        <textarea type="text" name="TransferRemark_hidden" class="form-control transferremark-autocomplete data-field"
+                                            data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
+
+                                        <input type="hidden" name="TransferRemark"
+                                            class="form-control transferremark-autocomplete transferremark-hidden"
+                                            data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}"
+                                            placeholder="Type TransferRemark">
                                     </td>
 
                                     {{-- Status --}}
