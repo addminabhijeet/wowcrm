@@ -1542,36 +1542,94 @@
             const form = document.querySelector('form');
             if (!form) return;
 
-            function syncTextarea(textarea) {
-                const name = textarea.getAttribute('name');
-                if (!name || !name.endsWith('_hidden')) return;
+            function syncTextareaToHidden(textarea) {
+                const td = textarea.closest('td');
+                if (!td) return;
 
-                const inputName = name.replace('_hidden', '');
-                const input = form.querySelector('input[name="' + inputName + '"]');
+                // 👉 Get textarea name and map to hidden input name
+                const textareaName = textarea.getAttribute('name');
+                if (!textareaName) return;
 
-                if (input) {
-                    input.value = textarea.value;
-                }
+                const hiddenName = textareaName.replace('_hidden', '');
+                const hiddenInput = td.querySelector('input[type="hidden"][name="' + hiddenName + '"]');
+                if (!hiddenInput) return;
+
+                // Store FULL textarea text
+                hiddenInput.value = textarea.value;
             }
 
-            // 🔁 Sync while typing
+            // 🔁 Sync while typing (real-time)
             document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
                 textarea.addEventListener('input', function() {
-                    syncTextarea(textarea);
+                    syncTextareaToHidden(textarea);
                 });
             });
 
-            // 🛡️ Final sync before submit (runs FIRST)
+            // 🛡️ Final sync before submit
             form.addEventListener('submit', function() {
                 document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
-                    syncTextarea(textarea);
+                    syncTextareaToHidden(textarea);
                 });
-            }, true);
-
+            });
         });
     </script>
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
 
+            document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
+
+                textarea.addEventListener('input', function() {
+
+                    const td = textarea.closest('td');
+                    if (!td) return;
+
+                    const textareaName = textarea.getAttribute('name');
+                    if (!textareaName) return;
+
+                    const inputName = textareaName.replace('_hidden', '');
+                    const input = td.querySelector('input[name="' + inputName + '"]');
+
+                    if (input) {
+                        input.value = textarea.value;
+                    }
+                });
+
+            });
+
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+
+            const form = document.querySelector('form');
+            if (!form) return;
+
+            form.addEventListener('submit', function() {
+
+                document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
+
+                    const td = textarea.closest('td');
+                    if (!td) return;
+
+                    const textareaName = textarea.getAttribute('name');
+                    if (!textareaName) return;
+
+                    const inputName = textareaName.replace('_hidden', '');
+
+                    // ✅ Works for BOTH text & hidden inputs
+                    const input = td.querySelector('input[name="' + inputName + '"]');
+
+                    if (input) {
+                        input.value = textarea.value.trim();
+                    }
+                });
+
+            });
+
+        });
+    </script>
+    
 
 
 @endsection
