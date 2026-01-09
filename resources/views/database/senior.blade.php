@@ -1554,10 +1554,11 @@
                 const input = td.querySelector('input[name="' + inputName + '"]');
                 if (!input) return;
 
-                input.value = textarea.value;
+                // Trim value before assigning
+                input.value = textarea.value.trim();
             }
 
-            // 🔁 Real-time sync on input for all textareas
+            // 🔁 Real-time sync on input for all textareas with *_autocomplete class
             document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
                 function(textarea) {
                     textarea.addEventListener('input', function() {
@@ -1565,7 +1566,7 @@
                     });
                 });
 
-            // 🛡️ Ensure sync before form submit
+            // 🛡️ Final sync before form submit
             form.addEventListener('submit', function() {
                 document.querySelectorAll(
                     'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
@@ -1576,62 +1577,6 @@
         });
     </script>
 
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
-
-                textarea.addEventListener('input', function() {
-
-                    const td = textarea.closest('td');
-                    if (!td) return;
-
-                    const textareaName = textarea.getAttribute('name');
-                    if (!textareaName) return;
-
-                    const inputName = textareaName.replace('_hidden', '');
-                    const input = td.querySelector('input[name="' + inputName + '"]');
-
-                    if (input) {
-                        input.value = textarea.value;
-                    }
-                });
-
-            });
-
-        });
-    </script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-
-            const form = document.querySelector('form');
-            if (!form) return;
-
-            form.addEventListener('submit', function() {
-
-                document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
-
-                    const td = textarea.closest('td');
-                    if (!td) return;
-
-                    const textareaName = textarea.getAttribute('name');
-                    if (!textareaName) return;
-
-                    const inputName = textareaName.replace('_hidden', '');
-
-                    // ✅ Works for BOTH text & hidden inputs
-                    const input = td.querySelector('input[name="' + inputName + '"]');
-
-                    if (input) {
-                        input.value = textarea.value.trim();
-                    }
-                });
-
-            });
-
-        });
-    </script>
 
 
 
