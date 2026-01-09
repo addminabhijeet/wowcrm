@@ -276,18 +276,18 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <textarea type="text" name="Remark" class="form-control remark-autocomplete" data-key="Remark"
+                                        <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" data-key="Remark"
                                             placeholder="Type remark" rows="2">{{ $row->Remark ?? '' }}</textarea>
 
-                                        <input type="hidden" name="Remark_hidden" class="remark-hidden">
+                                        <input type="hidden" name="Remark" class="remark-hidden">
                                     </td>
 
                                     {{-- TransferRemark --}}
                                     <td>
-                                        <textarea type="text" name="TransferRemark" class="form-control remark-autocomplete data-field"
+                                        <textarea type="text" name="TransferRemark_hidden" class="form-control remark-autocomplete data-field"
                                             data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
 
-                                        <input type="hidden" name="TransferRemark_hidden" class="remark-hidden">
+                                        <input type="hidden" name="TransferRemark" class="remark-hidden">
                                     </td>
 
 
@@ -1534,23 +1534,26 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
 
-            const form = document.querySelector('form'); // use form id if needed
+            const form = document.querySelector('form'); // use form ID if available
+            if (!form) return;
 
             form.addEventListener('submit', function() {
 
-                document.querySelectorAll('textarea.remark-autocomplete').forEach(textarea => {
+                document.querySelectorAll('textarea.remark-autocomplete').forEach(function(textarea) {
 
-                    const hiddenInput = textarea.parentNode.querySelector(
-                        'input.remark-hidden'
-                    );
+                    // Find the hidden input inside the SAME <td>
+                    const td = textarea.closest('td');
+                    if (!td) return;
 
-                    if (hiddenInput) {
-                        hiddenInput.value = textarea.value;
-                    }
+                    const hiddenInput = td.querySelector('input.remark-hidden');
+                    if (!hiddenInput) return;
+
+                    hiddenInput.value = textarea.value;
                 });
             });
         });
     </script>
+
 
 
 @endsection
