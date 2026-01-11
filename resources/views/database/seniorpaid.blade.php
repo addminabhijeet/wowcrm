@@ -30,7 +30,18 @@
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
 
-               
+                <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user"
+                    id="junior-filter">
+                    <option value="">Select IT Recruiter</option>
+                    @foreach ($juniorUsers as $junior)
+                        <option value="{{ $junior->id }}">
+                            {{ $junior->name }}
+                            @if ($junior->gender)
+                                ({{ $junior->gender }})
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
 
 
             </div>
@@ -72,7 +83,7 @@
                                 <th scope="col" class="text-center">Remark</th>
                                 <th scope="col" class="text-center">Transfer Remark</th>
                                 <th scope="col" class="text-center">Status</th>
-         
+                               
                             </tr>
                         </thead>
                         <tbody id="sheet-table-body">
@@ -296,7 +307,7 @@
                                         </select>
                                     </td>
 
-
+                                   
                                 </tr>
                             @endforeach
                         </tbody>
