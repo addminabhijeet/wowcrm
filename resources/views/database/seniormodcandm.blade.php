@@ -30,7 +30,7 @@
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
 
-                <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user"
+                <!-- <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user"
                     id="junior-filter">
                     <option value="">Select IT Recruiter</option>
                     @foreach ($juniorUsers as $junior)
@@ -41,7 +41,7 @@
                             @endif
                         </option>
                     @endforeach
-                </select>
+                </select> -->
 
 
             </div>
