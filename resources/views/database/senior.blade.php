@@ -318,10 +318,6 @@
                                                     data-id="{{ $row->id }}">
                                                     <i class="fas fa-save"></i> Save
                                                 </button>
-                                                <button class="btn btn-sm btn-warning transfers-btn"
-                                                    data-id="{{ $row->id }}">
-                                                    <i class="fas fa-exchange-alt"></i> Transfer
-                                                </button>
                                             </td>
                                         @endif
                                     @endauth
