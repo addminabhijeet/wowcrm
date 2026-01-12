@@ -834,7 +834,7 @@
                                         <i class="bi bi-bar-chart-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Sr IT Recruiter<br>(Follow Up)</small>
+                                        <small class="text-muted d-block">Sr IT Recruiter(Follow Up)</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $SotherCalls }}</h4>
                                     </div>
                                 </div>
@@ -845,7 +845,7 @@
                                         <i class="bi bi-envelope-paper-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Sr IT Recruiter<br>(Called & Mailed)</small>
+                                        <small class="text-muted d-block">Sr IT Recruiter(Called & Mailed)</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
                                     </div>
                                 </div>
@@ -856,7 +856,7 @@
                                         <i class="bi bi-envelope-paper-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Sr IT Recruiter<br>(Self follow up)</small>
+                                        <small class="text-muted d-block">Sr IT Recruiter(Self follow up)</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $SreadyToPaidCalls }}</h4>
                                     </div>
                                 </div>
@@ -867,7 +867,7 @@
                                         <i class="bi bi-envelope-paper-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Sr IT Recruiter<br>(Transfered Follow Up)</small>
+                                        <small class="text-muted d-block">Sr IT Recruiter(Transfered Follow Up)</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $SfollowUpCalls }}</h4>
                                     </div>
                                 </div>
