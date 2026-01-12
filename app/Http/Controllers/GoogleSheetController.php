@@ -1256,26 +1256,43 @@ class GoogleSheetController extends Controller
 
     public function seniortra(Request $request)
     {
-        $authUser = (object) ['id' => null];
+        $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // dropdown value
         $page = $request->input('page', 1); // ✅ Ensure page input handled
 
-        $userPattern = "%" . $authUser->id . "|junior";
+        $userPattern = "%:" . $authUser->id . "|senior";
+        $zeroPattern = "%:0|senior";
 
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
-            $q->where('created_by', $authUser->id . '|junior')
-                ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior'])
-                ->orWhere('created_by', 'LIKE', $userPattern);
-        })->where('transfers', 1);
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+            $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+
+                $q2->where('created_by', $authUser->id . '|senior')
+                    ->orWhere('created_by', '0|senior')
+                    ->orWhere('created_by', 'LIKE', $userPattern)
+                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+            })
+                // EXCLUSION: Do NOT show rows having more than one "|senior"
+                ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
+        })
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            })
+            // ✅ NEW CONDITION: second part = number|senior AND ends with 0|senior
+            ->whereRaw("
+    SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 3), ':', -2)
+    REGEXP '^[0-9]+\\|senior:0\\|senior$'
+");
+
 
         // Filter by selected junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                    ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$juniorUserId . '|junior', $juniorUserId . '|junior']);
-            })->where('transfers', 1);
+                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+            });
         }
 
         // Search or specific row filter
@@ -1290,7 +1307,7 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('Date', 'desc')->get();
+        $results = $query->orderBy('id', 'desc')->get();
 
         // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
@@ -1345,7 +1362,8 @@ class GoogleSheetController extends Controller
             ['path' => url()->current(), 'query' => $request->query()]
         );
 
-        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior'])
+
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
@@ -1354,7 +1372,6 @@ class GoogleSheetController extends Controller
         if ($request->ajax()) {
             return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
-
 
         return view('database.seniortra',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
