@@ -3142,6 +3142,12 @@ class CallReportController extends Controller
             })
             ->count();
 
+        $Stotaltransfers = (clone $query)
+            ->where(function ($q) {
+                $q->where('transfers', 1);
+            })
+            ->count();
+
 
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
@@ -3159,6 +3165,14 @@ class CallReportController extends Controller
                 $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
             })
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        $hourlyTransfers = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate)
+            ->where('transfers', 1)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3185,6 +3199,19 @@ class CallReportController extends Controller
         $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
         $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
         $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+
+        $tr8to9am  = $hourlyTransfers[8]  ?? 0;
+        $tr9to10am = $hourlyTransfers[9]  ?? 0;
+        $tr10to11am = $hourlyTransfers[10] ?? 0;
+        $tr11to12pm = $hourlyTransfers[11] ?? 0;
+        $tr12to1pm = $hourlyTransfers[12] ?? 0;
+        $tr1to2pm  = $hourlyTransfers[13] ?? 0;
+        $tr2to3pm  = $hourlyTransfers[14] ?? 0;
+        $tr3to4pm  = $hourlyTransfers[15] ?? 0;
+        $tr4to5pm  = $hourlyTransfers[16] ?? 0;
+        $tr5to6pm  = $hourlyTransfers[17] ?? 0;
+        $tr6to7pm  = $hourlyTransfers[18] ?? 0;
+        $tr7to8pm  = $hourlyTransfers[19] ?? 0;
 
         $o8to9am = $hourlyOtherCalls[8] ?? 0;
         $o9to10am = $hourlyOtherCalls[9] ?? 0;
@@ -3389,6 +3416,7 @@ class CallReportController extends Controller
             'otherCalls',
             'juniorUser',
             'StotalCalls',
+            'Stotaltransfers',
             'ScalledAndMailedCalls',
             'SotherCalls',
             'selectedDate',
@@ -3404,6 +3432,18 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'tr8to9am',
+            'tr9to10am',
+            'tr10to11am',
+            'tr11to12pm',
+            'tr12to1pm',
+            'tr1to2pm',
+            'tr2to3pm',
+            'tr3to4pm',
+            'tr4to5pm',
+            'tr5to6pm',
+            'tr6to7pm',
+            'tr7to8pm',
             'o8to9am',
             'o9to10am',
             'o10to11am',
