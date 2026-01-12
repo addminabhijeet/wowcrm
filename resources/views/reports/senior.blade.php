@@ -672,8 +672,8 @@
                         </div>
 
                         <!-- Stats Section -->
-                        <div class="row g-3 mb-4 flex-nowrap overflow-auto">
-                            <div class="col-sm-6 col-md-3">
+                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3 mb-4">
+                            <div class="col">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-primary fs-2">
                                         <i class="bi bi-telephone-fill"></i>
@@ -684,7 +684,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-3">
+
+                            <div class="col">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-success fs-2">
                                         <i class="bi bi-bar-chart-fill"></i>
@@ -695,7 +696,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-3">
+
+                            <div class="col">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
@@ -706,7 +708,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-3">
+
+                            <div class="col">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
@@ -717,7 +720,8 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="col-sm-6 col-md-3">
+
+                            <div class="col">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
@@ -745,7 +749,7 @@
                                 <tbody>
                                     <tr>
                                         <td style="white-space: nowrap;">08.00AM-09.00AM</td>
-                                         <td class="text-center"><span class="badge bg-info">{{ $f8to9am }}</span>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f8to9am }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t8to9am }}</span>
                                         </td>
@@ -778,7 +782,7 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">11.00AM-12.00PM</td>
-                                         <td class="text-center"><span class="badge bg-info">{{ $f11to12pm }}</span>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f11to12pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span>
                                         </td>
@@ -855,7 +859,7 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">06.00PM-07.00PM</td>
-                                         <td class="text-center"><span class="badge bg-info">{{ $f6to7pm }}</span>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f6to7pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t6to7pm }}</span>
                                         </td>
@@ -866,7 +870,7 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">07.00PM-08.00PM</td>
-                                         <td class="text-center"><span class="badge bg-info">{{ $f7to8pm }}</span>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f7to8pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t7to8pm }}</span>
                                         </td>
