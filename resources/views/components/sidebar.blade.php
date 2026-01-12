@@ -144,9 +144,13 @@
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.seniormodcandmfollow') }}"><i
+                        <li><a href="{{ route('google.sheet.seniormodcandm') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter<br>(Called &
-                                Mailed)</a>
+                                Mailed)</a></li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniormodcandmfollow') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter<br>(Self Follow Up)</a>
                         </li>
                     </ul>
 
@@ -168,11 +172,7 @@
                         </li>
                     </ul>
 
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.seniormodcandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self <br>(Called &
-                                Mailed)</a></li>
-                    </ul>
+
 
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorpaid') }}"><i
