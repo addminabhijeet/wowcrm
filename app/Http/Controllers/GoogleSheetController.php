@@ -495,21 +495,26 @@ class GoogleSheetController extends Controller
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+        $query = GoogleSheetData::where(function ($q) use ($authUser) {
 
-                $q2->where('created_by', $authUser->id . '|senior')
-                    ->orWhere('created_by', '0|senior')
-                    ->orWhere('created_by', 'LIKE', $userPattern)
-                    ->orWhere('created_by', 'LIKE', $zeroPattern);
-            })
-                // EXCLUSION: Do NOT show rows having more than one "|senior"
-                ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
+            $q->where('created_by', $authUser->id . '|senior')
+                ->orWhere('created_by', '0|senior')
+                ->orWhere('created_by', 'LIKE', '%:' . $authUser->id . '|senior')
+                ->orWhere('created_by', 'LIKE', '%:0|senior');
         })
+            // ✅ Only ONE senior
+            ->whereRaw("
+            (LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', ''))) = LENGTH('|senior')
+        ")
+                    // ✅ Valid senior placement
+                    ->whereRaw("
+            created_by REGEXP '(^[0-9]+\\|senior$|^[0-9]+\\|junior:[0-9]+\\|senior$)'
+        ")
+            // ✅ Transfer check
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
-            })->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) NOT REGEXP '^[0-9]+\\|senior$'");
+            });
 
         // Filter by selected junior
         if ($juniorUserId) {
@@ -1404,7 +1409,7 @@ class GoogleSheetController extends Controller
         })
             ->orWhere(function ($q) use ($authUser) {
                 $q->where('created_by', $authUser->id . '|senior:0|senior');
-            })            ->where(function ($q) {
+            })->where(function ($q) {
                 $q->whereNotNull('TransferRemark')
                     ->where('TransferRemark', '!=', '');
             });
