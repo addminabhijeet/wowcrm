@@ -1394,24 +1394,28 @@ class GoogleSheetController extends Controller
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+        $query = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
 
-            $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+            $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
 
-                $q2->where('created_by', $authUser->id . '|senior')
-                    ->orWhere('created_by', '0|senior')
-                    ->orWhere('created_by', 'LIKE', $userPattern)
-                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+                $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+                    $q2->where('created_by', $authUser->id . '|senior')
+                        ->orWhere('created_by', '0|senior')
+                        ->orWhere('created_by', 'LIKE', $userPattern)
+                        ->orWhere('created_by', 'LIKE', $zeroPattern);
+                })
+                    // ❌ Exclude rows having more than one "|senior"
+                    ->whereRaw(
+                        "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
+                    );
             })
-                // EXCLUSION: Do NOT show rows having more than one "|senior"
-                ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
+                // ✅ Exception case
+                ->orWhere('created_by', $authUser->id . '|senior:0|senior');
         })
-            ->orWhere(function ($q) use ($authUser) {
-                $q->where('created_by', $authUser->id . '|senior:0|senior');
-            })->where(function ($q) {
-                $q->whereNotNull('TransferRemark')
-                    ->where('TransferRemark', '!=', '');
-            });
+            // ✅ APPLY TO ALL RESULTS
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '');
+
 
 
 
