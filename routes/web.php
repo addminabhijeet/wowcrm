@@ -167,16 +167,17 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/admin/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadadminResume'])->name('download.admin.resume');
 
     Route::get('/dashboard/senior/google-sheet', [GoogleSheetController::class, 'senior'])->name('google.sheet.senior');
-        Route::get('/dashboard/senior/google-sheet-follow', [GoogleSheetController::class, 'seniorfollow'])->name('google.sheet.seniorfollow');
+    Route::get('/dashboard/senior/google-sheet-follow', [GoogleSheetController::class, 'seniorfollow'])->name('google.sheet.seniorfollow');
     Route::get('/dashboard/career/google-sheet', [GoogleSheetController::class, 'career'])->name('google.sheet.career');
     Route::get('/dashboard/writer/google-sheet', [GoogleSheetController::class, 'writer'])->name('google.sheet.writer');
     Route::get('/dashboard/senior/google-sheet-candm', [GoogleSheetController::class, 'seniorcandm'])->name('google.sheet.seniorcandm');
     Route::get('/dashboard/senior/google-sheet-admincandm', [GoogleSheetController::class, 'senioradmincandm'])->name('google.sheet.senioradmincandm');
     Route::get('/dashboard/senior/google-sheet-mod', [GoogleSheetController::class, 'seniormod'])->name('google.sheet.seniormod');
     Route::get('/dashboard/senior/google-sheet-tra', [GoogleSheetController::class, 'seniortra'])->name('google.sheet.seniortra');
+    Route::get('/dashboard/senior/google-sheet-tra-follow', [GoogleSheetController::class, 'seniortrafollow'])->name('google.sheet.seniortrafollow');
     Route::post('/junior/transfers-update', [GoogleSheetController::class, 'juniorupdatetra'])->name('junior.transfers.update');
     Route::get('/dashboard/senior/google-sheet-modcandm', [GoogleSheetController::class, 'seniormodcandm'])->name('google.sheet.seniormodcandm');
-        Route::get('/dashboard/senior/google-sheet-modcandmfollow', [GoogleSheetController::class, 'seniormodcandmfollow'])->name('google.sheet.seniormodcandmfollow');
+    Route::get('/dashboard/senior/google-sheet-modcandmfollow', [GoogleSheetController::class, 'seniormodcandmfollow'])->name('google.sheet.seniormodcandmfollow');
     Route::get('/dashboard/senior/google-sheet-paid', [GoogleSheetController::class, 'seniorpaid'])->name('google.sheet.seniorpaid');
     Route::get('/dashboard/senior/google-sheet-con', [GoogleSheetController::class, 'seniorcon'])->name('google.sheet.seniorcon');
     Route::get('/dashboard/accountant/google-sheet-paid', [GoogleSheetController::class, 'accountantpaid'])->name('google.sheet.accountantpaid');
@@ -219,7 +220,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/junior/google-sheet', [GoogleSheetController::class, 'junior'])->name('google.sheet.junior');
     Route::get('/dashboard/junior/google-sheet-candm', [GoogleSheetController::class, 'juniorcandm'])->name('google.sheet.junior.candm');
-        Route::get('/dashboard/junior/google-sheet-tra', [GoogleSheetController::class, 'juniortra'])->name('google.sheet.junior.tra');
+    Route::get('/dashboard/junior/google-sheet-tra', [GoogleSheetController::class, 'juniortra'])->name('google.sheet.junior.tra');
     Route::get('/dashboard/junior/google-sheet-modcandm', [GoogleSheetController::class, 'juniormodcandm'])->name('google.sheet.juniormodcandm');
     Route::post('/dashboard/junior/google-sheet-candm-update', [GoogleSheetController::class, 'juniorcandmupdate'])->name('juniorcandmupdate');
     Route::post('/dashboard/senior/google-sheet-candm-update', [GoogleSheetController::class, 'seniorcandmupdate'])->name('seniorcandmupdate');
