@@ -581,72 +581,68 @@
                                     <i class="bi bi-telephone-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="fw-bold d-block">Total Calls</small>
+                                    <small class="text-muted d-block">Total Calls</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MtotalCalls }}</h4>
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-md-2">
                             <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                 <div class="icon mb-2 text-success fs-2">
                                     <i class="bi bi-bar-chart-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="fw-bold d-block">Other Calls</small>
-                                    <h4 class="fw-bold text-dark mb-0">{{ $MotherCalls }}</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                <div class="icon mb-2 text-warning fs-2">
-                                    <i class="bi bi-envelope-paper-fill"></i>
-                                </div>
-                                <div>
-                                    <small class="fw-bold d-block">Called & Mailed</small>
-                                    <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                <div class="icon mb-2 text-info fs-2">
-                                    <i class="bi bi-cash-stack"></i>
-                                </div>
-                                <div>
-                                    <small class="fw-bold d-block">Ready To Pay</small>
-                                    <h4 class="fw-bold text-dark mb-0">{{ $MreadyToPaidCalls }}</h4>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-2">
-                            <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                <div class="icon mb-2 text-info fs-2">
-                                    <i class="bi bi-cash-stack"></i>
-                                </div>
-                                <div>
-                                    <small class="fw-bold d-block">Follow Up</small>
+                                    <small class="text-muted d-block">Sr IT Recruiter<br>(Follow Up)</small>
                                     <h4 class="fw-bold text-dark mb-0">{{ $MfollowUpCalls }}</h4>
                                 </div>
                             </div>
                         </div>
-
                         <div class="col-md-2">
                             <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                 <div class="icon mb-2 text-warning fs-2">
                                     <i class="bi bi-envelope-paper-fill"></i>
                                 </div>
                                 <div>
-                                    <small class="fw-bold d-block">Per Day Calls</small>
-                                    <h4 class="fw-bold text-dark mb-0">{{ $MAvgTotalCalls }}</h4>
+                                    <small class="text-muted d-block">Sr IT Recruiter<br>(Called & Mailed)</small>
+                                    <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                <div class="icon mb-2 text-warning fs-2">
+                                    <i class="bi bi-envelope-paper-fill"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Sr IT Recruiter<br>(Self follow up)</small>
+                                    <h4 class="fw-bold text-dark mb-0">{{ $MselffollowupCalls }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                <div class="icon mb-2 text-warning fs-2">
+                                    <i class="bi bi-envelope-paper-fill"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Sr IT Recruiter<br>(Transfered Follow Up)</small>
+                                    <h4 class="fw-bold text-dark mb-0">{{ $MtransferedfollowUpCalls }}</h4>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                <div class="icon mb-2 text-warning fs-2">
+                                    <i class="bi bi-envelope-paper-fill"></i>
+                                </div>
+                                <div>
+                                    <small class="text-muted d-block">Ready To Paid</small>
+                                    <h4 class="fw-bold text-dark mb-0">{{ $MreadyToPaidCalls }}</h4>
                                 </div>
                             </div>
                         </div>
                     </div>
+
 
 
 
@@ -703,7 +699,7 @@
                                         </tr>
                                         <tr>
                                             <td>04</td>
-                                             <td class="text-center"><span
+                                            <td class="text-center"><span
                                                     class="badge bg-info">{{ $fDay4 }}</span></td>
                                             <td class="text-center"><span
                                                     class="badge bg-info">{{ $tDay4 }}</span></td>
@@ -877,7 +873,7 @@
                                         </tr>
                                         <tr>
                                             <td>18</td>
-                                             <td class="text-center"><span
+                                            <td class="text-center"><span
                                                     class="badge bg-info">{{ $fDay18 }}</span></td>
                                             <td class="text-center"><span
                                                     class="badge bg-info">{{ $tDay18 }}</span></td>
@@ -888,7 +884,7 @@
                                         </tr>
                                         <tr>
                                             <td>19</td>
-                                             <td class="text-center"><span
+                                            <td class="text-center"><span
                                                     class="badge bg-info">{{ $fDay19 }}</span></td>
                                             <td class="text-center"><span
                                                     class="badge bg-info">{{ $tDay19 }}</span></td>
@@ -910,7 +906,7 @@
                                         </tr>
                                         <tr>
                                             <td>21</td>
-                                               <td class="text-center"><span
+                                            <td class="text-center"><span
                                                     class="badge bg-info">{{ $fDay21 }}</span></td>
                                             <td class="text-center"><span
                                                     class="badge bg-info">{{ $tDay21 }}</span></td>
@@ -921,7 +917,7 @@
                                         </tr>
                                         <tr>
                                             <td>22</td>
-                                             <td class="text-center"><span
+                                            <td class="text-center"><span
                                                     class="badge bg-info">{{ $fDay22 }}</span></td>
                                             <td class="text-center"><span
                                                     class="badge bg-info">{{ $tDay22 }}</span></td>
@@ -954,7 +950,7 @@
                                         </tr>
                                         <tr>
                                             <td>25</td>
-                                             <td class="text-center"><span
+                                            <td class="text-center"><span
                                                     class="badge bg-info">{{ $fDay25 }}</span></td>
                                             <td class="text-center"><span
                                                     class="badge bg-info">{{ $tDay25 }}</span></td>
@@ -965,7 +961,7 @@
                                         </tr>
                                         <tr>
                                             <td>26</td>
-                                             <td class="text-center"><span
+                                            <td class="text-center"><span
                                                     class="badge bg-info">{{ $fDay26 }}</span></td>
                                             <td class="text-center"><span
                                                     class="badge bg-info">{{ $tDay26 }}</span></td>
@@ -998,7 +994,7 @@
                                         </tr>
                                         <tr>
                                             <td>29</td>
-                                             <td class="text-center"><span
+                                            <td class="text-center"><span
                                                     class="badge bg-info">{{ $fDay29 }}</span></td>
                                             <td class="text-center"><span
                                                     class="badge bg-info">{{ $tDay29 }}</span></td>
