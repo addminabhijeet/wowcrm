@@ -39,6 +39,13 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
+        $followUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->count();
+
+
         // Total other calls (excluding Called & Mailed)
         $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->where(function ($q) {
@@ -62,6 +69,7 @@ class CallReportController extends Controller
         // Selected date totals
         $StotalCalls = $tquery->count();
         $ScalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
+        $SfollowUpCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->whereNotNull('TransferRemark')->where('TransferRemark', '!=', '')->count();
         $SreadyToPaidCalls = (clone $tquery)->where('Exe_Remarks', 'Ready To Pay')->count();
         $SotherCalls = (clone $tquery)
             ->where(function ($q) {
@@ -83,6 +91,18 @@ class CallReportController extends Controller
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
+        // Hour-wise "Ready To Pay" counts
+        $hourlyFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
 
         // Hour-wise "Ready To Pay" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
@@ -136,6 +156,19 @@ class CallReportController extends Controller
         $r5to6pm   = $hourlyReadyToPaid[17] ?? 0;
         $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
         $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
+
+        $f8to9am = $hourlyFollowUp[8] ?? 0;
+        $f9to10am = $hourlyFollowUp[9] ?? 0;
+        $f10to11am = $hourlyFollowUp[10] ?? 0;
+        $f11to12pm = $hourlyFollowUp[11] ?? 0;
+        $f12to1pm  = $hourlyFollowUp[12] ?? 0;
+        $f1to2pm   = $hourlyFollowUp[13] ?? 0;
+        $f2to3pm   = $hourlyFollowUp[14] ?? 0;
+        $f3to4pm   = $hourlyFollowUp[15] ?? 0;
+        $f4to5pm   = $hourlyFollowUp[16] ?? 0;
+        $f5to6pm   = $hourlyFollowUp[17] ?? 0;
+        $f6to7pm   = $hourlyFollowUp[18] ?? 0;
+        $f7to8pm   = $hourlyFollowUp[19] ?? 0;
 
         $o8to9am = $hourlyOtherCalls[8] ?? 0;
         $o9to10am = $hourlyOtherCalls[9] ?? 0;
@@ -319,10 +352,12 @@ class CallReportController extends Controller
             'juniorUser',
             'calledAndMailedCalls',
             'readyToPaidCalls',
+            'followUpCalls',
             'otherCalls',
             'StotalCalls',
             'ScalledAndMailedCalls',
             'SreadyToPaidCalls',
+            'SfollowUpCalls',
             'SotherCalls',
             'selectedDate',
             't8to9am',
@@ -337,6 +372,18 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'f8to9am',
+            'f9to10am',
+            'f10to11am',
+            'f11to12pm',
+            'f12to1pm',
+            'f1to2pm',
+            'f2to3pm',
+            'f3to4pm',
+            'f4to5pm',
+            'f5to6pm',
+            'f6to7pm',
+            'f7to8pm',
             'r8to9am',
             'r9to10am',
             'r10to11am',
@@ -392,6 +439,12 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
+        $followUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->count();
+
         // Total other calls (excluding Called & Mailed)
         $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->where(function ($q) {
@@ -415,6 +468,15 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->count();
+
+        // Total "Ready To Pay" calls
+        $MfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
             ->count();
 
         // Total "Ready To Pay" calls
@@ -444,6 +506,19 @@ class CallReportController extends Controller
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
+
+        // Daily "Follow Up" counts
+        $dailyFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->groupBy('day')
+            ->pluck('count', 'day')
+            ->toArray();
+
 
         // Daily "Ready To Pay" counts
         $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
@@ -566,6 +641,38 @@ class CallReportController extends Controller
         $rDay29 = $dailyReadyToPaid[29] ?? 0;
         $rDay30 = $dailyReadyToPaid[30] ?? 0;
         $rDay31 = $dailyReadyToPaid[31] ?? 0;
+
+        $fDay1  = $dailyFollowUp[1]  ?? 0;
+        $fDay2  = $dailyFollowUp[2]  ?? 0;
+        $fDay3  = $dailyFollowUp[3]  ?? 0;
+        $fDay4  = $dailyFollowUp[4]  ?? 0;
+        $fDay5  = $dailyFollowUp[5]  ?? 0;
+        $fDay6  = $dailyFollowUp[6]  ?? 0;
+        $fDay7  = $dailyFollowUp[7]  ?? 0;
+        $fDay8  = $dailyFollowUp[8]  ?? 0;
+        $fDay9  = $dailyFollowUp[9]  ?? 0;
+        $fDay10 = $dailyFollowUp[10] ?? 0;
+        $fDay11 = $dailyFollowUp[11] ?? 0;
+        $fDay12 = $dailyFollowUp[12] ?? 0;
+        $fDay13 = $dailyFollowUp[13] ?? 0;
+        $fDay14 = $dailyFollowUp[14] ?? 0;
+        $fDay15 = $dailyFollowUp[15] ?? 0;
+        $fDay16 = $dailyFollowUp[16] ?? 0;
+        $fDay17 = $dailyFollowUp[17] ?? 0;
+        $fDay18 = $dailyFollowUp[18] ?? 0;
+        $fDay19 = $dailyFollowUp[19] ?? 0;
+        $fDay20 = $dailyFollowUp[20] ?? 0;
+        $fDay21 = $dailyFollowUp[21] ?? 0;
+        $fDay22 = $dailyFollowUp[22] ?? 0;
+        $fDay23 = $dailyFollowUp[23] ?? 0;
+        $fDay24 = $dailyFollowUp[24] ?? 0;
+        $fDay25 = $dailyFollowUp[25] ?? 0;
+        $fDay26 = $dailyFollowUp[26] ?? 0;
+        $fDay27 = $dailyFollowUp[27] ?? 0;
+        $fDay28 = $dailyFollowUp[28] ?? 0;
+        $fDay29 = $dailyFollowUp[29] ?? 0;
+        $fDay30 = $dailyFollowUp[30] ?? 0;
+        $fDay31 = $dailyFollowUp[31] ?? 0;
 
         $juniorUser = $user;
 
@@ -736,9 +843,11 @@ class CallReportController extends Controller
             'juniorUser',
             'calledAndMailedCalls',
             'readyToPaidCalls',
+            'followUpCalls',
             'otherCalls',
             'MtotalCalls',
             'McalledAndMailedCalls',
+            'MfollowUpCalls',
             'MreadyToPaidCalls',
             'MotherCalls',
             'selectedMonth',
@@ -841,6 +950,39 @@ class CallReportController extends Controller
             'rDay29',
             'rDay30',
             'rDay31',
+
+            // --- Follow Up daily ---
+            'fDay1',
+            'fDay2',
+            'fDay3',
+            'fDay4',
+            'fDay5',
+            'fDay6',
+            'fDay7',
+            'fDay8',
+            'fDay9',
+            'fDay10',
+            'fDay11',
+            'fDay12',
+            'fDay13',
+            'fDay14',
+            'fDay15',
+            'fDay16',
+            'fDay17',
+            'fDay18',
+            'fDay19',
+            'fDay20',
+            'fDay21',
+            'fDay22',
+            'fDay23',
+            'fDay24',
+            'fDay25',
+            'fDay26',
+            'fDay27',
+            'fDay28',
+            'fDay29',
+            'fDay30',
+            'fDay31',
 
             'targetGiven',
             'targetAchieved',
@@ -1584,6 +1726,12 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
+        $followUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->count();
+
         // Total other calls (excluding Called & Mailed)
         $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->where(function ($q) {
@@ -1607,6 +1755,7 @@ class CallReportController extends Controller
         // Selected date totals
         $StotalCalls = $tquery->count();
         $ScalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
+        $SfollowUpCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->whereNotNull('TransferRemark')->where('TransferRemark', '!=', '')->count();
         $SreadyToPaidCalls = (clone $tquery)->where('Exe_Remarks', 'Ready To Pay')->count();
         $SotherCalls = (clone $tquery)
             ->where(function ($q) {
@@ -1625,6 +1774,17 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Hour-wise "Ready To Pay" counts
+        $hourlyFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -1681,6 +1841,19 @@ class CallReportController extends Controller
         $r5to6pm   = $hourlyReadyToPaid[17] ?? 0;
         $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
         $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
+
+        $f8to9am = $hourlyFollowUp[8] ?? 0;
+        $f9to10am = $hourlyFollowUp[9] ?? 0;
+        $f10to11am = $hourlyFollowUp[10] ?? 0;
+        $f11to12pm = $hourlyFollowUp[11] ?? 0;
+        $f12to1pm  = $hourlyFollowUp[12] ?? 0;
+        $f1to2pm   = $hourlyFollowUp[13] ?? 0;
+        $f2to3pm   = $hourlyFollowUp[14] ?? 0;
+        $f3to4pm   = $hourlyFollowUp[15] ?? 0;
+        $f4to5pm   = $hourlyFollowUp[16] ?? 0;
+        $f5to6pm   = $hourlyFollowUp[17] ?? 0;
+        $f6to7pm   = $hourlyFollowUp[18] ?? 0;
+        $f7to8pm   = $hourlyFollowUp[19] ?? 0;
 
         $o8to9am = $hourlyOtherCalls[8] ?? 0;
         $o9to10am = $hourlyOtherCalls[9] ?? 0;
@@ -1864,10 +2037,12 @@ class CallReportController extends Controller
             'juniorUser',
             'calledAndMailedCalls',
             'readyToPaidCalls',
+            'followUpCalls',
             'otherCalls',
             'StotalCalls',
             'ScalledAndMailedCalls',
             'SreadyToPaidCalls',
+            'SfollowUpCalls',
             'SotherCalls',
             'selectedDate',
             't8to9am',
@@ -1883,6 +2058,18 @@ class CallReportController extends Controller
             't5to6pm',
             't6to7pm',
             't7to8pm',
+            'f8to9am',
+            'f9to10am',
+            'f10to11am',
+            'f11to12pm',
+            'f12to1pm',
+            'f1to2pm',
+            'f2to3pm',
+            'f3to4pm',
+            'f4to5pm',
+            'f5to6pm',
+            'f6to7pm',
+            'f7to8pm',
             'r8to9am',
             'r9to10am',
             'r10to11am',
@@ -2628,6 +2815,12 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
+        $followUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->count();
+
         // Total other calls (excluding Called & Mailed)
         $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->where(function ($q) {
@@ -2654,6 +2847,15 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Ready To Pay" calls
+        $MfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->count();
+
+        // Total "Ready To Pay" calls
         $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -2677,6 +2879,18 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->groupBy('day')
+            ->pluck('count', 'day')
+            ->toArray();
+
+        // Daily "Follow Up" counts
+        $dailyFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -2802,6 +3016,38 @@ class CallReportController extends Controller
         $rDay29 = $dailyReadyToPaid[29] ?? 0;
         $rDay30 = $dailyReadyToPaid[30] ?? 0;
         $rDay31 = $dailyReadyToPaid[31] ?? 0;
+
+        $fDay1  = $dailyFollowUp[1]  ?? 0;
+        $fDay2  = $dailyFollowUp[2]  ?? 0;
+        $fDay3  = $dailyFollowUp[3]  ?? 0;
+        $fDay4  = $dailyFollowUp[4]  ?? 0;
+        $fDay5  = $dailyFollowUp[5]  ?? 0;
+        $fDay6  = $dailyFollowUp[6]  ?? 0;
+        $fDay7  = $dailyFollowUp[7]  ?? 0;
+        $fDay8  = $dailyFollowUp[8]  ?? 0;
+        $fDay9  = $dailyFollowUp[9]  ?? 0;
+        $fDay10 = $dailyFollowUp[10] ?? 0;
+        $fDay11 = $dailyFollowUp[11] ?? 0;
+        $fDay12 = $dailyFollowUp[12] ?? 0;
+        $fDay13 = $dailyFollowUp[13] ?? 0;
+        $fDay14 = $dailyFollowUp[14] ?? 0;
+        $fDay15 = $dailyFollowUp[15] ?? 0;
+        $fDay16 = $dailyFollowUp[16] ?? 0;
+        $fDay17 = $dailyFollowUp[17] ?? 0;
+        $fDay18 = $dailyFollowUp[18] ?? 0;
+        $fDay19 = $dailyFollowUp[19] ?? 0;
+        $fDay20 = $dailyFollowUp[20] ?? 0;
+        $fDay21 = $dailyFollowUp[21] ?? 0;
+        $fDay22 = $dailyFollowUp[22] ?? 0;
+        $fDay23 = $dailyFollowUp[23] ?? 0;
+        $fDay24 = $dailyFollowUp[24] ?? 0;
+        $fDay25 = $dailyFollowUp[25] ?? 0;
+        $fDay26 = $dailyFollowUp[26] ?? 0;
+        $fDay27 = $dailyFollowUp[27] ?? 0;
+        $fDay28 = $dailyFollowUp[28] ?? 0;
+        $fDay29 = $dailyFollowUp[29] ?? 0;
+        $fDay30 = $dailyFollowUp[30] ?? 0;
+        $fDay31 = $dailyFollowUp[31] ?? 0;
 
         $juniorUser = $user;
 
@@ -2977,9 +3223,11 @@ class CallReportController extends Controller
             'juniorUser',
             'calledAndMailedCalls',
             'readyToPaidCalls',
+            'followUpCalls',
             'otherCalls',
             'MtotalCalls',
             'McalledAndMailedCalls',
+            'MfollowUpCalls',
             'MreadyToPaidCalls',
             'MotherCalls',
             'selectedMonth',
@@ -3082,6 +3330,39 @@ class CallReportController extends Controller
             'rDay29',
             'rDay30',
             'rDay31',
+
+            // --- Follow Up daily ---
+            'fDay1',
+            'fDay2',
+            'fDay3',
+            'fDay4',
+            'fDay5',
+            'fDay6',
+            'fDay7',
+            'fDay8',
+            'fDay9',
+            'fDay10',
+            'fDay11',
+            'fDay12',
+            'fDay13',
+            'fDay14',
+            'fDay15',
+            'fDay16',
+            'fDay17',
+            'fDay18',
+            'fDay19',
+            'fDay20',
+            'fDay21',
+            'fDay22',
+            'fDay23',
+            'fDay24',
+            'fDay25',
+            'fDay26',
+            'fDay27',
+            'fDay28',
+            'fDay29',
+            'fDay30',
+            'fDay31',
 
             'targetGiven',
             'targetAchieved',

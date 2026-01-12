@@ -861,6 +861,17 @@
                                     </div>
                                 </div>
                             </div>
+                            <div class="col-sm-6 col-md-3">
+                                <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                    <div class="icon mb-2 text-warning fs-2">
+                                        <i class="bi bi-envelope-paper-fill"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Follow Up</small>
+                                        <h4 class="fw-bold text-dark mb-0">{{ $SfollowUpCalls }}</h4>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <!-- Table Section -->
@@ -868,15 +879,18 @@
                             <table class="table table-hover table-bordered align-middle mb-0">
                                 <thead class="table-primary">
                                     <tr>
-                                        <th class="fw-semibold">⏰ Time Range</th>
-                                        <th class="fw-semibold text-center">📊 Called & Mailed Count</th>
-                                        <th class="fw-semibold text-center">📊 Ready To Pay Count</th>
-                                        <th class="fw-semibold text-center">📊 Other Call Count</th>
+                                        <th class="fw-semibold">Time Range</th>
+                                        <th class="fw-semibold text-center">Follow Up Count</th>
+                                        <th class="fw-semibold text-center">Called & Mailed Count</th>
+                                        <th class="fw-semibold text-center">Ready To Pay Count</th>
+                                        <th class="fw-semibold text-center">Other Call Count</th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     <tr>
                                         <td style="white-space: nowrap;">08.00AM-09.00AM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f8to9am }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t8to9am }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r8to9am }}</span>
@@ -886,6 +900,8 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">09.00AM-10.00AM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f9to10am }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t9to10am }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r9to10am }}</span>
@@ -895,6 +911,8 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">10.00AM-11.00AM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f10to11am }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t10to11am }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r10to11am }}</span>
@@ -904,6 +922,8 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">11.00AM-12.00PM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f11to12pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r11to12pm }}</span>
@@ -913,6 +933,8 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">12.00PM-01.00PM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f12to1pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t12to1pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r12to1pm }}</span>
@@ -922,6 +944,8 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">01.00PM-02.00PM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f1to2pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t1to2pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r1to2pm }}</span>
@@ -931,6 +955,8 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">02.00PM-03.00PM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f2to3pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t2to3pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r2to3pm }}</span>
@@ -940,6 +966,8 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">03.00PM-04.00PM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f3to4pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t3to4pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r3to4pm }}</span>
@@ -949,6 +977,8 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">04.00PM-05.00PM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f4to5pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t4to5pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r4to5pm }}</span>
@@ -958,6 +988,8 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">05.00PM-06.00PM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f5to6pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t5to6pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r5to6pm }}</span>
@@ -967,6 +999,8 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">06.00PM-07.00PM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f6to7pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t6to7pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r6to7pm }}</span>
@@ -976,6 +1010,8 @@
                                     </tr>
                                     <tr>
                                         <td style="white-space: nowrap;">07.00PM-08.00PM</td>
+                                        <td class="text-center"><span class="badge bg-info">{{ $f7to8pm }}</span>
+                                        </td>
                                         <td class="text-center"><span class="badge bg-info">{{ $t7to8pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $r7to8pm }}</span>
@@ -1040,6 +1076,16 @@
                                 <div>
                                     <span class="text-secondary fw-normal d-block mb-1">Ready To Pay Calls (R2P)</span>
                                     <h5 class="fw-semibold mb-0">{{ $readyToPaidCalls }}</h5>
+                                </div>
+                                <div id="iconBarChartR2p" class="p-2"></div>
+                            </div>
+
+                            <!-- Follow Up Calls -->
+                            <div
+                                class="d-flex align-items-center justify-content-between p-3 border rounded-3 shadow-sm bg-white">
+                                <div>
+                                    <span class="text-secondary fw-normal d-block mb-1">Follow Up Calls</span>
+                                    <h5 class="fw-semibold mb-0">{{ $followUpCalls }}</h5>
                                 </div>
                                 <div id="iconBarChartR2p" class="p-2"></div>
                             </div>
