@@ -495,21 +495,34 @@ class GoogleSheetController extends Controller
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+        $query = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
 
-                $q2->where('created_by', $authUser->id . '|senior')
-                    ->orWhere('created_by', '0|senior')
-                    ->orWhere('created_by', 'LIKE', $userPattern)
-                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+            $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+
+                $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+                    $q2->where('created_by', $authUser->id . '|senior')
+                        ->orWhere('created_by', '0|senior')
+                        ->orWhere('created_by', 'LIKE', $userPattern)
+                        ->orWhere('created_by', 'LIKE', $zeroPattern);
+                })
+                    // ❌ Exclude rows with more than one "|senior"
+                    ->whereRaw(
+                        "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
+                    );
             })
-                // EXCLUSION: Do NOT show rows having more than one "|senior"
-                ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
+                // ✅ Exception: allow "5|senior:0|senior" only for auth user
+                ->orWhere('created_by', $authUser->id . '|senior:0|senior');
         })
+            // ✅ FINAL FILTER — applies to ALL results
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
-            })->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) NOT REGEXP '^[0-9]+\\|senior$'");
+            });
+
+
+
+
+
 
         // Filter by selected junior
         if ($juniorUserId) {
@@ -596,6 +609,7 @@ class GoogleSheetController extends Controller
         if ($request->ajax()) {
             return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
+
 
         return view('database.senior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
