@@ -597,6 +597,120 @@ class GoogleSheetController extends Controller
         return view('database.senior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
+    
+    public function seniorfollow(Request $request)
+    {
+        $authUser = Auth::user();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+        $juniorUserId = $request->input('junior_user'); // dropdown value
+        $page = $request->input('page', 1); // ✅ Ensure page input handled
+
+        $userPattern = "%:" . $authUser->id . "|senior";
+        $zeroPattern = "%:0|senior";
+
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+            $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+
+                $q2->where('created_by', $authUser->id . '|senior')
+                    ->orWhere('created_by', '0|senior')
+                    ->orWhere('created_by', 'LIKE', $userPattern)
+                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+            })
+                // EXCLUSION: Do NOT show rows having more than one "|senior"
+                ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
+        });
+
+
+        // Filter by selected junior
+        if ($juniorUserId) {
+            $query->where(function ($q) use ($juniorUserId) {
+                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+            });
+        }
+
+        // Search or specific row filter
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
+        $results = $query->orderBy('id', 'desc')->get();
+
+        // ✅ Transform after getting all filtered data
+        $transformed = $results->map(function ($item) use ($authUser) {
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                $names = [];
+
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SELF ({$userId}) ({$roleLabel})";
+                    } elseif ($userId == 0) {
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SYSTEM (0) ({$roleLabel})";
+                    } else {
+                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "{$name} ({$userId}) ({$roleLabel})";
+                    }
+                }
+
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        // ✅ Apply pagination AFTER transformation (like junior)
+        $perPage = 10;
+        $currentPage = $page;
+        $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transformed->forPage($currentPage, $perPage),
+            $transformed->count(),
+            $perPage,
+            $currentPage,
+            ['path' => url()->current(), 'query' => $request->query()]
+        );
+
+
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
+            ->where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
+
+        // ✅ Handle AJAX pagination and search
+        if ($request->ajax()) {
+            return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+        }
+
+        return view('database.seniorfollow', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+    }
+
 
     public function career(Request $request)
     {
@@ -937,6 +1051,99 @@ class GoogleSheetController extends Controller
         }
 
         return view('database.seniormodcandm', compact('data'));
+    }
+
+    public function seniormodcandmfollow(Request $request)
+    {
+        $authUser = Auth::user();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+
+        // SUBSTRING_INDEX-based filter with second part check
+        $query = GoogleSheetData::where(function ($q) use ($authUser) {
+
+            $seniorPart = $authUser->id . '|senior';
+
+            // CASE 2 ONLY: x|junior : <senior>|senior : <some>|senior
+            $q->whereRaw("
+                -- First part must be ANY junior
+                SUBSTRING_INDEX(created_by, ':', 1) LIKE '%|junior'
+            ")
+
+                ->whereRaw("
+                -- Second part must be the logged-in senior
+                SUBSTRING_INDEX(
+                    SUBSTRING_INDEX(created_by, ':', 2),
+                    ':',
+                    -1
+                ) = ?
+            ", [$seniorPart])
+
+                ->whereRaw("
+                -- Third part must end with |senior
+                SUBSTRING_INDEX(
+                    SUBSTRING_INDEX(created_by, ':', 3),
+                    ':',
+                    -1
+                ) LIKE '%|senior'
+            ");
+        });
+
+
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $data = $query->orderBy('Date', 'desc')->paginate(10);
+
+        // Map forwarded_by dynamically for multiple creators
+        $data->getCollection()->transform(function ($item) use ($authUser) {
+
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                // Split by ':' to handle multiple forwarded entries
+                $entries = explode(':', $item->created_by);
+
+                $names = [];
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                // Join all names for forwarded chain
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+
+        if ($request->ajax()) {
+            return view('database.partials.senior_table', compact('data'))->render();
+        }
+
+        return view('database.seniormodcandmfollow', compact('data'));
     }
 
     public function seniormod(Request $request)
