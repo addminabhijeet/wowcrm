@@ -21,7 +21,7 @@ class CallReportController extends Controller
     {
         $user = Auth::user();
         $createdByKey = "{$user->id}|senior";
-
+        $juniorUser = $user;
         // ================================
         // Main logic with LIKE filters
         // ================================
@@ -31,7 +31,7 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
             ->count();
 
         // Total "Ready To Pay" calls
@@ -52,11 +52,12 @@ class CallReportController extends Controller
         $selectedDate = $request->input('selected_date', date('Y-m-d'));
         $selectedMonth = date('Y-m', strtotime($selectedDate));
         [$year, $month] = explode('-', $selectedMonth);
+
         // Base query filtered by this senior and date
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereDate('created_at', $selectedDate);
+            ->whereDate('updated_at', $selectedDate);
         $tquery = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
-            ->whereDate('created_at', $selectedDate);
+            ->whereDate('updated_at', $selectedDate);
 
         // Selected date totals
         $StotalCalls = $tquery->count();
@@ -77,7 +78,7 @@ class CallReportController extends Controller
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereDate('created_at', $selectedDate)
+            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->groupBy('hour')
             ->pluck('count', 'hour')
@@ -86,7 +87,7 @@ class CallReportController extends Controller
         // Hour-wise "Ready To Pay" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
-            ->whereDate('created_at', $selectedDate)
+            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('hour')
             ->pluck('count', 'hour')
@@ -95,7 +96,7 @@ class CallReportController extends Controller
         // Hour-wise other calls
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
-            ->whereDate('created_at', $selectedDate)
+            ->whereDate('updated_at', $selectedDate)
             ->where(function ($q) {
                 $q->where(function ($q2) {
                     $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
@@ -107,7 +108,7 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        $juniorUser = $user;
+
 
         // Initialize hour blocks (10 AM - 8 PM)
         $t8to9am = $hourlyCalledMailed[8] ?? 0;
@@ -1860,6 +1861,7 @@ class CallReportController extends Controller
 
         return view('reports.allseniordaily', compact(
             'totalCalls',
+            'juniorUser',
             'calledAndMailedCalls',
             'readyToPaidCalls',
             'otherCalls',
