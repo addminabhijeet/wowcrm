@@ -997,6 +997,9 @@ class GoogleSheetController extends Controller
                     -1
                 ) LIKE '%|senior'
             ");
+        })->where(function ($q) {
+            $q->whereNull('TransferRemark')
+                ->orWhere('TransferRemark', '');
         });
 
 
@@ -1090,7 +1093,8 @@ class GoogleSheetController extends Controller
                     -1
                 ) LIKE '%|senior'
             ");
-        });
+        })->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '');
 
 
         if ($rowId) {
