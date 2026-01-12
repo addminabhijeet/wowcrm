@@ -1277,13 +1277,19 @@ class GoogleSheetController extends Controller
                 // EXCLUSION: Do NOT show rows having more than one "|senior"
                 ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
         })
-            ->where(function ($q) {
+            ->where(function ($q) use ($authUser) {
+                // ✅ Only rows where TransferRemark is null or empty
                 $q->whereNull('TransferRemark')
-                    ->orWhere('TransferRemark', '');
-            })
-            // ✅ EXCEPTION: allow "5|senior:0|senior" when auth id = 5
-            ->orWhere(function ($q) use ($authUser) {
-                $q->where('created_by', $authUser->id . '|senior:0|senior');
+                    ->orWhere('TransferRemark', '')
+
+                    // ✅ Include exception for "5|senior:0|senior" (only if auth id = 5)
+                    ->orWhere(function ($q2) use ($authUser) {
+                        $q2->where('created_by', $authUser->id . '|senior:0|senior')
+                            ->where(function ($q3) {
+                                $q3->whereNull('TransferRemark')
+                                    ->orWhere('TransferRemark', '');
+                            });
+                    });
             });
 
 
@@ -1401,14 +1407,20 @@ class GoogleSheetController extends Controller
                 // EXCLUSION: Do NOT show rows having more than one "|senior"
                 ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
         })
-            ->where(function ($q) {
+            ->where(function ($q) use ($authUser) {
+
+                // ✅ Only rows with TransferRemark NOT NULL or not empty
                 $q->whereNotNull('TransferRemark')
-                    ->where('TransferRemark', '!=', '');
-            })
-            // ✅ EXCEPTION: allow "5|senior:0|senior" when auth id = 5
-            ->orWhere(function ($q) use ($authUser) {
-                $q->where('created_by', $authUser->id . '|senior:0|senior');
+                    ->where('TransferRemark', '!=', '')
+
+                    // ✅ Exception for "5|senior:0|senior" (only if auth id = 5)
+                    ->orWhere(function ($q2) use ($authUser) {
+                        $q2->where('created_by', $authUser->id . '|senior:0|senior')
+                            ->whereNotNull('TransferRemark')
+                            ->where('TransferRemark', '!=', '');
+                    });
             });
+
 
 
 
