@@ -2084,19 +2084,47 @@ class CallReportController extends Controller
             ->whereDate('updated_at', $selectedDate);
 
         // Selected date totals
-        $StotalCalls = $tquery->count();
-        $ScalledAndMailedCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->count();
-        $SfollowUpCalls = (clone $query)->where('Exe_Remarks', 'Called & Mailed')->whereNotNull('TransferRemark')->where('TransferRemark', '!=', '')->count();
-        $SreadyToPaidCalls = (clone $tquery)->where('Exe_Remarks', 'Ready To Pay')->count();
+        // Self follow-up calls (Called & Mailed / Ready To Pay with TransferRemark)
+        $SselffollowupCalls = (clone $query)
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->count();
+
+        // Ready To Pay calls
+        $SreadyToPaidCalls = (clone $tquery)
+            ->where('Exe_Remarks', 'Ready To Pay')
+            ->count();
+
+        // Follow-up calls (Called & Mailed with TransferRemark)
+        $SfollowUpCalls = (clone $tquery)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->count();
+
+        // Transferred follow-up calls
+        $StransferedfollowUpCalls = (clone $tquery)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', '1')
+            ->count();
+
+        // Other calls (excluding Called & Mailed)
         $SotherCalls = (clone $tquery)
             ->where(function ($q) {
-                $q->where(function ($q2) {
-                    $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
-                        ->where('Exe_Remarks', '<>', 'Ready To Pay');
-                })
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
             })
             ->count();
+
+        $Stotalcall = (clone $tquery)->count();
+
+        $ScalledAndMailedCalls = (clone $tquery)
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
+            ->count();
+
 
 
 
@@ -2371,6 +2399,7 @@ class CallReportController extends Controller
             'followUpCalls',
             'otherCalls',
             'StotalCalls',
+            'StransferedfollowUpCalls',
             'ScalledAndMailedCalls',
             'SreadyToPaidCalls',
             'SfollowUpCalls',
