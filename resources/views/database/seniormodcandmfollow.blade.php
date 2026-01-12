@@ -30,7 +30,7 @@
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
 
-                
+
 
 
             </div>
@@ -288,7 +288,7 @@
 
                                     {{-- Status --}}
                                     <td>
-                                        @php $exeOptions = ['Called & Mailed','Ready To Pay', 'Follow Up']; @endphp
+                                        @php $exeOptions = ['Called & Mailed','Ready To Pay']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                             <option value="">-- Status --</option>
                                             @foreach ($exeOptions as $option)
