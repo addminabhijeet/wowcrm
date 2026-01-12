@@ -509,7 +509,7 @@ class GoogleSheetController extends Controller
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
-            });
+            })->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) NOT REGEXP '^[0-9]+\\|senior$'");
 
         // Filter by selected junior
         if ($juniorUserId) {
