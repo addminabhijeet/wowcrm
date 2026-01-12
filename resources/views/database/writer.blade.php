@@ -22,7 +22,7 @@
         <div
             class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
             <div class="d-flex align-items-center flex-wrap gap-3">
-                
+
 
                 <!-- Search Input -->
                 <form class="navbar-search position-relative" autocomplete="off">
