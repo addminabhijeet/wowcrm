@@ -162,13 +162,12 @@
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.senior') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT
-                                Recruiter<br>(Called
-                                & Mailed)</a></li>
+                                Recruiter<br>(Transfered Calls)</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniortrafollow') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter
-                                <br>(Follow Up)</a>
+                                <br>(Transfered Follow Up)</a>
                         </li>
                     </ul>
 
