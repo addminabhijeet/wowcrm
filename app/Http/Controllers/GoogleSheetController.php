@@ -1301,7 +1301,10 @@ class GoogleSheetController extends Controller
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
-            });
+            })
+            // ✅ NEW CONDITION — applies to ALL results (no logic change)
+            ->where('transfers', 0);
+
 
 
 
