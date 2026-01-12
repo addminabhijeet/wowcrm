@@ -124,13 +124,16 @@
                         <span>Database</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.senior') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter<br>(Called
-                                & Mailed)</a></li>
+                        <li><a href="{{ route('google.sheet.seniortra') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter
+                                <br>(Called & Mailed)</a>
+                        </li>
                     </ul>
+
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorfollow') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter<br>(Follow
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT
+                                Recruiter<br>(Follow
                                 Up)</a></li>
                     </ul>
 
@@ -141,10 +144,10 @@
                                 (Database)</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.seniortra') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter
-                                <br>(Called & Mailed)</a>
-                        </li>
+                        <li><a href="{{ route('google.sheet.senior') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT
+                                Recruiter<br>(Called
+                                & Mailed)</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniortrafollow') }}"><i
@@ -165,7 +168,8 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormodcandmfollow') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self <br>(Follow Up)</a>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self <br>(Follow
+                                Up)</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
