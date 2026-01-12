@@ -125,47 +125,47 @@
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.senior') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter (Called
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter<br>(Called
                                 & Mailed)</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorfollow') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter (Follow
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter<br>(Follow
                                 Up)</a></li>
                     </ul>
 
 
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorcandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter<br>
                                 (Database)</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniortra') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter
-                                (Called & Mailed)</a>
+                                <br>(Called & Mailed)</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniortrafollow') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter
-                                (Follow Up)</a>
+                                <br>(Follow Up)</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormod') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self (Other
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self <br>(Other
                                 Disposition)</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormodcandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self (Called &
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self <br>(Called &
                                 Mailed)</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormodcandmfollow') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self (Follow Up)</a>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self <br>(Follow Up)</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
