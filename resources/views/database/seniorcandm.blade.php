@@ -33,7 +33,7 @@
                     <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
-                
+
             </div>
         </div>
         <div class="card-body p-24" id="senior-table-wrapper">
@@ -801,7 +801,7 @@
                         url = "{{ route('seniorstore') }}";
                         method = "POST";
                     } else {
-                        url = "{{ route('seniorupdate') }}";
+                        url = "{{ route('juniorupdate') }}";
                         method = "POST";
                         formData.append("id", id);
                     }
