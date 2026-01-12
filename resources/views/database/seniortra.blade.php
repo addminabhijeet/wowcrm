@@ -30,7 +30,18 @@
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
 
-
+                <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user"
+                    id="junior-filter">
+                    <option value="">Select IT Recruiter</option>
+                    @foreach ($juniorUsers as $junior)
+                        <option value="{{ $junior->id }}">
+                            {{ $junior->name }}
+                            @if ($junior->gender)
+                                ({{ $junior->gender }})
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
 
 
             </div>
@@ -51,28 +62,32 @@
                     <table class="table bordered-table sm-table mb-0">
                         <thead>
                             <tr>
-                                <th scope="col">Row</th>
-                                <th scope="col">Date</th>
-                                <th scope="col">Name</th>
-                                <th scope="col">Email Address</th>
-                                <th scope="col">Phone Number</th>
-                                <th scope="col">Location</th>
+                                <th scope="col" class="text-center">Row</th>
+                                <th scope="col" class="text-center">Date</th>
+                                <th scope="col" class="text-center">Name</th>
+                                <th scope="col" class="text-center">Email Address</th>
+                                <th scope="col" class="text-center">Phone Number</th>
+                                <th scope="col" class="text-center">Location</th>
 
-                                <th scope="col">Relocation</th>
-                                <th scope="col">Graduation Date</th>
-                                <th scope="col">Immigration</th>
-                                <th scope="col">Course</th>
-                                <th scope="col">Amount</th>
-                                <th scope="col">Qualification</th>
+                                <th scope="col" class="text-center">Relocation</th>
+                                <th scope="col" class="text-center">Graduation Date</th>
+                                <th scope="col" class="text-center">Immigration</th>
+                                <th scope="col" class="text-center">Course</th>
+                                <th scope="col" class="text-center">Amount</th>
+                                <th scope="col" class="text-center">Qualification</th>
+                                <th scope="col" class="text-center">Time Zone</th>
+                                <th scope="col" class="text-center">1st Follow Up Remarks</th>
 
-                                <th scope="col">1st Follow Up Remarks</th>
-                                <th scope="col">Time Zone</th>
-                                <th scope="col">Forwarded By</th>
-                                <th scope="col">Resume</th>
-                                <th scope="col">Remark</th>
-                                <th scope="col">Transfer Remark</th>
-                                <th scope="col">Status</th>
-                                <th scope="col" class="text-center">Actions</th>
+                                <th scope="col" class="text-center">Forwarded By</th>
+                                <th scope="col" class="text-center">Resume</th>
+                                <th scope="col" class="text-center">Remark</th>
+                                <th scope="col" class="text-center">Transfer Remark</th>
+                                <th scope="col" class="text-center">Status</th>
+                                @auth
+                                    @if (auth()->user()->role !== 'operation')
+                                        <th scope="col" class="text-center">Actions</th>
+                                    @endif
+                                @endauth
                             </tr>
                         </thead>
                         <tbody id="sheet-table-body">
@@ -84,33 +99,31 @@
                                     {{-- Date --}}
                                     <td>
                                         <input type="text" class="form-control date-picker" data-key="Date"
-                                            value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}"
-                                            readonly style=" cursor: not-allowed;">
+                                            value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
                                     </td>
 
                                     {{-- Name --}}
                                     <td>
                                         <input type="text" class="form-control name-input" data-key="Name"
-                                            value="{{ $row->Name ?? '' }}" placeholder="Name" readonly>
+                                            value="{{ $row->Name ?? '' }}" placeholder="Name">
                                     </td>
 
                                     {{-- Email Address --}}
                                     <td>
                                         <input type="email" class="form-control email-input" data-key="Email Address"
-                                            value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail" readonly>
+                                            value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail">
                                     </td>
 
                                     {{-- Phone Number --}}
                                     <td>
                                         <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                            maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number"
-                                            readonly>
+                                            maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
                                     </td>
 
                                     {{-- Location --}}
                                     <td>
                                         <input type="text" class="form-control location-autocomplete" data-key="Location"
-                                            value="{{ $row->Location ?? '' }}" placeholder="Type location" readonly>
+                                            value="{{ $row->Location ?? '' }}" placeholder="Type location">
                                     </td>
 
 
@@ -118,7 +131,7 @@
                                     {{-- Relocation --}}
                                     <td>
                                         @php $relOptions = ['YES','NO']; @endphp
-                                        <select class="form-select dynamic-dropdown" data-key="Relocation" disabled>
+                                        <select class="form-select dynamic-dropdown" data-key="Relocation">
                                             <option value="">-- Relocation --</option>
                                             @foreach ($relOptions as $option)
                                                 <option value="{{ $option }}"
@@ -132,15 +145,14 @@
                                     {{-- Graduation Date --}}
                                     <td>
                                         <input type="text" class="form-control date-picker" data-key="Graduation Date"
-                                            value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}"
-                                            readonly>
+                                            value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
                                     </td>
 
                                     {{-- Immigration --}}
                                     <td>
                                         @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
-                                        <select class="form-select dynamic-dropdown" data-key="Immigration" disabled>
-                                            <option value="">-- Immigration --</option>
+                                        <select class="form-select dynamic-dropdown" data-key="Immigration">
+                                            <option value="">--Immigration --</option>
                                             @foreach ($immOptions as $option)
                                                 <option value="{{ $option }}"
                                                     {{ $row->Immigration === $option ? 'selected' : '' }}>
@@ -153,7 +165,7 @@
                                     {{-- Course --}}
                                     <td>
                                         @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
-                                        <select class="form-select dynamic-dropdown" data-key="Course" disabled>
+                                        <select class="form-select dynamic-dropdown" data-key="Course">
                                             <option value="">-- Course --</option>
                                             @foreach ($courseOptions as $option)
                                                 <option value="{{ $option }}"
@@ -168,7 +180,7 @@
                                     <td>
                                         <input type="text" class="form-control amount-input" data-key="Amount"
                                             value="{{ $row->Amount !== null ? '$' . number_format($row->Amount, 2) : '' }}"
-                                            placeholder="Amount (469)" readonly>
+                                            placeholder="Amount (469)">
                                     </td>
 
                                     {{-- Qualification --}}
@@ -189,7 +201,7 @@
                                             ];
                                         @endphp
 
-                                        <select class="form-select dynamic-dropdown" data-key="Qualification" disabled>
+                                        <select class="form-select dynamic-dropdown" data-key="Qualification">
                                             <option value="">-- Qualification --</option>
                                             @foreach ($qualificationOptions as $option)
                                                 <option value="{{ $option }}"
@@ -200,6 +212,19 @@
                                         </select>
                                     </td>
 
+                                    {{-- Time Zone --}}
+                                    <td>
+                                        @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
+                                        <select class="form-select dynamic-dropdown" data-key="Time Zone">
+                                            <option value="">-- Time Zone --</option>
+                                            @foreach ($timezoneOptions as $option)
+                                                <option value="{{ $option }}"
+                                                    {{ $row->Time_Zone === $option ? 'selected' : '' }}>
+                                                    {{ $option }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                    </td>
 
                                     {{-- 1st Follow Up Remarks --}}
                                     <td>
@@ -217,19 +242,7 @@
 
 
 
-                                    {{-- Time Zone --}}
-                                    <td>
-                                        @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
-                                        <select class="form-select dynamic-dropdown" data-key="Time Zone" disabled>
-                                            <option value="">-- Time Zone --</option>
-                                            @foreach ($timezoneOptions as $option)
-                                                <option value="{{ $option }}"
-                                                    {{ $row->Time_Zone === $option ? 'selected' : '' }}>
-                                                    {{ $option }}
-                                                </option>
-                                            @endforeach
-                                        </select>
-                                    </td>
+
 
                                     {{-- Forwarded By --}}
                                     <td>
@@ -271,7 +284,7 @@
                                             value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
-                                                                        {{-- TransferRemark --}}
+                                    {{-- TransferRemark --}}
                                     <td>
                                         <textarea type="text" name="TransferRemark_hidden" class="form-control transferremark-autocomplete data-field"
                                             data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
@@ -282,20 +295,12 @@
                                             placeholder="Type TransferRemark">
                                     </td>
 
+
+
                                     {{-- Status --}}
                                     <td>
-                                        @php
-                                            $exeOptions = [
-                                                'Called & Mailed',
-                                                'Not Interested',
-                                                'Interested',
-                                                'Others',
-                                                'Ready To Pay',
-                                                'VM',
-                                                'Busy',
-                                            ];
-                                        @endphp
-                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
+                                        @php $exeOptions = ['Called & Mailed','Ready To Pay']; @endphp
+                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                             <option value="">-- Status --</option>
                                             @foreach ($exeOptions as $option)
                                                 <option value="{{ $option }}"
@@ -306,13 +311,16 @@
                                         </select>
                                     </td>
 
-
-
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
-                                            <i class="fas fa-save"></i> Save
-                                        </button>
-                                    </td>
+                                    @auth
+                                        @if (auth()->user()->role !== 'operation')
+                                            <td class="text-center">
+                                                <button class="btn btn-sm btn-success save-btn"
+                                                    data-id="{{ $row->id }}">
+                                                    <i class="fas fa-save"></i> Save
+                                                </button>
+                                            </td>
+                                        @endif
+                                    @endauth
                                 </tr>
                             @endforeach
                         </tbody>
@@ -336,12 +344,6 @@
             font-size: .85rem;
             color: #6c757d;
         }
-
-        .pagination {
-            margin-left: 280px;
-            /* adjust as needed */
-        }
-
 
         select.dynamic-dropdown {
             min-width: 160px;
@@ -398,7 +400,85 @@
         document.addEventListener("DOMContentLoaded", function() {
             const tableBody = document.getElementById("sheet-table-body");
 
+            const exeColors = {
+                'Called & Mailed': '#d4edda',
+                'Ready To Pay': '#d4edda',
+                'Not Connected': '#f8d7da',
+                'Did Not Pickup': '#d4edda',
+                'Not Interested': '#f8d7da',
+                'Others': '#d1ecf1',
+                'Ready To Pay': '#e2e3e5',
+                'VM': '#fff3cd',
+                'Busy': '#cce5ff'
+            };
+            const immColors = {
+                'F1 CPT': '#d1ecf1',
+                'F1 OPT': '#cce5ff',
+                'STEM OPT': '#d4edda',
+                'H1B': '#fff3cd',
+                'B2': '#e2e3e5',
+                'B1': '#f8d7da',
+                'H4': '#ffe5b4',
+                'H4 EAD': '#e6ccff',
+                'GC/PR': '#d0f0c0',
+                'USC': '#f5c6cb'
+            };
 
+            const relColors = {
+                'YES': '#d4edda',
+                'NO': '#f8d7da'
+            };
+            const followColors = {
+                'Interested': '#d4edda',
+                'Doubt need Clarification': '#fff3cd',
+                'Money Issue': '#f8d7da',
+                'Not Interested': '#f8d7da',
+                "Don't Call": '#e2e3e5'
+            };
+            const courseColors = {
+                'BA': '#e2f0d9',
+                'SAS': '#d1ecf1',
+                'JAVA': '#cce5ff',
+                'QA': '#fff3cd',
+                'SQL': '#fbe7d0',
+                'PYTHON': '#d4edda',
+                'DOT NET': '#f8d7da'
+            };
+            const timezoneColors = {
+                'EST': '#e2f0d9',
+                'CST': '#d1ecf1',
+                'MST': '#cce5ff',
+                'PST': '#fff3cd'
+            };
+            const qualificationColors = {
+                'Masters': '#e2f0d9',
+                'Masters of Science': '#cce5ff',
+                'Bachelors': '#e2f0d9',
+                'PG': '#cce5ff',
+                'MBA': '#e2f0d9',
+                'PG Diploma': '#e2f0d9',
+                'M.Tech': '#cce5ff',
+                'B.Tech': '#e2f0d9',
+                'MA': '#e2f0d9',
+                'Associate Degree': '#cce5ff',
+                'Aerospace Proj. Manag.': '#e2f0d9',
+            };
+            const dateColor = "#e0f7fa";
+            const amountColors = "#e0f7fa";
+
+            function updateSelectColor(select) {
+                const val = select.value;
+                const key = select.dataset.key;
+                let color = '#ffffff';
+                if (key === 'Exe Remarks') color = exeColors[val] || color;
+                else if (key === 'Immigration') color = immColors[val] || color;
+                else if (key === 'Relocation') color = relColors[val] || color;
+                else if (key === '1st Follow Up Remarks') color = followColors[val] || color;
+                else if (key === 'Course') color = courseColors[val] || color;
+                else if (key === 'Time Zone') color = timezoneColors[val] || color;
+                else if (key === 'Qualification') color = qualificationColors[val] || color;
+                select.style.backgroundColor = color;
+            }
 
             function formatPhoneNumber(value) {
                 const digits = value.replace(/\D/g, "").slice(0, 10);
@@ -500,7 +580,7 @@
 
             function initDatePickers(context = document) {
                 const laravelToday =
-                    "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}";
+                    "{{ \Carbon\Carbon::now('America/New_York')->format('m/d/Y') }}"; // 🕒 Server-side today
 
                 context.querySelectorAll('input.date-picker').forEach(input => {
                     const key = input.dataset.key;
@@ -508,27 +588,26 @@
                         dateFormat: "m/d/Y",
                         allowInput: true,
                         onChange: function(selectedDates, dateStr) {
-                            // override existing color logic without removing it
-                            input.style.backgroundColor = 'transparent';
+                            input.style.backgroundColor = dateStr ? dateColor : '#fff';
                         },
                         onReady: function(selectedDates, dateStr) {
-                            if (input.value) input.style.backgroundColor = 'transparent';
+                            if (input.value) input.style.backgroundColor = dateColor;
                         }
                     };
 
-                    if (key === "Graduation Date") opts.maxDate = laravelToday;
+                    // ✅ Use Laravel's timezone-based today
+                    if (key === "Date") opts.maxDate = laravelToday;
                     if (key === "Date") opts.minDate = laravelToday;
 
                     flatpickr(input, opts);
 
                     input.addEventListener('blur', function() {
                         if (input.value && !/^\d{1,2}\/\d{1,2}\/\d{4}$/.test(input.value)) {
-                            input.style.backgroundColor = 'transparent';
+                            input.style.backgroundColor = '#fff';
                         }
                     });
                 });
             }
-
 
 
             function initLocationAutocomplete(context = document) {
@@ -654,65 +733,65 @@
                 let cells = `<td>—</td>`;
 
                 colKeys.forEach(k => {
-                    if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
-                            'Time Zone', 'Qualification'
-                        ].includes(k)) {
-                        let opts = [];
-                        if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors',
-                            'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
-                            'Aerospace Proj. Manag.'
-                        ];
-                        if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested',
-                            'Not Connected', 'Did Not Connect', 'Others', 'Ready To Pay', 'VM', 'Busy'
-                        ];
-                        if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
-                            'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC'
-                        ];
-                        if (k === 'Relocation') opts = ['YES', 'NO'];
-                        if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
-                            'Money Issue', 'Not Interested', "Don't Call"
-                        ];
-                        if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
-                        if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
-                        cells +=
-                            `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
-                    } else if (k === 'Amount') {
-                        cells +=
-                            `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount (469)"></td>`;
-                    } else if (k === 'Location') {
-                        cells +=
-                            `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Remark') {
-                        cells +=
-                            `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Date' || k === 'Graduation Date') {
-                        cells +=
-                            `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Phone Number') {
-                        cells +=
-                            `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
-                    } else if (k === 'Email Address') {
-                        cells +=
-                            `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Name') {
-                        cells +=
-                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                    } else if (k === 'forwardedBy') {
-                        cells +=
-                            `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
-                    } else if (k === 'View') {
-                        cells += `<td>
-                    <input type="file" accept="application/pdf" class="d-none resume-input" data-key="View">
-                    <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-                    <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View PDF</a>
-                    <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-                </td>`;
-                    }
+                    //                 if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
+                    //                         'Time Zone', 'Qualification'
+                    //                     ].includes(k)) {
+                    //                     let opts = [];
+                    //                     if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors',
+                    //                         'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
+                    //                         'Aerospace Proj. Manag.'
+                    //                     ];
+                    //                     if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested',
+                    //                         'Not Connected', 'Did Not Connect', 'Others', 'Ready To Pay', 'VM', 'Busy'
+                    //                     ];
+                    //                     if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
+                    //                         'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC'
+                    //                     ];
+                    //                     if (k === 'Relocation') opts = ['YES', 'NO'];
+                    //                     if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
+                    //                         'Money Issue', 'Not Interested', "Don't Call"
+                    //                     ];
+                    //                     if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+                    //                     if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
+                    //                     cells +=
+                    //                         `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
+                    //                 } else if (k === 'Amount') {
+                    //                     cells +=
+                    //                         `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount (469)"></td>`;
+                    //                 } else if (k === 'Location') {
+                    //                     cells +=
+                    //                         `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
+                    //                 } else if (k === 'Remark') {
+                    //                     cells +=
+                    //                         `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
+                    //                 } else if (k === 'Date' || k === 'Graduation Date') {
+                    //                     cells +=
+                    //                         `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
+                    //                 } else if (k === 'Phone Number') {
+                    //                     cells +=
+                    //                         `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
+                    //                 } else if (k === 'Email Address') {
+                    //                     cells +=
+                    //                         `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
+                    //                 } else if (k === 'Name') {
+                    //                     cells +=
+                    //                         `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
+                    //                 } else if (k === 'forwardedBy') {
+                    //                     cells +=
+                    //                         `<td><input type="text" class="form-control forwardedBy-input" data-key="forwardedBy" placeholder="Forwarded By" readonly><span class="small-hint"></span></td>`;
+                    //                 } else if (k === 'View') {
+                    //                     cells += `<td>
+                //     <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input" data-key="View">
+                //     <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+                //     <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
+                //     <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+                // </td>`;
+                    //                 }
                 });
 
                 cells +=
-                    `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
-                newRow.innerHTML = cells;
+                    // `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
+                    newRow.innerHTML = cells;
                 tableBody.appendChild(newRow);
                 applyInitialState(newRow);
             }
@@ -740,57 +819,90 @@
             tableBody.addEventListener('click', function(e) {
                 if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
                     e.preventDefault();
-
                     let saveBtn = e.target.matches('.save-btn') ? e.target : e.target.closest('.save-btn');
                     let id = saveBtn.dataset.id;
                     let row = saveBtn.closest("tr");
                     console.log("Saving row with id:", id);
 
-                    // ✅ Collect only 'Remark' and '1st Follow Up Remarks' from the row
+                    // Collect all data from the row
                     let rowData = {};
-                    let remarkInput = row.querySelector(
-                        'input[data-key="Remark"], select[data-key="Remark"], textarea[data-key="Remark"]'
-                    );
-                    let followUpInput = row.querySelector(
-                        'input[data-key="1st Follow Up Remarks"], select[data-key="1st Follow Up Remarks"], textarea[data-key="1st Follow Up Remarks"]'
-                    );
+                    row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
+                        let key = cell.dataset.key;
+                        let value = cell.value;
+                        rowData[key] = value;
+                    });
+                    console.log("Row data:", rowData);
 
-                    if (remarkInput) {
-                        rowData["Remark"] = remarkInput.value;
-                    }
-                    if (followUpInput) {
-                        rowData["1st Follow Up Remarks"] = followUpInput.value;
-                    }
-
-                    console.log("Row data to send:", rowData);
-
-                    // ✅ Create FormData
+                    // Create FormData object
                     let formData = new FormData();
                     formData.append("data", JSON.stringify(rowData));
                     formData.append("_token", "{{ csrf_token() }}");
 
-                    if (id) {
+                    // Handle resume file upload
+                    let resumeInput = row.querySelector("input.resume-input");
+                    if (resumeInput && resumeInput.files.length > 0) {
+                        formData.append("resume", resumeInput.files[0]);
+                    }
+
+                    // Determine URL and method
+                    let url, method;
+                    if (id === "new") {
+                        url = "{{ route('seniorstore') }}";
+                        method = "POST";
+                    } else {
+                        url = "{{ route('seniorupdate') }}";
+                        method = "POST";
                         formData.append("id", id);
                     }
 
-                    let url = "{{ route('seniorcandmupdate') }}";
-                    let method = "POST";
-
                     console.log("Sending to:", url, "Method:", method);
 
-                    // ✅ Send only remark-related data
+                    // Send the request
                     fetch(url, {
                             method: method,
                             body: formData
                         })
                         .then(res => {
-                            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                            if (!res.ok) {
+                                throw new Error(`HTTP error! status: ${res.status}`);
+                            }
                             return res.json();
                         })
+                        // In the save button click event handler, update the success callback:
                         .then(data => {
                             console.log("Response from server:", data);
                             if (data.success) {
-                                alert("Updated successfully");
+                                alert("Saved successfully");
+                                if (id === "new") {
+                                    // Update row with new ID
+                                    row.dataset.id = data.id;
+                                    saveBtn.dataset.id = data.id;
+                                    row.querySelector("td:first-child").innerText = data
+                                        .sheet_row_number;
+
+                                    const viewBtn = row.querySelector('.view-btn');
+                                    const downloadBtn = row.querySelector('.download-btn');
+
+                                    if (viewBtn && data.resume_path) {
+                                        viewBtn.href =
+                                            `/dashboard/senior/google-sheet/view-resume/${data.id}`;
+                                        viewBtn.classList.remove('d-none');
+                                    }
+
+                                    if (downloadBtn && data.resume_path) {
+                                        downloadBtn.href =
+                                            `/dashboard/senior/google-sheet/download-resume/${data.id}`;
+                                        downloadBtn.classList.remove('d-none');
+                                    }
+
+                                    // Only add new blank row if none exists
+                                    const existingNewRows = tableBody.querySelectorAll(
+                                        'tr[data-id="new"]');
+                                    if (existingNewRows.length === 0) {
+                                        addBlankRow();
+                                    }
+                                }
+
                             } else {
                                 console.error("Server error:", data.message);
                                 alert("Error: " + (data.message || "Unknown error"));
@@ -802,7 +914,6 @@
                         });
                 }
             });
-
 
             // Handle file upload button clicks
             tableBody.addEventListener('click', function(e) {
@@ -935,7 +1046,7 @@
             // -----------------------------
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
                 $.ajax({
-                    url: "{{ route('google.sheet.seniorcandm') }}",
+                    url: "{{ route('google.sheet.senior') }}",
                     type: 'GET',
                     data: {
                         search,
@@ -987,7 +1098,6 @@
                 });
             }, 300);
 
-
             $('#senior-search').on('input', showSuggestions);
 
             // Click suggestion
@@ -1001,14 +1111,7 @@
                 fetchTable('', 1, junior_user, rowId);
             });
 
-            // Pagination click (AJAX)
-            $(document).on('click', '.pagination a', function(e) {
-                e.preventDefault();
-                const page = $(this).attr('href').split('page=')[1];
-                const search = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val() || '';
-                fetchTable(search, page, junior_user);
-            });
+
 
             // Junior dropdown filter
             $(document).on('change', '#junior-filter', function() {
@@ -1027,6 +1130,30 @@
         });
     </script>
 
+    <script>
+        $(document).on("click", ".transfers-btn", function() {
+            let id = $(this).data("id");
+
+            $.ajax({
+                url: "{{ route('junior.transfers.update') }}",
+                method: "POST",
+                data: {
+                    id: id,
+                    _token: "{{ csrf_token() }}"
+                },
+                success: function(res) {
+                    if (res.success) {
+                        alert("Transfer Updated!");
+                    } else {
+                        alert(res.message);
+                    }
+                },
+                error: function() {
+                    alert("Something went wrong!");
+                }
+            });
+        });
+    </script>
 
     <style>
         .scroll-sm {
@@ -1281,7 +1408,7 @@
             let juniorId = this.value;
             let search = document.getElementById('senior-search').value;
 
-            fetch("{{ route('google.sheet.seniorcandm') }}?junior_user=" + juniorId + "&search=" + search, {
+            fetch("{{ route('google.sheet.senior') }}?junior_user=" + juniorId + "&search=" + search, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
@@ -1405,7 +1532,6 @@
             updateTopScrollWidth();
         });
     </script>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const form = document.querySelector('form');
@@ -1446,5 +1572,8 @@
             });
         });
     </script>
+
+
+
 
 @endsection
