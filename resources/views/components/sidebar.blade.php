@@ -145,7 +145,7 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.senior') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT
                                 Recruiter<br>(Called
                                 & Mailed)</a></li>
                     </ul>
