@@ -157,7 +157,7 @@
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormod') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self <br>(Other
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter<br>(Other
                                 Disposition)</a>
                         </li>
                     </ul>
