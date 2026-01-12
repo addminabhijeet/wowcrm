@@ -2520,17 +2520,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // --- Make TransferRemark mandatory ---
-        if (
-            !isset($rowData['TransferRemark']) ||
-            trim($rowData['TransferRemark']) === ''
-        ) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Transfer Remark is required.'
-            ]);
-        }
-
 
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {

@@ -287,17 +287,6 @@
                                             value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
-                                    {{-- TransferRemark --}}
-                                    <td>
-                                        <textarea type="text" name="TransferRemark_hidden" class="form-control transferremark-autocomplete data-field"
-                                            data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
-
-                                        <input type="hidden" name="TransferRemark"
-                                            class="form-control transferremark-autocomplete transferremark-hidden"
-                                            data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}"
-                                            placeholder="Type TransferRemark">
-                                    </td>
-
                                     {{-- Status --}}
                                     <td>
                                         @php $exeOptions = ['Called & Mailed','Not Interested','Interested','Others','Ready To Pay','VM','Busy']; @endphp
