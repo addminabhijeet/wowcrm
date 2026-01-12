@@ -824,11 +824,10 @@ class GoogleSheetController extends Controller
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
 
             $seniorPart = $authUser->id . '|senior';
-
-            // ✅ Keep first-part senior check
             $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart]);
-        })->where('transfers', 0);
-
+        })
+            ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) = 0")
+            ->where('transfers', 0);
 
         if ($rowId) {
             $query->where('id', $rowId);
