@@ -496,7 +496,6 @@ class GoogleSheetController extends Controller
         $zeroPattern = "%:0|senior";
 
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-
             $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
 
                 $q2->where('created_by', $authUser->id . '|senior')
@@ -507,18 +506,10 @@ class GoogleSheetController extends Controller
                 // EXCLUSION: Do NOT show rows having more than one "|senior"
                 ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
         })
-
-            // ✅ EXCEPTION: allow "5|senior:0|senior" when auth id = 5
-            ->orWhere(function ($q) use ($authUser) {
-                $q->where('created_by', $authUser->id . '|senior:0|senior');
-            })->where(function ($q) {
+            ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
-            });
-
-
-
-
+            })->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) NOT REGEXP '^[0-9]+\\|senior$'");
 
         // Filter by selected junior
         if ($juniorUserId) {
@@ -1413,7 +1404,7 @@ class GoogleSheetController extends Controller
         })
             ->orWhere(function ($q) use ($authUser) {
                 $q->where('created_by', $authUser->id . '|senior:0|senior');
-            })->where(function ($q) {
+            })            ->where(function ($q) {
                 $q->whereNotNull('TransferRemark')
                     ->where('TransferRemark', '!=', '');
             });
