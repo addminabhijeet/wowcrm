@@ -1265,26 +1265,30 @@ class GoogleSheetController extends Controller
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+        $query = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
 
-            $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+            $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
 
-                $q2->where('created_by', $authUser->id . '|senior')
-                    ->orWhere('created_by', '0|senior')
-                    ->orWhere('created_by', 'LIKE', $userPattern)
-                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+                $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+                    $q2->where('created_by', $authUser->id . '|senior')
+                        ->orWhere('created_by', '0|senior')
+                        ->orWhere('created_by', 'LIKE', $userPattern)
+                        ->orWhere('created_by', 'LIKE', $zeroPattern);
+                })
+                    // ❌ Exclude rows with more than one "|senior"
+                    ->whereRaw(
+                        "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
+                    );
             })
-                // EXCLUSION: Do NOT show rows having more than one "|senior"
-                ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
+                // ✅ Exception: allow "5|senior:0|senior" only for auth user
+                ->orWhere('created_by', $authUser->id . '|senior:0|senior');
         })
-
-            // ✅ EXCEPTION: allow "5|senior:0|senior" when auth id = 5
-            ->orWhere(function ($q) use ($authUser) {
-                $q->where('created_by', $authUser->id . '|senior:0|senior');
-            })->where(function ($q) {
+            // ✅ FINAL FILTER — applies to ALL results
+            ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
             });
+
 
 
 
@@ -1404,7 +1408,7 @@ class GoogleSheetController extends Controller
         })
             ->orWhere(function ($q) use ($authUser) {
                 $q->where('created_by', $authUser->id . '|senior:0|senior');
-            })            ->where(function ($q) {
+            })->where(function ($q) {
                 $q->whereNotNull('TransferRemark')
                     ->where('TransferRemark', '!=', '');
             });
