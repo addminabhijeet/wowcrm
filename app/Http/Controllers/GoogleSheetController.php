@@ -511,11 +511,12 @@ class GoogleSheetController extends Controller
             })
                 ->orWhere('created_by', $authUser->id . '|senior:0|senior');
         })
-            // ✅ correct NULL OR empty check
+            // ✅ Transfer remark condition
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
             })
+            // ✅ THIS guarantees ONLY transfers = 1 records are returned
             ->where('transfers', 1);
 
 
@@ -1412,28 +1413,31 @@ class GoogleSheetController extends Controller
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
-        $query = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
+        $query = GoogleSheetData::where(function ($outer) use ($authUser, $userPattern, $zeroPattern) {
 
-            $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+            $outer->where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
 
-                $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
-                    $q2->where('created_by', $authUser->id . '|senior')
-                        ->orWhere('created_by', '0|senior')
-                        ->orWhere('created_by', 'LIKE', $userPattern)
-                        ->orWhere('created_by', 'LIKE', $zeroPattern);
+                $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+
+                    $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+                        $q2->where('created_by', $authUser->id . '|senior')
+                            ->orWhere('created_by', '0|senior')
+                            ->orWhere('created_by', 'LIKE', $userPattern)
+                            ->orWhere('created_by', 'LIKE', $zeroPattern);
+                    })
+                        // ❌ Exclude rows having more than one "|senior"
+                        ->whereRaw(
+                            "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
+                        );
                 })
-                    // ❌ Exclude rows having more than one "|senior"
-                    ->whereRaw(
-                        "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
-                    );
-            })
-                // ✅ Exception case
-                ->orWhere('created_by', $authUser->id . '|senior:0|senior');
+                    // ✅ Exception case
+                    ->orWhere('created_by', $authUser->id . '|senior:0|senior');
+            });
         })
-            // ✅ APPLY TO ALL RESULTS
+            // ✅ GLOBAL FILTER — applies to ALL results
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', 1);   
+            ->where('transfers', 1);
 
         // Filter by selected junior
         if ($juniorUserId) {
