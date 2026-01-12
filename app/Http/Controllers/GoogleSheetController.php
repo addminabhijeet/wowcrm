@@ -1279,12 +1279,8 @@ class GoogleSheetController extends Controller
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
-            })
-            // ✅ NEW CONDITION: second part = number|senior AND ends with 0|senior
-            ->whereRaw("
-    SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 3), ':', -2)
-    REGEXP '^[0-9]+\\|senior:0\\|senior$'
-");
+            });
+
 
 
         // Filter by selected junior
