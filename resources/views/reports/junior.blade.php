@@ -548,8 +548,7 @@
                             <div>
                                 <h5 class="fw-bold mb-1">{{ $juniorUser->name }}</h5>
                             </div>
-                            <form method="GET"
-                                action="{{ route('call.reports.alljuniordaily', ['userId' => request()->route('userId')]) }}"
+                            <form method="GET" action="{{ route('call.reports.junior') }}"
                                 class="d-flex align-items-center gap-2">
                                 <label for="selected_date" class="form-label mb-0 fw-semibold small">Select Date:</label>
                                 <input type="date" name="selected_date" id="selected_date"
