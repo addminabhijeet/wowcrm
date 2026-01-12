@@ -143,6 +143,12 @@
                                 Disposition)</a>
                         </li>
                     </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniormodcandmfollow') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter<br>(Called &
+                                Mailed)</a>
+                        </li>
+                    </ul>
 
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorcandm') }}"><i
@@ -167,12 +173,7 @@
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self <br>(Called &
                                 Mailed)</a></li>
                     </ul>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.seniormodcandmfollow') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self <br>(Follow
-                                Up)</a>
-                        </li>
-                    </ul>
+
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorpaid') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Pay</a>
