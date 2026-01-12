@@ -505,8 +505,11 @@ class GoogleSheetController extends Controller
             })
                 // EXCLUSION: Do NOT show rows having more than one "|senior"
                 ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
-        });
-
+        })
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            });
 
         // Filter by selected junior
         if ($juniorUserId) {
@@ -597,14 +600,14 @@ class GoogleSheetController extends Controller
         return view('database.senior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
-    
+
     public function seniorfollow(Request $request)
     {
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // dropdown value
-        $page = $request->input('page', 1); // ✅ Ensure page input handled
+        $page = $request->input('page', 1); //  Ensure page input handled
 
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
@@ -619,8 +622,8 @@ class GoogleSheetController extends Controller
             })
                 // EXCLUSION: Do NOT show rows having more than one "|senior"
                 ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
-        });
-
+        })->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '');
 
         // Filter by selected junior
         if ($juniorUserId) {
