@@ -292,11 +292,6 @@
                                             <i class="fas fa-save"></i> Save
                                         </button>
 
-                                        {{-- <button class="btn btn-sm btn-warning transfers-btn"
-                                            data-id="{{ $row->id }}">
-                                            <i class="fas fa-exchange-alt"></i> Transfer
-                                        </button> --}}
-
 
                                     </td>
 
@@ -713,7 +708,7 @@
                             'Aerospace Proj. Manag.'
                         ];
                         if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested',
-                            'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'
+                            'Interested', 'Others', 'VM', 'Busy'
                         ];
                         if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
                             'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC'
