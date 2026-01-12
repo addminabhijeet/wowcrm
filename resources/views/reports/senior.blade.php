@@ -671,9 +671,9 @@
                             </form>
                         </div>
 
-                        <!-- Stats Section -->
-                        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-5 g-3 mb-4">
-                            <div class="col">
+                        <div class="row g-3 mb-4 d-flex flex-nowrap overflow-auto">
+
+                            <div class="col flex-shrink-0" style="width: 20%;">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-primary fs-2">
                                         <i class="bi bi-telephone-fill"></i>
@@ -685,7 +685,7 @@
                                 </div>
                             </div>
 
-                            <div class="col">
+                            <div class="col flex-shrink-0" style="width: 20%;">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-success fs-2">
                                         <i class="bi bi-bar-chart-fill"></i>
@@ -697,7 +697,7 @@
                                 </div>
                             </div>
 
-                            <div class="col">
+                            <div class="col flex-shrink-0" style="width: 20%;">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
@@ -709,7 +709,7 @@
                                 </div>
                             </div>
 
-                            <div class="col">
+                            <div class="col flex-shrink-0" style="width: 20%;">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
@@ -721,7 +721,7 @@
                                 </div>
                             </div>
 
-                            <div class="col">
+                            <div class="col flex-shrink-0" style="width: 20%;">
                                 <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
                                     <div class="icon mb-2 text-warning fs-2">
                                         <i class="bi bi-envelope-paper-fill"></i>
@@ -732,7 +732,9 @@
                                     </div>
                                 </div>
                             </div>
+
                         </div>
+
 
                         <!-- Table Section -->
                         <div class="table-responsive">
