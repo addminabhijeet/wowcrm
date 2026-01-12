@@ -125,42 +125,47 @@
                     </a>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.senior') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Called &
-                                Mailed</a></li>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter (Called
+                                & Mailed)</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorfollow') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Called &
-                                Mailed Remark</a></li>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter (Follow
+                                Up)</a></li>
                     </ul>
+
+
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniorcandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self Called &
-                                Mailed</a></li>
-                    </ul>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('google.sheet.seniormod') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter Other
-                                Disposition</a>
-                        </li>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter
+                                (Database)</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniortra') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Transfered Call</a>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter
+                                (Called & Mailed)</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniortrafollow') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Transfered Call Follow</a>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter
+                                (Follow Up)</a>
+                        </li>
+                    </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniormod') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self (Other
+                                Disposition)</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormodcandm') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Follow Up</a></li>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self (Called &
+                                Mailed)</a></li>
                     </ul>
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniormodcandmfollow') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Follow Up Remark</a>
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Self (Follow Up)</a>
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
