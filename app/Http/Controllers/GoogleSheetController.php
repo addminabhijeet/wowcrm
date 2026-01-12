@@ -1430,11 +1430,10 @@ class GoogleSheetController extends Controller
                             "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
                         );
                 })
-                    // ✅ Exception case
+
                     ->orWhere('created_by', $authUser->id . '|senior:0|senior');
             });
         })
-            // ✅ GLOBAL FILTER — applies to ALL results
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1);
