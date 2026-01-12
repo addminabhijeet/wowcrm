@@ -679,7 +679,7 @@
                                         <i class="bi bi-telephone-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Total Calls (TC)</small>
+                                        <small class="text-muted d-block">Total Calls</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $StotalCalls }}</h4>
                                     </div>
                                 </div>
@@ -690,7 +690,7 @@
                                         <i class="bi bi-bar-chart-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Other Calls</small>
+                                        <small class="text-muted d-block">Sr IT Recruiter(Follow Up)</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $SotherCalls }}</h4>
                                     </div>
                                 </div>
@@ -701,7 +701,7 @@
                                         <i class="bi bi-envelope-paper-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Called & Mailed</small>
+                                        <small class="text-muted d-block">Sr IT Recruiter(Called & Mailed)</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
                                     </div>
                                 </div>
@@ -712,7 +712,7 @@
                                         <i class="bi bi-envelope-paper-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Ready To Pay Calls</small>
+                                        <small class="text-muted d-block">Sr IT Recruiter(Self follow up)</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $SreadyToPaidCalls }}</h4>
                                     </div>
                                 </div>
@@ -723,7 +723,18 @@
                                         <i class="bi bi-envelope-paper-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Follow Up</small>
+                                        <small class="text-muted d-block">Sr IT Recruiter(Transfered Follow Up)</small>
+                                        <h4 class="fw-bold text-dark mb-0">{{ $SfollowUpCalls }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                    <div class="icon mb-2 text-warning fs-2">
+                                        <i class="bi bi-envelope-paper-fill"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block">Ready To Paid</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $SfollowUpCalls }}</h4>
                                     </div>
                                 </div>
