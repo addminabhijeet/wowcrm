@@ -116,7 +116,7 @@
 
                                     {{-- Relocation --}}
                                     <td>
-                                        @php $relOptions = ['YES','NO']; @endphp
+                                        @php $relOptions = ['YES','NO','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Relocation" disabled>
                                             <option value="">-- Relocation --</option>
                                             @foreach ($relOptions as $option)
@@ -138,7 +138,7 @@
 
                                     {{-- Immigration --}}
                                     <td>
-                                        @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
+                                        @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Immigration" disabled>
                                             <option value="">-- Immigration --</option>
                                             @foreach ($immOptions as $option)
@@ -152,7 +152,7 @@
 
                                     {{-- Course --}}
                                     <td>
-                                        @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
+                                        @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Course" disabled>
                                             <option value="">-- Course --</option>
                                             @foreach ($courseOptions as $option)
@@ -186,6 +186,7 @@
                                                 'MA',
                                                 'Associate Degree',
                                                 'Aerospace Proj. Manag.',
+                                                '',
                                             ];
                                         @endphp
 
@@ -206,7 +207,7 @@
 
                                     {{-- 1st Follow Up Remarks --}}
                                     <td>
-                                        @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call']; @endphp
+                                        @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="1st Follow Up Remarks">
                                             <option value="">-- 1st Follow Up Remarks --</option>
                                             @foreach ($followOptions as $option)
@@ -220,7 +221,7 @@
 
                                     {{-- Time Zone --}}
                                     <td>
-                                        @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
+                                        @php $timezoneOptions = ['EST','CST','MST','PST','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Time Zone" disabled>
                                             <option value="">-- Time Zone --</option>
                                             @foreach ($timezoneOptions as $option)

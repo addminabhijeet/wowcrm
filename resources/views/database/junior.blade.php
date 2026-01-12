@@ -128,7 +128,7 @@
 
                                     {{-- Relocation --}}
                                     <td>
-                                        @php $relOptions = ['YES','NO']; @endphp
+                                        @php $relOptions = ['YES','NO','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Relocation">
                                             <option value="">-- Select --</option>
                                             @foreach ($relOptions as $option)
@@ -148,7 +148,7 @@
 
                                     {{-- Immigration --}}
                                     <td>
-                                        @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
+                                        @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Immigration">
                                             <option value="">-- Select --</option>
                                             @foreach ($immOptions as $option)
@@ -162,7 +162,7 @@
 
                                     {{-- Course --}}
                                     <td>
-                                        @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
+                                        @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Course">
                                             <option value="">-- Select --</option>
                                             @foreach ($courseOptions as $option)
@@ -196,6 +196,7 @@
                                                 'MA',
                                                 'Associate Degree',
                                                 'Aerospace Proj. Manag.',
+                                                '',
                                             ];
                                         @endphp
 
@@ -215,7 +216,7 @@
 
                                     {{-- 1st Follow Up Remarks --}}
                                     <td>
-                                        @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call']; @endphp
+                                        @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="1st Follow Up Remarks">
                                             <option value="">-- Select --</option>
                                             @foreach ($followOptions as $option)
@@ -229,7 +230,7 @@
 
                                     {{-- Time Zone --}}
                                     <td>
-                                        @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
+                                        @php $timezoneOptions = ['EST','CST','MST','PST','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Time Zone">
                                             <option value="">-- Select --</option>
                                             @foreach ($timezoneOptions as $option)
@@ -272,7 +273,7 @@
 
                                     {{-- Status --}}
                                     <td>
-                                        @php $exeOptions = ['Called & Mailed','Not Interested','Interested','Others','Ready To Pay','VM','Busy']; @endphp
+                                        @php $exeOptions = ['Called & Mailed','Not Interested','Interested','Others','Ready To Pay','VM','Busy','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                             <option value="">-- Select Status--</option>
                                             @foreach ($exeOptions as $option)
