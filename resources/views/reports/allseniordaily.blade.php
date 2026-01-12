@@ -656,6 +656,8 @@
     <div id="pdfContent">
 
         <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
+
+            <!-- Total Target Given -->
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 20px; color: #0d47a1; transition: all 0.3s ease; cursor: pointer;"
@@ -673,6 +675,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Total Target Achieved -->
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); border-radius: 20px; color: #6a1b9a; transition: all 0.3s ease; cursor: pointer;"
@@ -690,6 +694,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Target Yet to Achieve -->
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
@@ -707,6 +713,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Days Left -->
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
@@ -724,6 +732,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Total Present Days -->
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
@@ -742,6 +752,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Total Absent Days -->
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #ffebee, #ffcdd2); border-radius: 20px; color: #c62828; transition: all 0.3s ease; cursor: pointer;"
@@ -751,7 +763,6 @@
                         <div>
                             <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Absent Days</p>
                             <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $absentDays }}</h3>
-
                         </div>
                         <div class="d-flex justify-content-center align-items-center"
                             style="width: 70px; height: 70px; background-color: rgba(198,40,40,0.1); border-radius: 50%;">
@@ -761,6 +772,8 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Total Working Days -->
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #fff8e1, #ffecb3); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
@@ -779,6 +792,7 @@
                     </div>
                 </div>
             </div>
+
         </div>
 
         <div class="row gy-4 mt-1">
