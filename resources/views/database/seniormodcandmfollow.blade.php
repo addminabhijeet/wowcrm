@@ -839,7 +839,7 @@
                         url = "{{ route('seniorstore') }}";
                         method = "POST";
                     } else {
-                        url = "{{ route('seniorcandmupdate') }}";
+                        url = "{{ route('seniorupdate') }}";
                         method = "POST";
                         formData.append("id", id);
                     }
