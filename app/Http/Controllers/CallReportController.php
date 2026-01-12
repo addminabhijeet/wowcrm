@@ -359,7 +359,16 @@ class CallReportController extends Controller
             'o4to5pm',
             'o5to6pm',
             'o6to7pm',
-            'o7to8pm'
+            'o7to8pm',
+
+            'targetGiven',
+            'targetAchieved',
+            'targetYetToAchieve',
+            'daysLeft',
+            'presentDays',
+            'absentDays',
+            'workingDays',
+            'nonWorkingDays'
         ));
     }
 
