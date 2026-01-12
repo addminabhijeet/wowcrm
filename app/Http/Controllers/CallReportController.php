@@ -3121,6 +3121,8 @@ class CallReportController extends Controller
 
         // Selected date (default today)
         $selectedDate = $request->input('selected_date', date('Y-m-d'));
+        $selectedMonth = date('Y-m', strtotime($selectedDate));
+        [$year, $month] = explode('-', $selectedMonth);
 
         // Base query filtered by this junior and date
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
@@ -3161,6 +3163,13 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
+        $holidayDates = Holiday::whereYear('holiday_date', $year)
+            ->whereMonth('holiday_date', $month)
+            ->where('is_holiday', 1)
+            ->pluck('holiday_date')
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
+
         $juniorUser = $user;
 
         // Initialize hour blocks (8 PM - 6 AM)
@@ -3189,6 +3198,190 @@ class CallReportController extends Controller
         $o5to6pm   = $hourlyOtherCalls[17] ?? 0;
         $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
         $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
+
+        $Mtotaltransfers = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('transfers', 1)
+            ->count();
+
+        // Total "Called & Mailed" calls
+        $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->count();
+
+        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
+        $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
+        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+
+        // Find index of matching month (e.g., "2025-10")
+        $targetIndex = null;
+        foreach ($targetDates as $index => $date) {
+            // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
+            $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
+                ? $date
+                : Carbon::parse($date)->format('Y-m');
+
+            if ($monthPart === $selectedMonth) {
+                $targetIndex = $index;
+                break;
+            }
+        }
+
+        // Use the matching month's target, else fallback to first or 0
+        $targetGiven = isset($targetValues[$targetIndex])
+            ? (int) $targetValues[$targetIndex]
+            : ((int) ($targetValues[0] ?? 0));
+
+        // Calculate Days Left (based on matched target_date entry)
+        $matchedDate = $targetDates[$targetIndex] ?? null;
+
+        if ($matchedDate) {
+            // Handle "YYYY-MM" (month only) or full date
+            if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
+                $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
+            } else {
+                $carbonDate = Carbon::parse($matchedDate);
+            }
+
+            $diff = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff)); // Round up days
+        } else {
+            $daysLeft = 0;
+        }
+
+        $targetAchieved = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Ready To Pay')
+            ->count();
+
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+
+        // --- Calculate Present / Absent / Working / Non-working days ---
+        $events = UserTimerPause::where('user_id', $juniorUser->id)
+            ->whereYear('event_time', $year)
+            ->whereMonth('event_time', $month)
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        // Group events by date
+        $groupedEvents = $events->groupBy(function ($event) {
+            return Carbon::parse($event->event_time)->format('Y-m-d');
+        });
+
+        // Determine all days in the selected month
+        $startOfMonth = Carbon::create($year, $month, 1);
+        $endOfMonth   = $startOfMonth->copy()->endOfMonth();
+        $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
+
+        $presentDays = 0;
+        $halfDays = 0;
+        $absentDays = 0;
+        $workingDays = 0;
+        $nonWorkingDays = 0;
+
+        // Loop through each day
+        foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
+            $dateStr = $day->format('Y-m-d');
+            $dailyEvents = $groupedEvents->get($dateStr, collect());
+
+            // Consider only Saturday/Sunday as non-working days
+            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+                $nonWorkingDays++;
+                continue;
+            }
+
+            // For all other days (Mon–Fri)
+            if ($dailyEvents->isEmpty()) {
+                // No events on a working day = absent
+                $absentDays++;
+                $workingDays++;
+                continue;
+            }
+
+            $workingDays++;
+
+            // Auto-present rule: If any event has pause_type = 'start'
+            if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
+                $presentDays++;
+                continue; // Skip further processing for this day
+            }
+
+            // Sort earliest first
+            $sorted = $dailyEvents->sortBy('event_time')->values();
+
+            $startSeen = false;
+            $activeWorkSec = 0;
+            $totalBreakSec = 0;
+            $lastPauseTime = null;
+
+            for ($i = 0; $i < $sorted->count(); $i++) {
+                $event = $sorted[$i];
+                $title = strtolower($event->status ?? '');
+                $pauseType = strtolower($event->pause_type ?? '');
+                $eventName = $title ?: $pauseType;
+                $eventTime = Carbon::parse($event->event_time);
+
+                if ($eventName === 'start') {
+                    $startSeen = true;
+                }
+
+                if (!$startSeen) continue;
+
+                if ($pauseType === 'inactive') {
+                    $lastPauseTime = $eventTime;
+                } elseif (in_array($pauseType, ['resume', 'running']) && $lastPauseTime) {
+                    $totalBreakSec += $eventTime->diffInSeconds($lastPauseTime);
+                    $lastPauseTime = null;
+                }
+
+                if ($i < $sorted->count() - 1) {
+                    $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
+                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
+
+                    if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
+                        $activeWorkSec += $durationSec;
+                    }
+                }
+            }
+
+            // --- Apply threshold with Half-Day logic ---
+            if ($activeWorkSec >= (8 * 3600)) {
+                $presentDays++;
+            } elseif ($activeWorkSec >= (4 * 3600)) {
+                $halfDays++;
+            } else {
+                $absentDays++;
+            }
+        }
+
+        // --- Remove future working days from absentDays ---
+        $today = now()->startOfDay();
+
+        $futureWorkingDays = 0;
+
+        foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
+            $dateStr = $day->format('Y-m-d');
+
+            if (
+                $day->greaterThan($today) &&
+                !$day->isWeekend() &&
+                !in_array($dateStr, $holidayDates)
+            ) {
+                $futureWorkingDays++;
+            }
+        }
+
+        // Subtract future working days from absent
+        $absentDays = max(0, $absentDays - $futureWorkingDays);
+
+        $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
+        $MAvgtotaltransfers = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
 
         return view('reports.junior', compact(
             'totalCalls',
