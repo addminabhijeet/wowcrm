@@ -505,19 +505,19 @@ class GoogleSheetController extends Controller
                         ->orWhere('created_by', 'LIKE', $userPattern)
                         ->orWhere('created_by', 'LIKE', $zeroPattern);
                 })
-                    // ❌ Exclude rows with more than one "|senior"
                     ->whereRaw(
                         "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
                     );
             })
-                // ✅ Exception: allow "5|senior:0|senior" only for auth user
                 ->orWhere('created_by', $authUser->id . '|senior:0|senior');
         })
-            // ✅ FINAL FILTER — applies to ALL results
+            // ✅ correct NULL OR empty check
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
-            });
+            })
+            ->where('transfers', 1);
+
 
 
 
@@ -1432,11 +1432,8 @@ class GoogleSheetController extends Controller
         })
             // ✅ APPLY TO ALL RESULTS
             ->whereNotNull('TransferRemark')
-            ->where('TransferRemark', '!=', '');
-
-
-
-
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', 1);   
 
         // Filter by selected junior
         if ($juniorUserId) {
