@@ -1266,6 +1266,7 @@ class GoogleSheetController extends Controller
         $zeroPattern = "%:0|senior";
 
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+
             $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
 
                 $q2->where('created_by', $authUser->id . '|senior')
@@ -1279,7 +1280,12 @@ class GoogleSheetController extends Controller
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
+            })
+            // ✅ EXCEPTION: allow "5|senior:0|senior" when auth id = 5
+            ->orWhere(function ($q) use ($authUser) {
+                $q->where('created_by', $authUser->id . '|senior:0|senior');
             });
+
 
 
 
