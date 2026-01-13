@@ -1117,6 +1117,7 @@ class CallReportController extends Controller
             'MotherCalls',
             'selectedMonth',
             'MselffollowupCalls',
+            'MtransferedfollowUpCalls',
 
             // --- Called & Mailed daily ---
             'cDay1',
