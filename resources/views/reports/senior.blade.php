@@ -654,7 +654,8 @@
 
         <div class="row gy-4 mt-1">
 
-            <div class="col-xxl-8 col-lg-6">
+            <!-- ================= Left Section ================= -->
+            <div class="col-xxl-8 col-lg-6 w-100">
                 <div class="card h-100 border-0 shadow-sm radius-12">
                     <div class="card-body p-4">
                         <!-- Header -->
@@ -933,13 +934,13 @@
                 </div>
             </div>
 
-            <div class="col-xxl-4 col-lg-6">
+            {{-- <div class="col-xxl-4 col-lg-6">
                 <div class="card h-100 radius-8 border-0">
                     <div class="card-body p-24">
                         <h6 class="mb-2 fw-bold text-lg">Total Summary (From Joining)</h6>
 
                         <div class="mt-4">
-                            <!-- Total Calls -->
+
                             <div
                                 class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                                 <div>
@@ -955,7 +956,7 @@
                                 </div>
                             </div>
 
-                            <!-- Other Calls -->
+
                             <div
                                 class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                                 <div>
@@ -965,7 +966,7 @@
                                 <div id="areaChart" class="p-2"></div>
                             </div>
 
-                            <!-- Called & Mailed Calls -->
+
                             <div
                                 class="d-flex align-items-center justify-content-between mb-4 p-3 border rounded-3 shadow-sm bg-white">
                                 <div>
@@ -975,7 +976,7 @@
                                 <div id="iconBarChartCmc" class="p-2"></div>
                             </div>
 
-                            <!-- Ready To Pay Calls -->
+
                             <div
                                 class="d-flex align-items-center justify-content-between p-3 border rounded-3 shadow-sm bg-white">
                                 <div>
@@ -985,7 +986,7 @@
                                 <div id="iconBarChartR2p" class="p-2"></div>
                             </div>
 
-                            <!-- Follow Up Calls -->
+
                             <div
                                 class="d-flex align-items-center justify-content-between p-3 border rounded-3 shadow-sm bg-white">
                                 <div>
@@ -998,7 +999,7 @@
 
                     </div>
                 </div>
-            </div>
+            </div> --}}
 
         </div>
     </div>
