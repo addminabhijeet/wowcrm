@@ -45,11 +45,14 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
-        $followUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $followUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->count();
+
 
         $transferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -93,11 +96,15 @@ class CallReportController extends Controller
             ->count();
 
         // Follow-up calls (Called & Mailed with TransferRemark)
-        $SfollowUpCalls = (clone $tquery)
+        $SfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
+            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->count();
+
 
         // Transferred follow-up calls
         $StransferedfollowUpCalls = (clone $tquery)
@@ -152,7 +159,7 @@ class CallReportController extends Controller
 
         // Hourly Follow-up (Called & Mailed with TransferRemark)
         $hourlyFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
@@ -160,6 +167,7 @@ class CallReportController extends Controller
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
         // Hourly Transferred Follow-up
         $hourlyTransferredFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
