@@ -1029,9 +1029,9 @@
                                         <td style="white-space: nowrap;">05.00PM-06.00PM</td>
                                         <td class="text-center"><span class="badge bg-info">{{ $f5to6pm }}</span>
                                         </td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t5to6pm }}</span>
+                                        <td class="text-center"><span class="badge bg-info">{{ $c5to6pm }}</span>
                                         </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $c5to6pm }}</span>
+                                        <td class="text-center"><span class="badge bg-success">{{ $sf5to6pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $tf5to6pm }}</span>
                                         </td>
@@ -1043,9 +1043,9 @@
                                         <td style="white-space: nowrap;">06.00PM-07.00PM</td>
                                         <td class="text-center"><span class="badge bg-info">{{ $f6to7pm }}</span>
                                         </td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t6to7pm }}</span>
+                                        <td class="text-center"><span class="badge bg-info">{{ $c6to7pm }}</span>
                                         </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $c6to7pm }}</span>
+                                        <td class="text-center"><span class="badge bg-success">{{ $sf6to7pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $tf6to7pm }}</span>
                                         </td>
@@ -1057,9 +1057,9 @@
                                         <td style="white-space: nowrap;">07.00PM-08.00PM</td>
                                         <td class="text-center"><span class="badge bg-info">{{ $f7to8pm }}</span>
                                         </td>
-                                        <td class="text-center"><span class="badge bg-info">{{ $t7to8pm }}</span>
+                                        <td class="text-center"><span class="badge bg-info">{{ $c7to8pm }}</span>
                                         </td>
-                                        <td class="text-center"><span class="badge bg-success">{{ $c7to8pm }}</span>
+                                        <td class="text-center"><span class="badge bg-success">{{ $sf7to8pm }}</span>
                                         </td>
                                         <td class="text-center"><span class="badge bg-success">{{ $tf7to8pm }}</span>
                                         </td>
