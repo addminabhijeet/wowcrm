@@ -268,10 +268,9 @@ class CallReportController extends Controller
         $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
         $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
 
-
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
-        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+        $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
         // Find index of matching month (e.g., "2025-10")
         $targetIndex = null;
@@ -279,7 +278,7 @@ class CallReportController extends Controller
             // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
             $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
                 ? $date
-                : \Carbon\Carbon::parse($date)->format('Y-m');
+                : Carbon::parse($date)->format('Y-m');
 
             if ($monthPart === $selectedMonth) {
                 $targetIndex = $index;
@@ -288,21 +287,22 @@ class CallReportController extends Controller
         }
 
         // Use the matching month's target, else fallback to first or 0
-        $targetGiven = isset($targetValues[$targetIndex]) ? (int) $targetValues[$targetIndex] : ((int) $targetValues[0] ?? 0);
+        $targetGiven = isset($targetValues[$targetIndex])
+            ? (int) $targetValues[$targetIndex]
+            : ((int) ($targetValues[0] ?? 0));
 
         // Calculate Days Left (based on matched target_date entry)
         $matchedDate = $targetDates[$targetIndex] ?? null;
 
         if ($matchedDate) {
-            // ✅ Handle "YYYY-MM" (month only) or full date
             if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
+                $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate);
+                $carbonDate = Carbon::parse($matchedDate);
             }
 
-            $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
+            $diff     = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff));
         } else {
             $daysLeft = 0;
         }
@@ -312,6 +312,7 @@ class CallReportController extends Controller
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
+
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         // --- Calculate Present / Absent / Working / Non-working days ---
@@ -331,15 +332,21 @@ class CallReportController extends Controller
         $endOfMonth   = $startOfMonth->copy()->endOfMonth();
         $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
 
-        $presentDays = 0;
-        $halfDays = 0;
-        $absentDays = 0;
-        $workingDays = 0;
+        $presentDays    = 0;
+        $halfDays       = 0;
+        $absentDays     = 0;
+        $workingDays    = 0;
         $nonWorkingDays = 0;
+
+        $today = now()->startOfDay(); // 🔒 freeze today until end of day
 
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
+            if ($day->equalTo($today)) {
+                continue;
+            }
 
             if ($day->isFuture()) {
                 continue;
@@ -348,39 +355,37 @@ class CallReportController extends Controller
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
-            // ✅ Consider only Saturday/Sunday as non-working days
-            if ($day->isWeekend()) { // Saturday or Sunday
+            // Weekend = non-working
+            if ($day->isWeekend()) {
                 $nonWorkingDays++;
                 continue;
             }
 
-            // For all other days (Mon–Fri)
+            // Working day
+            $workingDays++;
+
             if ($dailyEvents->isEmpty()) {
-                // ✅ No events on a working day = absent
                 $absentDays++;
-                $workingDays++;
                 continue;
             }
 
-            $workingDays++;
-
-            // ✅ Auto-present rule: If any event has pause_type = 'start'
+            // Auto-present rule
             if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
                 $presentDays++;
-                continue; // Skip further processing for this day
+                continue;
             }
 
             // Sort earliest first
             $sorted = $dailyEvents->sortBy('event_time')->values();
 
-            $startSeen = false;
+            $startSeen     = false;
             $activeWorkSec = 0;
             $totalBreakSec = 0;
             $lastPauseTime = null;
 
             for ($i = 0; $i < $sorted->count(); $i++) {
-                $event = $sorted[$i];
-                $title = strtolower($event->status ?? '');
+                $event     = $sorted[$i];
+                $title     = strtolower($event->status ?? '');
                 $pauseType = strtolower($event->pause_type ?? '');
                 $eventName = $title ?: $pauseType;
                 $eventTime = Carbon::parse($event->event_time);
@@ -400,7 +405,7 @@ class CallReportController extends Controller
 
                 if ($i < $sorted->count() - 1) {
                     $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
-                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
+                    $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
 
                     if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
                         $activeWorkSec += $durationSec;
@@ -419,12 +424,11 @@ class CallReportController extends Controller
         }
 
         // --- Remove future working days from absentDays ---
-        $today = now()->startOfDay();
-
         $futureWorkingDays = 0;
 
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
             if ($day->greaterThan($today) && !$day->isWeekend()) {
                 $futureWorkingDays++;
             }
@@ -432,6 +436,7 @@ class CallReportController extends Controller
 
         // Subtract future working days from absent
         $absentDays = max(0, $absentDays - $futureWorkingDays);
+
 
         return view('reports.senior', compact(
             'totalCalls',
@@ -941,7 +946,7 @@ class CallReportController extends Controller
 
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
-        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+        $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
         // Find index of matching month (e.g., "2025-10")
         $targetIndex = null;
@@ -949,7 +954,7 @@ class CallReportController extends Controller
             // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
             $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
                 ? $date
-                : \Carbon\Carbon::parse($date)->format('Y-m');
+                : Carbon::parse($date)->format('Y-m');
 
             if ($monthPart === $selectedMonth) {
                 $targetIndex = $index;
@@ -958,21 +963,22 @@ class CallReportController extends Controller
         }
 
         // Use the matching month's target, else fallback to first or 0
-        $targetGiven = isset($targetValues[$targetIndex]) ? (int) $targetValues[$targetIndex] : ((int) $targetValues[0] ?? 0);
+        $targetGiven = isset($targetValues[$targetIndex])
+            ? (int) $targetValues[$targetIndex]
+            : ((int) ($targetValues[0] ?? 0));
 
         // Calculate Days Left (based on matched target_date entry)
         $matchedDate = $targetDates[$targetIndex] ?? null;
 
         if ($matchedDate) {
-            // ✅ Handle "YYYY-MM" (month only) or full date
             if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
+                $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate);
+                $carbonDate = Carbon::parse($matchedDate);
             }
 
-            $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
+            $diff     = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff));
         } else {
             $daysLeft = 0;
         }
@@ -982,6 +988,7 @@ class CallReportController extends Controller
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
+
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         // --- Calculate Present / Absent / Working / Non-working days ---
@@ -1001,51 +1008,60 @@ class CallReportController extends Controller
         $endOfMonth   = $startOfMonth->copy()->endOfMonth();
         $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
 
-        $presentDays = 0;
-        $halfDays = 0;
-        $absentDays = 0;
-        $workingDays = 0;
+        $presentDays    = 0;
+        $halfDays       = 0;
+        $absentDays     = 0;
+        $workingDays    = 0;
         $nonWorkingDays = 0;
+
+        $today = now()->startOfDay(); // 🔒 freeze today until end of day
 
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
+            if ($day->equalTo($today)) {
+                continue;
+            }
+
+            if ($day->isFuture()) {
+                continue;
+            }
+
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
-            // ✅ Consider only Saturday/Sunday as non-working days
-            if ($day->isWeekend()) { // Saturday or Sunday
+            // Weekend = non-working
+            if ($day->isWeekend()) {
                 $nonWorkingDays++;
                 continue;
             }
 
-            // For all other days (Mon–Fri)
+            // Working day
+            $workingDays++;
+
             if ($dailyEvents->isEmpty()) {
-                // ✅ No events on a working day = absent
                 $absentDays++;
-                $workingDays++;
                 continue;
             }
 
-            $workingDays++;
-
-            // ✅ Auto-present rule: If any event has pause_type = 'start'
+            // Auto-present rule
             if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
                 $presentDays++;
-                continue; // Skip further processing for this day
+                continue;
             }
 
             // Sort earliest first
             $sorted = $dailyEvents->sortBy('event_time')->values();
 
-            $startSeen = false;
+            $startSeen     = false;
             $activeWorkSec = 0;
             $totalBreakSec = 0;
             $lastPauseTime = null;
 
             for ($i = 0; $i < $sorted->count(); $i++) {
-                $event = $sorted[$i];
-                $title = strtolower($event->status ?? '');
+                $event     = $sorted[$i];
+                $title     = strtolower($event->status ?? '');
                 $pauseType = strtolower($event->pause_type ?? '');
                 $eventName = $title ?: $pauseType;
                 $eventTime = Carbon::parse($event->event_time);
@@ -1065,7 +1081,7 @@ class CallReportController extends Controller
 
                 if ($i < $sorted->count() - 1) {
                     $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
-                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
+                    $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
 
                     if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
                         $activeWorkSec += $durationSec;
@@ -1084,12 +1100,11 @@ class CallReportController extends Controller
         }
 
         // --- Remove future working days from absentDays ---
-        $today = now()->startOfDay();
-
         $futureWorkingDays = 0;
 
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
             if ($day->greaterThan($today) && !$day->isWeekend()) {
                 $futureWorkingDays++;
             }
@@ -1097,7 +1112,6 @@ class CallReportController extends Controller
 
         // Subtract future working days from absent
         $absentDays = max(0, $absentDays - $futureWorkingDays);
-
         $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
 
         return view('reports.seniormonthly', compact(
@@ -2231,7 +2245,7 @@ class CallReportController extends Controller
 
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
-        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+        $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
         // Find index of matching month (e.g., "2025-10")
         $targetIndex = null;
@@ -2239,7 +2253,7 @@ class CallReportController extends Controller
             // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
             $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
                 ? $date
-                : \Carbon\Carbon::parse($date)->format('Y-m');
+                : Carbon::parse($date)->format('Y-m');
 
             if ($monthPart === $selectedMonth) {
                 $targetIndex = $index;
@@ -2248,21 +2262,22 @@ class CallReportController extends Controller
         }
 
         // Use the matching month's target, else fallback to first or 0
-        $targetGiven = isset($targetValues[$targetIndex]) ? (int) $targetValues[$targetIndex] : ((int) $targetValues[0] ?? 0);
+        $targetGiven = isset($targetValues[$targetIndex])
+            ? (int) $targetValues[$targetIndex]
+            : ((int) ($targetValues[0] ?? 0));
 
         // Calculate Days Left (based on matched target_date entry)
         $matchedDate = $targetDates[$targetIndex] ?? null;
 
         if ($matchedDate) {
-            // ✅ Handle "YYYY-MM" (month only) or full date
             if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
+                $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate);
+                $carbonDate = Carbon::parse($matchedDate);
             }
 
-            $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
+            $diff     = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff));
         } else {
             $daysLeft = 0;
         }
@@ -2272,6 +2287,7 @@ class CallReportController extends Controller
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
+
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         // --- Calculate Present / Absent / Working / Non-working days ---
@@ -2291,15 +2307,22 @@ class CallReportController extends Controller
         $endOfMonth   = $startOfMonth->copy()->endOfMonth();
         $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
 
-        $presentDays = 0;
-        $halfDays = 0;
-        $absentDays = 0;
-        $workingDays = 0;
+        $presentDays    = 0;
+        $halfDays       = 0;
+        $absentDays     = 0;
+        $workingDays    = 0;
         $nonWorkingDays = 0;
+
+        $today = now()->startOfDay(); // 🔒 freeze today until end of day
 
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
+            // ⛔ Skip today explicitly
+            if ($day->equalTo($today)) {
+                continue;
+            }
 
             if ($day->isFuture()) {
                 continue;
@@ -2308,39 +2331,37 @@ class CallReportController extends Controller
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
-            // ✅ Consider only Saturday/Sunday as non-working days
-            if ($day->isWeekend()) { // Saturday or Sunday
+            // Weekend = non-working
+            if ($day->isWeekend()) {
                 $nonWorkingDays++;
                 continue;
             }
 
-            // For all other days (Mon–Fri)
+            // Working day
+            $workingDays++;
+
             if ($dailyEvents->isEmpty()) {
-                // ✅ No events on a working day = absent
                 $absentDays++;
-                $workingDays++;
                 continue;
             }
 
-            $workingDays++;
-
-            // ✅ Auto-present rule: If any event has pause_type = 'start'
+            // Auto-present rule
             if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
                 $presentDays++;
-                continue; // Skip further processing for this day
+                continue;
             }
 
             // Sort earliest first
             $sorted = $dailyEvents->sortBy('event_time')->values();
 
-            $startSeen = false;
+            $startSeen     = false;
             $activeWorkSec = 0;
             $totalBreakSec = 0;
             $lastPauseTime = null;
 
             for ($i = 0; $i < $sorted->count(); $i++) {
-                $event = $sorted[$i];
-                $title = strtolower($event->status ?? '');
+                $event     = $sorted[$i];
+                $title     = strtolower($event->status ?? '');
                 $pauseType = strtolower($event->pause_type ?? '');
                 $eventName = $title ?: $pauseType;
                 $eventTime = Carbon::parse($event->event_time);
@@ -2360,7 +2381,7 @@ class CallReportController extends Controller
 
                 if ($i < $sorted->count() - 1) {
                     $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
-                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
+                    $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
 
                     if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
                         $activeWorkSec += $durationSec;
@@ -2379,12 +2400,12 @@ class CallReportController extends Controller
         }
 
         // --- Remove future working days from absentDays ---
-        $today = now()->startOfDay();
-
         $futureWorkingDays = 0;
 
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
+            // ⛔ today excluded
             if ($day->greaterThan($today) && !$day->isWeekend()) {
                 $futureWorkingDays++;
             }
@@ -2392,6 +2413,7 @@ class CallReportController extends Controller
 
         // Subtract future working days from absent
         $absentDays = max(0, $absentDays - $futureWorkingDays);
+
 
         return view('reports.allseniordaily', compact(
             'totalCalls',
@@ -2642,7 +2664,7 @@ class CallReportController extends Controller
 
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
-        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+        $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
         // Find index of matching month (e.g., "2025-10")
         $targetIndex = null;
@@ -2667,15 +2689,14 @@ class CallReportController extends Controller
         $matchedDate = $targetDates[$targetIndex] ?? null;
 
         if ($matchedDate) {
-            // ✅ Handle "YYYY-MM" (month only) or full date
             if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
                 $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
                 $carbonDate = Carbon::parse($matchedDate);
             }
 
-            $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
+            $diff     = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff));
         } else {
             $daysLeft = 0;
         }
@@ -2705,27 +2726,34 @@ class CallReportController extends Controller
         $endOfMonth   = $startOfMonth->copy()->endOfMonth();
         $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
 
-        $presentDays = 0;
-        $halfDays = 0;
-        $absentDays = 0;
-        $workingDays = 0;
+        $presentDays    = 0;
+        $halfDays       = 0;
+        $absentDays     = 0;
+        $workingDays    = 0;
         $nonWorkingDays = 0;
+
+        $today = now()->startOfDay(); // 🔒 Freeze today until end of day
 
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
+            // ⛔ Do not count today
+            if ($day->equalTo($today)) {
+                continue;
+            }
+
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
-            // ✅ Consider only Saturday/Sunday as non-working days
-            if ($day->isWeekend()) { // Saturday or Sunday
+            // Weekend = non-working
+            if ($day->isWeekend()) {
                 $nonWorkingDays++;
                 continue;
             }
 
-            // For all other days (Mon–Fri)
+            // Working day
             if ($dailyEvents->isEmpty()) {
-                // ✅ No events on a working day = absent
                 $absentDays++;
                 $workingDays++;
                 continue;
@@ -2733,23 +2761,23 @@ class CallReportController extends Controller
 
             $workingDays++;
 
-            // ✅ Auto-present rule: If any event has pause_type = 'start'
+            // Auto-present rule
             if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
                 $presentDays++;
-                continue; // Skip further processing for this day
+                continue;
             }
 
             // Sort earliest first
             $sorted = $dailyEvents->sortBy('event_time')->values();
 
-            $startSeen = false;
+            $startSeen     = false;
             $activeWorkSec = 0;
             $totalBreakSec = 0;
             $lastPauseTime = null;
 
             for ($i = 0; $i < $sorted->count(); $i++) {
-                $event = $sorted[$i];
-                $title = strtolower($event->status ?? '');
+                $event     = $sorted[$i];
+                $title     = strtolower($event->status ?? '');
                 $pauseType = strtolower($event->pause_type ?? '');
                 $eventName = $title ?: $pauseType;
                 $eventTime = Carbon::parse($event->event_time);
@@ -2769,7 +2797,7 @@ class CallReportController extends Controller
 
                 if ($i < $sorted->count() - 1) {
                     $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
-                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
+                    $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
 
                     if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
                         $activeWorkSec += $durationSec;
@@ -2788,12 +2816,12 @@ class CallReportController extends Controller
         }
 
         // --- Remove future working days from absentDays ---
-        $today = now()->startOfDay();
-
         $futureWorkingDays = 0;
 
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
+            // ⛔ today excluded
             if ($day->greaterThan($today) && !$day->isWeekend()) {
                 $futureWorkingDays++;
             }
@@ -2802,8 +2830,8 @@ class CallReportController extends Controller
         // Subtract future working days from absent
         $absentDays = max(0, $absentDays - $futureWorkingDays);
 
-
-        $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
+        // --- Averages ---
+        $MAvgTotalCalls     = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
         $MAvgtotaltransfers = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
 
         return view('reports.alljuniormonthly', compact(
@@ -3552,7 +3580,7 @@ class CallReportController extends Controller
 
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
-        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+        $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
         // Find index of matching month (e.g., "2025-10")
         $targetIndex = null;
@@ -3560,7 +3588,7 @@ class CallReportController extends Controller
             // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
             $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
                 ? $date
-                : \Carbon\Carbon::parse($date)->format('Y-m');
+                : Carbon::parse($date)->format('Y-m');
 
             if ($monthPart === $selectedMonth) {
                 $targetIndex = $index;
@@ -3569,21 +3597,22 @@ class CallReportController extends Controller
         }
 
         // Use the matching month's target, else fallback to first or 0
-        $targetGiven = isset($targetValues[$targetIndex]) ? (int) $targetValues[$targetIndex] : ((int) $targetValues[0] ?? 0);
+        $targetGiven = isset($targetValues[$targetIndex])
+            ? (int) $targetValues[$targetIndex]
+            : ((int) ($targetValues[0] ?? 0));
 
         // Calculate Days Left (based on matched target_date entry)
         $matchedDate = $targetDates[$targetIndex] ?? null;
 
         if ($matchedDate) {
-            // ✅ Handle "YYYY-MM" (month only) or full date
             if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate . '-01')->endOfMonth();
+                $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
-                $carbonDate = \Carbon\Carbon::parse($matchedDate);
+                $carbonDate = Carbon::parse($matchedDate);
             }
 
-            $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
+            $diff     = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff));
         } else {
             $daysLeft = 0;
         }
@@ -3593,6 +3622,7 @@ class CallReportController extends Controller
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
+
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
         // --- Calculate Present / Absent / Working / Non-working days ---
@@ -3612,51 +3642,60 @@ class CallReportController extends Controller
         $endOfMonth   = $startOfMonth->copy()->endOfMonth();
         $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
 
-        $presentDays = 0;
-        $halfDays = 0;
-        $absentDays = 0;
-        $workingDays = 0;
+        $presentDays    = 0;
+        $halfDays       = 0;
+        $absentDays     = 0;
+        $workingDays    = 0;
         $nonWorkingDays = 0;
+
+        $today = now()->startOfDay(); // 🔒 freeze today until end of day
 
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
+            if ($day->equalTo($today)) {
+                continue;
+            }
+
+            if ($day->isFuture()) {
+                continue;
+            }
+
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
-            // ✅ Consider only Saturday/Sunday as non-working days
-            if ($day->isWeekend()) { // Saturday or Sunday
+            // Weekend = non-working
+            if ($day->isWeekend()) {
                 $nonWorkingDays++;
                 continue;
             }
 
-            // For all other days (Mon–Fri)
+            // Working day
+            $workingDays++;
+
             if ($dailyEvents->isEmpty()) {
-                // ✅ No events on a working day = absent
                 $absentDays++;
-                $workingDays++;
                 continue;
             }
 
-            $workingDays++;
-
-            // ✅ Auto-present rule: If any event has pause_type = 'start'
+            // Auto-present rule
             if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
                 $presentDays++;
-                continue; // Skip further processing for this day
+                continue;
             }
 
             // Sort earliest first
             $sorted = $dailyEvents->sortBy('event_time')->values();
 
-            $startSeen = false;
+            $startSeen     = false;
             $activeWorkSec = 0;
             $totalBreakSec = 0;
             $lastPauseTime = null;
 
             for ($i = 0; $i < $sorted->count(); $i++) {
-                $event = $sorted[$i];
-                $title = strtolower($event->status ?? '');
+                $event     = $sorted[$i];
+                $title     = strtolower($event->status ?? '');
                 $pauseType = strtolower($event->pause_type ?? '');
                 $eventName = $title ?: $pauseType;
                 $eventTime = Carbon::parse($event->event_time);
@@ -3676,7 +3715,7 @@ class CallReportController extends Controller
 
                 if ($i < $sorted->count() - 1) {
                     $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
-                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
+                    $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
 
                     if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
                         $activeWorkSec += $durationSec;
@@ -3695,12 +3734,11 @@ class CallReportController extends Controller
         }
 
         // --- Remove future working days from absentDays ---
-        $today = now()->startOfDay();
-
         $futureWorkingDays = 0;
 
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
             if ($day->greaterThan($today) && !$day->isWeekend()) {
                 $futureWorkingDays++;
             }
@@ -3708,6 +3746,7 @@ class CallReportController extends Controller
 
         // Subtract future working days from absent
         $absentDays = max(0, $absentDays - $futureWorkingDays);
+
 
         $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
 
@@ -4093,8 +4132,6 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
-
-
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
         $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
@@ -4166,14 +4203,14 @@ class CallReportController extends Controller
         $workingDays     = 0;
         $nonWorkingDays  = 0;
 
-        $today = now()->startOfDay();
+        $today = now()->startOfDay(); // 🔒 block today until end of day
 
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
             $dateStr = $day->format('Y-m-d');
 
-
+            // ⛔ Skip today completely
             if ($day->equalTo($today)) {
                 continue;
             }
@@ -4503,7 +4540,7 @@ class CallReportController extends Controller
 
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
         $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
-        $targetDates = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+        $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
 
         // Find index of matching month (e.g., "2025-10")
         $targetIndex = null;
@@ -4528,15 +4565,14 @@ class CallReportController extends Controller
         $matchedDate = $targetDates[$targetIndex] ?? null;
 
         if ($matchedDate) {
-            // ✅ Handle "YYYY-MM" (month only) or full date
             if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
                 $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
             } else {
                 $carbonDate = Carbon::parse($matchedDate);
             }
 
-            $diff = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff)); // ✅ Round up days
+            $diff     = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff));
         } else {
             $daysLeft = 0;
         }
@@ -4566,51 +4602,60 @@ class CallReportController extends Controller
         $endOfMonth   = $startOfMonth->copy()->endOfMonth();
         $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
 
-        $presentDays = 0;
-        $halfDays = 0;
-        $absentDays = 0;
-        $workingDays = 0;
+        $presentDays    = 0;
+        $halfDays       = 0;
+        $absentDays     = 0;
+        $workingDays    = 0;
         $nonWorkingDays = 0;
+
+        $today = now()->startOfDay(); // 🔒 freeze today until end of day
 
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
+            if ($day->equalTo($today)) {
+                continue;
+            }
+
+            if ($day->isFuture()) {
+                continue;
+            }
+
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
-            // ✅ Consider only Saturday/Sunday as non-working days
-            if ($day->isWeekend()) { // Saturday or Sunday
+            // Weekend = non-working
+            if ($day->isWeekend()) {
                 $nonWorkingDays++;
                 continue;
             }
 
-            // For all other days (Mon–Fri)
+            // Working day
+            $workingDays++;
+
             if ($dailyEvents->isEmpty()) {
-                // ✅ No events on a working day = absent
                 $absentDays++;
-                $workingDays++;
                 continue;
             }
 
-            $workingDays++;
-
-            // ✅ Auto-present rule: If any event has pause_type = 'start'
+            // Auto-present rule
             if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
                 $presentDays++;
-                continue; // Skip further processing for this day
+                continue;
             }
 
             // Sort earliest first
             $sorted = $dailyEvents->sortBy('event_time')->values();
 
-            $startSeen = false;
+            $startSeen     = false;
             $activeWorkSec = 0;
             $totalBreakSec = 0;
             $lastPauseTime = null;
 
             for ($i = 0; $i < $sorted->count(); $i++) {
-                $event = $sorted[$i];
-                $title = strtolower($event->status ?? '');
+                $event     = $sorted[$i];
+                $title     = strtolower($event->status ?? '');
                 $pauseType = strtolower($event->pause_type ?? '');
                 $eventName = $title ?: $pauseType;
                 $eventTime = Carbon::parse($event->event_time);
@@ -4630,7 +4675,7 @@ class CallReportController extends Controller
 
                 if ($i < $sorted->count() - 1) {
                     $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
-                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
+                    $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
 
                     if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
                         $activeWorkSec += $durationSec;
@@ -4649,12 +4694,11 @@ class CallReportController extends Controller
         }
 
         // --- Remove future working days from absentDays ---
-        $today = now()->startOfDay();
-
         $futureWorkingDays = 0;
 
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+
             if ($day->greaterThan($today) && !$day->isWeekend()) {
                 $futureWorkingDays++;
             }
@@ -4662,6 +4706,7 @@ class CallReportController extends Controller
 
         // Subtract future working days from absent
         $absentDays = max(0, $absentDays - $futureWorkingDays);
+
         $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
         $MAvgtotaltransfers = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
 
