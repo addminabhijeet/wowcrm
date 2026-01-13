@@ -51,6 +51,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
             ->count();
 
 
@@ -103,6 +104,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
             ->count();
 
 
@@ -162,6 +164,7 @@ class CallReportController extends Controller
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('transfers', 0)
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->groupBy('hour')
@@ -589,6 +592,7 @@ class CallReportController extends Controller
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('transfers', 0)
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->count();
@@ -652,6 +656,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
             ->count();
 
         // Transferred follow-up calls in month
@@ -692,6 +697,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -2095,6 +2101,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
             ->count();
 
         $transferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
@@ -2146,6 +2153,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
             ->count();
 
         // Transferred follow-up calls
@@ -2209,6 +2217,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3330,6 +3339,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
             ->count();
 
         $transferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
@@ -3392,6 +3402,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
             ->count();
 
 
@@ -3433,6 +3444,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
