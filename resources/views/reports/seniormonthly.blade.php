@@ -886,10 +886,10 @@
                                     <thead class="table-primary">
                                         <tr>
                                             <th class="fw-bold">Date</th>
-                                            <th class="fw-bold text-center">Sr IT Recruiter<br>(Follow Up)</th>
-                                            <th class="fw-bold text-center">Sr IT Recruiter<br>(Called & Mailed)</th>
-                                            <th class="fw-bold text-center">Sr IT Recruiter<br>(Self follow up)</th>
-                                            <th class="fw-bold text-center">Sr IT Recruiter<br>(Transfered Follow Up)</th>
+                                            <th class="fw-bold text-center">Follow Up</th>
+                                            <th class="fw-bold text-center">Called & Mailed</th>
+                                            <th class="fw-bold text-center">Self follow up</th>
+                                            <th class="fw-bold text-center">Transfered Follow Up</th>
                                             <th class="fw-bold text-center">Ready To Paid</th>
                                             <!-- Replaces Transfers -->
                                         </tr>
