@@ -26,9 +26,6 @@ class CallReportController extends Controller
         // Main logic with LIKE filters
         // ================================
 
-        // Total calls for this senior (including hierarchical keys)
-        $totalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")->count();
-
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
@@ -48,9 +45,13 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Ready To Pay" calls
-        $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $readyToPaidCalls = GoogleSheetData::where(function ($q) {
+            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        })
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
+
 
         $followUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
@@ -69,6 +70,13 @@ class CallReportController extends Controller
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
             ->count();
+
+        $totalCalls =
+            $calledAndMailedCalls
+            + $selffollowupCalls
+            + $readyToPaidCalls
+            + $followUpCalls
+            + $transferedfollowUpCalls;
 
 
         // Total other calls (excluding Called & Mailed)
@@ -104,9 +112,14 @@ class CallReportController extends Controller
             ->count();
 
         // Ready To Pay calls
-        $SreadyToPaidCalls = (clone $tquery)
+        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) {
+            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        })
+            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
+
 
         // Follow-up calls (Called & Mailed with TransferRemark)
         $SfollowUpCalls = GoogleSheetData::whereRaw(
@@ -139,8 +152,6 @@ class CallReportController extends Controller
             })
             ->count();
 
-        $StotalCalls = (clone $tquery)->count();
-
         $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
@@ -150,15 +161,25 @@ class CallReportController extends Controller
             ->where('transfers', 0)
             ->count();
 
+        $StotalCalls =
+            $ScalledAndMailedCalls
+            + $SselffollowupCalls
+            + $SreadyToPaidCalls
+            + $SfollowUpCalls
+            + $StransferedfollowUpCalls;
 
         // Hour-wise "Ready To Pay" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->where(function ($q) {
+                $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                    ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+            })
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
         // Hourly Called & Mailed
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
@@ -596,9 +617,6 @@ class CallReportController extends Controller
         $user = Auth::user();
         $createdByKey = "{$user->id}|senior";
 
-        // Total calls for this senior (including hierarchical keys)
-        $totalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")->count();
-
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
@@ -618,7 +636,10 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Ready To Pay" calls
-        $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $readyToPaidCalls = GoogleSheetData::where(function ($q) {
+            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        })
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
@@ -640,6 +661,12 @@ class CallReportController extends Controller
             ->where('TransferRemark', '!=', '')
             ->count();
 
+        $totalCalls =
+            $calledAndMailedCalls
+            + $selffollowupCalls
+            + $readyToPaidCalls
+            + $followUpCalls
+            + $transferedfollowUpCalls;
 
         // Total other calls (excluding Called & Mailed)
         $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
@@ -653,12 +680,6 @@ class CallReportController extends Controller
         // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
         [$year, $month] = explode('-', $selectedMonth);
-
-        // Total calls for this senior in selected month
-        $MtotalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
-            ->count();
 
         // Total "Called & Mailed" calls in month
         $McalledAndMailedCalls = GoogleSheetData::whereRaw(
@@ -686,11 +707,15 @@ class CallReportController extends Controller
 
 
         // Ready To Pay calls in month
-        $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $MreadyToPaidCalls = GoogleSheetData::where(function ($q) {
+            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        })
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
+
 
         // Follow-up calls in month (Called & Mailed with TransferRemark)
         $MfollowUpCalls = GoogleSheetData::whereRaw(
@@ -726,6 +751,14 @@ class CallReportController extends Controller
             })
             ->count();
 
+        $MtotalCalls =
+            $McalledAndMailedCalls
+            + $MselffollowupCalls
+            + $MreadyToPaidCalls
+            + $MfollowUpCalls
+            + $MtransferedfollowUpCalls;
+
+
         // Daily "Called & Mailed" counts
         $dailyCalledAndMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
@@ -755,13 +788,17 @@ class CallReportController extends Controller
 
         // Daily Ready To Paid
         $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
-            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->where(function ($q) {
+                $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                    ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+            })
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
+
 
         // Daily Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
         $dailySelfFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
@@ -2118,9 +2155,6 @@ class CallReportController extends Controller
         // ================================
         // Main logic with LIKE filters
         // ================================
-        // Total calls for this senior (including hierarchical keys)
-        $totalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")->count();
-
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
@@ -2140,7 +2174,10 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Ready To Pay" calls
-        $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $readyToPaidCalls = GoogleSheetData::where(function ($q) {
+            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        })
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
@@ -2197,7 +2234,11 @@ class CallReportController extends Controller
 
 
         // Ready To Pay calls
-        $SreadyToPaidCalls = (clone $tquery)
+        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) {
+            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        })
+            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
@@ -2231,7 +2272,6 @@ class CallReportController extends Controller
             })
             ->count();
 
-        $StotalCalls = (clone $tquery)->count();
 
         $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
@@ -2242,10 +2282,19 @@ class CallReportController extends Controller
             ->where('transfers', 0)
             ->count();
 
+        $StotalCalls =
+            $ScalledAndMailedCalls
+            + $SselffollowupCalls
+            + $SreadyToPaidCalls
+            + $SfollowUpCalls
+            + $StransferedfollowUpCalls;
 
         // Hour-wise "Ready To Pay" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->where(function ($q) {
+                $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                    ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+            })
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('hour')
@@ -3379,9 +3428,6 @@ class CallReportController extends Controller
             ->where('is_deleted', 0)
             ->firstOrFail();
 
-        // Total calls for this senior (including hierarchical keys)
-        $totalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")->count();
-
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
@@ -3401,7 +3447,10 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Ready To Pay" calls
-        $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $readyToPaidCalls = GoogleSheetData::where(function ($q) {
+            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        })
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
@@ -3423,6 +3472,13 @@ class CallReportController extends Controller
             ->where('transfers', 1)
             ->count();
 
+        $totalCalls =
+            $calledAndMailedCalls
+            + $selffollowupCalls
+            + $readyToPaidCalls
+            + $followUpCalls
+            + $transferedfollowUpCalls;
+
 
         // Total other calls (excluding Called & Mailed)
         $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
@@ -3437,12 +3493,6 @@ class CallReportController extends Controller
         // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
         [$year, $month] = explode('-', $selectedMonth);
-
-        // Total calls for this senior in selected month
-        $MtotalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
-            ->count();
 
         // Total "Called & Mailed" calls in month
         $McalledAndMailedCalls = GoogleSheetData::whereRaw(
@@ -3468,7 +3518,10 @@ class CallReportController extends Controller
             ->count();
 
         // Ready To Pay calls in month
-        $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $MreadyToPaidCalls = GoogleSheetData::where(function ($q) {
+            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        })
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
@@ -3509,6 +3562,14 @@ class CallReportController extends Controller
             })
             ->count();
 
+
+        $MtotalCalls =
+            $McalledAndMailedCalls
+            + $MselffollowupCalls
+            + $MreadyToPaidCalls
+            + $MfollowUpCalls
+            + $MtransferedfollowUpCalls;
+
         // Daily "Called & Mailed" counts
         $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
@@ -3534,7 +3595,10 @@ class CallReportController extends Controller
 
         // Daily Ready To Paid
         $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
-            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->where(function ($q) {
+                $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                    ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+            })
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
