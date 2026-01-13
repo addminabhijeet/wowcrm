@@ -55,11 +55,13 @@ class CallReportController extends Controller
             ->count();
 
 
-        $transferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $transferedfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
+            ->where('transfers', 1)
             ->count();
 
 
@@ -109,11 +111,14 @@ class CallReportController extends Controller
 
 
         // Transferred follow-up calls
-        $StransferedfollowUpCalls = (clone $tquery)
+        $StransferedfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
+            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
+            ->where('transfers', 0)
             ->count();
 
         // Other calls (excluding Called & Mailed)
@@ -174,15 +179,16 @@ class CallReportController extends Controller
 
         // Hourly Transferred Follow-up
         $hourlyTransferredFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('transfers', 1)
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
         // Hourly Other Calls (excluding Called & Mailed)
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
@@ -597,11 +603,13 @@ class CallReportController extends Controller
             ->where('TransferRemark', '!=', '')
             ->count();
 
-        $transferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $transferedfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('transfers', 1)
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
             ->count();
 
 
@@ -660,13 +668,15 @@ class CallReportController extends Controller
             ->count();
 
         // Transferred follow-up calls in month
-        $MtransferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $MtransferedfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
+            ->where('transfers', 1)
             ->count();
 
         // Other calls in month (excluding Called & Mailed)
@@ -737,13 +747,13 @@ class CallReportController extends Controller
 
         // Daily Transferred Follow-up (Called & Mailed with TransferRemark and transfers = 1)
         $dailyTransferredFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
-            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
+            ->where('transfers', 1)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -2104,11 +2114,13 @@ class CallReportController extends Controller
             ->where('transfers', 0)
             ->count();
 
-        $transferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $transferedfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
+            ->where('transfers', 1)
             ->count();
 
 
@@ -2157,11 +2169,14 @@ class CallReportController extends Controller
             ->count();
 
         // Transferred follow-up calls
-        $StransferedfollowUpCalls = (clone $tquery)
+        $StransferedfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
+            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
+            ->where('transfers', 1)
             ->count();
 
         // Other calls (excluding Called & Mailed)
@@ -2224,12 +2239,12 @@ class CallReportController extends Controller
 
         // Hourly Transferred Follow-up
         $hourlyTransferredFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
+            ->where('transfers', 1)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3342,11 +3357,13 @@ class CallReportController extends Controller
             ->where('transfers', 0)
             ->count();
 
-        $transferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $transferedfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
+            ->where('transfers', 1)
             ->count();
 
 
@@ -3407,13 +3424,15 @@ class CallReportController extends Controller
 
 
         // Transferred follow-up calls in month
-        $MtransferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        $MtransferedfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
+            ->where('transfers', 1)
             ->count();
 
         // Other calls in month (excluding Called & Mailed)
@@ -3483,13 +3502,13 @@ class CallReportController extends Controller
 
         // Daily Transferred Follow-up (Called & Mailed with TransferRemark and transfers = 1)
         $dailyTransferredFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
-            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', '1')
+            ->where('transfers', 1)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
