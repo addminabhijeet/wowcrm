@@ -701,7 +701,7 @@
         <div class="row gy-4 mt-1">
 
             <!-- ================= Left Section ================= -->
-            <div class="col-xxl-8 col-lg-6">
+            <div class="col-xxl-8 col-lg-6 w-100">
                 <div class="card h-100 border-0 shadow-sm radius-12">
                     <div class="card-body p-4">
                         <!-- Header -->
@@ -809,8 +809,9 @@
                                                 <th class="fw-bold">Date</th>
                                                 <th class="fw-bold text-center">Follow Up</th>
                                                 <th class="fw-bold text-center">Called & Mailed</th>
-                                                <th class="fw-bold text-center">Other Call</th>
-                                                <th class="fw-bold text-center">Ready To Pay</th>
+                                                <th class="fw-bold text-center">Self follow up</th>
+                                                <th class="fw-bold text-center">Tra. Follow Up</th>
+                                                <th class="fw-bold text-center">Ready To Paid</th>
                                                 <!-- Replaces Transfers -->
                                             </tr>
                                         </thead>
@@ -820,9 +821,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay1 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay1 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay1 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay1 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay1 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay1 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay1 }}</span></td>
                                             </tr>
@@ -831,9 +834,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay2 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay2 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay2 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay2 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay2 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay2 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay2 }}</span></td>
                                             </tr>
@@ -842,9 +847,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay3 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay3 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay3 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay3 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay3 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay3 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay3 }}</span></td>
                                             </tr>
@@ -853,9 +860,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay4 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay4 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay4 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay4 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay4 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay4 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay4 }}</span></td>
                                             </tr>
@@ -864,9 +873,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay5 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay5 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay5 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay5 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay5 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay5 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay5 }}</span></td>
                                             </tr>
@@ -875,9 +886,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay6 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay6 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay6 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay6 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay6 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay6 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay6 }}</span></td>
                                             </tr>
@@ -886,9 +899,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay7 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay7 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay7 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay7 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay7 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay7 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay7 }}</span></td>
                                             </tr>
@@ -897,9 +912,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay8 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay8 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay8 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay8 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay8 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay8 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay8 }}</span></td>
                                             </tr>
@@ -908,9 +925,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay9 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay9 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay9 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay9 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay9 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay9 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay9 }}</span></td>
                                             </tr>
@@ -919,9 +938,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay10 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay10 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay10 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay10 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay10 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay10 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay10 }}</span></td>
                                             </tr>
@@ -930,9 +951,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay11 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay11 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay11 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay11 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay11 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay11 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay11 }}</span></td>
                                             </tr>
@@ -941,9 +964,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay12 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay12 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay12 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay12 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay12 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay12 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay12 }}</span></td>
                                             </tr>
@@ -952,9 +977,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay13 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay13 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay13 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay13 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay13 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay13 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay13 }}</span></td>
                                             </tr>
@@ -963,9 +990,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay14 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay14 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay14 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay14 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay14 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay14 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay14 }}</span></td>
                                             </tr>
@@ -974,9 +1003,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay15 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay15 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay15 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay15 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay15 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay15 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay15 }}</span></td>
                                             </tr>
@@ -985,9 +1016,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay16 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay16 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay16 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay16 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay16 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay16 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay16 }}</span></td>
                                             </tr>
@@ -1005,9 +1038,9 @@
                                                 <th class="fw-bold">Date</th>
                                                 <th class="fw-bold text-center">Follow Up</th>
                                                 <th class="fw-bold text-center">Called & Mailed</th>
-                                                <th class="fw-bold text-center">Other Call</th>
-                                                <th class="fw-bold text-center">Ready To Pay</th>
-                                                <!-- Replaces Transfers -->
+                                                <th class="fw-bold text-center">Self follow up</th>
+                                                <th class="fw-bold text-center">Tra. Follow Up</th>
+                                                <th class="fw-bold text-center">Ready To Paid</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -1016,9 +1049,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay17 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay17 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay17 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay17 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay17 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay17 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay17 }}</span></td>
                                             </tr>
@@ -1027,9 +1062,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay18 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay18 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay18 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay18 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay18 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay18 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay18 }}</span></td>
                                             </tr>
@@ -1038,9 +1075,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay19 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay19 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay19 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay19 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay19 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay19 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay19 }}</span></td>
                                             </tr>
@@ -1049,9 +1088,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay20 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay20 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay20 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay20 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay20 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay20 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay20 }}</span></td>
                                             </tr>
@@ -1060,9 +1101,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay21 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay21 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay21 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay21 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay21 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay21 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay21 }}</span></td>
                                             </tr>
@@ -1071,9 +1114,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay22 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay22 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay22 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay22 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay22 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay22 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay22 }}</span></td>
                                             </tr>
@@ -1082,9 +1127,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay23 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay23 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay23 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay23 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay23 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay23 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay23 }}</span></td>
                                             </tr>
@@ -1093,9 +1140,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay24 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay24 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay24 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay24 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay24 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay24 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay24 }}</span></td>
                                             </tr>
@@ -1104,9 +1153,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay25 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay25 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay25 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay25 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay25 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay25 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay25 }}</span></td>
                                             </tr>
@@ -1115,9 +1166,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay26 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay26 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay26 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay26 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay26 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay26 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay26 }}</span></td>
                                             </tr>
@@ -1126,9 +1179,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay27 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay27 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay27 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay27 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay27 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay27 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay27 }}</span></td>
                                             </tr>
@@ -1137,9 +1192,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay28 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay28 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay28 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay28 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay28 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay28 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay28 }}</span></td>
                                             </tr>
@@ -1148,9 +1205,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay29 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay29 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay29 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay29 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay29 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay29 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay29 }}</span></td>
                                             </tr>
@@ -1159,9 +1218,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay30 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay30 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay30 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay30 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay30 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay30 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay30 }}</span></td>
                                             </tr>
@@ -1170,9 +1231,11 @@
                                                 <td class="text-center"><span
                                                         class="badge bg-info">{{ $fDay31 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-info">{{ $tDay31 }}</span></td>
+                                                        class="badge bg-info">{{ $cDay31 }}</span></td>
                                                 <td class="text-center"><span
-                                                        class="badge bg-warning">{{ $oDay31 }}</span></td>
+                                                        class="badge bg-warning">{{ $sfDay31 }}</span></td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tfDay31 }}</span></td>
                                                 <td class="text-center"><span
                                                         class="badge bg-success">{{ $rDay31 }}</span></td>
                                             </tr>
@@ -1182,13 +1245,12 @@
                             </div>
 
                         </div>
-
                     </div>
                 </div>
             </div>
 
             <!-- ================= Right Summary ================= -->
-            <div class="col-xxl-4 col-lg-6">
+            {{-- <div class="col-xxl-4 col-lg-6">
                 <div class="card h-100 radius-8 border-0">
                     <div class="card-body p-24">
                         <h6 class="fw-bold mb-1">Total Summary (From Joining)</h6>
@@ -1234,7 +1296,7 @@
                         </div>
                     </div>
                 </div>
-            </div>
+            </div> --}}
         </div>
 
     </div>
