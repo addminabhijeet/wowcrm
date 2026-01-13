@@ -2058,13 +2058,18 @@ class CallReportController extends Controller
         // ================================
         // Main logic with LIKE filters
         // ================================
-
         // Total calls for this senior (including hierarchical keys)
         $totalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")->count();
 
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
+            ->count();
+
+        $selffollowupCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
             ->count();
 
         // Total "Ready To Pay" calls
@@ -2077,6 +2082,14 @@ class CallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->count();
+
+        $transferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', '1')
+            ->count();
+
 
         // Total other calls (excluding Called & Mailed)
         $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
