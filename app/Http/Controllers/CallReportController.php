@@ -141,7 +141,7 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', 0)
+            ->where('transfers', 1)
             ->count();
 
         // Other calls (excluding Called & Mailed)
