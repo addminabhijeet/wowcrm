@@ -740,43 +740,7 @@
                                         <i class="bi bi-bar-chart-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="fw-bold d-block">Other Calls</small>
-                                        <h4 class="fw-bold text-dark mb-0">{{ $MotherCalls }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-2">
-                                <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                    <div class="icon mb-2 text-warning fs-2">
-                                        <i class="bi bi-envelope-paper-fill"></i>
-                                    </div>
-                                    <div>
-                                        <small class="fw-bold d-block">Called & Mailed</small>
-                                        <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-2">
-                                <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                    <div class="icon mb-2 text-info fs-2">
-                                        <i class="bi bi-cash-stack"></i>
-                                    </div>
-                                    <div>
-                                        <small class="fw-bold d-block">Ready To Pay</small>
-                                        <h4 class="fw-bold text-dark mb-0">{{ $MreadyToPaidCalls }}</h4>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="col-md-2">
-                                <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                    <div class="icon mb-2 text-info fs-2">
-                                        <i class="bi bi-cash-stack"></i>
-                                    </div>
-                                    <div>
-                                        <small class="fw-bold d-block">Follow Up</small>
+                                        <small class="fw-bold d-block">Sr IT Recruiter<br>(Follow Up)</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $MfollowUpCalls }}</h4>
                                     </div>
                                 </div>
@@ -788,8 +752,44 @@
                                         <i class="bi bi-envelope-paper-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="fw-bold d-block">Per Day Calls</small>
-                                        <h4 class="fw-bold text-dark mb-0">{{ $MAvgTotalCalls }}</h4>
+                                        <small class="fw-bold d-block">Sr IT Recruiter<br>(Called & Mailed)</small>
+                                        <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                    <div class="icon mb-2 text-info fs-2">
+                                        <i class="bi bi-cash-stack"></i>
+                                    </div>
+                                    <div>
+                                        <small class="fw-bold d-block">Sr IT Recruiter<br>(Self follow up)</small>
+                                        <h4 class="fw-bold text-dark mb-0">{{ $MselffollowupCalls }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                    <div class="icon mb-2 text-info fs-2">
+                                        <i class="bi bi-cash-stack"></i>
+                                    </div>
+                                    <div>
+                                        <small class="fw-bold d-block">Sr IT Recruiter<br>(Transfered Follow Up)</small>
+                                        <h4 class="fw-bold text-dark mb-0">{{ $MtransferedfollowUpCalls }}</h4>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-2">
+                                <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                    <div class="icon mb-2 text-warning fs-2">
+                                        <i class="bi bi-envelope-paper-fill"></i>
+                                    </div>
+                                    <div>
+                                        <small class="fw-bold d-block">Ready To Paid</small>
+                                        <h4 class="fw-bold text-dark mb-0">{{ $MreadyToPaidCalls }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -807,10 +807,10 @@
                                         <thead class="table-primary">
                                             <tr>
                                                 <th class="fw-bold">Date</th>
-                                                <th class="fw-bold text-center">Follow Up</th>
-                                                <th class="fw-bold text-center">Called & Mailed</th>
-                                                <th class="fw-bold text-center">Self follow up</th>
-                                                <th class="fw-bold text-center">Tra. Follow Up</th>
+                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Follow Up)</th>
+                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Called & Mailed)</th>
+                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Self follow up)</th>
+                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Transfered Follow Up)</th>
                                                 <th class="fw-bold text-center">Ready To Paid</th>
                                                 <!-- Replaces Transfers -->
                                             </tr>
@@ -1036,10 +1036,10 @@
                                         <thead class="table-primary">
                                             <tr>
                                                 <th class="fw-bold">Date</th>
-                                                <th class="fw-bold text-center">Follow Up</th>
-                                                <th class="fw-bold text-center">Called & Mailed</th>
-                                                <th class="fw-bold text-center">Self follow up</th>
-                                                <th class="fw-bold text-center">Tra. Follow Up</th>
+                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Follow Up)</th>
+                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Called & Mailed)</th>
+                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Self follow up)</th>
+                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Transfered Follow Up)</th>
                                                 <th class="fw-bold text-center">Ready To Paid</th>
                                             </tr>
                                         </thead>
