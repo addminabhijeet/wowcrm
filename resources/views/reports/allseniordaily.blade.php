@@ -858,7 +858,7 @@
                                     </div>
                                     <div>
                                         <small class="text-muted d-block">Sr IT Recruiter<br>(Self follow up)</small>
-                                        <h4 class="fw-bold text-dark mb-0">{{ $SreadyToPaidCalls }}</h4>
+                                        <h4 class="fw-bold text-dark mb-0">{{ $SselffollowupCalls }}</h4>
                                     </div>
                                 </div>
                             </div>
