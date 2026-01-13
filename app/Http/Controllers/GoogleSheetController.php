@@ -37,7 +37,6 @@ class GoogleSheetController extends Controller
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
         });
 
-        // Filter by selected junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
@@ -45,7 +44,6 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -56,11 +54,9 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // ✅ Pagination at query level (not collection level)
         $perPage = 10;
         $results = $query->orderBy('id', 'desc')->paginate($perPage, ['*'], 'page', $page);
 
-        // ✅ Transform only current page results
         $results->getCollection()->transform(function ($item) use ($authUser) {
             $forwardedBy = 'N/A';
 
@@ -99,7 +95,6 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-        // ✅ For AJAX pagination, return only table partial
         if ($request->ajax()) {
             return view('database.partials.senior_table', [
                 'data' => $results,
@@ -121,7 +116,6 @@ class GoogleSheetController extends Controller
             'sheet_link' => 'required|url'
         ]);
 
-        // Extract spreadsheet ID
         preg_match('/\/d\/([a-zA-Z0-9-_]+)/', $request->sheet_link, $matches);
         $spreadsheetId = $matches[1] ?? null;
 
@@ -129,7 +123,6 @@ class GoogleSheetController extends Controller
             return back()->with('error', 'Invalid Google Sheet link');
         }
 
-        // Fetch CSV
         $csvUrl = "https://docs.google.com/spreadsheets/d/{$spreadsheetId}/export?format=csv";
         $csvData = @file_get_contents($csvUrl);
 
@@ -138,7 +131,7 @@ class GoogleSheetController extends Controller
         }
 
         $rows = array_map('str_getcsv', explode("\n", trim($csvData)));
-        $header = array_shift($rows); // first row as column headers
+        $header = array_shift($rows);
 
         $rowIndex = 2;
         $user = Auth::user();
@@ -149,7 +142,6 @@ class GoogleSheetController extends Controller
 
             $rowData = array_combine($header, $row);
 
-            // Map CSV headers to database columns
             $mappedData = [
                 'sheet_row_number' => $rowIndex,
                 'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
@@ -211,11 +203,9 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? null;
         $phone = $rowData['Phone Number'] ?? null;
 
-        // Check for duplicate Email (ignore current record)
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)
                 ->where('id', '!=', $id)
@@ -229,7 +219,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Check for duplicate Phone (ignore current record)
         if (!empty($phone)) {
             $phoneExists = GoogleSheetData::where('Phone_Number', $phone)
                 ->where('id', '!=', $id)
@@ -243,38 +232,32 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Validate it's a PDF
             if ($file->getMimeType() !== 'application/pdf') {
                 return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
             }
 
-            // Generate unique filename
             $timestamp = now()->format('Ymd_His');
             $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
 
-                // Delete old resume file if exists
                 if ($row->resume && Storage::disk('public')->exists($row->resume)) {
                     Storage::disk('public')->delete($row->resume);
                 }
 
-                $row->resume = $filePath; // Store file path instead of just filename
+                $row->resume = $filePath;
 
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
         }
 
-        // Prepare update data
         $updateData = [
             'Date' => isset($rowData['Date']) && !empty($rowData['Date']) ?
                 $this->parseDate($rowData['Date']) : null,
@@ -296,7 +279,6 @@ class GoogleSheetController extends Controller
             'updated_at' => now(),
         ];
 
-        // Only update resume if it was uploaded
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
@@ -336,7 +318,6 @@ class GoogleSheetController extends Controller
         $record->sheet_row_number = $nextRow;
         $record->created_by = $user->id . '|admin';
 
-        // Map frontend keys to DB columns
         $columnMap = [
             'Date' => 'Date',
             'Name' => 'Name',
@@ -354,11 +335,9 @@ class GoogleSheetController extends Controller
             'Time Zone' => 'Time_Zone',
         ];
 
-        // Temporary storage for checking unique fields
         $email = null;
         $phone = null;
 
-        // Assign values safely
         foreach ($rowData as $key => $val) {
             if (!isset($columnMap[$key])) continue;
             $column = $columnMap[$key];
@@ -382,7 +361,6 @@ class GoogleSheetController extends Controller
             $record->$column = $val;
         }
 
-        // --- Check for duplicate Email or Phone ---
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
             if ($emailExists) {
@@ -403,11 +381,9 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Validate it's a PDF
             if ($file->getMimeType() !== 'application/pdf') {
                 return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
             }
@@ -418,11 +394,9 @@ class GoogleSheetController extends Controller
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
-                $record->resume = $filePath; // Store file path
+                $record->resume = $filePath;
             } catch (\Exception $e) {
-                // Continue without resume if upload fails
                 $record->resume = null;
             }
         }
@@ -444,8 +418,6 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-
-    // Add a method to serve the PDF files
     public function viewadminResume($id)
     {
         $row = GoogleSheetData::find($id);
@@ -466,7 +438,6 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-    // Add a method to download the PDF files
     public function downloadadminResume($id)
     {
         $row = GoogleSheetData::find($id);
@@ -489,8 +460,8 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
-        $page = $request->input('page', 1); // ✅ Ensure page input handled
+        $juniorUserId = $request->input('junior_user');
+        $page = $request->input('page', 1);
 
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
@@ -511,21 +482,11 @@ class GoogleSheetController extends Controller
             })
                 ->orWhere('created_by', $authUser->id . '|senior:0|senior');
         })
-            // ✅ Transfer remark condition
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
             })
-            // ✅ THIS guarantees ONLY transfers = 1 records are returned
             ->where('transfers', 1);
-
-
-
-
-
-
-
-        // Filter by selected junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
@@ -533,7 +494,6 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -544,22 +504,17 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
         $results = $query->orderBy('id', 'desc')->get();
-
-        // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
                 $names = [];
-
                 foreach ($entries as $entry) {
                     $parts = explode('|', $entry);
                     $userId = $parts[0] ?? null;
                     $role   = $parts[1] ?? 'unknown';
-
                     if ($userId == $authUser->id) {
                         $roleLabel = ($role === 'senior')
                             ? 'IT Senior Recruiter'
@@ -589,7 +544,6 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -606,7 +560,6 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-        // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
             return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
@@ -621,8 +574,8 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
-        $page = $request->input('page', 1); //  Ensure page input handled
+        $juniorUserId = $request->input('junior_user');
+        $page = $request->input('page', 1);
 
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
@@ -635,13 +588,10 @@ class GoogleSheetController extends Controller
                     ->orWhere('created_by', 'LIKE', $userPattern)
                     ->orWhere('created_by', 'LIKE', $zeroPattern);
             })
-                // EXCLUSION: Do NOT show rows having more than one "|senior"
                 ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
         })->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0);
-
-        // Filter by selected junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
@@ -649,7 +599,6 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -660,10 +609,7 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
         $results = $query->orderBy('id', 'desc')->get();
-
-        // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -705,7 +651,6 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -715,18 +660,13 @@ class GoogleSheetController extends Controller
             $currentPage,
             ['path' => url()->current(), 'query' => $request->query()]
         );
-
-
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
-
-        // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
             return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
-
         return view('database.seniorfollow', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
@@ -835,8 +775,6 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-
-        // SUBSTRING_INDEX-based filter with second part check
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
 
             $seniorPart = $authUser->id . '|senior';
@@ -856,14 +794,11 @@ class GoogleSheetController extends Controller
         }
 
         $data = $query->orderBy('Date', 'desc')->paginate(10);
-
-        // Map forwarded_by dynamically for multiple creators
         $data->getCollection()->transform(function ($item) use ($authUser) {
 
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
 
                 $names = [];
@@ -882,8 +817,6 @@ class GoogleSheetController extends Controller
                         $names[] = "{$name} ({$userId}) ({$role})";
                     }
                 }
-
-                // Join all names for forwarded chain
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -897,19 +830,15 @@ class GoogleSheetController extends Controller
         if ($request->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
         }
-
         return view('database.seniorcandm', compact('data'));
     }
 
     public function senioradmincandm(Request $request)
     {
-        // Create a dummy object with id = 32 (without touching your inner logic)
         $authUser = (object)['id' => 32];
 
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-
-        // SUBSTRING_INDEX-based filter with second part check
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
             $seniorPart = $authUser->id . '|senior';
 
@@ -932,15 +861,10 @@ class GoogleSheetController extends Controller
         }
 
         $data = $query->orderBy('Date', 'desc')->paginate(10);
-
-        // Map forwarded_by dynamically for multiple creators
         $data->getCollection()->transform(function ($item) use ($authUser) {
-
             $forwardedBy = '';
-
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
-
                 $names = [];
                 foreach ($entries as $entry) {
                     $parts = explode('|', $entry);
@@ -957,20 +881,16 @@ class GoogleSheetController extends Controller
                         $names[] = "{$name} ({$userId}) ({$role})";
                     }
                 }
-
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
             }
-
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
-
         if ($request->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
         }
-
         return view('database.seniorcandm', compact('data'));
     }
 
@@ -980,18 +900,12 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-
-        // SUBSTRING_INDEX-based filter with second part check
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
-
             $seniorPart = $authUser->id . '|senior';
-
-            // CASE 2 ONLY: x|junior : <senior>|senior : <some>|senior
             $q->whereRaw("
                 -- First part must be ANY junior
                 SUBSTRING_INDEX(created_by, ':', 1) LIKE '%|junior'
             ")
-
                 ->whereRaw("
                 -- Second part must be the logged-in senior
                 SUBSTRING_INDEX(
@@ -1000,7 +914,6 @@ class GoogleSheetController extends Controller
                     -1
                 ) = ?
             ", [$seniorPart])
-
                 ->whereRaw("
                 -- Third part must end with |senior
                 SUBSTRING_INDEX(
@@ -1013,8 +926,6 @@ class GoogleSheetController extends Controller
             $q->whereNull('TransferRemark')
                 ->orWhere('TransferRemark', '');
         });
-
-
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -1024,16 +935,13 @@ class GoogleSheetController extends Controller
                     ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
             });
         }
-
         $data = $query->orderBy('Date', 'desc')->paginate(10);
 
-        // Map forwarded_by dynamically for multiple creators
         $data->getCollection()->transform(function ($item) use ($authUser) {
 
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
 
                 $names = [];
@@ -1052,8 +960,6 @@ class GoogleSheetController extends Controller
                         $names[] = "{$name} ({$userId}) ({$role})";
                     }
                 }
-
-                // Join all names for forwarded chain
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -1076,13 +982,9 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-
-        // SUBSTRING_INDEX-based filter with second part check
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
 
             $seniorPart = $authUser->id . '|senior';
-
-            // CASE 2 ONLY: x|junior : <senior>|senior : <some>|senior
             $q->whereRaw("
                 -- First part must be ANY junior
                 SUBSTRING_INDEX(created_by, ':', 1) LIKE '%|junior'
@@ -1120,16 +1022,12 @@ class GoogleSheetController extends Controller
         }
 
         $data = $query->orderBy('Date', 'desc')->paginate(10);
-
-        // Map forwarded_by dynamically for multiple creators
         $data->getCollection()->transform(function ($item) use ($authUser) {
 
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
-
                 $names = [];
                 foreach ($entries as $entry) {
                     $parts = explode('|', $entry);
@@ -1146,8 +1044,6 @@ class GoogleSheetController extends Controller
                         $names[] = "{$name} ({$userId}) ({$role})";
                     }
                 }
-
-                // Join all names for forwarded chain
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -1164,32 +1060,25 @@ class GoogleSheetController extends Controller
 
         return view('database.seniormodcandmfollow', compact('data'));
     }
-
     public function seniormod(Request $request)
     {
         $authUser = (object) ['id' => null];
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
-        $page = $request->input('page', 1); // ✅ Ensure page input handled
-
+        $juniorUserId = $request->input('junior_user');
+        $page = $request->input('page', 1);
         $userPattern = "%" . $authUser->id . "|junior";
-
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
             $q->where('created_by', $authUser->id . '|junior')
                 ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior'])
                 ->orWhere('created_by', 'LIKE', $userPattern);
         });
-
-        // Filter by selected junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
                     ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$juniorUserId . '|junior', $juniorUserId . '|junior']);
             });
         }
-
-        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -1199,23 +1088,16 @@ class GoogleSheetController extends Controller
                     ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
             });
         }
-
-        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
         $results = $query->orderBy('Date', 'desc')->get();
-
-        // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
-
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
                 $names = [];
-
                 foreach ($entries as $entry) {
                     $parts = explode('|', $entry);
                     $userId = $parts[0] ?? null;
                     $role   = $parts[1] ?? 'unknown';
-
                     if ($userId == $authUser->id) {
                         $roleLabel = ($role === 'senior')
                             ? 'IT Senior Recruiter'
@@ -1244,8 +1126,6 @@ class GoogleSheetController extends Controller
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
-
-        // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -1260,13 +1140,9 @@ class GoogleSheetController extends Controller
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
-
-        // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
             return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
-
-
         return view('database.seniormod',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
@@ -1275,45 +1151,27 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
-        $page = $request->input('page', 1); // ✅ Ensure page input handled
+        $juniorUserId = $request->input('junior_user');
+        $page = $request->input('page', 1);
 
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
-        $query = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
 
-            $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+            $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+                $q2->where('created_by', $authUser->id . '|senior')
+                    ->orWhere('created_by', '0|senior')
+                    ->orWhere('created_by', 'LIKE', $userPattern)
+                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+            })->whereRaw(
+                "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
+            )->orWhere('created_by', $authUser->id . '|senior:0|senior');
+        })->where(function ($q) {
+            $q->whereNull('TransferRemark')
+                ->orWhere('TransferRemark', '');
+        })->where('transfers', 0);
 
-                $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
-                    $q2->where('created_by', $authUser->id . '|senior')
-                        ->orWhere('created_by', '0|senior')
-                        ->orWhere('created_by', 'LIKE', $userPattern)
-                        ->orWhere('created_by', 'LIKE', $zeroPattern);
-                })
-                    // ❌ Exclude rows with more than one "|senior"
-                    ->whereRaw(
-                        "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
-                    );
-            })
-                // ✅ Exception: allow "5|senior:0|senior" only for auth user
-                ->orWhere('created_by', $authUser->id . '|senior:0|senior');
-        })
-            // ✅ FINAL FILTER — applies to ALL results
-            ->where(function ($q) {
-                $q->whereNull('TransferRemark')
-                    ->orWhere('TransferRemark', '');
-            })
-            // ✅ NEW CONDITION — applies to ALL results (no logic change)
-            ->where('transfers', 0);
-
-
-
-
-
-
-
-        // Filter by selected junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
@@ -1321,7 +1179,6 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -1332,10 +1189,8 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
         $results = $query->orderBy('id', 'desc')->get();
 
-        // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -1377,7 +1232,6 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -1394,7 +1248,6 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-        // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
             return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
@@ -1407,9 +1260,8 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
-        $page = $request->input('page', 1); // ✅ Ensure page input handled
-
+        $juniorUserId = $request->input('junior_user');
+        $page = $request->input('page', 1);
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
@@ -1425,7 +1277,6 @@ class GoogleSheetController extends Controller
                             ->orWhere('created_by', 'LIKE', $userPattern)
                             ->orWhere('created_by', 'LIKE', $zeroPattern);
                     })
-                        // ❌ Exclude rows having more than one "|senior"
                         ->whereRaw(
                             "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
                         );
@@ -1437,16 +1288,12 @@ class GoogleSheetController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1);
-
-        // Filter by selected junior
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
                     ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
             });
         }
-
-        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -1456,11 +1303,7 @@ class GoogleSheetController extends Controller
                     ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
             });
         }
-
-        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
         $results = $query->orderBy('id', 'desc')->get();
-
-        // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -1501,8 +1344,6 @@ class GoogleSheetController extends Controller
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
-
-        // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -1518,8 +1359,6 @@ class GoogleSheetController extends Controller
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
-
-        // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
             return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
@@ -1545,8 +1384,6 @@ class GoogleSheetController extends Controller
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
-
-        // Properly map frontend keys to DB columns
         $updateData = [];
 
         if (array_key_exists('TransferRemark', $rowData)) {
@@ -1560,31 +1397,13 @@ class GoogleSheetController extends Controller
         if (array_key_exists('1st Follow Up Remarks', $rowData)) {
             $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
         }
-
-
-        // if (!isset($updateData['Remark']) || $updateData['Remark'] === '') {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Remark field is required before updating.'
-        //     ]);
-        // }
-
-        // if (!isset($updateData['TransferRemark']) || $updateData['TransferRemark'] === '') {
-        //     return response()->json([
-        //         'success' => false,
-        //         'message' => 'Transfer Remark field is required before updating.'
-        //     ]);
-        // }
-
         if (empty($updateData)) {
             return response()->json(['success' => false, 'message' => 'No valid fields to update']);
         }
 
         try {
-            // ✅ Disable timestamps so updated_at is not touched
             $row->timestamps = false;
 
-            // ✅ Force assign and save — avoids fillable restrictions
             foreach ($updateData as $key => $value) {
                 $row->$key = $value;
             }
@@ -1615,8 +1434,6 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
 
         $query = GoogleSheetData::where(function ($q) {
-            // Removed user_id|senior check
-            // Only keep the accountant part filter
             $q->where(function ($q2) {
                 $q2->whereRaw("created_by = '0|accountant'")
                     ->orWhereRaw("created_by LIKE '0|accountant:%'")
@@ -1642,7 +1459,6 @@ class GoogleSheetController extends Controller
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
 
                 $names = [];
@@ -1689,12 +1505,9 @@ class GoogleSheetController extends Controller
         $query = GoogleSheetData::where(function ($q) {
 
             $q->where(function ($q2) {
-
-                // Fetch only rows with created_by containing ":0|senior" at the very end
                 $q2->where('created_by', 'LIKE', '%:0|accountant:0|senior')
                     ->orWhere('created_by', 'LIKE', '0|accountant:0|senior')
                     ->orWhere(function ($qq) {
-                        // Handle ANY_NUMBER|accountant:0|senior
                         $qq->where('created_by', 'LIKE', '%|accountant:0|senior');
                     });
             });
@@ -1752,10 +1565,6 @@ class GoogleSheetController extends Controller
         return view('database.seniorcon', compact('data'));
     }
 
-
-    // -----------------------------
-    // AJAX Search Suggestions
-    // -----------------------------
     public function seniorSuggestions(Request $request)
     {
         $authUser = Auth::user();
@@ -1781,7 +1590,6 @@ class GoogleSheetController extends Controller
                 ->limit(10)
                 ->get(['id', 'sheet_row_number', 'Name', 'Email_Address', 'Phone_Number', 'Exe_Remarks', 'created_by']);
         }
-        // ✅ Transform the forwarded_by column like in senior()
         $transformed = collect($results)->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -1809,8 +1617,6 @@ class GoogleSheetController extends Controller
             } else {
                 $forwardedBy = 'N/A';
             }
-
-            // Add transformed field
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
@@ -1843,7 +1649,6 @@ class GoogleSheetController extends Controller
                 ->limit(10)
                 ->get(['id', 'sheet_row_number', 'Name', 'Email_Address', 'Phone_Number', 'Exe_Remarks', 'created_by']);
         }
-        // ✅ Transform the forwarded_by column like in senior()
         $transformed = collect($results)->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -1871,8 +1676,6 @@ class GoogleSheetController extends Controller
             } else {
                 $forwardedBy = 'N/A';
             }
-
-            // Add transformed field
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
@@ -1886,8 +1689,6 @@ class GoogleSheetController extends Controller
         $query = $request->input('query');
 
         $results = [];
-
-        // Search only when query length >= 3
         if ($query && strlen($query) >= 3) {
             $results = GoogleSheetData::where(function ($q) use ($query) {
                 $q->where('Name', 'LIKE', "%{$query}%")
@@ -1905,8 +1706,6 @@ class GoogleSheetController extends Controller
                     'created_by'
                 ]);
         }
-
-        // Transform forwarded_by field (same logic as before)
         $transformed = collect($results)->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -1967,8 +1766,6 @@ class GoogleSheetController extends Controller
                 ->limit(10)
                 ->get(['id', 'sheet_row_number', 'Name', 'Email_Address', 'Phone_Number', 'Exe_Remarks', 'created_by']);
         }
-
-        // ✅ Transform the forwarded_by column like in senior()
         $transformed = collect($results)->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -1996,8 +1793,6 @@ class GoogleSheetController extends Controller
             } else {
                 $forwardedBy = 'N/A';
             }
-
-            // Add transformed field
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
@@ -2029,8 +1824,6 @@ class GoogleSheetController extends Controller
                     'created_by'
                 ]);
         }
-
-        // ✅ Transform the forwarded_by column like in senior()
         $transformed = collect($results)->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -2058,8 +1851,6 @@ class GoogleSheetController extends Controller
             } else {
                 $forwardedBy = 'N/A';
             }
-
-            // Add transformed field
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
@@ -2067,10 +1858,6 @@ class GoogleSheetController extends Controller
         return response()->json($transformed);
     }
 
-
-    // -----------------------------
-    // AJAX Search Suggestions
-    // -----------------------------
     public function accountantSuggestions(Request $request)
     {
         $authUser = Auth::user();
@@ -2106,7 +1893,6 @@ class GoogleSheetController extends Controller
             'sheet_link' => 'required|url'
         ]);
 
-        // Extract spreadsheet ID
         preg_match('/\/d\/([a-zA-Z0-9-_]+)/', $request->sheet_link, $matches);
         $spreadsheetId = $matches[1] ?? null;
 
@@ -2123,7 +1909,7 @@ class GoogleSheetController extends Controller
         }
 
         $rows = array_map('str_getcsv', explode("\n", trim($csvData)));
-        $header = array_shift($rows); // first row as column headers
+        $header = array_shift($rows);
 
         $rowIndex = 2;
         $user = Auth::user();
@@ -2133,8 +1919,6 @@ class GoogleSheetController extends Controller
             if (count($row) !== count($header)) continue;
 
             $rowData = array_combine($header, $row);
-
-            // Map CSV headers to database columns
             $mappedData = [
                 'sheet_row_number' => $rowIndex,
                 'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
@@ -2183,8 +1967,6 @@ class GoogleSheetController extends Controller
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
-
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? $row->Email_Address;
         $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
         $name  = $rowData['Name'] ?? $row->Name;
@@ -2203,14 +1985,11 @@ class GoogleSheetController extends Controller
                 'message' => 'Date is required.'
             ]);
         }
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
-
-            // Allowed Word MIME types
             $allowed = [
                 'application/pdf',
-                'application/msword', // .doc
+                'application/msword',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
             ];
 
@@ -2220,18 +1999,13 @@ class GoogleSheetController extends Controller
                     'message' => 'Only PDF or Word files (.pdf, .doc, .docx) are allowed'
                 ]);
             }
-
-            // Generate unique filename
             $timestamp = now()->format('Ymd_His');
             $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
-
-                // Delete old resume file if exists
                 if ($row->resume && Storage::disk('public')->exists($row->resume)) {
                     Storage::disk('public')->delete($row->resume);
                 }
@@ -2241,12 +2015,11 @@ class GoogleSheetController extends Controller
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
         }
-        // --- Prepare update data with null defaults for empty fields ---
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
-            'Email_Address' => $email, // keep original email
-            'Phone_Number' => $phone,  // keep original phone
+            'Email_Address' => $email,
+            'Phone_Number' => $phone,
             'Location' => $rowData['Location'] ?? null,
             'Remark' => $rowData['Remark'] ?? null,
             'TransferRemark' => $rowData['TransferRemark'] ?? null,
@@ -2262,12 +2035,10 @@ class GoogleSheetController extends Controller
             'updated_at' => now(),
         ];
 
-        // Only update resume if it was uploaded
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
 
-        // Start with existing created_by value
         $updateData['created_by'] = $row->created_by;
 
         if (isset($rowData['Exe Remarks'])) {
@@ -2275,8 +2046,6 @@ class GoogleSheetController extends Controller
 
             if ($exeRemark === 'Ready To Pay') {
                 $authUser = Auth::user();
-
-                // Replace "0|senior" with "auth_id|senior:0|accountant"
                 if (preg_match('/0\|senior$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
                         '/0\|senior$/',
@@ -2285,7 +2054,6 @@ class GoogleSheetController extends Controller
                     );
                 }
 
-                // Ensure ":0|accountant" exists at the end if missing
                 if (strpos($updateData['created_by'], ':0|accountant') === false) {
                     $updateData['created_by'] .= ':0|accountant';
                 }
@@ -2293,27 +2061,20 @@ class GoogleSheetController extends Controller
                 $tag = $id . '|senior';
                 $zerotag = '0|senior';
 
-                // Get the last segment after the last colon
                 $parts = explode(':', $updateData['created_by']);
                 $lastPart = end($parts);
 
-                // Append only if the last part exactly matches the tag
                 if ($lastPart === $tag) {
                     $updateData['created_by'] .= ':' . $zerotag;
                 }
             } else {
-                // For all other remarks, apply "Revert To Junior" logic
-                // Match any integer followed by "|junior"
                 if (preg_match('/(\d+)\|junior/', $updateData['created_by'], $matches)) {
-                    $juniorId = $matches[1]; // Extract the integer
+                    $juniorId = $matches[1];
                     $tag = $juniorId . '|junior';
-                    // Append only if tag already exists in created_by
                     if (strpos($updateData['created_by'], $tag) !== false) {
                         $updateData['created_by'] .= ':' . $tag;
                     }
                 }
-
-                // Replace "0|senior" with actual senior ID (only if it ends with 0|senior)
                 if (preg_match('/0\|senior$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
                         '/0\|senior$/',
@@ -2336,8 +2097,6 @@ class GoogleSheetController extends Controller
             $mailMessage = 'No email sent.';
             $name = $rowData['Name'] ?? null;
             $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
-
-            // --- Send email if Exe_Remarks is "Called & Mailed" ---
             if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed' && !empty($email)) {
                 try {
                     $smtp = SmtpSetting::where('user_id', $user->id)->first();
@@ -2346,7 +2105,6 @@ class GoogleSheetController extends Controller
                             'message' => 'No SMTP settings found.'
                         ]);
                     } else {
-                        // Configure mailer dynamically (same as test() method)
                         config([
                             'mail.mailers.smtp.transport' => $smtp->mailer,
                             'mail.mailers.smtp.host' => $smtp->host,
@@ -2357,15 +2115,12 @@ class GoogleSheetController extends Controller
                             'mail.from.address' => $smtp->from_address,
                             'mail.from.name' => $smtp->from_name,
                         ]);
-
-                        // --- Fetch Email Template from Database ---
                         $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
                         if ($template) {
                             $subject = $template->subject;
                             $messageBody = $template->body;
                         } else {
-                            // Fallback if template not found
                             $subject = "Unlock Career Stability with Fortune 500 Projects !";
                             $messageBody =
                                 "Hi {$name},\n\n" .
@@ -2426,7 +2181,6 @@ class GoogleSheetController extends Controller
                                 "Visit Our Website: https://www.synergiesystems.com/";
                         }
 
-                        // --- Send Email (No Template Logic Changed) ---
                         Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                             $message->from($smtp->from_address, $smtp->from_name)
                                 ->to($email)
@@ -2474,7 +2228,6 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? $row->Email_Address;
         $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
         $name  = $rowData['Name'] ?? $row->Name;
@@ -2493,7 +2246,6 @@ class GoogleSheetController extends Controller
                 'message' => 'Date is required.'
             ]);
         }
-        // Check for duplicate Email (ignore current record)
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)
                 ->where('id', '!=', $id)
@@ -2506,8 +2258,6 @@ class GoogleSheetController extends Controller
                 ]);
             }
         }
-
-        // Check for duplicate Phone (ignore current record)
         if (!empty($phone)) {
             $phoneExists = GoogleSheetData::where('Phone_Number', $phone)
                 ->where('id', '!=', $id)
@@ -2521,15 +2271,12 @@ class GoogleSheetController extends Controller
             }
         }
 
-
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Allowed Word MIME types
             $allowed = [
                 'application/pdf',
-                'application/msword', // .doc
+                'application/msword',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
             ];
 
@@ -2540,34 +2287,28 @@ class GoogleSheetController extends Controller
                 ]);
             }
 
-            // Generate unique filename
             $timestamp = now()->format('Ymd_His');
             $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
-
-                // Delete old resume file if exists
                 if ($row->resume && Storage::disk('public')->exists($row->resume)) {
                     Storage::disk('public')->delete($row->resume);
                 }
-
-                $row->resume = $filePath; // Store file path instead of just filename
+                $row->resume = $filePath;
 
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
         }
 
-        // --- Prepare update data with null defaults for empty fields ---
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
-            'Email_Address' => $email, // keep original email
-            'Phone_Number' => $phone,  // keep original phone
+            'Email_Address' => $email,
+            'Phone_Number' => $phone,
             'Location' => $rowData['Location'] ?? null,
             'Remark' => $rowData['Remark'] ?? null,
             'TransferRemark' => $rowData['TransferRemark'] ?? null,
@@ -2583,26 +2324,17 @@ class GoogleSheetController extends Controller
             'updated_at' => now(),
         ];
 
-        // Only update resume if it was uploaded
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
-
-        // Start with existing created_by value
         $updateData['created_by'] = $row->created_by;
-
         if (isset($rowData['Exe Remarks'])) {
             $exeRemark = $rowData['Exe Remarks'];
-
             if ($exeRemark === 'Ready To Pay') {
                 $authUser = Auth::user();
-
-                // Ensure ":0|accountant" exists at the end if missing
                 if (strpos($updateData['created_by'], ':0|senior') === false) {
                     $updateData['created_by'] .= ':0|senior';
                 }
-
-                // Replace "0|senior" with "auth_id|senior:0|accountant"
                 if (preg_match('/0\|senior$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
                         '/0\|senior$/',
@@ -2610,17 +2342,12 @@ class GoogleSheetController extends Controller
                         $updateData['created_by']
                     );
                 }
-
-                // Ensure ":0|accountant" exists at the end if missing
                 if (strpos($updateData['created_by'], ':0|accountant') === false) {
                     $updateData['created_by'] .= ':0|accountant';
                 }
             } elseif ($exeRemark === 'Called & Mailed') {
                 $authUser = Auth::user();
-                // If created_by ends with something like "123|junior"
                 if (preg_match('/(\d+)\|junior$/', $updateData['created_by'])) {
-
-                    // Append ":0|senior" only once
                     if (!str_ends_with($updateData['created_by'], ':0|senior')) {
                         $updateData['created_by'] .= ':' . $authUser->id . '|senior:0|senior';
                     }
@@ -2641,8 +2368,6 @@ class GoogleSheetController extends Controller
             $mailMessage = 'No email sent.';
             $name = $rowData['Name'] ?? null;
             $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
-
-            // --- Send email if Exe_Remarks is "Called & Mailed" ---
             if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed' && !empty($email)) {
                 try {
                     $smtp = SmtpSetting::where('user_id', $user->id)->first();
@@ -2651,7 +2376,6 @@ class GoogleSheetController extends Controller
                             'message' => 'No SMTP settings found.'
                         ]);
                     } else {
-                        // Configure mailer dynamically (same as test() method)
                         config([
                             'mail.mailers.smtp.transport' => $smtp->mailer,
                             'mail.mailers.smtp.host' => $smtp->host,
@@ -2662,15 +2386,12 @@ class GoogleSheetController extends Controller
                             'mail.from.address' => $smtp->from_address,
                             'mail.from.name' => $smtp->from_name,
                         ]);
-
-                        // --- Fetch Email Template from Database ---
                         $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
                         if ($template) {
                             $subject = $template->subject;
                             $messageBody = $template->body;
                         } else {
-                            // Fallback if template not found
                             $subject = "Unlock Career Stability with Fortune 500 Projects !";
                             $messageBody =
                                 "Hi {$name},\n\n" .
@@ -2730,8 +2451,6 @@ class GoogleSheetController extends Controller
                                 "Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.\n\n" .
                                 "Visit Our Website: https://www.synergiesystems.com/";
                         }
-
-                        // --- Send Email (No Template Logic Changed) ---
                         Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                             $message->from($smtp->from_address, $smtp->from_name)
                                 ->to($email)
@@ -2778,8 +2497,6 @@ class GoogleSheetController extends Controller
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
-
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? $row->Email_Address;
         $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
         $name  = $rowData['Name'] ?? $row->Name;
@@ -2798,7 +2515,6 @@ class GoogleSheetController extends Controller
                 'message' => 'Date is required.'
             ]);
         }
-        // Check for duplicate Email (ignore current record)
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)
                 ->where('id', '!=', $id)
@@ -2811,8 +2527,6 @@ class GoogleSheetController extends Controller
                 ]);
             }
         }
-
-        // Check for duplicate Phone (ignore current record)
         if (!empty($phone)) {
             $phoneExists = GoogleSheetData::where('Phone_Number', $phone)
                 ->where('id', '!=', $id)
@@ -2826,14 +2540,11 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
-
-            // Allowed Word MIME types
             $allowed = [
                 'application/pdf',
-                'application/msword', // .doc
+                'application/msword',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
             ];
 
@@ -2844,34 +2555,23 @@ class GoogleSheetController extends Controller
                 ]);
             }
 
-
-            // Generate unique filename
             $timestamp = now()->format('Ymd_His');
             $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
-
-                // Delete old resume file if exists
                 if ($row->resume && Storage::disk('public')->exists($row->resume)) {
                     Storage::disk('public')->delete($row->resume);
                 }
-
-                $row->resume = $filePath; // Store file path instead of just filename
-
+                $row->resume = $filePath;
             } catch (\Exception $e) {
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
         }
-
-        // Handle audio file upload - Save actual file content
         if ($request->hasFile('audio')) {
             $audio = $request->file('audio');
-
-            // Allowed audio mime types
             $allowedAudio = [
                 'audio/mpeg',
                 'audio/mp3',
@@ -2891,23 +2591,15 @@ class GoogleSheetController extends Controller
                     'message' => 'Invalid audio format. Allowed: MP3, WAV, M4A, OGG, AAC, FLAC, WMA'
                 ]);
             }
-
-            // Create unique filename
             $timestamp = now()->format('Ymd_His');
             $filename = pathinfo($audio->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $audio->getClientOriginalExtension();
             $newAudioName = Str::slug($filename) . "_{$timestamp}.{$extension}";
-
             try {
-                // Store in storage/app/public/audios
                 $audioPath = $audio->storeAs('audios', $newAudioName, 'public');
-
-                // Delete old audio if exists
                 if ($row->audio && Storage::disk('public')->exists($row->audio)) {
                     Storage::disk('public')->delete($row->audio);
                 }
-
-                // Save DB path
                 $row->audio = $audioPath;
             } catch (\Exception $e) {
                 return response()->json([
@@ -2916,14 +2608,11 @@ class GoogleSheetController extends Controller
                 ]);
             }
         }
-
-
-        // --- Prepare update data with null defaults for empty fields ---
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
-            'Email_Address' => $email, // keep original email
-            'Phone_Number' => $phone,  // keep original phone
+            'Email_Address' => $email,
+            'Phone_Number' => $phone,
             'Location' => $rowData['Location'] ?? null,
             'Remark' => $rowData['Remark'] ?? null,
             'TransferRemark' => $rowData['TransferRemark'] ?? null,
@@ -2938,19 +2627,12 @@ class GoogleSheetController extends Controller
             'Time_Zone' => $rowData['Time Zone'] ?? null,
             'updated_at' => now(),
         ];
-
-        // Only update resume if it was uploaded
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
-
-        // Only update audio if it was uploaded
         if ($request->hasFile('audio')) {
             $updateData['audio'] = $row->audio;
         }
-
-
-        // Start with existing created_by value
         $updateData['created_by'] = $row->created_by;
 
         if (isset($rowData['Exe Remarks'])) {
@@ -2958,28 +2640,19 @@ class GoogleSheetController extends Controller
 
             if ($exeRemark === 'Verification Completed') {
                 $authUser = Auth::user();
-
-                // ✔ Proceed ONLY if created_by ends with "0|senior"
                 if (preg_match('/0\|senior$/', $updateData['created_by'])) {
-
-                    // Replace ending "0|senior" → "auth_id|senior:0|accountant"
                     $updateData['created_by'] = preg_replace(
                         '/0\|senior$/',
                         $authUser->id . '|senior:0|accountant',
                         $updateData['created_by']
                     );
-
-                    // Ensure ":0|accountant" exists only once at the end
                     if (!preg_match('/0\|accountant$/', $updateData['created_by'])) {
                         $updateData['created_by'] .= ':0|accountant';
                     }
                 }
             } elseif ($exeRemark === 'Payment Completed') {
                 $authUser = Auth::user();
-                // If created_by ends with something like "123|junior"
                 if (preg_match('/(\d+)\|junior$/', $updateData['created_by'])) {
-
-                    // Append ":0|senior" only once
                     if (!str_ends_with($updateData['created_by'], ':0|senior')) {
                         $updateData['created_by'] .= ':' . $authUser->id . '|senior:0|senior';
                     }
@@ -3000,8 +2673,6 @@ class GoogleSheetController extends Controller
             $mailMessage = 'No email sent.';
             $name = $rowData['Name'] ?? null;
             $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
-
-            // --- Send email if Exe_Remarks is "Called & Mailed" ---
             if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed' && !empty($email)) {
                 try {
                     $smtp = SmtpSetting::where('user_id', $user->id)->first();
@@ -3010,7 +2681,6 @@ class GoogleSheetController extends Controller
                             'message' => 'No SMTP settings found.'
                         ]);
                     } else {
-                        // Configure mailer dynamically (same as test() method)
                         config([
                             'mail.mailers.smtp.transport' => $smtp->mailer,
                             'mail.mailers.smtp.host' => $smtp->host,
@@ -3021,15 +2691,12 @@ class GoogleSheetController extends Controller
                             'mail.from.address' => $smtp->from_address,
                             'mail.from.name' => $smtp->from_name,
                         ]);
-
-                        // --- Fetch Email Template from Database ---
                         $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
                         if ($template) {
                             $subject = $template->subject;
                             $messageBody = $template->body;
                         } else {
-                            // Fallback if template not found
                             $subject = "Unlock Career Stability with Fortune 500 Projects !";
                             $messageBody =
                                 "Hi {$name},\n\n" .
@@ -3089,8 +2756,6 @@ class GoogleSheetController extends Controller
                                 "Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.\n\n" .
                                 "Visit Our Website: https://www.synergiesystems.com/";
                         }
-
-                        // --- Send Email (No Template Logic Changed) ---
                         Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                             $message->from($smtp->from_address, $smtp->from_name)
                                 ->to($email)
@@ -3129,14 +2794,10 @@ class GoogleSheetController extends Controller
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
-
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? null;
         $phone = $rowData['Phone Number'] ?? null;
         $name  = $rowData['Name'] ?? null;
         $date  = $rowData['Date'] ?? null;
-
-        // --- Check required fields ---
         if (empty($name)) {
             return response()->json([
                 'success' => false,
@@ -3150,8 +2811,6 @@ class GoogleSheetController extends Controller
                 'message' => 'Date is required.'
             ]);
         }
-
-        // Check for duplicate Email
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
 
@@ -3162,8 +2821,6 @@ class GoogleSheetController extends Controller
                 ]);
             }
         }
-
-        // Check for duplicate Phone
         if (!empty($phone)) {
             $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
 
@@ -3182,8 +2839,6 @@ class GoogleSheetController extends Controller
         $record = new GoogleSheetData();
         $record->sheet_row_number = $nextRow;
         $record->created_by = $user->id . '|senior';
-
-        // Map frontend keys to DB columns
         $columnMap = [
             'Date' => 'Date',
             'Name' => 'Name',
@@ -3205,8 +2860,6 @@ class GoogleSheetController extends Controller
         $exeRemarksValue = null;
         $name = null;
         $amount = null;
-
-        // Assign values safely, save null for empty non-number/email fields
         foreach ($columnMap as $frontendKey => $dbColumn) {
             $val = $rowData[$frontendKey] ?? null;
 
@@ -3226,16 +2879,12 @@ class GoogleSheetController extends Controller
             if ($dbColumn === 'Exe_Remarks') {
                 $exeRemarksValue = $val;
             }
-
-            // Save null for empty fields, including Amount
             if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number'])) {
                 $val = null;
             }
 
             $record->$dbColumn = $val;
         }
-
-        // Set created_by conditionally based on Exe_Remarks
         if ($exeRemarksValue === 'Called & Mailed') {
             $record->created_by = $user->id . '|senior:0|senior';
         } elseif ($exeRemarksValue === 'Ready To Pay') {
@@ -3243,15 +2892,11 @@ class GoogleSheetController extends Controller
         } else {
             $record->created_by = $user->id . '|senior';
         }
-
-        // Handle resume file upload
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
-
-            // Allow PDF + Word files
             $allowed = [
                 'application/pdf',
-                'application/msword', // .doc
+                'application/msword',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
             ];
 
@@ -3284,10 +2929,7 @@ class GoogleSheetController extends Controller
                 'message' => 'Fill Full Detail to Save.'
             ]);
         }
-
-        // --- Email logic ---
         $mailMessage = 'No email sent.';
-        // --- Send Email if Exe_Remarks is "Called & Mailed" ---
         if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
             try {
                 $smtp = SmtpSetting::where('user_id', $user->id)->first();
@@ -3296,7 +2938,6 @@ class GoogleSheetController extends Controller
                         'message' => 'No SMTP settings found.'
                     ]);
                 } else {
-                    // Configure mailer dynamically (same as test() method)
                     config([
                         'mail.mailers.smtp.transport' => $smtp->mailer,
                         'mail.mailers.smtp.host' => $smtp->host,
@@ -3307,15 +2948,12 @@ class GoogleSheetController extends Controller
                         'mail.from.address' => $smtp->from_address,
                         'mail.from.name' => $smtp->from_name,
                     ]);
-
-                    // --- Fetch Email Template from Database ---
                     $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
                     if ($template) {
                         $subject = $template->subject;
                         $messageBody = $template->body;
                     } else {
-                        // Fallback if template not found
                         $subject = "Unlock Career Stability with Fortune 500 Projects !";
                         $messageBody =
                             "Hi {$name},\n\n" .
@@ -3375,8 +3013,6 @@ class GoogleSheetController extends Controller
                             "Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.\n\n" .
                             "Visit Our Website: https://www.synergiesystems.com/";
                     }
-
-                    // --- Send Email (No Template Logic Changed) ---
                     Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                         $message->from($smtp->from_address, $smtp->from_name)
                             ->to($email)
@@ -3408,13 +3044,11 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? null;
         $phone = $rowData['Phone Number'] ?? null;
         $name  = $rowData['Name'] ?? null;
         $date  = $rowData['Date'] ?? null;
 
-        // --- Check required fields ---
         if (empty($name)) {
             return response()->json([
                 'success' => false,
@@ -3429,7 +3063,6 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // Check for duplicate Email
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
 
@@ -3441,7 +3074,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Check for duplicate Phone
         if (!empty($phone)) {
             $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
 
@@ -3461,7 +3093,6 @@ class GoogleSheetController extends Controller
         $record->sheet_row_number = $nextRow;
         $record->created_by = $user->id . '|senior';
 
-        // Map frontend keys to DB columns
         $columnMap = [
             'Date' => 'Date',
             'Name' => 'Name',
@@ -3484,7 +3115,6 @@ class GoogleSheetController extends Controller
         $name = null;
         $amount = null;
 
-        // Assign values safely, save null for empty non-number/email fields
         foreach ($columnMap as $frontendKey => $dbColumn) {
             $val = $rowData[$frontendKey] ?? null;
 
@@ -3505,7 +3135,6 @@ class GoogleSheetController extends Controller
                 $exeRemarksValue = $val;
             }
 
-            // Save null for empty fields, including Amount
             if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number'])) {
                 $val = null;
             }
@@ -3513,7 +3142,6 @@ class GoogleSheetController extends Controller
             $record->$dbColumn = $val;
         }
 
-        // Set created_by conditionally based on Exe_Remarks
         if ($exeRemarksValue === 'Called & Mailed') {
             $record->created_by = $user->id . '|senior:0|senior';
         } elseif ($exeRemarksValue === 'Ready To Pay') {
@@ -3521,12 +3149,8 @@ class GoogleSheetController extends Controller
         } else {
             $record->created_by = $user->id . '|senior';
         }
-
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
-
-            // Validate it's a PDF
             if ($file->getMimeType() !== 'application/pdf') {
                 return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
             }
@@ -3537,11 +3161,9 @@ class GoogleSheetController extends Controller
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
-                $record->resume = $filePath; // Store file path
+                $record->resume = $filePath;
             } catch (\Exception $e) {
-                // Continue without resume if upload fails
                 $record->resume = null;
             }
         }
@@ -3556,9 +3178,7 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // --- Email logic ---
         $mailMessage = 'No email sent.';
-        // --- Send Email if Exe_Remarks is "Called & Mailed" ---
         if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
             try {
                 $smtp = SmtpSetting::where('user_id', $user->id)->first();
@@ -3567,7 +3187,6 @@ class GoogleSheetController extends Controller
                         'message' => 'No SMTP settings found.'
                     ]);
                 } else {
-                    // Configure mailer dynamically (same as test() method)
                     config([
                         'mail.mailers.smtp.transport' => $smtp->mailer,
                         'mail.mailers.smtp.host' => $smtp->host,
@@ -3578,15 +3197,12 @@ class GoogleSheetController extends Controller
                         'mail.from.address' => $smtp->from_address,
                         'mail.from.name' => $smtp->from_name,
                     ]);
-
-                    // --- Fetch Email Template from Database ---
                     $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
                     if ($template) {
                         $subject = $template->subject;
                         $messageBody = $template->body;
                     } else {
-                        // Fallback if template not found
                         $subject = "Unlock Career Stability with Fortune 500 Projects !";
                         $messageBody =
                             "Hi {$name},\n\n" .
@@ -3646,8 +3262,6 @@ class GoogleSheetController extends Controller
                             "Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.\n\n" .
                             "Visit Our Website: https://www.synergiesystems.com/";
                     }
-
-                    // --- Send Email (No Template Logic Changed) ---
                     Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                         $message->from($smtp->from_address, $smtp->from_name)
                             ->to($email)
@@ -3670,9 +3284,6 @@ class GoogleSheetController extends Controller
             'save_message' => $saveMessage,
         ]);
     }
-
-
-    // Add a method to serve the PDF files
     public function viewseniorResume($id)
     {
         $row = GoogleSheetData::find($id);
@@ -3688,8 +3299,6 @@ class GoogleSheetController extends Controller
         }
 
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-
-        // --- If already PDF, return directly ---
         if ($extension === 'pdf') {
             return response()->file($filePath, [
                 'Content-Type' => 'application/pdf',
@@ -3697,30 +3306,19 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // --- Convert DOC/DOCX to PDF ---
         if (in_array($extension, ['doc', 'docx'])) {
 
-            // Load Word file using PHPWord
             $phpWord = IOFactory::load($filePath);
-
-            // Create a temporary HTML file from Word content
             $tempHtml = storage_path('app/temp_' . time() . '.html');
             $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
             $htmlWriter->save($tempHtml);
-
-            // Convert HTML to PDF via Dompdf
             $options = new Options();
             $options->set('isRemoteEnabled', true);
-
             $dompdf = new Dompdf($options);
             $dompdf->loadHtml(file_get_contents($tempHtml));
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
-
-            // Output PDF content
             $pdfOutput = $dompdf->output();
-
-            // Remove temp HTML
             unlink($tempHtml);
 
             return response($pdfOutput, 200)
@@ -3731,7 +3329,6 @@ class GoogleSheetController extends Controller
         abort(415, 'Unsupported file format');
     }
 
-    // Add a method to serve the PDF files
     public function viewseniorUpdateResume($id)
     {
         $row = GoogleSheetData::find($id);
@@ -3747,8 +3344,6 @@ class GoogleSheetController extends Controller
         }
 
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-
-        // --- If already PDF, return directly ---
         if ($extension === 'pdf') {
             return response()->file($filePath, [
                 'Content-Type' => 'application/pdf',
@@ -3756,30 +3351,18 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // --- Convert DOC/DOCX to PDF ---
         if (in_array($extension, ['doc', 'docx'])) {
-
-            // Load Word file using PHPWord
             $phpWord = IOFactory::load($filePath);
-
-            // Create a temporary HTML file from Word content
             $tempHtml = storage_path('app/temp_' . time() . '.html');
             $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
             $htmlWriter->save($tempHtml);
-
-            // Convert HTML to PDF via Dompdf
             $options = new Options();
             $options->set('isRemoteEnabled', true);
-
             $dompdf = new Dompdf($options);
             $dompdf->loadHtml(file_get_contents($tempHtml));
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
-
-            // Output PDF content
             $pdfOutput = $dompdf->output();
-
-            // Remove temp HTML
             unlink($tempHtml);
 
             return response($pdfOutput, 200)
@@ -3807,8 +3390,6 @@ class GoogleSheetController extends Controller
         }
 
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-
-        // --- If already PDF, return directly ---
         if ($extension === 'pdf') {
             return response()->file($filePath, [
                 'Content-Type' => 'application/pdf',
@@ -3816,18 +3397,11 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // --- Convert DOC/DOCX to PDF ---
         if (in_array($extension, ['doc', 'docx'])) {
-
-            // Load Word file using PHPWord
             $phpWord = IOFactory::load($filePath);
-
-            // Create a temporary HTML file from Word content
             $tempHtml = storage_path('app/temp_' . time() . '.html');
             $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
             $htmlWriter->save($tempHtml);
-
-            // Convert HTML to PDF via Dompdf
             $options = new Options();
             $options->set('isRemoteEnabled', true);
 
@@ -3835,11 +3409,7 @@ class GoogleSheetController extends Controller
             $dompdf->loadHtml(file_get_contents($tempHtml));
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
-
-            // Output PDF content
             $pdfOutput = $dompdf->output();
-
-            // Remove temp HTML
             unlink($tempHtml);
 
             return response($pdfOutput, 200)
@@ -3865,19 +3435,13 @@ class GoogleSheetController extends Controller
         }
 
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
-
-        // --- If already PDF, return directly ---
         if ($extension === 'pdf') {
             return response()->file($filePath, [
                 'Content-Type' => 'application/pdf',
                 'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
             ]);
         }
-
-        // --- Convert DOC/DOCX to PDF ---
         if (in_array($extension, ['doc', 'docx'])) {
-
-            // Load Word file using PHPWord
             $phpWord = IOFactory::load($filePath);
 
             // Create a temporary HTML file from Word content
@@ -4814,7 +4378,6 @@ class GoogleSheetController extends Controller
                             'message' => 'No SMTP settings found.'
                         ]);
                     } else {
-                        // Configure mailer dynamically (same as test() method)
                         config([
                             'mail.mailers.smtp.transport' => $smtp->mailer,
                             'mail.mailers.smtp.host' => $smtp->host,
@@ -4825,15 +4388,12 @@ class GoogleSheetController extends Controller
                             'mail.from.address' => $smtp->from_address,
                             'mail.from.name' => $smtp->from_name,
                         ]);
-
-                        // --- Fetch Email Template from Database ---
                         $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
                         if ($template) {
                             $subject = $template->subject;
                             $messageBody = $template->body;
                         } else {
-                            // Fallback if template not found
                             $subject = "Unlock Career Stability with Fortune 500 Projects !";
                             $messageBody =
                                 "Hi {$name},\n\n" .
@@ -4893,8 +4453,6 @@ class GoogleSheetController extends Controller
                                 "Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.\n\n" .
                                 "Visit Our Website: https://www.synergiesystems.com/";
                         }
-
-                        // --- Send Email (No Template Logic Changed) ---
                         Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                             $message->from($smtp->from_address, $smtp->from_name)
                                 ->to($email)
@@ -4941,8 +4499,6 @@ class GoogleSheetController extends Controller
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
-
-        // ✅ Map frontend keys to database columns
         $updateData = [];
 
         if (array_key_exists('Remark', $rowData)) {
@@ -4953,7 +4509,6 @@ class GoogleSheetController extends Controller
             $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
         }
 
-        // ✅ Validate that 'Remark' is mandatory
         if (!isset($updateData['Remark']) || $updateData['Remark'] === '') {
             return response()->json([
                 'success' => false,
@@ -4966,10 +4521,7 @@ class GoogleSheetController extends Controller
         }
 
         try {
-            // ✅ Prevent timestamps from updating automatically
             $row->timestamps = false;
-
-            // ✅ Force assign each field manually (bypasses $fillable restrictions)
             foreach ($updateData as $key => $value) {
                 $row->$key = $value;
             }
@@ -4999,14 +4551,10 @@ class GoogleSheetController extends Controller
         if (empty($rowData)) {
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
-
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? null;
         $phone = $rowData['Phone Number'] ?? null;
         $name = $rowData['Name'] ?? null;
         $date = $rowData['Date'] ?? null;
-
-        // --- Check required fields ---
         if (empty($name)) {
             return response()->json([
                 'success' => false,
@@ -5020,8 +4568,6 @@ class GoogleSheetController extends Controller
                 'message' => 'Date is required.'
             ]);
         }
-
-        // Check for duplicate Email
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
             if ($emailExists) {
@@ -5031,8 +4577,6 @@ class GoogleSheetController extends Controller
                 ]);
             }
         }
-
-        // Check for duplicate Phone
         if (!empty($phone)) {
             $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
             if ($phoneExists) {
@@ -5049,8 +4593,6 @@ class GoogleSheetController extends Controller
 
         $record = new GoogleSheetData();
         $record->sheet_row_number = $nextRow;
-
-        // Map frontend keys to DB columns
         $columnMap = [
             'Date' => 'Date',
             'Name' => 'Name',
@@ -5072,8 +4614,6 @@ class GoogleSheetController extends Controller
         $exeRemarksValue = null;
         $name = null;
         $amount = null;
-
-        // Assign values safely, save null for empty non-number/email fields
         foreach ($columnMap as $frontendKey => $dbColumn) {
             $val = $rowData[$frontendKey] ?? null;
 
@@ -5094,15 +4634,12 @@ class GoogleSheetController extends Controller
                 $exeRemarksValue = $val;
             }
 
-            // Save null for empty fields, including Amount
             if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number'])) {
                 $val = null;
             }
 
             $record->$dbColumn = $val;
         }
-
-        // Set created_by conditionally
         if ($exeRemarksValue === 'Called & Mailed') {
             $record->created_by = $user->id . '|junior:0|senior';
         } else {
@@ -5110,19 +4647,16 @@ class GoogleSheetController extends Controller
         }
 
         if (is_null($record->Amount)) {
-            $record->Amount = 469; // ✅ default amount
-            $amount = 469;         // ensures email shows correct amount
+            $record->Amount = 469;
+            $amount = 469;
         }
 
-
-        // Handle resume file upload
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Allow PDF + Word files
             $allowed = [
                 'application/pdf',
-                'application/msword', // .doc
+                'application/msword',
                 'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
             ];
 
@@ -5159,7 +4693,6 @@ class GoogleSheetController extends Controller
 
         $mailMessage = 'No email sent.';
 
-        // --- Send Email if Exe_Remarks is "Called & Mailed" ---
         if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
             try {
                 $smtp = SmtpSetting::where('user_id', $user->id)->first();
@@ -5168,7 +4701,6 @@ class GoogleSheetController extends Controller
                         'message' => 'No SMTP settings found.'
                     ]);
                 } else {
-                    // Configure mailer dynamically (same as test() method)
                     config([
                         'mail.mailers.smtp.transport' => $smtp->mailer,
                         'mail.mailers.smtp.host' => $smtp->host,
@@ -5180,14 +4712,13 @@ class GoogleSheetController extends Controller
                         'mail.from.name' => $smtp->from_name,
                     ]);
 
-                    // --- Fetch Email Template from Database ---
                     $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
                     if ($template) {
                         $subject = $template->subject;
                         $messageBody = $template->body;
                     } else {
-                        // Fallback if template not found
+
                         $subject = "Unlock Career Stability with Fortune 500 Projects !";
                         $messageBody =
                             "Hi {$name},\n\n" .
@@ -5248,7 +4779,6 @@ class GoogleSheetController extends Controller
                             "Visit Our Website: https://www.synergiesystems.com/";
                     }
 
-                    // --- Send Email (No Template Logic Changed) ---
                     Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                         $message->from($smtp->from_address, $smtp->from_name)
                             ->to($email)
@@ -5272,9 +4802,6 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-
-
-    // Add a method to serve the PDF files
     public function viewJuniorResume($id)
     {
         $row = GoogleSheetData::find($id);
@@ -5291,7 +4818,6 @@ class GoogleSheetController extends Controller
 
         $extension = strtolower(pathinfo($filePath, PATHINFO_EXTENSION));
 
-        // --- If already PDF, return directly ---
         if ($extension === 'pdf') {
             return response()->file($filePath, [
                 'Content-Type' => 'application/pdf',
@@ -5299,18 +4825,14 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // --- Convert DOC/DOCX to PDF ---
         if (in_array($extension, ['doc', 'docx'])) {
 
-            // Load Word file using PHPWord
             $phpWord = IOFactory::load($filePath);
 
-            // Create a temporary HTML file from Word content
             $tempHtml = storage_path('app/temp_' . time() . '.html');
             $htmlWriter = IOFactory::createWriter($phpWord, 'HTML');
             $htmlWriter->save($tempHtml);
 
-            // Convert HTML to PDF via Dompdf
             $options = new Options();
             $options->set('isRemoteEnabled', true);
 
@@ -5319,10 +4841,8 @@ class GoogleSheetController extends Controller
             $dompdf->setPaper('A4', 'portrait');
             $dompdf->render();
 
-            // Output PDF content
             $pdfOutput = $dompdf->output();
 
-            // Remove temp HTML
             unlink($tempHtml);
 
             return response($pdfOutput, 200)
@@ -5333,8 +4853,6 @@ class GoogleSheetController extends Controller
         abort(415, 'Unsupported file format');
     }
 
-
-    // Add a method to download the PDF files
     public function downloadjuniorResume($id)
     {
         $row = GoogleSheetData::find($id);
@@ -5358,40 +4876,35 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
+        $juniorUserId = $request->input('junior_user');
 
-        // Build patterns for LIKE match
         $userPattern = "%:" . $authUser->id . "|accountant";
         $zeroPattern = "%:0|accountant";
 
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            // Direct match with "id|accountant"
+
             $q->where('created_by', $authUser->id . '|accountant')
-                // Direct match with "0|accountant"
+
                 ->orWhere('created_by', '0|accountant')
-                // Matches if last part is ":id|accountant"
+
                 ->orWhere('created_by', 'LIKE', $userPattern)
-                // Matches if last part is ":0|accountant"
+
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
         })
-            // Ensure it's truly the LAST part of created_by
+
             ->where(function ($q) use ($authUser) {
                 $q->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|accountant', $authUser->id . '|accountant'])
                     ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|accountant', '0|accountant'])
-                    // ✅ MUST contain EXACTLY 2 occurrences of "accountant"
+
                     ->whereRaw("
             (LENGTH(created_by) - LENGTH(REPLACE(created_by, 'accountant', ''))) / LENGTH('accountant') = 2
         ");
             });
 
-
-
-        // Filter by selected junior
         if ($juniorUserId) {
             $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
         }
 
-        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -5401,8 +4914,6 @@ class GoogleSheetController extends Controller
                     ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
             });
         }
-
-        // Pagination with appended filters for AJAX navigation
         $data = $query->orderBy('Date', 'desc')->paginate(10);
         $data->appends([
             'search' => $search,
@@ -5410,7 +4921,6 @@ class GoogleSheetController extends Controller
             'junior_user' => $juniorUserId,
         ]);
 
-        // Map forwarded_by dynamically (multi-level like senior)
         $data->getCollection()->transform(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -5443,15 +4953,12 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // Fetch junior users list for dropdown
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->where('role', 'junior')
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-
-        // Handle AJAX request for both search and pagination
         if ($request->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
         }
@@ -5464,35 +4971,32 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
-
-        // Build patterns for LIKE match
+        $juniorUserId = $request->input('junior_user');
         $userPattern = "%:" . $authUser->id . "|accountant";
         $zeroPattern = "%:0|accountant";
 
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            // Direct match with "id|accountant"
+
             $q->where('created_by', $authUser->id . '|accountant')
-                // Direct match with "0|accountant"
+
                 ->orWhere('created_by', '0|accountant')
-                // Matches if last part is ":id|accountant"
+
                 ->orWhere('created_by', 'LIKE', $userPattern)
-                // Matches if last part is ":0|accountant"
+
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
         })
-            // Ensure it's truly the LAST part of created_by
+
             ->where(function ($q) use ($authUser) {
                 $q->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|accountant', $authUser->id . '|accountant'])
                     ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|accountant', '0|accountant'])
                     ->whereRaw("(LENGTH(created_by) - LENGTH(REPLACE(created_by, 'accountant', ''))) / LENGTH('accountant') = 1");
             });
 
-        // Filter by selected junior
+
         if ($juniorUserId) {
             $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
         }
 
-        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -5503,7 +5007,6 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // Pagination with appended filters for AJAX navigation
         $data = $query->orderBy('Date', 'desc')->paginate(10);
         $data->appends([
             'search' => $search,
@@ -5511,7 +5014,6 @@ class GoogleSheetController extends Controller
             'junior_user' => $juniorUserId,
         ]);
 
-        // Map forwarded_by dynamically (multi-level like senior)
         $data->getCollection()->transform(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -5544,15 +5046,12 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // Fetch junior users list for dropdown
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->where('role', 'junior')
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-
-        // Handle AJAX request for both search and pagination
         if ($request->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
         }
@@ -5567,8 +5066,6 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
 
         $query = GoogleSheetData::where(function ($q) {
-            // Removed user_id|senior check
-            // Only keep the accountant part filter
             $q->where(function ($q2) {
                 $q2->whereRaw("created_by = '0|trainer'")
                     ->orWhereRaw("created_by LIKE '0|trainer:%'")
@@ -5594,7 +5091,6 @@ class GoogleSheetController extends Controller
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
 
                 $names = [];
@@ -5614,7 +5110,6 @@ class GoogleSheetController extends Controller
                     }
                 }
 
-                // Join all names for forwarded chain
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -5639,8 +5134,6 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
 
         $query = GoogleSheetData::where(function ($q) {
-            // Removed user_id|senior check
-            // Only keep the accountant part filter
             $q->where(function ($q2) {
                 $q2->whereRaw("created_by = '0|trainer'")
                     ->orWhereRaw("created_by LIKE '0|trainer:%'")
@@ -5666,7 +5159,6 @@ class GoogleSheetController extends Controller
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
 
                 $names = [];
@@ -5686,7 +5178,6 @@ class GoogleSheetController extends Controller
                     }
                 }
 
-                // Join all names for forwarded chain
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -5711,8 +5202,6 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
 
         $query = GoogleSheetData::where(function ($q) {
-            // Removed user_id|senior check
-            // Only keep the accountant part filter
             $q->where(function ($q2) {
                 $q2->whereRaw("created_by = '0|trainer'")
                     ->orWhereRaw("created_by LIKE '0|trainer:%'")
@@ -5738,7 +5227,6 @@ class GoogleSheetController extends Controller
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
 
                 $names = [];
@@ -5758,7 +5246,6 @@ class GoogleSheetController extends Controller
                     }
                 }
 
-                // Join all names for forwarded chain
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -5778,14 +5265,12 @@ class GoogleSheetController extends Controller
 
     public function candidateStore(Request $request)
     {
-        // Validate
         $request->validate([
             'name'  => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'phone' => 'required|string|max:20',
         ]);
 
-        // Check duplicate email
         if (GoogleSheetData::where('Email_Address', $request->email)->exists()) {
             return response()->json([
                 'success' => false,
@@ -5793,7 +5278,6 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // Check duplicate phone
         if (GoogleSheetData::where('Phone_Number', $request->phone)->exists()) {
             return response()->json([
                 'success' => false,
@@ -5801,10 +5285,8 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // Auto serial number
         $nextRow = (GoogleSheetData::max('sheet_row_number') ?? 0) + 1;
 
-        // Create entry
         $candidate = GoogleSheetData::create([
             'sheet_row_number' => $nextRow,
             'Name'             => $request->name,
@@ -5820,10 +5302,6 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-
-
-
-
     public function writer(Request $request)
     {
         $authUser = Auth::user();
@@ -5831,8 +5309,6 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
 
         $query = GoogleSheetData::where(function ($q) {
-            // Removed user_id|senior check
-            // Only keep the accountant part filter
             $q->where(function ($q2) {
                 $q2->whereRaw("created_by = '0|trainer'")
                     ->orWhereRaw("created_by LIKE '0|trainer:%'")
@@ -5858,7 +5334,6 @@ class GoogleSheetController extends Controller
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
 
                 $names = [];
@@ -5878,7 +5353,6 @@ class GoogleSheetController extends Controller
                     }
                 }
 
-                // Join all names for forwarded chain
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -5902,40 +5376,33 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
-
-        // Build patterns for LIKE match
+        $juniorUserId = $request->input('junior_user');
         $userPattern = "%:" . $authUser->id . "|accountant";
         $zeroPattern = "%:0|accountant";
 
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            // Direct match with "id|accountant"
             $q->where('created_by', $authUser->id . '|accountant')
-                // Direct match with "0|accountant"
+
                 ->orWhere('created_by', '0|accountant')
-                // Matches if last part is ":id|accountant"
+
                 ->orWhere('created_by', 'LIKE', $userPattern)
-                // Matches if last part is ":0|accountant"
+
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
         })
-            // Ensure it's truly the LAST part of created_by
+
             ->where(function ($q) use ($authUser) {
                 $q->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|accountant', $authUser->id . '|accountant'])
                     ->orWhereRaw("RIGHT(created_by, LENGTH(?)) = ?", ['0|accountant', '0|accountant'])
-                    // ✅ MUST contain EXACTLY 3 occurrences of "accountant"
+
                     ->whereRaw("
             (LENGTH(created_by) - LENGTH(REPLACE(created_by, 'accountant', ''))) / LENGTH('accountant') = 3
         ");
             });
 
-
-
-        // Filter by selected junior
         if ($juniorUserId) {
             $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
         }
 
-        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -5946,7 +5413,6 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // Pagination with appended filters for AJAX navigation
         $data = $query->orderBy('Date', 'desc')->paginate(10);
         $data->appends([
             'search' => $search,
@@ -5954,7 +5420,6 @@ class GoogleSheetController extends Controller
             'junior_user' => $juniorUserId,
         ]);
 
-        // Map forwarded_by dynamically (multi-level like senior)
         $data->getCollection()->transform(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -5986,16 +5451,11 @@ class GoogleSheetController extends Controller
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
-
-        // Fetch junior users list for dropdown
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->where('role', 'junior')
             ->where('status', 1)
             ->where('is_deleted', 0)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
-
-
-        // Handle AJAX request for both search and pagination
         if ($request->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
         }
@@ -6011,7 +5471,6 @@ class GoogleSheetController extends Controller
             'sheet_link' => 'required|url'
         ]);
 
-        // Extract spreadsheet ID
         preg_match('/\/d\/([a-zA-Z0-9-_]+)/', $request->sheet_link, $matches);
         $spreadsheetId = $matches[1] ?? null;
 
@@ -6019,7 +5478,6 @@ class GoogleSheetController extends Controller
             return back()->with('error', 'Invalid Google Sheet link');
         }
 
-        // Fetch CSV
         $csvUrl = "https://docs.google.com/spreadsheets/d/{$spreadsheetId}/export?format=csv";
         $csvData = @file_get_contents($csvUrl);
 
@@ -6028,7 +5486,7 @@ class GoogleSheetController extends Controller
         }
 
         $rows = array_map('str_getcsv', explode("\n", trim($csvData)));
-        $header = array_shift($rows); // first row as column headers
+        $header = array_shift($rows);
 
         $rowIndex = 2;
         $user = Auth::user();
@@ -6038,8 +5496,6 @@ class GoogleSheetController extends Controller
             if (count($row) !== count($header)) continue;
 
             $rowData = array_combine($header, $row);
-
-            // Map CSV headers to database columns
             $mappedData = [
                 'sheet_row_number' => $rowIndex,
                 'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
@@ -6089,7 +5545,6 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? $row->Email_Address;
         $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
         $name  = $rowData['Name'] ?? $row->Name;
@@ -6109,7 +5564,6 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
@@ -6135,7 +5589,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle acceptance file upload
         if ($request->hasFile('acceptance')) {
             $file = $request->file('acceptance');
 
@@ -6161,7 +5614,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle consultation file upload
         if ($request->hasFile('consultation')) {
             $file = $request->file('consultation');
 
@@ -6187,7 +5639,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle delivery file upload
         if ($request->hasFile('delivery')) {
             $file = $request->file('delivery');
 
@@ -6213,7 +5664,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle payment file upload
         if ($request->hasFile('payment')) {
             $file = $request->file('payment');
 
@@ -6239,7 +5689,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // --- Prepare update data ---
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
@@ -6267,8 +5716,6 @@ class GoogleSheetController extends Controller
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
-
-        // created_by logic preserved exactly
         $updateData['created_by'] = $row->created_by;
 
         if (isset($rowData['Exe Remarks'])) {
@@ -6310,9 +5757,9 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),  // Show real error
-                'error_line' => $e->getLine(),  // Optional: line number
-                'error_file' => $e->getFile(),  // Optional: which file
+                'message' => $e->getMessage(),
+                'error_line' => $e->getLine(),
+                'error_file' => $e->getFile(),
             ]);
         }
     }
@@ -6355,7 +5802,6 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
@@ -6381,7 +5827,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle updateresume file upload - Save actual file content
         if ($request->hasFile('updateresume')) {
             $file = $request->file('updateresume');
 
@@ -6407,7 +5852,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // --- Prepare update data ---
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
@@ -6435,8 +5879,6 @@ class GoogleSheetController extends Controller
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
-
-        // created_by logic preserved exactly
         $updateData['created_by'] = $row->created_by;
 
         if (isset($rowData['Exe Remarks'])) {
@@ -6478,9 +5920,9 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),  // Show real error
-                'error_line' => $e->getLine(),  // Optional: line number
-                'error_file' => $e->getFile(),  // Optional: which file
+                'message' => $e->getMessage(),
+                'error_line' => $e->getLine(),
+                'error_file' => $e->getFile(),
             ]);
         }
     }
@@ -6504,7 +5946,6 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // Extract main details
         $email = $rowData['Email Address'] ?? $row->Email_Address;
         $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
         $name  = $rowData['Name'] ?? $row->Name;
@@ -6518,8 +5959,6 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'Date is required.']);
         }
 
-
-        // File upload
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
@@ -6545,7 +5984,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Prepare update data
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
@@ -6569,10 +6007,8 @@ class GoogleSheetController extends Controller
             $updateData['resume'] = $row->resume;
         }
 
-        // Keep created_by
         $updateData['created_by'] = $row->created_by;
 
-        // created_by logic
         if (isset($rowData['Exe Remarks'])) {
             $exeRemark = $rowData['Exe Remarks'];
 
@@ -6622,8 +6058,6 @@ class GoogleSheetController extends Controller
                 ?? $row->Email_Address
                 ?? '';
 
-            // EMAIL-SENDING SECTION REMOVED
-
             $firstCallerName = $this->getFirstCallerName($row->created_by);
 
             $dataText =
@@ -6672,7 +6106,6 @@ class GoogleSheetController extends Controller
                 ]);
             }
 
-            // Generate latest notification HTML
             $admin = User::find(1);
             $latestNotification = Notification::with(['user', 'candidate'])
                 ->where('notifiable_id', 1)
@@ -6743,7 +6176,6 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? $row->Email_Address;
         $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
         $name  = $rowData['Name'] ?? $row->Name;
@@ -6762,8 +6194,6 @@ class GoogleSheetController extends Controller
                 'message' => 'Date is required.'
             ]);
         }
-
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
@@ -6789,7 +6219,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle acceptance file upload
         if ($request->hasFile('acceptance')) {
             $file = $request->file('acceptance');
 
@@ -6814,8 +6243,6 @@ class GoogleSheetController extends Controller
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
         }
-
-        // Handle consultation sign file upload
         if ($request->hasFile('consultationsign')) {
             $file = $request->file('consultationsign');
 
@@ -6840,8 +6267,6 @@ class GoogleSheetController extends Controller
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
         }
-
-        // Handle acceptance sign file upload
         if ($request->hasFile('acceptancesign')) {
             $file = $request->file('acceptancesign');
 
@@ -6867,7 +6292,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle consultation file upload
         if ($request->hasFile('consultation')) {
             $file = $request->file('consultation');
 
@@ -6892,8 +6316,6 @@ class GoogleSheetController extends Controller
                 return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
             }
         }
-
-        // Handle delivery file upload
         if ($request->hasFile('delivery')) {
             $file = $request->file('delivery');
 
@@ -6919,7 +6341,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle payment file upload
         if ($request->hasFile('payment')) {
             $file = $request->file('payment');
 
@@ -6945,7 +6366,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle deliverysign file upload
         if ($request->hasFile('deliverysign')) {
             $file = $request->file('deliverysign');
 
@@ -6971,7 +6391,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Handle payment file upload
         if ($request->hasFile('paymentsign')) {
             $file = $request->file('paymentsign');
 
@@ -6997,7 +6416,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // --- Prepare update data ---
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
@@ -7026,7 +6444,6 @@ class GoogleSheetController extends Controller
             $updateData['resume'] = $row->resume;
         }
 
-        // created_by logic preserved exactly
         $updateData['created_by'] = $row->created_by;
 
         if (isset($rowData['Exe Remarks'])) {
@@ -7068,9 +6485,9 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => $e->getMessage(),  // Show real error
-                'error_line' => $e->getLine(),  // Optional: line number
-                'error_file' => $e->getFile(),  // Optional: which file
+                'message' => $e->getMessage(),
+                'error_line' => $e->getLine(),
+                'error_file' => $e->getFile(),
             ]);
         }
     }
@@ -7082,19 +6499,15 @@ class GoogleSheetController extends Controller
             return 'N/A';
         }
 
-        // Example format: "37|junior:5|senior"
-        // Extract first segment until the "|"
         $parts = explode(':', $createdBy);
-        $firstSegment = $parts[0];        // "37|junior"
+        $firstSegment = $parts[0];
         $subParts = explode('|', $firstSegment);
 
         if (count($subParts) < 2) {
             return 'N/A';
         }
 
-        $juniorId = intval($subParts[0]); // 37
-
-        // Fetch user
+        $juniorId = intval($subParts[0]);
         $user = \App\Models\User::find($juniorId);
 
         return $user->name ?? 'N/A';
@@ -7110,13 +6523,11 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? null;
         $phone = $rowData['Phone Number'] ?? null;
         $name  = $rowData['Name'] ?? null;
         $date  = $rowData['Date'] ?? null;
 
-        // --- Check required fields ---
         if (empty($name)) {
             return response()->json([
                 'success' => false,
@@ -7131,7 +6542,6 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // Check for duplicate Email
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
 
@@ -7143,7 +6553,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Check for duplicate Phone
         if (!empty($phone)) {
             $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
 
@@ -7162,8 +6571,6 @@ class GoogleSheetController extends Controller
         $record = new GoogleSheetData();
         $record->sheet_row_number = $nextRow;
         $record->created_by = $user->id . '|accountant';
-
-        // Map frontend keys to DB columns
         $columnMap = [
             'Date' => 'Date',
             'Name' => 'Name',
@@ -7186,7 +6593,6 @@ class GoogleSheetController extends Controller
         $name = null;
         $amount = null;
 
-        // Assign values safely, save null for empty non-number/email fields
         foreach ($columnMap as $frontendKey => $dbColumn) {
             $val = $rowData[$frontendKey] ?? null;
 
@@ -7207,7 +6613,6 @@ class GoogleSheetController extends Controller
                 $exeRemarksValue = $val;
             }
 
-            // Save null for empty fields, including Amount
             if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number'])) {
                 $val = null;
             }
@@ -7215,7 +6620,6 @@ class GoogleSheetController extends Controller
             $record->$dbColumn = $val;
         }
 
-        // Set created_by conditionally based on Exe_Remarks
         if ($exeRemarksValue === 'Ready To Pay') {
             $record->created_by = $user->id . '|accountant:0|accountant';
         } elseif ($exeRemarksValue === 'Payment Completed') {
@@ -7224,11 +6628,9 @@ class GoogleSheetController extends Controller
             $record->created_by = $user->id . '|accountant';
         }
 
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Validate it's a PDF
             if ($file->getMimeType() !== 'application/pdf') {
                 return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
             }
@@ -7239,11 +6641,9 @@ class GoogleSheetController extends Controller
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
                 $filePath = $file->storeAs('resumes', $newName, 'public');
-                $record->resume = $filePath; // Store file path
+                $record->resume = $filePath;
             } catch (\Exception $e) {
-                // Continue without resume if upload fails
                 $record->resume = null;
             }
         }
@@ -7258,9 +6658,8 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // --- Email logic ---
         $mailMessage = 'No email sent.';
-        // --- Send Email if Exe_Remarks is "Ready To Pay" ---
+
         if ($exeRemarksValue === 'Ready To Pay' && !empty($email)) {
             try {
                 $smtp = SmtpSetting::where('user_id', $user->id)->first();
@@ -7269,7 +6668,6 @@ class GoogleSheetController extends Controller
                         'message' => 'No SMTP settings found.'
                     ]);
                 } else {
-                    // Configure mailer dynamically (same as test() method)
                     config([
                         'mail.mailers.smtp.transport' => $smtp->mailer,
                         'mail.mailers.smtp.host' => $smtp->host,
@@ -7281,14 +6679,12 @@ class GoogleSheetController extends Controller
                         'mail.from.name' => $smtp->from_name,
                     ]);
 
-                    // --- Fetch Email Template from Database ---
                     $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
                     if ($template) {
                         $subject = $template->subject;
                         $messageBody = $template->body;
                     } else {
-                        // Fallback if template not found
                         $subject = "Unlock Career Stability with Fortune 500 Projects !";
                         $messageBody =
                             "Hi {$name},\n\n" .
@@ -7349,7 +6745,6 @@ class GoogleSheetController extends Controller
                             "Visit Our Website: https://www.synergiesystems.com/";
                     }
 
-                    // --- Send Email (No Template Logic Changed) ---
                     Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                         $message->from($smtp->from_address, $smtp->from_name)
                             ->to($email)
@@ -7373,7 +6768,6 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-    // Add a method to serve the PDF files
     public function viewaccountantResume($id)
     {
         $row = GoogleSheetData::find($id);
@@ -7393,8 +6787,6 @@ class GoogleSheetController extends Controller
             'Content-Disposition' => 'inline; filename="' . basename($filePath) . '"'
         ]);
     }
-
-    // Add a method to download the PDF files
     public function downloadaccountantResume($id)
     {
         $row = GoogleSheetData::find($id);
@@ -7418,7 +6810,7 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
+        $juniorUserId = $request->input('junior_user');
 
         $userPattern = "%:" . $authUser->id . "|trainer";
         $zeroPattern = "%:0|trainer";
@@ -7430,12 +6822,9 @@ class GoogleSheetController extends Controller
                 ->orWhere('created_by', 'LIKE', $zeroPattern);
         });
 
-        // Filter by selected junior
         if ($juniorUserId) {
             $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
         }
-
-        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -7446,15 +6835,12 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // Pagination with appended filters for AJAX navigation
         $data = $query->orderBy('Date', 'desc')->paginate(10);
         $data->appends([
             'search' => $search,
             'row_id' => $rowId,
             'junior_user' => $juniorUserId,
         ]);
-
-        // Map forwarded_by dynamically
         $data->getCollection()->transform(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -7493,8 +6879,6 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-
-        // Handle AJAX request for both search and pagination
         if ($request->ajax()) {
             return view('database.partials.senior_table', compact('data'))->render();
         }
@@ -7509,8 +6893,6 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
 
         $query = GoogleSheetData::where(function ($q) {
-            // Removed user_id|senior check
-            // Only keep the completed part filter
             $q->where(function ($q2) {
                 $q2->whereRaw("created_by = '0|completed'")
                     ->orWhereRaw("created_by LIKE '0|completed:%'")
@@ -7536,7 +6918,7 @@ class GoogleSheetController extends Controller
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
+
                 $entries = explode(':', $item->created_by);
 
                 $names = [];
@@ -7556,7 +6938,7 @@ class GoogleSheetController extends Controller
                     }
                 }
 
-                // Join all names for forwarded chain
+
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -7583,7 +6965,6 @@ class GoogleSheetController extends Controller
             'sheet_link' => 'required|url'
         ]);
 
-        // Extract spreadsheet ID
         preg_match('/\/d\/([a-zA-Z0-9-_]+)/', $request->sheet_link, $matches);
         $spreadsheetId = $matches[1] ?? null;
 
@@ -7591,7 +6972,6 @@ class GoogleSheetController extends Controller
             return back()->with('error', 'Invalid Google Sheet link');
         }
 
-        // Fetch CSV
         $csvUrl = "https://docs.google.com/spreadsheets/d/{$spreadsheetId}/export?format=csv";
         $csvData = @file_get_contents($csvUrl);
 
@@ -7600,7 +6980,7 @@ class GoogleSheetController extends Controller
         }
 
         $rows = array_map('str_getcsv', explode("\n", trim($csvData)));
-        $header = array_shift($rows); // first row as column headers
+        $header = array_shift($rows);
 
         $rowIndex = 2;
         $user = Auth::user();
@@ -7611,7 +6991,6 @@ class GoogleSheetController extends Controller
 
             $rowData = array_combine($header, $row);
 
-            // Map CSV headers to database columns
             $mappedData = [
                 'sheet_row_number' => $rowIndex,
                 'Date' => isset($rowData['Date']) ? \Carbon\Carbon::createFromFormat('m/d/Y', $rowData['Date'])->format('Y-m-d') : null,
@@ -7661,7 +7040,6 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? $row->Email_Address;
         $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
         $name  = $rowData['Name'] ?? $row->Name;
@@ -7724,10 +7102,10 @@ class GoogleSheetController extends Controller
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
+  
                 $filePath = $file->storeAs('resumes', $newName, 'public');
 
-                // Delete old resume file if exists
+
                 if ($row->resume && Storage::disk('public')->exists($row->resume)) {
                     Storage::disk('public')->delete($row->resume);
                 }
@@ -7739,12 +7117,12 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // --- Prepare update data with null defaults for empty fields ---
+
         $updateData = [
             'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
             'Name' => $rowData['Name'] ?? null,
-            'Email_Address' => $email, // keep original email
-            'Phone_Number' => $phone,  // keep original phone
+            'Email_Address' => $email,
+            'Phone_Number' => $phone,
             'Location' => $rowData['Location'] ?? null,
             'Remark' => $rowData['Remark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
@@ -7759,12 +7137,10 @@ class GoogleSheetController extends Controller
             'updated_at' => now(),
         ];
 
-        // Only update resume if it was uploaded
         if ($request->hasFile('resume')) {
             $updateData['resume'] = $row->resume;
         }
 
-        // Start with existing created_by value
         $updateData['created_by'] = $row->created_by;
 
         if (isset($rowData['Exe Remarks'])) {
@@ -7773,7 +7149,6 @@ class GoogleSheetController extends Controller
             if ($exeRemark === 'Training Completed') {
                 $authUser = Auth::user();
 
-                // Replace "0|trainer" with "auth_id|trainer:0|completed"
                 if (preg_match('/0\|trainer$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
                         '/0\|trainer$/',
@@ -7782,7 +7157,6 @@ class GoogleSheetController extends Controller
                     );
                 }
 
-                // Ensure ":0|completed" exists at the end if missing
                 if (strpos($updateData['created_by'], ':0|completed') === false) {
                     $updateData['created_by'] .= ':0|completed';
                 }
@@ -7790,27 +7164,23 @@ class GoogleSheetController extends Controller
                 $tag = $id . '|trainer';
                 $zerotag = '0|trainer';
 
-                // Get the last segment after the last colon
+
                 $parts = explode(':', $updateData['created_by']);
                 $lastPart = end($parts);
 
-                // Append only if the last part exactly matches the tag
+
                 if ($lastPart === $tag) {
                     $updateData['created_by'] .= ':' . $zerotag;
                 }
             } else {
-                // For all other remarks, apply "Revert To accountant" logic
-                // Match any integer followed by "|accountant"
                 if (preg_match('/(\d+)\|accountant/', $updateData['created_by'], $matches)) {
-                    $accountantId = $matches[1]; // Extract the integer
+                    $accountantId = $matches[1];
                     $tag = $accountantId . '|accountant';
-                    // Append only if tag already exists in created_by
                     if (strpos($updateData['created_by'], $tag) !== false) {
                         $updateData['created_by'] .= ':' . $tag;
                     }
                 }
 
-                // Replace "0|trainer" with actual trainer ID (only if it ends with 0|trainer)
                 if (preg_match('/0\|trainer$/', $updateData['created_by'])) {
                     $updateData['created_by'] = preg_replace(
                         '/0\|trainer$/',
@@ -7834,7 +7204,6 @@ class GoogleSheetController extends Controller
             $name = $rowData['Name'] ?? null;
             $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
 
-            // --- Send email if Exe_Remarks is "Training Completed" ---
             if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Training Completed' && !empty($email)) {
                 try {
                     $smtp = SmtpSetting::where('user_id', $user->id)->first();
@@ -7843,7 +7212,7 @@ class GoogleSheetController extends Controller
                             'message' => 'No SMTP settings found.'
                         ]);
                     } else {
-                        // Configure mailer dynamically (same as test() method)
+
                         config([
                             'mail.mailers.smtp.transport' => $smtp->mailer,
                             'mail.mailers.smtp.host' => $smtp->host,
@@ -7855,14 +7224,13 @@ class GoogleSheetController extends Controller
                             'mail.from.name' => $smtp->from_name,
                         ]);
 
-                        // --- Fetch Email Template from Database ---
                         $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
                         if ($template) {
                             $subject = $template->subject;
                             $messageBody = $template->body;
                         } else {
-                            // Fallback if template not found
+
                             $subject = "Unlock Career Stability with Fortune 500 Projects !";
                             $messageBody =
                                 "Hi {$name},\n\n" .
@@ -7923,7 +7291,6 @@ class GoogleSheetController extends Controller
                                 "Visit Our Website: https://www.synergiesystems.com/";
                         }
 
-                        // --- Send Email (No Template Logic Changed) ---
                         Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                             $message->from($smtp->from_address, $smtp->from_name)
                                 ->to($email)
@@ -7961,13 +7328,12 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // --- Extract Email & Phone for uniqueness check ---
         $email = $rowData['Email Address'] ?? null;
         $phone = $rowData['Phone Number'] ?? null;
         $name  = $rowData['Name'] ?? null;
         $date  = $rowData['Date'] ?? null;
 
-        // --- Check required fields ---
+
         if (empty($name)) {
             return response()->json([
                 'success' => false,
@@ -7982,7 +7348,6 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // Check for duplicate Email
         if (!empty($email)) {
             $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
 
@@ -7994,7 +7359,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Check for duplicate Phone
         if (!empty($phone)) {
             $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
 
@@ -8013,8 +7377,6 @@ class GoogleSheetController extends Controller
         $record = new GoogleSheetData();
         $record->sheet_row_number = $nextRow;
         $record->created_by = $user->id . '|trainer';
-
-        // Map frontend keys to DB columns
         $columnMap = [
             'Date' => 'Date',
             'Name' => 'Name',
@@ -8037,7 +7399,6 @@ class GoogleSheetController extends Controller
         $name = null;
         $amount = null;
 
-        // Assign values safely, save null for empty non-number/email fields
         foreach ($columnMap as $frontendKey => $dbColumn) {
             $val = $rowData[$frontendKey] ?? null;
 
@@ -8058,7 +7419,6 @@ class GoogleSheetController extends Controller
                 $exeRemarksValue = $val;
             }
 
-            // Save null for empty fields, including Amount
             if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number'])) {
                 $val = null;
             }
@@ -8066,7 +7426,6 @@ class GoogleSheetController extends Controller
             $record->$dbColumn = $val;
         }
 
-        // Set created_by conditionally based on Exe_Remarks
         if ($exeRemarksValue === 'Ready To Pay') {
             $record->created_by = $user->id . '|trainer:0|trainer';
         } elseif ($exeRemarksValue === 'Payment Completed') {
@@ -8075,11 +7434,9 @@ class GoogleSheetController extends Controller
             $record->created_by = $user->id . '|trainer';
         }
 
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Validate it's a PDF
             if ($file->getMimeType() !== 'application/pdf') {
                 return response()->json(['success' => false, 'message' => 'Only PDF files are allowed']);
             }
@@ -8090,11 +7447,10 @@ class GoogleSheetController extends Controller
             $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Store the actual file content
+
                 $filePath = $file->storeAs('resumes', $newName, 'public');
-                $record->resume = $filePath; // Store file path
+                $record->resume = $filePath;
             } catch (\Exception $e) {
-                // Continue without resume if upload fails
                 $record->resume = null;
             }
         }
@@ -8109,9 +7465,7 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // --- Email logic ---
         $mailMessage = 'No email sent.';
-        // --- Send Email if Exe_Remarks is "Ready To Pay" ---
         if ($exeRemarksValue === 'Ready To Pay' && !empty($email)) {
             try {
                 $smtp = SmtpSetting::where('user_id', $user->id)->first();
@@ -8120,7 +7474,7 @@ class GoogleSheetController extends Controller
                         'message' => 'No SMTP settings found.'
                     ]);
                 } else {
-                    // Configure mailer dynamically (same as test() method)
+
                     config([
                         'mail.mailers.smtp.transport' => $smtp->mailer,
                         'mail.mailers.smtp.host' => $smtp->host,
@@ -8132,14 +7486,14 @@ class GoogleSheetController extends Controller
                         'mail.from.name' => $smtp->from_name,
                     ]);
 
-                    // --- Fetch Email Template from Database ---
+
                     $template = EmailTemplate::where('name', 'Called_Mailed')->first();
 
                     if ($template) {
                         $subject = $template->subject;
                         $messageBody = $template->body;
                     } else {
-                        // Fallback if template not found
+
                         $subject = "Unlock Career Stability with Fortune 500 Projects !";
                         $messageBody =
                             "Hi {$name},\n\n" .
@@ -8199,8 +7553,6 @@ class GoogleSheetController extends Controller
                             "Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.\n\n" .
                             "Visit Our Website: https://www.synergiesystems.com/";
                     }
-
-                    // --- Send Email (No Template Logic Changed) ---
                     Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
                         $message->from($smtp->from_address, $smtp->from_name)
                             ->to($email)
@@ -8224,7 +7576,6 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-    // Add a method to serve the PDF files
     public function viewtrainerResume($id)
     {
         $row = GoogleSheetData::find($id);
@@ -8245,7 +7596,6 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-    // Add a method to download the PDF files
     public function downloadtrainerResume($id)
     {
         $row = GoogleSheetData::find($id);
