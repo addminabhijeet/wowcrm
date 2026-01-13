@@ -31,6 +31,7 @@ class CallReportController extends Controller
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->count();
@@ -39,6 +40,7 @@ class CallReportController extends Controller
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
@@ -104,6 +106,7 @@ class CallReportController extends Controller
         $SselffollowupCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
@@ -155,6 +158,7 @@ class CallReportController extends Controller
         $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
@@ -184,6 +188,7 @@ class CallReportController extends Controller
         // Hourly Called & Mailed
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
@@ -196,6 +201,7 @@ class CallReportController extends Controller
         // Hourly Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
         $hourlySelfFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
@@ -621,6 +627,7 @@ class CallReportController extends Controller
         $calledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
             ->where('transfers', 0)
@@ -629,6 +636,7 @@ class CallReportController extends Controller
         $selffollowupCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
@@ -685,6 +693,7 @@ class CallReportController extends Controller
         $McalledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -697,6 +706,7 @@ class CallReportController extends Controller
         $MselffollowupCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -762,6 +772,7 @@ class CallReportController extends Controller
         // Daily "Called & Mailed" counts
         $dailyCalledAndMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -802,6 +813,7 @@ class CallReportController extends Controller
 
         // Daily Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
         $dailySelfFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -2159,6 +2171,7 @@ class CallReportController extends Controller
         $calledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
             ->where('transfers', 0)
@@ -2167,6 +2180,7 @@ class CallReportController extends Controller
         $selffollowupCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+        ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
@@ -2232,6 +2246,7 @@ class CallReportController extends Controller
         $SselffollowupCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
@@ -2283,6 +2298,7 @@ class CallReportController extends Controller
         $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
@@ -2311,6 +2327,7 @@ class CallReportController extends Controller
         // Hourly Called & Mailed
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
@@ -2322,6 +2339,7 @@ class CallReportController extends Controller
         // Hourly Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
         $hourlySelfFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
@@ -3439,6 +3457,7 @@ class CallReportController extends Controller
         $calledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
             ->where('transfers', 0)
@@ -3447,6 +3466,7 @@ class CallReportController extends Controller
         $selffollowupCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
@@ -3505,6 +3525,7 @@ class CallReportController extends Controller
         $McalledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -3516,6 +3537,7 @@ class CallReportController extends Controller
         $MselffollowupCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -3616,6 +3638,7 @@ class CallReportController extends Controller
         // Daily Called & Mailed
         $dailyCalledAndMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -3629,6 +3652,7 @@ class CallReportController extends Controller
         // Daily Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
         $dailySelfFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
