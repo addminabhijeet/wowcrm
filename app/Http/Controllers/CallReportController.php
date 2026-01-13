@@ -2156,16 +2156,36 @@ class CallReportController extends Controller
 
 
 
-        // Hour-wise "Called & Mailed" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "{$createdByKey}%")
+        // Hour-wise "Ready To Pay" counts
+        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate)
+            ->where('Exe_Remarks', 'Ready To Pay')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Hourly Called & Mailed
+        $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Hour-wise "Ready To Pay" counts
+        // Hourly Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
+        $hourlySelfFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereDate('updated_at', $selectedDate)
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Hourly Follow-up (Called & Mailed with TransferRemark)
         $hourlyFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
@@ -2176,31 +2196,29 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Hour-wise "Ready To Pay" counts
-        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        // Hourly Transferred Follow-up
+        $hourlyTransferredFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
-            ->where('Exe_Remarks', 'Ready To Pay')
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', '1')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Hour-wise other calls
+        // Hourly Other Calls (excluding Called & Mailed)
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where(function ($q) {
-                $q->where(function ($q2) {
-                    $q2->where('Exe_Remarks', '<>', 'Called & Mailed')
-                        ->where('Exe_Remarks', '<>', 'Ready To Pay');
-                })
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
             })
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
-
-
 
         // Initialize hour blocks (10 AM - 8 PM)
         $c8to9am = $hourlyCalledAndMailed[8] ?? 0;
