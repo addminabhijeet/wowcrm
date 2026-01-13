@@ -22,7 +22,7 @@
         <div
             class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
             <div class="d-flex align-items-center flex-wrap gap-3">
-                
+
                 <!-- Search Input -->
                 <form class="navbar-search position-relative" autocomplete="off">
                     <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
@@ -146,7 +146,7 @@
 
                                     {{-- Immigration --}}
                                     <td>
-                                        @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
+                                        @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','L2S']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Immigration">
                                             <option value="">-- Immigration --</option>
                                             @foreach ($immOptions as $option)

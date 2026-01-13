@@ -148,7 +148,7 @@
 
                                     {{-- Immigration --}}
                                     <td>
-                                        @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','']; @endphp
+                                        @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','L2S','']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Immigration">
                                             <option value="">-- Select --</option>
                                             @foreach ($immOptions as $option)
@@ -711,7 +711,7 @@
                             'Interested', 'Others', 'VM', 'Busy'
                         ];
                         if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
-                            'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC'
+                            'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC', 'L2S'
                         ];
                         if (k === 'Relocation') opts = ['YES', 'NO'];
                         if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
