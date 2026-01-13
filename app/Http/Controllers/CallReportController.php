@@ -658,8 +658,6 @@ class CallReportController extends Controller
             })
             ->count();
 
-
-
         // Daily "Called & Mailed" counts
         $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
@@ -3172,6 +3170,12 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
             ->count();
 
+        $selffollowupCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->count();
+
         // Total "Ready To Pay" calls
         $readyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->where('Exe_Remarks', 'Ready To Pay')
@@ -3183,6 +3187,14 @@ class CallReportController extends Controller
             ->where('TransferRemark', '!=', '')
             ->count();
 
+        $transferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', '1')
+            ->count();
+
+
         // Total other calls (excluding Called & Mailed)
         $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->where(function ($q) {
@@ -3191,24 +3203,42 @@ class CallReportController extends Controller
             })
             ->count();
 
+
+
         // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
         [$year, $month] = explode('-', $selectedMonth);
 
-        // Total calls for this senior in the selected month (including hierarchical keys)
+        // Total calls for this senior in selected month
         $MtotalCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->count();
 
-        // Total "Called & Mailed" calls
+        // Total "Called & Mailed" calls in month
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
             ->count();
 
-        // Total "Ready To Pay" calls
+        // Self follow-up calls in month (Called & Mailed / Ready To Pay with TransferRemark)
+        $MselffollowupCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->count();
+
+        // Ready To Pay calls in month
+        $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Ready To Pay')
+            ->count();
+
+        // Follow-up calls in month (Called & Mailed with TransferRemark)
         $MfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -3217,23 +3247,25 @@ class CallReportController extends Controller
             ->where('TransferRemark', '!=', '')
             ->count();
 
-        // Total "Ready To Pay" calls
-        $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+        // Transferred follow-up calls in month
+        $MtransferedfollowUpCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Pay')
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', '1')
             ->count();
 
-        // Total other calls (not "Called & Mailed" or "Ready To Pay")
+        // Other calls in month (excluding Called & Mailed)
         $MotherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
-                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
             })
             ->count();
-
 
         // Daily "Called & Mailed" counts
         $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
@@ -3257,7 +3289,8 @@ class CallReportController extends Controller
             ->pluck('count', 'day')
             ->toArray();
 
-        // Daily "Ready To Pay" counts
+
+        // Daily Ready To Paid
         $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
@@ -3267,13 +3300,48 @@ class CallReportController extends Controller
             ->pluck('count', 'day')
             ->toArray();
 
-        // Daily "Other Calls" counts
+        // Daily Called & Mailed
+        $dailyCalledAndMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
+            ->groupBy('day')
+            ->pluck('count', 'day')
+            ->toArray();
+
+        // Daily Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
+        $dailySelfFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->groupBy('day')
+            ->pluck('count', 'day')
+            ->toArray();
+
+        // Daily Transferred Follow-up (Called & Mailed with TransferRemark and transfers = 1)
+        $dailyTransferredFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', '1')
+            ->groupBy('day')
+            ->pluck('count', 'day')
+            ->toArray();
+
+        // Daily Other Calls (excluding Called & Mailed)
         $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where(function ($q) {
-                $q->whereNotIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
             })
             ->groupBy('day')
@@ -3282,38 +3350,104 @@ class CallReportController extends Controller
 
 
 
+
         // --- Initialize daily variables (Day 1 - Day 31) ---
-        $tDay1  = $dailyCalledMailed[1]  ?? 0;
-        $tDay2  = $dailyCalledMailed[2]  ?? 0;
-        $tDay3  = $dailyCalledMailed[3]  ?? 0;
-        $tDay4  = $dailyCalledMailed[4]  ?? 0;
-        $tDay5  = $dailyCalledMailed[5]  ?? 0;
-        $tDay6  = $dailyCalledMailed[6]  ?? 0;
-        $tDay7  = $dailyCalledMailed[7]  ?? 0;
-        $tDay8  = $dailyCalledMailed[8]  ?? 0;
-        $tDay9  = $dailyCalledMailed[9]  ?? 0;
-        $tDay10 = $dailyCalledMailed[10] ?? 0;
-        $tDay11 = $dailyCalledMailed[11] ?? 0;
-        $tDay12 = $dailyCalledMailed[12] ?? 0;
-        $tDay13 = $dailyCalledMailed[13] ?? 0;
-        $tDay14 = $dailyCalledMailed[14] ?? 0;
-        $tDay15 = $dailyCalledMailed[15] ?? 0;
-        $tDay16 = $dailyCalledMailed[16] ?? 0;
-        $tDay17 = $dailyCalledMailed[17] ?? 0;
-        $tDay18 = $dailyCalledMailed[18] ?? 0;
-        $tDay19 = $dailyCalledMailed[19] ?? 0;
-        $tDay20 = $dailyCalledMailed[20] ?? 0;
-        $tDay21 = $dailyCalledMailed[21] ?? 0;
-        $tDay22 = $dailyCalledMailed[22] ?? 0;
-        $tDay23 = $dailyCalledMailed[23] ?? 0;
-        $tDay24 = $dailyCalledMailed[24] ?? 0;
-        $tDay25 = $dailyCalledMailed[25] ?? 0;
-        $tDay26 = $dailyCalledMailed[26] ?? 0;
-        $tDay27 = $dailyCalledMailed[27] ?? 0;
-        $tDay28 = $dailyCalledMailed[28] ?? 0;
-        $tDay29 = $dailyCalledMailed[29] ?? 0;
-        $tDay30 = $dailyCalledMailed[30] ?? 0;
-        $tDay31 = $dailyCalledMailed[31] ?? 0;
+        $cDay1  = $dailyCalledAndMailed[1]  ?? 0;
+        $cDay2  = $dailyCalledAndMailed[2]  ?? 0;
+        $cDay3  = $dailyCalledAndMailed[3]  ?? 0;
+        $cDay4  = $dailyCalledAndMailed[4]  ?? 0;
+        $cDay5  = $dailyCalledAndMailed[5]  ?? 0;
+        $cDay6  = $dailyCalledAndMailed[6]  ?? 0;
+        $cDay7  = $dailyCalledAndMailed[7]  ?? 0;
+        $cDay8  = $dailyCalledAndMailed[8]  ?? 0;
+        $cDay9  = $dailyCalledAndMailed[9]  ?? 0;
+        $cDay10 = $dailyCalledAndMailed[10] ?? 0;
+        $cDay11 = $dailyCalledAndMailed[11] ?? 0;
+        $cDay12 = $dailyCalledAndMailed[12] ?? 0;
+        $cDay13 = $dailyCalledAndMailed[13] ?? 0;
+        $cDay14 = $dailyCalledAndMailed[14] ?? 0;
+        $cDay15 = $dailyCalledAndMailed[15] ?? 0;
+        $cDay16 = $dailyCalledAndMailed[16] ?? 0;
+        $cDay17 = $dailyCalledAndMailed[17] ?? 0;
+        $cDay18 = $dailyCalledAndMailed[18] ?? 0;
+        $cDay19 = $dailyCalledAndMailed[19] ?? 0;
+        $cDay20 = $dailyCalledAndMailed[20] ?? 0;
+        $cDay21 = $dailyCalledAndMailed[21] ?? 0;
+        $cDay22 = $dailyCalledAndMailed[22] ?? 0;
+        $cDay23 = $dailyCalledAndMailed[23] ?? 0;
+        $cDay24 = $dailyCalledAndMailed[24] ?? 0;
+        $cDay25 = $dailyCalledAndMailed[25] ?? 0;
+        $cDay26 = $dailyCalledAndMailed[26] ?? 0;
+        $cDay27 = $dailyCalledAndMailed[27] ?? 0;
+        $cDay28 = $dailyCalledAndMailed[28] ?? 0;
+        $cDay29 = $dailyCalledAndMailed[29] ?? 0;
+        $cDay30 = $dailyCalledAndMailed[30] ?? 0;
+        $cDay31 = $dailyCalledAndMailed[31] ?? 0;
+
+        $sfDay1  = $dailySelfFollowUp[1]  ?? 0;
+        $sfDay2  = $dailySelfFollowUp[2]  ?? 0;
+        $sfDay3  = $dailySelfFollowUp[3]  ?? 0;
+        $sfDay4  = $dailySelfFollowUp[4]  ?? 0;
+        $sfDay5  = $dailySelfFollowUp[5]  ?? 0;
+        $sfDay6  = $dailySelfFollowUp[6]  ?? 0;
+        $sfDay7  = $dailySelfFollowUp[7]  ?? 0;
+        $sfDay8  = $dailySelfFollowUp[8]  ?? 0;
+        $sfDay9  = $dailySelfFollowUp[9]  ?? 0;
+        $sfDay10 = $dailySelfFollowUp[10] ?? 0;
+        $sfDay11 = $dailySelfFollowUp[11] ?? 0;
+        $sfDay12 = $dailySelfFollowUp[12] ?? 0;
+        $sfDay13 = $dailySelfFollowUp[13] ?? 0;
+        $sfDay14 = $dailySelfFollowUp[14] ?? 0;
+        $sfDay15 = $dailySelfFollowUp[15] ?? 0;
+        $sfDay16 = $dailySelfFollowUp[16] ?? 0;
+        $sfDay17 = $dailySelfFollowUp[17] ?? 0;
+        $sfDay18 = $dailySelfFollowUp[18] ?? 0;
+        $sfDay19 = $dailySelfFollowUp[19] ?? 0;
+        $sfDay20 = $dailySelfFollowUp[20] ?? 0;
+        $sfDay21 = $dailySelfFollowUp[21] ?? 0;
+        $sfDay22 = $dailySelfFollowUp[22] ?? 0;
+        $sfDay23 = $dailySelfFollowUp[23] ?? 0;
+        $sfDay24 = $dailySelfFollowUp[24] ?? 0;
+        $sfDay25 = $dailySelfFollowUp[25] ?? 0;
+        $sfDay26 = $dailySelfFollowUp[26] ?? 0;
+        $sfDay27 = $dailySelfFollowUp[27] ?? 0;
+        $sfDay28 = $dailySelfFollowUp[28] ?? 0;
+        $sfDay29 = $dailySelfFollowUp[29] ?? 0;
+        $sfDay30 = $dailySelfFollowUp[30] ?? 0;
+        $sfDay31 = $dailySelfFollowUp[31] ?? 0;
+
+
+        $tfDay1  = $dailyTransferredFollowUp[1]  ?? 0;
+        $tfDay2  = $dailyTransferredFollowUp[2]  ?? 0;
+        $tfDay3  = $dailyTransferredFollowUp[3]  ?? 0;
+        $tfDay4  = $dailyTransferredFollowUp[4]  ?? 0;
+        $tfDay5  = $dailyTransferredFollowUp[5]  ?? 0;
+        $tfDay6  = $dailyTransferredFollowUp[6]  ?? 0;
+        $tfDay7  = $dailyTransferredFollowUp[7]  ?? 0;
+        $tfDay8  = $dailyTransferredFollowUp[8]  ?? 0;
+        $tfDay9  = $dailyTransferredFollowUp[9]  ?? 0;
+        $tfDay10 = $dailyTransferredFollowUp[10] ?? 0;
+        $tfDay11 = $dailyTransferredFollowUp[11] ?? 0;
+        $tfDay12 = $dailyTransferredFollowUp[12] ?? 0;
+        $tfDay13 = $dailyTransferredFollowUp[13] ?? 0;
+        $tfDay14 = $dailyTransferredFollowUp[14] ?? 0;
+        $tfDay15 = $dailyTransferredFollowUp[15] ?? 0;
+        $tfDay16 = $dailyTransferredFollowUp[16] ?? 0;
+        $tfDay17 = $dailyTransferredFollowUp[17] ?? 0;
+        $tfDay18 = $dailyTransferredFollowUp[18] ?? 0;
+        $tfDay19 = $dailyTransferredFollowUp[19] ?? 0;
+        $tfDay20 = $dailyTransferredFollowUp[20] ?? 0;
+        $tfDay21 = $dailyTransferredFollowUp[21] ?? 0;
+        $tfDay22 = $dailyTransferredFollowUp[22] ?? 0;
+        $tfDay23 = $dailyTransferredFollowUp[23] ?? 0;
+        $tfDay24 = $dailyTransferredFollowUp[24] ?? 0;
+        $tfDay25 = $dailyTransferredFollowUp[25] ?? 0;
+        $tfDay26 = $dailyTransferredFollowUp[26] ?? 0;
+        $tfDay27 = $dailyTransferredFollowUp[27] ?? 0;
+        $tfDay28 = $dailyTransferredFollowUp[28] ?? 0;
+        $tfDay29 = $dailyTransferredFollowUp[29] ?? 0;
+        $tfDay30 = $dailyTransferredFollowUp[30] ?? 0;
+        $tfDay31 = $dailyTransferredFollowUp[31] ?? 0;
 
         $oDay1  = $dailyOtherCalls[1]  ?? 0;
         $oDay2  = $dailyOtherCalls[2]  ?? 0;
@@ -3347,37 +3481,6 @@ class CallReportController extends Controller
         $oDay30 = $dailyOtherCalls[30] ?? 0;
         $oDay31 = $dailyOtherCalls[31] ?? 0;
 
-        $rDay1  = $dailyReadyToPaid[1]  ?? 0;
-        $rDay2  = $dailyReadyToPaid[2]  ?? 0;
-        $rDay3  = $dailyReadyToPaid[3]  ?? 0;
-        $rDay4  = $dailyReadyToPaid[4]  ?? 0;
-        $rDay5  = $dailyReadyToPaid[5]  ?? 0;
-        $rDay6  = $dailyReadyToPaid[6]  ?? 0;
-        $rDay7  = $dailyReadyToPaid[7]  ?? 0;
-        $rDay8  = $dailyReadyToPaid[8]  ?? 0;
-        $rDay9  = $dailyReadyToPaid[9]  ?? 0;
-        $rDay10 = $dailyReadyToPaid[10] ?? 0;
-        $rDay11 = $dailyReadyToPaid[11] ?? 0;
-        $rDay12 = $dailyReadyToPaid[12] ?? 0;
-        $rDay13 = $dailyReadyToPaid[13] ?? 0;
-        $rDay14 = $dailyReadyToPaid[14] ?? 0;
-        $rDay15 = $dailyReadyToPaid[15] ?? 0;
-        $rDay16 = $dailyReadyToPaid[16] ?? 0;
-        $rDay17 = $dailyReadyToPaid[17] ?? 0;
-        $rDay18 = $dailyReadyToPaid[18] ?? 0;
-        $rDay19 = $dailyReadyToPaid[19] ?? 0;
-        $rDay20 = $dailyReadyToPaid[20] ?? 0;
-        $rDay21 = $dailyReadyToPaid[21] ?? 0;
-        $rDay22 = $dailyReadyToPaid[22] ?? 0;
-        $rDay23 = $dailyReadyToPaid[23] ?? 0;
-        $rDay24 = $dailyReadyToPaid[24] ?? 0;
-        $rDay25 = $dailyReadyToPaid[25] ?? 0;
-        $rDay26 = $dailyReadyToPaid[26] ?? 0;
-        $rDay27 = $dailyReadyToPaid[27] ?? 0;
-        $rDay28 = $dailyReadyToPaid[28] ?? 0;
-        $rDay29 = $dailyReadyToPaid[29] ?? 0;
-        $rDay30 = $dailyReadyToPaid[30] ?? 0;
-        $rDay31 = $dailyReadyToPaid[31] ?? 0;
 
         $fDay1  = $dailyFollowUp[1]  ?? 0;
         $fDay2  = $dailyFollowUp[2]  ?? 0;
@@ -3410,6 +3513,38 @@ class CallReportController extends Controller
         $fDay29 = $dailyFollowUp[29] ?? 0;
         $fDay30 = $dailyFollowUp[30] ?? 0;
         $fDay31 = $dailyFollowUp[31] ?? 0;
+
+        $rDay1  = $dailyReadyToPaid[1]  ?? 0;
+        $rDay2  = $dailyReadyToPaid[2]  ?? 0;
+        $rDay3  = $dailyReadyToPaid[3]  ?? 0;
+        $rDay4  = $dailyReadyToPaid[4]  ?? 0;
+        $rDay5  = $dailyReadyToPaid[5]  ?? 0;
+        $rDay6  = $dailyReadyToPaid[6]  ?? 0;
+        $rDay7  = $dailyReadyToPaid[7]  ?? 0;
+        $rDay8  = $dailyReadyToPaid[8]  ?? 0;
+        $rDay9  = $dailyReadyToPaid[9]  ?? 0;
+        $rDay10 = $dailyReadyToPaid[10] ?? 0;
+        $rDay11 = $dailyReadyToPaid[11] ?? 0;
+        $rDay12 = $dailyReadyToPaid[12] ?? 0;
+        $rDay13 = $dailyReadyToPaid[13] ?? 0;
+        $rDay14 = $dailyReadyToPaid[14] ?? 0;
+        $rDay15 = $dailyReadyToPaid[15] ?? 0;
+        $rDay16 = $dailyReadyToPaid[16] ?? 0;
+        $rDay17 = $dailyReadyToPaid[17] ?? 0;
+        $rDay18 = $dailyReadyToPaid[18] ?? 0;
+        $rDay19 = $dailyReadyToPaid[19] ?? 0;
+        $rDay20 = $dailyReadyToPaid[20] ?? 0;
+        $rDay21 = $dailyReadyToPaid[21] ?? 0;
+        $rDay22 = $dailyReadyToPaid[22] ?? 0;
+        $rDay23 = $dailyReadyToPaid[23] ?? 0;
+        $rDay24 = $dailyReadyToPaid[24] ?? 0;
+        $rDay25 = $dailyReadyToPaid[25] ?? 0;
+        $rDay26 = $dailyReadyToPaid[26] ?? 0;
+        $rDay27 = $dailyReadyToPaid[27] ?? 0;
+        $rDay28 = $dailyReadyToPaid[28] ?? 0;
+        $rDay29 = $dailyReadyToPaid[29] ?? 0;
+        $rDay30 = $dailyReadyToPaid[30] ?? 0;
+        $rDay31 = $dailyReadyToPaid[31] ?? 0;
 
         $juniorUser = $user;
 
@@ -3484,11 +3619,6 @@ class CallReportController extends Controller
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
-
-            if ($day->isFuture()) {
-                continue;
-            }
-
             $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
@@ -3580,7 +3710,7 @@ class CallReportController extends Controller
         $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
 
         return view('reports.allseniormonthly', compact(
-            'totalCalls',
+           'totalCalls',
             'MAvgTotalCalls',
             'juniorUser',
             'calledAndMailedCalls',
@@ -3593,41 +3723,142 @@ class CallReportController extends Controller
             'MreadyToPaidCalls',
             'MotherCalls',
             'selectedMonth',
+            'MselffollowupCalls',
+            'MtransferedfollowUpCalls',
 
             // --- Called & Mailed daily ---
-            'tDay1',
-            'tDay2',
-            'tDay3',
-            'tDay4',
-            'tDay5',
-            'tDay6',
-            'tDay7',
-            'tDay8',
-            'tDay9',
-            'tDay10',
-            'tDay11',
-            'tDay12',
-            'tDay13',
-            'tDay14',
-            'tDay15',
-            'tDay16',
-            'tDay17',
-            'tDay18',
-            'tDay19',
-            'tDay20',
-            'tDay21',
-            'tDay22',
-            'tDay23',
-            'tDay24',
-            'tDay25',
-            'tDay26',
-            'tDay27',
-            'tDay28',
-            'tDay29',
-            'tDay30',
-            'tDay31',
+            'cDay1',
+            'cDay2',
+            'cDay3',
+            'cDay4',
+            'cDay5',
+            'cDay6',
+            'cDay7',
+            'cDay8',
+            'cDay9',
+            'cDay10',
+            'cDay11',
+            'cDay12',
+            'cDay13',
+            'cDay14',
+            'cDay15',
+            'cDay16',
+            'cDay17',
+            'cDay18',
+            'cDay19',
+            'cDay20',
+            'cDay21',
+            'cDay22',
+            'cDay23',
+            'cDay24',
+            'cDay25',
+            'cDay26',
+            'cDay27',
+            'cDay28',
+            'cDay29',
+            'cDay30',
+            'cDay31',
+
 
             // --- Other Calls daily ---
+            'sfDay1',
+            'sfDay2',
+            'sfDay3',
+            'sfDay4',
+            'sfDay5',
+            'sfDay6',
+            'sfDay7',
+            'sfDay8',
+            'sfDay9',
+            'sfDay10',
+            'sfDay11',
+            'sfDay12',
+            'sfDay13',
+            'sfDay14',
+            'sfDay15',
+            'sfDay16',
+            'sfDay17',
+            'sfDay18',
+            'sfDay19',
+            'sfDay20',
+            'sfDay21',
+            'sfDay22',
+            'sfDay23',
+            'sfDay24',
+            'sfDay25',
+            'sfDay26',
+            'sfDay27',
+            'sfDay28',
+            'sfDay29',
+            'sfDay30',
+            'sfDay31',
+
+
+            'fDay1',
+            'fDay2',
+            'fDay3',
+            'fDay4',
+            'fDay5',
+            'fDay6',
+            'fDay7',
+            'fDay8',
+            'fDay9',
+            'fDay10',
+            'fDay11',
+            'fDay12',
+            'fDay13',
+            'fDay14',
+            'fDay15',
+            'fDay16',
+            'fDay17',
+            'fDay18',
+            'fDay19',
+            'fDay20',
+            'fDay21',
+            'fDay22',
+            'fDay23',
+            'fDay24',
+            'fDay25',
+            'fDay26',
+            'fDay27',
+            'fDay28',
+            'fDay29',
+            'fDay30',
+            'fDay31',
+
+
+            'tfDay1',
+            'tfDay2',
+            'tfDay3',
+            'tfDay4',
+            'tfDay5',
+            'tfDay6',
+            'tfDay7',
+            'tfDay8',
+            'tfDay9',
+            'tfDay10',
+            'tfDay11',
+            'tfDay12',
+            'tfDay13',
+            'tfDay14',
+            'tfDay15',
+            'tfDay16',
+            'tfDay17',
+            'tfDay18',
+            'tfDay19',
+            'tfDay20',
+            'tfDay21',
+            'tfDay22',
+            'tfDay23',
+            'tfDay24',
+            'tfDay25',
+            'tfDay26',
+            'tfDay27',
+            'tfDay28',
+            'tfDay29',
+            'tfDay30',
+            'tfDay31',
+
             'oDay1',
             'oDay2',
             'oDay3',
@@ -3660,7 +3891,6 @@ class CallReportController extends Controller
             'oDay30',
             'oDay31',
 
-            // --- Ready To Pay daily ---
             'rDay1',
             'rDay2',
             'rDay3',
@@ -3693,38 +3923,6 @@ class CallReportController extends Controller
             'rDay30',
             'rDay31',
 
-            // --- Follow Up daily ---
-            'fDay1',
-            'fDay2',
-            'fDay3',
-            'fDay4',
-            'fDay5',
-            'fDay6',
-            'fDay7',
-            'fDay8',
-            'fDay9',
-            'fDay10',
-            'fDay11',
-            'fDay12',
-            'fDay13',
-            'fDay14',
-            'fDay15',
-            'fDay16',
-            'fDay17',
-            'fDay18',
-            'fDay19',
-            'fDay20',
-            'fDay21',
-            'fDay22',
-            'fDay23',
-            'fDay24',
-            'fDay25',
-            'fDay26',
-            'fDay27',
-            'fDay28',
-            'fDay29',
-            'fDay30',
-            'fDay31',
 
             'targetGiven',
             'targetAchieved',
