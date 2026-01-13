@@ -2121,7 +2121,7 @@ class CallReportController extends Controller
             })
             ->count();
 
-        $Stotalcalls = (clone $tquery)->count();
+        $StotalCalls = (clone $tquery)->count();
 
         $ScalledAndMailedCalls = (clone $tquery)
             ->whereIn('Exe_Remarks', ['Called & Mailed', 'Ready To Pay'])
