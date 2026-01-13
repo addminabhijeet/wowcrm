@@ -2208,6 +2208,13 @@ class CallReportController extends Controller
             })
             ->count();
 
+        $totalCalls =
+            $calledAndMailedCalls
+            + $selffollowupCalls
+            + $readyToPaidCalls
+            + $followUpCalls
+            + $transferedfollowUpCalls;
+
 
         // Selected date (default today)
         $selectedDate = $request->input('selected_date', date('Y-m-d'));
