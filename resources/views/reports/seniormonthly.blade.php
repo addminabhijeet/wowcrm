@@ -656,15 +656,15 @@
                                 <table class="table table-hover table-bordered align-middle mb-0">
                                     <thead class="table-primary">
                                         <tr>
-                                            <th class="fw-bold">Date</th>
-                                            <th class="fw-bold text-center">Follow Up</th>
-                                            <th class="fw-bold text-center">Called & Mailed</th>
-                                            <th class="fw-bold text-center">Self follow up</th>
-                                            <th class="fw-bold text-center">Tra. Follow Up</th>
-                                            <th class="fw-bold text-center">Ready To Paid</th>
-                                            <!-- Replaces Transfers -->
+                                            <th class="fw-bold text-center w-100">Date</th>
+                                            <th class="fw-bold text-center w-100">Follow Up</th>
+                                            <th class="fw-bold text-center w-100">Called &amp; Mailed</th>
+                                            <th class="fw-bold text-center w-100">Self follow up</th>
+                                            <th class="fw-bold text-center w-100">Tra. Follow Up</th>
+                                            <th class="fw-bold text-center w-100">Ready To Paid</th>
                                         </tr>
                                     </thead>
+
                                     <tbody>
                                         <tr>
                                             <td>01</td>
@@ -885,15 +885,15 @@
                                 <table class="table table-hover table-bordered align-middle mb-0">
                                     <thead class="table-primary">
                                         <tr>
-                                            <th class="fw-bold">Date</th>
-                                            <th class="fw-bold text-center">Follow Up</th>
-                                            <th class="fw-bold text-center">Called & Mailed</th>
-                                            <th class="fw-bold text-center">Self follow up</th>
-                                            <th class="fw-bold text-center">Transfered Follow Up</th>
-                                            <th class="fw-bold text-center">Ready To Paid</th>
-                                            <!-- Replaces Transfers -->
+                                            <th class="fw-bold text-center w-100">Date</th>
+                                            <th class="fw-bold text-center w-100">Follow Up</th>
+                                            <th class="fw-bold text-center w-100">Called &amp; Mailed</th>
+                                            <th class="fw-bold text-center w-100">Self follow up</th>
+                                            <th class="fw-bold text-center w-100">Tra. Follow Up</th>
+                                            <th class="fw-bold text-center w-100">Ready To Paid</th>
                                         </tr>
                                     </thead>
+
                                     <tbody>
                                         <tr>
                                             <td>17</td>
