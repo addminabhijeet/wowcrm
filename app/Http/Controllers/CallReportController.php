@@ -228,7 +228,6 @@ class CallReportController extends Controller
         $f6to7pm   = $hourlyFollowUp[18] ?? 0;
         $f7to8pm   = $hourlyFollowUp[19] ?? 0;
 
-
         $tf8to9am = $hourlyTransferredFollowUp[8] ?? 0;
         $tf9to10am = $hourlyTransferredFollowUp[9] ?? 0;
         $tf10to11am = $hourlyTransferredFollowUp[10] ?? 0;
@@ -2191,18 +2190,31 @@ class CallReportController extends Controller
 
 
         // Initialize hour blocks (10 AM - 8 PM)
-        $t8to9am = $hourlyCalledMailed[8] ?? 0;
-        $t9to10am = $hourlyCalledMailed[9] ?? 0;
-        $t10to11am = $hourlyCalledMailed[10] ?? 0;
-        $t11to12pm = $hourlyCalledMailed[11] ?? 0;
-        $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
-        $t1to2pm   = $hourlyCalledMailed[13] ?? 0;
-        $t2to3pm   = $hourlyCalledMailed[14] ?? 0;
-        $t3to4pm   = $hourlyCalledMailed[15] ?? 0;
-        $t4to5pm   = $hourlyCalledMailed[16] ?? 0;
-        $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
-        $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
-        $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+        $c8to9am = $hourlyCalledAndMailed[8] ?? 0;
+        $c9to10am = $hourlyCalledAndMailed[9] ?? 0;
+        $c10to11am = $hourlyCalledAndMailed[10] ?? 0;
+        $c11to12pm = $hourlyCalledAndMailed[11] ?? 0;
+        $c12to1pm  = $hourlyCalledAndMailed[12] ?? 0;
+        $c1to2pm   = $hourlyCalledAndMailed[13] ?? 0;
+        $c2to3pm   = $hourlyCalledAndMailed[14] ?? 0;
+        $c3to4pm   = $hourlyCalledAndMailed[15] ?? 0;
+        $c4to5pm   = $hourlyCalledAndMailed[16] ?? 0;
+        $c5to6pm   = $hourlyCalledAndMailed[17] ?? 0;
+        $c6to7pm   = $hourlyCalledAndMailed[18] ?? 0;
+        $c7to8pm   = $hourlyCalledAndMailed[19] ?? 0;
+
+        $sf8to9am = $hourlySelfFollowUp[8] ?? 0;
+        $sf9to10am = $hourlySelfFollowUp[9] ?? 0;
+        $sf10to11am = $hourlySelfFollowUp[10] ?? 0;
+        $sf11to12pm = $hourlySelfFollowUp[11] ?? 0;
+        $sf12to1pm  = $hourlySelfFollowUp[12] ?? 0;
+        $sf1to2pm   = $hourlySelfFollowUp[13] ?? 0;
+        $sf2to3pm   = $hourlySelfFollowUp[14] ?? 0;
+        $sf3to4pm   = $hourlySelfFollowUp[15] ?? 0;
+        $sf4to5pm   = $hourlySelfFollowUp[16] ?? 0;
+        $sf5to6pm   = $hourlySelfFollowUp[17] ?? 0;
+        $sf6to7pm   = $hourlySelfFollowUp[18] ?? 0;
+        $sf7to8pm   = $hourlySelfFollowUp[19] ?? 0;
 
         $r8to9am = $hourlyReadyToPaid[8] ?? 0;
         $r9to10am = $hourlyReadyToPaid[9] ?? 0;
@@ -2229,6 +2241,19 @@ class CallReportController extends Controller
         $f5to6pm   = $hourlyFollowUp[17] ?? 0;
         $f6to7pm   = $hourlyFollowUp[18] ?? 0;
         $f7to8pm   = $hourlyFollowUp[19] ?? 0;
+
+        $tf8to9am = $hourlyTransferredFollowUp[8] ?? 0;
+        $tf9to10am = $hourlyTransferredFollowUp[9] ?? 0;
+        $tf10to11am = $hourlyTransferredFollowUp[10] ?? 0;
+        $tf11to12pm = $hourlyTransferredFollowUp[11] ?? 0;
+        $tf12to1pm  = $hourlyTransferredFollowUp[12] ?? 0;
+        $tf1to2pm   = $hourlyTransferredFollowUp[13] ?? 0;
+        $tf2to3pm   = $hourlyTransferredFollowUp[14] ?? 0;
+        $tf3to4pm   = $hourlyTransferredFollowUp[15] ?? 0;
+        $tf4to5pm   = $hourlyTransferredFollowUp[16] ?? 0;
+        $tf5to6pm   = $hourlyTransferredFollowUp[17] ?? 0;
+        $tf6to7pm   = $hourlyTransferredFollowUp[18] ?? 0;
+        $tf7to8pm   = $hourlyTransferredFollowUp[19] ?? 0;
 
         $o8to9am = $hourlyOtherCalls[8] ?? 0;
         $o9to10am = $hourlyOtherCalls[9] ?? 0;
@@ -2419,41 +2444,22 @@ class CallReportController extends Controller
             'totalCalls',
             'juniorUser',
             'calledAndMailedCalls',
+            'selffollowupCalls',
             'readyToPaidCalls',
             'followUpCalls',
+            'transferedfollowUpCalls',
             'otherCalls',
+
+            'SselffollowupCalls',
             'StotalCalls',
-            'StransferedfollowUpCalls',
             'ScalledAndMailedCalls',
             'SreadyToPaidCalls',
+            'StransferedfollowUpCalls',
             'SfollowUpCalls',
             'SotherCalls',
             'selectedDate',
-            't8to9am',
-            'juniorUser',
-            't9to10am',
-            't10to11am',
-            't11to12pm',
-            't12to1pm',
-            't1to2pm',
-            't2to3pm',
-            't3to4pm',
-            't4to5pm',
-            't5to6pm',
-            't6to7pm',
-            't7to8pm',
-            'f8to9am',
-            'f9to10am',
-            'f10to11am',
-            'f11to12pm',
-            'f12to1pm',
-            'f1to2pm',
-            'f2to3pm',
-            'f3to4pm',
-            'f4to5pm',
-            'f5to6pm',
-            'f6to7pm',
-            'f7to8pm',
+
+
             'r8to9am',
             'r9to10am',
             'r10to11am',
@@ -2466,6 +2472,64 @@ class CallReportController extends Controller
             'r5to6pm',
             'r6to7pm',
             'r7to8pm',
+
+
+            'c8to9am',
+            'c9to10am',
+            'c10to11am',
+            'c11to12pm',
+            'c12to1pm',
+            'c1to2pm',
+            'c2to3pm',
+            'c3to4pm',
+            'c4to5pm',
+            'c5to6pm',
+            'c6to7pm',
+            'c7to8pm',
+
+
+            'sf8to9am',
+            'sf9to10am',
+            'sf10to11am',
+            'sf11to12pm',
+            'sf12to1pm',
+            'sf1to2pm',
+            'sf2to3pm',
+            'sf3to4pm',
+            'sf4to5pm',
+            'sf5to6pm',
+            'sf6to7pm',
+            'sf7to8pm',
+
+
+            'f8to9am',
+            'f9to10am',
+            'f10to11am',
+            'f11to12pm',
+            'f12to1pm',
+            'f1to2pm',
+            'f2to3pm',
+            'f3to4pm',
+            'f4to5pm',
+            'f5to6pm',
+            'f6to7pm',
+            'f7to8pm',
+
+
+            'tf8to9am',
+            'tf9to10am',
+            'tf10to11am',
+            'tf11to12pm',
+            'tf12to1pm',
+            'tf1to2pm',
+            'tf2to3pm',
+            'tf3to4pm',
+            'tf4to5pm',
+            'tf5to6pm',
+            'tf6to7pm',
+            'tf7to8pm',
+
+
             'o8to9am',
             'o9to10am',
             'o10to11am',
@@ -2478,6 +2542,7 @@ class CallReportController extends Controller
             'o5to6pm',
             'o6to7pm',
             'o7to8pm',
+
 
             'targetGiven',
             'targetAchieved',
