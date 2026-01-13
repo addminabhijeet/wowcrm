@@ -1101,7 +1101,7 @@
         </div>
 
         <!-- ================= Right Summary ================= -->
-        <div class="col-xxl-4 col-lg-6">
+        {{-- <div class="col-xxl-4 col-lg-6">
             <div class="card h-100 radius-8 border-0">
                 <div class="card-body p-24">
                     <h6 class="fw-bold mb-1">Total Summary (From Joining)</h6>
@@ -1148,6 +1148,6 @@
                     </div>
                 </div>
             </div>
-        </div>
+        </div> --}}
     </div>
 @endsection
