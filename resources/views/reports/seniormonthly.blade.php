@@ -555,11 +555,12 @@
     <div class="row gy-4 mt-1">
 
         <!-- ================= Left Section ================= -->
-        <div class="col-xxl-8 col-lg-6">
+        <div class="col-xxl-8 col-lg-6 w-100">
             <div class="card h-100 border-0 shadow-sm radius-12">
                 <div class="card-body p-4">
                     <!-- Header -->
                     <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+
                         <div>
                             <h5 class="fw-bold mb-1">{{ $juniorUser->name }}</h5>
                         </div>
