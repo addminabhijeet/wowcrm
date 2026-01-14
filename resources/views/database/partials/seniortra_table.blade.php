@@ -255,13 +255,11 @@
 
                         {{-- TransferRemark --}}
                         <td>
-                            <textarea type="text" name="TransferRemark_hidden" class="form-control transferremark-autocomplete data-field"
-                                data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
+                            <textarea class="form-control transferremark-autocomplete" rows="2" placeholder="Type remark">{{ $row->TransferRemark ?? '' }}</textarea>
 
-                            <input type="hidden" name="TransferRemark"
-                                class="form-control transferremark-autocomplete transferremark-hidden"
-                                data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}"
-                                placeholder="Type TransferRemark">
+                            <input type="hidden" name="TransferRemark" class="transferremark-hidden"
+                                data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}">
+
                         </td>
 
 
@@ -335,13 +333,26 @@
                                 let rowId = $(this).data('id');
                                 let $tr = $('#row-' + rowId);
 
+                                // 🔁 Sync textarea values to hidden inputs BEFORE collecting data
+                                $tr.find('textarea').each(function() {
+                                    let $textarea = $(this);
+                                    let $td = $textarea.closest('td');
+
+                                    if ($textarea.hasClass('remark-autocomplete')) {
+                                        $td.find('input[name="Remark"]').val($textarea.val().trim());
+                                    }
+
+                                    if ($textarea.hasClass('transferremark-autocomplete')) {
+                                        $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
+                                    }
+                                });
+
                                 let data = {};
 
-                                $tr.find('input, select, textarea').each(function() {
+                                // ✅ Now safely collect data
+                                $tr.find('input[data-key], select[data-key]').each(function() {
                                     let key = $(this).data('key');
-                                    if (key) {
-                                        data[key] = $(this).val();
-                                    }
+                                    data[key] = $(this).val();
                                 });
 
                                 let formData = new FormData();
@@ -365,7 +376,7 @@
                                     success: function(response) {
                                         alert(response.message);
                                     },
-                                    error: function(err) {
+                                    error: function() {
                                         alert('AJAX error');
                                     }
                                 });
