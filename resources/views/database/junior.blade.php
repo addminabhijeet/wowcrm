@@ -1473,8 +1473,6 @@
                                 row.querySelector('[data-key="Name"]').value =
                                     data.data.Name ?? '';
 
-                               
-
                                 row.querySelector('[data-key="Phone Number"]').value =
                                     data.data.Phone_Number ?? '';
 
