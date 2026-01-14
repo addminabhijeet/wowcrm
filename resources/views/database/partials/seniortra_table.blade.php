@@ -335,16 +335,12 @@
                                 let rowId = $(this).data('id');
                                 let $tr = $('#row-' + rowId);
 
-                                // Collect row data
                                 let data = {};
-                                $tr.find('input, select').each(function() {
+
+                                $tr.find('input, select, textarea').each(function() {
                                     let key = $(this).data('key');
                                     if (key) {
-                                        if ($(this).is('select')) {
-                                            data[key] = $(this).val();
-                                        } else {
-                                            data[key] = $(this).val();
-                                        }
+                                        data[key] = $(this).val();
                                     }
                                 });
 
@@ -352,8 +348,7 @@
                                 formData.append('id', rowId);
                                 formData.append('data', JSON.stringify(data));
 
-                                // Attach resume file if uploaded
-                                let fileInput = $tr.find('input.resume-input')[0];
+                                let fileInput = $tr.find('.resume-input')[0];
                                 if (fileInput && fileInput.files.length > 0) {
                                     formData.append('resume', fileInput.files[0]);
                                 }
@@ -368,14 +363,10 @@
                                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
                                     },
                                     success: function(response) {
-                                        if (response.success) {
-                                            alert(response.message);
-                                        } else {
-                                            alert(response.message);
-                                        }
+                                        alert(response.message);
                                     },
                                     error: function(err) {
-                                        alert('AJAX error: ' + err.responseText);
+                                        alert('AJAX error');
                                     }
                                 });
                             });
