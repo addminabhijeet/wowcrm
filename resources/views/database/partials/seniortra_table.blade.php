@@ -321,7 +321,7 @@
                                 }
 
                                 $.ajax({
-                                    url: "{{ route('google.sheet.seniortra') }}",
+                                    url: '{{ route('seniorupdate') }}',
                                     type: 'POST',
                                     data: formData,
                                     contentType: false,
