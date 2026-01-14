@@ -1461,7 +1461,7 @@
                                     data.data.Name ?? '';
 
                                 row.querySelector('[data-key="Date"]').value =
-                                    data.data.Name ?? '';
+                                    data.data.Date ?? '';
 
                                 row.querySelector('[data-key="Phone Number"]').value =
                                     data.data.Phone_Number ?? '';
