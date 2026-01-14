@@ -1045,7 +1045,7 @@
 
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
                 $.ajax({
-                    url: "{{ route('seniorfollow') }}",
+                    url: "{{ route('google.sheet.seniorfollow') }}",
                     type: 'GET',
                     data: {
                         search,
