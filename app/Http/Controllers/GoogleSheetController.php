@@ -1757,7 +1757,7 @@ class GoogleSheetController extends Controller
                 ->limit(10)
                 ->get(['id', 'sheet_row_number', 'Name', 'Email_Address', 'Phone_Number', 'Exe_Remarks', 'created_by']);
         }
-        // ✅ Transform the forwarded_by column like in senior()
+
         $transformed = collect($results)->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -1793,6 +1793,87 @@ class GoogleSheetController extends Controller
 
         return response()->json($transformed);
     }
+
+
+    public function seniortraSuggestions(Request $request)
+    {
+        $authUser = Auth::user();
+        $query = $request->input('query');
+        $juniorUserId = $request->input('junior_user');
+
+        $results = [];
+
+        if ($query && strlen($query) >= 3) {
+            $results = GoogleSheetData::where(function ($q) use ($authUser) {
+
+                $userPattern = "%:" . $authUser->id . "|senior";
+                $zeroPattern = "%:0|senior";
+
+                $q->where('created_by', $authUser->id . '|senior')
+                    ->orWhere('created_by', '0|senior')
+                    ->orWhere('created_by', 'LIKE', $userPattern)
+                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+            })
+                // ✅ APPLY JUNIOR FILTER (SAME AS seniortra)
+                ->when($juniorUserId, function ($q) use ($juniorUserId) {
+                    $q->where(function ($sub) use ($juniorUserId) {
+                        $sub->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                            ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+                    });
+                })
+                ->where(function ($q) use ($query) {
+                    $q->where('Name', 'LIKE', "%{$query}%")
+                        ->orWhere('Email_Address', 'LIKE', "%{$query}%")
+                        ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
+                })
+                ->limit(10)
+                ->get([
+                    'id',
+                    'sheet_row_number',
+                    'Name',
+                    'Email_Address',
+                    'Phone_Number',
+                    'Exe_Remarks',
+                    'created_by'
+                ]);
+        }
+
+        $transformed = collect($results)->map(function ($item) use ($authUser) {
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                $names = [];
+
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            // Add transformed field
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        return response()->json($transformed);
+    }
+
 
     public function seniorpaidSuggestions(Request $request)
     {
