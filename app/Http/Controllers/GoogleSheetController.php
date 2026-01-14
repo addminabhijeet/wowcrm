@@ -185,7 +185,10 @@ class GoogleSheetController extends Controller
     {
         $email = $request->input('email');
 
-        $record = GoogleSheetData::where('Email_Address', $email)->first();
+        // Fetch the latest record with the given email (use is_current = 1 for latest active)
+        $record = GoogleSheetData::where('Email_Address', $email)
+            ->orderBy('sheet_row_number', 'desc') // latest row first
+            ->first();
 
         return response()->json([
             'exists' => (bool) $record,
