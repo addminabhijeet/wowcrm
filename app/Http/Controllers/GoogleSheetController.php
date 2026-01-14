@@ -5020,28 +5020,7 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'Date is required.']);
         }
 
-
         $user = Auth::user();
-
-        /**
-         * =========================================================
-         * 🔹 NEW LOGIC (ADDED WITHOUT AFFECTING EXISTING FLOW)
-         * ---------------------------------------------------------
-         * Set is_current = 0 for all previous rows
-         * with SAME Email OR SAME Phone Number
-         * =========================================================
-         */
-        $oldRecordIds = GoogleSheetData::query()
-            ->when($email, fn($q) => $q->orWhere('Email_Address', $email))
-            ->when($phone, fn($q) => $q->orWhere('Phone_Number', $phone))
-            ->pluck('id')
-            ->toArray();
-
-        if (!empty($oldRecordIds)) {
-            GoogleSheetData::whereIn('id', $oldRecordIds)
-                ->update(['is_current' => 0]);
-        }
-        // 🔹 END NEW LOGIC
 
         // --- Sheet row logic ---
         $maxRow  = GoogleSheetData::max('sheet_row_number') ?? 0;
@@ -5049,6 +5028,9 @@ class GoogleSheetController extends Controller
 
         $record = new GoogleSheetData();
         $record->sheet_row_number = $nextRow;
+
+        // ✅ NEW: mark only the current record as current
+        $record->is_current = 1;
 
         // --- Column map ---
         $columnMap = [
@@ -5148,6 +5130,8 @@ class GoogleSheetController extends Controller
         }
 
         $mailMessage = 'No email sent.';
+
+
 
         // --- Send Email if Exe_Remarks is "Called & Mailed" ---
         if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
