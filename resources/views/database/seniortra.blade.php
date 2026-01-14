@@ -1118,7 +1118,20 @@
                 fetchTable('', 1, junior_user, rowId);
             });
 
+            $(document).on('click', '.pagination a', function(e) {
+                e.preventDefault();
 
+                let url = $(this).attr('href');
+                if (!url) return;
+
+                // Extract page number
+                let page = new URL(url).searchParams.get('page');
+
+                let search = $('#senior-search').val().trim();
+                let junior_user = $('#junior-filter').val();
+
+                fetchTable(search, page, junior_user);
+            });
 
             // Junior dropdown filter
             $(document).on('change', '#junior-filter', function() {
@@ -1410,22 +1423,7 @@
         }
     </style>
 
-    <script>
-        document.getElementById('junior-filter').addEventListener('change', function() {
-            let juniorId = this.value;
-            let search = document.getElementById('senior-search').value;
 
-            fetch("{{ route('google.sheet.seniortra') }}?junior_user=" + juniorId + "&search=" + search, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('senior-table-wrapper').innerHTML = html;
-                });
-        });
-    </script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
