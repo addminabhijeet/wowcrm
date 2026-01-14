@@ -5002,31 +5002,24 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
-        // --- Extract Email & Phone for uniqueness check ---
+        // --- Extract Email & Phone ---
         $email = $rowData['Email Address'] ?? null;
         $phone = $rowData['Phone Number'] ?? null;
-        $name = $rowData['Name'] ?? null;
-        $date = $rowData['Date'] ?? null;
+        $name  = $rowData['Name'] ?? null;
+        $date  = $rowData['Date'] ?? null;
 
-        // --- Check required fields ---
+        // --- Required fields ---
         if (empty($name)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Name is required.'
-            ]);
+            return response()->json(['success' => false, 'message' => 'Name is required.']);
         }
 
         if (empty($date)) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Date is required.'
-            ]);
+            return response()->json(['success' => false, 'message' => 'Date is required.']);
         }
 
-        // Check for duplicate Email
+        // --- Duplicate check (unchanged) ---
         if (!empty($email)) {
-            $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
-            if ($emailExists) {
+            if (GoogleSheetData::where('Email_Address', $email)->exists()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Email address already exists in records.'
@@ -5034,10 +5027,8 @@ class GoogleSheetController extends Controller
             }
         }
 
-        // Check for duplicate Phone
         if (!empty($phone)) {
-            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
-            if ($phoneExists) {
+            if (GoogleSheetData::where('Phone_Number', $phone)->exists()) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Phone number already exists in records.'
@@ -5046,13 +5037,35 @@ class GoogleSheetController extends Controller
         }
 
         $user = Auth::user();
-        $maxRow = GoogleSheetData::max('sheet_row_number') ?? 0;
+
+        /**
+         * =========================================================
+         * 🔹 NEW LOGIC (ADDED WITHOUT AFFECTING EXISTING FLOW)
+         * ---------------------------------------------------------
+         * Set is_current = 0 for all previous rows
+         * with SAME Email OR SAME Phone Number
+         * =========================================================
+         */
+        $oldRecordIds = GoogleSheetData::query()
+            ->when($email, fn($q) => $q->orWhere('Email_Address', $email))
+            ->when($phone, fn($q) => $q->orWhere('Phone_Number', $phone))
+            ->pluck('id')
+            ->toArray();
+
+        if (!empty($oldRecordIds)) {
+            GoogleSheetData::whereIn('id', $oldRecordIds)
+                ->update(['is_current' => 0]);
+        }
+        // 🔹 END NEW LOGIC
+
+        // --- Sheet row logic ---
+        $maxRow  = GoogleSheetData::max('sheet_row_number') ?? 0;
         $nextRow = $maxRow + 1;
 
         $record = new GoogleSheetData();
         $record->sheet_row_number = $nextRow;
 
-        // Map frontend keys to DB columns
+        // --- Column map ---
         $columnMap = [
             'Date' => 'Date',
             'Name' => 'Name',
@@ -5072,10 +5085,8 @@ class GoogleSheetController extends Controller
         ];
 
         $exeRemarksValue = null;
-        $name = null;
         $amount = null;
 
-        // Assign values safely, save null for empty non-number/email fields
         foreach ($columnMap as $frontendKey => $dbColumn) {
             $val = $rowData[$frontendKey] ?? null;
 
@@ -5088,15 +5099,10 @@ class GoogleSheetController extends Controller
                 $amount = $val;
             }
 
-            if ($dbColumn === 'Name') {
-                $name = $val;
-            }
-
             if ($dbColumn === 'Exe_Remarks') {
                 $exeRemarksValue = $val;
             }
 
-            // Save null for empty fields, including Amount
             if (empty($val) && !in_array($dbColumn, ['Email_Address', 'Phone_Number'])) {
                 $val = null;
             }
@@ -5104,28 +5110,27 @@ class GoogleSheetController extends Controller
             $record->$dbColumn = $val;
         }
 
-        // Set created_by conditionally
+        // --- created_by logic ---
         if ($exeRemarksValue === 'Called & Mailed') {
             $record->created_by = $user->id . '|junior:0|senior';
         } else {
             $record->created_by = $user->id . '|junior';
         }
 
+        // --- Default amount ---
         if (is_null($record->Amount)) {
-            $record->Amount = 469; // ✅ default amount
-            $amount = 469;         // ensures email shows correct amount
+            $record->Amount = 469;
+            $amount = 469;
         }
 
-
-        // Handle resume file upload
+        // --- Resume upload ---
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
-            // Allow PDF + Word files
             $allowed = [
                 'application/pdf',
-                'application/msword', // .doc
-                'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+                'application/msword',
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
             ];
 
             if (!in_array($file->getMimeType(), $allowed)) {
@@ -5136,18 +5141,16 @@ class GoogleSheetController extends Controller
             }
 
             $timestamp = now()->format('Ymd_His');
-            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
-            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+            $newName   = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                $filePath = $file->storeAs('resumes', $newName, 'public');
-                $record->resume = $filePath;
+                $record->resume = $file->storeAs('resumes', $newName, 'public');
             } catch (\Exception $e) {
                 $record->resume = null;
             }
         }
-
 
         try {
             $record->save();
