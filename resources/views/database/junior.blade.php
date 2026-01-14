@@ -1449,45 +1449,54 @@
                             })
                             .then(response => response.json())
                             .then(data => {
+                                const row = input.closest('tr');
+
                                 if (data.exists && data.data) {
 
-                                    const row = input.closest('tr');
-
-                                    // Auto-fill fields (match data-key with DB columns)
-                                    row.querySelector('[data-key="Name"]').value = data.data
-                                        .Name ?? '';
-                                    row.querySelector('[data-key="Phone Number"]').value = data
-                                        .data.Phone_Number ?? '';
-                                    row.querySelector('[data-key="Location"]').value = data.data
-                                        .Location ?? '';
-                                    row.querySelector('[data-key="Relocation"]').value = data
-                                        .data.Relocation ?? '';
-                                    row.querySelector('[data-key="Graduation Date"]').value =
-                                        data.data.Graduation_Date ?? '';
-                                    row.querySelector('[data-key="Immigration"]').value = data
-                                        .data.Immigration ?? '';
-                                    row.querySelector('[data-key="Course"]').value = data.data
-                                        .Course ?? '';
-                                    row.querySelector('[data-key="Amount"]').value =
-                                        data.data.Amount ?
-                                        `$${parseFloat(data.data.Amount).toFixed(2)}` : '';
-                                    row.querySelector('[data-key="Qualification"]').value = data
-                                        .data.Qualification ?? '';
-                                    row.querySelector('[data-key="1st Follow Up Remarks"]')
-                                        .value =
-                                        data.data.First_Follow_Up_Remarks ?? '';
-                                    row.querySelector('[data-key="Time Zone"]').value = data
-                                        .data.Time_Zone ?? '';
-                                    row.querySelector('[data-key="Remark"]').value = data.data
-                                        .Remark ?? '';
-                                    row.querySelector('[data-key="Exe Remarks"]').value = data
-                                        .data.Exe_Remarks ?? '';
-
-                                    // Visual feedback
+                                    // mark email as valid (not invalid)
                                     input.classList.remove('is-invalid');
                                     input.classList.add('is-valid');
                                     hint.textContent = 'Existing record loaded.';
                                     hint.style.color = 'blue';
+
+                                    // loop through inputs
+                                    row.querySelectorAll('input, select').forEach(field => {
+                                        const key = field.dataset.key;
+                                        if (!key) return;
+
+                                        // match DB column names
+                                        const map = {
+                                            'Date': 'Date',
+                                            'Name': 'Name',
+                                            'Email Address': 'Email_Address',
+                                            'Phone Number': 'Phone_Number',
+                                            'Location': 'Location',
+                                            'Remark': 'Remark',
+                                            'Relocation': 'Relocation',
+                                            'Graduation Date': 'Graduation_Date',
+                                            'Immigration': 'Immigration',
+                                            'Course': 'Course',
+                                            'Amount': 'Amount',
+                                            'Qualification': 'Qualification',
+                                            '1st Follow Up Remarks': 'First_Follow_Up_Remarks',
+                                            'Time Zone': 'Time_Zone',
+                                            'Exe Remarks': 'Exe_Remarks'
+                                        };
+
+                                        const dbField = map[key];
+                                        if (!dbField || data.data[dbField] === null)
+                                            return;
+
+                                        // input fields
+                                        if (field.tagName === 'INPUT') {
+                                            field.value = data.data[dbField];
+                                        }
+
+                                        // dropdown auto-select
+                                        if (field.tagName === 'SELECT') {
+                                            field.value = data.data[dbField];
+                                        }
+                                    });
 
                                 } else {
                                     input.classList.remove('is-invalid');
@@ -1495,13 +1504,14 @@
                                     hint.textContent = 'Email available.';
                                     hint.style.color = 'green';
                                 }
-                            })
-
-                            .catch(error => {
-                                console.error('Email check failed:', error);
-                                hint.textContent = '⚠️ Server error. Try again.';
-                                hint.style.color = 'orange';
                             });
+
+
+                        .catch(error => {
+                            console.error('Email check failed:', error);
+                            hint.textContent = '⚠️ Server error. Try again.';
+                            hint.style.color = 'orange';
+                        });
 
                     }, 500); // 500ms debounce
                 }
