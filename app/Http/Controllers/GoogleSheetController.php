@@ -1373,7 +1373,7 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
         if ($request->ajax()) {
-            return view('database.partials.senior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.seniortra_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
         return view('database.seniortra',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
