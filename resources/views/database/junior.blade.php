@@ -1421,6 +1421,19 @@
                 .querySelector('meta[name="csrf-token"]')
                 .getAttribute('content');
 
+            // ---- DATE FORMATTER (MM-DD-YYYY) ----
+            const formatDateMDY = (dateStr) => {
+                if (!dateStr) return '';
+                const d = new Date(dateStr);
+                if (isNaN(d)) return '';
+
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                const yyyy = d.getFullYear();
+
+                return `${mm}-${dd}-${yyyy}`;
+            };
+
             document.addEventListener('input', function(e) {
 
                 if (!e.target.matches('.email-input')) return;
@@ -1461,7 +1474,7 @@
                                     data.data.Name ?? '';
 
                                 row.querySelector('[data-key="Date"]').value =
-                                    data.data.Date ?? '';
+                                    formatDateMDY(data.data.Date);
 
                                 row.querySelector('[data-key="Phone Number"]').value =
                                     data.data.Phone_Number ?? '';
@@ -1470,7 +1483,7 @@
                                     data.data.Location ?? '';
 
                                 row.querySelector('[data-key="Graduation Date"]').value =
-                                    data.data.Graduation_Date ?? '';
+                                    formatDateMDY(data.data.Graduation_Date);
 
                                 row.querySelector('[data-key="Amount"]').value =
                                     data.data.Amount ?
@@ -1524,6 +1537,7 @@
             });
         });
     </script>
+
 
     {{-- <script>
         $(document).on("click", ".transfers-btn", function() {
