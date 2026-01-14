@@ -25,7 +25,7 @@ class DecrementTimers extends Command
 
         $cycleCounter = 0;
         $totalCyclesPerMinute = 60 / $interval; // 20 cycles
-        $cyclesSubtract4 = 13; // 6 cycles subtract 4 seconds
+        $cyclesSubtract4 = 0; // 6 cycles subtract 4 seconds
         $cyclesSubtract3 = $totalCyclesPerMinute - $cyclesSubtract4; // 14 cycles subtract 3 seconds
 
         while (Carbon::now()->lessThan($endTime)) {
