@@ -33,7 +33,7 @@
                     <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
-               
+
             </div>
         </div>
         <div class="card-body p-24" id="senior-table-wrapper">
@@ -1449,12 +1449,46 @@
                             })
                             .then(response => response.json())
                             .then(data => {
-                                if (data.exists) {
-                                    input.classList.add('is-invalid');
-                                    input.classList.remove('is-valid');
-                                    hint.textContent =
-                                        'This email already exists in the database.';
-                                    hint.style.color = 'red';
+                                if (data.exists && data.data) {
+
+                                    const row = input.closest('tr');
+
+                                    // Auto-fill fields (match data-key with DB columns)
+                                    row.querySelector('[data-key="Name"]').value = data.data
+                                        .Name ?? '';
+                                    row.querySelector('[data-key="Phone Number"]').value = data
+                                        .data.Phone_Number ?? '';
+                                    row.querySelector('[data-key="Location"]').value = data.data
+                                        .Location ?? '';
+                                    row.querySelector('[data-key="Relocation"]').value = data
+                                        .data.Relocation ?? '';
+                                    row.querySelector('[data-key="Graduation Date"]').value =
+                                        data.data.Graduation_Date ?? '';
+                                    row.querySelector('[data-key="Immigration"]').value = data
+                                        .data.Immigration ?? '';
+                                    row.querySelector('[data-key="Course"]').value = data.data
+                                        .Course ?? '';
+                                    row.querySelector('[data-key="Amount"]').value =
+                                        data.data.Amount ?
+                                        `$${parseFloat(data.data.Amount).toFixed(2)}` : '';
+                                    row.querySelector('[data-key="Qualification"]').value = data
+                                        .data.Qualification ?? '';
+                                    row.querySelector('[data-key="1st Follow Up Remarks"]')
+                                        .value =
+                                        data.data.First_Follow_Up_Remarks ?? '';
+                                    row.querySelector('[data-key="Time Zone"]').value = data
+                                        .data.Time_Zone ?? '';
+                                    row.querySelector('[data-key="Remark"]').value = data.data
+                                        .Remark ?? '';
+                                    row.querySelector('[data-key="Exe Remarks"]').value = data
+                                        .data.Exe_Remarks ?? '';
+
+                                    // Visual feedback
+                                    input.classList.remove('is-invalid');
+                                    input.classList.add('is-valid');
+                                    hint.textContent = 'Existing record loaded.';
+                                    hint.style.color = 'blue';
+
                                 } else {
                                     input.classList.remove('is-invalid');
                                     input.classList.add('is-valid');
@@ -1462,6 +1496,7 @@
                                     hint.style.color = 'green';
                                 }
                             })
+
                             .catch(error => {
                                 console.error('Email check failed:', error);
                                 hint.textContent = '⚠️ Server error. Try again.';

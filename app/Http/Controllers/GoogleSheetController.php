@@ -185,12 +185,14 @@ class GoogleSheetController extends Controller
     {
         $email = $request->input('email');
 
-        $exists = GoogleSheetData::where('Email_Address', $email)->exists();
+        $record = GoogleSheetData::where('Email_Address', $email)->first();
 
         return response()->json([
-            'exists' => $exists
+            'exists' => (bool) $record,
+            'data'   => $record
         ]);
     }
+
 
 
     public function adminupdate(Request $request)
