@@ -5017,24 +5017,34 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'Date is required.']);
         }
 
-        // --- Duplicate check (unchanged) ---
+        // Check for duplicate Email (only current rows)
         if (!empty($email)) {
-            if (GoogleSheetData::where('Email_Address', $email)->exists()) {
+            $emailExists = GoogleSheetData::where('Email_Address', $email)
+                ->where('is_current', 1)
+                ->exists();
+
+            if ($emailExists) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Email address already exists in records.'
+                    'message' => 'Email address already exists in current records.'
                 ]);
             }
         }
 
+        // Check for duplicate Phone (only current rows)
         if (!empty($phone)) {
-            if (GoogleSheetData::where('Phone_Number', $phone)->exists()) {
+            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)
+                ->where('is_current', 1)
+                ->exists();
+
+            if ($phoneExists) {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Phone number already exists in records.'
+                    'message' => 'Phone number already exists in current records.'
                 ]);
             }
         }
+
 
         $user = Auth::user();
 
