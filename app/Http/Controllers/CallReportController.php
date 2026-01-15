@@ -2401,6 +2401,13 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
+        $holidayDates = Holiday::whereYear('holiday_date', $year)
+            ->whereMonth('holiday_date', $month)
+            ->where('is_holiday', 1)
+            ->pluck('holiday_date')
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
+
         // Initialize hour blocks (10 AM - 8 PM)
         $c8to9am = $hourlyCalledAndMailed[8] ?? 0;
         $c9to10am = $hourlyCalledAndMailed[9] ?? 0;
@@ -2556,21 +2563,16 @@ class CallReportController extends Controller
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+            $dateStr = $day->format('Y-m-d');
 
-            // ⛔ Skip today explicitly
             if ($day->equalTo($today)) {
                 continue;
             }
 
-            if ($day->isFuture()) {
-                continue;
-            }
-
-            $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
-            // Weekend = non-working
-            if ($day->isWeekend()) {
+            // Consider only Saturday/Sunday or holidays as non-working
+            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
                 $nonWorkingDays++;
                 continue;
             }
@@ -2589,20 +2591,19 @@ class CallReportController extends Controller
                 continue;
             }
 
-            // Sort earliest first
             $sorted = $dailyEvents->sortBy('event_time')->values();
 
-            $startSeen     = false;
-            $activeWorkSec = 0;
-            $totalBreakSec = 0;
-            $lastPauseTime = null;
+            $startSeen       = false;
+            $activeWorkSec   = 0;
+            $totalBreakSec   = 0;
+            $lastPauseTime   = null;
 
             for ($i = 0; $i < $sorted->count(); $i++) {
-                $event     = $sorted[$i];
-                $title     = strtolower($event->status ?? '');
-                $pauseType = strtolower($event->pause_type ?? '');
-                $eventName = $title ?: $pauseType;
-                $eventTime = Carbon::parse($event->event_time);
+                $event      = $sorted[$i];
+                $title      = strtolower($event->status ?? '');
+                $pauseType  = strtolower($event->pause_type ?? '');
+                $eventName  = $title ?: $pauseType;
+                $eventTime  = Carbon::parse($event->event_time);
 
                 if ($eventName === 'start') {
                     $startSeen = true;
@@ -2642,14 +2643,17 @@ class CallReportController extends Controller
 
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+            $dateStr = $day->format('Y-m-d');
 
-            // ⛔ today excluded
-            if ($day->greaterThan($today) && !$day->isWeekend()) {
+            if (
+                $day->greaterThan($today) &&
+                !$day->isWeekend() &&
+                !in_array($dateStr, $holidayDates)
+            ) {
                 $futureWorkingDays++;
             }
         }
 
-        // Subtract future working days from absent
         $absentDays = max(0, $absentDays - $futureWorkingDays);
 
 
@@ -3714,7 +3718,12 @@ class CallReportController extends Controller
             ->pluck('count', 'day')
             ->toArray();
 
-
+        $holidayDates = Holiday::whereYear('holiday_date', $year)
+            ->whereMonth('holiday_date', $month)
+            ->where('is_holiday', 1)
+            ->pluck('holiday_date')
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
 
 
         // --- Initialize daily variables (Day 1 - Day 31) ---
@@ -3990,20 +3999,16 @@ class CallReportController extends Controller
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+            $dateStr = $day->format('Y-m-d');
 
             if ($day->equalTo($today)) {
                 continue;
             }
 
-            if ($day->isFuture()) {
-                continue;
-            }
-
-            $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
-            // Weekend = non-working
-            if ($day->isWeekend()) {
+            // Consider only Saturday/Sunday or holidays as non-working
+            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
                 $nonWorkingDays++;
                 continue;
             }
@@ -4022,20 +4027,19 @@ class CallReportController extends Controller
                 continue;
             }
 
-            // Sort earliest first
             $sorted = $dailyEvents->sortBy('event_time')->values();
 
-            $startSeen     = false;
-            $activeWorkSec = 0;
-            $totalBreakSec = 0;
-            $lastPauseTime = null;
+            $startSeen       = false;
+            $activeWorkSec   = 0;
+            $totalBreakSec   = 0;
+            $lastPauseTime   = null;
 
             for ($i = 0; $i < $sorted->count(); $i++) {
-                $event     = $sorted[$i];
-                $title     = strtolower($event->status ?? '');
-                $pauseType = strtolower($event->pause_type ?? '');
-                $eventName = $title ?: $pauseType;
-                $eventTime = Carbon::parse($event->event_time);
+                $event      = $sorted[$i];
+                $title      = strtolower($event->status ?? '');
+                $pauseType  = strtolower($event->pause_type ?? '');
+                $eventName  = $title ?: $pauseType;
+                $eventTime  = Carbon::parse($event->event_time);
 
                 if ($eventName === 'start') {
                     $startSeen = true;
@@ -4075,15 +4079,18 @@ class CallReportController extends Controller
 
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+            $dateStr = $day->format('Y-m-d');
 
-            if ($day->greaterThan($today) && !$day->isWeekend()) {
+            if (
+                $day->greaterThan($today) &&
+                !$day->isWeekend() &&
+                !in_array($dateStr, $holidayDates)
+            ) {
                 $futureWorkingDays++;
             }
         }
 
-        // Subtract future working days from absent
         $absentDays = max(0, $absentDays - $futureWorkingDays);
-
 
         $MAvgTotalCalls = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
 
