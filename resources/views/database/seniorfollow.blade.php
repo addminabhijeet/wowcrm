@@ -1101,7 +1101,7 @@
                 }
 
                 $.ajax({
-                    url: "{{ route('senior.suggestions') }}",
+                    url: "{{ route('seniorfollow.suggestions') }}",
                     type: 'GET',
                     data: {
                         query
@@ -1443,7 +1443,7 @@
             let juniorId = this.value;
             let search = document.getElementById('senior-search').value;
 
-            fetch("{{ route('google.sheet.senior') }}?junior_user=" + juniorId + "&search=" + search, {
+            fetch("{{ route('google.sheet.seniorfollow') }}?junior_user=" + juniorId + "&search=" + search, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
