@@ -2830,6 +2830,13 @@ class CallReportController extends Controller
             ->pluck('count', 'day')
             ->toArray();
 
+        $holidayDates = Holiday::whereYear('holiday_date', $year)
+            ->whereMonth('holiday_date', $month)
+            ->where('is_holiday', 1)
+            ->pluck('holiday_date')
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
+
         // --- Create daily variables 1 to 31 ---
         $tDay1  = $dailyCalledMailed[1]  ?? 0;
         $tDay2  = $dailyCalledMailed[2]  ?? 0;
@@ -3003,29 +3010,27 @@ class CallReportController extends Controller
         // Loop through each day
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+            $dateStr = $day->format('Y-m-d');
 
-            // ⛔ Do not count today
             if ($day->equalTo($today)) {
                 continue;
             }
 
-            $dateStr = $day->format('Y-m-d');
             $dailyEvents = $groupedEvents->get($dateStr, collect());
 
-            // Weekend = non-working
-            if ($day->isWeekend()) {
+            // Consider only Saturday/Sunday or holidays as non-working
+            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
                 $nonWorkingDays++;
                 continue;
             }
 
             // Working day
+            $workingDays++;
+
             if ($dailyEvents->isEmpty()) {
                 $absentDays++;
-                $workingDays++;
                 continue;
             }
-
-            $workingDays++;
 
             // Auto-present rule
             if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
@@ -3033,20 +3038,19 @@ class CallReportController extends Controller
                 continue;
             }
 
-            // Sort earliest first
             $sorted = $dailyEvents->sortBy('event_time')->values();
 
-            $startSeen     = false;
-            $activeWorkSec = 0;
-            $totalBreakSec = 0;
-            $lastPauseTime = null;
+            $startSeen       = false;
+            $activeWorkSec   = 0;
+            $totalBreakSec   = 0;
+            $lastPauseTime   = null;
 
             for ($i = 0; $i < $sorted->count(); $i++) {
-                $event     = $sorted[$i];
-                $title     = strtolower($event->status ?? '');
-                $pauseType = strtolower($event->pause_type ?? '');
-                $eventName = $title ?: $pauseType;
-                $eventTime = Carbon::parse($event->event_time);
+                $event      = $sorted[$i];
+                $title      = strtolower($event->status ?? '');
+                $pauseType  = strtolower($event->pause_type ?? '');
+                $eventName  = $title ?: $pauseType;
+                $eventTime  = Carbon::parse($event->event_time);
 
                 if ($eventName === 'start') {
                     $startSeen = true;
@@ -3086,16 +3090,18 @@ class CallReportController extends Controller
 
         foreach ($daysInMonth as $day) {
             /** @var Carbon $day */
+            $dateStr = $day->format('Y-m-d');
 
-            // ⛔ today excluded
-            if ($day->greaterThan($today) && !$day->isWeekend()) {
+            if (
+                $day->greaterThan($today) &&
+                !$day->isWeekend() &&
+                !in_array($dateStr, $holidayDates)
+            ) {
                 $futureWorkingDays++;
             }
         }
 
-        // Subtract future working days from absent
         $absentDays = max(0, $absentDays - $futureWorkingDays);
-
         // --- Averages ---
         $MAvgTotalCalls     = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
         $MAvgtotaltransfers = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
