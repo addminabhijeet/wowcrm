@@ -987,40 +987,42 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
+        $juniorUserId = $request->input('junior_user'); // ✅ NEW
 
-        // SUBSTRING_INDEX-based filter with second part check
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
 
             $seniorPart = $authUser->id . '|senior';
 
-            // CASE 2 ONLY: x|junior : <senior>|senior : <some>|senior
             $q->whereRaw("
-                -- First part must be ANY junior
-                SUBSTRING_INDEX(created_by, ':', 1) LIKE '%|junior'
-            ")
-
+            SUBSTRING_INDEX(created_by, ':', 1) LIKE '%|junior'
+        ")
                 ->whereRaw("
-                -- Second part must be the logged-in senior
-                SUBSTRING_INDEX(
-                    SUBSTRING_INDEX(created_by, ':', 2),
-                    ':',
-                    -1
-                ) = ?
-            ", [$seniorPart])
-
+            SUBSTRING_INDEX(
+                SUBSTRING_INDEX(created_by, ':', 2),
+                ':',
+                -1
+            ) = ?
+        ", [$seniorPart])
                 ->whereRaw("
-                -- Third part must end with |senior
-                SUBSTRING_INDEX(
-                    SUBSTRING_INDEX(created_by, ':', 3),
-                    ':',
-                    -1
-                ) LIKE '%|senior'
-            ");
-        })->where(function ($q) {
-            $q->whereNull('TransferRemark')
-                ->orWhere('TransferRemark', '');
-        });
+            SUBSTRING_INDEX(
+                SUBSTRING_INDEX(created_by, ':', 3),
+                ':',
+                -1
+            ) LIKE '%|senior'
+        ");
+        })
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            });
 
+        // ✅ APPLY JUNIOR FILTER (NO LOGIC CHANGE)
+        if ($juniorUserId) {
+            $query->where(function ($q) use ($juniorUserId) {
+                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+            });
+        }
 
         if ($rowId) {
             $query->where('id', $rowId);
@@ -1034,16 +1036,18 @@ class GoogleSheetController extends Controller
 
         $data = $query->orderBy('Date', 'desc')->paginate(10);
 
-        // Map forwarded_by dynamically for multiple creators
+        // ✅ Keep pagination params
+        $data->appends($request->query());
+
+        // 🔁 Transform forwarded_by
         $data->getCollection()->transform(function ($item) use ($authUser) {
 
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
-
                 $names = [];
+
                 foreach ($entries as $entry) {
                     $parts = explode('|', $entry);
                     $userId = $parts[0] ?? null;
@@ -1060,7 +1064,6 @@ class GoogleSheetController extends Controller
                     }
                 }
 
-                // Join all names for forwarded chain
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -1070,13 +1073,13 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-
         if ($request->ajax()) {
-            return view('database.partials.senior_table', compact('data'))->render();
+            return view('database.partials.seniormodcandm_table', compact('data'))->render();
         }
 
         return view('database.seniormodcandm', compact('data'));
     }
+
 
     public function seniormodcandmfollow(Request $request)
     {
@@ -1953,6 +1956,86 @@ class GoogleSheetController extends Controller
 
         return response()->json($transformed);
     }
+
+    public function seniormodcandmSuggestions(Request $request)
+    {
+        $authUser = Auth::user();
+        $query = $request->input('query');
+        $juniorUserId = $request->input('junior_user');
+
+        $results = [];
+
+        if ($query && strlen($query) >= 3) {
+            $results = GoogleSheetData::where(function ($q) use ($authUser) {
+
+                $userPattern = "%:" . $authUser->id . "|senior";
+                $zeroPattern = "%:0|senior";
+
+                $q->where('created_by', $authUser->id . '|senior')
+                    ->orWhere('created_by', '0|senior')
+                    ->orWhere('created_by', 'LIKE', $userPattern)
+                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+            })
+                // ✅ APPLY JUNIOR FILTER (SAME AS seniortra)
+                ->when($juniorUserId, function ($q) use ($juniorUserId) {
+                    $q->where(function ($sub) use ($juniorUserId) {
+                        $sub->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                            ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+                    });
+                })
+                ->where(function ($q) use ($query) {
+                    $q->where('Name', 'LIKE', "%{$query}%")
+                        ->orWhere('Email_Address', 'LIKE', "%{$query}%")
+                        ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
+                })
+                ->limit(10)
+                ->get([
+                    'id',
+                    'sheet_row_number',
+                    'Name',
+                    'Email_Address',
+                    'Phone_Number',
+                    'Exe_Remarks',
+                    'created_by'
+                ]);
+        }
+
+        $transformed = collect($results)->map(function ($item) use ($authUser) {
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                $names = [];
+
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            // Add transformed field
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        return response()->json($transformed);
+    }
+
 
 
     public function seniorpaidSuggestions(Request $request)

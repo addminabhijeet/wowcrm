@@ -30,8 +30,18 @@
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
 
-
-
+                <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user"
+                    id="junior-filter">
+                    <option value="">Select IT Recruiter</option>
+                    @foreach ($juniorUsers as $junior)
+                        <option value="{{ $junior->id }}">
+                            {{ $junior->name }}
+                            @if ($junior->gender)
+                                ({{ $junior->gender }})
+                            @endif
+                        </option>
+                    @endforeach
+                </select>
 
             </div>
         </div>
@@ -1045,22 +1055,14 @@
     <script>
         $(document).ready(function() {
 
-            // -----------------------------
-            // Helper: Debounce
-            // -----------------------------
             function debounce(func, wait) {
                 let timeout;
                 return function() {
-                    const context = this,
-                        args = arguments;
                     clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(context, args), wait);
+                    timeout = setTimeout(() => func.apply(this, arguments), wait);
                 };
             }
 
-            // -----------------------------
-            // Fetch Table Data via AJAX
-            // -----------------------------
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
                 $.ajax({
                     url: "{{ route('google.sheet.seniormodcandm') }}",
@@ -1073,79 +1075,84 @@
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
-                    },
-                    error: function(err) {
-                        console.error(err);
                     }
                 });
             }
 
-            // -----------------------------
-            // Live Search Suggestions
-            // -----------------------------
+            // 🔍 LIVE SEARCH SUGGESTIONS
             const showSuggestions = debounce(function() {
+
                 const query = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+                const junior_user = $('#junior-filter').val();
 
                 if (query.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user); // reset table
+                    fetchTable('', 1, junior_user);
                     return;
                 }
 
                 $.ajax({
-                    url: "{{ route('senior.suggestions') }}",
+                    url: "{{ route('seniormodcandm.suggestions') }}",
                     type: 'GET',
                     data: {
-                        query
-                    },
+                        query,
+                        junior_user
+                    }, // ✅ FIXED
                     success: function(res) {
-                        let suggestions = '';
+
+                        let html = '';
+
                         if (res.length) {
                             res.forEach(item => {
-                                suggestions +=
-                                    `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}| ${item.Exe_Remarks}| ${item.forwarded_by}</a>`;
+                                html += `
+                            <a href="#" class="list-group-item list-group-item-action"
+                               data-id="${item.id}">
+                               ${item.sheet_row_number} |
+                               ${item.Name} |
+                               ${item.Email_Address} |
+                               ${item.Phone_Number} |
+                               ${item.Exe_Remarks} |
+                               ${item.forwarded_by}
+                            </a>`;
                             });
                         } else {
-                            suggestions =
-                                '<span class="list-group-item">No results found</span>';
+                            html = '<span class="list-group-item">No results found</span>';
                         }
-                        $('#search-suggestions').html(suggestions).show();
+
+                        $('#search-suggestions').html(html).show();
                     }
                 });
+
             }, 300);
 
             $('#senior-search').on('input', showSuggestions);
 
-            // Click suggestion
+            // 🖱 Click suggestion
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
+
                 const rowId = $(this).data('id');
                 const junior_user = $('#junior-filter').val();
-                $('#senior-search').val($(this).text());
-                $('#search-suggestions').empty().hide();
 
+                $('#search-suggestions').hide().empty();
                 fetchTable('', 1, junior_user, rowId);
             });
 
-
-
-            // Junior dropdown filter
-            $(document).on('change', '#junior-filter', function() {
-                const junior_user = $(this).val();
-                const search = $('#senior-search').val().trim();
-                fetchTable(search, 1, junior_user);
+            // 🎯 Junior dropdown filter (pagination-safe)
+            $('#junior-filter').on('change', function() {
+                fetchTable($('#senior-search').val().trim(), 1, $(this).val());
             });
 
-            // Click outside suggestions to hide
+            // ❌ Hide suggestions on outside click
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
-                    $('#search-suggestions').empty().hide();
+                    $('#search-suggestions').hide().empty();
                 }
             });
 
         });
     </script>
+
 
 
 
