@@ -919,7 +919,7 @@
             // -----------------------------
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
                 $.ajax({
-                    url: "{{ route('google.sheet.juniorcandm') }}",
+                    url: "{{ route('google.sheet.junior.candm') }}",
                     type: 'GET',
                     data: {
                         search,
