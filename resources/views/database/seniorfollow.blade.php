@@ -23,32 +23,26 @@
             class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
             <div class="d-flex align-items-center flex-wrap gap-3">
 
-                <!-- Search Input -->
                 <form class="navbar-search position-relative" autocomplete="off">
                     <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
                         placeholder="Search Name, Email, Phone">
-
                     <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
 
-                    <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;">
-                    </div>
+                    <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
 
-                <!-- Junior Filter -->
                 <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user"
                     id="junior-filter">
                     <option value="">Select IT Recruiter</option>
                     @foreach ($juniorUsers as $junior)
                         <option value="{{ $junior->id }}">
-                            {{ $junior->name }}
-                            @if ($junior->gender)
-                                ({{ $junior->gender }})
-                            @endif
+                            {{ $junior->name }} {{ $junior->gender ? '(' . $junior->gender . ')' : '' }}
                         </option>
                     @endforeach
                 </select>
 
             </div>
+
 
         </div>
 
@@ -1064,10 +1058,8 @@
             function debounce(func, wait) {
                 let timeout;
                 return function() {
-                    const context = this,
-                        args = arguments;
                     clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(context, args), wait);
+                    timeout = setTimeout(() => func.apply(this, arguments), wait);
                 };
             }
 
@@ -1083,14 +1075,13 @@
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
-                    },
-                    error: function(err) {
-                        console.error(err);
                     }
                 });
             }
 
+            // 🔍 SEARCH SUGGESTIONS
             const showSuggestions = debounce(function() {
+
                 const query = $('#senior-search').val().trim();
                 const junior_user = $('#junior-filter').val();
 
@@ -1104,17 +1095,17 @@
                     url: "{{ route('seniorfollow.suggestions') }}",
                     type: 'GET',
                     data: {
-                        query
-                    },
+                        query,
+                        junior_user
+                    }, // ✅ FIXED
                     success: function(res) {
 
-                        let suggestions = '';
+                        let html = '';
 
                         if (res.length) {
                             res.forEach(item => {
-                                suggestions += `
-                            <a href="#"
-                               class="list-group-item list-group-item-action"
+                                html += `
+                            <a href="#" class="list-group-item list-group-item-action"
                                data-id="${item.id}">
                                 ${item.sheet_row_number} |
                                 ${item.Name} |
@@ -1125,39 +1116,39 @@
                             </a>`;
                             });
                         } else {
-                            suggestions =
-                                '<span class="list-group-item">No results found</span>';
+                            html = '<span class="list-group-item">No results found</span>';
                         }
 
-                        $('#search-suggestions').html(suggestions).show();
+                        $('#search-suggestions').html(html).show();
                     }
                 });
+
             }, 300);
 
             $('#senior-search').on('input', showSuggestions);
 
+            // 🔹 CLICK ON SUGGESTION
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
 
                 const rowId = $(this).data('id');
                 const junior_user = $('#junior-filter').val();
 
-                $('#senior-search').val($(this).text());
-                $('#search-suggestions').empty().hide();
-
+                $('#search-suggestions').hide().empty();
                 fetchTable('', 1, junior_user, rowId);
             });
 
+            // 🔹 JUNIOR FILTER CHANGE (WITH PAGINATION)
             $('#junior-filter').on('change', function() {
                 const junior_user = $(this).val();
                 const search = $('#senior-search').val().trim();
-
                 fetchTable(search, 1, junior_user);
             });
 
+            // 🔹 HIDE SUGGESTIONS ON OUTSIDE CLICK
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
-                    $('#search-suggestions').empty().hide();
+                    $('#search-suggestions').hide().empty();
                 }
             });
 
