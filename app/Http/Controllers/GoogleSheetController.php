@@ -2228,6 +2228,92 @@ class GoogleSheetController extends Controller
         return response()->json($transformed);
     }
 
+    public function juniortraSuggestions(Request $request)
+    {
+        $authUser = Auth::user();
+        $queryText = $request->input('query');
+        $juniorUserId = $request->input('junior_user');
+
+        if (!$queryText || strlen($queryText) < 3) {
+            return response()->json([]);
+        }
+
+        $juniorPart = $authUser->id . '|junior';
+
+        $query = GoogleSheetData::where(function ($q) use ($juniorPart) {
+            // ✅ EXACT same first segment logic
+            $q->whereRaw(
+                "SUBSTRING_INDEX(created_by, ':', 1) = ?",
+                [$juniorPart]
+            );
+        })
+            ->where(function ($q) {
+                // ✅ EXACT same second segment logic
+                $q->whereRaw(
+                    "SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'"
+                );
+            })
+            ->where('transfers', 1); // ✅ MUST be 1 (same as juniortra)
+
+        // ✅ Same junior dropdown filter
+        if ($juniorUserId) {
+            $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
+        }
+
+        // ✅ Same search logic
+        $results = $query->where(function ($q) use ($queryText) {
+            $q->where('Name', 'LIKE', "%{$queryText}%")
+                ->orWhere('Email_Address', 'LIKE', "%{$queryText}%")
+                ->orWhere('Phone_Number', 'LIKE', "%{$queryText}%");
+        })
+            ->orderBy('id', 'desc')
+            ->limit(10)
+            ->get([
+                'id',
+                'sheet_row_number',
+                'Name',
+                'Email_Address',
+                'Phone_Number',
+                'Exe_Remarks',
+                'created_by'
+            ]);
+
+        // ✅ SAME transform logic
+        $transformed = $results->map(function ($item) use ($authUser) {
+            $entries = explode(':', $item->created_by);
+            $names = [];
+
+            foreach ($entries as $entry) {
+                $parts = explode('|', $entry);
+                $userId = $parts[0] ?? null;
+                $role   = $parts[1] ?? 'unknown';
+
+                if ($userId == $authUser->id) {
+                    $label = $role === 'senior'
+                        ? 'IT Senior Recruiter'
+                        : 'IT Recruiter';
+                    $names[] = "SELF ({$userId}) ({$label})";
+                } elseif ($userId == 0) {
+                    $label = $role === 'senior'
+                        ? 'IT Senior Recruiter'
+                        : 'IT Recruiter';
+                    $names[] = "SYSTEM (0) ({$label})";
+                } else {
+                    $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                    $name = $user ? $user->name : 'Unknown';
+                    $label = $role === 'senior'
+                        ? 'IT Senior Recruiter'
+                        : 'IT Recruiter';
+                    $names[] = "{$name} ({$userId}) ({$label})";
+                }
+            }
+
+            $item->forwarded_by = implode(' → ', $names);
+            return $item;
+        });
+
+        return response()->json($transformed);
+    }
 
     // -----------------------------
     // AJAX Search Suggestions
@@ -4892,7 +4978,7 @@ class GoogleSheetController extends Controller
 
         // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
-            return view('database.partials.junior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.juniortra_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
         return view('database.juniortra', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
