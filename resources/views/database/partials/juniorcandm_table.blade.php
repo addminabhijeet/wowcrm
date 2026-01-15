@@ -243,6 +243,7 @@
                             @endif
                         </td>
 
+
                         {{-- Remark --}}
                         <td>
                             <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
@@ -252,17 +253,6 @@
                                 class="form-control remark-autocomplete remark-hidden" data-key="Remark"
                                 value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                         </td>
-
-                        {{-- TransferRemark --}}
-                        <td>
-                            <textarea class="form-control transferremark-autocomplete" rows="2" placeholder="Type remark">{{ $row->TransferRemark ?? '' }}</textarea>
-
-                            <input type="hidden" name="TransferRemark" class="transferremark-hidden"
-                                data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}">
-
-                        </td>
-
-
 
                         {{-- Status --}}
                         <td>
