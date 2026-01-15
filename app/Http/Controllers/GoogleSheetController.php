@@ -4699,7 +4699,7 @@ class GoogleSheetController extends Controller
         }
 
 
-        return view('database.juniorcandm', compact('data'));
+        return view('database.juniorcandm', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
     public function juniortra(Request $request)
@@ -4808,7 +4808,7 @@ class GoogleSheetController extends Controller
             return view('database.partials.junior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
-        return view('database.juniortra', compact('data'));
+        return view('database.juniortra', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
 
