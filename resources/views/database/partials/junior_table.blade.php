@@ -51,18 +51,14 @@
                     <th scope="col" class="text-center">Course</th>
                     <th scope="col" class="text-center">Amount</th>
                     <th scope="col" class="text-center">Qualification</th>
-                    <th scope="col" class="text-center">Time Zone</th>
-                    <th scope="col" class="text-center">1st Follow Up Remarks</th>
 
-                    <th scope="col" class="text-center">Forwarded By</th>
+                    <th scope="col" class="text-center">1st Follow Up Remarks</th>
+                    <th scope="col" class="text-center">Time Zone</th>
                     <th scope="col" class="text-center">Resume</th>
-                    <th scope="col" class="text-center">Remark</th>
+                    <th scope="col" class="text-center">Remarks</th>
                     <th scope="col" class="text-center">Status</th>
-                    @auth
-                        @if (auth()->user()->role !== 'operation')
-                            <th scope="col" class="text-center">Actions</th>
-                        @endif
-                    @endauth
+                    <th scope="col" class="text-center">Actions</th>
+
                 </tr>
             </thead>
             <tbody id="sheet-table-body">
@@ -103,11 +99,12 @@
 
 
 
+
                         {{-- Relocation --}}
                         <td>
-                            @php $relOptions = ['YES','NO']; @endphp
+                            @php $relOptions = ['YES','NO','']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Relocation">
-                                <option value="">-- Relocation --</option>
+                                <option value="">-- Select --</option>
                                 @foreach ($relOptions as $option)
                                     <option value="{{ $option }}"
                                         {{ $row->Relocation === $option ? 'selected' : '' }}>
@@ -125,9 +122,9 @@
 
                         {{-- Immigration --}}
                         <td>
-                            @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','L2S']; @endphp
+                            @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','L2S','']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Immigration">
-                                <option value="">--Immigration --</option>
+                                <option value="">-- Select --</option>
                                 @foreach ($immOptions as $option)
                                     <option value="{{ $option }}"
                                         {{ $row->Immigration === $option ? 'selected' : '' }}>
@@ -139,9 +136,9 @@
 
                         {{-- Course --}}
                         <td>
-                            @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
+                            @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET','']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Course">
-                                <option value="">-- Course --</option>
+                                <option value="">-- Select --</option>
                                 @foreach ($courseOptions as $option)
                                     <option value="{{ $option }}"
                                         {{ $row->Course === $option ? 'selected' : '' }}>
@@ -154,8 +151,8 @@
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount !== null ? '$' . number_format($row->Amount, 2) : '' }}"
-                                placeholder="Amount (469)">
+                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}"
+                                placeholder="Amount(469)">
                         </td>
 
                         {{-- Qualification --}}
@@ -173,11 +170,12 @@
                                     'MA',
                                     'Associate Degree',
                                     'Aerospace Proj. Manag.',
+                                    '',
                                 ];
                             @endphp
 
                             <select class="form-select dynamic-dropdown" data-key="Qualification">
-                                <option value="">-- Qualification --</option>
+                                <option value="">-- Select --</option>
                                 @foreach ($qualificationOptions as $option)
                                     <option value="{{ $option }}"
                                         {{ $row->Qualification === $option ? 'selected' : '' }}>
@@ -187,25 +185,14 @@
                             </select>
                         </td>
 
-                        {{-- Time Zone --}}
-                        <td>
-                            @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Time Zone">
-                                <option value="">-- Time Zone --</option>
-                                @foreach ($timezoneOptions as $option)
-                                    <option value="{{ $option }}"
-                                        {{ $row->Time_Zone === $option ? 'selected' : '' }}>
-                                        {{ $option }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
+
+
 
                         {{-- 1st Follow Up Remarks --}}
                         <td>
-                            @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call']; @endphp
+                            @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call','']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="1st Follow Up Remarks">
-                                <option value="">-- 1st Follow Up Remarks --</option>
+                                <option value="">-- Select --</option>
                                 @foreach ($followOptions as $option)
                                     <option value="{{ $option }}"
                                         {{ $row->First_Follow_Up_Remarks === $option ? 'selected' : '' }}>
@@ -215,10 +202,18 @@
                             </select>
                         </td>
 
-                        {{-- Forwarded By --}}
+                        {{-- Time Zone --}}
                         <td>
-                            <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
-                                value="{{ $row->forwarded_by ?? '' }}" placeholder="Forwarded By" readonly>
+                            @php $timezoneOptions = ['EST','CST','MST','PST','']; @endphp
+                            <select class="form-select dynamic-dropdown" data-key="Time Zone">
+                                <option value="">-- Select --</option>
+                                @foreach ($timezoneOptions as $option)
+                                    <option value="{{ $option }}"
+                                        {{ $row->Time_Zone === $option ? 'selected' : '' }}>
+                                        {{ $option }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </td>
 
                         {{-- View (Resume) --}}
@@ -244,6 +239,7 @@
                             @endif
                         </td>
 
+
                         {{-- Remark --}}
                         <td>
                             <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
@@ -256,9 +252,9 @@
 
                         {{-- Status --}}
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Ready To Pay']; @endphp
+                            @php $exeOptions = ['Called & Mailed','Not Interested','Interested','Others','VM','Busy']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                <option value="">-- Status --</option>
+                                <option value="">-- Select Status--</option>
                                 @foreach ($exeOptions as $option)
                                     <option value="{{ $option }}"
                                         {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
@@ -268,15 +264,15 @@
                             </select>
                         </td>
 
-                        @auth
-                            @if (auth()->user()->role !== 'operation')
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
-                                        <i class="fas fa-save"></i> Save
-                                    </button>
-                                </td>
-                            @endif
-                        @endauth
+
+                        <td class="text-center">
+
+                            <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+
+
+                        </td>
 
 
                     </tr>
