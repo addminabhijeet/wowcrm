@@ -35,7 +35,7 @@
 
     <div class="table-responsive scroll-sm">
 
-        <table class="table bordered-table sm-table mb-0" id="sheet-table">
+        <table class="table bordered-table sm-table mb-0">
             <thead>
                 <tr>
                     <th scope="col" class="text-center">Row</th>
@@ -51,19 +51,13 @@
                     <th scope="col" class="text-center">Course</th>
                     <th scope="col" class="text-center">Amount</th>
                     <th scope="col" class="text-center">Qualification</th>
-                    <th scope="col" class="text-center">Time Zone</th>
-                    <th scope="col" class="text-center">1st Follow Up Remarks</th>
 
-                    <th scope="col" class="text-center">Forwarded By</th>
+                    <th scope="col" class="text-center">1st Follow Up Remarks</th>
+                    <th scope="col" class="text-center">Time Zone</th>
                     <th scope="col" class="text-center">Resume</th>
                     <th scope="col" class="text-center">Remark</th>
-                    <th scope="col" class="text-center">Follow Up Remark</th>
                     <th scope="col" class="text-center">Status</th>
-                    @auth
-                        @if (auth()->user()->role !== 'operation')
-                            <th scope="col" class="text-center">Actions</th>
-                        @endif
-                    @endauth
+                    <th scope="col" class="text-center">Actions</th>
                 </tr>
             </thead>
             <tbody id="sheet-table-body">
@@ -75,37 +69,42 @@
                         {{-- Date --}}
                         <td>
                             <input type="text" class="form-control date-picker" data-key="Date"
-                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
+                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}"
+                                readonly style="background-color: #f8f9fa; cursor: not-allowed;">
                         </td>
+
 
                         {{-- Name --}}
                         <td>
                             <input type="text" class="form-control name-input" data-key="Name"
-                                value="{{ $row->Name ?? '' }}" placeholder="Name">
+                                value="{{ $row->Name ?? '' }}" placeholder="Name" readonly>
                         </td>
 
                         {{-- Email Address --}}
                         <td>
                             <input type="email" class="form-control email-input" data-key="Email Address"
-                                value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail">
+                                value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail" readonly>
                         </td>
 
                         {{-- Phone Number --}}
                         <td>
                             <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
+                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number" readonly>
                         </td>
 
                         {{-- Location --}}
                         <td>
                             <input type="text" class="form-control location-autocomplete" data-key="Location"
-                                value="{{ $row->Location ?? '' }}" placeholder="Type location">
+                                value="{{ $row->Location ?? '' }}" placeholder="Type location" readonly>
                         </td>
+
+
+
 
                         {{-- Relocation --}}
                         <td>
-                            @php $relOptions = ['YES','NO']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Relocation">
+                            @php $relOptions = ['YES','NO','']; @endphp
+                            <select class="form-select dynamic-dropdown" data-key="Relocation" disabled>
                                 <option value="">-- Relocation --</option>
                                 @foreach ($relOptions as $option)
                                     <option value="{{ $option }}"
@@ -116,17 +115,19 @@
                             </select>
                         </td>
 
+
                         {{-- Graduation Date --}}
                         <td>
                             <input type="text" class="form-control date-picker" data-key="Graduation Date"
-                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
+                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}"
+                                readonly>
                         </td>
 
                         {{-- Immigration --}}
                         <td>
-                            @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','L2S']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Immigration">
-                                <option value="">--Immigration --</option>
+                            @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','L2S','']; @endphp
+                            <select class="form-select dynamic-dropdown" data-key="Immigration" disabled>
+                                <option value="">-- Immigration --</option>
                                 @foreach ($immOptions as $option)
                                     <option value="{{ $option }}"
                                         {{ $row->Immigration === $option ? 'selected' : '' }}>
@@ -138,8 +139,8 @@
 
                         {{-- Course --}}
                         <td>
-                            @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Course">
+                            @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET','']; @endphp
+                            <select class="form-select dynamic-dropdown" data-key="Course" disabled>
                                 <option value="">-- Course --</option>
                                 @foreach ($courseOptions as $option)
                                     <option value="{{ $option }}"
@@ -153,8 +154,8 @@
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount !== null ? '$' . number_format($row->Amount, 2) : '' }}"
-                                placeholder="Amount (469)">
+                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}"
+                                placeholder="Amount(469)" readonly>
                         </td>
 
                         {{-- Qualification --}}
@@ -172,10 +173,11 @@
                                     'MA',
                                     'Associate Degree',
                                     'Aerospace Proj. Manag.',
+                                    '',
                                 ];
                             @endphp
 
-                            <select class="form-select dynamic-dropdown" data-key="Qualification">
+                            <select class="form-select dynamic-dropdown" data-key="Qualification" disabled>
                                 <option value="">-- Qualification --</option>
                                 @foreach ($qualificationOptions as $option)
                                     <option value="{{ $option }}"
@@ -186,23 +188,13 @@
                             </select>
                         </td>
 
-                        {{-- Time Zone --}}
-                        <td>
-                            @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Time Zone">
-                                <option value="">-- Time Zone --</option>
-                                @foreach ($timezoneOptions as $option)
-                                    <option value="{{ $option }}"
-                                        {{ $row->Time_Zone === $option ? 'selected' : '' }}>
-                                        {{ $option }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
+
+
+
 
                         {{-- 1st Follow Up Remarks --}}
                         <td>
-                            @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call']; @endphp
+                            @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call','']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="1st Follow Up Remarks">
                                 <option value="">-- 1st Follow Up Remarks --</option>
                                 @foreach ($followOptions as $option)
@@ -214,10 +206,18 @@
                             </select>
                         </td>
 
-                        {{-- Forwarded By --}}
+                        {{-- Time Zone --}}
                         <td>
-                            <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
-                                value="{{ $row->forwarded_by ?? '' }}" placeholder="Forwarded By" readonly>
+                            @php $timezoneOptions = ['EST','CST','MST','PST','']; @endphp
+                            <select class="form-select dynamic-dropdown" data-key="Time Zone" disabled>
+                                <option value="">-- Time Zone --</option>
+                                @foreach ($timezoneOptions as $option)
+                                    <option value="{{ $option }}"
+                                        {{ $row->Time_Zone === $option ? 'selected' : '' }}>
+                                        {{ $option }}
+                                    </option>
+                                @endforeach
+                            </select>
                         </td>
 
                         {{-- View (Resume) --}}
@@ -266,8 +266,19 @@
 
                         {{-- Status --}}
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Ready To Pay']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
+                            @php
+                                $exeOptions = [
+                                    'Called & Mailed',
+                                    'Not Interested',
+                                    'Not Connected',
+                                    'Did Not Pickup',
+                                    'Others',
+                                    'Ready To Pay',
+                                    'VM',
+                                    'Busy',
+                                ];
+                            @endphp
+                            <select class="form-select dynamic-dropdown" data-key="Exe Remarks" disabled>
                                 <option value="">-- Status --</option>
                                 @foreach ($exeOptions as $option)
                                     <option value="{{ $option }}"
@@ -278,15 +289,14 @@
                             </select>
                         </td>
 
-                        @auth
-                            @if (auth()->user()->role !== 'operation')
-                                <td class="text-center">
-                                    <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
-                                        <i class="fas fa-save"></i> Save
-                                    </button>
-                                </td>
-                            @endif
-                        @endauth
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-sm btn-warning transfers-btn" data-id="{{ $row->id }}">
+                                <i class="fas fa-exchange-alt"></i> Transfer
+                            </button>
+                        </td>
                     </tr>
 
                     <script>
@@ -365,7 +375,7 @@
                                 }
 
                                 $.ajax({
-                                    url: '{{ route('seniorupdate') }}',
+                                    url: '{{ route('juniorcandmupdate') }}',
                                     type: 'POST',
                                     data: formData,
                                     contentType: false,

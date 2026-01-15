@@ -218,6 +218,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/accountant/google-sheet/search', [GoogleSheetController::class, 'accountantSuggestions'])->name('accountant.suggestions');
     Route::get('/dashboard/trainer/google-sheet/search', [GoogleSheetController::class, 'trainerSuggestions'])->name('trainer.suggestions');
     Route::get('/dashboard/junior/google-sheet/search', [GoogleSheetController::class, 'juniorSuggestions'])->name('junior.suggestions');
+    Route::get('/dashboard/junior/google-sheet/searchcandm', [GoogleSheetController::class, 'juniorcandmSuggestions'])->name('juniorcandm.suggestions');
 
     Route::get('/dashboard/junior/google-sheet', [GoogleSheetController::class, 'junior'])->name('google.sheet.junior');
     Route::get('/dashboard/junior/google-sheet-candm', [GoogleSheetController::class, 'juniorcandm'])->name('google.sheet.junior.candm');

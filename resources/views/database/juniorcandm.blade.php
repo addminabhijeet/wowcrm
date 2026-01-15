@@ -28,11 +28,6 @@
                     <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
-                <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px">
-                    <option>Status</option>
-                    <option>Active</option>
-                    <option>Inactive</option>
-                </select>
             </div>
         </div>
         <div class="card-body p-24" id="senior-table-wrapper">
@@ -955,7 +950,7 @@
                 }
 
                 $.ajax({
-                    url: "{{ route('junior.suggestions') }}",
+                    url: "{{ route('juniorcandm.suggestions') }}",
                     type: 'GET',
                     data: {
                         query
