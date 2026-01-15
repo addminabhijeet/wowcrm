@@ -988,6 +988,7 @@ class GoogleSheetController extends Controller
         $search = $request->input('search');
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // ✅ NEW
+        $page = $request->input('page', 1);
 
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
 
@@ -1034,13 +1035,10 @@ class GoogleSheetController extends Controller
             });
         }
 
-        $data = $query->orderBy('Date', 'desc')->paginate(10);
-
-        // ✅ Keep pagination params
-        $data->appends($request->query());
+        $results = $query->orderBy('Date', 'desc')->get();
 
         // 🔁 Transform forwarded_by
-        $data->getCollection()->transform(function ($item) use ($authUser) {
+        $transformed = $results->map(function ($item) use ($authUser) {
 
             $forwardedBy = '';
 
@@ -1054,13 +1052,22 @@ class GoogleSheetController extends Controller
                     $role   = $parts[1] ?? 'unknown';
 
                     if ($userId == $authUser->id) {
-                        $names[] = "SELF ({$userId}) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SELF ({$userId}) ({$roleLabel})";
                     } elseif ($userId == 0) {
-                        $names[] = "SYSTEM (0) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
                         $user = \App\Models\User::where('is_deleted', 0)->find($userId);
                         $name = $user ? $user->name : 'Unknown';
-                        $names[] = "{$name} ({$userId}) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
                 }
 
@@ -1073,11 +1080,28 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        // ✅ Apply pagination AFTER transformation (like junior)
+        $perPage = 10;
+        $currentPage = $page;
+        $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transformed->forPage($currentPage, $perPage),
+            $transformed->count(),
+            $perPage,
+            $currentPage,
+            ['path' => url()->current(), 'query' => $request->query()]
+        );
+
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior'])
+            ->where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
+
+
         if ($request->ajax()) {
-            return view('database.partials.seniormodcandm_table', compact('data'))->render();
+            return view('database.partials.seniormodcandm_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
-        return view('database.seniormodcandm', compact('data'));
+        return view('database.seniormodcandm',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
 
