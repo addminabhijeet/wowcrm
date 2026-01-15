@@ -990,32 +990,38 @@ class GoogleSheetController extends Controller
         $juniorUserId = $request->input('junior_user'); // ✅ NEW
         $page = $request->input('page', 1);
 
+        // SUBSTRING_INDEX-based filter with second part check
         $query = GoogleSheetData::where(function ($q) use ($authUser) {
 
             $seniorPart = $authUser->id . '|senior';
 
+            // CASE 2 ONLY: x|junior : <senior>|senior : <some>|senior
             $q->whereRaw("
-            SUBSTRING_INDEX(created_by, ':', 1) LIKE '%|junior'
-        ")
+                -- First part must be ANY junior
+                SUBSTRING_INDEX(created_by, ':', 1) LIKE '%|junior'
+            ")
+
                 ->whereRaw("
-            SUBSTRING_INDEX(
-                SUBSTRING_INDEX(created_by, ':', 2),
-                ':',
-                -1
-            ) = ?
-        ", [$seniorPart])
+                -- Second part must be the logged-in senior
+                SUBSTRING_INDEX(
+                    SUBSTRING_INDEX(created_by, ':', 2),
+                    ':',
+                    -1
+                ) = ?
+            ", [$seniorPart])
+
                 ->whereRaw("
-            SUBSTRING_INDEX(
-                SUBSTRING_INDEX(created_by, ':', 3),
-                ':',
-                -1
-            ) LIKE '%|senior'
-        ");
-        })
-            ->where(function ($q) {
-                $q->whereNull('TransferRemark')
-                    ->orWhere('TransferRemark', '');
-            });
+                -- Third part must end with |senior
+                SUBSTRING_INDEX(
+                    SUBSTRING_INDEX(created_by, ':', 3),
+                    ':',
+                    -1
+                ) LIKE '%|senior'
+            ");
+        })->where(function ($q) {
+            $q->whereNull('TransferRemark')
+                ->orWhere('TransferRemark', '');
+        });
 
         // ✅ APPLY JUNIOR FILTER (NO LOGIC CHANGE)
         if ($juniorUserId) {
