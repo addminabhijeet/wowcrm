@@ -711,37 +711,65 @@
          }
 
          function applyInitialState(context = document) {
-             context.querySelectorAll('select.dynamic-dropdown').forEach(s => updateSelectColor(s));
-             initDatePickers(context);
-             initLocationAutocomplete(context);
-             context.querySelectorAll('input.amount-input').forEach(i => {
-                 validateAmountInput(i);
-                 i.addEventListener('input', () => validateAmountInput(i));
-             });
-             context.querySelectorAll("input.phone-input").forEach(i => {
-                 i.value = formatPhoneNumber(i.value);
-                 validatePhoneInput(i);
-                 i.addEventListener("input", () => {
-                     i.value = formatPhoneNumber(i.value);
-                     validatePhoneInput(i);
-                 });
-             });
-             context.querySelectorAll('input.email-input').forEach(i => {
-                 validateEmailInput(i);
-                 i.addEventListener('input', () => {
-                     i.value = i.value.toLowerCase();
-                     validateEmailInput(i);
-                 });
-             });
-             context.querySelectorAll('input.name-input').forEach(i => {
-                 validateNameInput(i);
-                 i.addEventListener('input', () => {
-                     i.value = i.value.toLowerCase().replace(/[^a-zA-Z\s]/g, '');
-                     validateNameInput(i);
-                 });
-             });
+                context.querySelectorAll('select.dynamic-dropdown').forEach(s => updateSelectColor(s));
+                initDatePickers(context);
+                initLocationAutocomplete(context);
 
-         }
+                context.querySelectorAll('input.amount-input').forEach(i => {
+                    validateAmountInput(i);
+                    i.addEventListener('input', () => validateAmountInput(i));
+                });
+
+                context.querySelectorAll("input.phone-input").forEach(i => {
+                    i.value = formatPhoneNumber(i.value);
+                    validatePhoneInput(i);
+                    i.addEventListener("input", () => {
+                        i.value = formatPhoneNumber(i.value);
+                        validatePhoneInput(i);
+                    });
+                });
+
+                context.querySelectorAll('input.email-input').forEach(i => {
+                    validateEmailInput(i);
+                    i.addEventListener('input', () => {
+                        let value = i.value.toLowerCase();
+
+                        // allow only a-z 0-9 _ . - before @
+                        // allow only a-z 0-9 . after @
+                        value = value.replace(/[^a-z0-9@._-]/g, '');
+
+                        // allow only one @
+                        const parts = value.split('@');
+                        if (parts.length > 2) {
+                            value = parts[0] + '@' + parts.slice(1).join('');
+                        }
+
+                        if (parts.length === 2) {
+                            // remove hyphen after @
+                            parts[1] = parts[1].replace(/-/g, '');
+
+                            // allow only one dot after @
+                            const domainParts = parts[1].split('.');
+                            if (domainParts.length > 2) {
+                                parts[1] = domainParts[0] + '.' + domainParts[1];
+                            }
+
+                            value = parts[0] + '@' + parts[1];
+                        }
+
+                        i.value = value;
+                        validateEmailInput(i);
+                    });
+                });
+
+                context.querySelectorAll('input.name-input').forEach(i => {
+                    validateNameInput(i);
+                    i.addEventListener('input', () => {
+                        i.value = i.value.toLowerCase().replace(/[^a-zA-Z\s]/g, '');
+                        validateNameInput(i);
+                    });
+                });
+            }
 
          function addBlankRow() {
              let colKeys = [];
