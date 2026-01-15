@@ -38,28 +38,30 @@
         <table class="table bordered-table sm-table mb-0">
             <thead>
                 <tr>
-                    <th scope="col" class="text-center">Row</th>
-                    <th scope="col" class="text-center">Date</th>
-                    <th scope="col" class="text-center">Name</th>
-                    <th scope="col" class="text-center">Email Address</th>
-                    <th scope="col" class="text-center">Phone Number</th>
-                    <th scope="col" class="text-center">Location</th>
+                    <th scope="col">Row</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Email Address</th>
+                    <th scope="col">Phone Number</th>
+                    <th scope="col">Location</th>
 
-                    <th scope="col" class="text-center">Relocation</th>
-                    <th scope="col" class="text-center">Graduation Date</th>
-                    <th scope="col" class="text-center">Immigration</th>
-                    <th scope="col" class="text-center">Course</th>
-                    <th scope="col" class="text-center">Amount</th>
-                    <th scope="col" class="text-center">Qualification</th>
-                    <th scope="col" class="text-center">Time Zone</th>
-                    <th scope="col" class="text-center">1st Follow Up Remarks</th>
+                    <th scope="col">Relocation</th>
+                    <th scope="col">Graduation Date</th>
+                    <th scope="col">Immigration</th>
+                    <th scope="col">Course</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Qualification</th>
+                    <th scope="col">Time Zone</th>
+                    <th scope="col">1st Follow Up Remarks</th>
 
-                    <th scope="col" class="text-center">Forwarded By</th>
-                    <th scope="col" class="text-center">Resume</th>
-                    <th scope="col" class="text-center">Remark</th>
-                    <th scope="col" class="text-center">Status</th>
+                    <th scope="col">Forwarded By</th>
+
+                    <th scope="col">Resume</th>
+                    <th scope="col">Remark</th>
+
+                    <th scope="col">Status</th>
                     @auth
-                        @if (auth()->user()->role !== 'operation')
+                        @if (!in_array(auth()->user()->role, ['operation', 'admin']))
                             <th scope="col" class="text-center">Actions</th>
                         @endif
                     @endauth
@@ -100,6 +102,7 @@
                             <input type="text" class="form-control location-autocomplete" data-key="Location"
                                 value="{{ $row->Location ?? '' }}" placeholder="Type location">
                         </td>
+
 
 
 
@@ -215,6 +218,10 @@
                             </select>
                         </td>
 
+
+
+
+
                         {{-- Forwarded By --}}
                         <td>
                             <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
@@ -256,7 +263,7 @@
 
                         {{-- Status --}}
                         <td>
-                            @php $exeOptions = ['Called & Mailed','Ready To Pay']; @endphp
+                            @php $exeOptions = ['Called & Mailed','Not Interested','Interested','Others','Ready To Pay','VM','Busy']; @endphp
                             <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                                 <option value="">-- Status --</option>
                                 @foreach ($exeOptions as $option)
@@ -267,9 +274,8 @@
                                 @endforeach
                             </select>
                         </td>
-
                         @auth
-                            @if (auth()->user()->role !== 'operation')
+                            @if (!in_array(auth()->user()->role, ['operation', 'admin']))
                                 <td class="text-center">
                                     <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
                                         <i class="fas fa-save"></i> Save
@@ -357,7 +363,7 @@
                                 }
 
                                 $.ajax({
-                                    url: '{{ route('seniorupdate') }}',
+                                    url: '{{ route('seniorupdatemod') }}',
                                     type: 'POST',
                                     data: formData,
                                     contentType: false,
