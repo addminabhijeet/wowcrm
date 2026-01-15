@@ -2065,60 +2065,74 @@ class GoogleSheetController extends Controller
 
     public function juniorSuggestions(Request $request)
     {
-        $authUser = (object) ['id' => null];
-        $query = $request->input('query');
+        $authUser = Auth::user();
+        $queryText = $request->input('query');
+        $juniorUserId = $request->input('junior_user');
 
-        $results = [];
-
-        if ($query && strlen($query) >= 3) {
-            $results = GoogleSheetData::where(function ($q) use ($query) {
-                $q->where('Name', 'LIKE', "%{$query}%")
-                    ->orWhere('Email_Address', 'LIKE', "%{$query}%")
-                    ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
-            })
-                ->limit(10)
-                ->get([
-                    'id',
-                    'sheet_row_number',
-                    'Name',
-                    'Email_Address',
-                    'Phone_Number',
-                    'Exe_Remarks',
-                    'created_by'
-                ]);
+        if (!$queryText || strlen($queryText) < 3) {
+            return response()->json([]);
         }
 
-        // ✅ Transform the forwarded_by column like in senior()
-        $transformed = collect($results)->map(function ($item) use ($authUser) {
-            $forwardedBy = '';
+        $userPattern = "%:" . $authUser->id . "|junior";
 
-            if (!empty($item->created_by)) {
-                $entries = explode(':', $item->created_by);
-                $names = [];
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
+            $q->where(function ($q2) use ($authUser, $userPattern) {
+                $q2->where('created_by', $authUser->id . '|junior')
+                    ->orWhere('created_by', 'LIKE', $userPattern);
+            })
+                // ✅ SAME exclusion logic as junior()
+                ->whereRaw(
+                    "RIGHT(created_by, LENGTH(?)) = ?",
+                    [$authUser->id . '|junior', $authUser->id . '|junior']
+                );
+        })
+            ->where('transfers', '!=', 1);
 
-                foreach ($entries as $entry) {
-                    $parts = explode('|', $entry);
-                    $userId = $parts[0] ?? null;
-                    $role   = $parts[1] ?? 'unknown';
+        // ✅ SAME junior filter as junior()
+        if ($juniorUserId) {
+            $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
+        }
 
-                    if ($userId == $authUser->id) {
-                        $names[] = "SELF ({$userId}) ({$role})";
-                    } elseif ($userId == 0) {
-                        $names[] = "SYSTEM (0) ({$role})";
-                    } else {
-                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
-                        $name = $user ? $user->name : 'Unknown';
-                        $names[] = "{$name} ({$userId}) ({$role})";
-                    }
+        // ✅ SAME search logic
+        $query->where(function ($q) use ($queryText) {
+            $q->where('Name', 'LIKE', "%{$queryText}%")
+                ->orWhere('Email_Address', 'LIKE', "%{$queryText}%")
+                ->orWhere('Phone_Number', 'LIKE', "%{$queryText}%");
+        });
+
+        $results = $query
+            ->orderBy('id', 'desc')
+            ->limit(10)
+            ->get([
+                'id',
+                'sheet_row_number',
+                'Name',
+                'Email_Address',
+                'Phone_Number',
+                'created_by'
+            ]);
+
+        // ✅ SAME forwarded_by transform pattern
+        $transformed = $results->map(function ($item) use ($authUser) {
+            $entries = explode(':', $item->created_by);
+            $names = [];
+
+            foreach ($entries as $entry) {
+                $parts = explode('|', $entry);
+                $userId = $parts[0] ?? null;
+                $role   = $parts[1] ?? 'unknown';
+
+                if ($userId == $authUser->id) {
+                    $names[] = "SELF ({$userId}) (IT Recruiter)";
+                } elseif ($userId == 0) {
+                    $names[] = "SYSTEM (0)";
+                } else {
+                    $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                    $names[] = ($user ? $user->name : 'Unknown') . " ({$userId})";
                 }
-
-                $forwardedBy = implode(' → ', $names);
-            } else {
-                $forwardedBy = 'N/A';
             }
 
-            // Add transformed field
-            $item->forwarded_by = $forwardedBy;
+            $item->forwarded_by = implode(' → ', $names);
             return $item;
         });
 
@@ -4569,7 +4583,7 @@ class GoogleSheetController extends Controller
 
         // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
-            return view('database.partials.career_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.junior_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
         return view('database.junior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
