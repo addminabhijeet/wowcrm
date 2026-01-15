@@ -2932,33 +2932,7 @@ class GoogleSheetController extends Controller
                 'message' => 'Date is required.'
             ]);
         }
-        // Check for duplicate Email (ignore current record)
-        if (!empty($email)) {
-            $emailExists = GoogleSheetData::where('Email_Address', $email)
-                ->where('id', '!=', $id)
-                ->exists();
 
-            if ($emailExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Email address already exists in records.'
-                ]);
-            }
-        }
-
-        // Check for duplicate Phone (ignore current record)
-        if (!empty($phone)) {
-            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)
-                ->where('id', '!=', $id)
-                ->exists();
-
-            if ($phoneExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Phone number already exists in records.'
-                ]);
-            }
-        }
 
 
         // Handle resume file upload - Save actual file content
