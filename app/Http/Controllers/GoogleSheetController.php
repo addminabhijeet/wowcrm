@@ -4772,7 +4772,6 @@ class GoogleSheetController extends Controller
         }
 
         // Handle resume file upload - Save actual file content
-        // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
 
@@ -4855,8 +4854,27 @@ class GoogleSheetController extends Controller
         }
 
         try {
-            $row->update($updateData);
             $user = Auth::user();
+
+            // Prevent same user duplicate email BEFORE update
+            if (!empty($email)) {
+                $emailExistsForUser = GoogleSheetData::where('Email_Address', $email)
+                    ->where('id', '!=', $id)
+                    ->where('created_by', 'like', $user->id . '|%')
+                    ->exists();
+
+                if ($emailExistsForUser) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'This email ID already exists for you.'
+                    ]);
+                }
+            }
+
+            // ONLY NOW update
+            $row->update($updateData);
+
+
             $mailMessage = 'No email sent.';
             $name = $rowData['Name'] ?? null;
             $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
@@ -5072,6 +5090,19 @@ class GoogleSheetController extends Controller
         }
 
         $user = Auth::user();
+        // ❌ Block duplicate email for SAME user only
+        if (!empty($email)) {
+            $emailExistsForUser = GoogleSheetData::where('Email_Address', $email)
+                ->where('created_by', 'like', $user->id . '|%')
+                ->exists();
+
+            if ($emailExistsForUser) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'This email ID already exists for you.'
+                ]);
+            }
+        }
 
         // --- Sheet row logic ---
         $maxRow  = GoogleSheetData::max('sheet_row_number') ?? 0;
