@@ -378,9 +378,10 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|accountant'")
+
+        $targetAchieved = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$juniorUser->id}\\\\|senior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
@@ -1105,12 +1106,13 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|accountant'")
+        $targetAchieved = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$juniorUser->id}\\\\|senior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
+
 
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
@@ -1691,12 +1693,13 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|junior'")
-            ->whereRaw("created_by REGEXP '\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|accountant'")
+        $targetAchieved = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$juniorUser->id}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
+
 
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
@@ -2526,12 +2529,13 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|accountant'")
+        $targetAchieved = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$juniorUser->id}\\\\|senior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
+
 
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
@@ -2990,9 +2994,9 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|junior'")
-            ->whereRaw("created_by REGEXP '\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|accountant'")
+        $targetAchieved = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$juniorUser->id}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
@@ -3962,12 +3966,13 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|accountant'")
+        $targetAchieved = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$juniorUser->id}\\\\|senior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
+
 
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
@@ -4516,12 +4521,13 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|junior'")
-            ->whereRaw("created_by REGEXP '\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|accountant'")
+        $targetAchieved = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$juniorUser->id}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
+
 
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
@@ -4929,12 +4935,13 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|junior'")
-            ->whereRaw("created_by REGEXP '\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|accountant'")
+        $targetAchieved = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$juniorUser->id}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
+
 
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
