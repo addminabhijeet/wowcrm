@@ -1031,7 +1031,7 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user');
         $page = $request->input('page', 1);
-        $userPattern = "%:" . $authUser->id . "|junior";
+        $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
         $query = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
@@ -1039,14 +1039,14 @@ class GoogleSheetController extends Controller
             $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
 
                 $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
-                    $q2->where('created_by', $authUser->id . '|junior')
+                    $q2->where('created_by', $authUser->id . '|senior')
                         ->orWhere('created_by', 'LIKE', $zeroPattern);
                 })
                     ->whereRaw(
                         "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
                     );
             })
-                ->orWhere('created_by', $authUser->id . '|junior:0|senior');
+                ->orWhere('created_by', $authUser->id . '|senior:0|senior');
         })
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
@@ -1056,7 +1056,7 @@ class GoogleSheetController extends Controller
 
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
-                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|senior%')
                     ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
             });
         }
