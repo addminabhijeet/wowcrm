@@ -1093,6 +1093,7 @@
             // Live suggestions
             // -----------------------------
             const showSuggestions = debounce(function() {
+
                 const query = $('#senior-search').val().trim();
                 const junior_user = $('#junior-filter').val();
 
@@ -1107,19 +1108,25 @@
                     type: 'GET',
                     data: {
                         query,
-                        junior_user // ✅ PASS JUNIOR
+                        junior_user // ✅ critical
                     },
                     success: function(res) {
+
                         let html = '';
 
                         if (res.length) {
                             res.forEach(item => {
                                 html += `
-                        <a href="#" class="list-group-item list-group-item-action"
-                           data-id="${item.id}">
-                           ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} |
-                           ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
-                        </a>`;
+                            <a href="#"
+                               class="list-group-item list-group-item-action"
+                               data-id="${item.id}">
+                                ${item.sheet_row_number} |
+                                ${item.Name} |
+                                ${item.Email_Address} |
+                                ${item.Phone_Number} |
+                                ${item.Exe_Remarks} |
+                                ${item.forwarded_by}
+                            </a>`;
                             });
                         } else {
                             html = '<span class="list-group-item">No results found</span>';
@@ -1128,6 +1135,7 @@
                         $('#search-suggestions').html(html).show();
                     }
                 });
+
             }, 300);
 
             $('#senior-search').on('input', showSuggestions);
@@ -1155,7 +1163,7 @@
             });
 
             // -----------------------------
-            // Pagination click (CRITICAL FIX)
+            // Pagination (CRITICAL)
             // -----------------------------
             $(document).on('click', '.pagination a', function(e) {
                 e.preventDefault();
@@ -1178,6 +1186,7 @@
 
         });
     </script>
+
 
     <style>
         .scroll-sm {
