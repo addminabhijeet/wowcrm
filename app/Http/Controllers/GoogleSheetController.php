@@ -1888,19 +1888,35 @@ class GoogleSheetController extends Controller
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
-        $results = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-            $q->where('created_by', $authUser->id . '|senior')
-                ->orWhere('created_by', '0|senior')
-                ->orWhere('created_by', 'LIKE', $userPattern)
-                ->orWhere('created_by', 'LIKE', $zeroPattern);
+        $results = GoogleSheetData::where(function ($outer) use ($authUser, $userPattern, $zeroPattern) {
+
+            $outer->where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
+
+                $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+
+                    $q->where('created_by', $authUser->id . '|senior')
+                        ->orWhere('created_by', '0|senior')
+                        ->orWhere('created_by', 'LIKE', $userPattern)
+                        ->orWhere('created_by', 'LIKE', $zeroPattern);
+                })
+                    ->whereRaw(
+                        "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
+                    );
+            })
+                ->orWhere('created_by', $authUser->id . '|senior:0|senior');
         })
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', 1)
+
+            /* 🔍 Search */
             ->where(function ($q) use ($query) {
                 $q->where('Name', 'LIKE', "%{$query}%")
                     ->orWhere('Email_Address', 'LIKE', "%{$query}%")
                     ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
             });
 
-        /* ✅ junior filter SAME as senior() */
+        /* ✅ Junior filter (EXACT same as seniortrafollow) */
         if ($juniorUserId) {
             $results->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', "%{$juniorUserId}|junior%")
@@ -1909,6 +1925,7 @@ class GoogleSheetController extends Controller
         }
 
         $results = $results
+            ->orderBy('id', 'desc')
             ->limit(10)
             ->get([
                 'id',
@@ -1920,7 +1937,9 @@ class GoogleSheetController extends Controller
                 'created_by'
             ]);
 
-        /* Transform forwarded_by */
+        /* -----------------------------
+       Transform forwarded_by
+    ----------------------------- */
         $results = $results->map(function ($item) use ($authUser) {
 
             $names = [];
@@ -1951,6 +1970,7 @@ class GoogleSheetController extends Controller
 
         return response()->json($results);
     }
+
 
 
 
