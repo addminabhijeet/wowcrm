@@ -60,7 +60,7 @@ class GoogleSheetController extends Controller
 
         // ✅ Pagination at query level (not collection level)
         $perPage = 10;
-        $results = $query->orderBy('id', 'desc')->paginate($perPage, ['*'], 'page', $page);
+        $results = $query->orderBy('updated_at', 'desc')->paginate($perPage, ['*'], 'page', $page);
 
         // ✅ Transform only current page results
         $results->getCollection()->transform(function ($item) use ($authUser) {
@@ -552,7 +552,7 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('id', 'desc')->get();
+        $results = $query->orderBy('updated_at', 'desc')->get();
 
         // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
@@ -668,7 +668,7 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('id', 'desc')->get();
+        $results = $query->orderBy('updated_at', 'desc')->get();
 
         // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
@@ -882,7 +882,7 @@ class GoogleSheetController extends Controller
             });
         }
 
-        $results = $query->orderBy('Date', 'desc')->get();
+        $results = $query->orderBy('updated_at', 'desc')->get();
 
         // 🔁 Transform forwarded_by
         $transformed = $results->map(function ($item) use ($authUser) {
@@ -1069,7 +1069,9 @@ class GoogleSheetController extends Controller
                     ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
             });
         }
-        $results = $query->orderBy('id', 'desc')->get();
+
+        $results = $query->orderBy('updated_at', 'desc')->get();
+
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
@@ -1173,7 +1175,9 @@ class GoogleSheetController extends Controller
                     ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
             });
         }
-        $results = $query->orderBy('id', 'desc')->get();
+
+        $results = $query->orderBy('updated_at', 'desc')->get();
+
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
@@ -1267,7 +1271,7 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('Date', 'desc')->get();
+        $results = $query->orderBy('updated_at', 'desc')->get();
 
         // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
@@ -1380,7 +1384,9 @@ class GoogleSheetController extends Controller
                     ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
             });
         }
-        $results = $query->orderBy('id', 'desc')->get();
+
+        $results = $query->orderBy('updated_at', 'desc')->get();
+
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
@@ -1492,7 +1498,7 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('id', 'desc')->get();
+        $results = $query->orderBy('updated_at', 'desc')->get();
 
         // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
@@ -5183,7 +5189,7 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('id', 'desc')->get();
+        $results = $query->orderBy('updated_at', 'desc')->get();
 
         // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
@@ -5293,7 +5299,7 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('id', 'desc')->get();
+       $results = $query->orderBy('updated_at', 'desc')->get();
 
         // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
@@ -5403,7 +5409,7 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('id', 'desc')->get();
+        $results = $query->orderBy('updated_at', 'desc')->get();
 
         // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
