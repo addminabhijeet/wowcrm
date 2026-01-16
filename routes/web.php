@@ -211,10 +211,11 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/google-sheet/view-audio/{id}', [GoogleSheetController::class, 'viewseniorAudio'])->name('view.audio');
     Route::get('/dashboard/senior/google-sheet/download-audio/{id}', [GoogleSheetController::class, 'downloadseniorAudio'])->name('download.audio');
     Route::get('/dashboard/senior/google-sheet/search-tra', [GoogleSheetController::class, 'seniortraSuggestions'])->name('seniortra.suggestions');
+    Route::get('/dashboard/senior/google-sheet/search-seniortrafollow', [GoogleSheetController::class, 'seniortrafollowSuggestions'])->name('seniortrafollow.suggestions');
     Route::get('/dashboard/senior/google-sheet/search-seniorupdatemod', [GoogleSheetController::class, 'seniorupdatemodSuggestions'])->name('seniorupdatemod.suggestions');
     Route::get('/dashboard/senior/google-sheet/search-follow', [GoogleSheetController::class, 'seniorfollowSuggestions'])->name('seniorfollow.suggestions');
     Route::get('/dashboard/senior/google-sheet/search-modcandm', [GoogleSheetController::class, 'seniormodcandmSuggestions'])->name('seniormodcandm.suggestions');
-        Route::get('/dashboard/senior/google-sheet/search-modcandmfollow', [GoogleSheetController::class, 'seniormodcandmfollowSuggestions'])->name('seniormodcandmfollow.suggestions');
+    Route::get('/dashboard/senior/google-sheet/search-modcandmfollow', [GoogleSheetController::class, 'seniormodcandmfollowSuggestions'])->name('seniormodcandmfollow.suggestions');
     Route::get('/dashboard/senior/google-sheet/search', [GoogleSheetController::class, 'seniorSuggestions'])->name('senior.suggestions');
     Route::get('/dashboard/senior/google-sheet/search-paid', [GoogleSheetController::class, 'seniorpaidSuggestions'])->name('senior.suggestionspaid');
     Route::get('/dashboard/career/google-sheet/search', [GoogleSheetController::class, 'careerSuggestions'])->name('career.suggestions');
