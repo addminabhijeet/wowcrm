@@ -1876,6 +1876,7 @@ class GoogleSheetController extends Controller
     }
 
 
+
     public function seniortraSuggestions(Request $request)
     {
         $authUser = Auth::user();
