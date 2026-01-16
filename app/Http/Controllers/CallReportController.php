@@ -378,7 +378,7 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|junior'")
+        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|senior'")
             ->whereRaw("created_by REGEXP '\\\\|senior'")
             ->whereRaw("created_by REGEXP '\\\\|accountant'")
             ->whereYear('updated_at', $year)
@@ -1105,7 +1105,7 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|junior'")
+        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|senior'")
             ->whereRaw("created_by REGEXP '\\\\|senior'")
             ->whereRaw("created_by REGEXP '\\\\|accountant'")
             ->whereYear('updated_at', $year)
@@ -2526,7 +2526,7 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|junior'")
+        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|senior'")
             ->whereRaw("created_by REGEXP '\\\\|senior'")
             ->whereRaw("created_by REGEXP '\\\\|accountant'")
             ->whereYear('updated_at', $year)
@@ -3962,7 +3962,7 @@ class CallReportController extends Controller
             $daysLeft = 0;
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|junior'")
+        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|senior'")
             ->whereRaw("created_by REGEXP '\\\\|senior'")
             ->whereRaw("created_by REGEXP '\\\\|accountant'")
             ->whereYear('updated_at', $year)
