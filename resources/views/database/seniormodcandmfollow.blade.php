@@ -1057,24 +1057,22 @@
         $(document).ready(function() {
 
             // -----------------------------
-            // Helper: Debounce
+            // Debounce helper
             // -----------------------------
             function debounce(func, wait) {
                 let timeout;
                 return function() {
-                    const context = this,
-                        args = arguments;
                     clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(context, args), wait);
+                    timeout = setTimeout(() => func.apply(this, arguments), wait);
                 };
             }
 
             // -----------------------------
-            // Fetch Table Data via AJAX
+            // Fetch table (USED EVERYWHERE)
             // -----------------------------
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
                 $.ajax({
-                    url: "{{ route('google.sheet.seniormodcandm') }}",
+                    url: "{{ route('google.sheet.seniormodcandmfollow') }}",
                     type: 'GET',
                     data: {
                         search,
@@ -1092,63 +1090,86 @@
             }
 
             // -----------------------------
-            // Live Search Suggestions
+            // Live suggestions
             // -----------------------------
             const showSuggestions = debounce(function() {
                 const query = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+                const junior_user = $('#junior-filter').val();
 
                 if (query.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user); // reset table
+                    fetchTable('', 1, junior_user);
                     return;
                 }
 
                 $.ajax({
-                    url: "{{ route('senior.suggestions') }}",
+                    url: "{{ route('seniormodcandmfollow.suggestions') }}",
                     type: 'GET',
                     data: {
-                        query
+                        query,
+                        junior_user // ✅ PASS JUNIOR
                     },
                     success: function(res) {
-                        let suggestions = '';
+                        let html = '';
+
                         if (res.length) {
                             res.forEach(item => {
-                                suggestions +=
-                                    `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}| ${item.Exe_Remarks}| ${item.forwarded_by}</a>`;
+                                html += `
+                        <a href="#" class="list-group-item list-group-item-action"
+                           data-id="${item.id}">
+                           ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} |
+                           ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
+                        </a>`;
                             });
                         } else {
-                            suggestions =
-                                '<span class="list-group-item">No results found</span>';
+                            html = '<span class="list-group-item">No results found</span>';
                         }
-                        $('#search-suggestions').html(suggestions).show();
+
+                        $('#search-suggestions').html(html).show();
                     }
                 });
             }, 300);
 
             $('#senior-search').on('input', showSuggestions);
 
+            // -----------------------------
             // Click suggestion
+            // -----------------------------
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
+
                 const rowId = $(this).data('id');
                 const junior_user = $('#junior-filter').val();
-                $('#senior-search').val($(this).text());
-                $('#search-suggestions').empty().hide();
 
+                $('#search-suggestions').empty().hide();
                 fetchTable('', 1, junior_user, rowId);
             });
 
-
-
-            // Junior dropdown filter
-            $(document).on('change', '#junior-filter', function() {
+            // -----------------------------
+            // Junior dropdown
+            // -----------------------------
+            $('#junior-filter').on('change', function() {
                 const junior_user = $(this).val();
                 const search = $('#senior-search').val().trim();
                 fetchTable(search, 1, junior_user);
             });
 
-            // Click outside suggestions to hide
+            // -----------------------------
+            // Pagination click (CRITICAL FIX)
+            // -----------------------------
+            $(document).on('click', '.pagination a', function(e) {
+                e.preventDefault();
+
+                const page = new URL($(this).attr('href')).searchParams.get('page');
+                const search = $('#senior-search').val().trim();
+                const junior_user = $('#junior-filter').val();
+
+                fetchTable(search, page, junior_user);
+            });
+
+            // -----------------------------
+            // Hide suggestions on outside click
+            // -----------------------------
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
                     $('#search-suggestions').empty().hide();
@@ -1157,8 +1178,6 @@
 
         });
     </script>
-
-
 
     <style>
         .scroll-sm {
@@ -1407,23 +1426,6 @@
             cursor: -webkit-grabbing;
         }
     </style>
-
-    <script>
-        document.getElementById('junior-filter').addEventListener('change', function() {
-            let juniorId = this.value;
-            let search = document.getElementById('senior-search').value;
-
-            fetch("{{ route('google.sheet.seniormodcandm') }}?junior_user=" + juniorId + "&search=" + search, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('senior-table-wrapper').innerHTML = html;
-                });
-        });
-    </script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
