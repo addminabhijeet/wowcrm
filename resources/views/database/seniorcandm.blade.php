@@ -27,6 +27,8 @@
         <div
             class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
             <div class="d-flex align-items-center flex-wrap gap-3">
+
+                <!-- SEARCH -->
                 <form class="navbar-search position-relative" autocomplete="off">
                     <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
                         placeholder="Search Name, Email, Phone">
@@ -36,6 +38,7 @@
 
             </div>
         </div>
+
         <div class="card-body p-24" id="senior-table-wrapper">
             <!-- Extra Scroll Bar Above -->
             <!-- Extra Scroll Bar Above -->
@@ -702,7 +705,7 @@
                     });
                 });
             }
-            
+
             function addBlankRow() {
                 let colKeys = [];
                 let firstRow = tableBody.querySelector("tr");
@@ -728,7 +731,7 @@
                             'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'
                         ];
                         if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
-                            'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC','L2S'
+                            'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC', 'L2S'
                         ];
                         if (k === 'Relocation') opts = ['YES', 'NO'];
                         if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
@@ -1010,26 +1013,17 @@
     <script>
         $(document).ready(function() {
 
-            // -----------------------------
-            // Helper: Debounce
-            // -----------------------------
-            function debounce(func, wait) {
-                let timeout;
+            function debounce(fn, delay) {
+                let timer;
                 return function() {
-                    const context = this,
-                        args = arguments;
-                    clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(context, args), wait);
+                    clearTimeout(timer);
+                    timer = setTimeout(() => fn.apply(this, arguments), delay);
                 };
             }
 
-            // -----------------------------
-            // Fetch Table Data via AJAX
-            // -----------------------------
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
                 $.ajax({
-                    url: "{{ route('google.sheet.senior') }}",
-                    type: 'GET',
+                    url: "{{ route('google.sheet.seniorcandm') }}",
                     data: {
                         search,
                         page,
@@ -1038,74 +1032,73 @@
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
-                    },
-                    error: function(err) {
-                        console.error(err);
                     }
                 });
             }
 
-            // -----------------------------
-            // Live Search Suggestions
-            // -----------------------------
+            // 🔍 LIVE SEARCH SUGGESTIONS
             const showSuggestions = debounce(function() {
+
                 const query = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+                const junior_user = $('#junior-filter').val();
 
                 if (query.length < 3) {
-                    $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user); // reset table
+                    $('#search-suggestions').hide().empty();
+                    fetchTable('', 1, junior_user);
                     return;
                 }
 
                 $.ajax({
-                    url: "{{ route('senior.suggestions') }}",
-                    type: 'GET',
+                    url: "{{ route('seniorcandm.suggestions') }}",
                     data: {
-                        query
+                        query,
+                        junior_user
                     },
                     success: function(res) {
-                        let suggestions = '';
+
+                        let html = '';
+
                         if (res.length) {
                             res.forEach(item => {
-                                suggestions +=
-                                    `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}| ${item.Exe_Remarks}| ${item.forwarded_by}</a>`;
+                                html += `
+                        <a href="#" class="list-group-item list-group-item-action"
+                           data-id="${item.id}">
+                            ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} |
+                            ${item.Phone_Number} | ${item.forwarded_by}
+                        </a>`;
                             });
                         } else {
-                            suggestions =
-                                '<span class="list-group-item">No results found</span>';
+                            html = '<span class="list-group-item">No results found</span>';
                         }
-                        $('#search-suggestions').html(suggestions).show();
+
+                        $('#search-suggestions').html(html).show();
                     }
                 });
+
             }, 300);
 
             $('#senior-search').on('input', showSuggestions);
 
-            // Click suggestion
+            // 📌 CLICK SUGGESTION
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
+
                 const rowId = $(this).data('id');
                 const junior_user = $('#junior-filter').val();
-                $('#senior-search').val($(this).text());
-                $('#search-suggestions').empty().hide();
 
+                $('#search-suggestions').hide().empty();
                 fetchTable('', 1, junior_user, rowId);
             });
 
-
-
-            // Junior dropdown filter
-            $(document).on('change', '#junior-filter', function() {
-                const junior_user = $(this).val();
-                const search = $('#senior-search').val().trim();
-                fetchTable(search, 1, junior_user);
+            // 👤 JUNIOR FILTER
+            $('#junior-filter').on('change', function() {
+                fetchTable($('#senior-search').val(), 1, this.value);
             });
 
-            // Click outside suggestions to hide
-            $(document).click(function(e) {
+            // ❌ HIDE SUGGESTIONS
+            $(document).on('click', function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
-                    $('#search-suggestions').empty().hide();
+                    $('#search-suggestions').hide().empty();
                 }
             });
 
@@ -1413,7 +1406,7 @@
             let juniorId = this.value;
             let search = document.getElementById('senior-search').value;
 
-            fetch("{{ route('google.sheet.junior') }}?junior_user=" + juniorId + "&search=" + search, {
+            fetch("{{ route('google.sheet.seniorcandm') }}?junior_user=" + juniorId + "&search=" + search, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
