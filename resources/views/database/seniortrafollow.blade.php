@@ -747,7 +747,7 @@
                     });
                 });
             }
-            
+
             function addBlankRow() {
                 let colKeys = [];
                 let firstRow = tableBody.querySelector("tr");
@@ -1074,7 +1074,7 @@
             // -----------------------------
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
                 $.ajax({
-                    url: "{{ route('google.sheet.senior') }}",
+                    url: "{{ route('google.sheet.seniortrafollow') }}",
                     type: 'GET',
                     data: {
                         search,
@@ -1105,7 +1105,7 @@
                 }
 
                 $.ajax({
-                    url: "{{ route('senior.suggestions') }}",
+                    url: "{{ route('seniortrafollow.suggestions') }}",
                     type: 'GET',
                     data: {
                         query
@@ -1436,7 +1436,7 @@
             let juniorId = this.value;
             let search = document.getElementById('senior-search').value;
 
-            fetch("{{ route('google.sheet.senior') }}?junior_user=" + juniorId + "&search=" + search, {
+            fetch("{{ route('google.sheet.seniortrafollow') }}?junior_user=" + juniorId + "&search=" + search, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }

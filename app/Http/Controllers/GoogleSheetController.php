@@ -1875,6 +1875,84 @@ class GoogleSheetController extends Controller
         return response()->json($results);
     }
 
+    public function seniortrafollowSuggestions(Request $request)
+    {
+        $authUser = Auth::user();
+        $query = $request->query('query');
+        $juniorUserId = $request->query('junior_user');
+
+        if (!$query || strlen($query) < 3) {
+            return response()->json([]);
+        }
+
+        $userPattern = "%:" . $authUser->id . "|senior";
+        $zeroPattern = "%:0|senior";
+
+        $results = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+            $q->where('created_by', $authUser->id . '|senior')
+                ->orWhere('created_by', '0|senior')
+                ->orWhere('created_by', 'LIKE', $userPattern)
+                ->orWhere('created_by', 'LIKE', $zeroPattern);
+        })
+            ->where(function ($q) use ($query) {
+                $q->where('Name', 'LIKE', "%{$query}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$query}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
+            });
+
+        /* ✅ junior filter SAME as senior() */
+        if ($juniorUserId) {
+            $results->where(function ($q) use ($juniorUserId) {
+                $q->where('created_by', 'LIKE', "%{$juniorUserId}|junior%")
+                    ->orWhere('created_by', 'LIKE', "%{$juniorUserId}|senior%");
+            });
+        }
+
+        $results = $results
+            ->limit(10)
+            ->get([
+                'id',
+                'sheet_row_number',
+                'Name',
+                'Email_Address',
+                'Phone_Number',
+                'Exe_Remarks',
+                'created_by'
+            ]);
+
+        /* Transform forwarded_by */
+        $results = $results->map(function ($item) use ($authUser) {
+
+            $names = [];
+
+            foreach (explode(':', $item->created_by ?? '') as $entry) {
+
+                [$userId, $role] = array_pad(explode('|', $entry), 2, null);
+
+                $roleLabel = match ($role) {
+                    'senior' => 'IT Senior Recruiter',
+                    'junior' => 'IT Recruiter',
+                    default  => $role
+                };
+
+                if ($userId == $authUser->id) {
+                    $names[] = "SELF ({$userId}) ({$roleLabel})";
+                } elseif ($userId == 0) {
+                    $names[] = "SYSTEM (0) ({$roleLabel})";
+                } else {
+                    $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                    $names[] = ($user->name ?? 'Unknown') . " ({$userId}) ({$roleLabel})";
+                }
+            }
+
+            $item->forwarded_by = implode(' → ', $names);
+            return $item;
+        });
+
+        return response()->json($results);
+    }
+
+
 
 
     public function seniortraSuggestions(Request $request)
