@@ -1058,7 +1058,7 @@
         $(document).ready(function() {
 
             /* -----------------------------
-               Debounce Helper
+               Debounce
             ----------------------------- */
             function debounce(fn, delay) {
                 let timer;
@@ -1069,7 +1069,7 @@
             }
 
             /* -----------------------------
-               Fetch Table
+               Fetch Table (single source)
             ----------------------------- */
             function fetchTable({
                 search = '',
@@ -1126,16 +1126,16 @@
                         if (res.length) {
                             res.forEach(item => {
                                 html += `
-                            <a href="#"
-                               class="list-group-item list-group-item-action"
-                               data-id="${item.id}">
-                               ${item.sheet_row_number} |
-                               ${item.Name} |
-                               ${item.Email_Address} |
-                               ${item.Phone_Number} |
-                               ${item.Exe_Remarks} |
-                               ${item.forwarded_by}
-                            </a>`;
+                        <a href="#"
+                           class="list-group-item list-group-item-action"
+                           data-id="${item.id}">
+                           ${item.sheet_row_number} |
+                           ${item.Name} |
+                           ${item.Email_Address} |
+                           ${item.Phone_Number} |
+                           ${item.Exe_Remarks} |
+                           ${item.forwarded_by}
+                        </a>`;
                             });
                         } else {
                             html = `<span class="list-group-item">No results found</span>`;
@@ -1155,16 +1155,13 @@
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
 
-                const row_id = $(this).data('id');
-                const junior_user = $('#junior-filter').val();
+                fetchTable({
+                    row_id: $(this).data('id'),
+                    junior_user: $('#junior-filter').val()
+                });
 
                 $('#senior-search').val($(this).text());
                 $('#search-suggestions').hide().empty();
-
-                fetchTable({
-                    row_id,
-                    junior_user
-                });
             });
 
             /* -----------------------------
@@ -1173,6 +1170,21 @@
             $('#junior-filter').on('change', function() {
                 fetchTable({
                     junior_user: this.value,
+                    search: $('#senior-search').val().trim()
+                });
+            });
+
+            /* -----------------------------
+               PAGINATION FIX (🔥 KEY PART)
+            ----------------------------- */
+            $(document).on('click', '.pagination a', function(e) {
+                e.preventDefault();
+
+                const page = new URL($(this).attr('href')).searchParams.get('page');
+
+                fetchTable({
+                    page,
+                    junior_user: $('#junior-filter').val(),
                     search: $('#senior-search').val().trim()
                 });
             });
@@ -1188,7 +1200,6 @@
 
         });
     </script>
-
 
     <script>
         $(document).on("click", ".transfers-btn", function() {
@@ -1462,23 +1473,6 @@
             cursor: -webkit-grabbing;
         }
     </style>
-
-    <script>
-        document.getElementById('junior-filter').addEventListener('change', function() {
-            let juniorId = this.value;
-            let search = document.getElementById('senior-search').value;
-
-            fetch("{{ route('google.sheet.seniortrafollow') }}?junior_user=" + juniorId + "&search=" + search, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('senior-table-wrapper').innerHTML = html;
-                });
-        });
-    </script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
