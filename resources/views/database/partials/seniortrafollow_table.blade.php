@@ -371,7 +371,7 @@
                                 }
 
                                 $.ajax({
-                                    url: '{{ route('seniortrafollow') }}',
+                                    url: '{{ route('seniorupdate') }}',
                                     type: 'POST',
                                     data: formData,
                                     contentType: false,
