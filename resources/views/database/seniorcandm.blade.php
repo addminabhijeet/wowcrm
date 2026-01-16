@@ -1437,60 +1437,121 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // Get CSRF token from meta tag
-            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
 
-            // Attach input listener for dynamically added rows too
+            const csrfToken = document
+                .querySelector('meta[name="csrf-token"]')
+                .getAttribute('content');
+
+            // ---- DATE FORMATTER (MM-DD-YYYY) ----
+            const formatDateMDY = (dateStr) => {
+                if (!dateStr) return '';
+                const d = new Date(dateStr);
+                if (isNaN(d)) return '';
+
+                const mm = String(d.getMonth() + 1).padStart(2, '0');
+                const dd = String(d.getDate()).padStart(2, '0');
+                const yyyy = d.getFullYear();
+
+                return `${mm}/${dd}/${yyyy}`;
+            };
+
             document.addEventListener('input', function(e) {
-                if (e.target.matches('.email-input')) {
-                    const input = e.target;
-                    const email = input.value.trim();
-                    const hint = input.nextElementSibling;
 
-                    // Basic email validation before checking DB
-                    if (email.length < 5 || !email.includes('@')) {
-                        hint.textContent = '';
-                        input.classList.remove('is-invalid', 'is-valid');
-                        return;
-                    }
+                if (!e.target.matches('.email-input')) return;
 
-                    // Debounce to avoid excessive requests
-                    clearTimeout(input._emailCheckTimer);
-                    input._emailCheckTimer = setTimeout(() => {
+                const input = e.target;
+                const email = input.value.trim();
+                const hint = input.nextElementSibling;
 
-                        fetch("{{ route('check.uniqueemail') }}", {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': csrfToken
-                                },
-                                body: JSON.stringify({
-                                    email: email
-                                })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.exists) {
-                                    input.classList.add('is-invalid');
-                                    input.classList.remove('is-valid');
-                                    hint.textContent =
-                                        'This email already exists in the database.';
-                                    hint.style.color = 'red';
-                                } else {
-                                    input.classList.remove('is-invalid');
-                                    input.classList.add('is-valid');
-                                    hint.textContent = 'Email available.';
-                                    hint.style.color = 'green';
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Email check failed:', error);
-                                hint.textContent = '⚠️ Server error. Try again.';
-                                hint.style.color = 'orange';
-                            });
-
-                    }, 500); // 500ms debounce
+                if (email.length < 5 || !email.includes('@')) {
+                    hint.textContent = '';
+                    input.classList.remove('is-invalid', 'is-valid');
+                    return;
                 }
+
+                clearTimeout(input._emailCheckTimer);
+
+                input._emailCheckTimer = setTimeout(() => {
+
+                    fetch("{{ route('check.uniqueemail') }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': csrfToken
+                            },
+                            body: JSON.stringify({
+                                email
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+
+                            if (data.exists && data.data) {
+
+                                const row = input.closest('tr');
+
+                                // ---------- INPUT FIELDS ----------
+                                row.querySelector('[data-key="Name"]').value =
+                                    data.data.Name ?? '';
+
+                                row.querySelector('[data-key="Phone Number"]').value =
+                                    data.data.Phone_Number ?? '';
+
+                                row.querySelector('[data-key="Location"]').value =
+                                    data.data.Location ?? '';
+
+                                row.querySelector('[data-key="Graduation Date"]').value =
+                                    formatDateMDY(data.data.Graduation_Date);
+
+                                row.querySelector('[data-key="Amount"]').value =
+                                    data.data.Amount ?
+                                    `$${parseFloat(data.data.Amount).toFixed(2)}` :
+                                    '';
+
+                                row.querySelector('[data-key="Remark"]').value =
+                                    data.data.Remark ?? '';
+
+                                // ---------- DROPDOWNS (AUTO SELECT + TRIGGER CHANGE) ----------
+                                const setSelect = (key, value) => {
+                                    const select = row.querySelector(`[data-key="${key}"]`);
+                                    if (!select || value === null) return;
+
+                                    select.value = value;
+                                    select.dispatchEvent(new Event('change', {
+                                        bubbles: true
+                                    }));
+                                };
+
+                                setSelect('Relocation', data.data.Relocation);
+                                setSelect('Immigration', data.data.Immigration);
+                                setSelect('Course', data.data.Course);
+                                setSelect('Qualification', data.data.Qualification);
+                                setSelect('1st Follow Up Remarks', data.data
+                                    .First_Follow_Up_Remarks);
+                                setSelect('Time Zone', data.data.Time_Zone);
+                                setSelect('Exe Remarks', data.data.Exe_Remarks);
+
+                                // ---------- VISUAL FEEDBACK ----------
+                                input.classList.remove('is-invalid');
+                                input.classList.add('is-valid');
+                                hint.textContent = 'Existing record loaded.';
+                                hint.style.color = 'blue';
+
+                            } else {
+
+                                input.classList.remove('is-invalid');
+                                input.classList.add('is-valid');
+                                hint.textContent = 'Email available.';
+                                hint.style.color = 'green';
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            hint.textContent = '⚠️ Server error. Try again.';
+                            hint.style.color = 'orange';
+                        });
+
+                }, 500);
             });
         });
     </script>
