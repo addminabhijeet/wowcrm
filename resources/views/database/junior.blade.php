@@ -1061,53 +1061,39 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
+
     <script>
         $(document).ready(function() {
 
             // -----------------------------
-            // GLOBAL FILTER STATE
-            // -----------------------------
-            let filterState = {
-                search: '',
-                junior_user: '',
-                date: '',
-                page: 1,
-                row_id: ''
-            };
-
-            // -----------------------------
-            // Debounce Helper
+            // Helper: Debounce
             // -----------------------------
             function debounce(func, wait) {
                 let timeout;
                 return function() {
+                    const context = this,
+                        args = arguments;
                     clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(this, arguments), wait);
+                    timeout = setTimeout(() => func.apply(context, args), wait);
                 };
             }
 
             // -----------------------------
-            // Fetch Table via AJAX
+            // Fetch Table Data via AJAX
             // -----------------------------
-            function fetchTable() {
+            function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
                 $.ajax({
                     url: "{{ route('google.sheet.junior') }}",
-                    type: "GET",
-                    data: filterState,
+                    type: 'GET',
+                    data: {
+                        search,
+                        page,
+                        junior_user,
+                        row_id,
+                        date // ✅ added
+                    },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
-
-                        // -----------------------------
-                        // FIX PAGINATION (KEEP DATE)
-                        // -----------------------------
-                        $('#senior-table-wrapper .pagination a').off('click').on('click', function(e) {
-                            e.preventDefault();
-
-                            let page = new URL($(this).attr('href')).searchParams.get('page');
-                            filterState.page = page;
-
-                            fetchTable();
-                        });
                     },
                     error: function(err) {
                         console.error(err);
@@ -1115,42 +1101,39 @@
                 });
             }
 
+
             // -----------------------------
-            // SEARCH SUGGESTIONS
+            // Live Search Suggestions
             // -----------------------------
             const showSuggestions = debounce(function() {
-                filterState.search = $('#senior-search').val().trim();
-                filterState.junior_user = $('#junior-filter').val();
+                const query = $('#senior-search').val().trim();
+                const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
 
-                if (filterState.search.length < 3) {
-                    $('#search-suggestions').hide().empty();
-                    filterState.page = 1;
-                    fetchTable();
+                if (query.length < 3) {
+                    $('#search-suggestions').empty().hide();
+                    fetchTable('', 1, junior_user); // reset table
                     return;
                 }
 
                 $.ajax({
                     url: "{{ route('junior.suggestions') }}",
-                    type: "GET",
+                    type: 'GET',
                     data: {
-                        query: filterState.search,
-                        junior_user: filterState.junior_user
+                        query: query,
+                        junior_user: junior_user // ✅ PASS SELECTED JUNIOR
                     },
                     success: function(res) {
-                        let html = '';
+                        let suggestions = '';
                         if (res.length) {
                             res.forEach(item => {
-                                html += `
-                        <a href="#" class="list-group-item list-group-item-action"
-                           data-id="${item.id}">
-                           ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address}
-                           | ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
-                        </a>`;
+                                suggestions +=
+                                    `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}| ${item.Exe_Remarks}| ${item.forwarded_by}</a>`;
                             });
                         } else {
-                            html = `<span class="list-group-item">No results found</span>`;
+                            suggestions =
+                                '<span class="list-group-item">No results found</span>';
                         }
-                        $('#search-suggestions').html(html).show();
+                        $('#search-suggestions').html(suggestions).show();
                     }
                 });
 
@@ -1158,57 +1141,37 @@
 
             $('#senior-search').on('input', showSuggestions);
 
-            // -----------------------------
-            // SUGGESTION CLICK
-            // -----------------------------
+            // Click suggestion
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
-
-                filterState.row_id = $(this).data('id');
-                filterState.page = 1;
-
+                const rowId = $(this).data('id');
+                const junior_user = $('#junior-filter').val();
                 $('#senior-search').val($(this).text());
-                $('#search-suggestions').hide().empty();
+                $('#search-suggestions').empty().hide();
 
-                fetchTable();
+                fetchTable('', 1, junior_user, rowId);
             });
 
-            // -----------------------------
-            // JUNIOR FILTER
-            // -----------------------------
+
+
+            // Junior dropdown filter
             $(document).on('change', '#junior-filter', function() {
-                filterState.junior_user = $(this).val();
-                filterState.page = 1;
-                filterState.row_id = '';
-                fetchTable();
+                const junior_user = $(this).val();
+                const search = $('#senior-search').val().trim();
+                const date = $('#date-filter').val(); // add selected date
+                fetchTable(search, page, junior_user, row_id, date);
             });
 
-            // -----------------------------
-            // DATE FILTER (MAIN FIX)
-            // -----------------------------
-            $('#date-filter').on('change', function() {
-                filterState.date = $(this).val();
-                filterState.page = 1;
-                filterState.row_id = '';
-                fetchTable();
-            });
 
-            // -----------------------------
-            // HIDE SUGGESTIONS
-            // -----------------------------
+            // Click outside suggestions to hide
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
-                    $('#search-suggestions').hide().empty();
+                    $('#search-suggestions').empty().hide();
                 }
             });
 
-            // -----------------------------
-            // INITIAL LOAD
-            // -----------------------------
-            fetchTable();
         });
     </script>
-
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
@@ -1643,6 +1606,18 @@
             });
         });
     </script>
+
+
+    <script>
+        $('#date-filter').on('change', function() {
+            const date = $(this).val();
+            const search = $('#senior-search').val().trim();
+            const junior_user = $('#junior-filter').val();
+
+            fetchTable(search, 1, junior_user, '', date);
+        });
+    </script>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
