@@ -5896,7 +5896,28 @@ class GoogleSheetController extends Controller
         // ✅ Map frontend keys to database columns
         $updateData = [];
 
-        if (array_key_exists('Remark', $rowData)) {
+        // --- Append remark if Exe Remarks changed ---
+        $oldExeRemarks = $row->Exe_Remarks ?? null;
+
+        if (
+            isset($rowData['Exe Remarks']) &&
+            $rowData['Exe Remarks'] !== $oldExeRemarks
+        ) {
+            $updatedBy = Auth::user()->name;
+            $updatedAt = now()->format('d-m-Y H:i');
+
+            $newRemarkEntry = "{$rowData['Exe Remarks']} | Updated by {$updatedBy} on {$updatedAt}";
+
+            // Append to existing remark (keep history)
+            $existingRemark = $rowData['Remark'] ?? $row->Remark ?? '';
+
+            $updateData['Remark'] = trim(
+                $existingRemark
+                    ? $existingRemark . PHP_EOL . $newRemarkEntry
+                    : $newRemarkEntry
+            );
+        } elseif (array_key_exists('Remark', $rowData)) {
+            // Keep existing logic if Exe Remarks didn't change
             $updateData['Remark'] = trim($rowData['Remark']);
         }
 
@@ -5940,8 +5961,6 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
-
-
 
     public function juniorstore(Request $request)
     {
