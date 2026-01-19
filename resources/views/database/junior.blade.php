@@ -25,7 +25,7 @@
         <div class="table-responsive w-100">
             <table class="table table-sm table-bordered mb-0 text-center align-middle w-100">
                 <thead class="table-light">
-                    <tr>
+                    <tr class="text-center">
                         <th class="text-nowrap">TCs</th>
                         <th class="text-nowrap">C&amp;M</th>
                         <th class="text-nowrap">NI</th>
@@ -34,6 +34,7 @@
                         <th class="text-nowrap">VM</th>
                         <th class="text-nowrap">B</th>
                     </tr>
+
                 </thead>
                 <tbody>
                     <tr>
