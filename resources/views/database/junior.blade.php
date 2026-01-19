@@ -250,12 +250,6 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <input type="hidden" class="form-control remark-autocomplete" 
-                                             placeholder="Type remark">
-                                    </td>
-
-                                    {{-- Remark --}}
-                                    <td>
                                         <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="2">{{ $row->Remark ?? '' }}</textarea>
                                     </td>
 
