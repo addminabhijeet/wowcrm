@@ -1502,6 +1502,12 @@ class CallReportController extends Controller
         return view('reports.alltrainerlist', compact('trainerUsers'));
     }
 
+    public function reportsender(Request $request)
+    {
+        // Pass users to the view
+        return view('reports.reportsender');
+    }
+
     public function alljuniordaily(Request $request, $userId)
     {
         // Get the junior user
