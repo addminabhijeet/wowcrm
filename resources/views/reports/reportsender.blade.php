@@ -38,7 +38,7 @@
                 <table class="table bordered-table sm-table mb-0">
                     <thead>
                         <tr>
-                            <th>
+                            <th class="text-center">
                                 <input type="checkbox" id="selectAllUsers">
                             </th>
                             <th>S.L</th>
@@ -50,20 +50,23 @@
                     <tbody>
                         @foreach ($juniorUsers as $index => $user)
                             <tr>
-                                <td>
-                                    <input type="checkbox" class="user-checkbox" value="{{ $user->id }}"
+                                <td class="text-center">
+                                    <input type="checkbox" class="user-checkbox" name="users[]" value="{{ $user->id }}"
                                         data-role="{{ $user->role }}">
                                 </td>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $user->name }}</td>
                                 <td>{{ $user->email }}</td>
-                                <td>{{ $user->role === 'junior' ? 'IT Recruiter' : 'Senior' }}</td>
+                                <td>
+                                    {{ $user->role === 'junior' ? 'IT Recruiter' : ucfirst($user->role) }}
+                                </td>
                             </tr>
                         @endforeach
                     </tbody>
                 </table>
             </div>
         </div>
+
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
