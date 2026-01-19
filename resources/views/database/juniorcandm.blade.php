@@ -1039,7 +1039,6 @@
                     type: 'GET',
                     data: {
                         query,
-                        junior_user
                     },
                     success: function(res) {
                         let suggestions = '';
@@ -1062,11 +1061,9 @@
             // Click suggestion
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
-
                 const rowId = $(this).data('id');
                 const junior_user = $('#junior-filter').val();
                 const date = $('#date-filter').val();
-                
                 $('#senior-search').val($(this).text());
                 $('#search-suggestions').empty().hide();
 
