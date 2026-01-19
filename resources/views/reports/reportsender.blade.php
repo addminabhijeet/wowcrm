@@ -181,4 +181,21 @@
             mergedPdf.save(`Merged_Report_${selectedDate}.pdf`);
         });
     </script>
+    <style>
+        /* Remove blue background & focus glow from Bootstrap checkboxes */
+        .form-check-input:checked {
+            background-color: #dc3545;
+            /* Bootstrap danger (red) */
+            border-color: #dc3545;
+        }
+
+        .form-check-input:focus {
+            box-shadow: none;
+            border-color: #adb5bd;
+        }
+
+        .form-check-input {
+            cursor: pointer;
+        }
+    </style>
 @endsection
