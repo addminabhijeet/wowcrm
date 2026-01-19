@@ -6037,6 +6037,24 @@ class GoogleSheetController extends Controller
                 $record->$dbColumn = $val;
             }
 
+            // --- Append Exe Remarks into Remark (Audit Pattern) ---
+            if (!empty($exeRemarksValue)) {
+
+                $existingRemark = $record->Remark ?? '';
+
+                $newRemarkEntry =
+                    $exeRemarksValue .
+                    ' | Added by ' . $user->name .
+                    ' on ' . now()->format('d-m-Y H:i');
+
+                $record->Remark = trim(
+                    $existingRemark
+                        ? $existingRemark . PHP_EOL . $newRemarkEntry
+                        : $newRemarkEntry
+                );
+            }
+
+
             // --- created_by logic ---
             if ($exeRemarksValue === 'Called & Mailed') {
                 $record->created_by = $user->id . '|junior:0|senior';
