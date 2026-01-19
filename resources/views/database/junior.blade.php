@@ -30,7 +30,7 @@
                             <th class="text-nowrap text-center text-danger">Not Interested</th>
                             <th class="text-nowrap text-center text-info">Interested</th>
                             <th class="text-nowrap text-center text-secondary">Others</th>
-                            <th class="text-nowrap text-center text-warning">VM</th>
+                            <th class="text-nowrap text-center text-warning">Voice Mail</th>
                             <th class="text-nowrap text-center text-dark">Busy</th>
                         </tr>
                     </thead>
