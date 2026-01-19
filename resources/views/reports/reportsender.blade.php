@@ -27,9 +27,9 @@
                             <input type="date" id="selected_date" value="{{ request('selected_date', date('Y-m-d')) }}"
                                 class="form-control form-control-sm">
                         </div>
-                        <button class="btn btn-danger btn-sm" id="downloadPdfBtn">
-                            <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download Merged PDF
-                        </button>
+                        <a href="{{ route('call.reports.allreport') }}" class="btn btn-danger btn-sm" id="downloadPdfBtn">
+                            <i class="bi bi-file-earmark-pdf-fill me-1"></i> All Report
+                        </a>
                     </div>
                 </div>
             </div>
