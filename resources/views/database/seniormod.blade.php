@@ -280,7 +280,7 @@
                                     {{-- Remark --}}
                                     <td>
                                         <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
-                                            rows="2">{{ $row->Remark ?? '' }}</textarea>
+                                            rows="6">{{ $row->Remark ?? '' }}</textarea>
 
                                         <input type="hidden" name="Remark"
                                             class="form-control remark-autocomplete remark-hidden" data-key="Remark"

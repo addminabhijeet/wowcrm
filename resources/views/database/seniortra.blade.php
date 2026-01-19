@@ -277,7 +277,7 @@
                                     {{-- Remark --}}
                                     <td>
                                         <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
-                                            rows="2">{{ $row->Remark ?? '' }}</textarea>
+                                            rows="6">{{ $row->Remark ?? '' }}</textarea>
 
                                         <input type="hidden" name="Remark"
                                             class="form-control remark-autocomplete remark-hidden" data-key="Remark"
@@ -287,7 +287,7 @@
                                     {{-- TransferRemark --}}
                                     <td>
                                         <textarea type="text" name="TransferRemark_hidden" class="form-control transferremark-autocomplete data-field"
-                                            data-key="TransferRemark" placeholder="Type remark" rows="2">{{ $row->TransferRemark ?? '' }}</textarea>
+                                            data-key="TransferRemark" placeholder="Type remark" rows="6">{{ $row->TransferRemark ?? '' }}</textarea>
 
                                         <input type="hidden" name="TransferRemark"
                                             class="form-control transferremark-autocomplete transferremark-hidden"
@@ -747,7 +747,7 @@
                     });
                 });
             }
-            
+
             function addBlankRow() {
                 let colKeys = [];
                 let firstRow = tableBody.querySelector("tr");
