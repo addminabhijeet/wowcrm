@@ -1,10 +1,10 @@
 @extends('layout.layout')
 @php
-    $title = 'Total Calls Today: {{ $exeRemarkCounts['total_calls'] }}
-Called & Mailed: {{ $exeRemarkCounts['called_and_mailed'] }}
-VM: {{ $exeRemarkCounts['vm'] }}
-Busy: {{ $exeRemarkCounts['busy'] }}
-';
+    $title =
+        'Total Calls Today: ' . ($exeRemarkCounts['total_calls'] ?? 0) . "\n\n" .
+        'Called & Mailed: ' . ($exeRemarkCounts['called_and_mailed'] ?? 0) . "\n\n" .
+        'VM: ' . ($exeRemarkCounts['vm'] ?? 0) . "\n\n" .
+        'Busy: ' . ($exeRemarkCounts['busy'] ?? 0);
     $role = auth()->user()->role ?? '';
     if ($role === 'admin') {
         $subTitle = 'Super Admin';
