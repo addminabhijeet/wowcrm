@@ -63,15 +63,6 @@
             </table>
         </div>
 
-        {{-- RIGHT: Search --}}
-        <div class="d-flex align-items-center flex-wrap gap-3">
-            <form class="navbar-search position-relative" autocomplete="off">
-                <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
-                    placeholder="Search Name, Email, Phone">
-                <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
-                <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
-            </form>
-        </div>
     </div>
 
     <div class="card h-100 p-0 radius-12">
