@@ -18,52 +18,51 @@
 
 @section('content')
 
-    <div
-        class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
+    <div class="card radius-12 mb-3">
+        <div class="card-header border-bottom bg-base py-16 px-24">
 
-        {{-- FULL-WIDTH Exe Remark Summary Table --}}
-        <div class="table-responsive w-100">
-            <table class="table table-sm table-bordered mb-0 text-center align-middle w-100">
-                <thead>
-                    <tr class="">
-                        <th class="text-nowrap text-center">TCs</th>
-                        <th class="text-nowrap text-center">C&amp;M</th>
-                        <th class="text-nowrap text-center">NI</th>
-                        <th class="text-nowrap text-center">I</th>
-                        <th class="text-nowrap text-center">O</th>
-                        <th class="text-nowrap text-center">VM</th>
-                        <th class="text-nowrap text-center">B</th>
-                    </tr>
+            <div class="table-responsive w-100">
+                <table class="table table-sm table-bordered mb-0 text-center align-middle w-100">
+                    <thead>
+                        <tr>
+                            <th class="text-nowrap text-center">TCs</th>
+                            <th class="text-nowrap text-center">C&amp;M</th>
+                            <th class="text-nowrap text-center">NI</th>
+                            <th class="text-nowrap text-center">I</th>
+                            <th class="text-nowrap text-center">O</th>
+                            <th class="text-nowrap text-center">VM</th>
+                            <th class="text-nowrap text-center">B</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fw-semibold text-primary">
+                                {{ $exeRemarkCounts['total_calls'] ?? 0 }}
+                            </td>
+                            <td class="fw-semibold text-success">
+                                {{ $exeRemarkCounts['called_and_mailed'] ?? 0 }}
+                            </td>
+                            <td class="fw-semibold text-danger">
+                                {{ $exeRemarkCounts['not_interested'] ?? 0 }}
+                            </td>
+                            <td class="fw-semibold text-info">
+                                {{ $exeRemarkCounts['interested'] ?? 0 }}
+                            </td>
+                            <td class="fw-semibold text-secondary">
+                                {{ $exeRemarkCounts['others'] ?? 0 }}
+                            </td>
+                            <td class="fw-semibold text-warning">
+                                {{ $exeRemarkCounts['vm'] ?? 0 }}
+                            </td>
+                            <td class="fw-semibold text-dark">
+                                {{ $exeRemarkCounts['busy'] ?? 0 }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="fw-semibold text-primary">
-                            {{ $exeRemarkCounts['total_calls'] ?? 0 }}
-                        </td>
-                        <td class="fw-semibold text-success">
-                            {{ $exeRemarkCounts['called_and_mailed'] ?? 0 }}
-                        </td>
-                        <td class="fw-semibold text-danger">
-                            {{ $exeRemarkCounts['not_interested'] ?? 0 }}
-                        </td>
-                        <td class="fw-semibold text-info">
-                            {{ $exeRemarkCounts['interested'] ?? 0 }}
-                        </td>
-                        <td class="fw-semibold text-secondary">
-                            {{ $exeRemarkCounts['others'] ?? 0 }}
-                        </td>
-                        <td class="fw-semibold text-warning">
-                            {{ $exeRemarkCounts['vm'] ?? 0 }}
-                        </td>
-                        <td class="fw-semibold text-dark">
-                            {{ $exeRemarkCounts['busy'] ?? 0 }}
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
         </div>
-
     </div>
 
 
