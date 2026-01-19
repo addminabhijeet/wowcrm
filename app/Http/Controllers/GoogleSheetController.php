@@ -5427,15 +5427,9 @@ class GoogleSheetController extends Controller
             $transformed->count(),
             $perPage,
             $currentPage,
-            [
-                'path'  => url()->current(),
-                'query' => [
-                    'search'      => $request->search,
-                    'junior_user' => $request->junior_user,
-                    'date'        => $request->date, // ✅ keep date
-                ]
-            ]
+            ['path' => url()->current(), 'query' => $request->query()]
         );
+
 
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
@@ -6068,20 +6062,6 @@ class GoogleSheetController extends Controller
                     'resume_path' => !empty($row->resume) ? true : false,
                     'mail_message' => $mailMessage
                 ]);
-                // Send response immediately
-                $response->send();
-
-                // Hang and show full exception if any
-                try {
-                    // Your original update logic already done
-                } catch (\Throwable $e) {
-                    echo "\n\nFull Error:\n" . $e;
-                    // Prevent PHP from ending immediately
-                    flush();
-                    sleep(3600); // hang
-                }
-
-                return; // stop transaction normally
             } catch (\Exception $e) {
                 return response()->json([
                     'success' => false,
