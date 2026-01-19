@@ -5297,7 +5297,7 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-       $results = $query->orderBy('updated_at', 'desc')->get();
+        $results = $query->orderBy('updated_at', 'desc')->get();
 
         // ✅ Transform after getting all filtered data
         $transformed = $results->map(function ($item) use ($authUser) {
@@ -5712,6 +5712,32 @@ class GoogleSheetController extends Controller
             } else {
                 $updateData['created_by'] = $row->created_by;
             }
+
+            // === Append remark if Exe Remarks changed ===
+            $oldExeRemarks = $row->Exe_Remarks;
+
+            if (
+                isset($rowData['Exe Remarks']) &&
+                $rowData['Exe Remarks'] !== $oldExeRemarks
+            ) {
+                $updatedBy = Auth::user()->name;
+                $updatedAt = now()->format('d-m-Y H:i');
+
+                $newRemarkEntry = "{$rowData['Exe Remarks']} | Updated by {$updatedBy} on {$updatedAt}";
+
+                // Append to existing remark (keep history)
+                $existingRemark =
+                    $rowData['Remark']
+                    ?? $row->Remark
+                    ?? '';
+
+                $updateData['Remark'] = trim(
+                    $existingRemark
+                        ? $existingRemark . PHP_EOL . $newRemarkEntry
+                        : $newRemarkEntry
+                );
+            }
+
 
             foreach ($updateData as $key => $value) {
                 if ($value === '' && !in_array($key, ['Email_Address', 'Remark', 'Name', 'Amount'])) {
