@@ -382,14 +382,11 @@
 @endif
 </div>
 {{-- Pagination --}}
-@if ($paginator->hasPages())
-    <ul class="pagination">
-        @foreach ($paginator->links()->elements[0] as $page => $url)
-            <li class="page-item {{ $page == $paginator->currentPage() ? 'active' : '' }}">
-                <a class="page-link" href="{{ $url }}" data-page="{{ $page }}">{{ $page }}</a>
-            </li>
-        @endforeach
-    </ul>
+@if ($data->hasPages())
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
+        <div>
+            {{ $data->links('pagination::bootstrap-5') }}
+        </div>
+    </div>
 @endif
-
 </div>
