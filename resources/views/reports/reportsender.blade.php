@@ -35,11 +35,14 @@
 
         <div class="card-body p-24">
             <div class="table-responsive scroll-sm">
-                <table class="table bordered-table sm-table mb-0">
+                <table class="table bordered-table sm-table mb-0 align-middle">
                     <thead>
                         <tr>
-                            <th class="text-center">
-                                <input type="checkbox" id="selectAllUsers">
+                            <th class="text-center" style="width:40px;">
+                                <div class="form-check d-flex justify-content-center">
+                                    <input class="form-check-input" type="checkbox" id="selectAllUsers"
+                                        style="opacity:1; position:static;">
+                                </div>
                             </th>
                             <th>S.L</th>
                             <th>Name</th>
@@ -47,12 +50,16 @@
                             <th>Role</th>
                         </tr>
                     </thead>
+
                     <tbody>
                         @foreach ($juniorUsers as $index => $user)
                             <tr>
                                 <td class="text-center">
-                                    <input type="checkbox" class="user-checkbox" name="users[]" value="{{ $user->id }}"
-                                        data-role="{{ $user->role }}">
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input user-checkbox" type="checkbox" name="users[]"
+                                            value="{{ $user->id }}" data-role="{{ $user->role }}"
+                                            style="opacity:1; position:static;">
+                                    </div>
                                 </td>
                                 <td>{{ $index + 1 }}</td>
                                 <td>{{ $user->name }}</td>
@@ -67,9 +74,23 @@
             </div>
         </div>
 
+
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+
+            const selectAll = document.getElementById("selectAllUsers");
+
+            selectAll.addEventListener("change", function() {
+                document.querySelectorAll(".user-checkbox").forEach(cb => {
+                    cb.checked = selectAll.checked;
+                });
+            });
+
+        });
+    </script>
 
     <script>
         document.getElementById('selectAllUsers').addEventListener('change', function() {
