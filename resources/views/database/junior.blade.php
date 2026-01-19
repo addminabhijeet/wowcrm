@@ -1,6 +1,10 @@
 @extends('layout.layout')
 @php
-    $title = 'Users Grid';
+    $title = 'Total Calls Today: {{ $exeRemarkCounts['total_calls'] }}
+Called & Mailed: {{ $exeRemarkCounts['called_and_mailed'] }}
+VM: {{ $exeRemarkCounts['vm'] }}
+Busy: {{ $exeRemarkCounts['busy'] }}
+';
     $role = auth()->user()->role ?? '';
     if ($role === 'admin') {
         $subTitle = 'Super Admin';
