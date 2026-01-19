@@ -1086,9 +1086,20 @@
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
+
+                        // Fix pagination links to call fetchTable with current filters
+                        $('#senior-table-wrapper .pagination a').each(function() {
+                            const page = $(this).data('page') || $(this).attr('href').split(
+                                'page=')[1];
+                            $(this).off('click').on('click', function(e) {
+                                e.preventDefault();
+                                fetchTable(search, page, junior_user, '', date);
+                            });
+                        });
                     }
                 });
             }
+
 
             const showSuggestions = debounce(function() {
                 const query = $('#senior-search').val().trim();
