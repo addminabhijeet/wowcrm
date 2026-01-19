@@ -1620,30 +1620,23 @@
     </script>
 
 
-    {{-- <script>
-        $(document).on("click", ".transfers-btn", function() {
-            let id = $(this).data("id");
+    <script>
+        $('#date-filter').on('change', function() {
+            let selectedDate = $(this).val();
 
             $.ajax({
-                url: "{{ route('junior.transfers.update') }}",
-                method: "POST",
+                url: "{{ url()->current() }}",
+                type: "GET",
                 data: {
-                    id: id,
-                    _token: "{{ csrf_token() }}"
+                    date: selectedDate
                 },
-                success: function(res) {
-                    if (res.success) {
-                        alert("Transfer Updated!");
-                    } else {
-                        alert(res.message);
-                    }
-                },
-                error: function() {
-                    alert("Something went wrong!");
+                success: function(response) {
+                    $('#senior-table-wrapper').html(response);
                 }
             });
         });
-    </script> --}}
+    </script>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
