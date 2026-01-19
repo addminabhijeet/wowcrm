@@ -1060,7 +1060,6 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-
     <script>
         $(document).ready(function() {
 
@@ -1089,10 +1088,28 @@
                         page,
                         junior_user,
                         row_id,
-                        date // ✅ added
+                        date
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
+
+                        // -----------------------------
+                        // Handle Pagination Links
+                        // -----------------------------
+                        $('#senior-table-wrapper .pagination a').each(function() {
+                            const page = $(this).data('page') || $(this).attr('href').split(
+                                'page=')[1];
+                            $(this).off('click').on('click', function(e) {
+                                e.preventDefault();
+                                fetchTable(
+                                    $('#senior-search').val().trim(),
+                                    page,
+                                    $('#junior-filter').val(),
+                                    '',
+                                    $('#date-filter').val()
+                                );
+                            });
+                        });
                     },
                     error: function(err) {
                         console.error(err);
@@ -1100,17 +1117,16 @@
                 });
             }
 
-
             // -----------------------------
             // Live Search Suggestions
             // -----------------------------
             const showSuggestions = debounce(function() {
                 const query = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+                const junior_user = $('#junior-filter').val();
 
                 if (query.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user); // reset table
+                    fetchTable('', 1, junior_user, '', $('#date-filter').val());
                     return;
                 }
 
@@ -1118,8 +1134,8 @@
                     url: "{{ route('junior.suggestions') }}",
                     type: 'GET',
                     data: {
-                        query: query,
-                        junior_user: junior_user // ✅ PASS SELECTED JUNIOR
+                        query,
+                        junior_user
                     },
                     success: function(res) {
                         let suggestions = '';
@@ -1135,7 +1151,6 @@
                         $('#search-suggestions').html(suggestions).show();
                     }
                 });
-
             }, 300);
 
             $('#senior-search').on('input', showSuggestions);
@@ -1144,31 +1159,57 @@
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
                 const rowId = $(this).data('id');
-                const junior_user = $('#junior-filter').val();
                 $('#senior-search').val($(this).text());
                 $('#search-suggestions').empty().hide();
 
-                fetchTable('', 1, junior_user, rowId);
+                fetchTable(
+                    '',
+                    1,
+                    $('#junior-filter').val(),
+                    rowId,
+                    $('#date-filter').val()
+                );
             });
 
-
-
+            // -----------------------------
             // Junior dropdown filter
+            // -----------------------------
             $(document).on('change', '#junior-filter', function() {
-                const junior_user = $(this).val();
-                const search = $('#senior-search').val().trim();
-                const date = $('#date-filter').val(); // add selected date
-                fetchTable(search, page, junior_user, row_id, date);
+                fetchTable(
+                    $('#senior-search').val().trim(),
+                    1,
+                    $(this).val(),
+                    '',
+                    $('#date-filter').val()
+                );
             });
 
+            // -----------------------------
+            // Date filter
+            // -----------------------------
+            $('#date-filter').on('change', function() {
+                fetchTable(
+                    $('#senior-search').val().trim(),
+                    1,
+                    $('#junior-filter').val(),
+                    '',
+                    $(this).val()
+                );
+            });
 
+            // -----------------------------
             // Click outside suggestions to hide
+            // -----------------------------
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
                     $('#search-suggestions').empty().hide();
                 }
             });
 
+            // -----------------------------
+            // Initial Table Load
+            // -----------------------------
+            fetchTable('', 1, $('#junior-filter').val(), '', $('#date-filter').val());
         });
     </script>
 
