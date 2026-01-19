@@ -1,7 +1,7 @@
 @extends('layout.layout')
 @php
     $title =
-        'Total Calls Today: ' .
+        'Total Calls: ' .
         ($exeRemarkCounts['total_calls'] ?? 0) .
         "\n\n" .
         'Called & Mailed: ' .
