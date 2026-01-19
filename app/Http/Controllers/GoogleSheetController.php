@@ -5305,7 +5305,7 @@ class GoogleSheetController extends Controller
             'busy'              => $SbusyCalls,
         ];
 
-        if ($request->ajax()) {
+        if ($request->ajax() || $request->wantsJson()) {
             return view('database.partials.junior_table', [
                 'data' => $pagedData,
                 'juniorUsers' => $juniorUsers,
@@ -5313,7 +5313,7 @@ class GoogleSheetController extends Controller
             ])->render();
         }
 
-
+        // 👇 FULL PAGE RENDER WHEN VISITING google.sheet.junior
         return view('database.junior', [
             'data' => $pagedData,
             'juniorUsers' => $juniorUsers,
