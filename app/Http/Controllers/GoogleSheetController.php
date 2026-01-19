@@ -5244,8 +5244,16 @@ class GoogleSheetController extends Controller
             $transformed->count(),
             $perPage,
             $currentPage,
-            ['path' => url()->current(), 'query' => $request->query()]
+            [
+                'path'  => url()->current(),
+                'query' => [
+                    'search'      => $request->search,
+                    'junior_user' => $request->junior_user,
+                    'date'        => $request->date, // ✅ keep date
+                ]
+            ]
         );
+
 
 
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])

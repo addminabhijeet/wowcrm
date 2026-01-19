@@ -1160,6 +1160,17 @@
             });
 
 
+            $(document).on('click', '.pagination a', function(e) {
+                e.preventDefault();
+
+                let page = $(this).attr('href').split('page=')[1];
+
+                const search = $('#senior-search').val().trim();
+                const junior_user = $('#junior-filter').val();
+                const date = $('#date-filter').val();
+
+                fetchTable(search, page, junior_user, '', date);
+            });
 
 
             // Junior dropdown filter
