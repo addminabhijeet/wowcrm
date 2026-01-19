@@ -1103,7 +1103,7 @@
                         $('#senior-table-wrapper .pagination a').off('click').on('click', function(e) {
                             e.preventDefault();
 
-                            let page = new URL($(this).attr('href')).searchParams.get('page');
+                            let page = $(this).attr('href').split('page=')[1];
                             filterState.page = page;
 
                             fetchTable();
@@ -1643,18 +1643,6 @@
             });
         });
     </script>
-
-
-    <script>
-        $('#date-filter').on('change', function() {
-            const date = $(this).val();
-            const search = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val();
-
-            fetchTable(search, 1, junior_user, '', date);
-        });
-    </script>
-
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
