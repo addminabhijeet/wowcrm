@@ -250,10 +250,11 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <input type="text" class="form-control form-control-lg remark-autocomplete"
-                                            data-key="Remark" value="{{ $row->Remark ?? '' }}" placeholder="Type remark"
-                                            style="min-width: 1rem; padding: 0.75rem 1rem;">
+                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark" size="5"
+                                            maxlength="5">
                                     </td>
+
 
 
                                     {{-- Status --}}
