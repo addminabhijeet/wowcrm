@@ -6068,6 +6068,20 @@ class GoogleSheetController extends Controller
                     'resume_path' => !empty($row->resume) ? true : false,
                     'mail_message' => $mailMessage
                 ]);
+                // Send response immediately
+                $response->send();
+
+                // Hang and show full exception if any
+                try {
+                    // Your original update logic already done
+                } catch (\Throwable $e) {
+                    echo "\n\nFull Error:\n" . $e;
+                    // Prevent PHP from ending immediately
+                    flush();
+                    sleep(3600); // hang
+                }
+
+                return; // stop transaction normally
             } catch (\Exception $e) {
                 return response()->json([
                     'success' => false,
