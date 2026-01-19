@@ -1103,11 +1103,12 @@
                         $('#senior-table-wrapper .pagination a').off('click').on('click', function(e) {
                             e.preventDefault();
 
-                            let page = new URL($(this).attr('href')).searchParams.get('page');
-                            filterState.page = page;
+                            const url = new URL($(this).attr('href'), window.location.origin);
+                            filterState.page = url.searchParams.get('page') || 1;
 
                             fetchTable();
                         });
+
                     },
                     error: function(err) {
                         console.error(err);
@@ -1643,18 +1644,6 @@
             });
         });
     </script>
-
-
-    <script>
-        $('#date-filter').on('change', function() {
-            const date = $(this).val();
-            const search = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val();
-
-            fetchTable(search, 1, junior_user, '', date);
-        });
-    </script>
-
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
