@@ -1177,7 +1177,7 @@
                 const search = $('#senior-search').val().trim();
                 const junior_user = $('#junior-filter').val();
 
-                fetchTable(search, page, junior_user, '', date);
+                fetchTable(search, 1, junior_user, '', date);
             });
 
 
