@@ -253,9 +253,10 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="2"
-                                            style="width: 200%; height: calc(2 * 2em);">{{ $row->Remark ?? '' }}</textarea>
+                                        <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="4"
+                                            style="min-width: calc(100% * 2); height: calc(2 * 2rem);">{{ $row->Remark ?? '' }}</textarea>
                                     </td>
+
 
 
                                     {{-- Status --}}
