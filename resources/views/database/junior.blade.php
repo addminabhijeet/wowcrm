@@ -1,42 +1,40 @@
 @extends('layout.layout')
 @php
+    // ===============================
+    // Dashboard Title (HTML badges)
+    // ===============================
     $title =
-        '<span class="badge bg-primary">TCs: ' .
-        ($exeRemarkCounts['total_calls'] ?? 0) .
-        '</span> ' .
-        '<span class="badge bg-success">C&M: ' .
-        ($exeRemarkCounts['called_and_mailed'] ?? 0) .
-        '</span> ' .
-        '<span class="badge bg-danger">NI: ' .
-        ($exeRemarkCounts['not_interested'] ?? 0) .
-        '</span> ' .
-        '<span class="badge bg-info">I: ' .
-        ($exeRemarkCounts['interested'] ?? 0) .
-        '</span> ' .
-        '<span class="badge bg-secondary">O: ' .
-        ($exeRemarkCounts['others'] ?? 0) .
-        '</span> ' .
-        '<span class="badge bg-warning text-dark">VM: ' .
-        ($exeRemarkCounts['vm'] ?? 0) .
-        '</span> ' .
-        '<span class="badge bg-dark">B: ' .
-        ($exeRemarkCounts['busy'] ?? 0) .
-        '</span>';
+        '<span class="badge bg-primary me-1">TCs: ' . ($exeRemarkCounts['total_calls'] ?? 0) . '</span>' .
+        '<span class="badge bg-success me-1">C&amp;M: ' . ($exeRemarkCounts['called_and_mailed'] ?? 0) . '</span>' .
+        '<span class="badge bg-danger me-1">NI: ' . ($exeRemarkCounts['not_interested'] ?? 0) . '</span>' .
+        '<span class="badge bg-info me-1">I: ' . ($exeRemarkCounts['interested'] ?? 0) . '</span>' .
+        '<span class="badge bg-secondary me-1">O: ' . ($exeRemarkCounts['others'] ?? 0) . '</span>' .
+        '<span class="badge bg-warning text-dark me-1">VM: ' . ($exeRemarkCounts['vm'] ?? 0) . '</span>' .
+        '<span class="badge bg-dark">B: ' . ($exeRemarkCounts['busy'] ?? 0) . '</span>';
+
 
     $role = auth()->user()->role ?? '';
+
     if ($role === 'admin') {
         $subTitle = 'Super Admin';
     } elseif ($role === 'operation') {
         $subTitle = 'Operation Manager';
     } else {
-        $subTitle = 'role';
+        $subTitle = ucfirst($role);
     }
-    $script = '<script>
-        $(".remove-item-btn").on("click", function() {
-            $(this).closest("tr").addClass("d-none")
-        });
-    </script>';
+
+    // ===============================
+    // Page script
+    // ===============================
+    $script = <<<SCRIPT
+<script>
+    $(document).on("click", ".remove-item-btn", function () {
+        $(this).closest("tr").addClass("d-none");
+    });
+</script>
+SCRIPT;
 @endphp
+
 
 @section('content')
 
