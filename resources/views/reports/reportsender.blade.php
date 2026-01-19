@@ -17,6 +17,34 @@
 @endphp
 
 @section('content')
+    <style>
+        /* Prevent row highlight when checkbox is clicked */
+        .table> :not(caption)>*>* {
+            background-color: transparent !important;
+        }
+
+        /* Disable Bootstrap active/hover blue effect */
+        .table-hover tbody tr:hover,
+        .table-hover tbody tr:active,
+        .table-hover tbody tr:focus,
+        .table-hover tbody tr:has(input:checked) {
+            background-color: transparent !important;
+        }
+
+        /* Remove blue focus ring from checkbox */
+        .form-check-input:focus {
+            box-shadow: none !important;
+            outline: none !important;
+        }
+
+        /* Remove active blue background on checkbox click */
+        .form-check-input:checked {
+            background-color: #dc3545;
+            /* keep your red theme */
+            border-color: #dc3545;
+        }
+    </style>
+
     <div class="card h-100 p-0 radius-12">
         <div class="card-header border-bottom bg-base py-16 px-24">
             <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
