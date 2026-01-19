@@ -1,27 +1,6 @@
 @extends('layout.layout')
 @php
-    $title =
-        'TCs: ' .
-        ($exeRemarkCounts['total_calls'] ?? 0) .
-        "\n\n" .
-        'C&M: ' .
-        ($exeRemarkCounts['called_and_mailed'] ?? 0) .
-        "\n\n" .
-        'NI: ' .
-        ($exeRemarkCounts['not_interested'] ?? 0) .
-        "\n\n" .
-        'I: ' .
-        ($exeRemarkCounts['interested'] ?? 0) .
-        "\n\n" .
-        'O: ' .
-        ($exeRemarkCounts['others'] ?? 0) .
-        "\n\n" .
-        'VM: ' .
-        ($exeRemarkCounts['vm'] ?? 0) .
-        "\n\n" .
-        'B: ' .
-        ($exeRemarkCounts['busy'] ?? 0);
-
+    $title = 'Database';
     $role = auth()->user()->role ?? '';
     if ($role === 'admin') {
         $subTitle = 'Super Admin';
@@ -38,6 +17,62 @@
 @endphp
 
 @section('content')
+
+    <div
+        class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
+
+        {{-- LEFT: Exe Remark Summary Table --}}
+        <div class="table-responsive">
+            <table class="table table-sm table-bordered mb-0 text-center align-middle">
+                <thead class="table-light">
+                    <tr>
+                        <th>TCs</th>
+                        <th>C&amp;M</th>
+                        <th>NI</th>
+                        <th>I</th>
+                        <th>O</th>
+                        <th>VM</th>
+                        <th>B</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-semibold text-primary">
+                            {{ $exeRemarkCounts['total_calls'] ?? 0 }}
+                        </td>
+                        <td class="fw-semibold text-success">
+                            {{ $exeRemarkCounts['called_and_mailed'] ?? 0 }}
+                        </td>
+                        <td class="fw-semibold text-danger">
+                            {{ $exeRemarkCounts['not_interested'] ?? 0 }}
+                        </td>
+                        <td class="fw-semibold text-info">
+                            {{ $exeRemarkCounts['interested'] ?? 0 }}
+                        </td>
+                        <td class="fw-semibold text-secondary">
+                            {{ $exeRemarkCounts['others'] ?? 0 }}
+                        </td>
+                        <td class="fw-semibold text-warning">
+                            {{ $exeRemarkCounts['vm'] ?? 0 }}
+                        </td>
+                        <td class="fw-semibold text-dark">
+                            {{ $exeRemarkCounts['busy'] ?? 0 }}
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        {{-- RIGHT: Search --}}
+        <div class="d-flex align-items-center flex-wrap gap-3">
+            <form class="navbar-search position-relative" autocomplete="off">
+                <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
+                    placeholder="Search Name, Email, Phone">
+                <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+                <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
+            </form>
+        </div>
+    </div>
 
     <div class="card h-100 p-0 radius-12">
         <div
@@ -118,13 +153,15 @@
                                     {{-- Phone Number --}}
                                     <td>
                                         <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                            maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
+                                            maxlength="14" value="{{ $row->Phone_Number ?? '' }}"
+                                            placeholder="US number">
                                     </td>
 
                                     {{-- Location --}}
                                     <td>
-                                        <input type="text" class="form-control location-autocomplete" data-key="Location"
-                                            value="{{ $row->Location ?? '' }}" placeholder="Type location">
+                                        <input type="text" class="form-control location-autocomplete"
+                                            data-key="Location" value="{{ $row->Location ?? '' }}"
+                                            placeholder="Type location">
                                     </td>
 
 
