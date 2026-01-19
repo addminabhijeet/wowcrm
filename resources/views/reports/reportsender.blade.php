@@ -39,34 +39,35 @@
                     <table class="table bordered-table sm-table mb-0 align-middle">
                         <thead>
                             <tr>
+
+                                <th>S.L</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
                                 <th class="text-center" style="width:40px;">
                                     <div class="form-check d-flex justify-content-center">
                                         <input class="form-check-input" type="checkbox" id="selectAllUsers"
                                             style="opacity:1; position:static;">
                                     </div>
                                 </th>
-                                <th>S.L</th>
-                                <th>Name</th>
-                                <th>Email</th>
-                                <th>Role</th>
                             </tr>
                         </thead>
 
                         <tbody>
                             @foreach ($juniorUsers as $index => $user)
                                 <tr>
-                                    <td class="text-center">
-                                        <div class="form-check d-flex justify-content-center">
-                                            <input class="form-check-input user-checkbox" type="checkbox" name="users[]"
-                                                value="{{ $user->id }}" data-role="{{ $user->role }}"
-                                                style="opacity:1; position:static;">
-                                        </div>
-                                    </td>
+
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $user->name }}</td>
                                     <td>{{ $user->email }}</td>
                                     <td>
                                         {{ $user->role === 'junior' ? 'IT Recruiter' : ucfirst($user->role) }}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="form-check d-flex justify-content-center">
+                                            <input class="form-check-input user-checkbox" type="checkbox" name="users[]"
+                                                value="{{ $user->id }}" data-role="{{ $user->role }}">
+                                        </div>
                                     </td>
                                 </tr>
                             @endforeach
@@ -181,21 +182,4 @@
             mergedPdf.save(`Merged_Report_${selectedDate}.pdf`);
         });
     </script>
-    <style>
-        /* Remove blue background & focus glow from Bootstrap checkboxes */
-        .form-check-input:checked {
-            background-color: #dc3545;
-            /* Bootstrap danger (red) */
-            border-color: #dc3545;
-        }
-
-        .form-check-input:focus {
-            box-shadow: none;
-            border-color: #adb5bd;
-        }
-
-        .form-check-input {
-            cursor: pointer;
-        }
-    </style>
 @endsection
