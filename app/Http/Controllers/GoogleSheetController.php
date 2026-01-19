@@ -5153,6 +5153,7 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // dropdown value
         $page = $request->input('page', 1); // ✅ Ensure page input handled
+        $date = $request->input('date');
 
         $userPattern = "%:" . $authUser->id . "|junior";
 
@@ -5173,6 +5174,10 @@ class GoogleSheetController extends Controller
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
                     ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
             })->where('transfers', '!=', 1);
+        }
+
+        if ($date) {
+            $query->whereDate('updated_at', $date);
         }
 
         // Search or specific row filter
