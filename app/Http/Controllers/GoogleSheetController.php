@@ -5506,6 +5506,7 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // dropdown value
         $page = $request->input('page', 1); // ✅ Ensure page input handled
+        $date = $request->input('date');
 
         $juniorPart = $authUser->id . '|junior';
 
@@ -5526,6 +5527,11 @@ class GoogleSheetController extends Controller
                     ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
             })->where('transfers', '!=', 1);
         }
+
+        if ($date) {
+            $query->whereDate('updated_at', $date);
+        }
+
 
         // Search or specific row filter
         if ($rowId) {
@@ -5591,8 +5597,12 @@ class GoogleSheetController extends Controller
             $transformed->count(),
             $perPage,
             $currentPage,
-            ['path' => url()->current(), 'query' => $request->query()]
+            [
+                'path' => url()->current(),
+                'query' => $request->query() // ✅ keeps date, junior, search
+            ]
         );
+
 
 
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
