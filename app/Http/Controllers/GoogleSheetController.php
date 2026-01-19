@@ -5896,8 +5896,16 @@ class GoogleSheetController extends Controller
         // ✅ Map frontend keys to database columns
         $updateData = [];
 
-        // --- Append remark if Exe Remarks changed ---
-        $oldExeRemarks = $row->Exe_Remarks ?? null;
+        if (array_key_exists('Remark', $rowData)) {
+            $updateData['Remark'] = trim($rowData['Remark']);
+        }
+
+        if (array_key_exists('1st Follow Up Remarks', $rowData)) {
+            $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
+        }
+
+        // === Append remark if Exe Remarks changed ===
+        $oldExeRemarks = $row->Exe_Remarks;
 
         if (
             isset($rowData['Exe Remarks']) &&
@@ -5909,20 +5917,16 @@ class GoogleSheetController extends Controller
             $newRemarkEntry = "{$rowData['Exe Remarks']} | Updated by {$updatedBy} on {$updatedAt}";
 
             // Append to existing remark (keep history)
-            $existingRemark = $rowData['Remark'] ?? $row->Remark ?? '';
+            $existingRemark =
+                $updateData['Remark']
+                ?? $row->Remark
+                ?? '';
 
             $updateData['Remark'] = trim(
                 $existingRemark
                     ? $existingRemark . PHP_EOL . $newRemarkEntry
                     : $newRemarkEntry
             );
-        } elseif (array_key_exists('Remark', $rowData)) {
-            // Keep existing logic if Exe Remarks didn't change
-            $updateData['Remark'] = trim($rowData['Remark']);
-        }
-
-        if (array_key_exists('1st Follow Up Remarks', $rowData)) {
-            $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
         }
 
         // ✅ Validate that 'Remark' is mandatory
