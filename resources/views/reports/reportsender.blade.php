@@ -47,7 +47,7 @@
                                 <th class="text-center" style="width:40px;">
                                     <div class="form-check d-flex justify-content-center">
                                         <input class="form-check-input" type="checkbox" id="selectAllUsers"
-                                            style="opacity:1; position:static;">
+                                            >
                                     </div>
                                 </th>
                             </tr>
@@ -59,7 +59,7 @@
 
                                     <td>{{ $index + 1 }}</td>
                                     <td>{{ $user->name }}</td>
-                                 
+
                                     <td>
                                         {{ $user->role === 'junior' ? 'IT Recruiter' : ucfirst($user->role) }}
                                     </td>
