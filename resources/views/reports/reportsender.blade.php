@@ -46,8 +46,7 @@
                                 <th>Role</th>
                                 <th class="text-center" style="width:40px;">
                                     <div class="form-check d-flex justify-content-center">
-                                        <input class="form-check-input" type="checkbox" id="selectAllUsers"
-                                            >
+                                        <input class="form-check-input" type="checkbox" id="selectAllUsers">
                                     </div>
                                 </th>
                             </tr>
@@ -94,11 +93,6 @@
     </script>
 
     <script>
-        document.getElementById('selectAllUsers').addEventListener('change', function() {
-            document.querySelectorAll('.user-checkbox')
-                .forEach(cb => cb.checked = this.checked);
-        });
-
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
 
             const selectedDate = document.getElementById("selected_date").value;
@@ -112,74 +106,80 @@
             const {
                 jsPDF
             } = window.jspdf;
-            const mergedPdf = new jsPDF('p', 'px', 'a4');
-
-            let firstPage = true;
+            const finalPdf = new jsPDF("p", "px", "a4");
+            let isFirstPage = true;
 
             for (const checkbox of selectedUsers) {
 
                 const userId = checkbox.value;
                 const role = checkbox.dataset.role;
 
-                const url =
-                    role === 'senior' ?
-                    `/dashboard/allseniordaily/call-reports/${userId}?selected_date=${selectedDate}` :
-                    `/dashboard/alljuniordaily/call-reports/${userId}?selected_date=${selectedDate}`;
+                const urls = role === "senior" ?
+                    [
+                        `/dashboard/allseniordaily/call-reports/${userId}?selected_date=${selectedDate}`,
+                        `/dashboard/allseniormonthly/call-reports/${userId}?selected_date=${selectedDate}`
+                    ] :
+                    [
+                        `/dashboard/alljuniordaily/call-reports/${userId}?selected_date=${selectedDate}`,
+                        `/dashboard/alljuniormonthly/call-reports/${userId}?selected_date=${selectedDate}`
+                    ];
 
-                // Load report silently
-                const iframe = document.createElement("iframe");
-                iframe.style.position = "absolute";
-                iframe.style.left = "-9999px";
-                iframe.src = url;
-                document.body.appendChild(iframe);
+                for (const url of urls) {
 
-                await new Promise(resolve => iframe.onload = resolve);
+                    const iframe = document.createElement("iframe");
+                    iframe.style.position = "absolute";
+                    iframe.style.left = "-9999px";
+                    iframe.src = url;
+                    document.body.appendChild(iframe);
 
-                const content = iframe.contentDocument.getElementById("pdfContent");
+                    await new Promise(resolve => iframe.onload = resolve);
 
-                const pdfBlob = await html2pdf()
-                    .from(content)
-                    .set({
-                        margin: 0,
-                        image: {
-                            type: "jpeg",
-                            quality: 0.98
-                        },
-                        html2canvas: {
-                            scale: 3,
-                            useCORS: true
-                        },
-                        jsPDF: {
-                            unit: "px",
-                            format: "a4",
-                            orientation: "portrait"
-                        }
-                    })
-                    .outputPdf("blob");
+                    const content = iframe.contentDocument.getElementById("pdfContent");
 
-                const arrayBuffer = await pdfBlob.arrayBuffer();
-                const tempPdf = new jsPDF();
-                const pages = tempPdf.loadFile(arrayBuffer);
+                    const tempPdfBlob = await html2pdf()
+                        .from(content)
+                        .set({
+                            margin: 10,
+                            image: {
+                                type: "jpeg",
+                                quality: 0.98
+                            },
+                            html2canvas: {
+                                scale: 2,
+                                useCORS: true
+                            },
+                            jsPDF: {
+                                unit: "px",
+                                format: "a4",
+                                orientation: "portrait"
+                            }
+                        })
+                        .outputPdf("blob");
 
-                const tempDoc = await jsPDF.load(arrayBuffer);
+                    const buffer = await tempPdfBlob.arrayBuffer();
+                    const tempPdf = await jsPDF.load(buffer);
 
-                tempDoc.getPages().forEach((page, index) => {
-                    if (!firstPage) mergedPdf.addPage();
-                    mergedPdf.addImage(
-                        page.getImageData(),
-                        'JPEG',
-                        0,
-                        0,
-                        mergedPdf.internal.pageSize.width,
-                        mergedPdf.internal.pageSize.height
-                    );
-                    firstPage = false;
-                });
+                    const pageCount = tempPdf.getNumberOfPages();
 
-                document.body.removeChild(iframe);
+                    for (let i = 1; i <= pageCount; i++) {
+                        if (!isFirstPage) finalPdf.addPage();
+                        finalPdf.setPage(finalPdf.getNumberOfPages());
+                        finalPdf.addImage(
+                            tempPdf.getPage(i).getImageData(),
+                            "JPEG",
+                            0,
+                            0,
+                            finalPdf.internal.pageSize.width,
+                            finalPdf.internal.pageSize.height
+                        );
+                        isFirstPage = false;
+                    }
+
+                    document.body.removeChild(iframe);
+                }
             }
 
-            mergedPdf.save(`Merged_Report_${selectedDate}.pdf`);
+            finalPdf.save(`Merged_Daily_Monthly_Report_${selectedDate}.pdf`);
         });
     </script>
 @endsection
