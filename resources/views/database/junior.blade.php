@@ -25,13 +25,13 @@
                 <table class="table table-sm table-bordered mb-0 text-center align-middle w-100">
                     <thead>
                         <tr>
-                            <th class="text-nowrap text-center">Total Calls</th>
-                            <th class="text-nowrap text-center">Called & Mailed</th>
-                            <th class="text-nowrap text-center">Not Interested</th>
-                            <th class="text-nowrap text-center">Interested</th>
-                            <th class="text-nowrap text-center">Others</th>
-                            <th class="text-nowrap text-center">VM</th>
-                            <th class="text-nowrap text-center">Busy</th>
+                            <th class="text-nowrap text-center text-primary">Total Calls</th>
+                            <th class="text-nowrap text-center text-success">Called & Mailed</th>
+                            <th class="text-nowrap text-center text-danger">Not Interested</th>
+                            <th class="text-nowrap text-center text-info">Interested</th>
+                            <th class="text-nowrap text-center text-secondary">Others</th>
+                            <th class="text-nowrap text-center text-warning">VM</th>
+                            <th class="text-nowrap text-center text-dark">Busy</th>
                         </tr>
                     </thead>
                     <tbody>
