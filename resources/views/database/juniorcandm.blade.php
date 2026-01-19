@@ -1039,6 +1039,7 @@
                     type: 'GET',
                     data: {
                         query,
+                        date
                     },
                     success: function(res) {
                         let suggestions = '';
