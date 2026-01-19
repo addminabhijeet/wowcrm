@@ -479,6 +479,11 @@
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer Report</a>
                         </li>
                     </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('call.reports.sender') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Report sender</a>
+                        </li>
+                    </ul>
                 </li>
 
                 <li class="dropdown">
