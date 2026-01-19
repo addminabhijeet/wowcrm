@@ -30,47 +30,7 @@
 
         <div class="card-body p-24">
             <div class="table-responsive scroll-sm">
-                <table class="table bordered-table sm-table mb-0">
-                    <thead>
-                        <tr>
-                            <th>S.L</th>
-
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-
-                            <th class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @forelse($trainerUsers as $index => $user)
-                            <tr>
-                                <td>{{ $index + 1 }}</td>
-
-                                <td>{{ $user->name }}</td>
-                                <td>{{ $user->email }}</td>
-                                <td>{{ $user->role }}</td>
-
-                                <td class="text-center">
-                                    <a href="{{ route('call.reports.alltrainermonthly', $user->id) }}"
-                                        class="btn btn-sm btn-primary">
-                                        View Monthly
-                                    </a>
-
-                                    <a href="{{ route('call.reports.alltrainerdaily', $user->id) }}"
-                                        class="btn btn-sm btn-success">
-                                        View Daily
-                                    </a>
-                                </td>
-
-                            </tr>
-                        @empty
-                            <tr>
-                                <td colspan="7" class="text-center">No trainer users found.</td>
-                            </tr>
-                        @endforelse
-                    </tbody>
-                </table>
+                
             </div>
 
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
