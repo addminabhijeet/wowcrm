@@ -1,25 +1,25 @@
 @extends('layout.layout')
 @php
     $title =
-        'Total Calls: ' .
+        'TCs: ' .
         ($exeRemarkCounts['total_calls'] ?? 0) .
         "\n\n" .
-        'Called & Mailed: ' .
+        'C&M: ' .
         ($exeRemarkCounts['called_and_mailed'] ?? 0) .
         "\n\n" .
-        'Not Interested: ' .
+        'NI: ' .
         ($exeRemarkCounts['not_interested'] ?? 0) .
         "\n\n" .
-        'Interested: ' .
+        'I: ' .
         ($exeRemarkCounts['interested'] ?? 0) .
         "\n\n" .
-        'Others: ' .
+        'O: ' .
         ($exeRemarkCounts['others'] ?? 0) .
         "\n\n" .
         'VM: ' .
         ($exeRemarkCounts['vm'] ?? 0) .
         "\n\n" .
-        'Busy: ' .
+        'B: ' .
         ($exeRemarkCounts['busy'] ?? 0);
 
     $role = auth()->user()->role ?? '';
