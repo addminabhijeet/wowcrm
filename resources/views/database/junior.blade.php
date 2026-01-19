@@ -1107,11 +1107,12 @@
             // -----------------------------
             const showSuggestions = debounce(function() {
                 const query = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+                const junior_user = $('#junior-filter').val();
+                const date = $('#date-filter').val(); // ✅ add
 
                 if (query.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user); // reset table
+                    fetchTable('', 1, junior_user, '', date); // ✅ pass date
                     return;
                 }
 
@@ -1119,15 +1120,18 @@
                     url: "{{ route('junior.suggestions') }}",
                     type: 'GET',
                     data: {
-                        query: query,
-                        junior_user: junior_user // ✅ PASS SELECTED JUNIOR
+                        query,
+                        junior_user
                     },
                     success: function(res) {
                         let suggestions = '';
                         if (res.length) {
                             res.forEach(item => {
-                                suggestions +=
-                                    `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}| ${item.Exe_Remarks}| ${item.forwarded_by}</a>`;
+                                suggestions += `
+                        <a href="#" class="list-group-item list-group-item-action"
+                           data-id="${item.id}">
+                           ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}
+                        </a>`;
                             });
                         } else {
                             suggestions =
@@ -1136,21 +1140,25 @@
                         $('#search-suggestions').html(suggestions).show();
                     }
                 });
-
             }, 300);
+
 
             $('#senior-search').on('input', showSuggestions);
 
             // Click suggestion
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
+
                 const rowId = $(this).data('id');
                 const junior_user = $('#junior-filter').val();
+                const date = $('#date-filter').val(); // ✅ add
+
                 $('#senior-search').val($(this).text());
                 $('#search-suggestions').empty().hide();
 
-                fetchTable('', 1, junior_user, rowId);
+                fetchTable('', 1, junior_user, rowId, date); // ✅
             });
+
 
 
 
@@ -1609,7 +1617,7 @@
 
 
     <script>
-        $('#date-filter').on('change', function() {
+        $(document).on('change', '#date-filter', function() {
             const date = $(this).val();
             const search = $('#senior-search').val().trim();
             const junior_user = $('#junior-filter').val();
