@@ -18,11 +18,6 @@
 
 @section('content')
 
-
-
-
-
-
     <div class="card h-100 p-0 radius-12">
         <div
             class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
@@ -33,7 +28,6 @@
                     <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
-
             </div>
         </div>
         <div class="card-body p-24" id="senior-table-wrapper">
@@ -256,8 +250,7 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                                        <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="2">{{ $row->Remark ?? '' }}</textarea>
                                     </td>
 
                                     {{-- Status --}}
@@ -1617,5 +1610,45 @@
     </script>
 
 
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.querySelector('form');
+            if (!form) return;
+
+            // Function to sync a textarea to its corresponding input
+            function syncTextareaToInput(textarea) {
+                const td = textarea.closest('td');
+                if (!td) return;
+
+                const textareaName = textarea.getAttribute('name');
+                if (!textareaName) return;
+
+                // Map _hidden textarea to input with same name minus _hidden
+                const inputName = textareaName.replace('_hidden', '');
+                const input = td.querySelector('input[name="' + inputName + '"]');
+                if (!input) return;
+
+                // Trim value before assigning
+                input.value = textarea.value.trim();
+            }
+
+            // 🔁 Real-time sync on input for all textareas with *_autocomplete class
+            document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                function(textarea) {
+                    textarea.addEventListener('input', function() {
+                        syncTextareaToInput(textarea);
+                    });
+                });
+
+            // 🛡️ Final sync before form submit
+            form.addEventListener('submit', function() {
+                document.querySelectorAll(
+                    'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                    function(textarea) {
+                        syncTextareaToInput(textarea);
+                    });
+            });
+        });
+    </script>
 
 @endsection
