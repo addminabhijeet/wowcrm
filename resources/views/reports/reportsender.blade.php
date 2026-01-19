@@ -17,92 +17,64 @@
 @endphp
 
 @section('content')
-    <style>
-        /* Prevent row highlight when checkbox is clicked */
-        .table> :not(caption)>*>* {
-            background-color: transparent !important;
-        }
-
-        /* Disable Bootstrap active/hover blue effect */
-        .table-hover tbody tr:hover,
-        .table-hover tbody tr:active,
-        .table-hover tbody tr:focus,
-        .table-hover tbody tr:has(input:checked) {
-            background-color: transparent !important;
-        }
-
-        /* Remove blue focus ring from checkbox */
-        .form-check-input:focus {
-            box-shadow: none !important;
-            outline: none !important;
-        }
-
-        /* Remove active blue background on checkbox click */
-        .form-check-input:checked {
-            background-color: #dc3545;
-            /* keep your red theme */
-            border-color: #dc3545;
-        }
-    </style>
-
-    <div class="card h-100 p-0 radius-12">
-        <div class="card-header border-bottom bg-base py-16 px-24">
-            <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
-                <div class="d-flex flex-wrap gap-3 align-items-center">
-                    <div class="d-flex align-items-center gap-2">
-                        <label for="selected_date" class="fw-semibold small mb-0">Select Date:</label>
-                        <input type="date" id="selected_date" value="{{ request('selected_date', date('Y-m-d')) }}"
-                            class="form-control form-control-sm">
+    <div class="user-select-none">
+        <div class="card h-100 p-0 radius-12">
+            <div class="card-header border-bottom bg-base py-16 px-24">
+                <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="selected_date" class="fw-semibold small mb-0">Select Date:</label>
+                            <input type="date" id="selected_date" value="{{ request('selected_date', date('Y-m-d')) }}"
+                                class="form-control form-control-sm">
+                        </div>
+                        <button class="btn btn-danger btn-sm" id="downloadPdfBtn">
+                            <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download Merged PDF
+                        </button>
                     </div>
-                    <button class="btn btn-danger btn-sm" id="downloadPdfBtn">
-                        <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download Merged PDF
-                    </button>
+                </div>
+            </div>
+
+            <div class="card-body p-24">
+                <div class="table-responsive scroll-sm">
+                    <table class="table bordered-table sm-table mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th class="text-center" style="width:40px;">
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input" type="checkbox" id="selectAllUsers"
+                                            style="opacity:1; position:static;">
+                                    </div>
+                                </th>
+                                <th>S.L</th>
+                                <th>Name</th>
+                                <th>Email</th>
+                                <th>Role</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach ($juniorUsers as $index => $user)
+                                <tr>
+                                    <td class="text-center">
+                                        <div class="form-check d-flex justify-content-center">
+                                            <input class="form-check-input user-checkbox" type="checkbox" name="users[]"
+                                                value="{{ $user->id }}" data-role="{{ $user->role }}"
+                                                style="opacity:1; position:static;">
+                                        </div>
+                                    </td>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $user->name }}</td>
+                                    <td>{{ $user->email }}</td>
+                                    <td>
+                                        {{ $user->role === 'junior' ? 'IT Recruiter' : ucfirst($user->role) }}
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
-
-        <div class="card-body p-24">
-            <div class="table-responsive scroll-sm">
-                <table class="table bordered-table sm-table mb-0 align-middle">
-                    <thead>
-                        <tr>
-                            <th class="text-center" style="width:40px;">
-                                <div class="form-check d-flex justify-content-center">
-                                    <input class="form-check-input" type="checkbox" id="selectAllUsers"
-                                        style="opacity:1; position:static;">
-                                </div>
-                            </th>
-                            <th>S.L</th>
-                            <th>Name</th>
-                            <th>Email</th>
-                            <th>Role</th>
-                        </tr>
-                    </thead>
-
-                    <tbody>
-                        @foreach ($juniorUsers as $index => $user)
-                            <tr>
-                                <td class="text-center">
-                                    <div class="form-check d-flex justify-content-center">
-                                        <input class="form-check-input user-checkbox" type="checkbox" name="users[]"
-                                            value="{{ $user->id }}" data-role="{{ $user->role }}"
-                                            style="opacity:1; position:static;">
-                                    </div>
-                                </td>
-                                <td>{{ $index + 1 }}</td>
-                                <td>{{ $user->name }}</td>
-                                <td>{{ $user->email }}</td>
-                                <td>
-                                    {{ $user->role === 'junior' ? 'IT Recruiter' : ucfirst($user->role) }}
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-
     </div>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
