@@ -21,18 +21,18 @@
     <div
         class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
 
-        {{-- LEFT: Exe Remark Summary Table --}}
-        <div class="table-responsive">
-            <table class="table table-sm table-bordered mb-0 text-center align-middle">
+        {{-- FULL-WIDTH Exe Remark Summary Table --}}
+        <div class="table-responsive w-100">
+            <table class="table table-sm table-bordered mb-0 text-center align-middle w-100">
                 <thead class="table-light">
                     <tr>
-                        <th>TCs</th>
-                        <th>C&amp;M</th>
-                        <th>NI</th>
-                        <th>I</th>
-                        <th>O</th>
-                        <th>VM</th>
-                        <th>B</th>
+                        <th class="text-nowrap">TCs</th>
+                        <th class="text-nowrap">C&amp;M</th>
+                        <th class="text-nowrap">NI</th>
+                        <th class="text-nowrap">I</th>
+                        <th class="text-nowrap">O</th>
+                        <th class="text-nowrap">VM</th>
+                        <th class="text-nowrap">B</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -64,6 +64,7 @@
         </div>
 
     </div>
+
 
     <div class="card h-100 p-0 radius-12">
         <div
@@ -144,8 +145,7 @@
                                     {{-- Phone Number --}}
                                     <td>
                                         <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                            maxlength="14" value="{{ $row->Phone_Number ?? '' }}"
-                                            placeholder="US number">
+                                            maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
                                     </td>
 
                                     {{-- Location --}}
