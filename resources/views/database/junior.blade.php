@@ -1,26 +1,27 @@
 @extends('layout.layout')
 @php
     $title =
-        'TCs: ' .
+        '<span class="badge bg-primary">TCs: ' .
         ($exeRemarkCounts['total_calls'] ?? 0) .
-        "\n\n" .
-        'C&M: ' .
+        '</span> ' .
+        '<span class="badge bg-success">C&M: ' .
         ($exeRemarkCounts['called_and_mailed'] ?? 0) .
-        "\n\n" .
-        'NI: ' .
+        '</span> ' .
+        '<span class="badge bg-danger">NI: ' .
         ($exeRemarkCounts['not_interested'] ?? 0) .
-        "\n\n" .
-        'I: ' .
+        '</span> ' .
+        '<span class="badge bg-info">I: ' .
         ($exeRemarkCounts['interested'] ?? 0) .
-        "\n\n" .
-        'O: ' .
+        '</span> ' .
+        '<span class="badge bg-secondary">O: ' .
         ($exeRemarkCounts['others'] ?? 0) .
-        "\n\n" .
-        'VM: ' .
+        '</span> ' .
+        '<span class="badge bg-warning text-dark">VM: ' .
         ($exeRemarkCounts['vm'] ?? 0) .
-        "\n\n" .
-        'B: ' .
-        ($exeRemarkCounts['busy'] ?? 0);
+        '</span> ' .
+        '<span class="badge bg-dark">B: ' .
+        ($exeRemarkCounts['busy'] ?? 0) .
+        '</span>';
 
     $role = auth()->user()->role ?? '';
     if ($role === 'admin') {
