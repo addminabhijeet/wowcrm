@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-    $title = 'Users Grid';
+    $title = 'Database';
     $role = auth()->user()->role ?? '';
     if ($role === 'admin') {
         $subTitle = 'Super Admin';
