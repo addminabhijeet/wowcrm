@@ -86,6 +86,7 @@
             </div>
         </div>
 
+
         <div class="card-body p-24" id="senior-table-wrapper">
             <!-- Extra Scroll Bar Above -->
             <!-- Extra Scroll Bar Above -->
@@ -1060,39 +1061,53 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-
     <script>
         $(document).ready(function() {
 
             // -----------------------------
-            // Helper: Debounce
+            // GLOBAL FILTER STATE
+            // -----------------------------
+            let filterState = {
+                search: '',
+                junior_user: '',
+                date: '',
+                page: 1,
+                row_id: ''
+            };
+
+            // -----------------------------
+            // Debounce Helper
             // -----------------------------
             function debounce(func, wait) {
                 let timeout;
                 return function() {
-                    const context = this,
-                        args = arguments;
                     clearTimeout(timeout);
-                    timeout = setTimeout(() => func.apply(context, args), wait);
+                    timeout = setTimeout(() => func.apply(this, arguments), wait);
                 };
             }
 
             // -----------------------------
-            // Fetch Table Data via AJAX
+            // Fetch Table via AJAX
             // -----------------------------
-            function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
+            function fetchTable() {
                 $.ajax({
                     url: "{{ route('google.sheet.junior') }}",
-                    type: 'GET',
-                    data: {
-                        search,
-                        page,
-                        junior_user,
-                        row_id,
-                        date // ✅ added
-                    },
+                    type: "GET",
+                    data: filterState,
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
+
+                        // -----------------------------
+                        // FIX PAGINATION (KEEP DATE)
+                        // -----------------------------
+                        $('#senior-table-wrapper .pagination a').off('click').on('click', function(e) {
+                            e.preventDefault();
+
+                            let page = new URL($(this).attr('href')).searchParams.get('page');
+                            filterState.page = page;
+
+                            fetchTable();
+                        });
                     },
                     error: function(err) {
                         console.error(err);
@@ -1100,39 +1115,42 @@
                 });
             }
 
-
             // -----------------------------
-            // Live Search Suggestions
+            // SEARCH SUGGESTIONS
             // -----------------------------
             const showSuggestions = debounce(function() {
-                const query = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+                filterState.search = $('#senior-search').val().trim();
+                filterState.junior_user = $('#junior-filter').val();
 
-                if (query.length < 3) {
-                    $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user); // reset table
+                if (filterState.search.length < 3) {
+                    $('#search-suggestions').hide().empty();
+                    filterState.page = 1;
+                    fetchTable();
                     return;
                 }
 
                 $.ajax({
                     url: "{{ route('junior.suggestions') }}",
-                    type: 'GET',
+                    type: "GET",
                     data: {
-                        query: query,
-                        junior_user: junior_user // ✅ PASS SELECTED JUNIOR
+                        query: filterState.search,
+                        junior_user: filterState.junior_user
                     },
                     success: function(res) {
-                        let suggestions = '';
+                        let html = '';
                         if (res.length) {
                             res.forEach(item => {
-                                suggestions +=
-                                    `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}| ${item.Exe_Remarks}| ${item.forwarded_by}</a>`;
+                                html += `
+                        <a href="#" class="list-group-item list-group-item-action"
+                           data-id="${item.id}">
+                           ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address}
+                           | ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
+                        </a>`;
                             });
                         } else {
-                            suggestions =
-                                '<span class="list-group-item">No results found</span>';
+                            html = `<span class="list-group-item">No results found</span>`;
                         }
-                        $('#search-suggestions').html(suggestions).show();
+                        $('#search-suggestions').html(html).show();
                     }
                 });
 
@@ -1140,37 +1158,57 @@
 
             $('#senior-search').on('input', showSuggestions);
 
-            // Click suggestion
+            // -----------------------------
+            // SUGGESTION CLICK
+            // -----------------------------
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
-                const rowId = $(this).data('id');
-                const junior_user = $('#junior-filter').val();
+
+                filterState.row_id = $(this).data('id');
+                filterState.page = 1;
+
                 $('#senior-search').val($(this).text());
-                $('#search-suggestions').empty().hide();
+                $('#search-suggestions').hide().empty();
 
-                fetchTable('', 1, junior_user, rowId);
+                fetchTable();
             });
 
-
-
-            // Junior dropdown filter
+            // -----------------------------
+            // JUNIOR FILTER
+            // -----------------------------
             $(document).on('change', '#junior-filter', function() {
-                const junior_user = $(this).val();
-                const search = $('#senior-search').val().trim();
-                const date = $('#date-filter').val(); // add selected date
-                fetchTable(search, page, junior_user, row_id, date);
+                filterState.junior_user = $(this).val();
+                filterState.page = 1;
+                filterState.row_id = '';
+                fetchTable();
             });
 
+            // -----------------------------
+            // DATE FILTER (MAIN FIX)
+            // -----------------------------
+            $('#date-filter').on('change', function() {
+                filterState.date = $(this).val();
+                filterState.page = 1;
+                filterState.row_id = '';
+                fetchTable();
+            });
 
-            // Click outside suggestions to hide
+            // -----------------------------
+            // HIDE SUGGESTIONS
+            // -----------------------------
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
-                    $('#search-suggestions').empty().hide();
+                    $('#search-suggestions').hide().empty();
                 }
             });
 
+            // -----------------------------
+            // INITIAL LOAD
+            // -----------------------------
+            fetchTable();
         });
     </script>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
