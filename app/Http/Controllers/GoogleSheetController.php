@@ -5587,18 +5587,67 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
+
+        $todayDate = date('Y-m-d');
+        $createdByKey = $authUser->id . '|junior';
+
+        // Base query for today & this user
+        $todayBaseQuery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereDate('updated_at', $todayDate);
+
+        // Total calls today
+        $StotalCalls = (clone $todayBaseQuery)->count();
+
+        // Individual Exe Remark counts
+        $ScalledAndMailedCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNull('TransferRemark')
+            ->count();
+
+        $SnotInterestedCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'Not Interested')
+            ->whereNull('TransferRemark')
+            ->count();
+
+        $SinterestedCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'Interested')
+            ->whereNull('TransferRemark')
+            ->count();
+
+        $SothersCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'Others')
+            ->whereNull('TransferRemark')
+            ->count();
+
+        $SvmCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'VM')
+            ->whereNull('TransferRemark')
+            ->count();
+
+        $SbusyCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'Busy')
+            ->whereNull('TransferRemark')
+            ->count();
+
+        // Grouped array (easy to use in Blade / AJAX)
+        $exeRemarkCounts = [
+            'total_calls'       => $StotalCalls,
+            'called_and_mailed' => $ScalledAndMailedCalls,
+            'not_interested'    => $SnotInterestedCalls,
+            'interested'        => $SinterestedCalls,
+            'others'            => $SothersCalls,
+            'vm'                => $SvmCalls,
+            'busy'              => $SbusyCalls,
+        ];
+
+
         // ✅ Handle AJAX pagination and search
         if ($request->ajax()) {
-            return view('database.partials.juniortra_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.juniortra_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers, 'exeRemarkCounts' => $exeRemarkCounts])->render();
         }
 
-        return view('database.juniortra', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+        return view('database.juniortra', ['data' => $pagedData, 'juniorUsers' => $juniorUsers, 'exeRemarkCounts' => $exeRemarkCounts]);
     }
-
-
-
-
-
 
     public function juniorfetch(Request $request)
     {
