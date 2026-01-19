@@ -1170,6 +1170,16 @@
                 fetchTable(search, page, junior_user, row_id, date);
             });
 
+            // Date filter
+            $(document).on('change', '#date-filter', function() {
+                const date = $(this).val();
+                const search = $('#senior-search').val().trim();
+                const junior_user = $('#junior-filter').val();
+
+                fetchTable(search, page, junior_user, row_id, date);
+            });
+
+
 
             // Click outside suggestions to hide
             $(document).click(function(e) {
@@ -1612,17 +1622,6 @@
 
                 }, 500);
             });
-        });
-    </script>
-
-
-    <script>
-        $(document).on('change', '#date-filter', function() {
-            const date = $(this).val();
-            const search = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val();
-
-            fetchTable(search, 1, junior_user, '', date);
         });
     </script>
 
