@@ -24,15 +24,15 @@
         {{-- FULL-WIDTH Exe Remark Summary Table --}}
         <div class="table-responsive w-100">
             <table class="table table-sm table-bordered mb-0 text-center align-middle w-100">
-                <thead class="table-light">
-                    <tr class="text-center">
-                        <th class="text-nowrap">TCs</th>
-                        <th class="text-nowrap">C&amp;M</th>
-                        <th class="text-nowrap">NI</th>
-                        <th class="text-nowrap">I</th>
-                        <th class="text-nowrap">O</th>
-                        <th class="text-nowrap">VM</th>
-                        <th class="text-nowrap">B</th>
+                <thead>
+                    <tr class="">
+                        <th class="text-nowrap text-center">TCs</th>
+                        <th class="text-nowrap text-center">C&amp;M</th>
+                        <th class="text-nowrap text-center">NI</th>
+                        <th class="text-nowrap text-center">I</th>
+                        <th class="text-nowrap text-center">O</th>
+                        <th class="text-nowrap text-center">VM</th>
+                        <th class="text-nowrap text-center">B</th>
                     </tr>
 
                 </thead>
