@@ -5893,44 +5893,36 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No data provided']);
         }
 
+        $user = Auth::user();
+
         // ✅ Map frontend keys to database columns
         $updateData = [];
 
         if (array_key_exists('Remark', $rowData)) {
-            $updateData['Remark'] = trim($rowData['Remark']);
+            $newRemark = trim($rowData['Remark']);
+
+            // Append only if remark has changed
+            if ($newRemark !== $row->Remark) {
+                $existingRemark = $row->Remark ?? '';
+
+                $remarkEntry = $newRemark
+                    . ' | Updated by ' . $user->name
+                    . ' on ' . now()->format('d-m-Y H:i');
+
+                $updateData['Remark'] = trim(
+                    $existingRemark
+                        ? $existingRemark . PHP_EOL . $remarkEntry
+                        : $remarkEntry
+                );
+            }
         }
 
         if (array_key_exists('1st Follow Up Remarks', $rowData)) {
             $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
         }
 
-        // === Append remark if Exe Remarks changed ===
-        $oldExeRemarks = $row->Exe_Remarks;
-
-        if (
-            isset($rowData['Exe Remarks']) &&
-            $rowData['Exe Remarks'] !== $oldExeRemarks
-        ) {
-            $updatedBy = Auth::user()->name;
-            $updatedAt = now()->format('d-m-Y H:i');
-
-            $newRemarkEntry = "{$rowData['Exe Remarks']} | Updated by {$updatedBy} on {$updatedAt}";
-
-            // Append to existing remark (keep history)
-            $existingRemark =
-                $updateData['Remark']
-                ?? $row->Remark
-                ?? '';
-
-            $updateData['Remark'] = trim(
-                $existingRemark
-                    ? $existingRemark . PHP_EOL . $newRemarkEntry
-                    : $newRemarkEntry
-            );
-        }
-
-        // ✅ Validate that 'Remark' is mandatory
-        if (!isset($updateData['Remark']) || $updateData['Remark'] === '') {
+        // Validate Remark is mandatory if it exists
+        if (array_key_exists('Remark', $updateData) && $updateData['Remark'] === '') {
             return response()->json([
                 'success' => false,
                 'message' => 'Remark field is required before updating.'
@@ -5942,10 +5934,8 @@ class GoogleSheetController extends Controller
         }
 
         try {
-            // ✅ Prevent timestamps from updating automatically
             $row->timestamps = false;
 
-            // ✅ Force assign each field manually (bypasses $fillable restrictions)
             foreach ($updateData as $key => $value) {
                 $row->$key = $value;
             }
