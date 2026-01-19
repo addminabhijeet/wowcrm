@@ -1,10 +1,27 @@
 @extends('layout.layout')
 @php
     $title =
-        'Total Calls Today: ' . ($exeRemarkCounts['total_calls'] ?? 0) . "\n\n" .
-        'Called & Mailed: ' . ($exeRemarkCounts['called_and_mailed'] ?? 0) . "\n\n" .
-        'VM: ' . ($exeRemarkCounts['vm'] ?? 0) . "\n\n" .
-        'Busy: ' . ($exeRemarkCounts['busy'] ?? 0);
+        'Total Calls Today: ' .
+        ($exeRemarkCounts['total_calls'] ?? 0) .
+        "\n\n" .
+        'Called & Mailed: ' .
+        ($exeRemarkCounts['called_and_mailed'] ?? 0) .
+        "\n\n" .
+        'Not Interested: ' .
+        ($exeRemarkCounts['not_interested'] ?? 0) .
+        "\n\n" .
+        'Interested: ' .
+        ($exeRemarkCounts['interested'] ?? 0) .
+        "\n\n" .
+        'Others: ' .
+        ($exeRemarkCounts['others'] ?? 0) .
+        "\n\n" .
+        'VM: ' .
+        ($exeRemarkCounts['vm'] ?? 0) .
+        "\n\n" .
+        'Busy: ' .
+        ($exeRemarkCounts['busy'] ?? 0);
+
     $role = auth()->user()->role ?? '';
     if ($role === 'admin') {
         $subTitle = 'Super Admin';
@@ -254,8 +271,8 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark" rows="6"
-                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                                        <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                                            rows="6" value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
                                     {{-- Status --}}
