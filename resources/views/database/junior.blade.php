@@ -1103,11 +1103,12 @@
                         $('#senior-table-wrapper .pagination a').off('click').on('click', function(e) {
                             e.preventDefault();
 
-                            let page = new URL($(this).attr('href')).searchParams.get('page');
-                            filterState.page = page;
+                            const url = new URL($(this).attr('href'), window.location.origin);
+                            filterState.page = url.searchParams.get('page') || 1;
 
                             fetchTable();
                         });
+
 
                     },
                     error: function(err) {
