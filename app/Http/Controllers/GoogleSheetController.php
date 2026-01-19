@@ -5428,8 +5428,12 @@ class GoogleSheetController extends Controller
             $perPage,
             $currentPage,
             [
-                'path' => url()->current(),
-                'query' => $request->query() // ✅ keeps date, junior, search
+                'path'  => url()->current(),
+                'query' => [
+                    'search'      => $request->search,
+                    'junior_user' => $request->junior_user,
+                    'date'        => $request->date, // ✅ keep date
+                ]
             ]
         );
 

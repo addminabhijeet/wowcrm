@@ -1090,7 +1090,7 @@
                         page,
                         junior_user,
                         row_id,
-                        date // ✅ added
+                        date
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
@@ -1101,18 +1101,17 @@
                 });
             }
 
-
             // -----------------------------
             // Live Search Suggestions
             // -----------------------------
             const showSuggestions = debounce(function() {
                 const query = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val();
-                const date = $('#date-filter').val(); // ✅ add
+                const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+                const date = $('#date-filter').val();
 
                 if (query.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user, '', date); // ✅ pass date
+                    fetchTable('', 1, junior_user, '', date); // reset table
                     return;
                 }
 
@@ -1139,7 +1138,6 @@
                 });
             }, 300);
 
-
             $('#senior-search').on('input', showSuggestions);
 
             // Click suggestion
@@ -1148,12 +1146,20 @@
 
                 const rowId = $(this).data('id');
                 const junior_user = $('#junior-filter').val();
-                const date = $('#date-filter').val(); // ✅ add
+                const date = $('#date-filter').val();
 
                 $('#senior-search').val($(this).text());
                 $('#search-suggestions').empty().hide();
 
-                fetchTable('', 1, junior_user, rowId, date); // ✅
+                fetchTable('', 1, junior_user, rowId, date);
+            });
+
+            $('#date-filter').on('change', function() {
+                const date = $(this).val();
+                const junior_user = $('#junior-filter').val();
+                const search = $('#senior-search').val().trim();
+
+                fetchTable(search, 1, junior_user, '', date);
             });
 
 
@@ -1161,22 +1167,9 @@
             $(document).on('change', '#junior-filter', function() {
                 const junior_user = $(this).val();
                 const search = $('#senior-search').val().trim();
-                const date = $('#date-filter').val(); // add selected date
-                fetchTable(search, page, junior_user, row_id, date);
-            });
-
-
-            // Date filter
-            $(document).on('change', '#date-filter', function() {
-                const date = $(this).val();
-                const search = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val();
-
+                const date = $('#date-filter').val();
                 fetchTable(search, 1, junior_user, '', date);
             });
-
-
-
 
             // Click outside suggestions to hide
             $(document).click(function(e) {
