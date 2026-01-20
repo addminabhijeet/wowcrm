@@ -32,7 +32,7 @@ class CallReportController extends Controller
         )
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->count();
 
@@ -161,7 +161,7 @@ class CallReportController extends Controller
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->count();
 
@@ -191,7 +191,7 @@ class CallReportController extends Controller
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->groupBy('hour')
             ->pluck('count', 'hour')
@@ -638,7 +638,7 @@ class CallReportController extends Controller
         )
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->count();
 
@@ -706,7 +706,7 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->count();
 
@@ -785,7 +785,7 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->groupBy('day')
             ->pluck('count', 'day')
@@ -1530,7 +1530,7 @@ class CallReportController extends Controller
         // Total "Called & Mailed" calls for this junior
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKeyCM}%")
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->count();
 
         // Total other calls for this junior
@@ -1566,7 +1566,7 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = (clone $query)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->count();
 
         $SotherCalls = (clone $query)
@@ -1588,7 +1588,7 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKeyCM}%")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -1670,7 +1670,7 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->count();
 
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
@@ -2212,7 +2212,7 @@ class CallReportController extends Controller
         )
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->count();
 
@@ -2340,7 +2340,7 @@ class CallReportController extends Controller
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->count();
 
@@ -2369,7 +2369,7 @@ class CallReportController extends Controller
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->groupBy('hour')
             ->pluck('count', 'hour')
@@ -3511,7 +3511,7 @@ class CallReportController extends Controller
         )
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->count();
 
@@ -3581,7 +3581,7 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->count();
 
@@ -3694,7 +3694,7 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-           
+            ->whereNull('TransferRemark')
             ->where('transfers', 0)
             ->groupBy('day')
             ->pluck('count', 'day')
@@ -4363,6 +4363,7 @@ class CallReportController extends Controller
         // Total "Called & Mailed" calls for this junior
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKeyCM}%")
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNull('TransferRemark')
             ->count();
 
         // Total other calls for this junior
@@ -4398,7 +4399,7 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = (clone $tquery)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->count();
 
         $SotherCalls = (clone $query)
@@ -4420,7 +4421,7 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKeyCM}%")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-
+            ->whereNull('TransferRemark')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -4748,7 +4749,6 @@ class CallReportController extends Controller
     {
         $user = Auth::user();
         $createdByKey = "{$user->id}|junior";
-
 
         // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));
