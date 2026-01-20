@@ -5329,7 +5329,6 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-
     public function juniorcandm(Request $request)
     {
         $authUser = Auth::user();
@@ -5342,14 +5341,12 @@ class GoogleSheetController extends Controller
         $juniorPart = $authUser->id . '|junior';
 
         $query = GoogleSheetData::where(function ($q) use ($juniorPart) {
-            // Check first segment is junior
             $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$juniorPart]);
         })
             ->where(function ($q) {
-                // Check second segment is senior (any ID or 0)
                 $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
             })
-            ->where('transfers', 0); // ✅ show only transfer = 0
+            ->where('transfers', 0);
 
         // Filter by selected junior
         if ($juniorUserId) {
@@ -5359,7 +5356,8 @@ class GoogleSheetController extends Controller
             })->where('transfers', '!=', 1);
         }
 
-        if ($date) {
+        // 🔹 Apply date filter only if search is empty or less than 3 chars
+        if ((!$search || strlen($search) < 3) && $date) {
             $query->whereDate('updated_at', $date);
         }
 
@@ -5372,12 +5370,14 @@ class GoogleSheetController extends Controller
                     ->orWhere('Email_Address', 'LIKE', "%{$search}%")
                     ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
             });
+            // 🔹 Ignore date when searching
+            $date = null;
         }
 
-        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
+        // Order by latest updated
         $results = $query->orderBy('updated_at', 'desc')->get();
 
-        // ✅ Transform after getting all filtered data
+        // Transform forwarded_by
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -5391,21 +5391,15 @@ class GoogleSheetController extends Controller
                     $role   = $parts[1] ?? 'unknown';
 
                     if ($userId == $authUser->id) {
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "SELF ({$userId}) ({$roleLabel})";
                     } elseif ($userId == 0) {
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
                         $user = \App\Models\User::where('is_deleted', 0)->find($userId);
                         $name = $user ? $user->name : 'Unknown';
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
                 }
@@ -5419,7 +5413,7 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // ✅ Apply pagination AFTER transformation (like junior)
+        // Apply pagination after transformation
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -5430,8 +5424,8 @@ class GoogleSheetController extends Controller
             ['path' => url()->current(), 'query' => $request->query()]
         );
 
-
-        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)
+            ->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
@@ -5443,52 +5437,18 @@ class GoogleSheetController extends Controller
         $todayBaseQuery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $todayDate);
 
-        // Total calls today
-        $StotalCalls = (clone $todayBaseQuery)->count();
-
-        // Individual Exe Remark counts
-        $ScalledAndMailedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('TransferRemark')
-            ->count();
-
-        $SnotInterestedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Not Interested')
-            ->whereNull('TransferRemark')
-            ->count();
-
-        $SinterestedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Interested')
-            ->whereNull('TransferRemark')
-            ->count();
-
-        $SothersCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Others')
-            ->whereNull('TransferRemark')
-            ->count();
-
-        $SvmCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'VM')
-            ->whereNull('TransferRemark')
-            ->count();
-
-        $SbusyCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Busy')
-            ->whereNull('TransferRemark')
-            ->count();
-
-        // Grouped array (easy to use in Blade / AJAX)
+        // Execution remark counts
         $exeRemarkCounts = [
-            'total_calls'       => $StotalCalls,
-            'called_and_mailed' => $ScalledAndMailedCalls,
-            'not_interested'    => $SnotInterestedCalls,
-            'interested'        => $SinterestedCalls,
-            'others'            => $SothersCalls,
-            'vm'                => $SvmCalls,
-            'busy'              => $SbusyCalls,
+            'total_calls'       => (clone $todayBaseQuery)->count(),
+            'called_and_mailed' => (clone $todayBaseQuery)->where('Exe_Remarks', 'Called & Mailed')->whereNull('TransferRemark')->count(),
+            'not_interested'    => (clone $todayBaseQuery)->where('Exe_Remarks', 'Not Interested')->whereNull('TransferRemark')->count(),
+            'interested'        => (clone $todayBaseQuery)->where('Exe_Remarks', 'Interested')->whereNull('TransferRemark')->count(),
+            'others'            => (clone $todayBaseQuery)->where('Exe_Remarks', 'Others')->whereNull('TransferRemark')->count(),
+            'vm'                => (clone $todayBaseQuery)->where('Exe_Remarks', 'VM')->whereNull('TransferRemark')->count(),
+            'busy'              => (clone $todayBaseQuery)->where('Exe_Remarks', 'Busy')->whereNull('TransferRemark')->count(),
         ];
 
-        // ✅ Handle AJAX pagination and search
+        // Handle AJAX
         if ($request->ajax()) {
             return view('database.partials.juniorcandm_table', [
                 'data' => $pagedData,

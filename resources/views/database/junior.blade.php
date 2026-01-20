@@ -1065,9 +1065,6 @@
     <script>
         $(document).ready(function() {
 
-            // -----------------------------
-            // Helper: Debounce
-            // -----------------------------
             function debounce(func, wait) {
                 let timeout;
                 return function() {
@@ -1078,19 +1075,16 @@
                 };
             }
 
-            // -----------------------------
-            // Fetch Table Data via AJAX
-            // -----------------------------
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
                 $.ajax({
-                    url: "{{ route('google.sheet.junior') }}",
+                    url: "{{ route('google.sheet.junior.candm') }}",
                     type: 'GET',
                     data: {
-                        search,
-                        page,
-                        junior_user,
-                        row_id,
-                        date
+                        search: search,
+                        page: page,
+                        junior_user: junior_user,
+                        row_id: row_id,
+                        date: date
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
@@ -1105,34 +1099,44 @@
             // Live Search Suggestions
             // -----------------------------
             const showSuggestions = debounce(function() {
-                const query = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+                const search = $('#senior-search').val().trim();
+                const junior_user = $('#junior-filter').val();
                 const date = $('#date-filter').val();
 
-                if (query.length < 3) {
+                if (search.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user, '', date); // reset table
+                    // Only fetch by date if no search is active
+                    if (!date) {
+                        fetchTable('', 1, junior_user, '', '');
+                    }
                     return;
                 }
 
                 $.ajax({
-                    url: "{{ route('junior.suggestions') }}",
+                    url: "{{ route('juniorcandm.suggestions') }}",
                     type: 'GET',
                     data: {
-                        query,
-                        junior_user
+                        search: search,
+                        junior_user: junior_user
+                        // ✅ Remove date from suggestions when searching
                     },
                     success: function(res) {
                         let suggestions = '';
                         if (res.length) {
                             res.forEach(item => {
-                                suggestions +=
-                                    `<a href="#" class="list-group-item list-group-item-action" data-id="${item.id}">${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number}| ${item.Exe_Remarks}| ${item.forwarded_by}</a>`;
+                                suggestions += `
+                        <a href="#"
+                           class="list-group-item list-group-item-action"
+                           data-id="${item.id}"
+                           data-name="${item.Name}">
+                           ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
+                        </a>`;
                             });
                         } else {
                             suggestions =
                                 '<span class="list-group-item">No results found</span>';
                         }
+
                         $('#search-suggestions').html(suggestions).show();
                     }
                 });
@@ -1140,38 +1144,73 @@
 
             $('#senior-search').on('input', showSuggestions);
 
-            // Click suggestion
+            // -----------------------------
+            // Suggestion click
+            // -----------------------------
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
 
                 const rowId = $(this).data('id');
+                const name = $(this).data('name');
                 const junior_user = $('#junior-filter').val();
-                const date = $('#date-filter').val();
 
-                $('#senior-search').val($(this).text());
+                $('#senior-search').val(name);
                 $('#search-suggestions').empty().hide();
 
-                fetchTable('', 1, junior_user, rowId, date);
+                // When a suggestion is clicked, ignore date filter
+                fetchTable('', 1, junior_user, rowId, '');
             });
 
+            // -----------------------------
+            // Date filter
+            // -----------------------------
             $('#date-filter').on('change', function() {
                 const date = $(this).val();
                 const junior_user = $('#junior-filter').val();
-                const search = $('#senior-search').val().trim();
-
-                fetchTable(search, 1, junior_user, '', date);
+                // Ignore search input if a date is selected
+                fetchTable('', 1, junior_user, '', date);
             });
 
-
-            // Junior dropdown filter
+            // -----------------------------
+            // Junior filter
+            // -----------------------------
             $(document).on('change', '#junior-filter', function() {
                 const junior_user = $(this).val();
                 const search = $('#senior-search').val().trim();
                 const date = $('#date-filter').val();
-                fetchTable(search, 1, junior_user, '', date);
+
+                if (search.length >= 3) {
+                    fetchTable(search, 1, junior_user, '', '');
+                } else if (date) {
+                    fetchTable('', 1, junior_user, '', date);
+                } else {
+                    fetchTable('', 1, junior_user, '', '');
+                }
             });
 
-            // Click outside suggestions to hide
+            // -----------------------------
+            // AJAX Pagination
+            // -----------------------------
+            $(document).on('click', '.pagination a', function(e) {
+                e.preventDefault();
+
+                const page = $(this).attr('href').split('page=')[1];
+                const search = $('#senior-search').val().trim();
+                const date = $('#date-filter').val();
+                const junior_user = $('#junior-filter').val();
+
+                if (search.length >= 3) {
+                    fetchTable(search, page, junior_user, '', '');
+                } else if (date) {
+                    fetchTable('', page, junior_user, '', date);
+                } else {
+                    fetchTable('', page, junior_user, '', '');
+                }
+            });
+
+            // -----------------------------
+            // Hide suggestions on outside click
+            // -----------------------------
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
                     $('#search-suggestions').empty().hide();
