@@ -310,7 +310,7 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <input type="text" class="form-control remark-autocomplete w-100" data-key="Remark"
+                                        <input type="text" class="form-control remark-autocomplete w-100 form-control-lg" data-key="Remark"
                                             rows="6" value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
