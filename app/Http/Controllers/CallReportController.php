@@ -1522,13 +1522,12 @@ class CallReportController extends Controller
             ->where('is_deleted', 0)
             ->firstOrFail();
         $createdByKey = "{$juniorUser->id}|junior";
-        $createdByKeyCM = "{$juniorUser->id}|junior:%|senior%";
 
         // Total calls for this junior (including hierarchical keys)
         $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
 
         // Total "Called & Mailed" calls for this junior
-        $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKeyCM}%")
+        $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
             ->count();
@@ -1558,7 +1557,7 @@ class CallReportController extends Controller
         // Base query filtered by this junior and date
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate);
-        $tquery = GoogleSheetData::where('created_by', 'like', "{$createdByKeyCM}%")
+        $tquery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate);
 
         // Selected date totals for this junior
@@ -1585,7 +1584,7 @@ class CallReportController extends Controller
 
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "{$createdByKeyCM}%")
+            ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
@@ -1666,7 +1665,7 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Called & Mailed" calls
-        $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKeyCM}%")
+        $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -4351,7 +4350,6 @@ class CallReportController extends Controller
     {
         $user = Auth::user();
         $createdByKey = "{$user->id}|junior";
-        $createdByKeyCM = "{$user->id}|junior:%|senior%";
 
         // ================================
         // Main logic with LIKE filters
@@ -4361,7 +4359,7 @@ class CallReportController extends Controller
         $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
 
         // Total "Called & Mailed" calls for this junior
-        $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKeyCM}%")
+        $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
             ->count();
@@ -4391,7 +4389,7 @@ class CallReportController extends Controller
         // Base query filtered by this junior and date
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate);
-        $tquery = GoogleSheetData::where('created_by', 'like', "{$createdByKeyCM}%")
+        $tquery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate);
 
         // Selected date totals for this junior
@@ -4418,7 +4416,7 @@ class CallReportController extends Controller
 
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "{$createdByKeyCM}%")
+            ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
@@ -4501,7 +4499,7 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Called & Mailed" calls
-        $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKeyCM}%")
+        $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
@@ -4749,7 +4747,7 @@ class CallReportController extends Controller
     {
         $user = Auth::user();
         $createdByKey = "{$user->id}|junior";
-        
+
 
         // Selected month (default current month in YYYY-MM)
         $selectedMonth = $request->input('selected_month', date('Y-m'));

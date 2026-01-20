@@ -5263,12 +5263,9 @@ class GoogleSheetController extends Controller
 
         $todayDate = date('Y-m-d');
         $createdByKey = $authUser->id . '|junior';
-        $createdByKeyCM = "{$authUser->id}|junior:%|senior%";
 
         // Base query for today & this user
         $todayBaseQuery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereDate('updated_at', $todayDate);
-        $todayBaseQueryCM = GoogleSheetData::where('created_by', 'like', "{$createdByKeyCM}%")
             ->whereDate('updated_at', $todayDate);
 
 
@@ -5276,7 +5273,7 @@ class GoogleSheetController extends Controller
         $StotalCalls = (clone $todayBaseQuery)->count();
 
         // Individual Exe Remark counts
-        $ScalledAndMailedCalls = (clone $todayBaseQueryCM)
+        $ScalledAndMailedCalls = (clone $todayBaseQuery)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNull('TransferRemark')
             ->count();
