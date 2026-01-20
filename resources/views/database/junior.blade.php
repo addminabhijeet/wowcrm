@@ -1105,10 +1105,7 @@
 
                 if (search.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    // Only fetch by date if no search is active
-                    if (!date) {
-                        fetchTable('', 1, junior_user, '', '');
-                    }
+                    fetchTable('', 1, junior_user, '', date); // ✅ keep date here
                     return;
                 }
 
@@ -1118,19 +1115,18 @@
                     data: {
                         search: search,
                         junior_user: junior_user
-                        // ✅ Remove date from suggestions when searching
                     },
                     success: function(res) {
                         let suggestions = '';
                         if (res.length) {
                             res.forEach(item => {
                                 suggestions += `
-                        <a href="#"
-                           class="list-group-item list-group-item-action"
-                           data-id="${item.id}"
-                           data-name="${item.Name}">
-                           ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
-                        </a>`;
+                    <a href="#"
+                       class="list-group-item list-group-item-action"
+                       data-id="${item.id}"
+                       data-name="${item.Name}">
+                       ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
+                    </a>`;
                             });
                         } else {
                             suggestions =
@@ -1153,12 +1149,12 @@
                 const rowId = $(this).data('id');
                 const name = $(this).data('name');
                 const junior_user = $('#junior-filter').val();
+                const date = $('#date-filter').val(); // ✅ include date
 
                 $('#senior-search').val(name);
                 $('#search-suggestions').empty().hide();
 
-                // When a suggestion is clicked, ignore date filter
-                fetchTable('', 1, junior_user, rowId, '');
+                fetchTable('', 1, junior_user, rowId, date); // ✅ use date
             });
 
             // -----------------------------
@@ -1166,9 +1162,11 @@
             // -----------------------------
             $('#date-filter').on('change', function() {
                 const date = $(this).val();
+                const search = $('#senior-search').val().trim();
                 const junior_user = $('#junior-filter').val();
-                // Ignore search input if a date is selected
-                fetchTable('', 1, junior_user, '', date);
+
+                fetchTable(search.length >= 3 ? search : '', 1, junior_user, '',
+                date); // ✅ include search if >3
             });
 
             // -----------------------------
@@ -1179,13 +1177,8 @@
                 const search = $('#senior-search').val().trim();
                 const date = $('#date-filter').val();
 
-                if (search.length >= 3) {
-                    fetchTable(search, 1, junior_user, '', '');
-                } else if (date) {
-                    fetchTable('', 1, junior_user, '', date);
-                } else {
-                    fetchTable('', 1, junior_user, '', '');
-                }
+                fetchTable(search.length >= 3 ? search : '', 1, junior_user, '',
+                date); // ✅ include date always
             });
 
             // -----------------------------
@@ -1196,16 +1189,10 @@
 
                 const page = $(this).attr('href').split('page=')[1];
                 const search = $('#senior-search').val().trim();
-                const date = $('#date-filter').val();
                 const junior_user = $('#junior-filter').val();
+                const date = $('#date-filter').val(); // ✅ include date
 
-                if (search.length >= 3) {
-                    fetchTable(search, page, junior_user, '', '');
-                } else if (date) {
-                    fetchTable('', page, junior_user, '', date);
-                } else {
-                    fetchTable('', page, junior_user, '', '');
-                }
+                fetchTable(search.length >= 3 ? search : '', page, junior_user, '', date); // ✅ include date
             });
 
             // -----------------------------
