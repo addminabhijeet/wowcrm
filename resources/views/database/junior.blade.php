@@ -1066,9 +1066,6 @@
         $(document).ready(function() {
 
             let activeRequest = null;
-            let selectedRowId = '';
-
-            /* ---------------- Utilities ---------------- */
 
             function debounce(func, wait) {
                 let timeout;
@@ -1080,23 +1077,9 @@
                 };
             }
 
-            function getValidSearch() {
-                const val = $('#senior-search').val().trim();
-                return val.length >= 3 ? val : '';
-            }
+            function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
 
-            function resetState() {
-                selectedRowId = '';
-                if (activeRequest) {
-                    activeRequest.abort();
-                    activeRequest = null;
-                }
-            }
-
-            /* ---------------- Core Fetch ---------------- */
-
-            function fetchTable(page = 1) {
-
+                // 🔒 Abort previous request to prevent hang
                 if (activeRequest) {
                     activeRequest.abort();
                 }
@@ -1105,11 +1088,11 @@
                     url: "{{ route('google.sheet.junior') }}",
                     type: 'GET',
                     data: {
-                        search: getValidSearch(),
+                        search: search,
                         page: page,
-                        junior_user: $('#junior-filter').val(),
-                        row_id: selectedRowId,
-                        date: $('#date-filter').val()
+                        junior_user: junior_user,
+                        row_id: row_id,
+                        date: date
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
@@ -1125,16 +1108,20 @@
                 });
             }
 
-            /* ---------------- Live Search ---------------- */
-
+            // ----------------------------------
+            // Live Search Suggestions
+            // ----------------------------------
             const showSuggestions = debounce(function() {
 
                 const search = $('#senior-search').val().trim();
+                const junior_user = $('#junior-filter').val();
+                const date = $('#date-filter').val();
 
                 if (search.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    resetState();
-                    fetchTable(1); // 🔥 HARD RESET
+
+                    // 🔁 behave EXACTLY like cleared search
+                    fetchTable('', 1, junior_user, '', date);
                     return;
                 }
 
@@ -1142,31 +1129,35 @@
                     url: "{{ route('junior.suggestions') }}",
                     type: 'GET',
                     data: {
-                        query: search,
-                        junior_user: $('#junior-filter').val()
+                        query: search, // ✅ required
+                        junior_user: junior_user
+                        // ❌ date intentionally excluded (backend logic)
                     },
                     success: function(res) {
-                        let html = '';
+
+                        let suggestions = '';
 
                         if (res.length) {
                             res.forEach(item => {
-                                html += `
-                        <a href="#" class="list-group-item list-group-item-action"
-                           data-id="${item.id}"
-                           data-name="${item.Name}">
-                           ${item.sheet_row_number} |
-                           ${item.Name} |
-                           ${item.Email_Address} |
-                           ${item.Phone_Number} |
-                           ${item.Exe_Remarks} |
-                           ${item.forwarded_by}
-                        </a>`;
+                                suggestions += `
+                            <a href="#"
+                               class="list-group-item list-group-item-action"
+                               data-id="${item.id}"
+                               data-name="${item.Name}">
+                               ${item.sheet_row_number} |
+                               ${item.Name} |
+                               ${item.Email_Address} |
+                               ${item.Phone_Number} |
+                               ${item.Exe_Remarks} |
+                               ${item.forwarded_by}
+                            </a>`;
                             });
                         } else {
-                            html = '<span class="list-group-item">No results found</span>';
+                            suggestions =
+                                '<span class="list-group-item">No results found</span>';
                         }
 
-                        $('#search-suggestions').html(html).show();
+                        $('#search-suggestions').html(suggestions).show();
                     }
                 });
 
@@ -1174,58 +1165,81 @@
 
             $('#senior-search').on('input', showSuggestions);
 
-            /* ---------------- Suggestion Click ---------------- */
-
+            // ----------------------------------
+            // Suggestion click
+            // ----------------------------------
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
 
-                selectedRowId = $(this).data('id');
-                $('#senior-search').val($(this).data('name'));
+                const rowId = $(this).data('id');
+                const name = $(this).data('name');
+                const junior_user = $('#junior-filter').val();
+                const date = $('#date-filter').val();
+
+                $('#senior-search').val(name);
                 $('#search-suggestions').empty().hide();
 
-                fetchTable(1);
+                // 🎯 row_id intentionally set
+                fetchTable('', 1, junior_user, rowId, date);
             });
 
-            /* ---------------- Date Filter (FIXED) ---------------- */
-
+            // ----------------------------------
+            // Date Filter (FIXED)
+            // ----------------------------------
             $('#date-filter').on('change', function() {
-                resetState();
-                fetchTable(1); // 🔥 REQUIRED
+
+                // ❗ reset row_id EXACTLY like search
+                fetchTable(
+                    $('#senior-search').val().trim(),
+                    1,
+                    $('#junior-filter').val(),
+                    '',
+                    $(this).val()
+                );
             });
 
-            /* ---------------- Junior Filter ---------------- */
+            // ----------------------------------
+            // Junior Filter (FIXED)
+            // ----------------------------------
+            $(document).on('change', '#junior-filter', function() {
 
-            $('#junior-filter').on('change', function() {
-                resetState();
-                fetchTable(1);
+                fetchTable(
+                    $('#senior-search').val().trim(),
+                    1,
+                    $(this).val(),
+                    '',
+                    $('#date-filter').val()
+                );
             });
 
-            /* ---------------- Pagination ---------------- */
-
+            // ----------------------------------
+            // AJAX Pagination
+            // ----------------------------------
             $(document).on('click', '.pagination a', function(e) {
                 e.preventDefault();
+
                 const page = $(this).attr('href').split('page=')[1];
-                fetchTable(page);
+
+                fetchTable(
+                    $('#senior-search').val().trim(),
+                    page,
+                    $('#junior-filter').val(),
+                    '',
+                    $('#date-filter').val()
+                );
             });
 
-            /* ---------------- Hide Suggestions ---------------- */
-
+            // ----------------------------------
+            // Hide suggestions on outside click
+            // ----------------------------------
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
                     $('#search-suggestions').empty().hide();
                 }
             });
 
-            /* ---------------- POST SAVE REFRESH (FINAL FIX) ---------------- */
-
-            window.refreshJuniorTableAfterSave = function() {
-                resetState(); // 🔥 clears row_id + aborts inflight
-                fetchTable(1); // 🔥 forces valid pagination
-            };
-
         });
     </script>
-
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
