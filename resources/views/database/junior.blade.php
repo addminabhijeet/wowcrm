@@ -122,7 +122,7 @@
                                 <th scope="col" class="text-center">1st Follow Up Remarks</th>
                                 <th scope="col" class="text-center">Time Zone</th>
                                 <th scope="col" class="text-center">Resume</th>
-                                <th scope="col" class="text-center">Remarks</th>
+                                <th scope="col" class="text-center" colspan="2">Remarks</th>
                                 <th scope="col" class="text-center">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
 
@@ -309,7 +309,7 @@
                                     </td>
 
                                     {{-- Remark --}}
-                                    <td>
+                                    <td colspan="2">
                                         <input type="text" class="form-control remark-autocomplete w-100 form-control-lg" data-key="Remark"
                                             rows="6" value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
