@@ -847,56 +847,69 @@
             });
 
             // Event delegation for save buttons (handles both existing and dynamically added buttons)
-            // Event delegation for save buttons
             tableBody.addEventListener('click', function(e) {
                 if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
                     e.preventDefault();
 
-                    let saveBtn = e.target.closest('.save-btn');
+                    let saveBtn = e.target.matches('.save-btn') ? e.target : e.target.closest('.save-btn');
                     let id = saveBtn.dataset.id;
                     let row = saveBtn.closest("tr");
+                    console.log("Saving row with id:", id);
 
+                    // ✅ Collect only 'Remark' and '1st Follow Up Remarks' from the row
                     let rowData = {};
+                    let remarkInput = row.querySelector(
+                        'input[data-key="Remark"], select[data-key="Remark"], textarea[data-key="Remark"]'
+                    );
+                    let followUpInput = row.querySelector(
+                        'input[data-key="1st Follow Up Remarks"], select[data-key="1st Follow Up Remarks"], textarea[data-key="1st Follow Up Remarks"]'
+                    );
 
-                    let remarkInput = row.querySelector('[data-key="Remark"]');
-                    let followUpInput = row.querySelector('[data-key="1st Follow Up Remarks"]');
+                    if (remarkInput) {
+                        rowData["Remark"] = remarkInput.value;
+                    }
+                    if (followUpInput) {
+                        rowData["1st Follow Up Remarks"] = followUpInput.value;
+                    }
 
-                    if (remarkInput) rowData["Remark"] = remarkInput.value;
-                    if (followUpInput) rowData["1st Follow Up Remarks"] = followUpInput.value;
+                    console.log("Row data to send:", rowData);
 
+                    // ✅ Create FormData
                     let formData = new FormData();
-                    formData.append("id", id);
                     formData.append("data", JSON.stringify(rowData));
                     formData.append("_token", "{{ csrf_token() }}");
 
-                    // ✅ Preserve filters
-                    formData.append("search", $('#senior-search').val());
-                    formData.append("junior_user", $('#junior-filter').val());
-                    formData.append("date", $('#date-filter').val());
-                    formData.append("page", $('.pagination .active span').text() || 1);
+                    if (id) {
+                        formData.append("id", id);
+                    }
 
-                    fetch("{{ route('juniorcandmupdate') }}", {
-                            method: "POST",
+                    let url = "{{ route('juniorcandmupdate') }}";
+                    let method = "POST";
+
+                    console.log("Sending to:", url, "Method:", method);
+
+                    // ✅ Send only remark-related data
+                    fetch(url, {
+                            method: method,
                             body: formData
                         })
-                        .then(res => res.json())
+                        .then(res => {
+                            if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+                            return res.json();
+                        })
                         .then(data => {
+                            console.log("Response from server:", data);
                             if (data.success) {
                                 alert("Updated successfully");
-
-                                // ✅ Reload table with same filters
-                                fetchTable(
-                                    $('#senior-search').val(),
-                                    $('.pagination .active span').text() || 1,
-                                    $('#junior-filter').val(),
-                                    '',
-                                    $('#date-filter').val()
-                                );
                             } else {
-                                alert(data.message);
+                                console.error("Server error:", data.message);
+                                alert("Error: " + (data.message || "Unknown error"));
                             }
                         })
-                        .catch(() => alert("Save failed"));
+                        .catch(err => {
+                            console.error("Fetch error:", err);
+                            alert("Save failed. Check console for details.");
+                        });
                 }
             });
 
