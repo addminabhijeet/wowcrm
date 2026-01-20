@@ -26,12 +26,12 @@
                     <thead>
                         <tr>
                             <th class="text-nowrap text-center text-primary">Total Calls</th>
-                            <th class="text-nowrap text-center text-success">Called & Mailed</th>
                             <th class="text-nowrap text-center text-danger">Not Interested</th>
-                            <th class="text-nowrap text-center text-info">Interested</th>
-                            <th class="text-nowrap text-center text-secondary">Others</th>
                             <th class="text-nowrap text-center text-warning">Voice Mail</th>
                             <th class="text-nowrap text-center text-dark">Busy</th>
+                            <th class="text-nowrap text-center text-secondary">Others</th>
+                            <th class="text-nowrap text-center text-info">Interested</th>
+                            <th class="text-nowrap text-center text-success">Called & Mailed</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -39,17 +39,8 @@
                             <td class="fw-semibold text-primary">
                                 {{ $exeRemarkCounts['total_calls'] ?? 0 }}
                             </td>
-                            <td class="fw-semibold text-success">
-                                {{ $exeRemarkCounts['called_and_mailed'] ?? 0 }}
-                            </td>
                             <td class="fw-semibold text-danger">
                                 {{ $exeRemarkCounts['not_interested'] ?? 0 }}
-                            </td>
-                            <td class="fw-semibold text-info">
-                                {{ $exeRemarkCounts['interested'] ?? 0 }}
-                            </td>
-                            <td class="fw-semibold text-secondary">
-                                {{ $exeRemarkCounts['others'] ?? 0 }}
                             </td>
                             <td class="fw-semibold text-warning">
                                 {{ $exeRemarkCounts['vm'] ?? 0 }}
@@ -57,8 +48,18 @@
                             <td class="fw-semibold text-dark">
                                 {{ $exeRemarkCounts['busy'] ?? 0 }}
                             </td>
+                            <td class="fw-semibold text-secondary">
+                                {{ $exeRemarkCounts['others'] ?? 0 }}
+                            </td>
+                            <td class="fw-semibold text-info">
+                                {{ $exeRemarkCounts['interested'] ?? 0 }}
+                            </td>
+                            <td class="fw-semibold text-success">
+                                {{ $exeRemarkCounts['called_and_mailed'] ?? 0 }}
+                            </td>
                         </tr>
                     </tbody>
+
                 </table>
             </div>
 
