@@ -1067,6 +1067,7 @@
         $(document).ready(function() {
 
             let activeRequest = null;
+            let selectedRowId = ''; // 🔑 SINGLE SOURCE OF TRUTH
 
             function debounce(func, wait) {
                 let timeout;
@@ -1083,7 +1084,7 @@
                 return val.length >= 3 ? val : '';
             }
 
-            function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
+            function fetchTable(page = 1) {
 
                 if (activeRequest) {
                     activeRequest.abort();
@@ -1093,11 +1094,11 @@
                     url: "{{ route('google.sheet.junior') }}",
                     type: 'GET',
                     data: {
-                        search,
-                        page,
-                        junior_user,
-                        row_id,
-                        date
+                        search: getValidSearch(),
+                        page: page,
+                        junior_user: $('#junior-filter').val(),
+                        row_id: selectedRowId, // ✅ controlled here
+                        date: $('#date-filter').val() // ✅ always included
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
@@ -1119,12 +1120,11 @@
             const showSuggestions = debounce(function() {
 
                 const search = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val();
-                const date = $('#date-filter').val();
 
                 if (search.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user, '', date);
+                    selectedRowId = ''; // 🔥 reset row_id
+                    fetchTable(1);
                     return;
                 }
 
@@ -1133,7 +1133,7 @@
                     type: 'GET',
                     data: {
                         query: search,
-                        junior_user
+                        junior_user: $('#junior-filter').val()
                     },
                     success: function(res) {
 
@@ -1166,44 +1166,32 @@
             $('#senior-search').on('input', showSuggestions);
 
             // ----------------------------------
-            // Suggestion Click (ONLY place row_id is used)
+            // Suggestion Click (ONLY place row_id is set)
             // ----------------------------------
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
 
-                const rowId = $(this).data('id');
-                const name = $(this).data('name');
-
-                $('#senior-search').val(name);
+                selectedRowId = $(this).data('id'); // ✅ ONLY HERE
+                $('#senior-search').val($(this).data('name'));
                 $('#search-suggestions').empty().hide();
 
-                fetchTable('', 1, $('#junior-filter').val(), rowId, $('#date-filter').val());
+                fetchTable(1);
             });
 
             // ----------------------------------
-            // Date Filter (✔ behaves EXACTLY like search)
+            // Date Filter (IDENTICAL TO SEARCH)
             // ----------------------------------
             $('#date-filter').on('change', function() {
-                fetchTable(
-                    getValidSearch(),
-                    1,
-                    $('#junior-filter').val(),
-                    '',
-                    $(this).val()
-                );
+                selectedRowId = ''; // 🔥 critical
+                fetchTable(1);
             });
 
             // ----------------------------------
             // Junior Filter
             // ----------------------------------
             $('#junior-filter').on('change', function() {
-                fetchTable(
-                    getValidSearch(),
-                    1,
-                    $(this).val(),
-                    '',
-                    $('#date-filter').val()
-                );
+                selectedRowId = ''; // 🔥 critical
+                fetchTable(1);
             });
 
             // ----------------------------------
@@ -1211,15 +1199,9 @@
             // ----------------------------------
             $(document).on('click', '.pagination a', function(e) {
                 e.preventDefault();
-                const page = $(this).attr('href').split('page=')[1];
 
-                fetchTable(
-                    getValidSearch(),
-                    page,
-                    $('#junior-filter').val(),
-                    '',
-                    $('#date-filter').val()
-                );
+                const page = $(this).attr('href').split('page=')[1];
+                fetchTable(page);
             });
 
             // ----------------------------------
@@ -1233,7 +1215,6 @@
 
         });
     </script>
-
 
 
     <script>
