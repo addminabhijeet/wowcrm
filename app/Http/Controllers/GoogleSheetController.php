@@ -6136,6 +6136,8 @@ class GoogleSheetController extends Controller
             return response()->json(['success' => false, 'message' => 'No valid fields to update']);
         }
 
+        $updateData['followup'] = 1;
+
         try {
             $row->timestamps = false;
 
