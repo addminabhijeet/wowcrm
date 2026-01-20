@@ -253,7 +253,7 @@
                                 class="form-control remark-autocomplete remark-hidden" data-key="Remark"
                                 value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                         </td>
-
+                        
                         {{-- Status --}}
                         <td>
                             @php
