@@ -5329,6 +5329,7 @@ class GoogleSheetController extends Controller
         ]);
     }
 
+
     public function juniorcandm(Request $request)
     {
         $authUser = Auth::user();
@@ -5336,6 +5337,7 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user');
         $page = $request->input('page', 1);
+        $date = $request->input('date');
 
         $juniorPart = $authUser->id . '|junior';
 
@@ -5355,6 +5357,10 @@ class GoogleSheetController extends Controller
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
                     ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
             })->where('transfers', '!=', 1);
+        }
+
+        if ($date) {
+            $query->whereDate('updated_at', $date);
         }
 
         // Search or specific row filter
@@ -5497,6 +5503,7 @@ class GoogleSheetController extends Controller
             'exeRemarkCounts' => $exeRemarkCounts
         ]);
     }
+
     public function juniortra(Request $request)
     {
         $authUser = Auth::user();
