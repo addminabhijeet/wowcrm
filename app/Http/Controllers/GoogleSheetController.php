@@ -16,6 +16,7 @@ use PhpOffice\PhpWord\IOFactory;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 
 
@@ -5261,7 +5262,7 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-        $todayDate = date('Y-m-d');
+        $todayDate = Carbon::today()->toDateString();
         $createdByKey = $authUser->id . '|junior';
 
         // Base query for today & this user
