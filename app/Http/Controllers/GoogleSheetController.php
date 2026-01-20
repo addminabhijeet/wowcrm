@@ -5828,22 +5828,6 @@ class GoogleSheetController extends Controller
 
             $user = Auth::user();
 
-            // Atomic duplicate email check
-            if (!empty($email)) {
-                $emailExistsForUser = GoogleSheetData::where('Email_Address', $email)
-                    ->where('id', '!=', $id)
-                    ->where('created_by', 'like', $user->id . '|%')
-                    ->lockForUpdate()
-                    ->exists();
-
-                if ($emailExistsForUser) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'This email ID already exists for you.'
-                    ]);
-                }
-            }
-
             // Handle resume file upload - Save actual file content
             if ($request->hasFile('resume')) {
                 $file = $request->file('resume');
