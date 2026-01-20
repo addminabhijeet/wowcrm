@@ -1002,9 +1002,9 @@
                 });
             }
 
-            /* -----------------------------
-               Live Search Suggestions
-            ----------------------------- */
+            // -----------------------------
+            // Live Search Suggestions
+            // -----------------------------
             const showSuggestions = debounce(function() {
                 const search = $('#senior-search').val().trim();
                 const junior_user = $('#junior-filter').val();
@@ -1020,22 +1020,21 @@
                     url: "{{ route('juniorcandm.suggestions') }}",
                     type: 'GET',
                     data: {
-                        search: search,
-                        junior_user: junior_user,
-                        date: date
+                        search: search, // ✅ FIXED
+                        date: date,
+                        junior_user: junior_user
                     },
                     success: function(res) {
                         let suggestions = '';
-
                         if (res.length) {
                             res.forEach(item => {
                                 suggestions += `
-                        <a href="#"
-                           class="list-group-item list-group-item-action"
-                           data-id="${item.id}"
-                           data-name="${item.Name}">
-                           ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
-                        </a>`;
+                            <a href="#"
+                               class="list-group-item list-group-item-action"
+                               data-id="${item.id}"
+                               data-name="${item.Name}">
+                               ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
+                            </a>`;
                             });
                         } else {
                             suggestions =
@@ -1049,30 +1048,26 @@
 
             $('#senior-search').on('input', showSuggestions);
 
-            /* -----------------------------
-               Suggestion Click
-            ----------------------------- */
+            // -----------------------------
+            // Suggestion click
+            // -----------------------------
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
 
                 const rowId = $(this).data('id');
                 const name = $(this).data('name');
+                const junior_user = $('#junior-filter').val();
+                const date = $('#date-filter').val();
 
                 $('#senior-search').val(name);
                 $('#search-suggestions').empty().hide();
 
-                fetchTable(
-                    '',
-                    1,
-                    $('#junior-filter').val(),
-                    rowId,
-                    $('#date-filter').val()
-                );
+                fetchTable('', 1, junior_user, rowId, date);
             });
 
-            /* -----------------------------
-               Date Filter
-            ----------------------------- */
+            // -----------------------------
+            // Date filter
+            // -----------------------------
             $('#date-filter').on('change', function() {
                 fetchTable(
                     $('#senior-search').val().trim(),
@@ -1083,10 +1078,10 @@
                 );
             });
 
-            /* -----------------------------
-               Junior Filter
-            ----------------------------- */
-            $('#junior-filter').on('change', function() {
+            // -----------------------------
+            // Junior filter
+            // -----------------------------
+            $(document).on('change', '#junior-filter', function() {
                 fetchTable(
                     $('#senior-search').val().trim(),
                     1,
@@ -1096,14 +1091,13 @@
                 );
             });
 
-            /* -----------------------------
-               AJAX Pagination (FIXED)
-            ----------------------------- */
+            // -----------------------------
+            // AJAX Pagination
+            // -----------------------------
             $(document).on('click', '.pagination a', function(e) {
                 e.preventDefault();
 
-                const url = new URL($(this).attr('href'));
-                const page = url.searchParams.get('page');
+                const page = $(this).attr('href').split('page=')[1];
 
                 fetchTable(
                     $('#senior-search').val().trim(),
@@ -1114,9 +1108,9 @@
                 );
             });
 
-            /* -----------------------------
-               Hide Suggestions on Outside Click
-            ----------------------------- */
+            // -----------------------------
+            // Hide suggestions on outside click
+            // -----------------------------
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
                     $('#search-suggestions').empty().hide();
@@ -1125,6 +1119,7 @@
 
         });
     </script>
+
 
     <style>
         .scroll-sm {
