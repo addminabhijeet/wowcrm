@@ -86,6 +86,7 @@
             </div>
         </div>
 
+
         <div class="card-body p-24" id="senior-table-wrapper">
             <!-- Extra Scroll Bar Above -->
             <!-- Extra Scroll Bar Above -->
@@ -1089,7 +1090,7 @@
                         page,
                         junior_user,
                         row_id,
-                        date // ✅ added
+                        date
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
@@ -1100,17 +1101,17 @@
                 });
             }
 
-
             // -----------------------------
             // Live Search Suggestions
             // -----------------------------
             const showSuggestions = debounce(function() {
                 const query = $('#senior-search').val().trim();
                 const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+                const date = $('#date-filter').val();
 
                 if (query.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user); // reset table
+                    fetchTable('', 1, junior_user, '', date); // reset table
                     return;
                 }
 
@@ -1118,8 +1119,8 @@
                     url: "{{ route('junior.suggestions') }}",
                     type: 'GET',
                     data: {
-                        query: query,
-                        junior_user: junior_user // ✅ PASS SELECTED JUNIOR
+                        query,
+                        junior_user
                     },
                     success: function(res) {
                         let suggestions = '';
@@ -1135,7 +1136,6 @@
                         $('#search-suggestions').html(suggestions).show();
                     }
                 });
-
             }, 300);
 
             $('#senior-search').on('input', showSuggestions);
@@ -1143,24 +1143,33 @@
             // Click suggestion
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
+
                 const rowId = $(this).data('id');
                 const junior_user = $('#junior-filter').val();
+                const date = $('#date-filter').val();
+
                 $('#senior-search').val($(this).text());
                 $('#search-suggestions').empty().hide();
 
-                fetchTable('', 1, junior_user, rowId);
+                fetchTable('', 1, junior_user, rowId, date);
             });
 
+            $('#date-filter').on('change', function() {
+                const date = $(this).val();
+                const junior_user = $('#junior-filter').val();
+                const search = $('#senior-search').val().trim();
+
+                fetchTable(search, 1, junior_user, '', date);
+            });
 
 
             // Junior dropdown filter
             $(document).on('change', '#junior-filter', function() {
                 const junior_user = $(this).val();
                 const search = $('#senior-search').val().trim();
-                const date = $('#date-filter').val(); // add selected date
-                fetchTable(search, page, junior_user, row_id, date);
+                const date = $('#date-filter').val();
+                fetchTable(search, 1, junior_user, '', date);
             });
-
 
             // Click outside suggestions to hide
             $(document).click(function(e) {
@@ -1603,17 +1612,6 @@
 
                 }, 500);
             });
-        });
-    </script>
-
-
-    <script>
-        $('#date-filter').on('change', function() {
-            const date = $(this).val();
-            const search = $('#senior-search').val().trim();
-            const junior_user = $('#junior-filter').val();
-
-            fetchTable(search, 1, junior_user, '', date);
         });
     </script>
 
