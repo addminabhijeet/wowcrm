@@ -1032,21 +1032,21 @@
                     url: "{{ route('juniorcandm.suggestions') }}",
                     type: 'GET',
                     data: {
-                        search: search, // ✅ FIXED
-                        date: date,
+                        query: search, // ✅ MUST be "query"
                         junior_user: junior_user
+                        // ❌ date intentionally NOT sent (not used in suggestions)
                     },
                     success: function(res) {
                         let suggestions = '';
                         if (res.length) {
                             res.forEach(item => {
                                 suggestions += `
-                            <a href="#"
-                               class="list-group-item list-group-item-action"
-                               data-id="${item.id}"
-                               data-name="${item.Name}">
-                               ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
-                            </a>`;
+                    <a href="#"
+                       class="list-group-item list-group-item-action"
+                       data-id="${item.id}"
+                       data-name="${item.Name}">
+                       ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
+                    </a>`;
                             });
                         } else {
                             suggestions =
@@ -1056,6 +1056,7 @@
                         $('#search-suggestions').html(suggestions).show();
                     }
                 });
+
             }, 300);
 
             $('#senior-search').on('input', showSuggestions);
