@@ -32,8 +32,6 @@ class CallReportController extends Controller
         )
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-            ->whereNull('followup')
-            ->where('transfers', 0)
             ->count();
 
         $selffollowupCalls = GoogleSheetData::whereRaw(
@@ -161,7 +159,7 @@ class CallReportController extends Controller
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('created_at',  $selectedDate)
             ->where('transfers', 0)
             ->count();
 
@@ -191,7 +189,7 @@ class CallReportController extends Controller
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('created_at',  $selectedDate)
             ->where('transfers', 0)
             ->groupBy('hour')
             ->pluck('count', 'hour')
@@ -638,8 +636,6 @@ class CallReportController extends Controller
         )
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
-            ->where('transfers', 0)
             ->count();
 
         $selffollowupCalls = GoogleSheetData::whereRaw(
@@ -706,8 +702,6 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
-            ->where('transfers', 0)
             ->count();
 
 
@@ -785,8 +779,6 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
-            ->where('transfers', 0)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -1529,7 +1521,6 @@ class CallReportController extends Controller
         // Total "Called & Mailed" calls for this junior
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
             ->count();
 
         // Total other calls for this junior
@@ -1565,7 +1556,7 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = (clone $query)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('created_at',  $selectedDate)
             ->count();
 
         $SotherCalls = (clone $query)
@@ -1587,7 +1578,7 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('created_at',  $selectedDate)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -1669,7 +1660,6 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
             ->count();
 
         // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
@@ -2211,8 +2201,6 @@ class CallReportController extends Controller
         )
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
-            ->where('transfers', 0)
             ->count();
 
         $selffollowupCalls = GoogleSheetData::whereRaw(
@@ -2339,8 +2327,6 @@ class CallReportController extends Controller
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
-            ->where('transfers', 0)
             ->count();
 
         $StotalCalls =
@@ -2368,8 +2354,6 @@ class CallReportController extends Controller
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
-            ->where('transfers', 0)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3510,8 +3494,6 @@ class CallReportController extends Controller
         )
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
-            ->where('transfers', 0)
             ->count();
 
         $selffollowupCalls = GoogleSheetData::whereRaw(
@@ -3580,8 +3562,6 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
-            ->where('transfers', 0)
             ->count();
 
         // Self follow-up calls in month (Called & Mailed / Ready To Pay with TransferRemark)
@@ -3693,8 +3673,6 @@ class CallReportController extends Controller
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
-            ->where('transfers', 0)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -4361,7 +4339,6 @@ class CallReportController extends Controller
         // Total "Called & Mailed" calls for this junior
         $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
             ->count();
 
         // Total other calls for this junior
@@ -4397,7 +4374,7 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = (clone $tquery)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('created_at',  $selectedDate)
             ->count();
 
         $SotherCalls = (clone $query)
@@ -4419,7 +4396,7 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('created_at',  $selectedDate)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
