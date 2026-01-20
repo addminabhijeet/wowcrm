@@ -1113,7 +1113,7 @@
                     url: "{{ route('junior.suggestions') }}",
                     type: 'GET',
                     data: {
-                        search: search,
+                        query: search, // ✅ MUST be "query"
                         junior_user: junior_user
                     },
                     success: function(res) {
@@ -1136,6 +1136,7 @@
                         $('#search-suggestions').html(suggestions).show();
                     }
                 });
+
             }, 300);
 
             $('#senior-search').on('input', showSuggestions);
@@ -1166,7 +1167,7 @@
                 const junior_user = $('#junior-filter').val();
 
                 fetchTable(search.length >= 3 ? search : '', 1, junior_user, '',
-                date); // ✅ include search if >3
+                    date); // ✅ include search if >3
             });
 
             // -----------------------------
@@ -1178,7 +1179,7 @@
                 const date = $('#date-filter').val();
 
                 fetchTable(search.length >= 3 ? search : '', 1, junior_user, '',
-                date); // ✅ include date always
+                    date); // ✅ include date always
             });
 
             // -----------------------------
