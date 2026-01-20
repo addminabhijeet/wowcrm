@@ -1080,7 +1080,7 @@
 
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
 
-                // 🔒 Abort previous request to prevent hanging
+                // 🔒 Abort previous request to prevent hang
                 if (activeRequest) {
                     activeRequest.abort();
                 }
@@ -1121,7 +1121,7 @@
                 if (search.length < 3) {
                     $('#search-suggestions').empty().hide();
 
-                    // 🔁 behave like cleared search
+                    // 🔁 behave EXACTLY like cleared search
                     fetchTable('', 1, junior_user, '', date);
                     return;
                 }
@@ -1130,9 +1130,9 @@
                     url: "{{ route('junior.suggestions') }}",
                     type: 'GET',
                     data: {
-                        query: search, // ✅ backend expects "query"
+                        query: search, // ✅ required
                         junior_user: junior_user
-                        // ❌ date intentionally excluded (matches backend)
+                        // ❌ date intentionally excluded (backend logic)
                     },
                     success: function(res) {
 
@@ -1167,7 +1167,7 @@
             $('#senior-search').on('input', showSuggestions);
 
             // ----------------------------------
-            // Suggestion Click (ONLY place row_id is used)
+            // Suggestion click
             // ----------------------------------
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
@@ -1180,7 +1180,7 @@
                 $('#senior-search').val(name);
                 $('#search-suggestions').empty().hide();
 
-                // 🎯 row_id intentionally passed
+                // 🎯 row_id intentionally set
                 fetchTable('', 1, junior_user, rowId, date);
             });
 
@@ -1189,13 +1189,12 @@
             // ----------------------------------
             $('#date-filter').on('change', function() {
 
+                // ❗ reset row_id EXACTLY like search
                 fetchTable(
-                    $('#senior-search').val().trim().length >= 3 ?
-                    $('#senior-search').val().trim() :
-                    '',
+                    $('#senior-search').val().trim(),
                     1,
                     $('#junior-filter').val(),
-                    '', // ❗ reset row_id
+                    '',
                     $(this).val()
                 );
             });
@@ -1206,12 +1205,10 @@
             $(document).on('change', '#junior-filter', function() {
 
                 fetchTable(
-                    $('#senior-search').val().trim().length >= 3 ?
-                    $('#senior-search').val().trim() :
-                    '',
+                    $('#senior-search').val().trim(),
                     1,
                     $(this).val(),
-                    '', // ❗ reset row_id
+                    '',
                     $('#date-filter').val()
                 );
             });
@@ -1225,18 +1222,16 @@
                 const page = $(this).attr('href').split('page=')[1];
 
                 fetchTable(
-                    $('#senior-search').val().trim().length >= 3 ?
-                    $('#senior-search').val().trim() :
-                    '',
+                    $('#senior-search').val().trim(),
                     page,
                     $('#junior-filter').val(),
-                    '', // ❗ reset row_id
+                    '',
                     $('#date-filter').val()
                 );
             });
 
             // ----------------------------------
-            // Hide Suggestions on Outside Click
+            // Hide suggestions on outside click
             // ----------------------------------
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
