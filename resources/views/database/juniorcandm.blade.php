@@ -846,7 +846,6 @@
                 if (e.target.matches('select.dynamic-dropdown')) updateSelectColor(e.target);
             });
 
-            // Event delegation for save buttons (handles both existing and dynamically added buttons)
             tableBody.addEventListener('click', function(e) {
                 if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
                     e.preventDefault();
