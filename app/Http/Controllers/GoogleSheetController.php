@@ -5919,13 +5919,13 @@ class GoogleSheetController extends Controller
             // === Append remark if Exe Remarks changed ===
             $oldExeRemarks = $row->Exe_Remarks;
 
+            $updatedBy = Auth::user()->name;
+            $updatedAt = now()->format('d-m-Y H:i');
+
             if (
                 isset($rowData['Exe Remarks']) &&
                 $rowData['Exe Remarks'] !== $oldExeRemarks
             ) {
-                $updatedBy = Auth::user()->name;
-                $updatedAt = now()->format('d-m-Y H:i');
-
                 $newRemarkEntry = "{$rowData['Exe Remarks']} | Updated by {$updatedBy} on {$updatedAt}";
 
                 // Append to existing remark (keep history)
@@ -5939,7 +5939,22 @@ class GoogleSheetController extends Controller
                         ? $existingRemark . PHP_EOL . $newRemarkEntry
                         : $newRemarkEntry
                 );
+            } else {
+                // Exe Remarks NOT changed → still log update info
+                $newRemarkEntry = "Updated by {$updatedBy} on {$updatedAt}";
+
+                $existingRemark =
+                    $rowData['Remark']
+                    ?? $row->Remark
+                    ?? '';
+
+                $updateData['Remark'] = trim(
+                    $existingRemark
+                        ? $existingRemark . PHP_EOL . $newRemarkEntry
+                        : $newRemarkEntry
+                );
             }
+
 
 
             foreach ($updateData as $key => $value) {
