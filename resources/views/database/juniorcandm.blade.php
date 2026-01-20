@@ -901,6 +901,9 @@
                             console.log("Response from server:", data);
                             if (data.success) {
                                 alert("Updated successfully");
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1000);
                             } else {
                                 console.error("Server error:", data.message);
                                 alert("Error: " + (data.message || "Unknown error"));

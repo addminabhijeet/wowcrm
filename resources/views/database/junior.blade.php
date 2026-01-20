@@ -910,6 +910,9 @@
                             console.log("Response from server:", data);
                             if (data.success) {
                                 alert("Saved successfully");
+                                setTimeout(() => {
+                                    location.reload();
+                                }, 1000);
                                 if (id === "new") {
                                     // Update row with new ID
                                     row.dataset.id = data.id;
