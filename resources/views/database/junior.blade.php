@@ -1069,6 +1069,9 @@
             let activeRequest = null;
             let selectedRowId = ''; // 🔑 SINGLE SOURCE OF TRUTH
 
+            // -------------------------------
+            // Utilities
+            // -------------------------------
             function debounce(func, wait) {
                 let timeout;
                 return function() {
@@ -1084,6 +1087,14 @@
                 return val.length >= 3 ? val : '';
             }
 
+            function resetRowState() {
+                // 🔥 CRITICAL: guarantees backend never receives stale row_id
+                selectedRowId = '';
+            }
+
+            // -------------------------------
+            // Table Fetch
+            // -------------------------------
             function fetchTable(page = 1) {
 
                 if (activeRequest) {
@@ -1097,8 +1108,8 @@
                         search: getValidSearch(),
                         page: page,
                         junior_user: $('#junior-filter').val(),
-                        row_id: selectedRowId, // ✅ controlled here
-                        date: $('#date-filter').val() // ✅ always included
+                        row_id: selectedRowId,
+                        date: $('#date-filter').val()
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
@@ -1114,16 +1125,16 @@
                 });
             }
 
-            // ----------------------------------
+            // -------------------------------
             // Live Search Suggestions
-            // ----------------------------------
+            // -------------------------------
             const showSuggestions = debounce(function() {
 
                 const search = $('#senior-search').val().trim();
 
                 if (search.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    selectedRowId = ''; // 🔥 reset row_id
+                    resetRowState();
                     fetchTable(1);
                     return;
                 }
@@ -1165,9 +1176,9 @@
 
             $('#senior-search').on('input', showSuggestions);
 
-            // ----------------------------------
-            // Suggestion Click (ONLY place row_id is set)
-            // ----------------------------------
+            // -------------------------------
+            // Suggestion Click (ONLY place row_id allowed)
+            // -------------------------------
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
 
@@ -1178,25 +1189,25 @@
                 fetchTable(1);
             });
 
-            // ----------------------------------
+            // -------------------------------
             // Date Filter (IDENTICAL TO SEARCH)
-            // ----------------------------------
+            // -------------------------------
             $('#date-filter').on('change', function() {
-                selectedRowId = ''; // 🔥 critical
+                resetRowState();
                 fetchTable(1);
             });
 
-            // ----------------------------------
+            // -------------------------------
             // Junior Filter
-            // ----------------------------------
+            // -------------------------------
             $('#junior-filter').on('change', function() {
-                selectedRowId = ''; // 🔥 critical
+                resetRowState();
                 fetchTable(1);
             });
 
-            // ----------------------------------
+            // -------------------------------
             // Pagination
-            // ----------------------------------
+            // -------------------------------
             $(document).on('click', '.pagination a', function(e) {
                 e.preventDefault();
 
@@ -1204,14 +1215,23 @@
                 fetchTable(page);
             });
 
-            // ----------------------------------
+            // -------------------------------
             // Hide Suggestions
-            // ----------------------------------
+            // -------------------------------
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
                     $('#search-suggestions').empty().hide();
                 }
             });
+
+            // -------------------------------
+            // 🔥 POST-SAVE HARD RESET (KEY FIX)
+            // Call this AFTER juniorupdate success
+            // -------------------------------
+            window.refreshJuniorTableAfterSave = function() {
+                resetRowState(); // behaves like date/search
+                fetchTable(1); // reload safely
+            };
 
         });
     </script>
