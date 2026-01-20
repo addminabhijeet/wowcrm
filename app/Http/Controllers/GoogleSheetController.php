@@ -5262,7 +5262,7 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-        $todayDate = Carbon::now(config('app.timezone'))->toDateString();
+        $todayDate = Carbon::now('America/New_York')->toDateString();
         $createdByKey = $authUser->id . '|junior';
 
         // Base query for today & this user
@@ -5445,7 +5445,7 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-        $todayDate = Carbon::now(config('app.timezone'))->toDateString();
+        $todayDate = Carbon::now('America/New_York')->toDateString();
         $createdByKey = $authUser->id . '|junior';
 
         // Base query for today & this user
@@ -5625,7 +5625,7 @@ class GoogleSheetController extends Controller
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
 
-        $todayDate = Carbon::now(config('app.timezone'))->toDateString();
+        $todayDate = Carbon::now('America/New_York')->toDateString();
         $createdByKey = $authUser->id . '|junior';
 
         // Base query for today & this user
