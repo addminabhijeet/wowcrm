@@ -1133,23 +1133,6 @@
             });
 
             // ----------------------------------
-            // AJAX Pagination
-            // ----------------------------------
-            $(document).on('click', '.pagination a', function(e) {
-                e.preventDefault();
-
-                const page = $(this).attr('href').split('page=')[1];
-
-                fetchTable(
-                    $('#senior-search').val().trim(),
-                    page,
-                    $('#junior-filter').val(),
-                    '',
-                    $('#date-filter').val()
-                );
-            });
-
-            // ----------------------------------
             // Hide suggestions on outside click
             // ----------------------------------
             $(document).click(function(e) {
