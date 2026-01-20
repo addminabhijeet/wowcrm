@@ -5276,7 +5276,7 @@ class GoogleSheetController extends Controller
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereDate('created_at', '!=', $todayDate)
+            ->whereDate('created_at',  $todayDate)
             ->count();
 
         $SnotInterestedCalls = (clone $todayBaseQuery)
@@ -5458,7 +5458,7 @@ class GoogleSheetController extends Controller
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereDate('created_at', '!=', $todayDate)
+            ->whereDate('created_at',  $todayDate)
             ->count();
 
         $SnotInterestedCalls = (clone $todayBaseQuery)
@@ -5638,7 +5638,7 @@ class GoogleSheetController extends Controller
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereDate('created_at', '!=', $todayDate)
+            ->whereDate('created_at',  $todayDate)
             ->count();
 
         $SnotInterestedCalls = (clone $todayBaseQuery)
