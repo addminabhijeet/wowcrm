@@ -1066,6 +1066,8 @@
     <script>
         $(document).ready(function() {
 
+            let activeRequest = null;
+
             function debounce(func, wait) {
                 let timeout;
                 return function() {
@@ -1077,7 +1079,13 @@
             }
 
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
-                $.ajax({
+
+                // 🔒 Abort previous request to prevent hanging
+                if (activeRequest) {
+                    activeRequest.abort();
+                }
+
+                activeRequest = $.ajax({
                     url: "{{ route('google.sheet.junior') }}",
                     type: 'GET',
                     data: {
@@ -1091,22 +1099,30 @@
                         $('#senior-table-wrapper').html(res);
                     },
                     error: function(err) {
-                        console.error(err);
+                        if (err.statusText !== 'abort') {
+                            console.error(err);
+                        }
+                    },
+                    complete: function() {
+                        activeRequest = null;
                     }
                 });
             }
 
-            // -----------------------------
+            // ----------------------------------
             // Live Search Suggestions
-            // -----------------------------
+            // ----------------------------------
             const showSuggestions = debounce(function() {
+
                 const search = $('#senior-search').val().trim();
                 const junior_user = $('#junior-filter').val();
                 const date = $('#date-filter').val();
 
                 if (search.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user, '', date); // ✅ keep date here
+
+                    // 🔁 behave like cleared search
+                    fetchTable('', 1, junior_user, '', date);
                     return;
                 }
 
@@ -1114,20 +1130,28 @@
                     url: "{{ route('junior.suggestions') }}",
                     type: 'GET',
                     data: {
-                        query: search, // ✅ MUST be "query"
+                        query: search, // ✅ backend expects "query"
                         junior_user: junior_user
+                        // ❌ date intentionally excluded (matches backend)
                     },
                     success: function(res) {
+
                         let suggestions = '';
+
                         if (res.length) {
                             res.forEach(item => {
                                 suggestions += `
-                    <a href="#"
-                       class="list-group-item list-group-item-action"
-                       data-id="${item.id}"
-                       data-name="${item.Name}">
-                       ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} | ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
-                    </a>`;
+                            <a href="#"
+                               class="list-group-item list-group-item-action"
+                               data-id="${item.id}"
+                               data-name="${item.Name}">
+                               ${item.sheet_row_number} |
+                               ${item.Name} |
+                               ${item.Email_Address} |
+                               ${item.Phone_Number} |
+                               ${item.Exe_Remarks} |
+                               ${item.forwarded_by}
+                            </a>`;
                             });
                         } else {
                             suggestions =
@@ -1142,64 +1166,78 @@
 
             $('#senior-search').on('input', showSuggestions);
 
-            // -----------------------------
-            // Suggestion click
-            // -----------------------------
+            // ----------------------------------
+            // Suggestion Click (ONLY place row_id is used)
+            // ----------------------------------
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
 
                 const rowId = $(this).data('id');
                 const name = $(this).data('name');
                 const junior_user = $('#junior-filter').val();
-                const date = $('#date-filter').val(); // ✅ include date
+                const date = $('#date-filter').val();
 
                 $('#senior-search').val(name);
                 $('#search-suggestions').empty().hide();
 
-                fetchTable('', 1, junior_user, rowId, date); // ✅ use date
+                // 🎯 row_id intentionally passed
+                fetchTable('', 1, junior_user, rowId, date);
             });
 
-            // -----------------------------
-            // Date filter
-            // -----------------------------
+            // ----------------------------------
+            // Date Filter (FIXED)
+            // ----------------------------------
             $('#date-filter').on('change', function() {
-                const date = $(this).val();
-                const search = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val();
 
-                fetchTable(search.length >= 3 ? search : '', 1, junior_user, '',
-                    date); // ✅ include search if >3
+                fetchTable(
+                    $('#senior-search').val().trim().length >= 3 ?
+                    $('#senior-search').val().trim() :
+                    '',
+                    1,
+                    $('#junior-filter').val(),
+                    '', // ❗ reset row_id
+                    $(this).val()
+                );
             });
 
-            // -----------------------------
-            // Junior filter
-            // -----------------------------
+            // ----------------------------------
+            // Junior Filter (FIXED)
+            // ----------------------------------
             $(document).on('change', '#junior-filter', function() {
-                const junior_user = $(this).val();
-                const search = $('#senior-search').val().trim();
-                const date = $('#date-filter').val();
 
-                fetchTable(search.length >= 3 ? search : '', 1, junior_user, '',
-                    date); // ✅ include date always
+                fetchTable(
+                    $('#senior-search').val().trim().length >= 3 ?
+                    $('#senior-search').val().trim() :
+                    '',
+                    1,
+                    $(this).val(),
+                    '', // ❗ reset row_id
+                    $('#date-filter').val()
+                );
             });
 
-            // -----------------------------
+            // ----------------------------------
             // AJAX Pagination
-            // -----------------------------
+            // ----------------------------------
             $(document).on('click', '.pagination a', function(e) {
                 e.preventDefault();
 
                 const page = $(this).attr('href').split('page=')[1];
-                const search = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val();
-                const date = $('#date-filter').val(); // ✅ include date
 
-                fetchTable(search.length >= 3 ? search : '', page, junior_user, '', date); // ✅ include date
+                fetchTable(
+                    $('#senior-search').val().trim().length >= 3 ?
+                    $('#senior-search').val().trim() :
+                    '',
+                    page,
+                    $('#junior-filter').val(),
+                    '', // ❗ reset row_id
+                    $('#date-filter').val()
+                );
             });
 
-            // -----------------------------
-            // Hide suggestions on outside click
-            // -----------------------------
+            // ----------------------------------
+            // Hide Suggestions on Outside Click
+            // ----------------------------------
             $(document).click(function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
                     $('#search-suggestions').empty().hide();
@@ -1208,6 +1246,7 @@
 
         });
     </script>
+
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
