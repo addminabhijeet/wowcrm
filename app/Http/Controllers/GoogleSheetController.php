@@ -3117,6 +3117,8 @@ class GoogleSheetController extends Controller
             }
         }
 
+        $updateData['followup'] = 1;
+
         try {
             $row->update($updateData);
             $user = Auth::user();
