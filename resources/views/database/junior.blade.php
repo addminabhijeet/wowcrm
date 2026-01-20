@@ -1077,7 +1077,7 @@
 
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
                 $.ajax({
-                    url: "{{ route('google.sheet.junior.candm') }}",
+                    url: "{{ route('google.sheet.junior') }}",
                     type: 'GET',
                     data: {
                         search: search,
@@ -1113,7 +1113,7 @@
                 }
 
                 $.ajax({
-                    url: "{{ route('juniorcandm.suggestions') }}",
+                    url: "{{ route('junior.suggestions') }}",
                     type: 'GET',
                     data: {
                         search: search,
