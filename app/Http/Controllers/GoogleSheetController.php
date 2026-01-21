@@ -3907,6 +3907,14 @@ class GoogleSheetController extends Controller
                 return response()->json(['success' => false, 'message' => 'Date is required.']);
             }
 
+            if (empty($email)) {
+                return response()->json(['success' => false, 'message' => 'Email is required.']);
+            }
+
+            if (empty($phone)) {
+                return response()->json(['success' => false, 'message' => 'Phone is required.']);
+            }
+
             $user = Auth::user();
 
             //  Atomic duplicate email check
@@ -6195,6 +6203,14 @@ class GoogleSheetController extends Controller
 
             if (empty($date)) {
                 return response()->json(['success' => false, 'message' => 'Date is required.']);
+            }
+
+            if (empty($email)) {
+                return response()->json(['success' => false, 'message' => 'Email is required.']);
+            }
+
+            if (empty($phone)) {
+                return response()->json(['success' => false, 'message' => 'Phone is required.']);
             }
 
             $user = Auth::user();
