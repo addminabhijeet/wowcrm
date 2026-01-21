@@ -6289,15 +6289,16 @@ class GoogleSheetController extends Controller
 
             // --- created_by logic ---
             if ($exeRemarksValue === 'Called & Mailed') {
-                $record->created_by = $user->id . '|junior:0|senior';
-            } else {
-                $record->created_by = $user->id . '|junior';
-            }
 
-            // --- Default amount ---
-            if (is_null($record->Amount)) {
-                $record->Amount = 469;
-                $amount = 469;
+                $record->created_by = $user->id . '|junior:0|senior';
+
+                // ✅ NEW: set followup date only if empty
+                if (empty($record->followup)) {
+                    $record->followup = \Carbon\Carbon::now('America/New_York')->format('Y-m-d');
+                }
+            } else {
+
+                $record->created_by = $user->id . '|junior';
             }
 
             // --- Resume upload ---
