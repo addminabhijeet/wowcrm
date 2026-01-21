@@ -1146,21 +1146,6 @@
                 fetchTable('', 1, junior_user, rowId);
             });
 
-            $(document).on('click', '.pagination a', function(e) {
-                e.preventDefault();
-
-                let url = $(this).attr('href');
-                if (!url) return;
-
-                // Extract page number
-                let page = new URL(url).searchParams.get('page');
-
-                let search = $('#senior-search').val().trim();
-                let junior_user = $('#junior-filter').val();
-
-                fetchTable(search, page, junior_user);
-            });
-
             // Junior dropdown filter
             $(document).on('change', '#junior-filter', function() {
                 const junior_user = $(this).val();
