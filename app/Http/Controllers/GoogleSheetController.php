@@ -3077,6 +3077,7 @@ class GoogleSheetController extends Controller
                     $updateData['created_by'] .= ':0|accountant';
                 }
             } elseif ($exeRemark === 'Called & Mailed') {
+
                 $tag = $id . '|senior';
                 $zerotag = '0|senior';
 
@@ -3088,12 +3089,18 @@ class GoogleSheetController extends Controller
                 if ($lastPart === $tag) {
                     $updateData['created_by'] .= ':' . $zerotag;
                 }
+
+                // === NEW: set followup date ONLY if null/empty ===
+                if (empty($row->followup)) {
+                    $updateData['followup'] = \Carbon\Carbon::now('America/New_York')->format('Y-m-d');
+                }
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
                 // Match any integer followed by "|junior"
                 if (preg_match('/(\d+)\|junior/', $updateData['created_by'], $matches)) {
                     $juniorId = $matches[1]; // Extract the integer
                     $tag = $juniorId . '|junior';
+
                     // Append only if tag already exists in created_by
                     if (strpos($updateData['created_by'], $tag) !== false) {
                         $updateData['created_by'] .= ':' . $tag;
@@ -3110,6 +3117,7 @@ class GoogleSheetController extends Controller
                 }
             }
         }
+
 
         foreach ($updateData as $key => $value) {
             if ($value === '' && !in_array($key, ['Email_Address', 'Name', 'Date', 'Amount'])) {

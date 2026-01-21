@@ -834,7 +834,7 @@
                         url = "{{ route('seniorstore') }}";
                         method = "POST";
                     } else {
-                        url = "{{ route('juniorupdate') }}";
+                        url = "{{ route('seniorupdate') }}";
                         method = "POST";
                         formData.append("id", id);
                     }
