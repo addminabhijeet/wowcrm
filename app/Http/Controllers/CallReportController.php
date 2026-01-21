@@ -159,7 +159,7 @@ class CallReportController extends Controller
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('followup', $selectedDate)
             ->where('transfers', 0)
             ->count();
 
@@ -189,7 +189,7 @@ class CallReportController extends Controller
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('followup', $selectedDate)
             ->where('transfers', 0)
             ->groupBy('hour')
             ->pluck('count', 'hour')
@@ -1556,7 +1556,7 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = (clone $query)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('followup', $selectedDate)
             ->count();
 
         $SotherCalls = (clone $query)
@@ -1578,7 +1578,7 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('followup', $selectedDate)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -4374,7 +4374,7 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = (clone $tquery)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('followup', $selectedDate)
             ->count();
 
         $SotherCalls = (clone $query)
@@ -4396,7 +4396,7 @@ class CallReportController extends Controller
             ->where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('followup', $selectedDate)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();

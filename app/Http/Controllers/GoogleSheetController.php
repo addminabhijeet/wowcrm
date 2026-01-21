@@ -3117,8 +3117,6 @@ class GoogleSheetController extends Controller
             }
         }
 
-        $updateData['followup'] = 1;
-
         try {
             $row->update($updateData);
             $user = Auth::user();
@@ -5278,7 +5276,7 @@ class GoogleSheetController extends Controller
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNull('followup')
+            ->whereDate('followup', $todayDate)
             ->count();
 
         $SnotInterestedCalls = (clone $todayBaseQuery)
@@ -5460,7 +5458,7 @@ class GoogleSheetController extends Controller
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
             ->where('Exe_Remarks', 'Called & Mailed')
-             ->whereNull('followup')
+            ->whereDate('followup', $todayDate)
             ->count();
 
         $SnotInterestedCalls = (clone $todayBaseQuery)
@@ -5640,7 +5638,7 @@ class GoogleSheetController extends Controller
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
             ->where('Exe_Remarks', 'Called & Mailed')
-             ->whereNull('followup')
+            ->whereDate('followup', $todayDate)
             ->count();
 
         $SnotInterestedCalls = (clone $todayBaseQuery)
@@ -5894,11 +5892,17 @@ class GoogleSheetController extends Controller
 
             // === New created_by logic ===
             if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed') {
+
                 // Append only once if not already present
                 if (strpos($row->created_by, ':0|senior') === false) {
                     $updateData['created_by'] = $row->created_by . ':0|senior';
                 } else {
                     $updateData['created_by'] = $row->created_by;
+                }
+
+                // === NEW: set followup date ONLY if null ===
+                if (empty($row->followup)) {
+                    $updateData['followup'] = \Carbon\Carbon::now('America/New_York')->format('Y-m-d');
                 }
             } else {
                 $updateData['created_by'] = $row->created_by;
@@ -6138,8 +6142,6 @@ class GoogleSheetController extends Controller
         if (empty($updateData)) {
             return response()->json(['success' => false, 'message' => 'No valid fields to update']);
         }
-
-        $updateData['followup'] = 1;
 
         try {
             $row->timestamps = false;
