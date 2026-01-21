@@ -3979,12 +3979,17 @@ class GoogleSheetController extends Controller
                 $record->$dbColumn = $val;
             }
 
-            // Set created_by conditionally based on Exe_Remarks
             if ($exeRemarksValue === 'Called & Mailed') {
+
                 $record->created_by = $user->id . '|senior:0|senior';
+
+                // === NEW: insert followup date on create ===
+                $record->followup = \Carbon\Carbon::now('America/New_York')->format('Y-m-d');
             } elseif ($exeRemarksValue === 'Ready To Pay') {
+
                 $record->created_by = $user->id . '|senior:0|accountant';
             } else {
+
                 $record->created_by = $user->id . '|senior';
             }
 
