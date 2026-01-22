@@ -3079,7 +3079,7 @@ class GoogleSheetController extends Controller
                 if ($lastPart === $tag) {
                     $updateData['created_by'] .= ':' . $zerotag;
                 }
-                $updateData['followup'] = \Carbon\Carbon::now('America/New_York')->format('Y-m-d');
+                
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
                 // Match any integer followed by "|junior"
