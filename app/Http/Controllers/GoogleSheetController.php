@@ -3079,7 +3079,7 @@ class GoogleSheetController extends Controller
                 if ($lastPart === $tag) {
                     $updateData['created_by'] .= ':' . $zerotag;
                 }
-                
+
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
                 // Match any integer followed by "|junior"
@@ -3980,9 +3980,6 @@ class GoogleSheetController extends Controller
             if ($exeRemarksValue === 'Called & Mailed') {
 
                 $record->created_by = $user->id . '|senior:0|senior';
-
-                // === NEW: insert followup date on create ===
-                $record->followup = \Carbon\Carbon::now('America/New_York')->format('Y-m-d');
             } elseif ($exeRemarksValue === 'Ready To Pay') {
 
                 $record->created_by = $user->id . '|senior:0|accountant';
