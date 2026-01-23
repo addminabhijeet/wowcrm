@@ -44,6 +44,7 @@ class GoogleSheetData extends Model
         'delivery',
         'payment',
         'followup',
+        'rejected',
         'transfers',
         'updateresume',
     ];
