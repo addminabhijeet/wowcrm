@@ -6011,9 +6011,8 @@ class GoogleSheetController extends Controller
 
             // Clear followup field
             $row->followup = null;
+            $row->created_by = str_replace(':0|senior', '', $row->created_by);
 
-            // ✅ Overwrite created_by (remove previous value)
-            $row->created_by = $user->id . '|junior';
 
             // Append update info to Remark
             $updatedBy = $user->name;
