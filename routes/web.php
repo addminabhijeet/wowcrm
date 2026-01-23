@@ -176,6 +176,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/google-sheet-tra', [GoogleSheetController::class, 'seniortra'])->name('google.sheet.seniortra');
     Route::get('/dashboard/senior/google-sheet-tra-follow', [GoogleSheetController::class, 'seniortrafollow'])->name('google.sheet.seniortrafollow');
     Route::post('/junior/transfers-update', [GoogleSheetController::class, 'juniorupdatetra'])->name('junior.transfers.update');
+    Route::post('/junior/rejected-update', [GoogleSheetController::class, 'juniorupdaterej'])->name('junior.rejected.update');
     Route::get('/dashboard/senior/google-sheet-modcandm', [GoogleSheetController::class, 'seniormodcandm'])->name('google.sheet.seniormodcandm');
     Route::get('/dashboard/senior/google-sheet-modcandmfollow', [GoogleSheetController::class, 'seniormodcandmfollow'])->name('google.sheet.seniormodcandmfollow');
     Route::get('/dashboard/senior/google-sheet-paid', [GoogleSheetController::class, 'seniorpaid'])->name('google.sheet.seniorpaid');

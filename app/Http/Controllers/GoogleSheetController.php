@@ -5795,6 +5795,47 @@ class GoogleSheetController extends Controller
         }
     }
 
+    public function juniorupdaterej(Request $request)
+    {
+        $id = $request->input('id');
+
+        if (!$id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'ID is required'
+            ]);
+        }
+
+        $row = GoogleSheetData::find($id);
+
+        if (!$row) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Row not found'
+            ]);
+        }
+
+        try {
+            // Update only transfers column → set 1
+            $row->transfers = 1;
+            $row->updated_at = now();
+            $row->save();
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Rejected updated successfully',
+                'id' => $row->id
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Error: ' . $e->getMessage(),
+                'line'    => $e->getLine(),
+                'file'    => $e->getFile()
+            ]);
+        }
+    }
+
     public function juniorupdate(Request $request)
     {
         return DB::transaction(function () use ($request) {

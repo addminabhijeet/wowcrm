@@ -285,6 +285,9 @@
                                         <i class="fas fa-save"></i> Save
                                     </button>
                                 </td>
+                                <button class="btn btn-sm btn-warning Rejected-btn" data-id="{{ $row->id }}">
+                                    <i class="fas fa-exchange-alt"></i> Rejected
+                                </button>
                             @endif
                         @endauth
                     </tr>
@@ -326,6 +329,28 @@
                                     function(textarea) {
                                         syncTextareaToInput(textarea);
                                     });
+                            });
+                        });
+                        $(document).on("click", ".rejected-btn", function() {
+                            let id = $(this).data("id");
+
+                            $.ajax({
+                                url: "{{ route('junior.rejected.update') }}",
+                                method: "POST",
+                                data: {
+                                    id: id,
+                                    _token: "{{ csrf_token() }}"
+                                },
+                                success: function(res) {
+                                    if (res.success) {
+                                        alert("Rejected Updated!");
+                                    } else {
+                                        alert(res.message);
+                                    }
+                                },
+                                error: function() {
+                                    alert("Something went wrong!");
+                                }
                             });
                         });
                         $(document).ready(function() {
