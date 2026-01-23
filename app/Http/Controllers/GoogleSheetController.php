@@ -3079,7 +3079,6 @@ class GoogleSheetController extends Controller
                 if ($lastPart === $tag) {
                     $updateData['created_by'] .= ':' . $zerotag;
                 }
-
             } else {
                 // For all other remarks, apply "Revert To Junior" logic
                 // Match any integer followed by "|junior"
@@ -5817,7 +5816,25 @@ class GoogleSheetController extends Controller
 
         try {
             // Update only transfers column → set 1
-            $row->transfers = 1;
+            $row->rejected = 1;
+
+            // Update Exe_Remarks to 'Others'
+            $row->Exe_Remarks = 'Others';
+
+            // Append update info to Remark
+            $updatedBy = Auth::user()->name; // or adjust as needed
+            $updatedAt = now()->format('Y-m-d H:i:s');
+
+            $newRemarkEntry = "Status changed to 'Others' | Updated by {$updatedBy} on {$updatedAt}";
+
+            $existingRemark = $row->Remark ?? '';
+
+            $row->Remark = trim(
+                $existingRemark
+                    ? $existingRemark . PHP_EOL . $newRemarkEntry
+                    : $newRemarkEntry
+            );
+
             $row->updated_at = now();
             $row->save();
 
@@ -5835,6 +5852,7 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
+
 
     public function juniorupdate(Request $request)
     {
