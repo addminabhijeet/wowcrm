@@ -5821,6 +5821,9 @@ class GoogleSheetController extends Controller
             // Update Exe_Remarks to 'Others'
             $row->Exe_Remarks = 'Others';
 
+            // Clear followup field
+            $row->followup = null;
+
             // Append update info to Remark
             $updatedBy = Auth::user()->name; // or adjust as needed
             $updatedAt = now()->format('Y-m-d H:i:s');
@@ -5852,6 +5855,7 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
+
 
 
     public function juniorupdate(Request $request)
