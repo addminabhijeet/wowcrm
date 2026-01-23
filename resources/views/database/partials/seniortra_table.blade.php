@@ -284,10 +284,10 @@
                                     <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
                                         <i class="fas fa-save"></i> Save
                                     </button>
+                                    <button class="btn btn-sm btn-warning Rejected-btn" data-id="{{ $row->id }}">
+                                        <i class="fas fa-exchange-alt"></i> Rejected
+                                    </button>
                                 </td>
-                                <button class="btn btn-sm btn-warning Rejected-btn" data-id="{{ $row->id }}">
-                                    <i class="fas fa-exchange-alt"></i> Rejected
-                                </button>
                             @endif
                         @endauth
                     </tr>
