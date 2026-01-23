@@ -5815,7 +5815,10 @@ class GoogleSheetController extends Controller
         }
 
         try {
-            // Update only transfers column → set 1
+            // Auth user
+            $user = Auth::user();
+
+            // Update rejected flag
             $row->rejected = 1;
 
             // Update Exe_Remarks to 'Others'
@@ -5824,8 +5827,11 @@ class GoogleSheetController extends Controller
             // Clear followup field
             $row->followup = null;
 
+            // ✅ Overwrite created_by (remove previous value)
+            $row->created_by = $user->id . '|junior';
+
             // Append update info to Remark
-            $updatedBy = Auth::user()->name; // or adjust as needed
+            $updatedBy = $user->name;
             $updatedAt = now()->format('Y-m-d H:i:s');
 
             $newRemarkEntry = "Status changed to 'Others' | Updated by {$updatedBy} on {$updatedAt}";
