@@ -331,7 +331,7 @@
                                     });
                             });
                         });
-                        $(document).on("click", ".rejected-btn", function() {
+                        $(document).on("click", ".Rejected-btn", function() {
                             let id = $(this).data("id");
 
                             $.ajax({
@@ -353,6 +353,7 @@
                                 }
                             });
                         });
+
                         $(document).ready(function() {
                             $('.save-btn').click(function() {
                                 let rowId = $(this).data('id');
