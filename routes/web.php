@@ -229,7 +229,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/junior/google-sheet/searchtra', [GoogleSheetController::class, 'juniortraSuggestions'])->name('juniortra.suggestions');
 
     Route::get('/dashboard/junior/google-sheet', [GoogleSheetController::class, 'junior'])->name('google.sheet.junior');
-        Route::get('/dashboard/junior/google-sheet-rej', [GoogleSheetController::class, 'juniorrej'])->name('google.sheet.juniorrej');
+    Route::get('/dashboard/junior/google-sheet-rej', [GoogleSheetController::class, 'juniorrej'])->name('google.sheet.juniorrej');
     Route::get('/dashboard/junior/google-sheet-candm', [GoogleSheetController::class, 'juniorcandm'])->name('google.sheet.junior.candm');
     Route::get('/dashboard/junior/google-sheet-tra', [GoogleSheetController::class, 'juniortra'])->name('google.sheet.junior.tra');
     Route::get('/dashboard/junior/google-sheet-modcandm', [GoogleSheetController::class, 'juniormodcandm'])->name('google.sheet.juniormodcandm');
@@ -240,6 +240,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/junior/google-sheet/pdfstore', [GoogleSheetController::class, 'juniorpdfstore'])->name('google.sheet.juniorpdfstore');
     Route::post('/dashboard/junior/google-sheet/juniorstore', [GoogleSheetController::class, 'juniorstore'])->name('juniorstore');
     Route::post('/dashboard/junior/google-sheet/juniorupdate', [GoogleSheetController::class, 'juniorupdate'])->name('juniorupdate');
+    Route::post('/dashboard/junior/google-sheet/juniorupdaterejected', [GoogleSheetController::class, 'juniorupdaterejected'])->name('juniorupdaterejected');
     Route::get('/dashboard/junior/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewjuniorResume'])->name('view.resume');
     Route::get('/dashboard/junior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadjuniorResume'])->name('download.resume');
 

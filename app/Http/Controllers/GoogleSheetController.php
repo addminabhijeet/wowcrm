@@ -6047,6 +6047,301 @@ class GoogleSheetController extends Controller
     }
 
 
+    public function juniorupdaterejected(Request $request)
+    {
+        return DB::transaction(function () use ($request) {
+
+            $id = $request->input('id');
+            if (!$id) {
+                return response()->json(['success' => false, 'message' => 'ID is required']);
+            }
+
+            //  Lock the row being updated
+            $row = GoogleSheetData::where('id', $id)->lockForUpdate()->first();
+            if (!$row) {
+                return response()->json(['success' => false, 'message' => 'Row not found']);
+            }
+
+            $rowData = json_decode($request->input('data'), true);
+            if (empty($rowData)) {
+                return response()->json(['success' => false, 'message' => 'No data provided']);
+            }
+
+            $email = $rowData['Email Address'] ?? $row->Email_Address;
+            $phone = $rowData['Phone Number'] ?? $row->Phone_Number;
+            $name  = $rowData['Name'] ?? $row->Name;
+            $date  = $rowData['Date'] ?? $row->Date;
+
+            if (empty($name)) {
+                return response()->json(['success' => false, 'message' => 'Name is required.']);
+            }
+
+            if (empty($date)) {
+                return response()->json(['success' => false, 'message' => 'Date is required.']);
+            }
+
+            $user = Auth::user();
+
+            // Handle resume file upload - Save actual file content
+            if ($request->hasFile('resume')) {
+                $file = $request->file('resume');
+
+                // Allowed Word MIME types
+                $allowed = [
+                    'application/pdf',
+                    'application/msword', // .doc
+                    'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // .docx
+                ];
+
+                if (!in_array($file->getMimeType(), $allowed)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Only PDF or Word files (.pdf, .doc, .docx) are allowed'
+                    ]);
+                }
+
+                // Generate unique filename
+                $timestamp = now()->format('Ymd_His');
+                $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+                $extension = $file->getClientOriginalExtension();
+                $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+                try {
+                    // Store the actual file content
+                    $filePath = $file->storeAs('resumes', $newName, 'public');
+
+                    // Delete old resume file if exists
+                    if ($row->resume && Storage::disk('public')->exists($row->resume)) {
+                        Storage::disk('public')->delete($row->resume);
+                    }
+
+                    $row->resume = $filePath;
+                } catch (\Exception $e) {
+                    return response()->json(['success' => false, 'message' => 'File upload failed: ' . $e->getMessage()]);
+                }
+            }
+
+            // --- Prepare update data with null for empty fields ---
+            $updateData = [
+                'Date' => !empty($rowData['Date']) ? $this->parseDate($rowData['Date']) : null,
+                'Name' => $rowData['Name'] ?? null,
+                'Email_Address' => $email, // keep provided email
+                'Phone_Number' => $phone,  // keep provided phone
+                'Location' => $rowData['Location'] ?? null,
+                'Remark' => $rowData['Remark'] ?? null,
+                'Relocation' => $rowData['Relocation'] ?? null,
+                'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
+                'Immigration' => $rowData['Immigration'] ?? null,
+                'Course' => $rowData['Course'] ?? null,
+                'Amount' => isset($rowData['Amount']) && $rowData['Amount'] !== '' ? $this->parseAmount($rowData['Amount']) : 469, // ✅ default 469
+                'Qualification' => $rowData['Qualification'] ?? null,
+                'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
+                'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
+                'Time_Zone' => $rowData['Time Zone'] ?? null,
+                'updated_at' => now(),
+            ];
+
+            // Only update resume if it was uploaded
+            if ($request->hasFile('resume')) {
+                $updateData['resume'] = $row->resume;
+            }
+
+            // === New created_by logic ===
+            if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed') {
+
+                // Append only once if not already present
+                if (strpos($row->created_by, ':0|senior') === false) {
+                    $updateData['created_by'] = $row->created_by . ':0|senior';
+                } else {
+                    $updateData['created_by'] = $row->created_by;
+                }
+
+                // === NEW: set followup date ONLY if null ===
+                if (empty($row->followup)) {
+                    $updateData['followup'] = \Carbon\Carbon::now('America/New_York')->format('Y-m-d');
+                }
+            } else {
+                $updateData['created_by'] = $row->created_by;
+            }
+
+            // === Append remark if Exe Remarks changed ===
+            $oldExeRemarks = $row->Exe_Remarks;
+
+            $updatedBy = Auth::user()->name;
+            $updatedAt = now()->format('d-m-Y H:i');
+
+            if (
+                isset($rowData['Exe Remarks']) &&
+                $rowData['Exe Remarks'] !== $oldExeRemarks
+            ) {
+                $newRemarkEntry = "{$rowData['Exe Remarks']} | Updated by {$updatedBy} on {$updatedAt}";
+
+                // Append to existing remark (keep history)
+                $existingRemark =
+                    $rowData['Remark']
+                    ?? $row->Remark
+                    ?? '';
+
+                $updateData['Remark'] = trim(
+                    $existingRemark
+                        ? $existingRemark . PHP_EOL . $newRemarkEntry
+                        : $newRemarkEntry
+                );
+            } else {
+                // Exe Remarks NOT changed → still log update info
+                $newRemarkEntry = "Updated by {$updatedBy} on {$updatedAt}";
+
+                $existingRemark =
+                    $rowData['Remark']
+                    ?? $row->Remark
+                    ?? '';
+
+                $updateData['Remark'] = trim(
+                    $existingRemark
+                        ? $existingRemark . PHP_EOL . $newRemarkEntry
+                        : $newRemarkEntry
+                );
+            }
+
+            $updateData['rejected'] = null;
+
+            foreach ($updateData as $key => $value) {
+                if ($value === '' && !in_array($key, ['Email_Address', 'Remark', 'Name', 'Amount'])) {
+                    $updateData[$key] = null;
+                }
+            }
+
+            try {
+                $user = Auth::user();
+                // ONLY NOW update
+                $row->update($updateData);
+
+
+                $mailMessage = 'No email sent.';
+                $name = $rowData['Name'] ?? null;
+                $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
+
+                // --- Send email if Exe_Remarks is "Called & Mailed" ---
+                if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed' && !empty($email)) {
+                    try {
+                        $smtp = SmtpSetting::where('user_id', $user->id)->first();
+                        if (!$smtp) {
+                            return response()->json([
+                                'message' => 'No SMTP settings found.'
+                            ]);
+                        } else {
+                            // Configure mailer dynamically (same as test() method)
+                            config([
+                                'mail.mailers.smtp.transport' => $smtp->mailer,
+                                'mail.mailers.smtp.host' => $smtp->host,
+                                'mail.mailers.smtp.port' => $smtp->port,
+                                'mail.mailers.smtp.username' => $smtp->username,
+                                'mail.mailers.smtp.password' => decrypt($smtp->password),
+                                'mail.mailers.smtp.encryption' => $smtp->encryption,
+                                'mail.from.address' => $smtp->from_address,
+                                'mail.from.name' => $smtp->from_name,
+                            ]);
+
+                            // --- Fetch Email Template from Database ---
+                            $template = EmailTemplate::where('name', 'Called_Mailed')->first();
+
+                            if ($template) {
+                                $subject = $template->subject;
+                                $messageBody = $template->body;
+                            } else {
+                                // Fallback if template not found
+                                $subject = "Unlock Career Stability with Fortune 500 Projects !";
+                                $messageBody =
+                                    "Hi {$name},\n\n" .
+                                    "I hope this message finds you well.\n\n" .
+                                    "My name is {$smtp->from_name}, and I’m part of the Talent Acquisition Team at Synergie Systems INC., a respected workforce development and project management firm based in Delaware. We partner with some of the most renowned Fortune 500 companies across the U.S., delivering not just staffing solutions but long-term career success.\n\n" .
+                                    "After reviewing your profile, I believe you could be a strong fit for several exciting opportunities we currently have available. And more importantly, I believe we can offer you not just a job, but a career pathway built on stability, support, and growth.\n\n" .
+                                    "What Makes Synergie Different?\n" .
+                                    "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                    "At Synergie, we understand that a fulfilling career is built on trust, purpose, and progress. That's why we go beyond recruitment—we invest in you. Our commitment is simple: to help you grow, thrive, and achieve your highest potential.\n\n" .
+                                    "Here’s what you can expect when you join our community:\n\n" .
+                                    "                  - Direct Project Placements with Fortune 500 and Tier 1 clients\n" .
+                                    "                  - Full-time employment with Synergie—never just a short-term contract\n" .
+                                    "                  - Real-world project experience with today’s most in-demand tools and technologies\n" .
+                                    "                  - Dedicated support from day one: resume branding, interview prep, and onboarding guidance\n" .
+                                    "                  - Zero Bond Policy—because your freedom and career choices matter\n" .
+                                    "                  - Support for OPT, CPT, STEM OPT, H1B & Green Card sponsorships\n\n" .
+                                    "More Than a Paycheck — A Path to Prosperity\n" .
+                                    "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                    "We believe that when you bring value, you deserve to be valued. That’s why we offer a transparent, competitive compensation structure designed to reward your dedication and drive.\n\n" .
+                                    "                  - Full-Time Roles: \$40–\$50/hr\n" .
+                                    "                  - Part-Time Roles: \$15–\$25/hr\n" .
+                                    "                  - Paid Internships available\n" .
+                                    "                  - 15% Salary Raise every 6 months based on performance\n" .
+                                    "                  - 12 Days Paid Vacation annually\n" .
+                                    "                  - Relocation Assistance for client deployments\n\n" .
+                                    "Comprehensive Benefits That Put You First\n" .
+                                    "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                    "At Synergie, we care for your career—and your well-being. We provide:\n\n" .
+                                    "                  - Health, Dental & Vision Insurance\n" .
+                                    "                  - Short- & Long-Term Disability Insurance\n" .
+                                    "                  - Life Insurance & 401(k) Retirement Plan\n" .
+                                    "                  - Legal & Immigration Support\n" .
+                                    "                  - Tax Assistance & Transparent Payroll\n" .
+                                    "                  - Workers’ Compensation—your safety is our priority\n\n" .
+                                    "Support Tailored for International Talent\n" .
+                                    "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                    "We take pride in guiding hundreds of F1/OPT/CPT/STEM OPT professionals every year toward long-term success in the U.S.:\n\n" .
+                                    "                  - Offer Letters, Client Confirmations & Employer Letters\n" .
+                                    "                  - Full STEM Extension & OPT/CPT Support\n" .
+                                    "                  - H1B Sponsorship after project onboarding\n" .
+                                    "                  - Relocation & Immigration Documentation\n" .
+                                    "                  - Ongoing Green Card Processing Assistance\n\n" .
+                                    "Not Quite Job-Ready? We’ll Bridge That Gap\n" .
+                                    "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                    "Sometimes, all it takes is one last push to unlock your dream opportunity. That’s why we offer a 4-week industry-focused workshop, designed by experts with over a decade of experience to prepare you for real-world success.\n\n" .
+                                    "What You’ll Gain:\n\n" .
+                                    "                  - Live Zoom sessions & recorded expert sessions\n" .
+                                    "                  - Real-time project simulations & hands-on assignments\n" .
+                                    "                  - One-on-one resume branding & mock interviews\n" .
+                                    "                  - Global Certificate of Completion & recruiter access\n" .
+                                    "                  - 100% Fee Refund with your first project paycheck (Only \${$amount}—one-time, fully refundable)\n\n" .
+                                    "Let’s Take the First Step Together\n" .
+                                    "-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------\n\n" .
+                                    "If you’re seeking more than just another role—if you’re looking for a career that recognizes your potential, offers true support, and opens doors to the future you deserve—then Synergie is here for you.\n\n" .
+                                    "This is your opportunity to move forward with confidence, backed by a team that believes in you and works tirelessly to help you succeed.\n\n" .
+                                    "Please feel free to reply to this email or reach me directly over the phone if you’d like to learn more or take the next step.\n\n" .
+                                    "Wishing you success in every path you choose—but hoping we’ll have the honor of being part of your journey.\n\n" .
+                                    "Visit Our Website: https://www.synergiesystems.com/";
+                            }
+
+                            // --- Send Email (No Template Logic Changed) ---
+                            Mail::raw($messageBody, function ($message) use ($email, $subject, $smtp) {
+                                $message->from($smtp->from_address, $smtp->from_name)
+                                    ->to($email)
+                                    ->subject($subject);
+                            });
+
+                            $mailMessage = "Email sent successfully to {$email}!";
+                        }
+                    } catch (\Exception $e) {
+                        $mailMessage = 'Failed to send email: ' . $e->getMessage();
+                    }
+                }
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Row updated successfully',
+                    'id' => $row->id,
+                    'sheet_row_number' => $row->sheet_row_number,
+                    'resume_path' => !empty($row->resume) ? true : false,
+                    'mail_message' => $mailMessage
+                ]);
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Fill Full Detail to Save.'
+                ]);
+            }
+        });
+    }
+
+
 
     public function juniorupdate(Request $request)
     {
