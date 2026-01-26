@@ -6018,7 +6018,7 @@ class GoogleSheetController extends Controller
             $updatedBy = $user->name;
             $updatedAt = now()->format('Y-m-d H:i:s');
 
-            $newRemarkEntry = "Status changed to 'Others' | Updated by {$updatedBy} on {$updatedAt}";
+            $newRemarkEntry = "Called and Mailed Rejected | Updated by {$updatedBy} on {$updatedAt}";
 
             $existingRemark = $row->Remark ?? '';
 
