@@ -5512,7 +5512,7 @@ class GoogleSheetController extends Controller
         }
 
 
-        return view('database.junior', [
+        return view('database.juniorrej', [
             'data' => $pagedData,
             'juniorUsers' => $juniorUsers,
             'exeRemarkCounts' => $exeRemarkCounts
