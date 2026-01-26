@@ -6203,7 +6203,7 @@ class GoogleSheetController extends Controller
                 );
             }
 
-            $updateData['rejected'] = null;
+            $updateData['rejected'] = 0;
 
             foreach ($updateData as $key => $value) {
                 if ($value === '' && !in_array($key, ['Email_Address', 'Remark', 'Name', 'Amount'])) {
