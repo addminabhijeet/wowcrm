@@ -123,6 +123,7 @@
                                 <th scope="col" class="text-center">Time Zone</th>
                                 <th scope="col" class="text-center">Resume</th>
                                 <th scope="col" class="text-center">Remarks</th>
+                                <th scope="col" class="text-center">Rejected Remark</th>
                                 <th scope="col" class="text-center">Status</th>
                                 <th scope="col" class="text-center">Actions</th>
 
