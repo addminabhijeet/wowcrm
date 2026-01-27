@@ -3104,6 +3104,73 @@ class GoogleSheetController extends Controller
             }
         }
 
+        // === Append remark if Exe Remarks changed ===
+        $oldExeRemarks = $row->Exe_Remarks;
+
+        $updatedBy = Auth::user()->name;
+        $updatedAt = now()->format('d-m-Y H:i');
+
+        if (
+            isset($rowData['Exe Remarks']) &&
+            $rowData['Exe Remarks'] !== $oldExeRemarks
+        ) {
+            $newRemarkEntry = "{$rowData['Exe Remarks']} | Updated by {$updatedBy} on {$updatedAt}";
+
+            // Append to existing remark (keep history)
+            $existingRemark =
+                $rowData['Remark']
+                ?? $row->Remark
+                ?? '';
+
+            $updateData['Remark'] = trim(
+                $existingRemark
+                    ? $existingRemark . PHP_EOL . $newRemarkEntry
+                    : $newRemarkEntry
+            );
+        } else {
+            // Exe Remarks NOT changed → still log update info
+            $newRemarkEntry = "Updated by {$updatedBy} on {$updatedAt}";
+
+            $existingRemark =
+                $rowData['Remark']
+                ?? $row->Remark
+                ?? '';
+
+            $updateData['Remark'] = trim(
+                $existingRemark
+                    ? $existingRemark . PHP_EOL . $newRemarkEntry
+                    : $newRemarkEntry
+            );
+        }
+
+        // === Append RejectedRemark like Remark (keep history) ===
+        $oldRejectedRemark = $row->RejectedRemark ?? '';
+
+        if (
+            isset($rowData['RejectedRemark']) &&
+            $rowData['RejectedRemark'] !== '' &&
+            $rowData['RejectedRemark'] !== $oldRejectedRemark
+        ) {
+            // RejectedRemark changed
+            $newRejectedEntry = "{$rowData['RejectedRemark']} | Updated by {$updatedBy} on {$updatedAt}";
+
+            $updateData['RejectedRemark'] = trim(
+                $oldRejectedRemark
+                    ? $oldRejectedRemark . PHP_EOL . $newRejectedEntry
+                    : $newRejectedEntry
+            );
+        } else {
+            // RejectedRemark NOT changed → still log update info (same as Remark)
+            $newRejectedEntry = "Updated by {$updatedBy} on {$updatedAt}";
+
+            $updateData['RejectedRemark'] = trim(
+                $oldRejectedRemark
+                    ? $oldRejectedRemark . PHP_EOL . $newRejectedEntry
+                    : $newRejectedEntry
+            );
+        }
+
+
 
         foreach ($updateData as $key => $value) {
             if ($value === '' && !in_array($key, ['Email_Address', 'Name', 'Date', 'Amount'])) {
