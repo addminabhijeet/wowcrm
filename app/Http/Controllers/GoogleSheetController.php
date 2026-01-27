@@ -3222,60 +3222,7 @@ class GoogleSheetController extends Controller
             );
         }
 
-        // === Append RejectedRemark like Remark (keep history) ===
-        $oldRejectedRemark = $row->RejectedRemark ?? '';
-
-        if (
-            isset($rowData['RejectedRemark']) &&
-            $rowData['RejectedRemark'] !== '' &&
-            $rowData['RejectedRemark'] !== $oldRejectedRemark
-        ) {
-            // RejectedRemark changed
-            $newRejectedEntry = "{$rowData['RejectedRemark']} | Updated by {$updatedBy} on {$updatedAt}";
-
-            $updateData['RejectedRemark'] = trim(
-                $oldRejectedRemark
-                    ? $oldRejectedRemark . PHP_EOL . $newRejectedEntry
-                    : $newRejectedEntry
-            );
-        } else {
-            // RejectedRemark NOT changed → still log update info (same as Remark)
-            $newRejectedEntry = "Updated by {$updatedBy} on {$updatedAt}";
-
-            $updateData['RejectedRemark'] = trim(
-                $oldRejectedRemark
-                    ? $oldRejectedRemark . PHP_EOL . $newRejectedEntry
-                    : $newRejectedEntry
-            );
-        }
-
-        // === Append TransferRemark like Remark (keep history) ===
-        $oldTransferRemark = $row->TransferRemark ?? '';
-
-        if (
-            isset($rowData['TransferRemark']) &&
-            $rowData['TransferRemark'] !== '' &&
-            $rowData['TransferRemark'] !== $oldTransferRemark
-        ) {
-            // TransferRemark changed
-            $newTransferEntry = "{$rowData['TransferRemark']} | Updated by {$updatedBy} on {$updatedAt}";
-
-            $updateData['TransferRemark'] = trim(
-                $oldTransferRemark
-                    ? $oldTransferRemark . PHP_EOL . $newTransferEntry
-                    : $newTransferEntry
-            );
-        } else {
-            // TransferRemark NOT changed → still log update info (same as Remark)
-            $newTransferEntry = "Updated by {$updatedBy} on {$updatedAt}";
-
-            $updateData['TransferRemark'] = trim(
-                $oldTransferRemark
-                    ? $oldTransferRemark . PHP_EOL . $newTransferEntry
-                    : $newTransferEntry
-            );
-        }
-
+        
 
 
         foreach ($updateData as $key => $value) {
