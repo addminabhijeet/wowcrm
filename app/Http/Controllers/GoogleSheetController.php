@@ -6208,10 +6208,14 @@ class GoogleSheetController extends Controller
             }
 
             // === Append RejectedRemark like Remark (keep history) ===
-            if (isset($rowData['RejectedRemark']) && $rowData['RejectedRemark'] !== '') {
+            $oldRejectedRemark = $row->RejectedRemark ?? '';
 
-                $oldRejectedRemark = $row->RejectedRemark ?? '';
-
+            if (
+                isset($rowData['RejectedRemark']) &&
+                $rowData['RejectedRemark'] !== '' &&
+                $rowData['RejectedRemark'] !== $oldRejectedRemark
+            ) {
+                // RejectedRemark changed
                 $newRejectedEntry = "{$rowData['RejectedRemark']} | Updated by {$updatedBy} on {$updatedAt}";
 
                 $updateData['RejectedRemark'] = trim(
@@ -6220,8 +6224,14 @@ class GoogleSheetController extends Controller
                         : $newRejectedEntry
                 );
             } else {
-                // Keep existing rejected remark if nothing new provided
-                $updateData['RejectedRemark'] = $row->RejectedRemark;
+                // RejectedRemark NOT changed → still log update info (same as Remark)
+                $newRejectedEntry = "Updated by {$updatedBy} on {$updatedAt}";
+
+                $updateData['RejectedRemark'] = trim(
+                    $oldRejectedRemark
+                        ? $oldRejectedRemark . PHP_EOL . $newRejectedEntry
+                        : $newRejectedEntry
+                );
             }
 
 
