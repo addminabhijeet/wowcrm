@@ -2671,6 +2671,85 @@ class GoogleSheetController extends Controller
         return response()->json($transformed);
     }
 
+    public function juniorrejSuggestions(Request $request)
+    {
+        $authUser = Auth::user();
+        $queryText = $request->input('query');
+        $juniorUserId = $request->input('junior_user');
+
+        if (!$queryText || strlen($queryText) < 3) {
+            return response()->json([]);
+        }
+
+        $userPattern = "%:" . $authUser->id . "|junior";
+
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
+            $q->where(function ($q2) use ($authUser, $userPattern) {
+                $q2->where('created_by', $authUser->id . '|junior')
+                    ->orWhere('created_by', 'LIKE', $userPattern);
+            })
+                ->whereRaw(
+                    "RIGHT(created_by, LENGTH(?)) = ?",
+                    [$authUser->id . '|junior', $authUser->id . '|junior']
+                );
+        })
+            ->where('transfers', '!=', 1)->where('rejected', 1);
+
+        // ✅ Apply junior filter (same as junior())
+        if ($juniorUserId) {
+            $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
+        }
+
+        // ✅ Apply search
+        $results = $query->where(function ($q) use ($queryText) {
+            $q->where('Name', 'LIKE', "%{$queryText}%")
+                ->orWhere('Email_Address', 'LIKE', "%{$queryText}%")
+                ->orWhere('Phone_Number', 'LIKE', "%{$queryText}%");
+        })
+            ->orderBy('id', 'desc')
+            ->limit(10)
+            ->get([
+                'id',
+                'sheet_row_number',
+                'Name',
+                'Email_Address',
+                'Phone_Number',
+                'Exe_Remarks',
+                'created_by'
+            ]);
+
+        // ✅ SAME forwarded_by transformation
+        $transformed = $results->map(function ($item) use ($authUser) {
+            $entries = explode(':', $item->created_by);
+            $names = [];
+
+            foreach ($entries as $entry) {
+                $parts = explode('|', $entry);
+                $userId = $parts[0] ?? null;
+                $role   = $parts[1] ?? 'unknown';
+
+                if ($userId == $authUser->id) {
+                    $label = $role === 'senior' ? 'IT Senior Recruiter' : 'IT Recruiter';
+                    $names[] = "SELF ({$userId}) ({$label})";
+                } elseif ($userId == 0) {
+                    $label = $role === 'senior' ? 'IT Senior Recruiter' : 'IT Recruiter';
+                    $names[] = "SYSTEM (0) ({$label})";
+                } else {
+                    $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                    $name = $user ? $user->name : 'Unknown';
+                    $label = $role === 'senior' ? 'IT Senior Recruiter' : 'IT Recruiter';
+                    $names[] = "{$name} ({$userId}) ({$label})";
+                }
+            }
+
+            $item->forwarded_by = implode(' → ', $names);
+            return $item;
+        });
+
+        return response()->json($transformed);
+    }
+
+
     public function juniorcandmSuggestions(Request $request)
     {
         $authUser = Auth::user();
