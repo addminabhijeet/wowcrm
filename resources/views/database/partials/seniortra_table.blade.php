@@ -398,6 +398,10 @@
                                     if ($textarea.hasClass('transferremark-autocomplete')) {
                                         $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
                                     }
+
+                                    if ($textarea.hasClass('rejectedremark-autocomplete')) {
+                                        $td.find('input[name="RejectedRemark"]').val($textarea.val().trim());
+                                    }
                                 });
 
                                 let data = {};
