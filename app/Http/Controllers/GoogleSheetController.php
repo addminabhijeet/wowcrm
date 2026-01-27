@@ -3170,6 +3170,33 @@ class GoogleSheetController extends Controller
             );
         }
 
+        // === Append TransferRemark like Remark (keep history) ===
+        $oldTransferRemark = $row->TransferRemark ?? '';
+
+        if (
+            isset($rowData['TransferRemark']) &&
+            $rowData['TransferRemark'] !== '' &&
+            $rowData['TransferRemark'] !== $oldTransferRemark
+        ) {
+            // TransferRemark changed
+            $newTransferEntry = "{$rowData['TransferRemark']} | Updated by {$updatedBy} on {$updatedAt}";
+
+            $updateData['TransferRemark'] = trim(
+                $oldTransferRemark
+                    ? $oldTransferRemark . PHP_EOL . $newTransferEntry
+                    : $newTransferEntry
+            );
+        } else {
+            // TransferRemark NOT changed → still log update info (same as Remark)
+            $newTransferEntry = "Updated by {$updatedBy} on {$updatedAt}";
+
+            $updateData['TransferRemark'] = trim(
+                $oldTransferRemark
+                    ? $oldTransferRemark . PHP_EOL . $newTransferEntry
+                    : $newTransferEntry
+            );
+        }
+
 
 
         foreach ($updateData as $key => $value) {
