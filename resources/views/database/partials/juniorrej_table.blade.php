@@ -378,7 +378,7 @@
                                 }
 
                                 $.ajax({
-                                    url: '{{ route('juniorupdate') }}',
+                                    url: '{{ route('juniorupdaterejected') }}',
                                     type: 'POST',
                                     data: formData,
                                     contentType: false,
