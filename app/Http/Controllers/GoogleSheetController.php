@@ -3238,16 +3238,7 @@ class GoogleSheetController extends Controller
                     ? $oldRejectedRemark . PHP_EOL . $newRejectedEntry
                     : $newRejectedEntry
             );
-        } else {
-            // RejectedRemark NOT changed → still log update info (same as Remark)
-            $newRejectedEntry = "Updated by {$updatedBy} on {$updatedAt}";
-
-            $updateData['RejectedRemark'] = trim(
-                $oldRejectedRemark
-                    ? $oldRejectedRemark . PHP_EOL . $newRejectedEntry
-                    : $newRejectedEntry
-            );
-        }
+        } 
 
         // === Append TransferRemark like Remark (keep history) ===
         $oldTransferRemark = $row->TransferRemark ?? '';
@@ -3259,15 +3250,6 @@ class GoogleSheetController extends Controller
         ) {
             // TransferRemark changed
             $newTransferEntry = "{$rowData['TransferRemark']} | Updated by {$updatedBy} on {$updatedAt}";
-
-            $updateData['TransferRemark'] = trim(
-                $oldTransferRemark
-                    ? $oldTransferRemark . PHP_EOL . $newTransferEntry
-                    : $newTransferEntry
-            );
-        } else {
-            // TransferRemark NOT changed → still log update info (same as Remark)
-            $newTransferEntry = "Updated by {$updatedBy} on {$updatedAt}";
 
             $updateData['TransferRemark'] = trim(
                 $oldTransferRemark
