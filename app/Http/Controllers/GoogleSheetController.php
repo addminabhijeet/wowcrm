@@ -6155,6 +6155,14 @@ class GoogleSheetController extends Controller
             ]);
         }
 
+        if (is_null($row->RejectedRemark)) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Please fill Rejected Remark',
+                'id' => $row->id
+            ]);
+        }
+
         try {
             // Auth user
             $user = Auth::user();
@@ -6167,8 +6175,9 @@ class GoogleSheetController extends Controller
 
             // Clear followup field
             $row->followup = null;
-            $row->created_by = str_replace(':0|senior', '', $row->created_by);
 
+            // Clean created_by
+            $row->created_by = str_replace(':0|senior', '', $row->created_by);
 
             // Append update info to Remark
             $updatedBy = $user->name;
@@ -6201,6 +6210,7 @@ class GoogleSheetController extends Controller
             ]);
         }
     }
+
 
 
     public function juniorupdaterejected(Request $request)
