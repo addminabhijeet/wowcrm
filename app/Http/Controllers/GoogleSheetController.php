@@ -6130,6 +6130,7 @@ class GoogleSheetController extends Controller
                 'Phone_Number' => $phone,  // keep provided phone
                 'Location' => $rowData['Location'] ?? null,
                 'Remark' => $rowData['Remark'] ?? null,
+                'RejectedRemark' => $rowData['RejectedRemark'] ?? null,
                 'Relocation' => $rowData['Relocation'] ?? null,
                 'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
                 'Immigration' => $rowData['Immigration'] ?? null,
@@ -6156,6 +6157,8 @@ class GoogleSheetController extends Controller
                 } else {
                     $updateData['created_by'] = $row->created_by;
                 }
+
+                $updateData['rejected'] = 0;
 
                 // === NEW: set followup date ONLY if null ===
                 if (empty($row->followup)) {
@@ -6203,8 +6206,6 @@ class GoogleSheetController extends Controller
                         : $newRemarkEntry
                 );
             }
-
-            $updateData['rejected'] = 0;
 
             foreach ($updateData as $key => $value) {
                 if ($value === '' && !in_array($key, ['Email_Address', 'Remark', 'Name', 'Amount'])) {
