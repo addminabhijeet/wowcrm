@@ -313,6 +313,13 @@
                                         <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="6">{{ $row->Remark ?? '' }}</textarea>
                                     </td>
 
+                                    {{-- RejectedRemark --}}
+                                    <td>
+                                        <textarea class="form-control rejectedremark-autocomplete" data-key="RejectedRemark"
+                                            placeholder="Type rejected remark" rows="6">{{ $row->RejectedRemark ?? '' }}</textarea>
+                                    </td>
+
+
                                     {{-- Status --}}
                                     <td>
                                         @php $exeOptions = ['Called & Mailed','Not Interested','Interested','Others','VM','Busy']; @endphp
@@ -771,63 +778,63 @@
                 let cells = `<td>—</td>`;
 
                 colKeys.forEach(k => {
-        //             if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
-        //                     'Time Zone', 'Qualification'
-        //                 ].includes(k)) {
-        //                 let opts = [];
-        //                 if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors',
-        //                     'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
-        //                     'Aerospace Proj. Manag.'
-        //                 ];
-        //                 if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested',
-        //                     'Interested', 'Others', 'VM', 'Busy'
-        //                 ];
-        //                 if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
-        //                     'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC', 'L2S'
-        //                 ];
-        //                 if (k === 'Relocation') opts = ['YES', 'NO'];
-        //                 if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
-        //                     'Money Issue', 'Not Interested', "Don't Call"
-        //                 ];
-        //                 if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
-        //                 if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
-        //                 cells +=
-        //                     `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
-        //             } else if (k === 'Amount') {
-        //                 cells +=
-        //                     `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount(469)"></td>`;
-        //             } else if (k === 'Location') {
-        //                 cells +=
-        //                     `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
-        //             } else if (k === 'Remark') {
-        //                 cells +=
-        //                     `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
-        //             } else if (k === 'Date' || k === 'Graduation Date') {
-        //                 cells +=
-        //                     `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
-        //             } else if (k === 'Phone Number') {
-        //                 cells +=
-        //                     `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
-        //             } else if (k === 'Email Address') {
-        //                 cells +=
-        //                     `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
-        //             } else if (k === 'Name') {
-        //                 cells +=
-        //                     `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-        //             } else if (k === 'View') {
-        //                 cells += `<td>
-        //     <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input" data-key="View">
-        //     <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-        //     <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
-        //     <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-        // </td>`;
-        //             }
+                    //             if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
+                    //                     'Time Zone', 'Qualification'
+                    //                 ].includes(k)) {
+                    //                 let opts = [];
+                    //                 if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors',
+                    //                     'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
+                    //                     'Aerospace Proj. Manag.'
+                    //                 ];
+                    //                 if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested',
+                    //                     'Interested', 'Others', 'VM', 'Busy'
+                    //                 ];
+                    //                 if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
+                    //                     'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC', 'L2S'
+                    //                 ];
+                    //                 if (k === 'Relocation') opts = ['YES', 'NO'];
+                    //                 if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
+                    //                     'Money Issue', 'Not Interested', "Don't Call"
+                    //                 ];
+                    //                 if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+                    //                 if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
+                    //                 cells +=
+                    //                     `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
+                    //             } else if (k === 'Amount') {
+                    //                 cells +=
+                    //                     `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount(469)"></td>`;
+                    //             } else if (k === 'Location') {
+                    //                 cells +=
+                    //                     `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
+                    //             } else if (k === 'Remark') {
+                    //                 cells +=
+                    //                     `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
+                    //             } else if (k === 'Date' || k === 'Graduation Date') {
+                    //                 cells +=
+                    //                     `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
+                    //             } else if (k === 'Phone Number') {
+                    //                 cells +=
+                    //                     `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
+                    //             } else if (k === 'Email Address') {
+                    //                 cells +=
+                    //                     `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
+                    //             } else if (k === 'Name') {
+                    //                 cells +=
+                    //                     `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
+                    //             } else if (k === 'View') {
+                    //                 cells += `<td>
+                //     <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input" data-key="View">
+                //     <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+                //     <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
+                //     <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
+                // </td>`;
+                    //             }
 
                 });
 
                 cells +=
                     // `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
-                newRow.innerHTML = cells;
+                    newRow.innerHTML = cells;
                 tableBody.appendChild(newRow);
                 applyInitialState(newRow);
             }
@@ -1702,32 +1709,32 @@
                 const textareaName = textarea.getAttribute('name');
                 if (!textareaName) return;
 
-                // Map _hidden textarea to input with same name minus _hidden
                 const inputName = textareaName.replace('_hidden', '');
                 const input = td.querySelector('input[name="' + inputName + '"]');
                 if (!input) return;
 
-                // Trim value before assigning
                 input.value = textarea.value.trim();
             }
 
-            // 🔁 Real-time sync on input for all textareas with *_autocomplete class
-            document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-                function(textarea) {
-                    textarea.addEventListener('input', function() {
-                        syncTextareaToInput(textarea);
-                    });
+            // 🔁 Real-time sync (extended only)
+            document.querySelectorAll(
+                'textarea.remark-autocomplete, textarea.transferremark-autocomplete, textarea.rejectedremark-autocomplete'
+            ).forEach(function(textarea) {
+                textarea.addEventListener('input', function() {
+                    syncTextareaToInput(textarea);
                 });
+            });
 
-            // 🛡️ Final sync before form submit
+            // 🛡️ Final sync before submit (extended only)
             form.addEventListener('submit', function() {
                 document.querySelectorAll(
-                    'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-                    function(textarea) {
-                        syncTextareaToInput(textarea);
-                    });
+                    'textarea.remark-autocomplete, textarea.transferremark-autocomplete, textarea.rejectedremark-autocomplete'
+                ).forEach(function(textarea) {
+                    syncTextareaToInput(textarea);
+                });
             });
         });
     </script>
+
 
 @endsection

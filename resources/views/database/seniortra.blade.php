@@ -295,7 +295,16 @@
                                             placeholder="Type TransferRemark">
                                     </td>
 
+                                    {{-- RejectedRemark --}}
+                                    <td>
+                                        <textarea name="RejectedRemark_hidden" class="form-control remark-autocomplete" placeholder="Type rejected remark"
+                                            rows="6">{{ $row->RejectedRemark ?? '' }}</textarea>
 
+                                        <input type="hidden" name="RejectedRemark"
+                                            class="form-control remark-autocomplete remark-hidden"
+                                            data-key="RejectedRemark" value="{{ $row->RejectedRemark ?? '' }}"
+                                            placeholder="Type rejected remark">
+                                    </td>
 
                                     {{-- Status --}}
                                     <td>
@@ -1572,30 +1581,27 @@
                 const input = td.querySelector('input[name="' + inputName + '"]');
                 if (!input) return;
 
-                // Trim value before assigning
                 input.value = textarea.value.trim();
             }
 
-            // 🔁 Real-time sync on input for all textareas with *_autocomplete class
-            document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-                function(textarea) {
-                    textarea.addEventListener('input', function() {
-                        syncTextareaToInput(textarea);
-                    });
+            // 🔁 Real-time sync (extended only)
+            document.querySelectorAll(
+                'textarea.remark-autocomplete, textarea.transferremark-autocomplete, textarea.rejectedremark-autocomplete'
+            ).forEach(function(textarea) {
+                textarea.addEventListener('input', function() {
+                    syncTextareaToInput(textarea);
                 });
+            });
 
-            // 🛡️ Final sync before form submit
+            // 🛡️ Final sync before submit (extended only)
             form.addEventListener('submit', function() {
                 document.querySelectorAll(
-                    'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-                    function(textarea) {
-                        syncTextareaToInput(textarea);
-                    });
+                    'textarea.remark-autocomplete, textarea.transferremark-autocomplete, textarea.rejectedremark-autocomplete'
+                ).forEach(function(textarea) {
+                    syncTextareaToInput(textarea);
+                });
             });
         });
     </script>
-
-
-
 
 @endsection

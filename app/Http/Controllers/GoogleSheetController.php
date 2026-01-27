@@ -3027,6 +3027,7 @@ class GoogleSheetController extends Controller
             'Location' => $rowData['Location'] ?? null,
             'Remark' => $rowData['Remark'] ?? null,
             'TransferRemark' => $rowData['TransferRemark'] ?? null,
+            'RejectedRemark' => $rowData['RejectedRemark'] ?? null,
             'Relocation' => $rowData['Relocation'] ?? null,
             'Graduation_Date' => !empty($rowData['Graduation Date']) ? $this->parseDate($rowData['Graduation Date']) : null,
             'Immigration' => $rowData['Immigration'] ?? null,
@@ -5504,7 +5505,7 @@ class GoogleSheetController extends Controller
         ];
 
         if ($request->ajax()) {
-            return view('database.partials.junior_table', [
+            return view('database.partials.juniorrej_table', [
                 'data' => $pagedData,
                 'juniorUsers' => $juniorUsers,
                 'exeRemarkCounts' => $exeRemarkCounts
