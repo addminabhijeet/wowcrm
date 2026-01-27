@@ -22,6 +22,7 @@ class GoogleSheetData extends Model
         'Location',
         'Remark',
         'TransferRemark',
+        'RejectedRemark',
         'Relocation',
         'Graduation_Date',
         'Immigration',
