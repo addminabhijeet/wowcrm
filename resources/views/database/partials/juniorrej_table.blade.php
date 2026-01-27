@@ -251,12 +251,16 @@
                                 value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                         </td>
 
+
                         {{-- RejectedRemark --}}
                         <td>
-                            <textarea type="text" name="RejectedRemark_hidden" class="form-control rejectedremark-autocomplete" rows="6" placeholder="Type rejected remark">{{ $row->RejectedRemark ?? '' }}</textarea>
+                            <textarea type="text" name="RejectedRemark_hidden" class="form-control rejectedremark-autocomplete data-field"
+                                data-key="RejectedRemark" placeholder="Type rejected remark" rows="6">{{ $row->RejectedRemark ?? '' }}</textarea>
 
-                            <input type="hidden" name="RejectedRemark" class="form-control rejectedremark-autocomplete rejectedremark-hidden"
-                                data-key="RejectedRemark" value="{{ $row->RejectedRemark ?? '' }}" placeholder="Type rejected remark">
+                            <input type="hidden" name="RejectedRemark"
+                                class="form-control rejectedremark-autocomplete rejectedremark-hidden"
+                                data-key="RejectedRemark" value="{{ $row->RejectedRemark ?? '' }}"
+                                placeholder="Type rejected remark">
                         </td>
 
                         {{-- Status --}}
