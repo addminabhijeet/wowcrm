@@ -1081,7 +1081,7 @@
             // ✅ PDF generation options (optimized for full A4 coverage)
             const opt = {
                 margin: [0, 0, 0, 0],
-                filename: 'monthly-report.pdf',
+                filename: 'Report.pdf',
                 image: {
                     type: 'jpeg',
                     quality: 0.98
