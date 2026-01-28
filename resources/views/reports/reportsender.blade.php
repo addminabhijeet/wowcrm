@@ -116,14 +116,4 @@
         });
     </script>
 
-
-    <script>
-        document.querySelectorAll('.user-checkbox').forEach(cb => {
-            cb.addEventListener('change', function() {
-                document.querySelectorAll('.user-checkbox').forEach(other => {
-                    if (other !== this) other.checked = false;
-                });
-            });
-        });
-    </script>
 @endsection
