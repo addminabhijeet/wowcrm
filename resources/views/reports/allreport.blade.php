@@ -1088,7 +1088,7 @@
                     quality: 0.98
                 },
                 html2canvas: {
-                    scale: 3,
+                    scale: 2,
                     useCORS: true,
                     scrollY: 0,
                     backgroundColor: "#ffffff",
