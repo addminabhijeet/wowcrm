@@ -555,450 +555,430 @@
             <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
         </button>
     </div>
+    
+    <div id="pdfContent">
+        @foreach ($reports as $index => $report)
+            @php extract($report); @endphp
 
-    @foreach ($reports as $index => $report)
-        @php extract($report); @endphp
+            <div id="pdfContent-{{ $index }}">
 
-        <div id="pdfContent-{{ $index }}">
-
-            <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm"
-                        style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 20px; color: #0d47a1; transition: all 0.3s ease; cursor: pointer;"
-                        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
-                        <div class="card-body d-flex justify-content-between align-items-center p-4">
-                            <div>
-                                <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
-                                <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetGiven }}</h3>
-                            </div>
-                            <div class="d-flex justify-content-center align-items-center"
-                                style="width: 70px; height: 70px; background-color: rgba(13,71,161,0.1); border-radius: 50%;">
-                                <iconify-icon icon="mdi:bullseye-arrow"
-                                    style="font-size: 34px; color: #0d47a1;"></iconify-icon>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm"
-                        style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); border-radius: 20px; color: #6a1b9a; transition: all 0.3s ease; cursor: pointer;"
-                        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
-                        <div class="card-body d-flex justify-content-between align-items-center p-4">
-                            <div>
-                                <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
-                                <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetAchieved }}</h3>
-                            </div>
-                            <div class="d-flex justify-content-center align-items-center"
-                                style="width: 70px; height: 70px; background-color: rgba(106,27,154,0.1); border-radius: 50%;">
-                                <iconify-icon icon="fa-solid:trophy"
-                                    style="font-size: 34px; color: #6a1b9a;"></iconify-icon>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm"
-                        style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
-                        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
-                        <div class="card-body d-flex justify-content-between align-items-center p-4">
-                            <div>
-                                <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
-                                <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetYetToAchieve }}</h3>
-                            </div>
-                            <div class="d-flex justify-content-center align-items-center"
-                                style="width: 70px; height: 70px; background-color: rgba(239,108,0,0.1); border-radius: 50%;">
-                                <iconify-icon icon="mdi:progress-clock"
-                                    style="font-size: 34px; color: #ef6c00;"></iconify-icon>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm"
-                        style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
-                        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
-                        <div class="card-body d-flex justify-content-between align-items-center p-4">
-                            <div>
-                                <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
-                                <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $daysLeft }}</h3>
-                            </div>
-                            <div class="d-flex justify-content-center align-items-center"
-                                style="width: 70px; height: 70px; background-color: rgba(46,125,50,0.1); border-radius: 50%;">
-                                <iconify-icon icon="mdi:calendar-clock"
-                                    style="font-size: 34px; color: #2e7d32;"></iconify-icon>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm"
-                        style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
-                        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
-                        <div class="card-body d-flex justify-content-between align-items-center p-4">
-                            <div>
-                                <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Present Days</p>
-                                <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $presentDays }}</h3>
-                            </div>
-                            <div class="d-flex justify-content-center align-items-center"
-                                style="width: 70px; height: 70px; background-color: rgba(46,125,50,0.1); border-radius: 50%;">
-                                <iconify-icon icon="mdi:account-check-outline"
-                                    style="font-size: 34px; color: #2e7d32;"></iconify-icon>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm"
-                        style="background: linear-gradient(135deg, #ffebee, #ffcdd2); border-radius: 20px; color: #c62828; transition: all 0.3s ease; cursor: pointer;"
-                        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
-                        <div class="card-body d-flex justify-content-between align-items-center p-4">
-                            <div>
-                                <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Absent Days</p>
-                                <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $absentDays }}</h3>
-
-                            </div>
-                            <div class="d-flex justify-content-center align-items-center"
-                                style="width: 70px; height: 70px; background-color: rgba(198,40,40,0.1); border-radius: 50%;">
-                                <iconify-icon icon="mdi:account-cancel-outline"
-                                    style="font-size: 34px; color: #c62828;"></iconify-icon>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col">
-                    <div class="card h-100 border-0 shadow-sm"
-                        style="background: linear-gradient(135deg, #fff8e1, #ffecb3); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
-                        onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
-                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
-                        <div class="card-body d-flex justify-content-between align-items-center p-4">
-                            <div>
-                                <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Working Days</p>
-                                <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $workingDays }}</h3>
-                            </div>
-                            <div class="d-flex justify-content-center align-items-center"
-                                style="width: 70px; height: 70px; background-color: rgba(239,108,0,0.1); border-radius: 50%;">
-                                <iconify-icon icon="mdi:briefcase-outline"
-                                    style="font-size: 34px; color: #ef6c00;"></iconify-icon>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-            <div class="row gy-4 mt-1">
-
-                <div class="col-xxl-8 col-lg-6">
-                    <div class="card h-100 border-0 shadow-sm radius-12">
-                        <div class="card-body p-4">
-                            <!-- Header -->
-                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+                <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm"
+                            style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 20px; color: #0d47a1; transition: all 0.3s ease; cursor: pointer;"
+                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+                            <div class="card-body d-flex justify-content-between align-items-center p-4">
                                 <div>
-                                    <h5 class="fw-bold mb-1">{{ $juniorUser->name }}</h5>
+                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
+                                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetGiven }}</h3>
                                 </div>
-                                <form method="GET"
-                                    action="{{ route('call.reports.alljuniordaily', ['userId' => request()->route('userId')]) }}"
-                                    class="d-flex align-items-center gap-2">
-                                    <label for="selected_date" class="form-label mb-0 fw-semibold small">Select
-                                        Date:</label>
-                                    <input type="date" name="selected_date" id="selected_date"
-                                        value="{{ request('selected_date', date('Y-m-d')) }}"
-                                        class="form-control form-control-sm" onchange="this.form.submit()">
-                                </form>
-
+                                <div class="d-flex justify-content-center align-items-center"
+                                    style="width: 70px; height: 70px; background-color: rgba(13,71,161,0.1); border-radius: 50%;">
+                                    <iconify-icon icon="mdi:bullseye-arrow"
+                                        style="font-size: 34px; color: #0d47a1;"></iconify-icon>
+                                </div>
                             </div>
-
-                            <!-- Stats Section -->
-
-                            <div class="row g-3 mb-4">
-
-                                <div class="col-md-3">
-                                    <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                        <div class="icon mb-2 text-primary fs-2">
-                                            <i class="bi bi-telephone-fill"></i>
-                                        </div>
-                                        <div>
-                                            <small class="fw-bold d-block">Total Calls</small>
-                                            <h4 class="fw-bold text-dark mb-0">{{ $StotalCalls }}</h4>
-                                        </div>
-                                    </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm"
+                            style="background: linear-gradient(135deg, #f3e5f5, #e1bee7); border-radius: 20px; color: #6a1b9a; transition: all 0.3s ease; cursor: pointer;"
+                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+                            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                                <div>
+                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
+                                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetAchieved }}</h3>
                                 </div>
-
-                                <div class="col-md-3">
-                                    <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                        <div class="icon mb-2 text-success fs-2">
-                                            <i class="bi bi-bar-chart-fill"></i>
-                                        </div>
-                                        <div>
-                                            <small class="fw-bold d-block">Other Calls</small>
-                                            <h4 class="fw-bold text-dark mb-0">{{ $SotherCalls }}</h4>
-                                        </div>
-                                    </div>
+                                <div class="d-flex justify-content-center align-items-center"
+                                    style="width: 70px; height: 70px; background-color: rgba(106,27,154,0.1); border-radius: 50%;">
+                                    <iconify-icon icon="fa-solid:trophy"
+                                        style="font-size: 34px; color: #6a1b9a;"></iconify-icon>
                                 </div>
-
-                                <div class="col-md-3">
-                                    <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                        <div class="icon mb-2 text-warning fs-2">
-                                            <i class="bi bi-envelope-paper-fill"></i>
-                                        </div>
-                                        <div>
-                                            <small class="fw-bold d-block">Called & Mailed</small>
-                                            <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div class="col-md-3">
-                                    <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
-                                        <div class="icon mb-2 text-warning fs-2">
-                                            <i class="bi bi-envelope-paper-fill"></i>
-                                        </div>
-                                        <div>
-                                            <small class="fw-bold d-block">Total Transfers</small>
-                                            <h4 class="fw-bold text-dark mb-0">{{ $Stotaltransfers }}</h4>
-                                        </div>
-                                    </div>
-                                </div>
-
                             </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm"
+                            style="background: linear-gradient(135deg, #fff3e0, #ffe0b2); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
+                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+                            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                                <div>
+                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
+                                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">${{ $targetYetToAchieve }}</h3>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center"
+                                    style="width: 70px; height: 70px; background-color: rgba(239,108,0,0.1); border-radius: 50%;">
+                                    <iconify-icon icon="mdi:progress-clock"
+                                        style="font-size: 34px; color: #ef6c00;"></iconify-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm"
+                            style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
+                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.1)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+                            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                                <div>
+                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
+                                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $daysLeft }}</h3>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center"
+                                    style="width: 70px; height: 70px; background-color: rgba(46,125,50,0.1); border-radius: 50%;">
+                                    <iconify-icon icon="mdi:calendar-clock"
+                                        style="font-size: 34px; color: #2e7d32;"></iconify-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm"
+                            style="background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 20px; color: #2e7d32; transition: all 0.3s ease; cursor: pointer;"
+                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+                            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                                <div>
+                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Present Days</p>
+                                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $presentDays }}</h3>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center"
+                                    style="width: 70px; height: 70px; background-color: rgba(46,125,50,0.1); border-radius: 50%;">
+                                    <iconify-icon icon="mdi:account-check-outline"
+                                        style="font-size: 34px; color: #2e7d32;"></iconify-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm"
+                            style="background: linear-gradient(135deg, #ffebee, #ffcdd2); border-radius: 20px; color: #c62828; transition: all 0.3s ease; cursor: pointer;"
+                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+                            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                                <div>
+                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Absent Days</p>
+                                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $absentDays }}</h3>
 
-
-                            <!-- Table Section -->
-                            <div class="table-responsive">
-                                <table class="table table-hover table-bordered align-middle mb-0">
-                                    <thead class="table-primary">
-                                        <tr>
-                                            <th class="fw-bold">Time Range</th>
-                                            <th class="fw-bold text-center">Called & Mailed</th>
-                                            <th class="fw-bold text-center">Other Call</th>
-                                            <th class="fw-bold text-center">Transfers</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td style="white-space: nowrap;">08.00AM-09.00AM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t8to9am }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o8to9am }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr8to9am }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="white-space: nowrap;">09.00AM-10.00AM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t9to10am }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o9to10am }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr9to10am }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="white-space: nowrap;">10.00AM-11.00AM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t10to11am }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o10to11am }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr10to11am }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="white-space: nowrap;">11.00AM-12.00PM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t11to12pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o11to12pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr11to12pm }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="white-space: nowrap;">12.00PM-01.00PM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t12to1pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o12to1pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr12to1pm }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="white-space: nowrap;">01.00PM-02.00PM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t1to2pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o1to2pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr1to2pm }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="white-space: nowrap;">02.00PM-03.00PM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t2to3pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o2to3pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr2to3pm }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="white-space: nowrap;">03.00PM-04.00PM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t3to4pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o3to4pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr3to4pm }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="white-space: nowrap;">04.00PM-05.00PM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t4to5pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o4to5pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr4to5pm }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="white-space: nowrap;">05.00PM-06.00PM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t5to6pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o5to6pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr5to6pm }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="white-space: nowrap;">06.00PM-07.00PM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t6to7pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o6to7pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr6to7pm }}</span>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td style="white-space: nowrap;">07.00PM-08.00PM</td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-info">{{ $t7to8pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-warning">{{ $o7to8pm }}</span>
-                                            </td>
-                                            <td class="text-center"><span
-                                                    class="badge bg-success">{{ $tr7to8pm }}</span>
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center"
+                                    style="width: 70px; height: 70px; background-color: rgba(198,40,40,0.1); border-radius: 50%;">
+                                    <iconify-icon icon="mdi:account-cancel-outline"
+                                        style="font-size: 34px; color: #c62828;"></iconify-icon>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="card h-100 border-0 shadow-sm"
+                            style="background: linear-gradient(135deg, #fff8e1, #ffecb3); border-radius: 20px; color: #ef6c00; transition: all 0.3s ease; cursor: pointer;"
+                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='0 8px 20px rgba(0,0,0,0.15)';"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
+                            <div class="card-body d-flex justify-content-between align-items-center p-4">
+                                <div>
+                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Working Days</p>
+                                    <h3 class="mb-0 fw-bold" style="font-size: 36px;">{{ $workingDays }}</h3>
+                                </div>
+                                <div class="d-flex justify-content-center align-items-center"
+                                    style="width: 70px; height: 70px; background-color: rgba(239,108,0,0.1); border-radius: 50%;">
+                                    <iconify-icon icon="mdi:briefcase-outline"
+                                        style="font-size: 34px; color: #ef6c00;"></iconify-icon>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
+                <div class="row gy-4 mt-1">
 
-                <div class="col-xxl-4 col-lg-6">
-                    <div class="card h-100 radius-8 border-0">
-                        <div class="card-body p-24">
-                            <h6 class="mb-2 fw-bold text-lg">Total Summary (From Joining)</h6>
-
-                            <div class="mt-24">
-                                <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                    <div class="col-xxl-8 col-lg-6">
+                        <div class="card h-100 border-0 shadow-sm radius-12">
+                            <div class="card-body p-4">
+                                <!-- Header -->
+                                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
                                     <div>
-                                        <span class="text-secondary-light fw-normal mb-12 text-xl">Total Calls</span>
-                                        <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
+                                        <h5 class="fw-bold mb-1">{{ $juniorUser->name }}</h5>
                                     </div>
-                                    <div class="position-relative">
-                                        <div id="semiCircleGauge-{{ $index }}"></div>
-                                        <span
-                                            class="w-36-px h-36-px rounded-circle bg-neutral-100 d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0">
-                                            <iconify-icon icon="mdi:emoji"
-                                                class="text-primary-600 text-md mb-0"></iconify-icon>
-                                        </span>
-                                    </div>
+                                    <form method="GET"
+                                        action="{{ route('call.reports.alljuniordaily', ['userId' => request()->route('userId')]) }}"
+                                        class="d-flex align-items-center gap-2">
+                                        <label for="selected_date" class="form-label mb-0 fw-semibold small">Select
+                                            Date:</label>
+                                        <input type="date" name="selected_date" id="selected_date"
+                                            value="{{ request('selected_date', date('Y-m-d')) }}"
+                                            class="form-control form-control-sm" onchange="this.form.submit()">
+                                    </form>
+
                                 </div>
 
-                                <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
-                                    <div>
-                                        <span class="text-secondary-light fw-normal mb-12 text-xl">Other Calls</span>
-                                        <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
+                                <!-- Stats Section -->
+
+                                <div class="row g-3 mb-4">
+
+                                    <div class="col-md-3">
+                                        <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                            <div class="icon mb-2 text-primary fs-2">
+                                                <i class="bi bi-telephone-fill"></i>
+                                            </div>
+                                            <div>
+                                                <small class="fw-bold d-block">Total Calls</small>
+                                                <h4 class="fw-bold text-dark mb-0">{{ $StotalCalls }}</h4>
+                                            </div>
+                                        </div>
                                     </div>
-                                    <div id="areaChart-{{ $index }}"></div>
+
+                                    <div class="col-md-3">
+                                        <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                            <div class="icon mb-2 text-success fs-2">
+                                                <i class="bi bi-bar-chart-fill"></i>
+                                            </div>
+                                            <div>
+                                                <small class="fw-bold d-block">Other Calls</small>
+                                                <h4 class="fw-bold text-dark mb-0">{{ $SotherCalls }}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                            <div class="icon mb-2 text-warning fs-2">
+                                                <i class="bi bi-envelope-paper-fill"></i>
+                                            </div>
+                                            <div>
+                                                <small class="fw-bold d-block">Called & Mailed</small>
+                                                <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="card border-0 shadow-sm radius-12 text-center p-3 h-100">
+                                            <div class="icon mb-2 text-warning fs-2">
+                                                <i class="bi bi-envelope-paper-fill"></i>
+                                            </div>
+                                            <div>
+                                                <small class="fw-bold d-block">Total Transfers</small>
+                                                <h4 class="fw-bold text-dark mb-0">{{ $Stotaltransfers }}</h4>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
 
-                                <div class="d-flex align-items-center gap-1 justify-content-between">
-                                    <div>
-                                        <span class="text-secondary-light fw-normal mb-12 text-xl">Called & Mailed
-                                            Calls</span>
-                                        <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
+
+                                <!-- Table Section -->
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-bordered align-middle mb-0">
+                                        <thead class="table-primary">
+                                            <tr>
+                                                <th class="fw-bold">Time Range</th>
+                                                <th class="fw-bold text-center">Called & Mailed</th>
+                                                <th class="fw-bold text-center">Other Call</th>
+                                                <th class="fw-bold text-center">Transfers</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td style="white-space: nowrap;">08.00AM-09.00AM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t8to9am }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o8to9am }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr8to9am }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="white-space: nowrap;">09.00AM-10.00AM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t9to10am }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o9to10am }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr9to10am }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="white-space: nowrap;">10.00AM-11.00AM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t10to11am }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o10to11am }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr10to11am }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="white-space: nowrap;">11.00AM-12.00PM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t11to12pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o11to12pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr11to12pm }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="white-space: nowrap;">12.00PM-01.00PM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t12to1pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o12to1pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr12to1pm }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="white-space: nowrap;">01.00PM-02.00PM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t1to2pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o1to2pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr1to2pm }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="white-space: nowrap;">02.00PM-03.00PM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t2to3pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o2to3pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr2to3pm }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="white-space: nowrap;">03.00PM-04.00PM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t3to4pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o3to4pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr3to4pm }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="white-space: nowrap;">04.00PM-05.00PM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t4to5pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o4to5pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr4to5pm }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="white-space: nowrap;">05.00PM-06.00PM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t5to6pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o5to6pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr5to6pm }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="white-space: nowrap;">06.00PM-07.00PM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t6to7pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o6to7pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr6to7pm }}</span>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td style="white-space: nowrap;">07.00PM-08.00PM</td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-info">{{ $t7to8pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-warning">{{ $o7to8pm }}</span>
+                                                </td>
+                                                <td class="text-center"><span
+                                                        class="badge bg-success">{{ $tr7to8pm }}</span>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-xxl-4 col-lg-6">
+                        <div class="card h-100 radius-8 border-0">
+                            <div class="card-body p-24">
+                                <h6 class="mb-2 fw-bold text-lg">Total Summary (From Joining)</h6>
+
+                                <div class="mt-24">
+                                    <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                                        <div>
+                                            <span class="text-secondary-light fw-normal mb-12 text-xl">Total Calls</span>
+                                            <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
+                                        </div>
+                                        <div class="position-relative">
+                                            <div id="semiCircleGauge-{{ $index }}"></div>
+                                            <span
+                                                class="w-36-px h-36-px rounded-circle bg-neutral-100 d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0">
+                                                <iconify-icon icon="mdi:emoji"
+                                                    class="text-primary-600 text-md mb-0"></iconify-icon>
+                                            </span>
+                                        </div>
                                     </div>
-                                    <div id="dailyIconBarChart-{{ $index }}"></div>
+
+                                    <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                                        <div>
+                                            <span class="text-secondary-light fw-normal mb-12 text-xl">Other Calls</span>
+                                            <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
+                                        </div>
+                                        <div id="areaChart-{{ $index }}"></div>
+                                    </div>
+
+                                    <div class="d-flex align-items-center gap-1 justify-content-between">
+                                        <div>
+                                            <span class="text-secondary-light fw-normal mb-12 text-xl">Called & Mailed
+                                                Calls</span>
+                                            <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
+                                        </div>
+                                        <div id="dailyIconBarChart-{{ $index }}"></div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
+    </div>
     @endforeach
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-
-
-            const wrapper = document.createElement("div");
-            wrapper.style.width = "100%";
-
-            let index = 0;
-            while (true) {
-                const el = document.querySelectorAll(`pdfContent-${index}`);
-                if (!el) break;
-
-                if (index !== 0) {
-                    const pageBreak = document.createElement("div");
-                    pageBreak.style.pageBreakBefore = "always";
-                    wrapper.appendChild(pageBreak);
-                }
-
-                wrapper.appendChild(el.cloneNode(true));
-                index++;
-            }
-
-            const element = wrapper;
-
-
+            const element = document.getElementById("pdfContent");
 
             // ✅ Clone element to apply isolated print styles
             const clonedElement = element.cloneNode(true);
@@ -1103,7 +1083,7 @@
             // ✅ PDF generation options (optimized for full A4 coverage)
             const opt = {
                 margin: [0, 0, 0, 0],
-                filename: 'Report.pdf',
+                filename: 'monthly-report.pdf',
                 image: {
                     type: 'jpeg',
                     quality: 0.98
