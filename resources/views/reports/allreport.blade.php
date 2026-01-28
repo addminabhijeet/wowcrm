@@ -976,7 +976,7 @@
     @endforeach
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-            const element = document.getElementById("pdfContent");
+            const element = document.getElementById("[id^='pdfContent-']");
 
             // ✅ Clone element to apply isolated print styles
             const clonedElement = element.cloneNode(true);
