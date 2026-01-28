@@ -27,9 +27,10 @@
                             <input type="date" id="selected_date" value="{{ request('selected_date', date('Y-m-d')) }}"
                                 class="form-control form-control-sm">
                         </div>
-                        <a href="javascript:void(0)" class="btn btn-danger btn-sm" id="allReportBtn">
-                            <i class="bi bi-file-earmark-pdf-fill me-1"></i> All Report
+                        <a href="javascript:void(0)" class="btn btn-primary btn-sm" id="multiReportBtn">
+                            <i class="bi bi-people-fill me-1"></i>All Report
                         </a>
+
 
                     </div>
                 </div>
@@ -94,31 +95,27 @@
     </script>
 
     <script>
-        document.getElementById('allReportBtn').addEventListener('click', function() {
+        document.getElementById('multiReportBtn').addEventListener('click', function() {
 
-            // Get selected user (only one allowed)
-            const selectedUser = document.querySelector('.user-checkbox:checked');
+            const selectedUsers = Array.from(document.querySelectorAll('.user-checkbox:checked'))
+                .map(cb => cb.value);
 
-            if (!selectedUser) {
-                alert('Please select a user');
+            if (selectedUsers.length === 0) {
+                alert('Please select at least one user');
                 return;
             }
 
-            const userId = selectedUser.value;
-
-            // Get selected date
             const selectedDate = document.getElementById('selected_date').value;
 
-            // Route with placeholder
-            let url = "{{ route('call.reports.allreport', ['userId' => '__USER__']) }}";
-            url = url.replace('__USER__', userId);
+            let url = "{{ route('call.reports.allreport', ['userId' => '__USERS__']) }}";
+            url = url.replace('__USERS__', selectedUsers.join(','));
 
-            // Append date
             url += `?selected_date=${selectedDate}`;
 
             window.location.href = url;
         });
     </script>
+
 
     <script>
         document.querySelectorAll('.user-checkbox').forEach(cb => {
