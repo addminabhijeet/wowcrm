@@ -551,10 +551,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     @foreach ($reports as $index => $report)
         @php extract($report); @endphp
-        <button class="btn btn-danger btn-sm downloadPdfBtn" data-target="pdfContent-{{ $index }}">
-            <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
-        </button>
 
+        <div class="d-flex justify-content-end mb-3">
+            <button class="btn btn-danger btn-sm" data-target="pdfContent-{{ $index }}">
+                <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
+            </button>
+        </div>
 
         <div id="pdfContent-{{ $index }}">
 
