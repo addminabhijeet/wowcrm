@@ -1496,7 +1496,7 @@ class CallReportController extends Controller
 
     public function reportsender(Request $request)
     {
-        $juniorUsers = User::where('is_deleted', 0)->get();
+        $juniorUsers = User::where('is_deleted', 0)->whereIn('role',['junior','senior'])->get();
         // Pass users to the view
         return view('reports.reportsender', compact('juniorUsers'));
     }
