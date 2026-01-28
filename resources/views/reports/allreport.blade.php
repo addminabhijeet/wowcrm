@@ -974,8 +974,8 @@
                     </div>
                 </div>
             </div>
+        @endforeach
     </div>
-    @endforeach
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
             const element = document.getElementById("pdf");
