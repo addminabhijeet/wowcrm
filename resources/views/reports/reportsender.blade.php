@@ -27,7 +27,6 @@
                             <form method="GET"
                                 action="{{ route('call.reports.allreport', ['userId' => request()->route('userId')]) }}"
                                 class="d-flex align-items-center gap-2">
-                                <label for="selected_date" class="form-label mb-0 fw-semibold small">Select Date:</label>
                                 <input type="date" name="selected_date" id="selected_date"
                                     value="{{ request('selected_date', date('Y-m-d')) }}"
                                     class="form-control form-control-sm" onchange="this.form.submit()">
