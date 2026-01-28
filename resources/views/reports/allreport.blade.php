@@ -555,8 +555,8 @@
             <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
         </button>
     </div>
-    
-    <div id="pdfContent">
+
+    <div id="pdf">
         @foreach ($reports as $index => $report)
             @php extract($report); @endphp
 
@@ -978,7 +978,7 @@
     @endforeach
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-            const element = document.getElementById("pdfContent");
+            const element = document.getElementById("pdf");
 
             // ✅ Clone element to apply isolated print styles
             const clonedElement = element.cloneNode(true);
