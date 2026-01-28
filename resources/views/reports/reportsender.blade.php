@@ -27,9 +27,10 @@
                             <input type="date" id="selected_date" value="{{ request('selected_date', date('Y-m-d')) }}"
                                 class="form-control form-control-sm">
                         </div>
-                        <a href="" class="btn btn-danger btn-sm" id="downloadPdfBtn">
+                        <a href="javascript:void(0)" class="btn btn-danger btn-sm" id="allReportBtn">
                             <i class="bi bi-file-earmark-pdf-fill me-1"></i> All Report
                         </a>
+
                     </div>
                 </div>
             </div>
@@ -93,93 +94,34 @@
     </script>
 
     <script>
-        document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
+        document.getElementById('allReportBtn').addEventListener('click', function() {
 
-            const selectedDate = document.getElementById("selected_date").value;
-            const selectedUsers = [...document.querySelectorAll(".user-checkbox:checked")];
+            // Get selected user (only one allowed)
+            const selectedUser = document.querySelector('.user-checkbox:checked');
 
-            if (!selectedUsers.length) {
-                alert("Please select at least one user");
+            if (!selectedUser) {
+                alert('Please select a user');
                 return;
             }
 
-            const {
-                jsPDF
-            } = window.jspdf;
-            const finalPdf = new jsPDF("p", "px", "a4");
-            let isFirstPage = true;
+            const userId = selectedUser.value;
 
-            for (const checkbox of selectedUsers) {
+            // Get selected date
+            const selectedDate = document.getElementById('selected_date').value;
 
-                const userId = checkbox.value;
-                const role = checkbox.dataset.role;
+            // Build URL for allreport
+            const url = `{{ url('call/reports/allreport') }}/${userId}?selected_date=${selectedDate}`;
 
-                const urls = role === "senior" ?
-                    [
-                        `/dashboard/allseniordaily/call-reports/${userId}?selected_date=${selectedDate}`,
-                        `/dashboard/allseniormonthly/call-reports/${userId}?selected_date=${selectedDate}`
-                    ] :
-                    [
-                        `/dashboard/alljuniordaily/call-reports/${userId}?selected_date=${selectedDate}`,
-                        `/dashboard/alljuniormonthly/call-reports/${userId}?selected_date=${selectedDate}`
-                    ];
-
-                for (const url of urls) {
-
-                    const iframe = document.createElement("iframe");
-                    iframe.style.position = "absolute";
-                    iframe.style.left = "-9999px";
-                    iframe.src = url;
-                    document.body.appendChild(iframe);
-
-                    await new Promise(resolve => iframe.onload = resolve);
-
-                    const content = iframe.contentDocument.getElementById("pdfContent");
-
-                    const tempPdfBlob = await html2pdf()
-                        .from(content)
-                        .set({
-                            margin: 10,
-                            image: {
-                                type: "jpeg",
-                                quality: 0.98
-                            },
-                            html2canvas: {
-                                scale: 2,
-                                useCORS: true
-                            },
-                            jsPDF: {
-                                unit: "px",
-                                format: "a4",
-                                orientation: "portrait"
-                            }
-                        })
-                        .outputPdf("blob");
-
-                    const buffer = await tempPdfBlob.arrayBuffer();
-                    const tempPdf = await jsPDF.load(buffer);
-
-                    const pageCount = tempPdf.getNumberOfPages();
-
-                    for (let i = 1; i <= pageCount; i++) {
-                        if (!isFirstPage) finalPdf.addPage();
-                        finalPdf.setPage(finalPdf.getNumberOfPages());
-                        finalPdf.addImage(
-                            tempPdf.getPage(i).getImageData(),
-                            "JPEG",
-                            0,
-                            0,
-                            finalPdf.internal.pageSize.width,
-                            finalPdf.internal.pageSize.height
-                        );
-                        isFirstPage = false;
-                    }
-
-                    document.body.removeChild(iframe);
-                }
-            }
-
-            finalPdf.save(`Merged_Daily_Monthly_Report_${selectedDate}.pdf`);
+            window.location.href = url;
+        });
+    </script>
+    <script>
+        document.querySelectorAll('.user-checkbox').forEach(cb => {
+            cb.addEventListener('change', function() {
+                document.querySelectorAll('.user-checkbox').forEach(other => {
+                    if (other !== this) other.checked = false;
+                });
+            });
         });
     </script>
 @endsection
