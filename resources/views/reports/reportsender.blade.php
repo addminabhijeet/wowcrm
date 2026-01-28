@@ -24,12 +24,18 @@
                     <div class="d-flex flex-wrap gap-3 align-items-center">
                         <div class="d-flex align-items-center gap-2">
                             <label for="selected_date" class="fw-semibold small mb-0">Select Date:</label>
-                            <input type="date" id="selected_date" value="{{ request('selected_date', date('Y-m-d')) }}"
-                                class="form-control form-control-sm">
+                            <form method="GET"
+                                action="{{ route('call.reports.allreport', ['userId' => request()->route('userId')]) }}"
+                                class="d-flex align-items-center gap-2">
+                                <label for="selected_date" class="form-label mb-0 fw-semibold small">Select Date:</label>
+                                <input type="date" name="selected_date" id="selected_date"
+                                    value="{{ request('selected_date', date('Y-m-d')) }}"
+                                    class="form-control form-control-sm" onchange="this.form.submit()">
+                            </form>
                         </div>
-                        <a href="{{ route('call.reports.allreport') }}" class="btn btn-danger btn-sm" id="downloadPdfBtn">
+                        {{-- <a href="{{ route('call.reports.allreport') }}" class="btn btn-danger btn-sm" id="downloadPdfBtn">
                             <i class="bi bi-file-earmark-pdf-fill me-1"></i> All Report
-                        </a>
+                        </a> --}}
                     </div>
                 </div>
             </div>
