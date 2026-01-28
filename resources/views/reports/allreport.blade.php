@@ -560,7 +560,11 @@
         @foreach ($reports as $index => $report)
             @php extract($report); @endphp
 
-           <div id="pdfContent-{{ $index }}" class="{{ request('pdf') ? '' : 'pt-5' }}">
+            <div id="pdfContent-{{ $index }}" class="pt-5 pdf-page"
+     style="height: 1122px; /* A4 portrait approx in px at 96dpi */
+            box-sizing: border-box;
+            page-break-after: always;">
+
                 <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
                     <div class="col">
                         <div class="card h-100 border-0 shadow-sm"
