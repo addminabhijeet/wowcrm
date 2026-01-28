@@ -978,6 +978,24 @@
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
             const element = document.querySelector("[id^='pdfContent-']");
 
+            // Wrapper for all users
+            const element = document.createElement("div");
+            element.style.width = "100%";
+
+            elements.forEach((el, idx) => {
+                const cloned = el.cloneNode(true);
+
+                // Page break before every report except first
+                if (idx !== 0) {
+                    const pageBreak = document.createElement("div");
+                    pageBreak.style.pageBreakBefore = "always";
+                    pageBreak.style.breakBefore = "page";
+                    element.appendChild(pageBreak);
+                }
+
+                element.appendChild(cloned);
+            });
+
             // ✅ Clone element to apply isolated print styles
             const clonedElement = element.cloneNode(true);
 
