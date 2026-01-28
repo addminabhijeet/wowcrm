@@ -551,7 +551,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <div class="d-flex justify-content-end mb-3">
-        <button class="btn btn-danger btn-sm">
+        <button id="downloadPdfBtn" class="btn btn-danger btn-sm">
             <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
         </button>
     </div>
@@ -976,7 +976,7 @@
     @endforeach
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-            const element = document.getElementById("[id^='pdfContent-']");
+            const element = document.querySelector("[id^='pdfContent-']");
 
             // ✅ Clone element to apply isolated print styles
             const clonedElement = element.cloneNode(true);
