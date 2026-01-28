@@ -975,21 +975,13 @@
         </div>
     @endforeach
     <script>
-        document.addEventListener("click", async function(e) {
+        document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
+            const element = document.getElementById("pdfContent");
 
-            if (!e.target.closest("#downloadPdfBtn")) return;
-
-            const button = e.target.closest("#downloadPdfBtn");
-
-            const element = button.closest(".mb-3")?.nextElementSibling;
-
-            if (!element || element.id !== "pdfContent") {
-                alert("PDF content not found");
-                return;
-            }
-
+            // ✅ Clone element to apply isolated print styles
             const clonedElement = element.cloneNode(true);
 
+            // ✅ Add black & white print style dynamically (for PDF only)
             const printStyle = document.createElement("style");
             printStyle.textContent = `
         * {
