@@ -976,14 +976,14 @@
     @endforeach
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-            const elements = document.querySelectorAll("[id^='pdfContent-']");
+
 
             const wrapper = document.createElement("div");
             wrapper.style.width = "100%";
 
             let index = 0;
             while (true) {
-                const el = document.getElementById(`pdfContent-${index}`);
+                const el = document.querySelectorAll(`pdfContent-${index}`);
                 if (!el) break;
 
                 if (index !== 0) {
