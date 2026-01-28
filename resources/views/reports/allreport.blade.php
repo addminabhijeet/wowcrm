@@ -976,7 +976,26 @@
     @endforeach
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-            const element = document.querySelector("[id^='pdfContent-']");
+            const elements = document.querySelectorAll("[id^='pdfContent-']");
+
+            // Create wrapper for all reports
+            const element = document.createElement("div");
+            element.style.width = "100%";
+
+            elements.forEach((el, index) => {
+                const cloned = el.cloneNode(true);
+
+                // Page break for each new user
+                if (index !== 0) {
+                    const pageBreak = document.createElement("div");
+                    pageBreak.style.pageBreakBefore = "always";
+                    pageBreak.style.breakBefore = "page";
+                    element.appendChild(pageBreak);
+                }
+
+                element.appendChild(cloned);
+            });
+
 
             // ✅ Clone element to apply isolated print styles
             const clonedElement = element.cloneNode(true);
@@ -1072,7 +1091,7 @@
             clonedElement.prepend(printStyle);
 
             // ✅ Wait for a short time to ensure all assets/styles load
-            await new Promise(resolve => setTimeout(resolve, 5));
+            await new Promise(resolve => setTimeout(resolve, 50000));
 
             // ✅ Proper A4 PDF dimensions in pixels
             const a4WidthPx = 1175;
