@@ -356,7 +356,7 @@ Route::get('/', [Controller::class, 'index'])->name('home');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/registersubmit', [RegisterController::class, 'register'])->name('register.submit');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/loginsubmit', [LoginController::class, 'index'])->name('login.submit');
+Route::post('/loginsubmit', [LoginController::class, 'login'])->name('login.submit');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::post('/resumes/upload/{id}', [ResumeController::class, 'upload'])->name('resumes.upload')->middleware('auth');
