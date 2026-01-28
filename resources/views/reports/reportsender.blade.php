@@ -109,12 +109,17 @@
             // Get selected date
             const selectedDate = document.getElementById('selected_date').value;
 
-            // Build URL for allreport
-            const url = `{{ url('call/reports/allreport') }}/${userId}?selected_date=${selectedDate}`;
+            // Route with placeholder
+            let url = "{{ route('call.reports.allreport', ['userId' => '__USER__']) }}";
+            url = url.replace('__USER__', userId);
+
+            // Append date
+            url += `?selected_date=${selectedDate}`;
 
             window.location.href = url;
         });
     </script>
+
     <script>
         document.querySelectorAll('.user-checkbox').forEach(cb => {
             cb.addEventListener('change', function() {
