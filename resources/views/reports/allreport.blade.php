@@ -976,30 +976,32 @@
     @endforeach
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-            const element = document.querySelector("[id^='pdfContent-']");
 
-            // Wrapper for all users
-            const element = document.createElement("div");
-            element.style.width = "100%";
+            const elements = document.querySelectorAll("[id^='pdfContent-']");
+
+            if (!elements.length) {
+                alert("No report content found");
+                return;
+            }
+
+            const wrapper = document.createElement("div");
+            wrapper.style.width = "100%";
 
             elements.forEach((el, idx) => {
                 const cloned = el.cloneNode(true);
 
-                // Page break before every report except first
                 if (idx !== 0) {
                     const pageBreak = document.createElement("div");
                     pageBreak.style.pageBreakBefore = "always";
                     pageBreak.style.breakBefore = "page";
-                    element.appendChild(pageBreak);
+                    wrapper.appendChild(pageBreak);
                 }
 
-                element.appendChild(cloned);
+                wrapper.appendChild(cloned);
             });
 
-            // ✅ Clone element to apply isolated print styles
-            const clonedElement = element.cloneNode(true);
+            const clonedElement = wrapper.cloneNode(true);
 
-            // ✅ Add black & white print style dynamically (for PDF only)
             const printStyle = document.createElement("style");
             printStyle.textContent = `
         * {
