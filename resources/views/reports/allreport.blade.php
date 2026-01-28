@@ -561,7 +561,7 @@
             @php extract($report); @endphp
 
             <div id="pdfContent-{{ $index }}" class="pt-5 pdf-page"
-                style="height: 1122px; /* A4 portrait approx in px at 96dpi */
+     style="height: 1122px; /* A4 portrait approx in px at 96dpi */
             box-sizing: border-box;
             page-break-after: always;">
 
@@ -945,33 +945,38 @@
                                             <span class="text-secondary-light fw-normal mb-12 text-xl">Total Calls</span>
                                             <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
                                         </div>
-                                        <div id="semiCircleGauge-{{ $index }}"></div>
+                                        <div class="position-relative">
+                                            <div id="semiCircleGauge-{{ $index }}"></div>
+                                            <span
+                                                class="w-36-px h-36-px rounded-circle bg-neutral-100 d-flex justify-content-center align-items-center position-absolute start-50 translate-middle bottom-0">
+                                                
+                                            </span>
+                                        </div>
                                     </div>
-                                </div>
 
-                                <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
-                                    <div>
-                                        <span class="text-secondary-light fw-normal mb-12 text-xl">Other Calls</span>
-                                        <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
+                                    <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
+                                        <div>
+                                            <span class="text-secondary-light fw-normal mb-12 text-xl">Other Calls</span>
+                                            <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
+                                        </div>
+                                        <div id="areaChart-{{ $index }}"></div>
                                     </div>
-                                    <div id="areaChart-{{ $index }}"></div>
-                                </div>
 
-                                <div class="d-flex align-items-center gap-1 justify-content-between">
-                                    <div>
-                                        <span class="text-secondary-light fw-normal mb-12 text-xl">Called & Mailed
-                                            Calls</span>
-                                        <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
+                                    <div class="d-flex align-items-center gap-1 justify-content-between">
+                                        <div>
+                                            <span class="text-secondary-light fw-normal mb-12 text-xl">Called & Mailed
+                                                Calls</span>
+                                            <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
+                                        </div>
+                                        <div id="dailyIconBarChart-{{ $index }}"></div>
                                     </div>
-                                    <div id="dailyIconBarChart-{{ $index }}"></div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-    </div>
-    @endforeach
+        @endforeach
     </div>
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
