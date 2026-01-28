@@ -976,7 +976,24 @@
     @endforeach
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-            const element = document.querySelector("[id^='pdfContent-']");
+            const elements = document.querySelectorAll("[id^='pdfContent-']");
+
+            // Create a wrapper to hold all reports
+            const element = document.createElement("div");
+
+            elements.forEach((el, idx) => {
+                const cloned = el.cloneNode(true);
+
+                // Add page break between reports (except first)
+                if (idx !== 0) {
+                    const pageBreak = document.createElement("div");
+                    pageBreak.style.pageBreakBefore = "always";
+                    element.appendChild(pageBreak);
+                }
+
+                element.appendChild(cloned);
+            });
+
 
             // ✅ Clone element to apply isolated print styles
             const clonedElement = element.cloneNode(true);
