@@ -1899,6 +1899,12 @@ class CallReportController extends Controller
             );
         }
 
+        // Sort reports by ScalledAndMailedCalls (ascending)
+        usort($reports, function ($a, $b) {
+            return $a['ScalledAndMailedCalls'] <=> $b['ScalledAndMailedCalls'];
+        });
+
+
         return view('reports.allreport', compact('reports'));
     }
 
