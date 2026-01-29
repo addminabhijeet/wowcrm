@@ -295,7 +295,7 @@
                                     <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
                                         <i class="fas fa-save"></i> Save
                                     </button>
-                                    <button class="btn btn-sm btn-warning Rejected-btn" data-id="{{ $row->id }}">
+                                    <button class="btn btn-sm btn-warning rejected-btn" data-id="{{ $row->id }}">
                                         <i class="fas fa-exchange-alt"></i> Rejected
                                     </button>
                                 </td>
@@ -358,7 +358,7 @@
                                 });
                             });
                         });
-                        $(document).on("click", ".Rejected-btn", function() {
+                        $(document).on("click", ".rejected-btn", function() {
                             let id = $(this).data("id");
 
                             $.ajax({
