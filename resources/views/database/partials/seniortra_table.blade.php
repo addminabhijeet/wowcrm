@@ -369,11 +369,7 @@
                                     _token: "{{ csrf_token() }}"
                                 },
                                 success: function(res) {
-                                    if (res.success) {
-                                        alert("Rejected Updated!");
-                                    } else {
-                                        alert(res.message);
-                                    }
+                                    alert(res.success ? "Rejected Updated!" : res.message);
                                 },
                                 error: function() {
                                     alert("Something went wrong!");
@@ -381,68 +377,64 @@
                             });
                         });
 
-                        $(document).ready(function() {
-                            $('.save-btn').click(function() {
-                                let rowId = $(this).data('id');
-                                let $tr = $('#row-' + rowId);
 
-                                // 🔁 Sync textarea values to hidden inputs BEFORE collecting data
-                                $tr.find('textarea').each(function() {
-                                    let $textarea = $(this);
-                                    let $td = $textarea.closest('td');
+                        $(document).on('click', '.save-btn', function() {
 
-                                    if ($textarea.hasClass('remark-autocomplete')) {
-                                        $td.find('input[name="Remark"]').val($textarea.val().trim());
-                                    }
+                            let rowId = $(this).data('id');
+                            let $tr = $('#row-' + rowId);
 
-                                    if ($textarea.hasClass('transferremark-autocomplete')) {
-                                        $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
-                                    }
+                            // 🔁 Sync textarea → hidden inputs
+                            $tr.find('textarea').each(function() {
+                                let $textarea = $(this);
+                                let $td = $textarea.closest('td');
 
-                                    if ($textarea.hasClass('rejectedremark-autocomplete')) {
-                                        $td.find('input[name="RejectedRemark"]').val($textarea.val().trim());
-                                    }
-                                });
-
-                                let data = {};
-
-                                // ✅ Now safely collect data
-                                $tr.find('input[data-key], select[data-key]').each(function() {
-                                    let key = $(this).data('key');
-                                    data[key] = $(this).val();
-                                });
-
-                                let formData = new FormData();
-                                formData.append('id', rowId);
-                                formData.append('data', JSON.stringify(data));
-
-                                let fileInput = $tr.find('.resume-input')[0];
-                                if (fileInput && fileInput.files.length > 0) {
-                                    formData.append('resume', fileInput.files[0]);
+                                if ($textarea.hasClass('remark-autocomplete')) {
+                                    $td.find('input[name="Remark"]').val($textarea.val().trim());
                                 }
-
-                                $.ajax({
-                                    url: '{{ route('seniorupdate') }}',
-                                    type: 'POST',
-                                    data: formData,
-                                    contentType: false,
-                                    processData: false,
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                    },
-                                    success: function(response) {
-                                        alert(response.message);
-                                    },
-                                    error: function() {
-                                        alert('AJAX error');
-                                    }
-                                });
+                                if ($textarea.hasClass('transferremark-autocomplete')) {
+                                    $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
+                                }
+                                if ($textarea.hasClass('rejectedremark-autocomplete')) {
+                                    $td.find('input[name="RejectedRemark"]').val($textarea.val().trim());
+                                }
                             });
 
-                            // Show file input when clicking upload
-                            $('.upload-btn').click(function() {
-                                $(this).closest('td').find('input.resume-input').click();
+                            let data = {};
+
+                            $tr.find('input[data-key], select[data-key]').each(function() {
+                                data[$(this).data('key')] = $(this).val();
                             });
+
+                            let formData = new FormData();
+                            formData.append('id', rowId);
+                            formData.append('data', JSON.stringify(data));
+
+                            let fileInput = $tr.find('.resume-input')[0];
+                            if (fileInput && fileInput.files.length > 0) {
+                                formData.append('resume', fileInput.files[0]);
+                            }
+
+                            $.ajax({
+                                url: '{{ route('seniorupdate') }}',
+                                type: 'POST',
+                                data: formData,
+                                contentType: false,
+                                processData: false,
+                                headers: {
+                                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                                },
+                                success: function(response) {
+                                    alert(response.message);
+                                },
+                                error: function() {
+                                    alert('AJAX error');
+                                }
+                            });
+                        });
+
+
+                        $(document).on('click', '.upload-btn', function() {
+                            $(this).closest('td').find('input.resume-input').click();
                         });
                     </script>
                 @endforeach
