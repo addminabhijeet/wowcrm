@@ -83,7 +83,7 @@
                                 <th scope="col" class="text-center">Remark</th>
 
                                 <th scope="col" class="text-center">Follow Up Remark</th>
-                             
+                                <th scope="col" class="text-center">Rejected Remark</th>
                                 <th scope="col" class="text-center">Status</th>
                                 @auth
                                     @if (auth()->user()->role !== 'operation')
@@ -297,7 +297,16 @@
                                             placeholder="Type TransferRemark">
                                     </td>
 
+                                    {{-- RejectedRemark --}}
+                                    <td>
+                                        <textarea type="text" name="RejectedRemark_hidden" class="form-control rejectedremark-autocomplete data-field"
+                                            data-key="RejectedRemark" placeholder="Type rejected remark" rows="6">{{ $row->RejectedRemark ?? '' }}</textarea>
 
+                                        <input type="hidden" name="RejectedRemark"
+                                            class="form-control rejectedremark-autocomplete rejectedremark-hidden"
+                                            data-key="RejectedRemark" value="{{ $row->RejectedRemark ?? '' }}"
+                                            placeholder="Type rejected remark">
+                                    </td>
 
                                     {{-- Status --}}
                                     <td>

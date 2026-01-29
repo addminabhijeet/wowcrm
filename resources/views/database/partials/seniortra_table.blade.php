@@ -308,108 +308,86 @@
                             const form = document.querySelector('form');
                             if (!form) return;
 
-                            // Function to sync a textarea to its corresponding input
                             function syncTextareaToInput(textarea) {
                                 const td = textarea.closest('td');
                                 if (!td) return;
 
-                                const textareaName = textarea.getAttribute('name');
-                                if (!textareaName) return;
+                                if (textarea.classList.contains('remark-autocomplete')) {
+                                    td.querySelector('input[name="Remark"]')?.value = textarea.value.trim();
+                                }
 
-                                const inputName = textareaName.replace('_hidden', '');
-                                const input = td.querySelector('input[name="' + inputName + '"]');
-                                if (!input) return;
+                                if (textarea.classList.contains('transferremark-autocomplete')) {
+                                    td.querySelector('input[name="TransferRemark"]')?.value = textarea.value.trim();
+                                }
 
-                                input.value = textarea.value.trim();
+                                if (textarea.classList.contains('rejectedremark-autocomplete')) {
+                                    td.querySelector('input[name="RejectedRemark"]')?.value = textarea.value.trim();
+                                }
                             }
 
-                            // 🔁 Real-time sync (extended only)
                             document.querySelectorAll(
                                 'textarea.remark-autocomplete, textarea.transferremark-autocomplete, textarea.rejectedremark-autocomplete'
                             ).forEach(function(textarea) {
                                 textarea.addEventListener('input', function() {
-                                    const td = textarea.closest('td');
-                                    if (!td) return;
-
-                                    // Handle Transfer & Rejected explicitly
-                                    if (textarea.classList.contains('transferremark-autocomplete')) {
-                                        const input = td.querySelector('input[name="TransferRemark"]');
-                                        if (input) input.value = textarea.value.trim();
-                                        return;
-                                    }
-
-                                    if (textarea.classList.contains('rejectedremark-autocomplete')) {
-                                        const input = td.querySelector('input[name="RejectedRemark"]');
-                                        if (input) input.value = textarea.value.trim();
-                                        return;
-                                    }
-
-                                    // Default Remark behavior
                                     syncTextareaToInput(textarea);
                                 });
                             });
 
-                            // 🛡️ Final sync before submit
                             form.addEventListener('submit', function() {
                                 document.querySelectorAll(
                                     'textarea.remark-autocomplete, textarea.transferremark-autocomplete, textarea.rejectedremark-autocomplete'
-                                ).forEach(function(textarea) {
-                                    textarea.dispatchEvent(new Event('input'));
-                                });
+                                ).forEach(syncTextareaToInput);
                             });
                         });
+
+                        // ====================== AJAX SECTION ======================
+
                         $(document).on("click", ".rejected-btn", function() {
                             let id = $(this).data("id");
 
-                            $.ajax({
-                                url: "{{ route('junior.rejected.update') }}",
-                                method: "POST",
-                                data: {
-                                    id: id,
-                                    _token: "{{ csrf_token() }}"
-                                },
-                                success: function(res) {
-                                    if (res.success) {
-                                        alert("Rejected Updated!");
-                                    } else {
-                                        alert(res.message);
-                                    }
-                                },
-                                error: function() {
-                                    alert("Something went wrong!");
-                                }
+                            $.post("{{ route('junior.rejected.update') }}", {
+                                id: id,
+                                _token: "{{ csrf_token() }}"
+                            }).done(function(res) {
+                                alert(res.success ? "Rejected Updated!" : res.message);
+                            }).fail(function() {
+                                alert("Something went wrong!");
                             });
                         });
 
                         $(document).ready(function() {
-                            $('.save-btn').click(function() {
-                                let rowId = $(this).data('id');
+
+                            let isSaving = false; // 🔒 prevents hang / double click
+
+                            $(document).on('click', '.save-btn', function(e) {
+                                e.preventDefault();
+                                if (isSaving) return;
+
+                                isSaving = true;
+                                let $btn = $(this);
+                                $btn.prop('disabled', true);
+
+                                let rowId = $btn.data('id');
                                 let $tr = $('#row-' + rowId);
 
-                                // 🔁 Sync textarea values to hidden inputs BEFORE collecting data
+                                // 🔁 Sync textarea → hidden input ONCE
                                 $tr.find('textarea').each(function() {
-                                    let $textarea = $(this);
-                                    let $td = $textarea.closest('td');
+                                    const $td = $(this).closest('td');
 
-                                    if ($textarea.hasClass('remark-autocomplete')) {
-                                        $td.find('input[name="Remark"]').val($textarea.val().trim());
+                                    if ($(this).hasClass('remark-autocomplete')) {
+                                        $td.find('input[name="Remark"]').val($(this).val().trim());
                                     }
-
-                                    if ($textarea.hasClass('transferremark-autocomplete')) {
-                                        $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
+                                    if ($(this).hasClass('transferremark-autocomplete')) {
+                                        $td.find('input[name="TransferRemark"]').val($(this).val().trim());
                                     }
-
-                                    if ($textarea.hasClass('rejectedremark-autocomplete')) {
-                                        $td.find('input[name="RejectedRemark"]').val($textarea.val().trim());
+                                    if ($(this).hasClass('rejectedremark-autocomplete')) {
+                                        $td.find('input[name="RejectedRemark"]').val($(this).val().trim());
                                     }
                                 });
 
                                 let data = {};
-
-                                // ✅ Now safely collect data
                                 $tr.find('input[data-key], select[data-key]').each(function() {
-                                    let key = $(this).data('key');
-                                    data[key] = $(this).val();
+                                    data[$(this).data('key')] = $(this).val();
                                 });
 
                                 let formData = new FormData();
@@ -417,7 +395,7 @@
                                 formData.append('data', JSON.stringify(data));
 
                                 let fileInput = $tr.find('.resume-input')[0];
-                                if (fileInput && fileInput.files.length > 0) {
+                                if (fileInput && fileInput.files.length) {
                                     formData.append('resume', fileInput.files[0]);
                                 }
 
@@ -429,19 +407,19 @@
                                     processData: false,
                                     headers: {
                                         'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                    },
-                                    success: function(response) {
-                                        alert(response.message);
-                                    },
-                                    error: function() {
-                                        alert('AJAX error');
                                     }
+                                }).done(function(response) {
+                                    alert(response.message);
+                                }).fail(function() {
+                                    alert('AJAX error');
+                                }).always(function() {
+                                    isSaving = false;
+                                    $btn.prop('disabled', false);
                                 });
                             });
 
-                            // Show file input when clicking upload
-                            $('.upload-btn').click(function() {
-                                $(this).closest('td').find('input.resume-input').click();
+                            $(document).on('click', '.upload-btn', function() {
+                                $(this).closest('td').find('input.resume-input').trigger('click');
                             });
                         });
                     </script>
