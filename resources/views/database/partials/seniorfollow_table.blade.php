@@ -288,8 +288,7 @@
                         @endauth
                     </tr>
                 @endforeach
-            </tbody>
-            <script>
+                <script>
                 document.addEventListener('DOMContentLoaded', function() {
                     const form = document.querySelector('form');
                     if (!form) return;
@@ -431,6 +430,8 @@
                     });
                 });
             </script>
+            </tbody>
+
         </table>
 @endif
 </div>
