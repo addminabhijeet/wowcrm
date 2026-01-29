@@ -289,7 +289,10 @@
                         </td>
                     </tr>
 
-                    <script>
+
+                @endforeach
+            </tbody>
+            <script>
                         document.addEventListener('DOMContentLoaded', function() {
                             const form = document.querySelector('form');
                             if (!form) return;
@@ -388,8 +391,6 @@
                             });
                         });
                     </script>
-                @endforeach
-            </tbody>
         </table>
 @endif
 </div>

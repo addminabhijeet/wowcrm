@@ -280,108 +280,107 @@
 
 
                     </tr>
-
-                    <script>
-                        document.addEventListener('DOMContentLoaded', function() {
-                            const form = document.querySelector('form');
-                            if (!form) return;
-
-                            // Function to sync a textarea to its corresponding input
-                            function syncTextareaToInput(textarea) {
-                                const td = textarea.closest('td');
-                                if (!td) return;
-
-                                const textareaName = textarea.getAttribute('name');
-                                if (!textareaName) return;
-
-                                // Map _hidden textarea to input with same name minus _hidden
-                                const inputName = textareaName.replace('_hidden', '');
-                                const input = td.querySelector('input[name="' + inputName + '"]');
-                                if (!input) return;
-
-                                // Trim value before assigning
-                                input.value = textarea.value.trim();
-                            }
-
-                            // 🔁 Real-time sync on input for all textareas with *_autocomplete class
-                            document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-                                function(textarea) {
-                                    textarea.addEventListener('input', function() {
-                                        syncTextareaToInput(textarea);
-                                    });
-                                });
-
-                            // 🛡️ Final sync before form submit
-                            form.addEventListener('submit', function() {
-                                document.querySelectorAll(
-                                    'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-                                    function(textarea) {
-                                        syncTextareaToInput(textarea);
-                                    });
-                            });
-                        });
-                        $(document).ready(function() {
-                            $('.save-btn').click(function() {
-                                let rowId = $(this).data('id');
-                                let $tr = $('#row-' + rowId);
-
-                                // 🔁 Sync textarea values to hidden inputs BEFORE collecting data
-                                $tr.find('textarea').each(function() {
-                                    let $textarea = $(this);
-                                    let $td = $textarea.closest('td');
-
-                                    if ($textarea.hasClass('remark-autocomplete')) {
-                                        $td.find('input[name="Remark"]').val($textarea.val().trim());
-                                    }
-
-                                    if ($textarea.hasClass('transferremark-autocomplete')) {
-                                        $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
-                                    }
-                                });
-
-                                let data = {};
-
-                                // ✅ Now safely collect data
-                                $tr.find('input[data-key], select[data-key]').each(function() {
-                                    let key = $(this).data('key');
-                                    data[key] = $(this).val();
-                                });
-
-                                let formData = new FormData();
-                                formData.append('id', rowId);
-                                formData.append('data', JSON.stringify(data));
-
-                                let fileInput = $tr.find('.resume-input')[0];
-                                if (fileInput && fileInput.files.length > 0) {
-                                    formData.append('resume', fileInput.files[0]);
-                                }
-
-                                $.ajax({
-                                    url: '{{ route('seniorupdate') }}',
-                                    type: 'POST',
-                                    data: formData,
-                                    contentType: false,
-                                    processData: false,
-                                    headers: {
-                                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                                    },
-                                    success: function(response) {
-                                        alert(response.message);
-                                    },
-                                    error: function() {
-                                        alert('AJAX error');
-                                    }
-                                });
-                            });
-
-                            // Show file input when clicking upload
-                            $('.upload-btn').click(function() {
-                                $(this).closest('td').find('input.resume-input').click();
-                            });
-                        });
-                    </script>
                 @endforeach
             </tbody>
+            <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const form = document.querySelector('form');
+                    if (!form) return;
+
+                    // Function to sync a textarea to its corresponding input
+                    function syncTextareaToInput(textarea) {
+                        const td = textarea.closest('td');
+                        if (!td) return;
+
+                        const textareaName = textarea.getAttribute('name');
+                        if (!textareaName) return;
+
+                        // Map _hidden textarea to input with same name minus _hidden
+                        const inputName = textareaName.replace('_hidden', '');
+                        const input = td.querySelector('input[name="' + inputName + '"]');
+                        if (!input) return;
+
+                        // Trim value before assigning
+                        input.value = textarea.value.trim();
+                    }
+
+                    // 🔁 Real-time sync on input for all textareas with *_autocomplete class
+                    document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                        function(textarea) {
+                            textarea.addEventListener('input', function() {
+                                syncTextareaToInput(textarea);
+                            });
+                        });
+
+                    // 🛡️ Final sync before form submit
+                    form.addEventListener('submit', function() {
+                        document.querySelectorAll(
+                            'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                            function(textarea) {
+                                syncTextareaToInput(textarea);
+                            });
+                    });
+                });
+                $(document).ready(function() {
+                    $('.save-btn').click(function() {
+                        let rowId = $(this).data('id');
+                        let $tr = $('#row-' + rowId);
+
+                        // 🔁 Sync textarea values to hidden inputs BEFORE collecting data
+                        $tr.find('textarea').each(function() {
+                            let $textarea = $(this);
+                            let $td = $textarea.closest('td');
+
+                            if ($textarea.hasClass('remark-autocomplete')) {
+                                $td.find('input[name="Remark"]').val($textarea.val().trim());
+                            }
+
+                            if ($textarea.hasClass('transferremark-autocomplete')) {
+                                $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
+                            }
+                        });
+
+                        let data = {};
+
+                        // ✅ Now safely collect data
+                        $tr.find('input[data-key], select[data-key]').each(function() {
+                            let key = $(this).data('key');
+                            data[key] = $(this).val();
+                        });
+
+                        let formData = new FormData();
+                        formData.append('id', rowId);
+                        formData.append('data', JSON.stringify(data));
+
+                        let fileInput = $tr.find('.resume-input')[0];
+                        if (fileInput && fileInput.files.length > 0) {
+                            formData.append('resume', fileInput.files[0]);
+                        }
+
+                        $.ajax({
+                            url: '{{ route('seniorupdate') }}',
+                            type: 'POST',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            headers: {
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            success: function(response) {
+                                alert(response.message);
+                            },
+                            error: function() {
+                                alert('AJAX error');
+                            }
+                        });
+                    });
+
+                    // Show file input when clicking upload
+                    $('.upload-btn').click(function() {
+                        $(this).closest('td').find('input.resume-input').click();
+                    });
+                });
+            </script>
         </table>
 @endif
 </div>
