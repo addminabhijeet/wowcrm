@@ -1165,7 +1165,8 @@
             $(document).on('change', '#junior-filter', function() {
                 const junior_user = $(this).val();
                 const search = $('#senior-search').val().trim();
-                fetchTable(search, 1, junior_user);
+
+                fetchTable(search, 1, junior_user, rowId); 
             });
 
             // Click outside suggestions to hide
