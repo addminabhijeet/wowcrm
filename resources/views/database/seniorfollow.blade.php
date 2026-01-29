@@ -1429,23 +1429,6 @@
         }
     </style>
 
-    <script>
-        document.getElementById('junior-filter').addEventListener('change', function() {
-            let juniorId = this.value;
-            let search = document.getElementById('senior-search').value;
-
-            fetch("{{ route('google.sheet.seniorfollow') }}?junior_user=" + juniorId + "&search=" + search, {
-                    headers: {
-                        'X-Requested-With': 'XMLHttpRequest'
-                    }
-                })
-                .then(response => response.text())
-                .then(html => {
-                    document.getElementById('senior-table-wrapper').innerHTML = html;
-                });
-        });
-    </script>
-
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <script>
