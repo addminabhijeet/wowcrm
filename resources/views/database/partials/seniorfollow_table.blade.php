@@ -296,7 +296,10 @@
                     </tr>
                 @endforeach
             </tbody>
-            <script>
+
+
+        </table>
+        <script>
                 document.addEventListener('DOMContentLoaded', function() {
 
                     const form = document.querySelector('form');
@@ -397,8 +400,6 @@
                     $(this).closest('td').find('.resume-input').click();
                 });
             </script>
-
-        </table>
 @endif
 </div>
 {{-- Pagination --}}
