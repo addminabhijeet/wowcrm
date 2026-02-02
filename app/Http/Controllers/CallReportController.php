@@ -4180,7 +4180,7 @@ class CallReportController extends Controller
             'StransferedfollowUpCalls',
             'SfollowUpCalls',
             'SotherCalls',
-            'selectedDate',
+            'selectedWeek',
 
 
             'r8to9am',
