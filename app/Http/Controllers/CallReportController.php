@@ -3725,7 +3725,7 @@ class CallReportController extends Controller
 
         // Selected date totals
         // Self follow-up calls (Called & Mailed / Ready To Pay with TransferRemark)
-        $SselffollowupCalls = GoogleSheetData::where(
+        $SselffollowupCalls = GoogleSheetData::whereRaw(
             'created_by',
             "{$juniorUser->id}|senior:0|senior"
         )
