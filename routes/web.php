@@ -298,6 +298,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/allaccountantdaily/call-reports/{userId}', [CallReportController::class, 'allaccountantdaily'])->name('call.reports.allaccountantdaily');
     Route::get('/dashboard/alltrainerdaily/call-reports/{userId}', [CallReportController::class, 'alltrainerdaily'])->name('call.reports.alltrainerdaily');
     Route::get('/dashboard/allseniordaily/call-reports/{userId}', [CallReportController::class, 'allseniordaily'])->name('call.reports.allseniordaily');
+    Route::get('/dashboard/allseniorweekly/call-reports/{userId}', [CallReportController::class, 'allseniorweekly'])->name('call.reports.allseniorweekly');
 
     Route::match(['get', 'post'], '/timer/update', [DashboardController::class, 'updateTimer'])->name('timer.update');
     Route::get('/dashboard/smtp/add', [DashboardController::class, 'add'])->name('smtp.add');
