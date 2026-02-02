@@ -3725,7 +3725,7 @@ class CallReportController extends Controller
 
         // Selected date totals
         // Self follow-up calls (Called & Mailed / Ready To Pay with TransferRemark)
-        $SselffollowupCalls = GoogleSheetData::whereRaw(
+        $SselffollowupCalls = GoogleSheetData::where(
             'created_by',
             "{$juniorUser->id}|senior:0|senior"
         )
@@ -3846,8 +3846,10 @@ class CallReportController extends Controller
 
         // Hourly Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
         $hourlySelfFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by',
-            "{$juniorUser->id}|senior:0|senior")
+            ->where(
+                'created_by',
+                "{$juniorUser->id}|senior:0|senior"
+            )
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
