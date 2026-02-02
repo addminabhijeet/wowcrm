@@ -2358,13 +2358,24 @@ class CallReportController extends Controller
 
         // Base query filtered by this junior and date
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereDate('updated_at', $firstdate)
-            ->orWhereDate('updated_at', $seconddate)
-            ->orWhereDate('updated_at', $thirddate)
-            ->orWhereDate('updated_at', $fourthdate)
-            ->orWhereDate('updated_at', $fifthdate)
-            ->orWhereDate('updated_at', $sixthdate)
-            ->orWhereDate('updated_at', $seventhdate);
+            ->where(function ($q) use (
+                $firstdate,
+                $seconddate,
+                $thirddate,
+                $fourthdate,
+                $fifthdate,
+                $sixthdate,
+                $seventhdate
+            ) {
+                $q->whereDate('updated_at', $firstdate)
+                    ->orWhereDate('updated_at', $seconddate)
+                    ->orWhereDate('updated_at', $thirddate)
+                    ->orWhereDate('updated_at', $fourthdate)
+                    ->orWhereDate('updated_at', $fifthdate)
+                    ->orWhereDate('updated_at', $sixthdate)
+                    ->orWhereDate('updated_at', $seventhdate);
+            });
+
 
 
         $tquery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
@@ -2382,14 +2393,25 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = (clone $query)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereDate('followup', $firstdate)
-            ->orWhereDate('followup', $seconddate)
-            ->orWhereDate('followup', $thirddate)
-            ->orWhereDate('followup', $fourthdate)
-            ->orWhereDate('followup', $fifthdate)
-            ->orWhereDate('followup', $sixthdate)
-            ->orWhereDate('followup', $seventhdate)
+            ->where(function ($q) use (
+                $firstdate,
+                $seconddate,
+                $thirddate,
+                $fourthdate,
+                $fifthdate,
+                $sixthdate,
+                $seventhdate
+            ) {
+                $q->whereDate('followup', $firstdate)
+                    ->orWhereDate('followup', $seconddate)
+                    ->orWhereDate('followup', $thirddate)
+                    ->orWhereDate('followup', $fourthdate)
+                    ->orWhereDate('followup', $fifthdate)
+                    ->orWhereDate('followup', $sixthdate)
+                    ->orWhereDate('followup', $seventhdate);
+            })
             ->count();
+
 
         $SotherCalls = (clone $query)
             ->where(function ($q) {
