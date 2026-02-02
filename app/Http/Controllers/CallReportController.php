@@ -2650,7 +2650,7 @@ class CallReportController extends Controller
             'Stotaltransfers',
             'ScalledAndMailedCalls',
             'SotherCalls',
-            'selectedDate',
+            'selectedWeek',
             't8to9am',
             't9to10am',
             't10to11am',
