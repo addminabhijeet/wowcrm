@@ -2343,6 +2343,14 @@ class CallReportController extends Controller
         $weekStart = $weekCarbon->startOfWeek(Carbon::MONDAY)->startOfDay();
         $weekEnd   = $weekCarbon->endOfWeek(Carbon::SUNDAY)->endOfDay();
 
+        $weekDates = [];
+        for ($i = 0; $i < 7; $i++) {
+            $weekDates[] = $weekStart->copy()->addDays($i)->format('Y-m-d');
+        }
+
+        // Optional readable variables if you really want them
+        [$firstdate, $seconddate, $thirddate, $fourthdate, $fifthdate, $sixthdate, $seventhdate] = $weekDates;
+
         // For compatibility with existing month logic
         $year  = $weekStart->year;
         $month = $weekStart->month;
@@ -2350,17 +2358,37 @@ class CallReportController extends Controller
 
         // Base query filtered by this junior and date
         $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereBetween('updated_at', [$weekStart, $weekEnd]);
+            ->whereDate('updated_at', $firstdate)
+            ->orWhereDate('updated_at', $seconddate)
+            ->orWhereDate('updated_at', $thirddate)
+            ->orWhereDate('updated_at', $fourthdate)
+            ->orWhereDate('updated_at', $fifthdate)
+            ->orWhereDate('updated_at', $sixthdate)
+            ->orWhereDate('updated_at', $seventhdate);
+
 
         $tquery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereBetween('updated_at', [$weekStart, $weekEnd]);
+            ->whereDate('updated_at', $firstdate)
+            ->orWhereDate('updated_at', $seconddate)
+            ->orWhereDate('updated_at', $thirddate)
+            ->orWhereDate('updated_at', $fourthdate)
+            ->orWhereDate('updated_at', $fifthdate)
+            ->orWhereDate('updated_at', $sixthdate)
+            ->orWhereDate('updated_at', $seventhdate);
+
 
         // Selected date totals for this junior
         $StotalCalls = $query->count();
 
         $ScalledAndMailedCalls = (clone $query)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereBetween('followup', [$weekStart, $weekEnd])
+            ->whereDate('followup', $firstdate)
+            ->orWhereDate('followup', $seconddate)
+            ->orWhereDate('followup', $thirddate)
+            ->orWhereDate('followup', $fourthdate)
+            ->orWhereDate('followup', $fifthdate)
+            ->orWhereDate('followup', $sixthdate)
+            ->orWhereDate('followup', $seventhdate)
             ->count();
 
         $SotherCalls = (clone $query)
@@ -2380,16 +2408,34 @@ class CallReportController extends Controller
         // Hour-wise "Called & Mailed" counts
         $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereBetween('updated_at', [$weekStart, $weekEnd])
+            ->whereDate('updated_at', $firstdate)
+            ->orWhereDate('updated_at', $seconddate)
+            ->orWhereDate('updated_at', $thirddate)
+            ->orWhereDate('updated_at', $fourthdate)
+            ->orWhereDate('updated_at', $fifthdate)
+            ->orWhereDate('updated_at', $sixthdate)
+            ->orWhereDate('updated_at', $seventhdate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereBetween('followup', [$weekStart, $weekEnd])
+            ->whereDate('followup', $firstdate)
+            ->orWhereDate('followup', $seconddate)
+            ->orWhereDate('followup', $thirddate)
+            ->orWhereDate('followup', $fourthdate)
+            ->orWhereDate('followup', $fifthdate)
+            ->orWhereDate('followup', $sixthdate)
+            ->orWhereDate('followup', $seventhdate)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
 
         $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereBetween('updated_at', [$weekStart, $weekEnd])
+            ->whereDate('updated_at', $firstdate)
+            ->orWhereDate('updated_at', $seconddate)
+            ->orWhereDate('updated_at', $thirddate)
+            ->orWhereDate('updated_at', $fourthdate)
+            ->orWhereDate('updated_at', $fifthdate)
+            ->orWhereDate('updated_at', $sixthdate)
+            ->orWhereDate('updated_at', $seventhdate)
             ->where(function ($q) {
                 $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
@@ -2400,7 +2446,13 @@ class CallReportController extends Controller
 
         $hourlyTransfers = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereBetween('updated_at', [$weekStart, $weekEnd])
+            ->whereDate('updated_at', $firstdate)
+            ->orWhereDate('updated_at', $seconddate)
+            ->orWhereDate('updated_at', $thirddate)
+            ->orWhereDate('updated_at', $fourthdate)
+            ->orWhereDate('updated_at', $fifthdate)
+            ->orWhereDate('updated_at', $sixthdate)
+            ->orWhereDate('updated_at', $seventhdate)
             ->where('transfers', 1)
             ->groupBy('hour')
             ->pluck('count', 'hour')
