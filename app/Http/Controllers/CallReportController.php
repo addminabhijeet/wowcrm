@@ -2341,7 +2341,7 @@ class CallReportController extends Controller
 
 
         $weekStart = $weekCarbon->startOfWeek(Carbon::MONDAY)->startOfDay();
-        $weekEnd   = $weekCarbon->endOfWeek(Carbon::FRIDAY)->endOfDay();
+        $weekEnd   = $weekCarbon->endOfWeek(Carbon::SATURDAY)->endOfDay();
 
         $weekDates = [];
         for ($i = 0; $i < 7; $i++) {
