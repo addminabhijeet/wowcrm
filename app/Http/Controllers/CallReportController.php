@@ -2376,11 +2376,10 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = (clone $query)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->where(function ($q) use ($weekDates) {
-                foreach ($weekDates as $date) {
-                    $q->orWhereDate('followup', $date);
-                }
-            })
+            ->whereBetween('followup', [
+                $weekStart->format('Y-m-d'),
+                $weekEnd->format('Y-m-d')
+            ])
             ->count();
 
 
@@ -2407,11 +2406,10 @@ class CallReportController extends Controller
                 }
             })
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->where(function ($q) use ($weekDates) {
-                foreach ($weekDates as $date) {
-                    $q->orWhereDate('followup', $date);
-                }
-            })
+            ->whereBetween('followup', [
+                $weekStart->format('Y-m-d'),
+                $weekEnd->format('Y-m-d')
+            ])
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
