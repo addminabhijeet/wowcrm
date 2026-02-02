@@ -2332,7 +2332,7 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        $selectedWeek = $request->input('selected_week', now()->format('Y-\WW'));
+        $selectedWeek = $request->input('selected_week', now()->format('o-\WW'));
 
         // Convert ISO week to date range
         $weekCarbon = Carbon::createFromFormat('o-\WW', $selectedWeek);
