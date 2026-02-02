@@ -840,7 +840,7 @@
                                         <i class="bi bi-bar-chart-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="text-muted d-block">Sr IT Recruiter<br>(Follow Up)</small>
+                                        <small class="text-muted d-block">All Sr IT Recruiter<br>(Follow Up)</small>
                                         <h4 class="fw-bold text-dark mb-0">{{ $SfollowUpCalls }}</h4>
                                     </div>
                                 </div>
@@ -896,7 +896,7 @@
                                 <thead class="table-primary">
                                     <tr>
                                         <th class="fw-semibold">Time Range</th>
-                                        <th class="fw-semibold text-center">Sr IT Recruiter<br>(Follow Up)</th>
+                                        <th class="fw-semibold text-center">All Sr IT Recruiter<br>(Follow Up)</th>
                                         <th class="fw-semibold text-center">Sr IT Recruiter<br>(Called & Mailed)</th>
                                         <th class="fw-semibold text-center">Sr IT Recruiter<br>(Self follow up)</th>
                                         <th class="fw-semibold text-center">Sr IT Recruiter<br>(Transfered Follow Up)</th>
