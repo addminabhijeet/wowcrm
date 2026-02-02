@@ -3612,6 +3612,671 @@ class CallReportController extends Controller
         ));
     }
 
+    public function allseniorweekly(Request $request, $userId)
+    {
+        $juniorUser =  User::where('id', $userId)
+            ->where('is_deleted', 0)
+            ->firstOrFail();
+        $createdByKey = "{$juniorUser->id}|senior";
+
+        // ================================
+        // Main logic with LIKE filters
+        // ================================
+        // Total "Called & Mailed" calls
+        $calledAndMailedCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
+        )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->count();
+
+        $selffollowupCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
+        )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
+            ->count();
+
+        // Total "Ready To Pay" calls
+        $readyToPaidCalls = GoogleSheetData::where(function ($q) {
+            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        })
+            ->where('Exe_Remarks', 'Ready To Pay')
+            ->count();
+
+        $followUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
+            ->count();
+
+        $transferedfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', 1)
+            ->count();
+
+
+        // Total other calls (excluding Called & Mailed)
+        $otherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
+            ->count();
+
+        $totalCalls =
+            $calledAndMailedCalls
+            + $selffollowupCalls
+            + $readyToPaidCalls
+            + $followUpCalls
+            + $transferedfollowUpCalls;
+
+
+        $selectedWeek = trim(
+            $request->input('selected_week', now()->format('Y-\WW'))
+        );
+
+        [$year, $week] = explode('-W', $selectedWeek);
+        $weekCarbon = Carbon::now()->setISODate((int)$year, (int)$week);
+
+
+        $weekStart = $weekCarbon->startOfWeek(Carbon::MONDAY)->startOfDay();
+        $weekEnd   = $weekCarbon->endOfWeek(Carbon::SATURDAY)->endOfDay();
+
+        $weekDates = [];
+        for ($i = 0; $i < 7; $i++) {
+            $weekDates[] = $weekStart->copy()->addDays($i)->format('Y-m-d');
+        }
+
+        // Optional readable variables if you really want them
+        [$firstdate, $seconddate, $thirddate, $fourthdate, $fifthdate, $sixthdate, $seventhdate] = $weekDates;
+
+        // For compatibility with existing month logic
+        $year  = $weekStart->year;
+        $month = $weekStart->month;
+        $selectedMonth = $weekStart->format('Y-m');
+
+        // Base query filtered by this senior and date
+        $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            });
+
+        $tquery = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            });
+
+        // Selected date totals
+        // Self follow-up calls (Called & Mailed / Ready To Pay with TransferRemark)
+        $SselffollowupCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
+        )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
+            ->count();
+
+
+        // Ready To Pay calls
+        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) {
+            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        })
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->where('Exe_Remarks', 'Ready To Pay')
+            ->count();
+
+        // Follow-up calls (Called & Mailed with TransferRemark)
+        $SfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
+            ->count();
+
+        // Transferred follow-up calls
+        $StransferedfollowUpCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+        )
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', 1)
+            ->count();
+
+        // Other calls (excluding Called & Mailed)
+        $SotherCalls = (clone $tquery)
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
+            ->count();
+
+
+        $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
+        )
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->count();
+
+        $StotalCalls =
+            $ScalledAndMailedCalls
+            + $SselffollowupCalls
+            + $SreadyToPaidCalls
+            + $SfollowUpCalls
+            + $StransferedfollowUpCalls;
+
+        // Hour-wise "Ready To Pay" counts
+        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where(function ($q) {
+                $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+                    ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+            })
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->where('Exe_Remarks', 'Ready To Pay')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Hourly Called & Mailed
+        $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Hourly Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
+        $hourlySelfFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Hourly Follow-up (Called & Mailed with TransferRemark)
+        $hourlyFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', 0)
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Hourly Transferred Follow-up
+        $hourlyTransferredFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '!=', '')
+            ->where('transfers', 1)
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        // Hourly Other Calls (excluding Called & Mailed)
+        $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "%{$createdByKey}%")
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
+            ->groupBy('hour')
+            ->pluck('count', 'hour')
+            ->toArray();
+
+        $holidayDates = Holiday::whereYear('holiday_date', $year)
+            ->whereMonth('holiday_date', $month)
+            ->where('is_holiday', 1)
+            ->pluck('holiday_date')
+            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+            ->toArray();
+
+        // Initialize hour blocks (10 AM - 8 PM)
+        $c8to9am = $hourlyCalledAndMailed[8] ?? 0;
+        $c9to10am = $hourlyCalledAndMailed[9] ?? 0;
+        $c10to11am = $hourlyCalledAndMailed[10] ?? 0;
+        $c11to12pm = $hourlyCalledAndMailed[11] ?? 0;
+        $c12to1pm  = $hourlyCalledAndMailed[12] ?? 0;
+        $c1to2pm   = $hourlyCalledAndMailed[13] ?? 0;
+        $c2to3pm   = $hourlyCalledAndMailed[14] ?? 0;
+        $c3to4pm   = $hourlyCalledAndMailed[15] ?? 0;
+        $c4to5pm   = $hourlyCalledAndMailed[16] ?? 0;
+        $c5to6pm   = $hourlyCalledAndMailed[17] ?? 0;
+        $c6to7pm   = $hourlyCalledAndMailed[18] ?? 0;
+        $c7to8pm   = $hourlyCalledAndMailed[19] ?? 0;
+
+        $sf8to9am = $hourlySelfFollowUp[8] ?? 0;
+        $sf9to10am = $hourlySelfFollowUp[9] ?? 0;
+        $sf10to11am = $hourlySelfFollowUp[10] ?? 0;
+        $sf11to12pm = $hourlySelfFollowUp[11] ?? 0;
+        $sf12to1pm  = $hourlySelfFollowUp[12] ?? 0;
+        $sf1to2pm   = $hourlySelfFollowUp[13] ?? 0;
+        $sf2to3pm   = $hourlySelfFollowUp[14] ?? 0;
+        $sf3to4pm   = $hourlySelfFollowUp[15] ?? 0;
+        $sf4to5pm   = $hourlySelfFollowUp[16] ?? 0;
+        $sf5to6pm   = $hourlySelfFollowUp[17] ?? 0;
+        $sf6to7pm   = $hourlySelfFollowUp[18] ?? 0;
+        $sf7to8pm   = $hourlySelfFollowUp[19] ?? 0;
+
+        $r8to9am = $hourlyReadyToPaid[8] ?? 0;
+        $r9to10am = $hourlyReadyToPaid[9] ?? 0;
+        $r10to11am = $hourlyReadyToPaid[10] ?? 0;
+        $r11to12pm = $hourlyReadyToPaid[11] ?? 0;
+        $r12to1pm  = $hourlyReadyToPaid[12] ?? 0;
+        $r1to2pm   = $hourlyReadyToPaid[13] ?? 0;
+        $r2to3pm   = $hourlyReadyToPaid[14] ?? 0;
+        $r3to4pm   = $hourlyReadyToPaid[15] ?? 0;
+        $r4to5pm   = $hourlyReadyToPaid[16] ?? 0;
+        $r5to6pm   = $hourlyReadyToPaid[17] ?? 0;
+        $r6to7pm   = $hourlyReadyToPaid[18] ?? 0;
+        $r7to8pm   = $hourlyReadyToPaid[19] ?? 0;
+
+        $f8to9am = $hourlyFollowUp[8] ?? 0;
+        $f9to10am = $hourlyFollowUp[9] ?? 0;
+        $f10to11am = $hourlyFollowUp[10] ?? 0;
+        $f11to12pm = $hourlyFollowUp[11] ?? 0;
+        $f12to1pm  = $hourlyFollowUp[12] ?? 0;
+        $f1to2pm   = $hourlyFollowUp[13] ?? 0;
+        $f2to3pm   = $hourlyFollowUp[14] ?? 0;
+        $f3to4pm   = $hourlyFollowUp[15] ?? 0;
+        $f4to5pm   = $hourlyFollowUp[16] ?? 0;
+        $f5to6pm   = $hourlyFollowUp[17] ?? 0;
+        $f6to7pm   = $hourlyFollowUp[18] ?? 0;
+        $f7to8pm   = $hourlyFollowUp[19] ?? 0;
+
+        $tf8to9am = $hourlyTransferredFollowUp[8] ?? 0;
+        $tf9to10am = $hourlyTransferredFollowUp[9] ?? 0;
+        $tf10to11am = $hourlyTransferredFollowUp[10] ?? 0;
+        $tf11to12pm = $hourlyTransferredFollowUp[11] ?? 0;
+        $tf12to1pm  = $hourlyTransferredFollowUp[12] ?? 0;
+        $tf1to2pm   = $hourlyTransferredFollowUp[13] ?? 0;
+        $tf2to3pm   = $hourlyTransferredFollowUp[14] ?? 0;
+        $tf3to4pm   = $hourlyTransferredFollowUp[15] ?? 0;
+        $tf4to5pm   = $hourlyTransferredFollowUp[16] ?? 0;
+        $tf5to6pm   = $hourlyTransferredFollowUp[17] ?? 0;
+        $tf6to7pm   = $hourlyTransferredFollowUp[18] ?? 0;
+        $tf7to8pm   = $hourlyTransferredFollowUp[19] ?? 0;
+
+        $o8to9am = $hourlyOtherCalls[8] ?? 0;
+        $o9to10am = $hourlyOtherCalls[9] ?? 0;
+        $o10to11am = $hourlyOtherCalls[10] ?? 0;
+        $o11to12pm = $hourlyOtherCalls[11] ?? 0;
+        $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
+        $o1to2pm   = $hourlyOtherCalls[13] ?? 0;
+        $o2to3pm   = $hourlyOtherCalls[14] ?? 0;
+        $o3to4pm   = $hourlyOtherCalls[15] ?? 0;
+        $o4to5pm   = $hourlyOtherCalls[16] ?? 0;
+        $o5to6pm   = $hourlyOtherCalls[17] ?? 0;
+        $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
+        $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
+
+        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
+        $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
+        $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+
+        // Find index of matching month (e.g., "2025-10")
+        $targetIndex = null;
+        foreach ($targetDates as $index => $date) {
+            // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
+            $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
+                ? $date
+                : Carbon::parse($date)->format('Y-m');
+
+            if ($monthPart === $selectedMonth) {
+                $targetIndex = $index;
+                break;
+            }
+        }
+
+        // Use the matching month's target, else fallback to first or 0
+        $targetGiven = isset($targetValues[$targetIndex])
+            ? (int) $targetValues[$targetIndex]
+            : ((int) ($targetValues[0] ?? 0));
+
+        // Calculate Days Left (based on matched target_date entry)
+        $matchedDate = $targetDates[$targetIndex] ?? null;
+
+        if ($matchedDate) {
+            if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
+                $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
+            } else {
+                $carbonDate = Carbon::parse($matchedDate);
+            }
+
+            $diff     = now()->floatDiffInDays($carbonDate, false);
+            $daysLeft = max(0, ceil($diff));
+        } else {
+            $daysLeft = 0;
+        }
+
+        $targetAchieved = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$juniorUser->id}\\\\|senior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+        )
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', (int) $month)
+            ->sum('Amount');
+
+
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+
+        // --- Calculate Present / Absent / Working / Non-working days ---
+        $events = UserTimerPause::where('user_id', $juniorUser->id)
+            ->whereYear('event_time', $year)
+            ->whereMonth('event_time', $month)
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        // Group events by date
+        $groupedEvents = $events->groupBy(function ($event) {
+            return Carbon::parse($event->event_time)->format('Y-m-d');
+        });
+
+        // Determine all days in the selected month
+        $startOfMonth = Carbon::create($year, $month, 1);
+        $endOfMonth   = $startOfMonth->copy()->endOfMonth();
+        $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
+
+        $presentDays    = 0;
+        $halfDays       = 0;
+        $absentDays     = 0;
+        $workingDays    = 0;
+        $nonWorkingDays = 0;
+
+        $today = now()->startOfDay(); // 🔒 freeze today until end of day
+
+        // Loop through each day
+        foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
+            $dateStr = $day->format('Y-m-d');
+
+            if ($day->equalTo($today)) {
+                continue;
+            }
+
+            $dailyEvents = $groupedEvents->get($dateStr, collect());
+
+            // Consider only Saturday/Sunday or holidays as non-working
+            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+                $nonWorkingDays++;
+                continue;
+            }
+
+            // Working day
+            $workingDays++;
+
+            if ($dailyEvents->isEmpty()) {
+                $absentDays++;
+                continue;
+            }
+
+            // Auto-present rule
+            if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
+                $presentDays++;
+                continue;
+            }
+
+            $sorted = $dailyEvents->sortBy('event_time')->values();
+
+            $startSeen       = false;
+            $activeWorkSec   = 0;
+            $totalBreakSec   = 0;
+            $lastPauseTime   = null;
+
+            for ($i = 0; $i < $sorted->count(); $i++) {
+                $event      = $sorted[$i];
+                $title      = strtolower($event->status ?? '');
+                $pauseType  = strtolower($event->pause_type ?? '');
+                $eventName  = $title ?: $pauseType;
+                $eventTime  = Carbon::parse($event->event_time);
+
+                if ($eventName === 'start') {
+                    $startSeen = true;
+                }
+
+                if (!$startSeen) continue;
+
+                if ($pauseType === 'inactive') {
+                    $lastPauseTime = $eventTime;
+                } elseif (in_array($pauseType, ['resume', 'running']) && $lastPauseTime) {
+                    $totalBreakSec += $eventTime->diffInSeconds($lastPauseTime);
+                    $lastPauseTime = null;
+                }
+
+                if ($i < $sorted->count() - 1) {
+                    $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
+                    $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
+
+                    if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
+                        $activeWorkSec += $durationSec;
+                    }
+                }
+            }
+
+            // --- Apply threshold with Half-Day logic ---
+            if ($activeWorkSec >= (8 * 3600)) {
+                $presentDays++;
+            } elseif ($activeWorkSec >= (4 * 3600)) {
+                $halfDays++;
+            } else {
+                $absentDays++;
+            }
+        }
+
+        // --- Remove future working days from absentDays ---
+        $futureWorkingDays = 0;
+
+        foreach ($daysInMonth as $day) {
+            /** @var Carbon $day */
+            $dateStr = $day->format('Y-m-d');
+
+            if (
+                $day->greaterThan($today) &&
+                !$day->isWeekend() &&
+                !in_array($dateStr, $holidayDates)
+            ) {
+                $futureWorkingDays++;
+            }
+        }
+
+        $absentDays = max(0, $absentDays - $futureWorkingDays);
+
+
+        return view('reports.allseniordaily', compact(
+            'totalCalls',
+            'juniorUser',
+            'calledAndMailedCalls',
+            'selffollowupCalls',
+            'readyToPaidCalls',
+            'followUpCalls',
+            'transferedfollowUpCalls',
+            'otherCalls',
+
+            'SselffollowupCalls',
+            'StotalCalls',
+            'ScalledAndMailedCalls',
+            'SreadyToPaidCalls',
+            'StransferedfollowUpCalls',
+            'SfollowUpCalls',
+            'SotherCalls',
+            'selectedDate',
+
+
+            'r8to9am',
+            'r9to10am',
+            'r10to11am',
+            'r11to12pm',
+            'r12to1pm',
+            'r1to2pm',
+            'r2to3pm',
+            'r3to4pm',
+            'r4to5pm',
+            'r5to6pm',
+            'r6to7pm',
+            'r7to8pm',
+
+
+            'c8to9am',
+            'c9to10am',
+            'c10to11am',
+            'c11to12pm',
+            'c12to1pm',
+            'c1to2pm',
+            'c2to3pm',
+            'c3to4pm',
+            'c4to5pm',
+            'c5to6pm',
+            'c6to7pm',
+            'c7to8pm',
+
+
+            'sf8to9am',
+            'sf9to10am',
+            'sf10to11am',
+            'sf11to12pm',
+            'sf12to1pm',
+            'sf1to2pm',
+            'sf2to3pm',
+            'sf3to4pm',
+            'sf4to5pm',
+            'sf5to6pm',
+            'sf6to7pm',
+            'sf7to8pm',
+
+
+            'f8to9am',
+            'f9to10am',
+            'f10to11am',
+            'f11to12pm',
+            'f12to1pm',
+            'f1to2pm',
+            'f2to3pm',
+            'f3to4pm',
+            'f4to5pm',
+            'f5to6pm',
+            'f6to7pm',
+            'f7to8pm',
+
+
+            'tf8to9am',
+            'tf9to10am',
+            'tf10to11am',
+            'tf11to12pm',
+            'tf12to1pm',
+            'tf1to2pm',
+            'tf2to3pm',
+            'tf3to4pm',
+            'tf4to5pm',
+            'tf5to6pm',
+            'tf6to7pm',
+            'tf7to8pm',
+
+
+            'o8to9am',
+            'o9to10am',
+            'o10to11am',
+            'o11to12pm',
+            'o12to1pm',
+            'o1to2pm',
+            'o2to3pm',
+            'o3to4pm',
+            'o4to5pm',
+            'o5to6pm',
+            'o6to7pm',
+            'o7to8pm',
+
+
+            'targetGiven',
+            'targetAchieved',
+            'targetYetToAchieve',
+            'daysLeft',
+            'presentDays',
+            'absentDays',
+            'workingDays',
+            'nonWorkingDays'
+        ));
+    }
 
 
     public function alljuniormonthly(Request $request, $userId)
