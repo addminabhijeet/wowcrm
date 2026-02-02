@@ -2365,7 +2365,7 @@ class CallReportController extends Controller
                 $fourthdate,
                 $fifthdate,
                 $sixthdate,
-                $seventhdate
+                $seventhdate,
             ) {
                 $q->whereDate('updated_at', $firstdate)
                     ->orWhereDate('updated_at', $seconddate)
@@ -2400,7 +2400,7 @@ class CallReportController extends Controller
                 $fourthdate,
                 $fifthdate,
                 $sixthdate,
-                $seventhdate
+                $seventhdate,
             ) {
                 $q->whereDate('followup', $firstdate)
                     ->orWhereDate('followup', $seconddate)
