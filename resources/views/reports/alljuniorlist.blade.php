@@ -76,7 +76,7 @@ $script = '<script>
                             </a>
                             <a href="{{ route('call.reports.alljuniorweekly', $user->id) }}"
                                 class="btn btn-sm btn-success">
-                                View Daily
+                                View weekly
                             </a>
                             <a href="{{ route('call.reports.alljuniordaily', $user->id) }}"
                                 class="btn btn-sm btn-success">
