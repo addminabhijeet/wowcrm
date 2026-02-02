@@ -2333,7 +2333,7 @@ class CallReportController extends Controller
             ->toArray();
 
         $selectedWeek = trim(
-            $request->input('selected_week', now()->format('o-\WW'))
+            $request->input('selected_week', now()->format('Y-\WW'))
         );
 
         [$year, $week] = explode('-W', $selectedWeek);
