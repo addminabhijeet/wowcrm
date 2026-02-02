@@ -3623,8 +3623,9 @@ class CallReportController extends Controller
         // Main logic with LIKE filters
         // ================================
         // Total "Called & Mailed" calls
-        $calledAndMailedCalls = GoogleSheetData::whereRaw(
-            "created_by REGEXP '^{$juniorUser->id}\\|senior:0\\|senior$'"
+        $calledAndMailedCalls = GoogleSheetData::where(
+            'created_by',
+            "{$juniorUser->id}|senior:0|senior"
         )
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
@@ -3792,8 +3793,9 @@ class CallReportController extends Controller
             ->count();
 
 
-        $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
-            "created_by REGEXP '^{$juniorUser->id}\\|senior:0\\|senior$'"
+        $ScalledAndMailedCalls = GoogleSheetData::where(
+            'created_by',
+            "{$juniorUser->id}|senior:0|senior"
         )
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
@@ -3828,7 +3830,10 @@ class CallReportController extends Controller
 
         // Hourly Called & Mailed
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->whereRaw("created_by REGEXP '^{$juniorUser->id}\\|senior:0\\|senior$'")
+            ->where(
+                'created_by',
+                "{$juniorUser->id}|senior:0|senior"
+            )
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
