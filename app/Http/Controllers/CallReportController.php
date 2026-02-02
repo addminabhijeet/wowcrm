@@ -2335,7 +2335,7 @@ class CallReportController extends Controller
         $selectedWeek = $request->input('selected_week', now()->format('Y-\WW'));
 
         // Convert ISO week to date range
-        $weekCarbon = Carbon::createFromFormat('Y-\WW', $selectedWeek);
+        $weekCarbon = Carbon::createFromFormat('o-\WW', $selectedWeek);
 
         $weekStart = $weekCarbon->startOfWeek(Carbon::MONDAY)->startOfDay();
         $weekEnd   = $weekCarbon->endOfWeek(Carbon::SUNDAY)->endOfDay();
