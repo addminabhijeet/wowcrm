@@ -4163,7 +4163,7 @@ class CallReportController extends Controller
         $absentDays = max(0, $absentDays - $futureWorkingDays);
 
 
-        return view('reports.allseniordaily', compact(
+        return view('reports.allseniorweekly', compact(
             'totalCalls',
             'juniorUser',
             'calledAndMailedCalls',
