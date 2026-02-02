@@ -3626,7 +3626,6 @@ class CallReportController extends Controller
         $calledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '$juniorUser\\|senior:0\\|senior$'"
         )
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
@@ -3795,7 +3794,6 @@ class CallReportController extends Controller
         $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '$juniorUser\\|senior:0\\|senior$'"
         )
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -3830,7 +3828,6 @@ class CallReportController extends Controller
         // Hourly Called & Mailed
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->whereRaw("created_by REGEXP '$juniorUser\\|senior:0\\|senior$'")
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
