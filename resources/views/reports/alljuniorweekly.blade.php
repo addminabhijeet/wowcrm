@@ -703,7 +703,7 @@ $script = '<script>
                             <input type="week"
                                 name="selected_week"
                                 id="selected_week"
-                                value="{{ trim(request('selected_week', now()->format('o-\WW'))) }}"
+                                value="{{ trim(request('selected_week', now()->format('Y-\WW'))) }}"
                                 class="form-control form-control-sm"
                                 onchange="this.form.submit()">
 
