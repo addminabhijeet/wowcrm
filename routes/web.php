@@ -168,6 +168,7 @@ Route::middleware(['auth'])->group(function () {
 
     Route::get('/dashboard/senior/google-sheet', [GoogleSheetController::class, 'senior'])->name('google.sheet.senior');
     Route::get('/dashboard/senior/google-sheet-follow', [GoogleSheetController::class, 'seniorfollow'])->name('google.sheet.seniorfollow');
+    Route::get('/dashboard/senior/google-sheet-followni', [GoogleSheetController::class, 'seniorfollowni'])->name('google.sheet.seniorfollowni');
     Route::get('/dashboard/career/google-sheet', [GoogleSheetController::class, 'career'])->name('google.sheet.career');
     Route::get('/dashboard/writer/google-sheet', [GoogleSheetController::class, 'writer'])->name('google.sheet.writer');
     Route::get('/dashboard/senior/google-sheet-candm', [GoogleSheetController::class, 'seniorcandm'])->name('google.sheet.seniorcandm');
