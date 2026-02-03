@@ -251,9 +251,25 @@
 
                         {{-- Remark --}}
                         <td>
-                            <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                            <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
+                                rows="6">{{ $row->Remark ?? '' }}</textarea>
+
+                            <input type="hidden" name="Remark"
+                                class="form-control remark-autocomplete remark-hidden" data-key="Remark"
                                 value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                         </td>
+
+                        {{-- TransferRemark --}}
+                        <td>
+                            <textarea type="text" name="TransferRemark_hidden" class="form-control transferremark-autocomplete data-field"
+                                data-key="TransferRemark" placeholder="Type remark" rows="6">{{ $row->TransferRemark ?? '' }}</textarea>
+
+                            <input type="hidden" name="TransferRemark"
+                                class="form-control transferremark-autocomplete transferremark-hidden"
+                                data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}"
+                                placeholder="Type TransferRemark">
+                        </td>
+
 
 
                         {{-- Status --}}
@@ -288,25 +304,37 @@
                         let rowId = $(this).data('id');
                         let $tr = $('#row-' + rowId);
 
-                        // Collect row data
-                        let data = {};
-                        $tr.find('input, select').each(function() {
-                            let key = $(this).data('key');
-                            if (key) {
-                                if ($(this).is('select')) {
-                                    data[key] = $(this).val();
-                                } else {
-                                    data[key] = $(this).val();
-                                }
+                        // 🔁 Sync textarea values to hidden inputs BEFORE collecting data
+                        $tr.find('textarea').each(function() {
+                            let $textarea = $(this);
+                            let $td = $textarea.closest('td');
+
+                            if ($textarea.hasClass('remark-autocomplete')) {
+                                $td.find('input[name="Remark"]').val($textarea.val().trim());
                             }
+
+                            if ($textarea.hasClass('transferremark-autocomplete')) {
+                                $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
+                            }
+
+                            if ($textarea.hasClass('rejectedremark-autocomplete')) {
+                                $td.find('input[name="RejectedRemark"]').val($textarea.val().trim());
+                            }
+                        });
+
+                        let data = {};
+
+                        // ✅ Now safely collect data
+                        $tr.find('input[data-key], select[data-key]').each(function() {
+                            let key = $(this).data('key');
+                            data[key] = $(this).val();
                         });
 
                         let formData = new FormData();
                         formData.append('id', rowId);
                         formData.append('data', JSON.stringify(data));
 
-                        // Attach resume file if uploaded
-                        let fileInput = $tr.find('input.resume-input')[0];
+                        let fileInput = $tr.find('.resume-input')[0];
                         if (fileInput && fileInput.files.length > 0) {
                             formData.append('resume', fileInput.files[0]);
                         }
@@ -321,14 +349,10 @@
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             },
                             success: function(response) {
-                                if (response.success) {
-                                    alert(response.message);
-                                } else {
-                                    alert(response.message);
-                                }
+                                alert(response.message);
                             },
-                            error: function(err) {
-                                alert('AJAX error: ' + err.responseText);
+                            error: function() {
+                                alert('AJAX error');
                             }
                         });
                     });
