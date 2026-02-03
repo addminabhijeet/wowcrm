@@ -249,10 +249,24 @@
                             @endif
                         </td>
 
+
                         {{-- Remark --}}
                         <td>
-                            <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                            <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
+                                rows="6">{{ $row->Remark ?? '' }}</textarea>
+
+                            <input type="hidden" name="Remark"
+                                class="form-control remark-autocomplete remark-hidden" data-key="Remark"
                                 value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                        </td>
+
+                        {{-- TransferRemark --}}
+                        <td>
+                            <textarea class="form-control transferremark-autocomplete" rows="6" placeholder="Type remark">{{ $row->TransferRemark ?? '' }}</textarea>
+
+                            <input type="hidden" name="TransferRemark" class="transferremark-hidden"
+                                data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}">
+
                         </td>
 
 
@@ -283,30 +297,76 @@
                 @endforeach
             </tbody>
             <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                    const form = document.querySelector('form');
+                    if (!form) return;
+
+                    // Function to sync a textarea to its corresponding input
+                    function syncTextareaToInput(textarea) {
+                        const td = textarea.closest('td');
+                        if (!td) return;
+
+                        const textareaName = textarea.getAttribute('name');
+                        if (!textareaName) return;
+
+                        // Map _hidden textarea to input with same name minus _hidden
+                        const inputName = textareaName.replace('_hidden', '');
+                        const input = td.querySelector('input[name="' + inputName + '"]');
+                        if (!input) return;
+
+                        // Trim value before assigning
+                        input.value = textarea.value.trim();
+                    }
+
+                    // 🔁 Real-time sync on input for all textareas with *_autocomplete class
+                    document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                        function(textarea) {
+                            textarea.addEventListener('input', function() {
+                                syncTextareaToInput(textarea);
+                            });
+                        });
+
+                    // 🛡️ Final sync before form submit
+                    form.addEventListener('submit', function() {
+                        document.querySelectorAll(
+                            'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                            function(textarea) {
+                                syncTextareaToInput(textarea);
+                            });
+                    });
+                });
                 $(document).ready(function() {
                     $('.save-btn').click(function() {
                         let rowId = $(this).data('id');
                         let $tr = $('#row-' + rowId);
 
-                        // Collect row data
-                        let data = {};
-                        $tr.find('input, select').each(function() {
-                            let key = $(this).data('key');
-                            if (key) {
-                                if ($(this).is('select')) {
-                                    data[key] = $(this).val();
-                                } else {
-                                    data[key] = $(this).val();
-                                }
+                        // 🔁 Sync textarea values to hidden inputs BEFORE collecting data
+                        $tr.find('textarea').each(function() {
+                            let $textarea = $(this);
+                            let $td = $textarea.closest('td');
+
+                            if ($textarea.hasClass('remark-autocomplete')) {
+                                $td.find('input[name="Remark"]').val($textarea.val().trim());
                             }
+
+                            if ($textarea.hasClass('transferremark-autocomplete')) {
+                                $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
+                            }
+                        });
+
+                        let data = {};
+
+                        // ✅ Now safely collect data
+                        $tr.find('input[data-key], select[data-key]').each(function() {
+                            let key = $(this).data('key');
+                            data[key] = $(this).val();
                         });
 
                         let formData = new FormData();
                         formData.append('id', rowId);
                         formData.append('data', JSON.stringify(data));
 
-                        // Attach resume file if uploaded
-                        let fileInput = $tr.find('input.resume-input')[0];
+                        let fileInput = $tr.find('.resume-input')[0];
                         if (fileInput && fileInput.files.length > 0) {
                             formData.append('resume', fileInput.files[0]);
                         }
@@ -321,14 +381,10 @@
                                 'X-CSRF-TOKEN': '{{ csrf_token() }}'
                             },
                             success: function(response) {
-                                if (response.success) {
-                                    alert(response.message);
-                                } else {
-                                    alert(response.message);
-                                }
+                                alert(response.message);
                             },
-                            error: function(err) {
-                                alert('AJAX error: ' + err.responseText);
+                            error: function() {
+                                alert('AJAX error');
                             }
                         });
                     });
