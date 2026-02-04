@@ -3206,20 +3206,6 @@ class GoogleSheetController extends Controller
                     ? $existingRemark . PHP_EOL . $newRemarkEntry
                     : $newRemarkEntry
             );
-        } else {
-            // Exe Remarks NOT changed → still log update info
-            $newRemarkEntry = "Updated by {$updatedBy} on {$updatedAt}";
-
-            $existingRemark =
-                $rowData['Remark']
-                ?? $row->Remark
-                ?? '';
-
-            $updateData['Remark'] = trim(
-                $existingRemark
-                    ? $existingRemark . PHP_EOL . $newRemarkEntry
-                    : $newRemarkEntry
-            );
         }
 
         // === Append RejectedRemark like Remark (keep history) ===
