@@ -6115,9 +6115,13 @@ class GoogleSheetController extends Controller
         }
 
         try {
-            // Update only transfers column → set 1
+            // Existing logic (UNCHANGED)
             $row->transfers = 1;
             $row->updated_at = now();
+
+            // ✅ NEW: store only date using Laravel timezone
+            $row->transfer_date = Carbon::now()->toDateString();
+
             $row->save();
 
             return response()->json([
