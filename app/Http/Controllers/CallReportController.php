@@ -1972,6 +1972,7 @@ class CallReportController extends Controller
             ->where(function ($q) {
                 $q->where('transfers', 1);
             })
+            ->whereDate('transfer_date', $selectedDate)
             ->count();
 
 
@@ -1998,7 +1999,7 @@ class CallReportController extends Controller
 
         $hourlyTransfers = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereDate('updated_at', $selectedDate)
+            ->whereDate('transfer_date', $selectedDate)
             ->where('transfers', 1)
             ->groupBy('hour')
             ->pluck('count', 'hour')
@@ -5891,6 +5892,7 @@ class CallReportController extends Controller
             ->where(function ($q) {
                 $q->where('transfers', 1);
             })
+            ->whereDate('transfer_date', $selectedDate)
             ->count();
 
 
@@ -5917,7 +5919,7 @@ class CallReportController extends Controller
 
         $hourlyTransfers = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereDate('updated_at', $selectedDate)
+            ->whereDate('transfer_date', $selectedDate)
             ->where('transfers', 1)
             ->groupBy('hour')
             ->pluck('count', 'hour')
