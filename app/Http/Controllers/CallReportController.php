@@ -157,7 +157,6 @@ class CallReportController extends Controller
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
         )
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('followup', $selectedDate)
             ->where('transfers', 0)
