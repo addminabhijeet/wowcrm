@@ -3692,34 +3692,7 @@ class GoogleSheetController extends Controller
                 'message' => 'Date is required.'
             ]);
         }
-        // Check for duplicate Email (ignore current record)
-        if (!empty($email)) {
-            $emailExists = GoogleSheetData::where('Email_Address', $email)
-                ->where('id', '!=', $id)
-                ->exists();
-
-            if ($emailExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Email address already exists in records.'
-                ]);
-            }
-        }
-
-        // Check for duplicate Phone (ignore current record)
-        if (!empty($phone)) {
-            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)
-                ->where('id', '!=', $id)
-                ->exists();
-
-            if ($phoneExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Phone number already exists in records.'
-                ]);
-            }
-        }
-
+        
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
@@ -4314,30 +4287,7 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // Check for duplicate Email
-        if (!empty($email)) {
-            $emailExists = GoogleSheetData::where('Email_Address', $email)->exists();
-
-            if ($emailExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Email address already exists in records.'
-                ]);
-            }
-        }
-
-        // Check for duplicate Phone
-        if (!empty($phone)) {
-            $phoneExists = GoogleSheetData::where('Phone_Number', $phone)->exists();
-
-            if ($phoneExists) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Phone number already exists in records.'
-                ]);
-            }
-        }
-
+        
         $user = Auth::user();
         $maxRow = GoogleSheetData::max('sheet_row_number') ?? 0;
         $nextRow = $maxRow + 1;
