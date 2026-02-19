@@ -3155,7 +3155,7 @@ class CallReportController extends Controller
 
 
         $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
-            "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
+            "created_by REGEXP '^[0-9]+\\|senior:0\\|senior$'"
         )
             ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
