@@ -31,7 +31,6 @@ class CallReportController extends Controller
             "created_by REGEXP '^[0-9]+\\|senior:0\\|senior$'"
         )
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->count();
 
         $selffollowupCalls = GoogleSheetData::whereRaw(
@@ -156,7 +155,6 @@ class CallReportController extends Controller
         $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|senior:0\\|senior$'"
         )
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('updated_at', $selectedDate)
             ->where('transfers', 0)
@@ -3031,7 +3029,6 @@ class CallReportController extends Controller
         $calledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|senior:0\\|senior$'"
         )
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
@@ -3156,7 +3153,6 @@ class CallReportController extends Controller
         $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|senior:0\\|senior$'"
         )
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('updated_at', $selectedDate)
             ->count();
@@ -3183,7 +3179,6 @@ class CallReportController extends Controller
         // Hourly Called & Mailed
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->whereRaw("created_by REGEXP '^[0-9]+\\|senior:0\\|senior$'")
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('updated_at', $selectedDate)
             ->groupBy('hour')
