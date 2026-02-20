@@ -102,8 +102,6 @@ class CallReportController extends Controller
         $SselffollowupCalls = GoogleSheetData::where('created_by', 'like', "{$user->id}|senior:0|senior")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNotNull('TransferRemark')
-            ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
             ->count();
 
