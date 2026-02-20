@@ -98,12 +98,8 @@ class CallReportController extends Controller
         $tquery = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
             ->whereDate('updated_at', $selectedDate);
 
-        // Selected date totals
         // Self follow-up calls (Called & Mailed / Ready To Pay with TransferRemark)
-        $SselffollowupCalls = GoogleSheetData::whereRaw(
-            "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
-        )
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+        $SselffollowupCalls = GoogleSheetData::where('created_by', 'like', "%|junior:{$user->id}|senior:0|senior")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
