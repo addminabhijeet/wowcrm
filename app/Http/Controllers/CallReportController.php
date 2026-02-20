@@ -153,12 +153,11 @@ class CallReportController extends Controller
             ->whereDate('updated_at', $selectedDate) // Added this line
             ->count();
 
-        $ScalledAndMailedCalls = GoogleSheetData::whereRaw("
-            TRIM(created_by) REGEXP '^[0-9]+\\|senior:0\\|senior$'
-            AND Exe_Remarks = 'Called & Mailed'
-            AND DATE(updated_at) = ?
-            AND transfers = 0
-        ", [$selectedDate])->count();
+        $ScalledAndMailedCalls = GoogleSheetData::where('created_by', "{$user->id}|senior:0|senior")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereDate('updated_at', $selectedDate)
+            ->where('transfers', 0)
+            ->count();
 
         $StotalCalls =
             $ScalledAndMailedCalls
@@ -182,10 +181,9 @@ class CallReportController extends Controller
 
         // Hourly Called & Mailed
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->whereRaw("created_by REGEXP '^[0-9]+\\|senior:0\\|senior$'")
-
-            ->whereDate('updated_at', $selectedDate)
+            ->where('created_by', "{$user->id}|senior:0|senior")
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereDate('updated_at', $selectedDate)
             ->where('transfers', 0)
             ->groupBy('hour')
             ->pluck('count', 'hour')
