@@ -99,7 +99,7 @@ class CallReportController extends Controller
             ->whereDate('updated_at', $selectedDate);
 
         // Self follow-up calls (Called & Mailed / Ready To Pay with TransferRemark)
-        $SselffollowupCalls = GoogleSheetData::where('created_by', 'like', "%|junior:{$user->id}|senior:0|senior")
+        $SselffollowupCalls = GoogleSheetData::where('created_by', 'like', "{$user->id}|senior:0|senior")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
