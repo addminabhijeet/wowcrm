@@ -150,6 +150,7 @@ class CallReportController extends Controller
                 $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
             })
+            ->whereDate('updated_at', $selectedDate) // Added this line
             ->count();
 
         $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
