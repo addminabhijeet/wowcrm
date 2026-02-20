@@ -3087,15 +3087,10 @@ class CallReportController extends Controller
             ->whereDate('updated_at', $selectedDate);
 
         // Selected date totals
-        // Self follow-up calls (Called & Mailed / Ready To Pay with TransferRemark)
-        $SselffollowupCalls = GoogleSheetData::whereRaw(
-            "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
-        )
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+        $SselffollowupCalls = GoogleSheetData::where('created_by', "{$juniorUser->id}|senior:0|senior")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
-            ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
             ->count();
 
@@ -3140,11 +3135,10 @@ class CallReportController extends Controller
             ->count();
 
 
-        $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
-            "created_by REGEXP '^[0-9]+\\|senior:0\\|senior$'"
-        )
+        $ScalledAndMailedCalls = GoogleSheetData::where('created_by', "{$juniorUser->id}|senior:0|senior")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('updated_at', $selectedDate)
+            ->where('transfers', 0)
             ->count();
 
         $StotalCalls =
@@ -3168,21 +3162,21 @@ class CallReportController extends Controller
 
         // Hourly Called & Mailed
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->whereRaw("created_by REGEXP '^[0-9]+\\|senior:0\\|senior$'")
+            ->where('created_by', "{$juniorUser->id}|senior:0|senior")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('updated_at', $selectedDate)
+            ->where('transfers', 0)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
 
         // Hourly Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
+
         $hourlySelfFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+            ->where('created_by', "{$juniorUser->id}|senior:0|senior")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
-            ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
             ->groupBy('hour')
             ->pluck('count', 'hour')
