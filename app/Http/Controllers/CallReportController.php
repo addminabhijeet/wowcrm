@@ -185,14 +185,11 @@ class CallReportController extends Controller
             ->toArray();
 
 
-        // Hourly Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
         $hourlySelfFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'")
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+            ->where('created_by', "{$user->id}|senior:0|senior")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
-            ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
             ->groupBy('hour')
             ->pluck('count', 'hour')
