@@ -3692,7 +3692,7 @@ class GoogleSheetController extends Controller
                 'message' => 'Date is required.'
             ]);
         }
-        
+
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
@@ -4287,7 +4287,7 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        
+
         $user = Auth::user();
         $maxRow = GoogleSheetData::max('sheet_row_number') ?? 0;
         $nextRow = $maxRow + 1;
@@ -5445,7 +5445,7 @@ class GoogleSheetController extends Controller
             })
                 // EXCLUSION: Do NOT show rows having more than one "|junior"
                 ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
-        })->where('transfers', '!=', 1)->where('rejected', 0);
+        })->where('transfers', '!=', 1)->where('rejected', 0)->where('Exe_Remarks', 'Others');
 
 
         // Filter by selected junior
