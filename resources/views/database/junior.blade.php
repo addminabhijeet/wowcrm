@@ -802,7 +802,7 @@
                             `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
                     } else if (k === 'Remark') {
                         cells +=
-                            `<td colspan="2"><input type="text" class="form-control remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
+                            `<td><input type="text" class="form-control remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
                         return;
                     } else if (k === 'Date' || k === 'Graduation Date') {
                         cells +=
