@@ -802,7 +802,8 @@
                             `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
                     } else if (k === 'Remark') {
                         cells +=
-                            `<td><input type="text" class="form-control remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td><td></td>`;
+                            `<td colspan="2"><input type="text" class="form-control remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
+                        return;
                     } else if (k === 'Date' || k === 'Graduation Date') {
                         cells +=
                             `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
