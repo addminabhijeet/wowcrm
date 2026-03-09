@@ -213,6 +213,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/senior/google-sheet/view-audio/{id}', [GoogleSheetController::class, 'viewseniorAudio'])->name('view.audio');
     Route::get('/dashboard/senior/google-sheet/download-audio/{id}', [GoogleSheetController::class, 'downloadseniorAudio'])->name('download.audio');
     Route::get('/dashboard/senior/google-sheet/search-tra', [GoogleSheetController::class, 'seniortraSuggestions'])->name('seniortra.suggestions');
+    Route::get('/dashboard/senior/google-sheet/search-tra-otp', [GoogleSheetController::class, 'seniortraotpSuggestions'])->name('seniortraotp.suggestions');
     Route::get('/dashboard/senior/google-sheet/search-seniortrafollow', [GoogleSheetController::class, 'seniortrafollowSuggestions'])->name('seniortrafollow.suggestions');
     Route::get('/dashboard/senior/google-sheet/search-seniorupdatemod', [GoogleSheetController::class, 'seniorupdatemodSuggestions'])->name('seniorupdatemod.suggestions');
     Route::get('/dashboard/senior/google-sheet/search-follow', [GoogleSheetController::class, 'seniorfollowSuggestions'])->name('seniorfollow.suggestions');
