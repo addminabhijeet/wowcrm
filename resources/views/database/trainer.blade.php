@@ -731,7 +731,7 @@
                         if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
                             'Money Issue', 'Not Interested', "Don't Call"
                         ];
-                        if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+                        if (k === 'Course') opts = ['BA','DA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
                         if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
                         cells +=
                             `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;

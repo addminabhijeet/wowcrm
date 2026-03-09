@@ -163,7 +163,7 @@
 
                                     {{-- Course --}}
                                     <td>
-                                        @php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
+                                        @php $courseOptions = ['BA','DA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; @endphp
                                         <select class="form-select dynamic-dropdown" data-key="Course">
                                             <option value="">-- Course --</option>
                                             @foreach ($courseOptions as $option)
