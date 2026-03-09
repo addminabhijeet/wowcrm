@@ -2178,7 +2178,7 @@ class GoogleSheetController extends Controller
                     $q->where('Name', 'LIKE', "%{$query}%")
                         ->orWhere('Email_Address', 'LIKE', "%{$query}%")
                         ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
-                })
+                })->where('Immigration', 'STEM OPT')
                 ->limit(10)
                 ->get([
                     'id',
