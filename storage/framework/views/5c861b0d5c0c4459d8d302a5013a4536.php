@@ -59,6 +59,11 @@
                         </li>
                     </ul>
                     <ul class="sidebar-submenu">
+                        <li><a href="<?php echo e(route('google.sheet.juniorother')); ?>"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Other</a>
+                        </li>
+                    </ul>
+                    <ul class="sidebar-submenu">
                         <li><a href="<?php echo e(route('google.sheet.juniorrej')); ?>"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Rejected</a>
                         </li>
@@ -132,6 +137,13 @@
                         <li><a href="<?php echo e(route('google.sheet.seniortra')); ?>"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter
                                 <br>(Called & Mailed)</a>
+                        </li>
+                    </ul>
+
+                    <ul class="sidebar-submenu">
+                        <li><a href="<?php echo e(route('google.sheet.seniortraotp')); ?>"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter
+                                <br>(Called & Mailed Steam Otp)</a>
                         </li>
                     </ul>
 
