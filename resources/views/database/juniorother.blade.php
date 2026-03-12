@@ -310,7 +310,12 @@
 
                                     {{-- Remark --}}
                                     <td>
-                                        <textarea class="form-control remark-autocomplete" data-key="Remark" placeholder="Type remark" rows="6">{{ $row->Remark ?? '' }}</textarea>
+                                        <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
+                                            rows="6">{{ $row->Remark ?? '' }}</textarea>
+
+                                        <input type="hidden" name="Remark"
+                                            class="form-control remark-autocomplete remark-hidden" data-key="Remark"
+                                            value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                                     </td>
 
                                     {{-- Status --}}
@@ -1698,14 +1703,16 @@
                 const td = textarea.closest('td');
                 if (!td) return;
 
-                const key = textarea.dataset.key || textarea.getAttribute('data-key');
+                const textareaName = textarea.getAttribute('name');
+                if (!textareaName) return;
 
-                // Find corresponding input/select with same data-key
-                const input = td.querySelector('[data-key="' + key + '"]');
+                // Map _hidden textarea to input with same name minus _hidden
+                const inputName = textareaName.replace('_hidden', '');
+                const input = td.querySelector('input[name="' + inputName + '"]');
+                if (!input) return;
 
-                if (input) {
-                    input.value = textarea.value.trim();
-                }
+                // Trim value before assigning
+                input.value = textarea.value.trim();
             }
 
             // 🔁 Real-time sync on input for all textareas with *_autocomplete class
