@@ -73,7 +73,10 @@
                                         class="btn btn-sm btn-primary">
                                         View Monthly
                                     </a>
-
+                                    <a href="<?php echo e(route('call.reports.allseniorweekly', $user->id)); ?>"
+                                        class="btn btn-sm btn-success">
+                                        View weekly
+                                    </a>
                                     <a href="<?php echo e(route('call.reports.allseniordaily', $user->id)); ?>"
                                         class="btn btn-sm btn-success">
                                         View Daily

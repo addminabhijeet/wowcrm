@@ -285,11 +285,11 @@
                                     
                                     <td>
                                         <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
-                                            rows="6"><?php echo e($row->Remark ?? ''); ?></textarea>
+                                            rows="6" readonly><?php echo e($row->Remark ?? ''); ?></textarea>
 
                                         <input type="hidden" name="Remark"
                                             class="form-control remark-autocomplete remark-hidden" data-key="Remark"
-                                            value="<?php echo e($row->Remark ?? ''); ?>" placeholder="Type remark">
+                                            value="<?php echo e($row->Remark ?? ''); ?>" placeholder="Type remark" readonly>
                                     </td>
 
                                     

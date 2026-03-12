@@ -168,7 +168,7 @@
 
                                     
                                     <td>
-                                        <?php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; ?>
+                                        <?php $courseOptions = ['BA','DA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; ?>
                                         <select class="form-select dynamic-dropdown" data-key="Course">
                                             <option value="">-- Course --</option>
                                             <?php $__currentLoopData = $courseOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -286,12 +286,13 @@
                                     
                                     <td>
                                         <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
-                                            rows="6"><?php echo e($row->Remark ?? ''); ?></textarea>
+                                            rows="6" readonly><?php echo e($row->Remark ?? ''); ?></textarea>
 
                                         <input type="hidden" name="Remark"
                                             class="form-control remark-autocomplete remark-hidden" data-key="Remark"
-                                            value="<?php echo e($row->Remark ?? ''); ?>" placeholder="Type remark">
+                                            value="<?php echo e($row->Remark ?? ''); ?>" placeholder="Type remark" readonly>
                                     </td>
+
 
                                     
                                     <td>
