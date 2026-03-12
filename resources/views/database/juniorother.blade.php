@@ -1698,16 +1698,14 @@
                 const td = textarea.closest('td');
                 if (!td) return;
 
-                const textareaName = textarea.getAttribute('name');
-                if (!textareaName) return;
+                const key = textarea.dataset.key || textarea.getAttribute('data-key');
 
-                // Map _hidden textarea to input with same name minus _hidden
-                const inputName = textareaName.replace('_hidden', '');
-                const input = td.querySelector('input[name="' + inputName + '"]');
-                if (!input) return;
+                // Find corresponding input/select with same data-key
+                const input = td.querySelector('[data-key="' + key + '"]');
 
-                // Trim value before assigning
-                input.value = textarea.value.trim();
+                if (input) {
+                    input.value = textarea.value.trim();
+                }
             }
 
             // 🔁 Real-time sync on input for all textareas with *_autocomplete class
