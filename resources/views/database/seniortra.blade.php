@@ -23,12 +23,15 @@
             class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
             <div class="d-flex align-items-center flex-wrap gap-3">
                 <!-- Search Input -->
-                <form class="navbar-search position-relative" autocomplete="off">
+                <form class="navbar-search position-relative d-flex gap-2" autocomplete="off">
                     <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
                         placeholder="Search Name, Email, Phone">
+
                     <input type="date" id="date-filter" class="bg-base h-40-px w-auto form-control"
                         title="Filter by Date">
+
                     <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
 
