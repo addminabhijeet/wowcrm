@@ -24,10 +24,15 @@
             <div class="d-flex align-items-center flex-wrap gap-3">
 
                 <!-- Search Input -->
-                <form class="navbar-search position-relative" autocomplete="off">
+                <form class="navbar-search position-relative d-flex gap-2" autocomplete="off">
                     <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
                         placeholder="Search Name, Email, Phone">
+
+                    <input type="date" id="date-filter" class="bg-base h-40-px w-auto form-control"
+                        title="Filter by Date">
+
                     <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
 
@@ -1033,67 +1038,74 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-<script>
-$(document).ready(function () {
+    <script>
+        $(document).ready(function() {
 
-    // -----------------------------
-    // Helper: Debounce
-    // -----------------------------
-    function debounce(func, wait) {
-        let timeout;
-        return function () {
-            const context = this, args = arguments;
-            clearTimeout(timeout);
-            timeout = setTimeout(() => func.apply(context, args), wait);
-        };
-    }
-
-    // -----------------------------
-    // Fetch Table Data via AJAX
-    // -----------------------------
-    function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
-        $.ajax({
-            url: "{{ route('google.sheet.seniormod') }}",
-            type: 'GET',
-            data: {
-                search,
-                page,
-                junior_user,
-                row_id
-            },
-            success: function (res) {
-                $('#senior-table-wrapper').html(res);
-            },
-            error: function (err) {
-                console.error(err);
+            // -----------------------------
+            // Helper: Debounce
+            // -----------------------------
+            function debounce(func, wait) {
+                let timeout;
+                return function() {
+                    const context = this,
+                        args = arguments;
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(context, args), wait);
+                };
             }
-        });
-    }
 
-    // -----------------------------
-    // Live Search Suggestions
-    // -----------------------------
-    const showSuggestions = debounce(function () {
-        const query = $('#senior-search').val().trim();
-        const junior_user = $('#junior-filter').val();
+            // -----------------------------
+            // Fetch Table Data via AJAX
+            // -----------------------------
+            function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
+                $.ajax({
+                    url: "{{ route('google.sheet.seniormod') }}",
+                    type: 'GET',
+                    data: {
+                        search,
+                        page,
+                        junior_user,
+                        row_id,
+                        date // ✅ added
+                    },
+                    success: function(res) {
+                        $('#senior-table-wrapper').html(res);
+                    },
+                    error: function(err) {
+                        console.error(err);
+                    }
+                });
+            }
 
-        if (query.length < 3) {
-            $('#search-suggestions').empty().hide();
-            fetchTable('', 1, junior_user);
-            return;
-        }
+            // -----------------------------
+            // Live Search Suggestions
+            // -----------------------------
+            const showSuggestions = debounce(function() {
+                const query = $('#senior-search').val().trim();
+                const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+                const date = $('#date-filter').val();
 
-        $.ajax({
-            url: "{{ route('senior.suggestionsmod') }}",
-            type: 'GET',
-            data: { query },
-            success: function (res) {
+                if (query.length < 3) {
+                    $('#search-suggestions').empty().hide();
 
-                let suggestions = '';
+                    // ✅ RESET WITH DATE
+                    fetchTable('', 1, junior_user, '', date);
+                    return;
+                }
 
-                if (res.length) {
-                    res.forEach(item => {
-                        suggestions += `
+                $.ajax({
+                    url: "{{ route('senior.suggestionsmod') }}",
+                    type: 'GET',
+                    data: {
+                        query
+                    },
+                    success: function(res) {
+
+                        let suggestions = '';
+
+                        if (res.length) {
+                            res.forEach(item => {
+                                suggestions += `
                             <a href="#"
                                class="list-group-item list-group-item-action"
                                data-id="${item.id}">
@@ -1104,54 +1116,66 @@ $(document).ready(function () {
                                 ${item.Exe_Remarks} |
                                 ${item.forwarded_by}
                             </a>`;
-                    });
-                } else {
-                    suggestions = '<span class="list-group-item">No results found</span>';
+                            });
+                        } else {
+                            suggestions =
+                                '<span class="list-group-item">No results found</span>';
+                        }
+
+                        $('#search-suggestions').html(suggestions).show();
+                    }
+                });
+            }, 300);
+
+            $('#senior-search').on('input', showSuggestions);
+
+            // -----------------------------
+            // Click suggestion
+            // -----------------------------
+            $(document).on('click', '#search-suggestions a', function(e) {
+                e.preventDefault();
+
+                const rowId = $(this).data('id');
+                const junior_user = $('#junior-filter').val();
+                const date = $('#date-filter').val();
+
+                $('#senior-search').val($(this).text());
+                $('#search-suggestions').empty().hide();
+
+                fetchTable('', 1, junior_user, rowId, date);
+            });
+
+            // -----------------------------
+            // Junior dropdown filter
+            // -----------------------------
+            $('#junior-filter').on('change', function() {
+                const junior_user = $(this).val();
+                const search = $('#senior-search').val().trim();
+
+                fetchTable(search, 1, junior_user);
+            });
+
+            $('#date-filter').on('change', function() {
+                fetchTable(
+                    $('#senior-search').val().trim(),
+                    1,
+                    $('#junior-filter').val(),
+                    '',
+                    $(this).val()
+                );
+            });
+
+            // -----------------------------
+            // Click outside suggestions
+            // -----------------------------
+            $(document).click(function(e) {
+                if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
+                    $('#search-suggestions').empty().hide();
                 }
+            });
 
-                $('#search-suggestions').html(suggestions).show();
-            }
         });
-    }, 300);
-
-    $('#senior-search').on('input', showSuggestions);
-
-    // -----------------------------
-    // Click suggestion
-    // -----------------------------
-    $(document).on('click', '#search-suggestions a', function (e) {
-        e.preventDefault();
-
-        const rowId = $(this).data('id');
-        const junior_user = $('#junior-filter').val();
-
-        $('#senior-search').val($(this).text());
-        $('#search-suggestions').empty().hide();
-
-        fetchTable('', 1, junior_user, rowId);
-    });
-
-    // -----------------------------
-    // Junior dropdown filter
-    // -----------------------------
-    $('#junior-filter').on('change', function () {
-        const junior_user = $(this).val();
-        const search = $('#senior-search').val().trim();
-
-        fetchTable(search, 1, junior_user);
-    });
-
-    // -----------------------------
-    // Click outside suggestions
-    // -----------------------------
-    $(document).click(function (e) {
-        if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
-            $('#search-suggestions').empty().hide();
-        }
-    });
-
-});
-</script>
+    </script>
 
 
 

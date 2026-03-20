@@ -1241,6 +1241,7 @@ class GoogleSheetController extends Controller
         $authUser = (object) ['id' => null];
         $search = $request->input('search');
         $rowId = $request->input('row_id');
+        $date = $request->input('date');
         $juniorUserId = $request->input('junior_user'); // dropdown value
         $page = $request->input('page', 1); // ✅ Ensure page input handled
 
@@ -1260,6 +1261,9 @@ class GoogleSheetController extends Controller
             });
         }
 
+        if ($date) {
+            $query->whereDate('updated_at', $date);
+        }
         // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
