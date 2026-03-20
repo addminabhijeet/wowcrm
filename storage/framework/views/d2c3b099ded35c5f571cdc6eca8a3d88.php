@@ -144,7 +144,7 @@
 
                         
                         <td>
-                            <?php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; ?>
+                            <?php $courseOptions = ['BA','DA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; ?>
                             <select class="form-select dynamic-dropdown" data-key="Course">
                                 <option value="">-- Course --</option>
                                 <?php $__currentLoopData = $courseOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>

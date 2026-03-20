@@ -29,20 +29,6 @@
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
                 </form>
 
-                <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user"
-                    id="junior-filter">
-                    <option value="">Select IT Recruiter</option>
-                    <?php $__currentLoopData = $juniorUsers; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $junior): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-                        <option value="<?php echo e($junior->id); ?>">
-                            <?php echo e($junior->name); ?>
-
-                            <?php if($junior->gender): ?>
-                                (<?php echo e($junior->gender); ?>)
-                            <?php endif; ?>
-                        </option>
-                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
-                </select>
-
             </div>
         </div>
 
@@ -165,7 +151,7 @@
 
                                     
                                     <td>
-                                        <?php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; ?>
+                                        <?php $courseOptions = ['BA','DA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; ?>
                                         <select class="form-select dynamic-dropdown" data-key="Course">
                                             <option value="">-- Course --</option>
                                             <?php $__currentLoopData = $courseOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
