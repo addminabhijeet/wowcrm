@@ -23,9 +23,13 @@
             class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
             <div class="d-flex align-items-center flex-wrap gap-3">
 
-                <form class="navbar-search position-relative" autocomplete="off">
+                <form class="navbar-search position-relative d-flex gap-2" autocomplete="off">
                     <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
                         placeholder="Search Name, Email, Phone">
+
+                    <input type="date" id="date-filter" class="bg-base h-40-px w-auto form-control"
+                        title="Filter by Date">
+
                     <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
 
                     <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
@@ -1064,7 +1068,7 @@
                 };
             }
 
-            function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
+            function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
                 $.ajax({
                     url: "{{ route('google.sheet.seniorfollow') }}",
                     type: 'GET',
@@ -1072,23 +1076,29 @@
                         search,
                         page,
                         junior_user,
-                        row_id
+                        row_id,
+                        date // ✅ added
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
+                    },
+                    error: function(err) {
+                        console.error(err);
                     }
                 });
             }
 
             // 🔍 SEARCH SUGGESTIONS
             const showSuggestions = debounce(function() {
-
                 const query = $('#senior-search').val().trim();
-                const junior_user = $('#junior-filter').val();
+                const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
+                const date = $('#date-filter').val();
 
                 if (query.length < 3) {
                     $('#search-suggestions').empty().hide();
-                    fetchTable('', 1, junior_user);
+
+                    // ✅ RESET WITH DATE
+                    fetchTable('', 1, junior_user, '', date);
                     return;
                 }
 
@@ -1134,9 +1144,12 @@
 
                 const rowId = $(this).data('id');
                 const junior_user = $('#junior-filter').val();
+                const date = $('#date-filter').val();
 
-                $('#search-suggestions').hide().empty();
-                fetchTable('', 1, junior_user, rowId);
+                $('#senior-search').val($(this).text());
+                $('#search-suggestions').empty().hide();
+
+                fetchTable('', 1, junior_user, rowId, date);
             });
 
             // 🔹 JUNIOR FILTER CHANGE (WITH PAGINATION)
@@ -1144,6 +1157,16 @@
                 const junior_user = $(this).val();
                 const search = $('#senior-search').val().trim();
                 fetchTable(search, 1, junior_user);
+            });
+
+            $('#date-filter').on('change', function() {
+                fetchTable(
+                    $('#senior-search').val().trim(),
+                    1,
+                    $('#junior-filter').val(),
+                    '',
+                    $(this).val()
+                );
             });
 
             // 🔹 HIDE SUGGESTIONS ON OUTSIDE CLICK
