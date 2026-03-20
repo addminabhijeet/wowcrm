@@ -1337,6 +1337,7 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user');
         $page = $request->input('page', 1);
+        $date = $request->input('date');
         $userPattern = "%:" . $authUser->id . "|junior";
         $zeroPattern = "%:0|senior";
 
@@ -1365,6 +1366,9 @@ class GoogleSheetController extends Controller
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
                     ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
             });
+        }
+        if ($date) {
+            $query->whereDate('updated_at', $date);
         }
         if ($rowId) {
             $query->where('id', $rowId);
@@ -1421,7 +1425,14 @@ class GoogleSheetController extends Controller
             $transformed->count(),
             $perPage,
             $currentPage,
-            ['path' => url()->current(), 'query' => $request->query()]
+            [
+                'path' => url()->current(),
+                'query' => [
+                    'search' => $request->search,
+                    'junior_user' => $request->junior_user,
+                    'date' => $request->date // ✅ add this
+                ]
+            ]
         );
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
