@@ -182,11 +182,33 @@
                                                     </select>
                                                 </div>
 
-                                                <!-- Remark -->
                                                 <div class="col-md-4 px-1">
+                                                    <label class="mb-0 small">Time Zone</label>
+
+                                                    @php
+                                                        $timezoneOptions = ['EST', 'CST', 'MST', 'PST', ''];
+                                                    @endphp
+
+                                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                                        data-key="Time Zone">
+
+                                                        <option value="">-- Select --</option>
+
+                                                        @foreach ($timezoneOptions as $option)
+                                                            <option value="{{ $option }}"
+                                                                {{ $row->Time_Zone === $option ? 'selected' : '' }}>
+                                                                {{ $option }}
+                                                            </option>
+                                                        @endforeach
+
+                                                    </select>
+                                                </div>
+
+                                                <!-- Remark -->
+                                                <div class="col-md-12 px-1">
                                                     <label class="mb-0 small">Remark</label>
-                                                    <input type="text" class="form-control form-control-sm py-0 px-1"
-                                                        data-key="Remark" value="{{ $row->Remark ?? '' }}">
+                                                    <textarea class="form-control form-control-sm py-0 px-1" style="min-height: 40px; resize: vertical;"
+                                                        data-key="Remark">{{ $row->Remark ?? '' }}</textarea>
                                                 </div>
 
                                             </div>
