@@ -101,22 +101,22 @@
 
                                             <div class="row g-1">
 
-                                                <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0" style="font-size:10px;">Location</label>
+                                                <div class="px-1 py-0">
+                                                    <label>Location</label>
                                                     <input type="text" class="form-control form-control-sm p-0 w-100"
                                                         style="height:22px; font-size:11px;" data-key="Location"
                                                         value="{{ $row->Location ?? '' }}">
                                                 </div>
 
-                                                <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0" style="font-size:10px;">Date</label>
+                                                <div class="px-1 py-0">
+                                                    <label>Date</label>
                                                     <input type="text" class="form-control form-control-sm p-0 w-100"
                                                         style="height:22px; font-size:11px;" data-key="Date"
                                                         value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
                                                 </div>
 
-                                                <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0" style="font-size:10px;">Relocation</label>
+                                                <div class="px-1 py-0">
+                                                    <label>Relocation</label>
                                                     <select class="form-select form-select-sm p-0 w-100"
                                                         style="height:22px; font-size:11px;" data-key="Relocation">
                                                         @foreach (['YES', 'NO'] as $option)
@@ -128,15 +128,15 @@
                                                     </select>
                                                 </div>
 
-                                                <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0" style="font-size:10px;">Graduation</label>
+                                                <div class="px-1 py-0">
+                                                    <label>Graduation</label>
                                                     <input type="text" class="form-control form-control-sm p-0 w-100"
                                                         style="height:22px; font-size:11px;" data-key="Graduation Date"
                                                         value="{{ $row->Graduation_Date }}">
                                                 </div>
 
-                                                <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0" style="font-size:10px;">Immigration</label>
+                                                <div class="px-1 py-0">
+                                                    <label>Immigration</label>
                                                     <select class="form-select form-select-sm p-0 w-100"
                                                         style="height:22px; font-size:11px;" data-key="Immigration">
                                                         @foreach (['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC', 'L2S'] as $option)
@@ -148,8 +148,8 @@
                                                     </select>
                                                 </div>
 
-                                                <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0" style="font-size:10px;">Course</label>
+                                                <div class="px-1 py-0">
+                                                    <label>Course</label>
                                                     <select class="form-select form-select-sm p-0 w-100"
                                                         style="height:22px; font-size:11px;" data-key="Course">
                                                         @foreach (['BA', 'DA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'] as $option)
@@ -161,15 +161,15 @@
                                                     </select>
                                                 </div>
 
-                                                <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0" style="font-size:10px;">Amount</label>
+                                                <div class="px-1 py-0">
+                                                    <label>Amount</label>
                                                     <input type="text" class="form-control form-control-sm p-0 w-100"
                                                         style="height:22px; font-size:11px;" data-key="Amount"
                                                         value="{{ $row->Amount }}">
                                                 </div>
 
-                                                <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0" style="font-size:10px;">Qualification</label>
+                                                <div class="px-1 py-0">
+                                                    <label>Qualification</label>
                                                     <select class="form-select form-select-sm p-0 w-100"
                                                         style="height:22px; font-size:11px;" data-key="Qualification">
                                                         @foreach (['Masters', 'Bachelors', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech'] as $option)
@@ -181,8 +181,8 @@
                                                     </select>
                                                 </div>
 
-                                                <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0" style="font-size:10px;">Remark</label>
+                                                <div class="px-1 py-0">
+                                                    <label>Remark</label>
                                                     <input type="text" class="form-control form-control-sm p-0 w-100"
                                                         style="height:22px; font-size:11px;" data-key="Remark"
                                                         value="{{ $row->Remark ?? '' }}">
