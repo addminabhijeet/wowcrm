@@ -961,6 +961,119 @@ class GoogleSheetController extends Controller
         return view('database.seniorcandm',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
+    public function seniorsearch(Request $request)
+    {
+        $authUser = Auth::user();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+        $juniorUserId = $request->input('junior_user'); // ✅ NEW
+        $page = $request->input('page', 1);
+
+        // SUBSTRING_INDEX-based filter with second part check
+        $query = GoogleSheetData::where(function ($q) use ($authUser) {
+
+            $seniorPart = $authUser->id . '|senior';
+            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart]);
+        })
+            ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) = 0")
+            ->where('transfers', 0);
+
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // ✅ APPLY JUNIOR FILTER (NO LOGIC CHANGE)
+        if ($juniorUserId) {
+            $query->where(function ($q) use ($juniorUserId) {
+                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+            });
+        }
+
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        $results = $query->orderBy('updated_at', 'desc')->get();
+
+        // 🔁 Transform forwarded_by
+        $transformed = $results->map(function ($item) use ($authUser) {
+
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                $names = [];
+
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SELF ({$userId}) ({$roleLabel})";
+                    } elseif ($userId == 0) {
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SYSTEM (0) ({$roleLabel})";
+                    } else {
+                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "{$name} ({$userId}) ({$roleLabel})";
+                    }
+                }
+
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        // ✅ Apply pagination AFTER transformation (like junior)
+        $perPage = 10;
+        $currentPage = $page;
+        $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transformed->forPage($currentPage, $perPage),
+            $transformed->count(),
+            $perPage,
+            $currentPage,
+            ['path' => url()->current(), 'query' => $request->query()]
+        );
+
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior'])
+            ->where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
+
+        if ($request->ajax()) {
+            return view('database.partials.seniorsearch_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+        }
+
+        return view('database.seniorsearch',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+    }
+
     public function senioradmincandm(Request $request)
     {
         // Create a dummy object with id = 32 (without touching your inner logic)
