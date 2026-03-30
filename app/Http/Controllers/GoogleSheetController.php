@@ -2898,6 +2898,66 @@ class GoogleSheetController extends Controller
         return response()->json($results);
     }
 
+    public function seniorsearchSuggestions(Request $request)
+    {
+        $authUser = Auth::user();
+        $query = $request->query('query');
+        $juniorUserId = $request->query('junior_user');
+
+        if (!$query || strlen($query) < 3) {
+            return response()->json([]);
+        }
+
+        $results = GoogleSheetData::where(function ($q) use ($authUser) {
+            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$authUser->id . '|senior']);
+        })
+            ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) = 0")
+            ->where('transfers', 0)
+
+            // ✅ JUNIOR FILTER (OPTIONAL)
+            ->when($juniorUserId, function ($q) use ($juniorUserId) {
+                $q->where('created_by', 'LIKE', "%{$juniorUserId}|junior%");
+            })
+
+            ->where(function ($q) use ($query) {
+                $q->where('Name', 'LIKE', "%{$query}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$query}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
+            })
+
+            ->limit(10)
+            ->get([
+                'id',
+                'sheet_row_number',
+                'Name',
+                'Email_Address',
+                'Phone_Number',
+                'created_by'
+            ]);
+
+        // 🔁 forwarded_by formatting
+        $results->each(function ($item) use ($authUser) {
+
+            $names = [];
+
+            foreach (explode(':', $item->created_by) as $entry) {
+                [$uid, $role] = array_pad(explode('|', $entry), 2, null);
+
+                if ($uid == $authUser->id) {
+                    $names[] = "SELF ({$uid}) ({$role})";
+                } elseif ($uid == 0) {
+                    $names[] = "SYSTEM (0) ({$role})";
+                } else {
+                    $user = \App\Models\User::find($uid);
+                    $names[] = ($user?->name ?? 'Unknown') . " ({$uid}) ({$role})";
+                }
+            }
+
+            $item->forwarded_by = implode(' → ', $names);
+        });
+
+        return response()->json($results);
+    }
 
     public function juniorSuggestions(Request $request)
     {
