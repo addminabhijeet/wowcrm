@@ -51,7 +51,7 @@
                     <table class="table bordered-table sm-table mb-0">
                         <thead>
                             <tr class="text-nowrap">
-                                <th class="w-auto"></th>
+                                
                                 <th class="text-center w-auto">Row</th>
                                 <th class="text-center w-auto">Name</th>
                                 <th class="text-center w-auto">Email Address</th>
@@ -62,12 +62,7 @@
                         <tbody id="sheet-table-body">
                             @foreach ($data as $row)
                                 <tr class="text-nowrap">
-                                    <td class="text-center w-auto px-2">
-                                        <button class="btn btn-sm btn-primary toggle-row p-1 px-2"
-                                            data-id="{{ $row->id }}">
-                                            +
-                                        </button>
-                                    </td>
+                                    
 
                                     <td class="w-auto px-2">{{ $row->sheet_row_number }}</td>
 
