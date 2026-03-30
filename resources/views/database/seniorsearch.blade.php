@@ -53,7 +53,6 @@
                             <tr>
                                 <th></th> <!-- Toggle Button -->
                                 <th class="text-center">Row</th>
-                                <th class="text-center">Date</th>
                                 <th class="text-center">Name</th>
                                 <th class="text-center">Email Address</th>
                                 <th class="text-center">Phone Number</th>
@@ -70,11 +69,6 @@
                                     </td>
 
                                     <td>{{ $row->sheet_row_number }}</td>
-
-                                    <td>
-                                        <input type="text" class="form-control date-picker" data-key="Date"
-                                            value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
-                                    </td>
 
                                     <td>
                                         <input type="text" class="form-control name-input" data-key="Name"
@@ -116,6 +110,14 @@
                                                     <input type="text" class="form-control location-autocomplete"
                                                         data-key="Location" value="{{ $row->Location ?? '' }}">
                                                 </div>
+
+
+                                                <div class="col-md-3">
+                                                    <label>Date</label>
+                                                    <input type="text" class="form-control date-picker" data-key="Date"
+                                                        value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
+                                                </div>
+
 
                                                 <!-- Relocation -->
                                                 <div class="col-md-3">
