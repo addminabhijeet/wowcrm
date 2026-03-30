@@ -87,30 +87,31 @@
 
                                 <tr id="collapse-{{ $row->id }}" class="collapse-row d-none">
                                     <td colspan="7" class="p-1">
-                                        <div class="p-2 border rounded bg-light small">
+                                        <div class="p-1 border rounded bg-light small">
 
                                             <div class="row g-1">
 
                                                 <!-- Location -->
-                                                <div class="col-md-6 col-sm-6 col-12">
+                                                <div class="col-md-4 px-1">
                                                     <label class="mb-0 small">Location</label>
                                                     <input type="text"
-                                                        class="form-control form-control-sm p-1 location-autocomplete"
+                                                        class="form-control form-control-sm py-0 px-1 location-autocomplete"
                                                         data-key="Location" value="{{ $row->Location ?? '' }}">
                                                 </div>
 
                                                 <!-- Date -->
-                                                <div class="col-md-6 col-sm-6 col-12">
+                                                <div class="col-md-4 px-1">
                                                     <label class="mb-0 small">Date</label>
                                                     <input type="text"
-                                                        class="form-control form-control-sm p-1 date-picker" data-key="Date"
+                                                        class="form-control form-control-sm py-0 px-1 date-picker"
+                                                        data-key="Date"
                                                         value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
                                                 </div>
 
                                                 <!-- Relocation -->
-                                                <div class="col-md-6 col-sm-6 col-12">
+                                                <div class="col-md-4 px-1">
                                                     <label class="mb-0 small">Relocation</label>
-                                                    <select class="form-select form-select-sm p-1 dynamic-dropdown"
+                                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
                                                         data-key="Relocation">
                                                         @foreach (['YES', 'NO'] as $option)
                                                             <option value="{{ $option }}"
@@ -122,17 +123,17 @@
                                                 </div>
 
                                                 <!-- Graduation -->
-                                                <div class="col-md-6 col-sm-6 col-12">
+                                                <div class="col-md-4 px-1">
                                                     <label class="mb-0 small">Graduation</label>
                                                     <input type="text"
-                                                        class="form-control form-control-sm p-1 date-picker"
+                                                        class="form-control form-control-sm py-0 px-1 date-picker"
                                                         data-key="Graduation Date" value="{{ $row->Graduation_Date }}">
                                                 </div>
 
                                                 <!-- Immigration -->
-                                                <div class="col-md-6 col-sm-6 col-12">
+                                                <div class="col-md-4 px-1">
                                                     <label class="mb-0 small">Immigration</label>
-                                                    <select class="form-select form-select-sm p-1 dynamic-dropdown"
+                                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
                                                         data-key="Immigration">
                                                         @foreach (['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC', 'L2S'] as $option)
                                                             <option value="{{ $option }}"
@@ -144,9 +145,9 @@
                                                 </div>
 
                                                 <!-- Course -->
-                                                <div class="col-md-6 col-sm-6 col-12">
+                                                <div class="col-md-4 px-1">
                                                     <label class="mb-0 small">Course</label>
-                                                    <select class="form-select form-select-sm p-1 dynamic-dropdown"
+                                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
                                                         data-key="Course">
                                                         @foreach (['BA', 'DA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'] as $option)
                                                             <option value="{{ $option }}"
@@ -158,17 +159,17 @@
                                                 </div>
 
                                                 <!-- Amount -->
-                                                <div class="col-md-6 col-sm-6 col-12">
+                                                <div class="col-md-4 px-1">
                                                     <label class="mb-0 small">Amount</label>
                                                     <input type="text"
-                                                        class="form-control form-control-sm p-1 amount-input"
+                                                        class="form-control form-control-sm py-0 px-1 amount-input"
                                                         data-key="Amount" value="{{ $row->Amount }}">
                                                 </div>
 
                                                 <!-- Qualification -->
-                                                <div class="col-md-6 col-sm-6 col-12">
+                                                <div class="col-md-4 px-1">
                                                     <label class="mb-0 small">Qualification</label>
-                                                    <select class="form-select form-select-sm p-1 dynamic-dropdown"
+                                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
                                                         data-key="Qualification">
                                                         @foreach (['Masters', 'Bachelors', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech'] as $option)
                                                             <option value="{{ $option }}"
@@ -180,9 +181,9 @@
                                                 </div>
 
                                                 <!-- Remark -->
-                                                <div class="col-md-6 col-sm-6 col-12">
+                                                <div class="col-md-4 px-1">
                                                     <label class="mb-0 small">Remark</label>
-                                                    <input type="text" class="form-control form-control-sm p-1"
+                                                    <input type="text" class="form-control form-control-sm py-0 px-1"
                                                         data-key="Remark" value="{{ $row->Remark ?? '' }}">
                                                 </div>
 
