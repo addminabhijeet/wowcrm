@@ -6,6 +6,8 @@
         $subTitle = 'Super Admin';
     } elseif ($role === 'operation') {
         $subTitle = 'Operation Manager';
+    } elseif ($role === 'senior') {
+        $subTitle = 'Senior IT Recruiter';
     } else {
         $subTitle = 'role';
     }
