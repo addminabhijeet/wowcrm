@@ -86,7 +86,7 @@
                                 </tr>
 
                                 <tr id="collapse-{{ $row->id }}" class="collapse-row d-none">
-                                    <td colspan="7" class="p-1">
+                                    <td colspan="5" class="p-1">
                                         <div class="p-1 border rounded bg-light small">
 
                                             <div class="row g-1">
