@@ -828,10 +828,10 @@
                     // Determine URL and method
                     let url, method;
                     if (id === "new") {
-                        url = "{{ route('seniorstore') }}";
+                        url = "";
                         method = "POST";
                     } else {
-                        url = "{{ route('seniorupdate') }}";
+                        url = "";
                         method = "POST";
                         formData.append("id", id);
                     }
