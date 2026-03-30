@@ -94,7 +94,7 @@
                                             <div class="row g-1 justify-content-start">
 
                                                 <!-- Location -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-3 px-1">
                                                     <label class="mb-0 small">Location</label>
                                                     <input type="text"
                                                         class="form-control form-control-sm py-0 px-1 location-autocomplete"
@@ -102,7 +102,7 @@
                                                 </div>
 
                                                 <!-- Date -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-3 px-1">
                                                     <label class="mb-0 small">Date</label>
                                                     <input type="text"
                                                         class="form-control form-control-sm py-0 px-1 date-picker"
@@ -111,7 +111,7 @@
                                                 </div>
 
                                                 <!-- Relocation -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-3 px-1">
                                                     <label class="mb-0 small">Relocation</label>
                                                     <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
                                                         data-key="Relocation">
@@ -125,7 +125,7 @@
                                                 </div>
 
                                                 <!-- Graduation -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-3 px-1">
                                                     <label class="mb-0 small">Graduation</label>
                                                     <input type="text"
                                                         class="form-control form-control-sm py-0 px-1 date-picker"
@@ -133,7 +133,7 @@
                                                 </div>
 
                                                 <!-- Immigration -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-3 px-1">
                                                     <label class="mb-0 small">Immigration</label>
                                                     <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
                                                         data-key="Immigration">
@@ -147,7 +147,7 @@
                                                 </div>
 
                                                 <!-- Course -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-3 px-1">
                                                     <label class="mb-0 small">Course</label>
                                                     <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
                                                         data-key="Course">
@@ -161,7 +161,7 @@
                                                 </div>
 
                                                 <!-- Amount -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-3 px-1">
                                                     <label class="mb-0 small">Amount</label>
                                                     <input type="text"
                                                         class="form-control form-control-sm py-0 px-1 amount-input"
@@ -169,7 +169,7 @@
                                                 </div>
 
                                                 <!-- Qualification -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-3 px-1">
                                                     <label class="mb-0 small">Qualification</label>
                                                     <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
                                                         data-key="Qualification">
@@ -182,7 +182,7 @@
                                                     </select>
                                                 </div>
 
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-3 px-1">
                                                     <label class="mb-0 small">Time Zone</label>
 
                                                     @php
