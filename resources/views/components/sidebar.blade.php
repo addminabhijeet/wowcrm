@@ -204,6 +204,11 @@
                                 Call</a>
                         </li>
                     </ul>
+                    <ul class="sidebar-submenu">
+                        <li><a href="{{ route('google.sheet.seniorsearch') }}"><i
+                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Search Candidate<br>
+                                </a></li>
+                    </ul>
                 </li>
 
                 <li class="dropdown">
