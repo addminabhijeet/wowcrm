@@ -87,9 +87,11 @@
 
                                 <tr id="collapse-{{ $row->id }}" class="collapse-row d-none">
                                     <td colspan="5" class="p-1">
-                                        <div class="p-1 border rounded bg-light small">
 
-                                            <div class="row g-1">
+                                        <!-- compact wrapper -->
+                                        <div class="p-1 border rounded bg-light small" style="max-width:700px;">
+
+                                            <div class="row g-1 justify-content-start">
 
                                                 <!-- Location -->
                                                 <div class="col-md-4 px-1">
