@@ -18,11 +18,6 @@
 
 @section('content')
 
-
-
-
-
-
     <div class="card h-100 p-0 radius-12">
         <div
             class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
@@ -737,7 +732,9 @@
                         if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
                             'Money Issue', 'Not Interested', "Don't Call"
                         ];
-                        if (k === 'Course') opts = ['BA','DA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+                        if (k === 'Course') opts = ['BA', 'DA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON',
+                            'DOT NET'
+                        ];
                         if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
                         cells +=
                             `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
@@ -1023,7 +1020,7 @@
 
             function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
                 $.ajax({
-                    url: "{{ route('google.sheet.seniorcandm') }}",
+                    url: "{{ route('google.sheet.seniorsearch') }}",
                     data: {
                         search,
                         page,
@@ -1049,7 +1046,7 @@
                 }
 
                 $.ajax({
-                    url: "{{ route('seniorcandm.suggestions') }}",
+                    url: "{{ route('seniorsearch.suggestions') }}",
                     data: {
                         query,
                         junior_user
@@ -1406,7 +1403,7 @@
             let juniorId = this.value;
             let search = document.getElementById('senior-search').value;
 
-            fetch("{{ route('google.sheet.seniorcandm') }}?junior_user=" + juniorId + "&search=" + search, {
+            fetch("{{ route('google.sheet.seniorsearch') }}?junior_user=" + juniorId + "&search=" + search, {
                     headers: {
                         'X-Requested-With': 'XMLHttpRequest'
                     }
