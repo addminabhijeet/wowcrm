@@ -1041,7 +1041,7 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        $perPage = 10;
+        $perPage = 5;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
             $transformed->forPage($currentPage, $perPage),
@@ -2952,7 +2952,7 @@ class GoogleSheetController extends Controller
                     ->orWhere('Exe_Remarks', 'LIKE', "%{$query}%");
             })
 
-            ->limit(10)
+            ->limit(5)
             ->get([
                 'id',
                 'sheet_row_number',
