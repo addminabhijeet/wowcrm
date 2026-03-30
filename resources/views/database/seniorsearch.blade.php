@@ -215,21 +215,42 @@
                                                     </select>
                                                 </div>
 
-                                                <!-- Resume -->
-                                                <div class="col-md-3 px-1">
-                                                    <label class="mb-0 small">Resume</label>
+                                          
+                                                <!-- Resume Upload -->
+                                                <div class="col-md-2 px-1">
+                                                    <label class="mb-0 small">Upload</label>
 
                                                     <input type="file" accept=".pdf,.doc,.docx"
                                                         class="d-none resume-input" data-key="View">
 
                                                     <button type="button" class="btn btn-sm btn-info upload-btn w-100">
-                                                        {{ !empty($row->resume) ? 'Change' : 'Upload' }}
+                                                        Upload
                                                     </button>
+                                                </div>
+
+                                                <!-- Resume Change -->
+                                                <div class="col-md-2 px-1">
+                                                    <label class="mb-0 small">Change</label>
+
+                                                    <button type="button"
+                                                        class="btn btn-sm btn-warning upload-btn w-100">
+                                                        Change
+                                                    </button>
+                                                </div>
+
+                                                <!-- Resume View -->
+                                                <div class="col-md-2 px-1">
+                                                    <label class="mb-0 small">View</label>
 
                                                     @if (!empty($row->resume))
                                                         <a href="{{ url('dashboard/junior/google-sheet/view-resume/' . $row->id) }}"
-                                                            target="_blank"
-                                                            class="btn btn-sm btn-primary w-100 mt-1">View</a>
+                                                            target="_blank" class="btn btn-sm btn-primary w-100">
+                                                            View
+                                                        </a>
+                                                    @else
+                                                        <button class="btn btn-sm btn-secondary w-100" disabled>
+                                                            No File
+                                                        </button>
                                                     @endif
                                                 </div>
 
