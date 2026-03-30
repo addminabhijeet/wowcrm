@@ -34,9 +34,9 @@
             </div>
         </div>
 
-        <div class="card-body p-24" id="senior-table-wrapper">
+        <div class="card-body p-2" id="senior-table-wrapper">
 
-            <div class="table-responsive mb-2" id="top-scroll-wrapper" style="overflow-x: hidden;">
+            <div class="table-responsive mb-1" id="top-scroll-wrapper" style="overflow-x: hidden;">
                 <div id="top-scroll"></div>
             </div>
 
@@ -44,44 +44,46 @@
                 @if ($data->isEmpty())
                     <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
                 @else
-                    <table class="table table-sm bordered-table mb-0 w-100" style="table-layout: fixed;">
+                    <table class="table table-sm bordered-table mb-0 w-100" style="table-layout: fixed; font-size:11px;">
                         <thead>
-                            <tr class="small text-wrap">
-                                <th class="text-center px-1 py-1" style="width:5%;">Row</th>
-                                <th class="text-center px-1 py-1" style="width:20%;">Name</th>
-                                <th class="text-center px-1 py-1" style="width:25%;">Email</th>
-                                <th class="text-center px-1 py-1" style="width:20%;">Phone</th>
-                                <th class="text-center px-1 py-1" style="width:30%;">Status</th>
+                            <tr class="text-wrap">
+                                <th class="text-center px-1 py-0" style="width:4%;">#</th>
+                                <th class="text-center px-1 py-0" style="width:18%;">Name</th>
+                                <th class="text-center px-1 py-0" style="width:22%;">Email</th>
+                                <th class="text-center px-1 py-0" style="width:18%;">Phone</th>
+                                <th class="text-center px-1 py-0" style="width:18%;">Status</th>
                             </tr>
                         </thead>
+
                         <tbody id="sheet-table-body">
                             @foreach ($data as $row)
                                 <!-- MAIN ROW -->
-                                <tr class="small text-wrap">
-                                    <td class="px-1 py-1 text-center">
+                                <tr class="text-wrap">
+                                    <td class="px-1 py-0 text-center">
                                         {{ $row->sheet_row_number }}
                                     </td>
 
-                                    <td class="px-1 py-1">
-                                        <input type="text" class="form-control form-control-sm p-1 w-100"
-                                            style="min-width:0;" data-key="Name" value="{{ $row->Name ?? '' }}">
+                                    <td class="px-1 py-0">
+                                        <input type="text" class="form-control form-control-sm p-0 w-100"
+                                            style="height:22px; font-size:11px;" data-key="Name"
+                                            value="{{ $row->Name ?? '' }}">
                                     </td>
 
-                                    <td class="px-1 py-1">
-                                        <input type="email" class="form-control form-control-sm p-1 w-100"
-                                            style="min-width:0;" data-key="Email Address"
+                                    <td class="px-1 py-0">
+                                        <input type="email" class="form-control form-control-sm p-0 w-100"
+                                            style="height:22px; font-size:11px;" data-key="Email Address"
                                             value="{{ $row->Email_Address ?? '' }}">
                                     </td>
 
-                                    <td class="px-1 py-1">
-                                        <input type="tel" class="form-control form-control-sm p-1 w-100"
-                                            style="min-width:0;" data-key="Phone Number"
+                                    <td class="px-1 py-0">
+                                        <input type="tel" class="form-control form-control-sm p-0 w-100"
+                                            style="height:22px; font-size:11px;" data-key="Phone Number"
                                             value="{{ $row->Phone_Number ?? '' }}">
                                     </td>
 
-                                    <td class="px-1 py-1">
-                                        <select class="form-select form-select-sm p-1 w-100" style="min-width:0;"
-                                            data-key="Exe Remarks">
+                                    <td class="px-1 py-0">
+                                        <select class="form-select form-select-sm p-0 w-100"
+                                            style="height:22px; font-size:11px;" data-key="Exe Remarks">
                                             @foreach (['Called & Mailed', 'Not Interested', 'Interested', 'Others', 'Ready To Pay', 'VM', 'Busy'] as $option)
                                                 <option value="{{ $option }}"
                                                     {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
@@ -100,23 +102,23 @@
                                             <div class="row g-1">
 
                                                 <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0 small">Location</label>
-                                                    <input type="text"
-                                                        class="form-control form-control-sm py-0 px-1 w-100"
-                                                        data-key="Location" value="{{ $row->Location ?? '' }}">
+                                                    <label class="mb-0" style="font-size:10px;">Location</label>
+                                                    <input type="text" class="form-control form-control-sm p-0 w-100"
+                                                        style="height:22px; font-size:11px;" data-key="Location"
+                                                        value="{{ $row->Location ?? '' }}">
                                                 </div>
 
                                                 <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0 small">Date</label>
-                                                    <input type="text"
-                                                        class="form-control form-control-sm py-0 px-1 w-100" data-key="Date"
+                                                    <label class="mb-0" style="font-size:10px;">Date</label>
+                                                    <input type="text" class="form-control form-control-sm p-0 w-100"
+                                                        style="height:22px; font-size:11px;" data-key="Date"
                                                         value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
                                                 </div>
 
                                                 <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0 small">Relocation</label>
-                                                    <select class="form-select form-select-sm py-0 px-1 w-100"
-                                                        data-key="Relocation">
+                                                    <label class="mb-0" style="font-size:10px;">Relocation</label>
+                                                    <select class="form-select form-select-sm p-0 w-100"
+                                                        style="height:22px; font-size:11px;" data-key="Relocation">
                                                         @foreach (['YES', 'NO'] as $option)
                                                             <option value="{{ $option }}"
                                                                 {{ $row->Relocation === $option ? 'selected' : '' }}>
@@ -127,16 +129,16 @@
                                                 </div>
 
                                                 <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0 small">Graduation</label>
-                                                    <input type="text"
-                                                        class="form-control form-control-sm py-0 px-1 w-100"
-                                                        data-key="Graduation Date" value="{{ $row->Graduation_Date }}">
+                                                    <label class="mb-0" style="font-size:10px;">Graduation</label>
+                                                    <input type="text" class="form-control form-control-sm p-0 w-100"
+                                                        style="height:22px; font-size:11px;" data-key="Graduation Date"
+                                                        value="{{ $row->Graduation_Date }}">
                                                 </div>
 
                                                 <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0 small">Immigration</label>
-                                                    <select class="form-select form-select-sm py-0 px-1 w-100"
-                                                        data-key="Immigration">
+                                                    <label class="mb-0" style="font-size:10px;">Immigration</label>
+                                                    <select class="form-select form-select-sm p-0 w-100"
+                                                        style="height:22px; font-size:11px;" data-key="Immigration">
                                                         @foreach (['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC', 'L2S'] as $option)
                                                             <option value="{{ $option }}"
                                                                 {{ $row->Immigration === $option ? 'selected' : '' }}>
@@ -147,9 +149,9 @@
                                                 </div>
 
                                                 <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0 small">Course</label>
-                                                    <select class="form-select form-select-sm py-0 px-1 w-100"
-                                                        data-key="Course">
+                                                    <label class="mb-0" style="font-size:10px;">Course</label>
+                                                    <select class="form-select form-select-sm p-0 w-100"
+                                                        style="height:22px; font-size:11px;" data-key="Course">
                                                         @foreach (['BA', 'DA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'] as $option)
                                                             <option value="{{ $option }}"
                                                                 {{ $row->Course === $option ? 'selected' : '' }}>
@@ -160,16 +162,16 @@
                                                 </div>
 
                                                 <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0 small">Amount</label>
-                                                    <input type="text"
-                                                        class="form-control form-control-sm py-0 px-1 w-100"
-                                                        data-key="Amount" value="{{ $row->Amount }}">
+                                                    <label class="mb-0" style="font-size:10px;">Amount</label>
+                                                    <input type="text" class="form-control form-control-sm p-0 w-100"
+                                                        style="height:22px; font-size:11px;" data-key="Amount"
+                                                        value="{{ $row->Amount }}">
                                                 </div>
 
                                                 <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0 small">Qualification</label>
-                                                    <select class="form-select form-select-sm py-0 px-1 w-100"
-                                                        data-key="Qualification">
+                                                    <label class="mb-0" style="font-size:10px;">Qualification</label>
+                                                    <select class="form-select form-select-sm p-0 w-100"
+                                                        style="height:22px; font-size:11px;" data-key="Qualification">
                                                         @foreach (['Masters', 'Bachelors', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech'] as $option)
                                                             <option value="{{ $option }}"
                                                                 {{ $row->Qualification === $option ? 'selected' : '' }}>
@@ -180,10 +182,10 @@
                                                 </div>
 
                                                 <div class="col-md-4 col-12 px-1">
-                                                    <label class="mb-0 small">Remark</label>
-                                                    <input type="text"
-                                                        class="form-control form-control-sm py-0 px-1 w-100"
-                                                        data-key="Remark" value="{{ $row->Remark ?? '' }}">
+                                                    <label class="mb-0" style="font-size:10px;">Remark</label>
+                                                    <input type="text" class="form-control form-control-sm p-0 w-100"
+                                                        style="height:22px; font-size:11px;" data-key="Remark"
+                                                        value="{{ $row->Remark ?? '' }}">
                                                 </div>
 
                                             </div>
@@ -199,10 +201,8 @@
 
             {{-- Pagination --}}
             @if ($data->hasPages())
-                <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
-                    <div>
-                        {{ $data->links('pagination::bootstrap-5') }}
-                    </div>
+                <div class="d-flex justify-content-between mt-2">
+                    {{ $data->links('pagination::bootstrap-5') }}
                 </div>
             @endif
 
