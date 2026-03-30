@@ -979,17 +979,22 @@ class GoogleSheetController extends Controller
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
             $query->where(function ($q) use ($search) {
-                $q->where('Name', 'LIKE', "%{$search}%")
+                $q->where('sheet_row_number', 'LIKE', "%{$search}%")
+                    ->orWhere('Date', 'LIKE', "%{$search}%")
+                    ->orWhere('Name', 'LIKE', "%{$search}%")
                     ->orWhere('Email_Address', 'LIKE', "%{$search}%")
                     ->orWhere('Phone_Number', 'LIKE', "%{$search}%")
                     ->orWhere('Location', 'LIKE', "%{$search}%")
-                    ->orWhere('Course', 'LIKE', "%{$search}%")
-                    ->orWhere('Qualification', 'LIKE', "%{$search}%")
+                    ->orWhere('Relocation', 'LIKE', "%{$search}%")
+                    ->orWhere('Graduation_Date', 'LIKE', "%{$search}%")
                     ->orWhere('Immigration', 'LIKE', "%{$search}%")
-                    ->orWhere('Exe_Remarks', 'LIKE', "%{$search}%")
-                    ->orWhere('Remark', 'LIKE', "%{$search}%")
+                    ->orWhere('Course', 'LIKE', "%{$search}%")
                     ->orWhere('Amount', 'LIKE', "%{$search}%")
-                    ->orWhere('sheet_row_number', 'LIKE', "%{$search}%");
+                    ->orWhere('Qualification', 'LIKE', "%{$search}%")
+                    ->orWhere('First_Follow_Up_Remarks', 'LIKE', "%{$search}%")
+                    ->orWhere('Time_Zone', 'LIKE', "%{$search}%")
+                    ->orWhere('Remark', 'LIKE', "%{$search}%")
+                    ->orWhere('Exe_Remarks', 'LIKE', "%{$search}%");
             });
         }
         $results = $query->orderBy('updated_at', 'desc')->get();
@@ -2929,14 +2934,22 @@ class GoogleSheetController extends Controller
             })
 
             ->where(function ($q) use ($query) {
-                $q->where('Name', 'LIKE', "%{$query}%")
+                $q->where('sheet_row_number', 'LIKE', "%{$query}%")
+                    ->orWhere('Date', 'LIKE', "%{$query}%")
+                    ->orWhere('Name', 'LIKE', "%{$query}%")
                     ->orWhere('Email_Address', 'LIKE', "%{$query}%")
                     ->orWhere('Phone_Number', 'LIKE', "%{$query}%")
                     ->orWhere('Location', 'LIKE', "%{$query}%")
+                    ->orWhere('Relocation', 'LIKE', "%{$query}%")
+                    ->orWhere('Graduation_Date', 'LIKE', "%{$query}%")
+                    ->orWhere('Immigration', 'LIKE', "%{$query}%")
                     ->orWhere('Course', 'LIKE', "%{$query}%")
+                    ->orWhere('Amount', 'LIKE', "%{$query}%")
                     ->orWhere('Qualification', 'LIKE', "%{$query}%")
-                    ->orWhere('Exe_Remarks', 'LIKE', "%{$query}%")
-                    ->orWhere('sheet_row_number', 'LIKE', "%{$query}%");
+                    ->orWhere('First_Follow_Up_Remarks', 'LIKE', "%{$query}%")
+                    ->orWhere('Time_Zone', 'LIKE', "%{$query}%")
+                    ->orWhere('Remark', 'LIKE', "%{$query}%")
+                    ->orWhere('Exe_Remarks', 'LIKE', "%{$query}%");
             })
 
             ->limit(10)
