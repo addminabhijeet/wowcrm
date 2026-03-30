@@ -970,15 +970,27 @@ class GoogleSheetController extends Controller
         $page = $request->input('page', 1);
 
         $query = GoogleSheetData::query();
-        if ($rowId) {
-        } elseif ($search && strlen($search) >= 3) {
-        }
 
         if ($juniorUserId) {
+            $query->where('created_by', 'LIKE', "%{$juniorUserId}|junior%");
         }
 
         if ($rowId) {
+            $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%")
+                    ->orWhere('Location', 'LIKE', "%{$search}%")
+                    ->orWhere('Course', 'LIKE', "%{$search}%")
+                    ->orWhere('Qualification', 'LIKE', "%{$search}%")
+                    ->orWhere('Immigration', 'LIKE', "%{$search}%")
+                    ->orWhere('Exe_Remarks', 'LIKE', "%{$search}%")
+                    ->orWhere('Remark', 'LIKE', "%{$search}%")
+                    ->orWhere('Amount', 'LIKE', "%{$search}%")
+                    ->orWhere('sheet_row_number', 'LIKE', "%{$search}%");
+            });
         }
         $results = $query->orderBy('updated_at', 'desc')->get();
 
@@ -2916,9 +2928,15 @@ class GoogleSheetController extends Controller
                 // no filter
             })
 
-            // ✅ Keep search block but neutralize it
-            ->where(function ($q) {
-                // no filter
+            ->where(function ($q) use ($query) {
+                $q->where('Name', 'LIKE', "%{$query}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$query}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$query}%")
+                    ->orWhere('Location', 'LIKE', "%{$query}%")
+                    ->orWhere('Course', 'LIKE', "%{$query}%")
+                    ->orWhere('Qualification', 'LIKE', "%{$query}%")
+                    ->orWhere('Exe_Remarks', 'LIKE', "%{$query}%")
+                    ->orWhere('sheet_row_number', 'LIKE', "%{$query}%");
             })
 
             ->limit(10)

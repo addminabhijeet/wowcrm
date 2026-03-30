@@ -206,213 +206,11 @@
             @endif
         </div>
     </div>
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-
-            function addBlankRow() {
-                let colKeys = [];
-                let firstRow = tableBody.querySelector("tr");
-                if (firstRow) {
-                    firstRow.querySelectorAll("input[data-key], select[data-key]").forEach(cell => colKeys.push(cell
-                        .dataset.key));
-                }
-
-                let newRow = document.createElement("tr");
-                newRow.setAttribute("data-id", "new");
-                let cells = `<td>—</td>`;
-
-                colKeys.forEach(k => {
-                    if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
-                            'Time Zone', 'Qualification'
-                        ].includes(k)) {
-                        let opts = [];
-                        if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors',
-                            'PG', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech', 'MA', 'Associate Degree',
-                            'Aerospace Proj. Manag.'
-                        ];
-                        if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested',
-                            'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'
-                        ];
-                        if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
-                            'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC', 'L2S'
-                        ];
-                        if (k === 'Relocation') opts = ['YES', 'NO'];
-                        if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
-                            'Money Issue', 'Not Interested', "Don't Call"
-                        ];
-                        if (k === 'Course') opts = ['BA', 'DA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON',
-                            'DOT NET'
-                        ];
-                        if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
-                        cells +=
-                            `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
-                    } else if (k === 'Amount') {
-                        cells +=
-                            `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount(469)"></td>`;
-                    } else if (k === 'Location') {
-                        cells +=
-                            `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Remark') {
-                        cells +=
-                            `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Date' || k === 'Graduation Date') {
-                        cells +=
-                            `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Phone Number') {
-                        cells +=
-                            `<td><input type="tel" class="form-control phone-input" data-key="${k}" maxlength="12" placeholder="US number"><span class="phone-hint"></span></td>`;
-                    } else if (k === 'Email Address') {
-                        cells +=
-                            `<td><input type="email" class="form-control email-input" data-key="${k}" placeholder="Email"><span class="small-hint"></span></td>`;
-                    } else if (k === 'Name') {
-                        cells +=
-                            `<td><input type="text" class="form-control name-input" data-key="${k}" placeholder="Name"><span class="small-hint"></span></td>`;
-                    } else if (k === 'View') {
-                        cells += `<td>
-            <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input" data-key="View">
-            <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
-            <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View File</a>
-            <a href="#" download class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-        </td>`;
-                    }
-
-                });
-
-                cells +=
-                    `<td><button class="btn btn-sm btn-success save-btn" data-id="new"><i class="fas fa-save"></i> Save</button></td>`;
-                newRow.innerHTML = cells;
-                tableBody.appendChild(newRow);
-                applyInitialState(newRow);
-            }
-
-            // Check if we need to add a blank row on page load
-            // Only add if there are no existing "new" rows
-            const hasNewRow = tableBody.querySelector('tr[data-id="new"]');
-            const hasAnyRows = tableBody.querySelector('tr');
-
-            if (!hasNewRow && !hasAnyRows) {
-                // No rows at all - add one blank row
-                addBlankRow();
-            } else if (!hasNewRow && hasAnyRows) {
-                // Has existing rows but no "new" row - add blank row at the end
-                addBlankRow();
-            }
-            // If hasNewRow exists, we don't need to add another one
-
-            // Handle select color changes
-            tableBody.addEventListener('change', function(e) {
-                if (e.target.matches('select.dynamic-dropdown')) updateSelectColor(e.target);
-            });
-
-            // Event delegation for save buttons (handles both existing and dynamically added buttons)
-            tableBody.addEventListener('click', function(e) {
-                if (e.target.matches('.save-btn') || e.target.closest('.save-btn')) {
-                    e.preventDefault();
-                    let saveBtn = e.target.matches('.save-btn') ? e.target : e.target.closest('.save-btn');
-                    let id = saveBtn.dataset.id;
-                    let row = saveBtn.closest("tr");
-                    console.log("Saving row with id:", id);
-
-                    // Collect all data from the row
-                    let rowData = {};
-                    row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
-                        let key = cell.dataset.key;
-                        let value = cell.value;
-                        rowData[key] = value;
-                    });
-                    console.log("Row data:", rowData);
-
-                    // Create FormData object
-                    let formData = new FormData();
-                    formData.append("data", JSON.stringify(rowData));
-                    formData.append("_token", "{{ csrf_token() }}");
-
-                    // Handle resume file upload
-                    let resumeInput = row.querySelector("input.resume-input");
-                    if (resumeInput && resumeInput.files.length > 0) {
-                        formData.append("resume", resumeInput.files[0]);
-                    }
-
-                    // Determine URL and method
-                    let url, method;
-                    if (id === "new") {
-                        url = "";
-                        method = "POST";
-                    } else {
-                        url = "";
-                        method = "POST";
-                        formData.append("id", id);
-                    }
-
-                    console.log("Sending to:", url, "Method:", method);
-
-                    // Send the request
-                    fetch(url, {
-                            method: method,
-                            body: formData
-                        })
-                        .then(res => {
-                            if (!res.ok) {
-                                throw new Error(`HTTP error! status: ${res.status}`);
-                            }
-                            return res.json();
-                        })
-                        // In the save button click event handler, update the success callback:
-                        .then(data => {
-                            console.log("Response from server:", data);
-                            if (data.success) {
-                                alert("Saved successfully");
-                                if (id === "new") {
-                                    // Update row with new ID
-                                    row.dataset.id = data.id;
-                                    saveBtn.dataset.id = data.id;
-                                    row.querySelector("td:first-child").innerText = data
-                                        .sheet_row_number;
-
-                                    const viewBtn = row.querySelector('.view-btn');
-                                    const downloadBtn = row.querySelector('.download-btn');
-
-                                    if (viewBtn && data.resume_path) {
-                                        viewBtn.href =
-                                            `/dashboard/junior/google-sheet/view-resume/${data.id}`;
-                                        viewBtn.classList.remove('d-none');
-                                    }
-
-                                    if (downloadBtn && data.resume_path) {
-                                        downloadBtn.href =
-                                            `/dashboard/junior/google-sheet/download-resume/${data.id}`;
-                                        downloadBtn.classList.remove('d-none');
-                                    }
-
-                                    // Only add new blank row if none exists
-                                    const existingNewRows = tableBody.querySelectorAll(
-                                        'tr[data-id="new"]');
-                                    if (existingNewRows.length === 0) {
-                                        addBlankRow();
-                                    }
-                                }
-
-                            } else {
-                                console.error("Server error:", data.message);
-                                alert("Error: " + (data.message || "Unknown error"));
-                            }
-                        })
-                        .catch(err => {
-                            console.error("Fetch error:", err);
-                            alert("Save failed. Check console for details.");
-                        });
-                }
-            });
-        });
-    </script>
-
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
 
     <script>
         $(document).ready(function() {
@@ -439,8 +237,6 @@
                     }
                 });
             }
-
-            // 🔍 LIVE SEARCH SUGGESTIONS
             const showSuggestions = debounce(function() {
 
                 const query = $('#senior-search').val().trim();
@@ -483,7 +279,14 @@
 
             $('#senior-search').on('input', showSuggestions);
 
-            // 📌 CLICK SUGGESTION
+            $(document).on('click', '#sheet-table-body tr', function() {
+                const nextRow = $(this).next('.collapse-row');
+
+                if (nextRow.length) {
+                    nextRow.toggleClass('d-none');
+                }
+            });
+
             $(document).on('click', '#search-suggestions a', function(e) {
                 e.preventDefault();
 
@@ -492,14 +295,34 @@
 
                 $('#search-suggestions').hide().empty();
                 fetchTable('', 1, junior_user, rowId);
+
+                setTimeout(() => {
+                    const row = $('a[data-id="' + rowId + '"]');
+
+                    // Highlight row
+                    $('#sheet-table-body tr').removeClass('table-warning');
+                    const targetRow = $('tr').filter(function() {
+                        return $(this).find('td:first').text() == rowId;
+                    });
+
+                    targetRow.addClass('table-warning');
+
+                    // Expand collapse row
+                    $('#collapse-' + rowId).removeClass('d-none');
+
+                    // Scroll into view
+                    targetRow[0]?.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'center'
+                    });
+
+                }, 500);
             });
 
-            // 👤 JUNIOR FILTER
             $('#junior-filter').on('change', function() {
                 fetchTable($('#senior-search').val(), 1, this.value);
             });
 
-            // ❌ HIDE SUGGESTIONS
             $(document).on('click', function(e) {
                 if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
                     $('#search-suggestions').hide().empty();
