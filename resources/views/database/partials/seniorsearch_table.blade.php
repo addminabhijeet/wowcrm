@@ -1,386 +1,204 @@
 @if ($data->isEmpty())
     <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
 @else
-    <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper"
-        style="
-        overflow-x: auto;
-        overflow-y: hidden;
-        scrollbar-gutter: stable;
-        height: 20px;
-    ">
-        <div id="top-scroll" style="height: 1px;"></div>
-    </div>
-    <script>
-        $(document).ready(function() {
-            // Set top-scroll width equal to table width
-            function syncTopScroll() {
-                var tableWidth = $('#sheet-table')[0].scrollWidth;
-                $('#top-scroll').width(tableWidth);
-            }
+    <table class="table table-sm bordered-table mb-0">
+        <thead>
+            <tr class="text-nowrap small">
+                <th class="text-center px-1 py-1">Row</th>
+                <th class="text-center px-1 py-1">Name</th>
+                <th class="text-center px-1 py-1">Email</th>
+                <th class="text-center px-1 py-1">Phone</th>
+                <th class="text-center px-1 py-1">Status</th>
+            </tr>
+        </thead>
+        <tbody id="sheet-table-body">
+            @foreach ($data as $row)
+                <!-- MAIN ROW -->
+                <tr class="text-nowrap small">
+                    <td class="px-1 py-1">{{ $row->sheet_row_number }}</td>
 
-            syncTopScroll(); // initial sync
-            $(window).resize(syncTopScroll); // update on window resize
+                    <td class="px-1 py-1">
+                        <input type="text" class="form-control form-control-sm p-1 name-input" data-key="Name"
+                            value="{{ $row->Name ?? '' }}">
+                    </td>
 
-            // Scroll table when top-scroll is moved
-            $('#top-scroll-wrapper').on('scroll', function() {
-                $('.table-responsive.scroll-sm').scrollLeft($(this).scrollLeft());
-            });
+                    <td class="px-1 py-1">
+                        <input type="email" class="form-control form-control-sm p-1 email-input"
+                            data-key="Email Address" value="{{ $row->Email_Address ?? '' }}">
+                    </td>
 
-            // Scroll top-scroll when table is scrolled
-            $('.table-responsive.scroll-sm').on('scroll', function() {
-                $('#top-scroll-wrapper').scrollLeft($(this).scrollLeft());
-            });
-        });
-    </script>
+                    <td class="px-1 py-1">
+                        <div class="input-group input-group-sm">
+                            <span class="input-group-text p-1">+1</span>
+                            <input type="tel" class="form-control p-1 phone-input" data-key="Phone Number"
+                                value="{{ $row->Phone_Number ?? '' }}">
+                        </div>
+                    </td>
 
-    <div class="table-responsive scroll-sm">
-
-        <table class="table bordered-table sm-table mb-0">
-            <thead>
-                <tr>
-                    <th scope="col" class="text-center">Row</th>
-                    <th scope="col" class="text-center">Date</th>
-                    <th scope="col" class="text-center">Name</th>
-                    <th scope="col" class="text-center">Email Address</th>
-                    <th scope="col" class="text-center">Phone Number</th>
-                    <th scope="col" class="text-center">Location</th>
-
-                    <th scope="col" class="text-center">Relocation</th>
-                    <th scope="col" class="text-center">Graduation Date</th>
-                    <th scope="col" class="text-center">Immigration</th>
-                    <th scope="col" class="text-center">Course</th>
-                    <th scope="col" class="text-center">Amount</th>
-                    <th scope="col" class="text-center">Qualification</th>
-
-                    <th scope="col" class="text-center">1st Follow Up Remarks</th>
-                    <th scope="col" class="text-center">Time Zone</th>
-                    <th scope="col" class="text-center">Resume</th>
-                    <th scope="col" class="text-center">Remarks</th>
-                    <th scope="col" class="text-center">Status</th>
-                    <th scope="col" class="text-center">Actions</th>
-
+                    <td class="px-1 py-1">
+                        <select class="form-select form-select-sm p-1 dynamic-dropdown" data-key="Exe Remarks">
+                            @foreach (['Called & Mailed', 'Not Interested', 'Interested', 'Others', 'Ready To Pay', 'VM', 'Busy'] as $option)
+                                <option value="{{ $option }}"
+                                    {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
+                                    {{ $option }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </td>
                 </tr>
-            </thead>
-            <tbody id="sheet-table-body">
-                @foreach ($data as $row)
-                    <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
 
-                        <td>{{ $row->sheet_row_number }}</td>
+                <!-- COLLAPSE ROW -->
+                <tr id="collapse-{{ $row->id }}" class="collapse-row d-none">
+                    <td colspan="5" class="p-1">
 
-                        {{-- Date --}}
-                        <td>
-                            <input type="text" class="form-control date-picker" data-key="Date"
-                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
-                        </td>
+                        <div class="p-1 border rounded bg-light small" style="max-width:1000px;">
+                            <div class="row g-1">
 
-                        {{-- Name --}}
-                        <td>
-                            <input type="text" class="form-control name-input" data-key="Name"
-                                value="{{ $row->Name ?? '' }}" placeholder="Name">
-                        </td>
+                                <!-- Location -->
+                                <div class="col-md-3 px-1">
+                                    <label class="mb-0 small">Location</label>
+                                    <input type="text"
+                                        class="form-control form-control-sm py-0 px-1 location-autocomplete"
+                                        data-key="Location" value="{{ $row->Location ?? '' }}">
+                                </div>
 
-                        {{-- Email Address --}}
-                        <td>
-                            <input type="email" class="form-control email-input" data-key="Email Address"
-                                value="{{ $row->Email_Address ?? '' }}" placeholder="E-mail">
-                        </td>
+                                <!-- Date -->
+                                <div class="col-md-3 px-1">
+                                    <label class="mb-0 small">Date</label>
+                                    <input type="text" class="form-control form-control-sm py-0 px-1 date-picker"
+                                        data-key="Date"
+                                        value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
+                                </div>
 
-                        {{-- Phone Number --}}
-                        <td>
-                            <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                maxlength="14" value="{{ $row->Phone_Number ?? '' }}" placeholder="US number">
-                        </td>
+                                <!-- Relocation -->
+                                <div class="col-md-3 px-1">
+                                    <label class="mb-0 small">Relocation</label>
+                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                        data-key="Relocation">
+                                        @foreach (['YES', 'NO'] as $option)
+                                            <option value="{{ $option }}"
+                                                {{ $row->Relocation === $option ? 'selected' : '' }}>
+                                                {{ $option }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                        {{-- Location --}}
-                        <td>
-                            <input type="text" class="form-control location-autocomplete" data-key="Location"
-                                value="{{ $row->Location ?? '' }}" placeholder="Type location">
-                        </td>
+                                <!-- Graduation -->
+                                <div class="col-md-3 px-1">
+                                    <label class="mb-0 small">Graduation</label>
+                                    <input type="text" class="form-control form-control-sm py-0 px-1 date-picker"
+                                        data-key="Graduation Date" value="{{ $row->Graduation_Date }}">
+                                </div>
 
+                                <!-- Immigration -->
+                                <div class="col-md-3 px-1">
+                                    <label class="mb-0 small">Immigration</label>
+                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                        data-key="Immigration">
+                                        @foreach (['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC', 'L2S'] as $option)
+                                            <option value="{{ $option }}"
+                                                {{ $row->Immigration === $option ? 'selected' : '' }}>
+                                                {{ $option }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
+                                <!-- Course -->
+                                <div class="col-md-3 px-1">
+                                    <label class="mb-0 small">Course</label>
+                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                        data-key="Course">
+                                        @foreach (['BA', 'DA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'] as $option)
+                                            <option value="{{ $option }}"
+                                                {{ $row->Course === $option ? 'selected' : '' }}>
+                                                {{ $option }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
+                                <!-- Amount -->
+                                <div class="col-md-3 px-1">
+                                    <label class="mb-0 small">Amount</label>
+                                    <input type="text" class="form-control form-control-sm py-0 px-1 amount-input"
+                                        data-key="Amount" value="{{ $row->Amount }}">
+                                </div>
 
-                        {{-- Relocation --}}
-                        <td>
-                            @php $relOptions = ['YES','NO','']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Relocation">
-                                <option value="">-- Select --</option>
-                                @foreach ($relOptions as $option)
-                                    <option value="{{ $option }}"
-                                        {{ $row->Relocation === $option ? 'selected' : '' }}>
-                                        {{ $option }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
+                                <!-- Qualification -->
+                                <div class="col-md-3 px-1">
+                                    <label class="mb-0 small">Qualification</label>
+                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                        data-key="Qualification">
+                                        @foreach (['Masters', 'Bachelors', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech'] as $option)
+                                            <option value="{{ $option }}"
+                                                {{ $row->Qualification === $option ? 'selected' : '' }}>
+                                                {{ $option }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                        {{-- Graduation Date --}}
-                        <td>
-                            <input type="text" class="form-control date-picker" data-key="Graduation Date"
-                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
-                        </td>
+                                <!-- 1st Follow Up Remarks -->
+                                <div class="col-md-3 px-1">
+                                    <label class="mb-0 small">1st Follow Up</label>
+                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                        data-key="1st Follow Up Remarks">
+                                        @foreach (['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"] as $option)
+                                            <option value="{{ $option }}"
+                                                {{ $row->First_Follow_Up_Remarks === $option ? 'selected' : '' }}>
+                                                {{ $option }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                        {{-- Immigration --}}
-                        <td>
-                            @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','L2S','']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Immigration">
-                                <option value="">-- Select --</option>
-                                @foreach ($immOptions as $option)
-                                    <option value="{{ $option }}"
-                                        {{ $row->Immigration === $option ? 'selected' : '' }}>
-                                        {{ $option }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
+                                <!-- Time Zone -->
+                                <div class="col-md-3 px-1">
+                                    <label class="mb-0 small">Time Zone</label>
+                                    @php $timezoneOptions = ['EST','CST','MST','PST','']; @endphp
+                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                        data-key="Time Zone">
+                                        <option value="">-- Select --</option>
+                                        @foreach ($timezoneOptions as $option)
+                                            <option value="{{ $option }}"
+                                                {{ $row->Time_Zone === $option ? 'selected' : '' }}>
+                                                {{ $option }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
 
-                        {{-- Course --}}
-                        <td>
-                            @php $courseOptions = ['BA','DA','SAS','JAVA','QA','SQL','PYTHON','DOT NET','']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Course">
-                                <option value="">-- Select --</option>
-                                @foreach ($courseOptions as $option)
-                                    <option value="{{ $option }}"
-                                        {{ $row->Course === $option ? 'selected' : '' }}>
-                                        {{ $option }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
+                                <!-- Resume -->
+                                <div class="col-md-3 px-1">
+                                    <label class="mb-0 small">Resume</label>
 
-                        {{-- Amount --}}
-                        <td>
-                            <input type="text" class="form-control amount-input" data-key="Amount"
-                                value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}"
-                                placeholder="Amount(469)">
-                        </td>
+                                    <input type="file" accept=".pdf,.doc,.docx" class="d-none resume-input"
+                                        data-key="View">
 
-                        {{-- Qualification --}}
-                        <td>
-                            @php
-                                $qualificationOptions = [
-                                    'Masters',
-                                    'Masters of Science',
-                                    'Bachelors',
-                                    'PG',
-                                    'MBA',
-                                    'PG Diploma',
-                                    'M.Tech',
-                                    'B.Tech',
-                                    'MA',
-                                    'Associate Degree',
-                                    'Aerospace Proj. Manag.',
-                                    '',
-                                ];
-                            @endphp
+                                    <button type="button" class="btn btn-sm btn-info upload-btn w-100">
+                                        {{ !empty($row->resume) ? 'Change' : 'Upload' }}
+                                    </button>
 
-                            <select class="form-select dynamic-dropdown" data-key="Qualification">
-                                <option value="">-- Select --</option>
-                                @foreach ($qualificationOptions as $option)
-                                    <option value="{{ $option }}"
-                                        {{ $row->Qualification === $option ? 'selected' : '' }}>
-                                        {{ $option }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
+                                    @if (!empty($row->resume))
+                                        <a href="{{ url('dashboard/junior/google-sheet/view-resume/' . $row->id) }}"
+                                            target="_blank" class="btn btn-sm btn-primary w-100 mt-1">View</a>
+                                    @endif
+                                </div>
 
+                                <!-- Remark -->
+                                <div class="col-md-12 px-1">
+                                    <label class="mb-0 small">Remark</label>
+                                    <textarea class="form-control form-control-sm py-0 px-1" style="min-height:40px;resize:vertical;" data-key="Remark">{{ $row->Remark ?? '' }}</textarea>
+                                </div>
 
+                            </div>
+                        </div>
 
-
-                        {{-- 1st Follow Up Remarks --}}
-                        <td>
-                            @php $followOptions = ['Interested','Doubt need Clarification','Money Issue','Not Interested','Don\'t Call','']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="1st Follow Up Remarks">
-                                <option value="">-- Select --</option>
-                                @foreach ($followOptions as $option)
-                                    <option value="{{ $option }}"
-                                        {{ $row->First_Follow_Up_Remarks === $option ? 'selected' : '' }}>
-                                        {{ $option }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-                        {{-- Time Zone --}}
-                        <td>
-                            @php $timezoneOptions = ['EST','CST','MST','PST','']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Time Zone">
-                                <option value="">-- Select --</option>
-                                @foreach ($timezoneOptions as $option)
-                                    <option value="{{ $option }}"
-                                        {{ $row->Time_Zone === $option ? 'selected' : '' }}>
-                                        {{ $option }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-                        {{-- View (Resume) --}}
-                        <td>
-                            <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input"
-                                data-key="View">
-
-                            <button type="button" class="btn btn-sm btn-info upload-btn">
-                                {{ !empty($row->resume) ? 'Change File' : 'Upload' }}
-                            </button>
-
-                            @if (!empty($row->resume))
-                                <a href="{{ url('dashboard/junior/google-sheet/view-resume/' . $row->id) }}"
-                                    target="_blank" class="btn btn-sm btn-primary view-btn">View File</a>
-
-                                <a href="{{ url('dashboard/junior/google-sheet/download-resume/' . $row->id) }}"
-                                    class="btn btn-sm btn-secondary download-btn">Download</a>
-                            @else
-                                <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View
-                                    File</a>
-                                <a href="#" download
-                                    class="btn btn-sm btn-secondary download-btn d-none">Download</a>
-                            @endif
-                        </td>
-
-
-                        {{-- Remark --}}
-                        <td>
-                            <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                                value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
-                        </td>
-
-                        {{-- Status --}}
-                        <td>
-                            @php $exeOptions = ['Called & Mailed','Not Interested','Interested','Others','Ready To Pay','VM','Busy']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
-                                <option value="">-- Select Status--</option>
-                                @foreach ($exeOptions as $option)
-                                    <option value="{{ $option }}"
-                                        {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
-                                        {{ $option }}
-                                    </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-
-                        <td class="text-center">
-
-                            <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
-                                <i class="fas fa-save"></i> Save
-                            </button>
-
-                        </td>
-
-
-                    </tr>
-                @endforeach
-            </tbody>
-            <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                    const form = document.querySelector('form');
-                    if (!form) return;
-
-                    // Function to sync a textarea to its corresponding input
-                    function syncTextareaToInput(textarea) {
-                        const td = textarea.closest('td');
-                        if (!td) return;
-
-                        const textareaName = textarea.getAttribute('name');
-                        if (!textareaName) return;
-
-                        // Map _hidden textarea to input with same name minus _hidden
-                        const inputName = textareaName.replace('_hidden', '');
-                        const input = td.querySelector('input[name="' + inputName + '"]');
-                        if (!input) return;
-
-                        // Trim value before assigning
-                        input.value = textarea.value.trim();
-                    }
-
-                    // 🔁 Real-time sync on input for all textareas with *_autocomplete class
-                    document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-                        function(textarea) {
-                            textarea.addEventListener('input', function() {
-                                syncTextareaToInput(textarea);
-                            });
-                        });
-
-                    // 🛡️ Final sync before form submit
-                    form.addEventListener('submit', function() {
-                        document.querySelectorAll(
-                            'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-                            function(textarea) {
-                                syncTextareaToInput(textarea);
-                            });
-                    });
-                });
-                $(document).ready(function() {
-                    $('.save-btn').click(function() {
-                        let rowId = $(this).data('id');
-                        let $tr = $('#row-' + rowId);
-
-                        // 🔁 Sync textarea values to hidden inputs BEFORE collecting data
-                        $tr.find('textarea').each(function() {
-                            let $textarea = $(this);
-                            let $td = $textarea.closest('td');
-
-                            if ($textarea.hasClass('remark-autocomplete')) {
-                                $td.find('input[name="Remark"]').val($textarea.val().trim());
-                            }
-
-                            if ($textarea.hasClass('transferremark-autocomplete')) {
-                                $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
-                            }
-                        });
-
-                        let data = {};
-
-                        // ✅ Now safely collect data
-                        $tr.find('input[data-key], select[data-key]').each(function() {
-                            let key = $(this).data('key');
-                            data[key] = $(this).val();
-                        });
-
-                        let formData = new FormData();
-                        formData.append('id', rowId);
-                        formData.append('data', JSON.stringify(data));
-
-                        let fileInput = $tr.find('.resume-input')[0];
-                        if (fileInput && fileInput.files.length > 0) {
-                            formData.append('resume', fileInput.files[0]);
-                        }
-
-                        $.ajax({
-                            url: '{{ route('juniorupdate') }}',
-                            type: 'POST',
-                            data: formData,
-                            contentType: false,
-                            processData: false,
-                            headers: {
-                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                            },
-                            success: function(response) {
-                                alert(response.message);
-                            },
-                            error: function() {
-                                alert('AJAX error');
-                            }
-                        });
-                    });
-
-                    // Show file input when clicking upload
-                    $('.upload-btn').click(function() {
-                        $(this).closest('td').find('input.resume-input').click();
-                    });
-                });
-            </script>
-        </table>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
 @endif
-</div>
-{{-- Pagination --}}
-@if ($data->hasPages())
-    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
-        <div>
-            {{ $data->links('pagination::bootstrap-5') }}
-        </div>
-    </div>
-@endif
-</div>
