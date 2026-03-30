@@ -54,6 +54,7 @@
                         </thead>
                         <tbody id="sheet-table-body">
                             @foreach ($data as $row)
+                                <!-- MAIN ROW -->
                                 <tr class="text-nowrap small">
                                     <td class="px-1 py-1">{{ $row->sheet_row_number }}</td>
 
@@ -85,13 +86,12 @@
                                     </td>
                                 </tr>
 
+                                <!-- COLLAPSE ROW -->
                                 <tr id="collapse-{{ $row->id }}" class="collapse-row d-none">
                                     <td colspan="5" class="p-1">
 
-                                        <!-- compact wrapper -->
                                         <div class="p-1 border rounded bg-light small" style="max-width:1000px;">
-
-                                            <div class="row g-1 justify-content-start">
+                                            <div class="row g-1">
 
                                                 <!-- Location -->
                                                 <div class="col-md-3 px-1">
@@ -182,38 +182,63 @@
                                                     </select>
                                                 </div>
 
+                                                <!-- 1st Follow Up Remarks -->
+                                                <div class="col-md-3 px-1">
+                                                    <label class="mb-0 small">1st Follow Up</label>
+                                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                                        data-key="1st Follow Up Remarks">
+                                                        @foreach (['Interested', 'Doubt need Clarification', 'Money Issue', 'Not Interested', "Don't Call"] as $option)
+                                                            <option value="{{ $option }}"
+                                                                {{ $row->First_Follow_Up_Remarks === $option ? 'selected' : '' }}>
+                                                                {{ $option }}
+                                                            </option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+
+                                                <!-- Time Zone -->
                                                 <div class="col-md-3 px-1">
                                                     <label class="mb-0 small">Time Zone</label>
-
-                                                    @php
-                                                        $timezoneOptions = ['EST', 'CST', 'MST', 'PST', ''];
-                                                    @endphp
-
+                                                    @php $timezoneOptions = ['EST','CST','MST','PST','']; @endphp
                                                     <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
                                                         data-key="Time Zone">
-
                                                         <option value="">-- Select --</option>
-
                                                         @foreach ($timezoneOptions as $option)
                                                             <option value="{{ $option }}"
                                                                 {{ $row->Time_Zone === $option ? 'selected' : '' }}>
                                                                 {{ $option }}
                                                             </option>
                                                         @endforeach
-
                                                     </select>
+                                                </div>
+
+                                                <!-- Resume -->
+                                                <div class="col-md-3 px-1">
+                                                    <label class="mb-0 small">Resume</label>
+
+                                                    <input type="file" accept=".pdf,.doc,.docx"
+                                                        class="d-none resume-input" data-key="View">
+
+                                                    <button type="button" class="btn btn-sm btn-info upload-btn w-100">
+                                                        {{ !empty($row->resume) ? 'Change' : 'Upload' }}
+                                                    </button>
+
+                                                    @if (!empty($row->resume))
+                                                        <a href="{{ url('dashboard/junior/google-sheet/view-resume/' . $row->id) }}"
+                                                            target="_blank"
+                                                            class="btn btn-sm btn-primary w-100 mt-1">View</a>
+                                                    @endif
                                                 </div>
 
                                                 <!-- Remark -->
                                                 <div class="col-md-12 px-1">
                                                     <label class="mb-0 small">Remark</label>
-                                                    <textarea class="form-control form-control-sm py-0 px-1" style="min-height: 40px; resize: vertical;"
-                                                        data-key="Remark">{{ $row->Remark ?? '' }}</textarea>
+                                                    <textarea class="form-control form-control-sm py-0 px-1" style="min-height:40px;resize:vertical;" data-key="Remark">{{ $row->Remark ?? '' }}</textarea>
                                                 </div>
 
                                             </div>
-
                                         </div>
+
                                     </td>
                                 </tr>
                             @endforeach
