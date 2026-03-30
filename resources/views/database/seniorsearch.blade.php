@@ -215,7 +215,7 @@
                                                     </select>
                                                 </div>
 
-                                          
+
                                                 <!-- Resume Upload -->
                                                 <div class="col-md-2 px-1">
                                                     <label class="mb-0 small">Upload</label>
@@ -333,14 +333,22 @@
                         let html = '';
 
                         if (res.length) {
+
+                            html += `
+                            <a href="#" class="list-group-item list-group-item-primary text-center fw-bold"
+                            id="show-all-results">
+                            Show All Results
+                            </a>`;
+
                             res.forEach(item => {
                                 html += `
-                        <a href="#" class="list-group-item list-group-item-action"
-                           data-id="${item.id}">
-                            ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} |
-                            ${item.Phone_Number} | ${item.forwarded_by}
-                        </a>`;
+                            <a href="#" class="list-group-item list-group-item-action"
+                            data-id="${item.id}">
+                                ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} |
+                                ${item.Phone_Number} | ${item.forwarded_by}
+                            </a>`;
                             });
+
                         } else {
                             html = '<span class="list-group-item">No results found</span>';
                         }
@@ -391,6 +399,19 @@
                     });
 
                 }, 500);
+            });
+
+            // 🔥 SHOW ALL RESULTS CLICK
+            $(document).on('click', '#show-all-results', function(e) {
+                e.preventDefault();
+
+                const query = $('#senior-search').val().trim();
+                const junior_user = $('#junior-filter').val();
+
+                $('#search-suggestions').hide().empty();
+
+                // 🔥 Fetch full search results (same existing function)
+                fetchTable(query, 1, junior_user);
             });
 
             $('#junior-filter').on('change', function() {
