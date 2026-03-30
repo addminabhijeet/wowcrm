@@ -50,43 +50,44 @@
                 @else
                     <table class="table bordered-table sm-table mb-0">
                         <thead>
-                            <tr>
-                                <th></th> <!-- Toggle Button -->
-                                <th class="text-center">Row</th>
-                                <th class="text-center">Name</th>
-                                <th class="text-center">Email Address</th>
-                                <th class="text-center">Phone Number</th>
-                                <th class="text-center">Status</th>
+                            <tr class="text-nowrap">
+                                <th class="w-auto"></th>
+                                <th class="text-center w-auto">Row</th>
+                                <th class="text-center w-auto">Name</th>
+                                <th class="text-center w-auto">Email Address</th>
+                                <th class="text-center w-auto">Phone Number</th>
+                                <th class="text-center w-auto">Status</th>
                             </tr>
                         </thead>
                         <tbody id="sheet-table-body">
                             @foreach ($data as $row)
-                                <tr>
-                                    <td class="text-center">
-                                        <button class="btn btn-sm btn-primary toggle-row" data-id="{{ $row->id }}">
+                                <tr class="text-nowrap">
+                                    <td class="text-center w-auto px-2">
+                                        <button class="btn btn-sm btn-primary toggle-row p-1 px-2"
+                                            data-id="{{ $row->id }}">
                                             +
                                         </button>
                                     </td>
 
-                                    <td>{{ $row->sheet_row_number }}</td>
+                                    <td class="w-auto px-2">{{ $row->sheet_row_number }}</td>
 
-                                    <td>
-                                        <input type="text" class="form-control name-input" data-key="Name"
-                                            value="{{ $row->Name ?? '' }}">
+                                    <td class="w-auto px-2">
+                                        <input type="text" class="form-control form-control-sm name-input"
+                                            data-key="Name" value="{{ $row->Name ?? '' }}">
                                     </td>
 
-                                    <td>
-                                        <input type="email" class="form-control email-input" data-key="Email Address"
-                                            value="{{ $row->Email_Address ?? '' }}">
+                                    <td class="w-auto px-2">
+                                        <input type="email" class="form-control form-control-sm email-input"
+                                            data-key="Email Address" value="{{ $row->Email_Address ?? '' }}">
                                     </td>
 
-                                    <td>
-                                        <input type="tel" class="form-control phone-input" data-key="Phone Number"
-                                            value="{{ $row->Phone_Number ?? '' }}">
+                                    <td class="w-auto px-2">
+                                        <input type="tel" class="form-control form-control-sm phone-input"
+                                            data-key="Phone Number" value="{{ $row->Phone_Number ?? '' }}">
                                     </td>
 
-                                    <td>
-                                        <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
+                                    <td class="w-auto px-2">
+                                        <select class="form-select form-select-sm dynamic-dropdown" data-key="Exe Remarks">
                                             @foreach (['Called & Mailed', 'Not Interested', 'Interested', 'Others', 'Ready To Pay', 'VM', 'Busy'] as $option)
                                                 <option value="{{ $option }}"
                                                     {{ $row->Exe_Remarks === $option ? 'selected' : '' }}>
