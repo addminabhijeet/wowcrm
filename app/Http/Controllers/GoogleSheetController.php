@@ -967,6 +967,7 @@ class GoogleSheetController extends Controller
         $search = $request->input('search');
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user');
+        $showAll = $request->input('show_all');
         $page = $request->input('page', 1);
 
         $query = GoogleSheetData::query();
@@ -1041,15 +1042,21 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        $perPage = 5;
-        $currentPage = $page;
-        $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($currentPage, $perPage),
-            $transformed->count(),
-            $perPage,
-            $currentPage,
-            ['path' => url()->current(), 'query' => $request->query()]
-        );
+        if ($showAll) {
+            // 🔥 return ALL data without pagination
+            $pagedData = $transformed;
+        } else {
+            $perPage = 5;
+            $currentPage = $page;
+
+            $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
+                $transformed->forPage($currentPage, $perPage),
+                $transformed->count(),
+                $perPage,
+                $currentPage,
+                ['path' => url()->current(), 'query' => $request->query()]
+            );
+        }
 
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior'])
             ->where('status', 1)

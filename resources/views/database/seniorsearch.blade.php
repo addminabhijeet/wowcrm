@@ -271,7 +271,7 @@
                 @endif
             </div>
             {{-- Pagination --}}
-            @if ($data->hasPages())
+            @if (method_exists($data, 'hasPages') && $data->hasPages())
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
                     <div>
                         {{ $data->links('pagination::bootstrap-5') }}
@@ -297,14 +297,15 @@
                 };
             }
 
-            function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
+            function fetchTable(search = '', page = 1, junior_user = '', row_id = '', show_all = false) {
                 $.ajax({
                     url: "{{ route('google.sheet.seniorsearch') }}",
                     data: {
                         search,
                         page,
                         junior_user,
-                        row_id
+                        row_id,
+                        show_all // ✅ send flag
                     },
                     success: function(res) {
                         $('#senior-table-wrapper').html(res);
@@ -401,7 +402,6 @@
                 }, 500);
             });
 
-            // 🔥 SHOW ALL RESULTS CLICK
             $(document).on('click', '#show-all-results', function(e) {
                 e.preventDefault();
 
@@ -410,8 +410,7 @@
 
                 $('#search-suggestions').hide().empty();
 
-                // 🔥 Fetch full search results (same existing function)
-                fetchTable(query, 1, junior_user);
+                fetchTable(query, 1, junior_user, '', true); // ✅ NEW FLAG
             });
 
             $('#junior-filter').on('change', function() {
