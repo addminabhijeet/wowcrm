@@ -2908,21 +2908,17 @@ class GoogleSheetController extends Controller
             return response()->json([]);
         }
 
-        $results = GoogleSheetData::where(function ($q) use ($authUser) {
-            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$authUser->id . '|senior']);
-        })
-            ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) = 0")
-            ->where('transfers', 0)
+        // ✅ No filters at all
+        $results = GoogleSheetData::query()
 
-            // ✅ JUNIOR FILTER (OPTIONAL)
-            ->when($juniorUserId, function ($q) use ($juniorUserId) {
-                $q->where('created_by', 'LIKE', "%{$juniorUserId}|junior%");
+            // ✅ Keep structure but disable junior filter
+            ->when($juniorUserId, function ($q) {
+                // no filter
             })
 
-            ->where(function ($q) use ($query) {
-                $q->where('Name', 'LIKE', "%{$query}%")
-                    ->orWhere('Email_Address', 'LIKE', "%{$query}%")
-                    ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
+            // ✅ Keep search block but neutralize it
+            ->where(function ($q) {
+                // no filter
             })
 
             ->limit(10)
@@ -2935,7 +2931,7 @@ class GoogleSheetController extends Controller
                 'created_by'
             ]);
 
-        // 🔁 forwarded_by formatting
+        // 🔁 forwarded_by formatting (UNCHANGED)
         $results->each(function ($item) use ($authUser) {
 
             $names = [];
