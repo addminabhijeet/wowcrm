@@ -966,49 +966,22 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // ✅ NEW
+        $juniorUserId = $request->input('junior_user');
         $page = $request->input('page', 1);
 
-        // SUBSTRING_INDEX-based filter with second part check
-        $query = GoogleSheetData::where(function ($q) use ($authUser) {
-
-            $seniorPart = $authUser->id . '|senior';
-            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart]);
-        })
-            ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) = 0")
-            ->where('transfers', 0);
-
+        $query = GoogleSheetData::query();
         if ($rowId) {
-            $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'LIKE', "%{$search}%")
-                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
-                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
-            });
         }
 
-        // ✅ APPLY JUNIOR FILTER (NO LOGIC CHANGE)
         if ($juniorUserId) {
-            $query->where(function ($q) use ($juniorUserId) {
-                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
-            });
         }
 
         if ($rowId) {
-            $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'LIKE', "%{$search}%")
-                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
-                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
-            });
         }
-
         $results = $query->orderBy('updated_at', 'desc')->get();
 
-        // 🔁 Transform forwarded_by
         $transformed = $results->map(function ($item) use ($authUser) {
 
             $forwardedBy = '';
@@ -1051,7 +1024,6 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
