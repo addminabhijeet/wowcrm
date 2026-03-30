@@ -69,8 +69,11 @@
                                     </td>
 
                                     <td class="px-1 py-1">
-                                        <input type="tel" class="form-control form-control-sm p-1 phone-input"
-                                            data-key="Phone Number" value="{{ $row->Phone_Number ?? '' }}">
+                                        <div class="input-group input-group-sm">
+                                            <span class="input-group-text p-1">+1</span>
+                                            <input type="tel" class="form-control p-1 phone-input"
+                                                data-key="Phone Number" value="{{ $row->Phone_Number ?? '' }}">
+                                        </div>
                                     </td>
 
                                     <td class="px-1 py-1">
