@@ -35,45 +35,52 @@
         </div>
 
         <div class="card-body p-24" id="senior-table-wrapper">
-            <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
+
+            <div class="table-responsive mb-2" id="top-scroll-wrapper" style="overflow-x: hidden;">
                 <div id="top-scroll"></div>
             </div>
-            <div class="table-responsive scroll-sm" id="bottom-scroll-wrapper">
+
+            <div class="table-responsive" id="bottom-scroll-wrapper" style="overflow-x: hidden;">
                 @if ($data->isEmpty())
                     <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
                 @else
-                    <table class="table table-sm bordered-table mb-0">
+                    <table class="table table-sm bordered-table mb-0 w-100" style="table-layout: fixed;">
                         <thead>
-                            <tr class="text-nowrap small">
-                                <th class="text-center px-1 py-1">Row</th>
-                                <th class="text-center px-1 py-1">Name</th>
-                                <th class="text-center px-1 py-1">Email</th>
-                                <th class="text-center px-1 py-1">Phone</th>
-                                <th class="text-center px-1 py-1">Status</th>
+                            <tr class="small text-wrap">
+                                <th class="text-center px-1 py-1" style="width:5%;">Row</th>
+                                <th class="text-center px-1 py-1" style="width:20%;">Name</th>
+                                <th class="text-center px-1 py-1" style="width:25%;">Email</th>
+                                <th class="text-center px-1 py-1" style="width:20%;">Phone</th>
+                                <th class="text-center px-1 py-1" style="width:30%;">Status</th>
                             </tr>
                         </thead>
                         <tbody id="sheet-table-body">
                             @foreach ($data as $row)
-                                <tr class="text-nowrap small">
-                                    <td class="px-1 py-1">{{ $row->sheet_row_number }}</td>
-
-                                    <td class="px-1 py-1">
-                                        <input type="text" class="form-control form-control-sm p-1 name-input"
-                                            data-key="Name" value="{{ $row->Name ?? '' }}">
+                                <!-- MAIN ROW -->
+                                <tr class="small text-wrap">
+                                    <td class="px-1 py-1 text-center">
+                                        {{ $row->sheet_row_number }}
                                     </td>
 
                                     <td class="px-1 py-1">
-                                        <input type="email" class="form-control form-control-sm p-1 email-input"
-                                            data-key="Email Address" value="{{ $row->Email_Address ?? '' }}">
+                                        <input type="text" class="form-control form-control-sm p-1 w-100"
+                                            style="min-width:0;" data-key="Name" value="{{ $row->Name ?? '' }}">
                                     </td>
 
                                     <td class="px-1 py-1">
-                                        <input type="tel" class="form-control form-control-sm p-1 phone-input"
-                                            data-key="Phone Number" value="{{ $row->Phone_Number ?? '' }}">
+                                        <input type="email" class="form-control form-control-sm p-1 w-100"
+                                            style="min-width:0;" data-key="Email Address"
+                                            value="{{ $row->Email_Address ?? '' }}">
                                     </td>
 
                                     <td class="px-1 py-1">
-                                        <select class="form-select form-select-sm p-1 dynamic-dropdown"
+                                        <input type="tel" class="form-control form-control-sm p-1 w-100"
+                                            style="min-width:0;" data-key="Phone Number"
+                                            value="{{ $row->Phone_Number ?? '' }}">
+                                    </td>
+
+                                    <td class="px-1 py-1">
+                                        <select class="form-select form-select-sm p-1 w-100" style="min-width:0;"
                                             data-key="Exe Remarks">
                                             @foreach (['Called & Mailed', 'Not Interested', 'Interested', 'Others', 'Ready To Pay', 'VM', 'Busy'] as $option)
                                                 <option value="{{ $option }}"
@@ -85,33 +92,30 @@
                                     </td>
                                 </tr>
 
+                                <!-- COLLAPSE ROW -->
                                 <tr id="collapse-{{ $row->id }}" class="collapse-row d-none">
                                     <td colspan="7" class="p-1">
                                         <div class="p-1 border rounded bg-light small">
 
                                             <div class="row g-1">
 
-                                                <!-- Location -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-4 col-12 px-1">
                                                     <label class="mb-0 small">Location</label>
                                                     <input type="text"
-                                                        class="form-control form-control-sm py-0 px-1 location-autocomplete"
+                                                        class="form-control form-control-sm py-0 px-1 w-100"
                                                         data-key="Location" value="{{ $row->Location ?? '' }}">
                                                 </div>
 
-                                                <!-- Date -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-4 col-12 px-1">
                                                     <label class="mb-0 small">Date</label>
                                                     <input type="text"
-                                                        class="form-control form-control-sm py-0 px-1 date-picker"
-                                                        data-key="Date"
+                                                        class="form-control form-control-sm py-0 px-1 w-100" data-key="Date"
                                                         value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
                                                 </div>
 
-                                                <!-- Relocation -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-4 col-12 px-1">
                                                     <label class="mb-0 small">Relocation</label>
-                                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                                    <select class="form-select form-select-sm py-0 px-1 w-100"
                                                         data-key="Relocation">
                                                         @foreach (['YES', 'NO'] as $option)
                                                             <option value="{{ $option }}"
@@ -122,18 +126,16 @@
                                                     </select>
                                                 </div>
 
-                                                <!-- Graduation -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-4 col-12 px-1">
                                                     <label class="mb-0 small">Graduation</label>
                                                     <input type="text"
-                                                        class="form-control form-control-sm py-0 px-1 date-picker"
+                                                        class="form-control form-control-sm py-0 px-1 w-100"
                                                         data-key="Graduation Date" value="{{ $row->Graduation_Date }}">
                                                 </div>
 
-                                                <!-- Immigration -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-4 col-12 px-1">
                                                     <label class="mb-0 small">Immigration</label>
-                                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                                    <select class="form-select form-select-sm py-0 px-1 w-100"
                                                         data-key="Immigration">
                                                         @foreach (['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1', 'H4', 'H4 EAD', 'GC/PR', 'USC', 'L2S'] as $option)
                                                             <option value="{{ $option }}"
@@ -144,10 +146,9 @@
                                                     </select>
                                                 </div>
 
-                                                <!-- Course -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-4 col-12 px-1">
                                                     <label class="mb-0 small">Course</label>
-                                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                                    <select class="form-select form-select-sm py-0 px-1 w-100"
                                                         data-key="Course">
                                                         @foreach (['BA', 'DA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'] as $option)
                                                             <option value="{{ $option }}"
@@ -158,18 +159,16 @@
                                                     </select>
                                                 </div>
 
-                                                <!-- Amount -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-4 col-12 px-1">
                                                     <label class="mb-0 small">Amount</label>
                                                     <input type="text"
-                                                        class="form-control form-control-sm py-0 px-1 amount-input"
+                                                        class="form-control form-control-sm py-0 px-1 w-100"
                                                         data-key="Amount" value="{{ $row->Amount }}">
                                                 </div>
 
-                                                <!-- Qualification -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-4 col-12 px-1">
                                                     <label class="mb-0 small">Qualification</label>
-                                                    <select class="form-select form-select-sm py-0 px-1 dynamic-dropdown"
+                                                    <select class="form-select form-select-sm py-0 px-1 w-100"
                                                         data-key="Qualification">
                                                         @foreach (['Masters', 'Bachelors', 'MBA', 'PG Diploma', 'M.Tech', 'B.Tech'] as $option)
                                                             <option value="{{ $option }}"
@@ -180,10 +179,10 @@
                                                     </select>
                                                 </div>
 
-                                                <!-- Remark -->
-                                                <div class="col-md-4 px-1">
+                                                <div class="col-md-4 col-12 px-1">
                                                     <label class="mb-0 small">Remark</label>
-                                                    <input type="text" class="form-control form-control-sm py-0 px-1"
+                                                    <input type="text"
+                                                        class="form-control form-control-sm py-0 px-1 w-100"
                                                         data-key="Remark" value="{{ $row->Remark ?? '' }}">
                                                 </div>
 
@@ -197,6 +196,7 @@
                     </table>
                 @endif
             </div>
+
             {{-- Pagination --}}
             @if ($data->hasPages())
                 <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mt-24">
@@ -205,6 +205,7 @@
                     </div>
                 </div>
             @endif
+
         </div>
     </div>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
