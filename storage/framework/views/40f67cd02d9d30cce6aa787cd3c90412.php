@@ -213,7 +213,7 @@
 
                                     
                                     <td>
-                                        <?php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET','']; ?>
+                                        <?php $courseOptions = ['BA','DA','SAS','JAVA','QA','SQL','PYTHON','DOT NET','']; ?>
                                         <select class="form-select dynamic-dropdown" data-key="Course">
                                             <option value="">-- Select --</option>
                                             <?php $__currentLoopData = $courseOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -805,7 +805,7 @@
                         if (k === '1st Follow Up Remarks') opts = ['Interested', 'Doubt need Clarification',
                             'Money Issue', 'Not Interested', "Don't Call"
                         ];
-                        if (k === 'Course') opts = ['BA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
+                        if (k === 'Course') opts = ['BA','DA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
                         if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
                         cells +=
                             `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;

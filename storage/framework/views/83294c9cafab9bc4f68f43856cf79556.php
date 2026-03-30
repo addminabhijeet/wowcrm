@@ -104,7 +104,7 @@
 
                         
                         <td>
-                            <?php $courseOptions = ['BA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; ?>
+                            <?php $courseOptions = ['BA','DA','SAS','JAVA','QA','SQL','PYTHON','DOT NET']; ?>
                             <select class="form-select dynamic-dropdown" data-key="Course">
                                 <option value="">-- Course --</option>
                                 <?php $__currentLoopData = $courseOptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $option): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
@@ -241,77 +241,77 @@
                         </td>
 
                     </tr>
-                    <script>
-                        $(document).ready(function() {
-                            $('.save-btn').click(function() {
-                                let rowId = $(this).data('id');
-                                let $tr = $('#row-' + rowId);
-
-                                // Collect row data
-                                let data = {};
-                                $tr.find('input, select').each(function() {
-                                    let key = $(this).data('key');
-                                    if (key) {
-                                        if ($(this).is('select')) {
-                                            data[key] = $(this).val();
-                                        } else {
-                                            data[key] = $(this).val();
-                                        }
-                                    }
-                                });
-
-                                let formData = new FormData();
-                                formData.append('id', rowId);
-                                formData.append('data', JSON.stringify(data));
-
-                                // Attach resume file if uploaded
-                                let fileInput = $tr.find('input.resume-input')[0];
-                                if (fileInput && fileInput.files.length > 0) {
-                                    formData.append('resume', fileInput.files[0]);
-                                }
-
-                                $.ajax({
-                                    url: '<?php echo e(route('seniorupdate')); ?>',
-                                    type: 'POST',
-                                    data: formData,
-                                    contentType: false,
-                                    processData: false,
-                                    headers: {
-                                        'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
-                                    },
-                                    success: function(response) {
-                                        if (response.success) {
-                                            alert(response.message);
-                                            // Optionally update resume buttons dynamically
-                                            if (response.row.resume_exists) {
-                                                let viewBtn = $tr.find('.view-btn');
-                                                viewBtn.attr('href',
-                                                        '/dashboard/senior/google-sheet/view-resume/' + rowId)
-                                                    .removeClass('d-none');
-                                                let downloadBtn = $tr.find('.download-btn');
-                                                downloadBtn.attr('href',
-                                                    '/dashboard/senior/google-sheet/download-resume/' +
-                                                    rowId).removeClass('d-none');
-                                                $tr.find('.upload-btn').text('Change File');
-                                            }
-                                        } else {
-                                            alert(response.message);
-                                        }
-                                    },
-                                    error: function(err) {
-                                        alert('AJAX error: ' + err.responseText);
-                                    }
-                                });
-                            });
-
-                            // Show file input when clicking upload
-                            $('.upload-btn').click(function() {
-                                $(this).closest('td').find('input.resume-input').click();
-                            });
-                        });
-                    </script>
                 <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
+            <script>
+                $(document).ready(function() {
+                    $('.save-btn').click(function() {
+                        let rowId = $(this).data('id');
+                        let $tr = $('#row-' + rowId);
+
+                        // Collect row data
+                        let data = {};
+                        $tr.find('input, select').each(function() {
+                            let key = $(this).data('key');
+                            if (key) {
+                                if ($(this).is('select')) {
+                                    data[key] = $(this).val();
+                                } else {
+                                    data[key] = $(this).val();
+                                }
+                            }
+                        });
+
+                        let formData = new FormData();
+                        formData.append('id', rowId);
+                        formData.append('data', JSON.stringify(data));
+
+                        // Attach resume file if uploaded
+                        let fileInput = $tr.find('input.resume-input')[0];
+                        if (fileInput && fileInput.files.length > 0) {
+                            formData.append('resume', fileInput.files[0]);
+                        }
+
+                        $.ajax({
+                            url: '<?php echo e(route('seniorupdate')); ?>',
+                            type: 'POST',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            headers: {
+                                'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>'
+                            },
+                            success: function(response) {
+                                if (response.success) {
+                                    alert(response.message);
+                                    // Optionally update resume buttons dynamically
+                                    if (response.row.resume_exists) {
+                                        let viewBtn = $tr.find('.view-btn');
+                                        viewBtn.attr('href',
+                                                '/dashboard/senior/google-sheet/view-resume/' + rowId)
+                                            .removeClass('d-none');
+                                        let downloadBtn = $tr.find('.download-btn');
+                                        downloadBtn.attr('href',
+                                            '/dashboard/senior/google-sheet/download-resume/' +
+                                            rowId).removeClass('d-none');
+                                        $tr.find('.upload-btn').text('Change File');
+                                    }
+                                } else {
+                                    alert(response.message);
+                                }
+                            },
+                            error: function(err) {
+                                alert('AJAX error: ' + err.responseText);
+                            }
+                        });
+                    });
+
+                    // Show file input when clicking upload
+                    $('.upload-btn').click(function() {
+                        $(this).closest('td').find('input.resume-input').click();
+                    });
+                });
+            </script>
         </table>
 <?php endif; ?>
 </div>
