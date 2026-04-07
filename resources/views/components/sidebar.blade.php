@@ -143,7 +143,7 @@
                     <ul class="sidebar-submenu">
                         <li><a href="{{ route('google.sheet.seniortraotp') }}"><i
                                     class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter
-                                <br>(Called & Mailed Steam Opt)</a>
+                                <br>(Called & Mailed Stem Opt)</a>
                         </li>
                     </ul>
 
