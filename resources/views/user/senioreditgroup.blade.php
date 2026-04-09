@@ -60,17 +60,20 @@ $script ='<script>
                                 <!-- Dropdown -->
                                 <div class="col-sm-6">
                                     <div class="mb-20">
-                                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                            Assign Juniors
+                                        <label for="junior" class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                            Select Junior <span class="text-danger-600">*</span>
                                         </label>
 
-                                        <select name="group[]" class="form-control radius-8 form-select" multiple>
+                                        <select name="group[]" id="junior" class="form-control radius-8 form-select" required>
+                                            <option value="" disabled selected>Select Junior</option>
+
                                             @foreach($juniors as $junior)
                                             <option value="{{ $junior->id }}"
                                                 {{ in_array($junior->id, $user->group ?? []) ? 'selected' : '' }}>
-                                                {{ $junior->name }} ({{ $junior->email }})
+                                                {{ $junior->name }}
                                             </option>
                                             @endforeach
+
                                         </select>
                                     </div>
                                 </div>
