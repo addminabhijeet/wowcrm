@@ -55,7 +55,9 @@ $script ='<script>
                     @method('PUT')
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="pills-edit-profile" role="tabpanel">
-                            <div class="row">
+                            <div class="row align-items-end"> <!-- ✅ align properly -->
+
+                                <!-- Dropdown -->
                                 <div class="col-sm-6">
                                     <div class="mb-20">
                                         <label class="form-label fw-semibold text-primary-light text-sm mb-8">
@@ -73,10 +75,13 @@ $script ='<script>
                                     </div>
                                 </div>
 
-                                <div class="d-flex align-items-center justify-content-center gap-3">
-                                    <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
-                                        Save
-                                    </button>
+                                <!-- Button -->
+                                <div class="col-sm-6 d-flex align-items-end justify-content-start">
+                                    <div class="mb-20 w-100">
+                                        <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
+                                            Save
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         </div>
