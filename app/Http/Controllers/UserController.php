@@ -424,7 +424,7 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'role' => 'required|string|in:junior,admin,senior,customer,accountant',
+            'group' => 'nullable',
         ]);
 
         $existingGroups = $user->group ?? [];
