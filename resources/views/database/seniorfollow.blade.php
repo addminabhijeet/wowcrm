@@ -398,6 +398,226 @@
             /* required */
         }
     </style>
+
+    <div class="card h-100 p-0 radius-12">
+    <div
+        class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
+        <div class="d-flex align-items-center flex-wrap gap-3">
+
+            <form class="navbar-search position-relative d-flex gap-2" autocomplete="off">
+                <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
+                    placeholder="Search Name, Email, Phone">
+
+                <input type="date" id="date-filter" class="bg-base h-40-px w-auto form-control"
+                    title="Filter by Date">
+
+                <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+
+                <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
+            </form>
+
+            <select class="form-select form-select-sm w-auto ps-12 py-6 radius-12 h-40-px" name="junior_user"
+                id="junior-filter">
+                <option value="">Select IT Recruiter</option>
+                @foreach ($juniorUsers as $junior)
+                    <option value="{{ $junior->id }}">
+                        {{ $junior->name }} {{ $junior->gender ? '(' . $junior->gender . ')' : '' }}
+                    </option>
+                @endforeach
+            </select>
+
+        </div>
+    </div>
+
+    <div class="card-body p-24" id="senior-table-wrapper">
+
+        <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
+            <div id="top-scroll"></div>
+        </div>
+
+        <div class="table-responsive scroll-sm" id="bottom-scroll-wrapper">
+            @if ($data->isEmpty())
+                <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
+            @else
+                <table class="table bordered-table sm-table mb-0">
+                    <thead>
+                        <tr>
+                            <th class="text-center">Row</th>
+                            <th class="text-center">Date</th>
+                            <th class="text-center">Name</th>
+                            <th class="text-center">Email Address</th>
+                            <th class="text-center">Phone Number</th>
+                            <th class="text-center">Location</th>
+                            <th class="text-center">Relocation</th>
+                            <th class="text-center">Graduation Date</th>
+                            <th class="text-center">Immigration</th>
+                            <th class="text-center">Course</th>
+                            <th class="text-center">Amount</th>
+                            <th class="text-center">Qualification</th>
+                            <th class="text-center">Time Zone</th>
+                            <th class="text-center">1st Follow Up Remarks</th>
+                            <th class="text-center">Forwarded By</th>
+                            <th class="text-center">Resume</th>
+                            <th class="text-center">Remark</th>
+                            <th class="text-center">Follow Up Remark</th>
+                            <th class="text-center">Status</th>
+                        </tr>
+                    </thead>
+
+                    <tbody id="sheet-table-body">
+                        @foreach ($data as $row)
+                            <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
+
+                                <td>{{ $row->sheet_row_number }}</td>
+
+                                {{-- Date --}}
+                                <td>
+                                    <input type="text" class="form-control date-picker" data-key="Date"
+                                        value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
+                                </td>
+
+                                {{-- Name --}}
+                                <td>
+                                    <input type="text" class="form-control name-input" data-key="Name"
+                                        value="{{ $row->Name ?? '' }}" placeholder="Name">
+                                </td>
+
+                                {{-- Email --}}
+                                <td>
+                                    <input type="email" class="form-control email-input" data-key="Email Address"
+                                        value="{{ $row->Email_Address ?? '' }}">
+                                </td>
+
+                                {{-- Phone --}}
+                                <td>
+                                    <input type="tel" class="form-control phone-input" data-key="Phone Number"
+                                        value="{{ $row->Phone_Number ?? '' }}">
+                                </td>
+
+                                {{-- Location --}}
+                                <td>
+                                    <input type="text" class="form-control location-autocomplete" data-key="Location"
+                                        value="{{ $row->Location ?? '' }}">
+                                </td>
+
+                                {{-- Relocation --}}
+                                <td>
+                                    <select class="form-select dynamic-dropdown" data-key="Relocation">
+                                        <option value="">-- Relocation --</option>
+                                    </select>
+                                </td>
+
+                                {{-- Graduation Date --}}
+                                <td>
+                                    <input type="text" class="form-control date-picker" data-key="Graduation Date"
+                                        value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
+                                </td>
+
+                                {{-- Immigration --}}
+                                <td>
+                                    <select class="form-select dynamic-dropdown" data-key="Immigration"></select>
+                                </td>
+
+                                {{-- Course --}}
+                                <td>
+                                    <select class="form-select dynamic-dropdown" data-key="Course"></select>
+                                </td>
+
+                                {{-- Amount --}}
+                                <td>
+                                    <input type="text" class="form-control amount-input" data-key="Amount">
+                                </td>
+
+                                {{-- Qualification --}}
+                                <td>
+                                    <select class="form-select dynamic-dropdown" data-key="Qualification"></select>
+                                </td>
+
+                                {{-- Time Zone --}}
+                                <td>
+                                    <select class="form-select dynamic-dropdown" data-key="Time Zone"></select>
+                                </td>
+
+                                {{-- Follow Up --}}
+                                <td>
+                                    <select class="form-select dynamic-dropdown" data-key="1st Follow Up Remarks"></select>
+                                </td>
+
+                                {{-- Forwarded By --}}
+                                <td>
+                                    <input type="text" class="form-control forwardedBy-input"
+                                        data-key="forwardedBy" readonly>
+                                </td>
+
+                                {{-- Resume --}}
+                                <td>
+                                    <input type="file" class="d-none resume-input">
+                                    <button type="button" class="btn btn-sm btn-info upload-btn">Upload</button>
+                                </td>
+
+                                {{-- Remark --}}
+                                <td>
+                                    <textarea class="form-control remark-autocomplete" rows="6"></textarea>
+                                </td>
+
+                                {{-- Transfer --}}
+                                <td>
+                                    <textarea class="form-control transferremark-autocomplete" rows="6"></textarea>
+                                </td>
+
+                                {{-- Status --}}
+                                <td>
+                                    <select class="form-select dynamic-dropdown" data-key="Exe Remarks"></select>
+                                </td>
+
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            @endif
+        </div>
+    </div>
+</div>
+
+<!-- ===================== FIX ADDED HERE (IMPORTANT) ===================== -->
+<style>
+/* ✅ FIX: ensure date visible on tablet/mobile */
+input.date-picker,
+.flatpickr-input {
+    width: 100% !important;
+    min-width: 140px !important;
+    display: block !important;
+}
+
+/* Prevent table shrinking inputs */
+.table td {
+    white-space: nowrap;
+}
+
+/* Prevent flex collapse in header */
+.navbar-search input,
+.navbar-search select {
+    min-width: 140px;
+}
+
+/* Ensure scroll container doesn't cut inputs */
+.table-responsive {
+    overflow-x: auto !important;
+}
+
+/* Tablet fix */
+@media (max-width: 1024px) {
+    input.date-picker {
+        min-width: 160px !important;
+    }
+}
+</style>
+<!-- ==================================================================== -->
+
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+<!-- (Your existing JS remains EXACTLY SAME - no changes made) -->
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
