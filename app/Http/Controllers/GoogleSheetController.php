@@ -918,7 +918,8 @@ class GoogleSheetController extends Controller
             $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$seniorPart]);
         })
             ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, ':', '')) = 0")
-            ->where('transfers', 0);
+            ->where('transfers', 0)
+            ->where('Exe_Remarks', '!=', 'Called & Mailed');
 
         if ($rowId) {
             $query->where('id', $rowId);
