@@ -1214,10 +1214,10 @@ class GoogleSheetController extends Controller
             $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$juniorPart]);
         })
             ->where(function ($q) {
-                // Check second segment is senior (any ID or 0)
                 $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
             })
-            ->where('transfers', 0); // ✅ show only transfer = 0
+            ->where('transfers', 0)
+            ->where('Exe_Remarks', 'Called & Mailed');
 
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
