@@ -1453,6 +1453,8 @@ class GoogleSheetController extends Controller
         return view('database.seniormod',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
+
+
     public function seniortra(Request $request)
     {
         $authUser = Auth::user();
@@ -1461,22 +1463,18 @@ class GoogleSheetController extends Controller
         $juniorUserId = $request->input('junior_user');
         $page = $request->input('page', 1);
         $date = $request->input('date');
-        $userPattern = "%:" . $authUser->id . "|junior";
-        $zeroPattern = "%:0|senior";
 
-        $query = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
+        $groupIds = $authUser->group ?? []; // ✅ juniors assigned to this senior
 
-            $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-
-                $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
-                    $q2->where('created_by', $authUser->id . '|junior')
-                        ->orWhere('created_by', 'LIKE', $zeroPattern);
-                })
-                    ->whereRaw(
-                        "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
-                    );
-            })
-                ->orWhere('created_by', $authUser->id . '|junior:0|senior');
+        $query = GoogleSheetData::where(function ($main) use ($authUser, $groupIds) {
+            // Only include rows created by assigned juniors or by the senior itself
+            $main->where(function ($q) use ($authUser, $groupIds) {
+                foreach ($groupIds as $juniorId) {
+                    $q->orWhere('created_by', 'LIKE', "%{$juniorId}|junior%");
+                }
+                // Also include rows created by self (the senior)
+                $q->orWhere('created_by', $authUser->id . '|junior:0|senior');
+            });
         })
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
@@ -1490,6 +1488,7 @@ class GoogleSheetController extends Controller
                     ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
             });
         }
+
         if ($date) {
             $query->whereDate('updated_at', $date);
         }
@@ -1541,6 +1540,7 @@ class GoogleSheetController extends Controller
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
+
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -1553,18 +1553,30 @@ class GoogleSheetController extends Controller
                 'query' => [
                     'search' => $request->search,
                     'junior_user' => $request->junior_user,
-                    'date' => $request->date // ✅ add this
+                    'date' => $request->date
                 ]
             ]
         );
-        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
+
+        // Filter dropdown to assigned juniors only
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)
+            ->whereIn('role', ['junior', 'senior'])
+            ->whereIn('id', $groupIds) // only assigned juniors
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
+
         if ($request->ajax()) {
-            return view('database.partials.seniortra_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.seniortra_table', [
+                'data' => $pagedData,
+                'juniorUsers' => $juniorUsers
+            ])->render();
         }
-        return view('database.seniortra',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+
+        return view('database.seniortra', [
+            'data' => $pagedData,
+            'juniorUsers' => $juniorUsers
+        ]);
     }
 
 
