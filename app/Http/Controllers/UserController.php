@@ -414,16 +414,7 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $assignedJuniorIds = User::whereNotNull('group')
-            ->pluck('group')
-            ->flatten()
-            ->unique()
-            ->toArray();
-
-        $juniors = User::where('role', 'junior')
-            ->where('is_deleted', 0)
-            ->whereNotIn('id', $assignedJuniorIds)
-            ->get();
+        $juniors = User::where('role', 'junior')->where('is_deleted', 0)->get();
 
         return view('user.senioreditgroup', compact('user', 'juniors'));
     }
