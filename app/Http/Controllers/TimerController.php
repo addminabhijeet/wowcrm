@@ -53,11 +53,18 @@ class TimerController extends Controller
         $timerSetting = TimerSetting::first();
         $workDaySeconds = $timerSetting ? $timerSetting->work_day_seconds : 8 * 60 * 60;
 
-        $juniors = User::where('role', 'junior')
-        ->where('is_deleted', 0)
-        ->get();
+        // ✅ Get the logged-in senior's group of juniors
+        $groupIds = Auth::user()->group ?? [];
 
+        // Fetch only juniors assigned to this senior
+        $juniors = User::where('role', 'junior')
+            ->where('is_deleted', 0)
+            ->whereIn('id', $groupIds) // filter for assigned juniors
+            ->get();
+
+        // Existing code (login users)
         $login_user = User::where('status')->where('is_deleted', 0)->get();
+
         $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
             $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
 
@@ -67,27 +74,27 @@ class TimerController extends Controller
                 $status = $timer->status;
                 $button_status = $timer->button_status;
                 $notice_status = $timer->notice_status;
-                $pause_type        = $timer->pause_type;
+                $pause_type = $timer->pause_type;
             } else {
                 $remaining_seconds = $workDaySeconds;
                 $elapsed_seconds = 0;
                 $status = 'running';
                 $button_status = 1;
                 $notice_status = 0;
-                $pause_type        = null;
+                $pause_type = null;
             }
 
             return [
                 'user_id'          => $junior->id,
                 'name'             => $junior->name,
-                'image'             => $junior->image,
+                'image'            => $junior->image,
                 'email'            => $junior->email,
                 'remaining_seconds' => $remaining_seconds,
                 'elapsed_seconds'  => $elapsed_seconds,
                 'status'           => $status,
                 'button_status'    => $button_status,
                 'notice_status'    => $notice_status,
-                'pause_type'        => $pause_type,
+                'pause_type'       => $pause_type,
             ];
         });
 
