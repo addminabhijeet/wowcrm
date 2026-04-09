@@ -27,6 +27,7 @@ class User extends Authenticatable
         'target',
         'target_date',
         'due_date',
+        'group',
     ];
 
     /**
@@ -48,6 +49,7 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
         'status' => 'boolean',
+        'group' => 'array',
     ];
 
     // User.php
