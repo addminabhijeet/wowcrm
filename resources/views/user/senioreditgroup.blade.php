@@ -46,7 +46,7 @@ $script ='<script>
 
 @section('content')
 
-<div class="row gy-4 mb-4">
+<div class="row gy-4 mb-5">
     <div class="col-12">
         <div class="card h-100">
             <div class="card-body p-24">
