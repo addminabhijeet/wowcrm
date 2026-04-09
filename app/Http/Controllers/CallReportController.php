@@ -1443,11 +1443,16 @@ class CallReportController extends Controller
         ));
     }
 
-
     public function alljuniorlist(Request $request)
     {
-        // Fetch all users with role 'junior'
-        $juniorUsers = User::where('role', 'junior')->where('is_deleted', 0)->get();
+        // Get logged-in senior's group IDs
+        $groupIds = Auth::user()->group ?? [];
+
+        // Fetch only juniors whose id exists in senior's group
+        $juniorUsers = User::where('role', 'junior')
+            ->where('is_deleted', 0)
+            ->whereIn('id', $groupIds)
+            ->get();
 
         // Pass users to the view
         return view('reports.alljuniorlist', compact('juniorUsers'));
