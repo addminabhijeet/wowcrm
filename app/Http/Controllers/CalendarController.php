@@ -110,11 +110,14 @@ class CalendarController extends Controller
 
     public function allJuniorlist(Request $request)
     {
-        // Fetch all users with role 'junior'
+        // ✅ Get logged-in senior's group IDs
+        $groupIds = Auth::user()->group ?? [];
+
+        // Fetch only juniors whose id exists in senior's group
         $juniorUsers = User::where('role', 'junior')
             ->where('is_deleted', 0)
+            ->whereIn('id', $groupIds) // ✅ filter added
             ->get();
-
 
         // Pass users to the view
         return view('calendar.alljuniorlist', compact('juniorUsers'));
