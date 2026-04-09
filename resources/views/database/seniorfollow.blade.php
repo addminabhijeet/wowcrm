@@ -342,7 +342,7 @@
         </div>
     </div>
 
-
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <style>
         .input-hint {
             font-size: .85rem;
@@ -398,7 +398,8 @@
             /* required */
         }
     </style>
-
+    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const tableBody = document.getElementById("sheet-table-body");
