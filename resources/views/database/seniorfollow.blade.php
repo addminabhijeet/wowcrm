@@ -399,25 +399,31 @@ $script = '<script>
     }
 </style>
 <script>
-    $(document).ready(function() {
+    document.addEventListener("DOMContentLoaded", function() {
 
-        function syncTopScroll() {
-            var table = $('#sheet-table-body').closest('table')[0];
+        const topWrapper = document.getElementById("top-scroll-wrapper");
+        const bottomWrappers = document.querySelectorAll(".table-responsive.scroll-sm");
+
+        function syncWidth() {
+            const table = document.querySelector("#sheet-table-body")?.closest("table");
             if (!table) return;
 
-            var tableWidth = table.scrollWidth;
-            $('#top-scroll').width(tableWidth);
+            document.getElementById("top-scroll").style.width = table.scrollWidth + "px";
         }
 
-        syncTopScroll();
-        $(window).on('resize', syncTopScroll);
+        syncWidth();
+        window.addEventListener("resize", syncWidth);
 
-        $('#top-scroll-wrapper').on('scroll', function() {
-            $('.table-responsive.scroll-sm').scrollLeft($(this).scrollLeft());
-        });
+        if (topWrapper) {
+            topWrapper.addEventListener("scroll", function() {
+                bottomWrappers.forEach(el => el.scrollLeft = topWrapper.scrollLeft);
+            });
+        }
 
-        $('.table-responsive.scroll-sm').on('scroll', function() {
-            $('#top-scroll-wrapper').scrollLeft($(this).scrollLeft());
+        bottomWrappers.forEach(el => {
+            el.addEventListener("scroll", function() {
+                if (topWrapper) topWrapper.scrollLeft = el.scrollLeft;
+            });
         });
 
     });
