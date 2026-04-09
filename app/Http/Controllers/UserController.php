@@ -419,7 +419,6 @@ class UserController extends Controller
             ->with('success', ' updated successfully!');
     }
 
-
     public function seniorgroupupdate(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -428,13 +427,17 @@ class UserController extends Controller
             'role' => 'required|string|in:junior,admin,senior,customer,accountant',
         ]);
 
-        // ✅ Save group JSON
-        $validated['group'] = $request->group ?? [];
+        $existingGroups = $user->group ?? [];
+        $newGroup = $request->group ?? [];
+
+        $mergedGroups = array_unique(array_merge($existingGroups, $newGroup));
+
+        $validated['group'] = $mergedGroups;
 
         $user->update($validated);
 
         return redirect()->route("users.senior.edit", $user->id)
-            ->with('success', ' updated successfully!');
+            ->with('success', 'Updated successfully!');
     }
 
     public function seniorgroupremove($seniorId, $juniorId)
