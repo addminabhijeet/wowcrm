@@ -68,9 +68,11 @@ $script ='<script>
                                             <option value="" disabled selected>Select Junior</option>
 
                                             @foreach($juniors as $junior)
+                                            @if(!in_array($junior->id, $user->group ?? []))
                                             <option value="{{ $junior->id }}">
                                                 {{ $junior->name }}
                                             </option>
+                                            @endif
                                             @endforeach
 
                                         </select>
