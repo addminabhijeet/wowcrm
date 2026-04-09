@@ -16,10 +16,29 @@
 	position: relative;
 	top: 0.4em;
 }
-.pdf24_ a:link {text-decoration:none;}
-.pdf24_ a:visited {text-decoration:none;}
-@media screen and (min-device-pixel-ratio:0), (-webkit-min-device-pixel-ratio:0), (min--moz-device-pixel-ratio: 0) {.pdf24_view{ font-size:10em; transform:scale(0.1); -moz-transform:scale(0.1); -webkit-transform:scale(0.1); -moz-transform-origin:top left; -webkit-transform-origin:top left; } }
-.pdf24_layer { }.pdf24_ie { font-size: 1pt; }
+.pdf24_ a:link { text-decoration: none; }
+.pdf24_ a:visited { text-decoration: none; }
+
+@media screen and (min-device-pixel-ratio:0), 
+       (-webkit-min-device-pixel-ratio:0), 
+       (min--moz-device-pixel-ratio: 0) 
+{
+    .pdf24_view { 
+        font-size: 10em; 
+        transform: scale(0.1);
+        -moz-transform: scale(0.1);
+        -webkit-transform: scale(0.1);
+
+        /* Standard property added for compatibility */
+        transform-origin: top left;
+        -moz-transform-origin: top left;
+        -webkit-transform-origin: top left;
+    }
+}
+
+
+
+.pdf24_ie { font-size: 1pt; }
 .pdf24_ie body { font-size: 12em; }
 @media print{.pdf24_view {font-size:1em; transform:scale(1);}}
 .pdf24_grlink { position:relative;width:100%;height:100%;z-index:1000000; }
