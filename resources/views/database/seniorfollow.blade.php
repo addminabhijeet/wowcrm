@@ -51,9 +51,13 @@
         </div>
 
         <div class="card-body p-24" id="senior-table-wrapper">
+            <!-- Extra Scroll Bar Above -->
+            <!-- Extra Scroll Bar Above -->
             <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
                 <div id="top-scroll"></div>
             </div>
+
+            <!-- Main Table Scroll -->
             <div class="table-responsive scroll-sm" id="bottom-scroll-wrapper">
                 @if ($data->isEmpty())
                     <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
@@ -396,76 +400,6 @@
     </style>
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-    <script>
-function initAllDatePickers(context = document) {
-    const inputs = context.querySelectorAll("input.date-picker");
-
-    inputs.forEach((input) => {
-        if (!input || input.dataset.fpInit === "1") return;
-
-        if (!input.value) return;
-
-        // mark so we don't initialize twice
-        input.dataset.fpInit = "1";
-
-        setTimeout(() => {
-            const fp = flatpickr(input, {
-                dateFormat: "m/d/Y",
-                defaultDate: input.value,
-                allowInput: true,
-
-                onReady: function(_, __, instance) {
-                    if (input.value) {
-                        instance.setDate(input.value, true, "m/d/Y");
-                    }
-                }
-            });
-
-            // force UI repaint (fix tablet blank issue)
-            requestAnimationFrame(() => {
-                input.dispatchEvent(new Event("input"));
-                input.dispatchEvent(new Event("change"));
-            });
-        }, 150); // IMPORTANT delay for tablet rendering
-    });
-}
-
-// Run in ALL lifecycle phases (critical for tablet Safari/Chrome)
-document.addEventListener("DOMContentLoaded", () => initAllDatePickers());
-window.addEventListener("load", () => initAllDatePickers());
-window.addEventListener("resize", () => initAllDatePickers());
-window.addEventListener("orientationchange", () => initAllDatePickers());
-</script>
-    <script>
-    function forceDateHydration() {
-        document.querySelectorAll("input.date-picker").forEach((input) => {
-            if (!input.value) return;
-
-            // destroy previous flatpickr instance if exists
-            if (input._flatpickr) {
-                input._flatpickr.destroy();
-            }
-
-            // re-init AFTER DOM is stable (tablet fix)
-            setTimeout(() => {
-                flatpickr(input, {
-                    dateFormat: "m/d/Y",
-                    defaultDate: input.value,
-                    allowInput: true
-                });
-
-                // force repaint for tablet Safari/Chrome
-                input.dispatchEvent(new Event("change"));
-            }, 50);
-        });
-    }
-
-    // run multiple times for tablet rendering lifecycle
-    document.addEventListener("DOMContentLoaded", forceDateHydration);
-    window.addEventListener("load", forceDateHydration);
-    window.addEventListener("resize", forceDateHydration);
-    window.addEventListener("orientationchange", forceDateHydration);
-    </script>
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const tableBody = document.getElementById("sheet-table-body");
