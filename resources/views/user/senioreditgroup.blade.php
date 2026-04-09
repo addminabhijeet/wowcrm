@@ -47,7 +47,7 @@ $script ='<script>
 @section('content')
 
 <div class="row gy-4">
-    <div class="col-lg-8">
+    <div class="col-12">
         <div class="card h-100">
             <div class="card-body p-24">
                 <ul class="nav border-gradient-tab nav-pills mb-20 d-inline-flex" id="pills-tab" role="tablist">
@@ -95,7 +95,7 @@ $script ='<script>
 </div>
 
 <div class="row gy-4">
-    <div class="col-lg-8">
+    <div class="col-12">
         <div class="card h-100">
             <div class="card-body p-24">
                 <div class="tab-content" id="pills-tabContent">
