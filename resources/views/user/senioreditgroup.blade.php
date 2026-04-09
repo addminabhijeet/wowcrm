@@ -68,8 +68,7 @@ $script ='<script>
                                             <option value="" disabled selected>Select Junior</option>
 
                                             @foreach($juniors as $junior)
-                                            <option value="{{ $junior->id }}"
-                                                {{ in_array($junior->id, $user->group ?? []) ? 'selected' : '' }}>
+                                            <option value="{{ $junior->id }}">
                                                 {{ $junior->name }}
                                             </option>
                                             @endforeach
