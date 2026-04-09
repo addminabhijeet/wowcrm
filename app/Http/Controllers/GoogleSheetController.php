@@ -1597,7 +1597,7 @@ class GoogleSheetController extends Controller
 
         return view('database.seniortra',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
-
+    
     public function seniortraotp(Request $request)
     {
         $authUser = Auth::user();
@@ -1609,6 +1609,9 @@ class GoogleSheetController extends Controller
         $userPattern = "%:" . $authUser->id . "|junior";
         $zeroPattern = "%:0|senior";
 
+        // -----------------------------
+        // Original query - DO NOT CHANGE
+        // -----------------------------
         $query = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
 
             $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
@@ -1627,7 +1630,8 @@ class GoogleSheetController extends Controller
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
             })
-            ->where('transfers', 0)->where('Immigration', 'STEM OPT');
+            ->where('transfers', 0)
+            ->where('Immigration', 'STEM OPT');
 
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
@@ -1648,9 +1652,42 @@ class GoogleSheetController extends Controller
             });
         }
 
+        // -----------------------------
+        // Fetch results (original query)
+        // -----------------------------
         $results = $query->orderBy('updated_at', 'desc')->get();
 
-        $transformed = $results->map(function ($item) use ($authUser) {
+        // -----------------------------
+        // FILTER: only assigned juniors
+        // -----------------------------
+        $assignedJuniorIds = $authUser->group ?? [];
+        $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds) {
+            if (empty($item->created_by)) return false;
+
+            $entries = explode(':', $item->created_by);
+            foreach ($entries as $entry) {
+                $parts = explode('|', $entry);
+                $userId = $parts[0] ?? null;
+                $role   = $parts[1] ?? null;
+
+                // Keep if junior is assigned
+                if ($role === 'junior' && in_array((int)$userId, $assignedJuniorIds)) {
+                    return true;
+                }
+
+                // Optionally include rows created by the senior themselves
+                if ($role === 'senior' && $userId == Auth::id()) {
+                    return true;
+                }
+            }
+
+            return false; // ignore everything else
+        });
+
+        // -----------------------------
+        // Transform data
+        // -----------------------------
+        $transformed = $filteredResults->map(function ($item) use ($authUser) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
@@ -1686,6 +1723,10 @@ class GoogleSheetController extends Controller
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
+
+        // -----------------------------
+        // Pagination
+        // -----------------------------
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -1698,20 +1739,30 @@ class GoogleSheetController extends Controller
                 'query' => [
                     'search' => $request->search,
                     'junior_user' => $request->junior_user,
-                    'date' => $request->date // ✅ add this
+                    'date' => $request->date
                 ]
             ]
         );
-        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
+
+        // -----------------------------
+        // Dropdown: only assigned juniors
+        // -----------------------------
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)
+            ->whereIn('role', ['junior', 'senior'])
+            ->whereIn('id', $assignedJuniorIds) // ✅ only assigned juniors
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
+
+        // -----------------------------
+        // Return view
+        // -----------------------------
         if ($request->ajax()) {
             return view('database.partials.seniortraotp_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
+
         return view('database.seniortraotp',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
-
 
     public function seniortrafollow(Request $request)
     {
