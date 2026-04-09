@@ -43,6 +43,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/admin/senior/create', [UserController::class, 'seniorcreate'])->name('users.senior.create');
     Route::post('/dashboard/admin/senior/store', [UserController::class, 'seniorstore'])->name('users.senior.store');
     Route::get('/dashboard/admin/senior/{id}/edit', [UserController::class, 'senioredit'])->name('users.senior.edit');
+    Route::get('/dashboard/admin/senior/{id}/editgroup', [UserController::class, 'senioreditgroup'])->name('users.senior.editgroup');
     Route::put('/dashboard/admin/senior/update/{id}', [UserController::class, 'seniorupdate'])->name('users.senior.update');
     Route::get('/dashboard/admin/senior/destroy/{id}', [UserController::class, 'seniordestroy'])->name('users.senior.destroy');
 

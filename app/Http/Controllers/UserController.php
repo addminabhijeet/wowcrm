@@ -356,6 +356,12 @@ class UserController extends Controller
         return view('user.senioredit', compact('user'));
     }
 
+    public function senioreditgroup($id)
+    {
+        $user = User::findOrFail($id);
+        return view('user.senioreditgroup', compact('user'));
+    }
+
     public function seniorupdate(Request $request, $id)
     {
         $user = User::findOrFail($id);
