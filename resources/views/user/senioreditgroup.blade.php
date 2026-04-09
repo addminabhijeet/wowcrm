@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title='View Profile';
+$title='View Senior Group';
 $role = auth()->user()->role ?? '';
 if($role === 'admin'){
 $subTitle = 'Super Admin';

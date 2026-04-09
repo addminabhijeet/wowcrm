@@ -356,15 +356,6 @@ class UserController extends Controller
         return view('user.senioredit', compact('user'));
     }
 
-    public function senioreditgroup($id)
-    {
-        $user = User::findOrFail($id);
-
-        $juniors = User::where('role', 'junior')->where('is_deleted', 0)->get();
-
-        return view('user.senioreditgroup', compact('user', 'juniors'));
-    }
-
     public function seniorupdate(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -419,6 +410,24 @@ class UserController extends Controller
             ->with('success', ' updated successfully!');
     }
 
+    public function senioreditgroup($id)
+    {
+        $user = User::findOrFail($id);
+
+        $assignedJuniorIds = User::whereNotNull('group')
+            ->pluck('group')
+            ->flatten()
+            ->unique()
+            ->toArray();
+
+        $juniors = User::where('role', 'junior')
+            ->where('is_deleted', 0)
+            ->whereNotIn('id', $assignedJuniorIds)
+            ->get();
+
+        return view('user.senioreditgroup', compact('user', 'juniors'));
+    }
+
     public function seniorgroupupdate(Request $request, $id)
     {
         $user = User::findOrFail($id);
@@ -436,7 +445,7 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users.senior.edit", $user->id)
+        return redirect()->route("users.senior.editgroup", $user->id)
             ->with('success', 'Updated successfully!');
     }
 
