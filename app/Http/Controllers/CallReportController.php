@@ -125,6 +125,12 @@ class CallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
             ->count();
 
 
