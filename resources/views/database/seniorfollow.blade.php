@@ -414,6 +414,36 @@
     });
     </script>
     <script>
+    function forceDateHydration() {
+        document.querySelectorAll("input.date-picker").forEach((input) => {
+            if (!input.value) return;
+
+            // destroy previous flatpickr instance if exists
+            if (input._flatpickr) {
+                input._flatpickr.destroy();
+            }
+
+            // re-init AFTER DOM is stable (tablet fix)
+            setTimeout(() => {
+                flatpickr(input, {
+                    dateFormat: "m/d/Y",
+                    defaultDate: input.value,
+                    allowInput: true
+                });
+
+                // force repaint for tablet Safari/Chrome
+                input.dispatchEvent(new Event("change"));
+            }, 50);
+        });
+    }
+
+    // run multiple times for tablet rendering lifecycle
+    document.addEventListener("DOMContentLoaded", forceDateHydration);
+    window.addEventListener("load", forceDateHydration);
+    window.addEventListener("resize", forceDateHydration);
+    window.addEventListener("orientationchange", forceDateHydration);
+    </script>
+    <script>
         document.addEventListener("DOMContentLoaded", function() {
             const tableBody = document.getElementById("sheet-table-body");
 
