@@ -389,54 +389,6 @@
                 <li class="dropdown">
                     <a href="javascript:void(0)">
                         <iconify-icon icon="fluent:people-20-filled" class="menu-icon"></iconify-icon>
-                        <span>Users</span>
-                    </a>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('users.admin') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Admin</a></li>
-                    </ul>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('users.operation') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Operation</a></li>
-                    </ul>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('users.junior') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter</a>
-                        </li>
-                    </ul>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('users.senior') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior
-                                Recruiter</a></li>
-                    </ul>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('users.accountant') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>US Accounts</a></li>
-                    </ul>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('users.associate') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Support
-                                Associate</a></li>
-                    </ul>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('users.support') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Support
-                                Associate</a></li>
-                    </ul>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('users.writer') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Resume Writer</a>
-                        </li>
-                    </ul>
-                    <ul class="sidebar-submenu">
-                        <li><a href="{{ route('users.trainer') }}"><i
-                                    class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Trainer</a></li>
-                    </ul>
-                </li>
-
-                <li class="dropdown">
-                    <a href="javascript:void(0)">
-                        <iconify-icon icon="fluent:people-20-filled" class="menu-icon"></iconify-icon>
                         <span>Group</span>
                     </a>
                     <ul class="sidebar-submenu">
