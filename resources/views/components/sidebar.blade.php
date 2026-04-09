@@ -440,7 +440,7 @@
                         <span>Group</span>
                     </a>
                     <ul class="sidebar-submenu">
-                        <li><a href="{{ route('group.senior') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Group</a></li>
+                        <li><a href="{{ route('senior.group') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Group</a></li>
                     </ul>
                 </li>
 
