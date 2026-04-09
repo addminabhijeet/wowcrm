@@ -416,6 +416,61 @@ class UserController extends Controller
             ->with('success', ' updated successfully!');
     }
 
+
+    public function seniorgroupupdate(Request $request, $id)
+    {
+        $user = User::findOrFail($id);
+
+        $validated = $request->validate([
+            'name'        => 'required|string|max:255',
+            'email'       => 'required|email|unique:users,email,' . $user->id,
+            'phone'       => 'nullable|string|max:20',
+            'gender' => 'nullable|string',
+            'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
+            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
+            'password'    => 'nullable|string|min:6|confirmed',
+        ]);
+
+        $validated['status'] = $request->has('status') ? 1 : 0;
+
+        // Handle Image Upload directly to public/user_images
+        if ($request->hasFile('image')) {
+            $file = $request->file('image');
+
+            // Generate unique filename
+            $timestamp = now()->format('Ymd_His');
+            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $extension = $file->getClientOriginalExtension();
+            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+
+            try {
+                // Move file directly to public/user_images
+                $file->move(public_path('user_images'), $newName);
+
+                // Delete old image if exists
+                if ($user->image && file_exists(public_path($user->image))) {
+                    unlink(public_path($user->image));
+                }
+
+                // Store relative path for asset()
+                $validated['image'] = 'user_images/' . $newName;
+            } catch (\Exception $e) {
+                return back()->with('error', 'Image upload failed: ' . $e->getMessage());
+            }
+        }
+
+        if (!empty($request->password)) {
+            $validated['password'] = Hash::make($request->password);
+        } else {
+            unset($validated['password']);
+        }
+
+        $user->update($validated);
+
+        return redirect()->route("users.senior.edit", $user->id)
+            ->with('success', ' updated successfully!');
+    }
+
     // ======================
     // DELETE
     // ======================

@@ -3,11 +3,11 @@
 $title='View Profile';
 $role = auth()->user()->role ?? '';
 if($role === 'admin'){
-    $subTitle = 'Super Admin';
+$subTitle = 'Super Admin';
 } elseif ($role === 'operation') {
-    $subTitle = 'Operation Manager';
+$subTitle = 'Operation Manager';
 } else{
-    $subTitle = 'role';
+$subTitle = 'role';
 }
 $script ='<script>
     // ======================== Upload Image Start =====================
@@ -100,18 +100,8 @@ $script ='<script>
                             Edit Profile
                         </button>
                     </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link d-flex align-items-center px-24" id="pills-change-passwork-tab" data-bs-toggle="pill" data-bs-target="#pills-change-passwork" type="button" role="tab" aria-controls="pills-change-passwork" aria-selected="false" tabindex="-1">
-                            Change Password
-                        </button>
-                    </li>
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link d-flex align-items-center px-24" id="pills-notification-tab" data-bs-toggle="pill" data-bs-target="#pills-notification" type="button" role="tab" aria-controls="pills-notification" aria-selected="false" tabindex="-1">
-                            Settings
-                        </button>
-                    </li>
                 </ul>
-                <form action="{{ route('users.senior.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('users.seniorgroup.update', $user->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="tab-content" id="pills-tabContent">
@@ -200,26 +190,6 @@ $script ='<script>
                                     <button type="submit" class="btn btn-primary border border-primary-600 text-md px-56 py-12 radius-8">
                                         Save
                                     </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="tab-pane fade" id="pills-change-passwork" role="tabpanel">
-                            <div class="mb-20">
-                                <label for="your-password" class="form-label fw-semibold text-primary-light text-sm mb-8">New Password</label>
-                                <input type="password" name="password" class="form-control radius-8" id="your-password" placeholder="Enter New Password">
-                            </div>
-                            <div class="mb-20">
-                                <label for="confirm-password" class="form-label fw-semibold text-primary-light text-sm mb-8">Confirm Password</label>
-                                <input type="password" name="password_confirmation" class="form-control radius-8" id="confirm-password" placeholder="Confirm Password">
-                            </div>
-                        </div>
-
-                        <div class="tab-pane fade" id="pills-notification" role="tabpanel">
-                            <div class="form-switch switch-primary py-12 px-16 border radius-8 position-relative mb-16">
-                                <div class="d-flex align-items-center gap-3 justify-content-between">
-                                    <span class="form-check-label line-height-1 fw-medium text-secondary-light">Account Status</span>
-                                    <input class="form-check-input" type="checkbox" id="status" name="status" value="1" {{ $user->status ? 'checked' : '' }}>
                                 </div>
                             </div>
                         </div>
