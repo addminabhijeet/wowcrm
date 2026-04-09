@@ -104,9 +104,12 @@ $script ='<script>
                         <div class="row">
                             <div class="col-12 mt-3">
                                 <h6>Assigned Juniors</h6>
-
                                 @if(!empty($user->group))
-                                @foreach($juniors->whereIn('id', $user->group) as $junior)
+                                @php
+                                $assignedJuniors = \App\Models\User::whereIn('id', $user->group)->get();
+                                @endphp
+
+                                @foreach($assignedJuniors as $junior)
                                 <div class="d-flex justify-content-between align-items-center border p-2 mb-2 radius-8">
                                     <div>
                                         {{ $junior->name }} ({{ $junior->email }})

@@ -414,7 +414,8 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $groupIds = User::whereNotNull('group')
+        $groupIds = User::where('id', '!=', $id)
+            ->whereNotNull('group')
             ->pluck('group')
             ->toArray();
 
@@ -427,6 +428,7 @@ class UserController extends Controller
         }
 
         $assignedJuniorIds = array_unique($assignedJuniorIds);
+
         $juniors = User::where('role', 'junior')
             ->where('is_deleted', 0)
             ->whereNotIn('id', $assignedJuniorIds)
@@ -440,7 +442,8 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'group' => 'nullable',
+            'group' => 'nullable|array',
+            'group.*' => 'exists:users,id'
         ]);
 
         $existingGroups = $user->group ?? [];
