@@ -295,6 +295,14 @@ class UserController extends Controller
         return view('user.senior', compact('users'));
     }
 
+    public function seniorgroup()
+    {
+        $users = User::where('role', 'senior')
+            ->where('is_deleted', 0)
+            ->get();
+        return view('user.seniorgroup', compact('users'));
+    }
+
     public function seniorcreate()
     {
         return view('user.seniorcreate');
