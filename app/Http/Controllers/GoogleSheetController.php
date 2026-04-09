@@ -1302,28 +1302,19 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user');
         $page = $request->input('page', 1);
-        $userPattern = "%:" . $authUser->id . "|senior";
-        $zeroPattern = "%:0|senior";
+        $juniorPart = $authUser->id . '|senior';
 
-        $query = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
+        $query = GoogleSheetData::where(function ($q) use ($juniorPart) {
 
-            $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-
-                $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
-                    $q2->where('created_by', $authUser->id . '|senior')
-                        ->orWhere('created_by', 'LIKE', $zeroPattern);
-                })
-                    ->whereRaw(
-                        "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
-                    );
-            })
-                ->orWhere('created_by', $authUser->id . '|senior:0|senior');
+            $q->whereRaw("SUBSTRING_INDEX(created_by, ':', 1) = ?", [$juniorPart]);
         })
             ->where(function ($q) {
-                $q->whereNotNull('TransferRemark')
-                    ->where('TransferRemark', '<>', '');
+
+                $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
             })
-            ->where('transfers', 0);
+            ->where('transfers', 0)
+            ->whereNotNull('TransferRemark')
+            ->where('TransferRemark', '<>', '');
 
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
@@ -2193,7 +2184,7 @@ class GoogleSheetController extends Controller
 
         return view('database.seniorpaid', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
-    
+
     public function seniorcon(Request $request)
     {
         $authUser = Auth::user();
