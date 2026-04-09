@@ -397,22 +397,45 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".date-picker").forEach(function (el) {
-            flatpickr(el, {
+function initAllDatePickers(context = document) {
+    const inputs = context.querySelectorAll("input.date-picker");
+
+    inputs.forEach((input) => {
+        if (!input || input.dataset.fpInit === "1") return;
+
+        if (!input.value) return;
+
+        // mark so we don't initialize twice
+        input.dataset.fpInit = "1";
+
+        setTimeout(() => {
+            const fp = flatpickr(input, {
                 dateFormat: "m/d/Y",
-                defaultDate: el.value ? el.value : null,
+                defaultDate: input.value,
                 allowInput: true,
-                onReady: function(selectedDates, dateStr, instance) {
-                    // force re-render value on tablet/mobile
-                    if (el.value && !instance.selectedDates.length) {
-                        instance.setDate(el.value, true, "m/d/Y");
+
+                onReady: function(_, __, instance) {
+                    if (input.value) {
+                        instance.setDate(input.value, true, "m/d/Y");
                     }
                 }
             });
-        });
+
+            // force UI repaint (fix tablet blank issue)
+            requestAnimationFrame(() => {
+                input.dispatchEvent(new Event("input"));
+                input.dispatchEvent(new Event("change"));
+            });
+        }, 150); // IMPORTANT delay for tablet rendering
     });
-    </script>
+}
+
+// Run in ALL lifecycle phases (critical for tablet Safari/Chrome)
+document.addEventListener("DOMContentLoaded", () => initAllDatePickers());
+window.addEventListener("load", () => initAllDatePickers());
+window.addEventListener("resize", () => initAllDatePickers());
+window.addEventListener("orientationchange", () => initAllDatePickers());
+</script>
     <script>
     function forceDateHydration() {
         document.querySelectorAll("input.date-picker").forEach((input) => {
