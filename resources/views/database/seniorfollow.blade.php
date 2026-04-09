@@ -395,79 +395,59 @@ $script = '<script>
     }
 
     /* =========================
-   Tablet / iPad Responsive
-   ========================= */
-    @media (max-width: 1024px) {
-
-        .card-header {
-            flex-direction: column;
-            align-items: flex-start !important;
-        }
-
-        .navbar-search {
-            flex-wrap: wrap;
-            width: 100%;
-        }
-
-        #senior-search,
-        #date-filter {
-            width: 100% !important;
-        }
-
-        #junior-filter {
-            width: 100% !important;
-            margin-top: 8px;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-            -webkit-overflow-scrolling: touch;
-        }
-
-        table.bordered-table {
-            min-width: 1200px;
-            /* keeps table scrollable instead of breaking layout */
-        }
-
-        th,
-        td {
-            white-space: nowrap;
-            font-size: 12px;
-            padding: 8px !important;
-        }
-
-        textarea.form-control {
-            min-width: 160px;
-        }
-
-        input.form-control,
-        select.form-select {
-            min-width: 140px;
-            font-size: 12px;
-        }
-
-        .btn {
-            white-space: nowrap;
-            font-size: 12px;
-        }
-    }
-
-    /* =========================
-   Small Tablet (optional)
+   MOBILE CARD VIEW (CRM STYLE)
    ========================= */
     @media (max-width: 768px) {
 
-        .card-header {
-            gap: 10px;
+        table.bordered-table,
+        thead,
+        tbody,
+        th,
+        td,
+        tr {
+            display: block;
+            width: 100%;
         }
 
-        .navbar-search {
-            flex-direction: column;
-            gap: 10px;
+        thead {
+            display: none;
+            /* hide table header */
         }
 
-        table.bordered-table {
-            min-width: 1000px;
+        tr {
+            margin-bottom: 15px;
+            background: #fff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            padding: 12px;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+        }
+
+        td {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 6px !important;
+            border: none !important;
+            border-bottom: 1px dashed #eee;
+        }
+
+        td:last-child {
+            border-bottom: none;
+        }
+
+        /* Make inputs full width inside card */
+        td input,
+        td select,
+        td textarea {
+            width: 60%;
+            min-width: auto !important;
+            font-size: 13px;
+        }
+
+        .btn {
+            width: auto;
+            font-size: 12px;
         }
     }
 </style>
