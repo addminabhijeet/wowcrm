@@ -50,13 +50,6 @@ $script ='<script>
     <div class="col-12">
         <div class="card h-100">
             <div class="card-body p-24">
-                <ul class="nav border-gradient-tab nav-pills mb-20 d-inline-flex" id="pills-tab" role="tablist">
-                    <li class="nav-item" role="presentation">
-                        <button class="nav-link d-flex align-items-center px-24 active" id="pills-edit-profile-tab" data-bs-toggle="pill" data-bs-target="#pills-edit-profile" type="button" role="tab" aria-controls="pills-edit-profile" aria-selected="true">
-                            Edit Profile
-                        </button>
-                    </li>
-                </ul>
                 <form action="{{ route('users.seniorgroup.update', $user->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
