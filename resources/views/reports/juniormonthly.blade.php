@@ -570,7 +570,7 @@
                                     </div>
                                     <div>
                                         <small class="fw-bold d-block">Total Calls</small>
-                                        <h4 class="fw-bold text-dark mb-0">{{ $MtotalCalls }}</h4>
+                                        <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MtotalCalls }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -582,7 +582,7 @@
                                     </div>
                                     <div>
                                         <small class="fw-bold d-block">Other Calls</small>
-                                        <h4 class="fw-bold text-dark mb-0">{{ $MotherCalls }}</h4>
+                                        <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MotherCalls }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -594,7 +594,7 @@
                                     </div>
                                     <div>
                                         <small class="fw-bold d-block">Called & Mailed</small>
-                                        <h4 class="fw-bold text-dark mb-0">{{ $McalledAndMailedCalls }}</h4>
+                                        <h4 class="fw-bold text-dark mb-0 fs-3">{{ $McalledAndMailedCalls }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -606,7 +606,7 @@
                                     </div>
                                     <div>
                                         <small class="fw-bold d-block">Per Day Calls</small>
-                                        <h4 class="fw-bold text-dark mb-0">{{ $MAvgTotalCalls }}</h4>
+                                        <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MAvgTotalCalls }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -618,7 +618,7 @@
                                     </div>
                                     <div>
                                         <small class="fw-bold d-block">Total Transfers</small>
-                                        <h4 class="fw-bold text-dark mb-0">{{ $Mtotaltransfers }}</h4>
+                                        <h4 class="fw-bold text-dark mb-0 fs-3">{{ $Mtotaltransfers }}</h4>
                                     </div>
                                 </div>
                             </div>
@@ -630,7 +630,7 @@
                                     </div>
                                     <div>
                                         <small class="fw-bold d-block">Per Day Transfers</small>
-                                        <h4 class="fw-bold text-dark mb-0">{{ $MAvgtotaltransfers }}</h4>
+                                        <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MAvgtotaltransfers }}</h4>
                                     </div>
                                 </div>
                             </div>

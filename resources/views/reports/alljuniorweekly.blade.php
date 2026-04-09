@@ -723,7 +723,7 @@ $script = '<script>
                                 </div>
                                 <div>
                                     <small class="fw-bold d-block">Total Calls</small>
-                                    <h4 class="fw-bold text-dark mb-0">{{ $StotalCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $StotalCalls }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -735,7 +735,7 @@ $script = '<script>
                                 </div>
                                 <div>
                                     <small class="fw-bold d-block">Other Calls</small>
-                                    <h4 class="fw-bold text-dark mb-0">{{ $SotherCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $SotherCalls }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -747,7 +747,7 @@ $script = '<script>
                                 </div>
                                 <div>
                                     <small class="fw-bold d-block">Called & Mailed</small>
-                                    <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $ScalledAndMailedCalls }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -759,7 +759,7 @@ $script = '<script>
                                 </div>
                                 <div>
                                     <small class="fw-bold d-block">Total Transfers</small>
-                                    <h4 class="fw-bold text-dark mb-0">{{ $Stotaltransfers }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $Stotaltransfers }}</h4>
                                 </div>
                             </div>
                         </div>

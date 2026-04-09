@@ -442,7 +442,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">Total Calls (TC)</small>
-                                    <h4 class="fw-bold text-dark mb-0">{{ $StotalCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $StotalCalls }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -453,7 +453,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">Other Calls (OC)</small>
-                                    <h4 class="fw-bold text-dark mb-0">{{ $SotherCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $SotherCalls }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -464,7 +464,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">Trainning (C&MC)</small>
-                                    <h4 class="fw-bold text-dark mb-0">{{ $ScalledAndMailedCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $ScalledAndMailedCalls }}</h4>
                                 </div>
                             </div>
                         </div>
