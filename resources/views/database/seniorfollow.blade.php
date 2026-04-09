@@ -397,6 +397,23 @@
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
     <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll(".date-picker").forEach(function (el) {
+            flatpickr(el, {
+                dateFormat: "m/d/Y",
+                defaultDate: el.value ? el.value : null,
+                allowInput: true,
+                onReady: function(selectedDates, dateStr, instance) {
+                    // force re-render value on tablet/mobile
+                    if (el.value && !instance.selectedDates.length) {
+                        instance.setDate(el.value, true, "m/d/Y");
+                    }
+                }
+            });
+        });
+    });
+    </script>
+    <script>
         document.addEventListener("DOMContentLoaded", function() {
             const tableBody = document.getElementById("sheet-table-body");
 
