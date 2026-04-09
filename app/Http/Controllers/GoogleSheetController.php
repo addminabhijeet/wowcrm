@@ -2074,16 +2074,16 @@ class GoogleSheetController extends Controller
 
 
 
-
     public function seniorpaid(Request $request)
     {
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
 
+        // -----------------------------
+        // Original query (no logic change)
+        // -----------------------------
         $query = GoogleSheetData::where(function ($q) {
-            // Removed user_id|senior check
-            // Only keep the accountant part filter
             $q->where(function ($q2) {
                 $q2->whereRaw("created_by = '0|accountant'")
                     ->orWhereRaw("created_by LIKE '0|accountant:%'")
@@ -2102,16 +2102,42 @@ class GoogleSheetController extends Controller
             });
         }
 
-        $data = $query->orderBy('Date', 'desc')->paginate(10);
+        $results = $query->orderBy('Date', 'desc')->get();
 
-        $data->getCollection()->transform(function ($item) use ($authUser) {
+        // -----------------------------
+        // Filter only assigned juniors
+        // -----------------------------
+        $assignedJuniorIds = $authUser->group ?? [];
+        $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds, $authUser) {
+            if (empty($item->created_by)) return false;
 
+            $entries = explode(':', $item->created_by);
+            foreach ($entries as $entry) {
+                $parts = explode('|', $entry);
+                $userId = $parts[0] ?? null;
+                $role   = $parts[1] ?? null;
+
+                // Keep if junior is assigned
+                if ($role === 'junior' && in_array((int)$userId, $assignedJuniorIds)) {
+                    return true;
+                }
+
+                // Include rows created by the senior themselves
+                if ($role === 'senior' && $userId == $authUser->id) {
+                    return true;
+                }
+            }
+
+            return false; // ignore everything else
+        });
+
+        // -----------------------------
+        // Transform forwarded_by
+        // -----------------------------
+        $transformed = $filteredResults->map(function ($item) use ($authUser) {
             $forwardedBy = '';
-
             if (!empty($item->created_by)) {
-                // Split by ':' to handle multiple forwarded entries
                 $entries = explode(':', $item->created_by);
-
                 $names = [];
                 foreach ($entries as $entry) {
                     $parts = explode('|', $entry);
@@ -2128,8 +2154,6 @@ class GoogleSheetController extends Controller
                         $names[] = "{$name} ({$userId}) ({$role})";
                     }
                 }
-
-                // Join all names for forwarded chain
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -2139,12 +2163,35 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        // -----------------------------
+        // Pagination
+        // -----------------------------
+        $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transformed->forPage(request()->input('page', 1), 10),
+            $transformed->count(),
+            10,
+            request()->input('page', 1),
+            ['path' => url()->current(), 'query' => $request->query()]
+        );
 
-        if (request()->ajax()) {
-            return view('database.partials.career_table', compact('data'))->render();
+        // -----------------------------
+        // Dropdown: only assigned juniors
+        // -----------------------------
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)
+            ->where('role', 'junior')
+            ->whereIn('id', $assignedJuniorIds)
+            ->where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
+
+        // -----------------------------
+        // Return view
+        // -----------------------------
+        if ($request->ajax()) {
+            return view('database.partials.career_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
-        return view('database.seniorpaid', compact('data'));
+        return view('database.seniorpaid', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
     public function seniorcon(Request $request)
