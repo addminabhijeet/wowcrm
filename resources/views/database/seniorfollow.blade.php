@@ -342,10 +342,63 @@
         </div>
     </div>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <style>
+        .input-hint {
+            font-size: .85rem;
+            color: #6c757d;
+        }
+
+        select.dynamic-dropdown {
+            min-width: 160px;
+        }
+
+        input.valid {
+            background-color: #d4edda;
+        }
+
+        input.invalid {
+            background-color: #f8d7da;
+        }
+
+        input.neutral {
+            background-color: #ffffff;
+        }
+
+        select.neutral {
+            background-color: #ffffff;
+        }
+
+        select.valid {
+            background-color: #d4edda;
+        }
+
+        .phone-hint {
+            font-size: .8rem;
+            color: #6c757d;
+            margin-top: 3px;
+            display: block;
+        }
+
+        .small-hint {
+            font-size: .8rem;
+            color: #6c757d;
+            display: block;
+            margin-top: 2px;
+        }
+
+        #top-scroll-wrapper {
+            overflow-x: scroll;
+            overflow-y: hidden;
+            height: 20px;
+        }
+
+        #top-scroll {
+            height: 1px;
+            /* required */
+        }
+    </style>
+
     <script>
         document.addEventListener("DOMContentLoaded", function() {
             const tableBody = document.getElementById("sheet-table-body");
