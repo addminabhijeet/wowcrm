@@ -583,7 +583,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">Total Calls</small>
-                                    <h4 class="fw-bold text-dark mb-0 fs-2">{{ $MtotalCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MtotalCalls }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -594,7 +594,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">Sr IT Recruiter<br>(Follow Up)</small>
-                                    <h4 class="fw-bold text-dark mb-0 fs-2">{{ $MfollowUpCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MfollowUpCalls }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -605,7 +605,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">Sr IT Recruiter<br>(Called & Mailed)</small>
-                                    <h4 class="fw-bold text-dark mb-0 fs-2">{{ $McalledAndMailedCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $McalledAndMailedCalls }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -616,7 +616,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">Sr IT Recruiter<br>(Self follow up)</small>
-                                    <h4 class="fw-bold text-dark mb-0 fs-2">{{ $MselffollowupCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MselffollowupCalls }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -627,7 +627,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">Sr IT Recruiter<br>(Transfered Follow Up)</small>
-                                    <h4 class="fw-bold text-dark mb-0 fs-2">{{ $MtransferedfollowUpCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MtransferedfollowUpCalls }}</h4>
                                 </div>
                             </div>
                         </div>
@@ -638,7 +638,7 @@
                                 </div>
                                 <div>
                                     <small class="text-muted d-block">Ready To Paid</small>
-                                    <h4 class="fw-bold text-dark mb-0 fs-2">{{ $MreadyToPaidCalls }}</h4>
+                                    <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MreadyToPaidCalls }}</h4>
                                 </div>
                             </div>
                         </div>
