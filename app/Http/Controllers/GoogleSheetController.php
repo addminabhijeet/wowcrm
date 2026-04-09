@@ -624,7 +624,6 @@ class GoogleSheetController extends Controller
         return view('database.senior', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
-
     public function seniorfollow(Request $request)
     {
         $authUser = Auth::user();
@@ -632,22 +631,24 @@ class GoogleSheetController extends Controller
         $date = $request->input('date');
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // dropdown value
-        $page = $request->input('page', 1); //  Ensure page input handled
+        $page = $request->input('page', 1);
 
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
+        // -----------------------------
+        // Original query - DO NOT CHANGE
+        // -----------------------------
         $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
             $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
-
                 $q2->where('created_by', $authUser->id . '|senior')
                     ->orWhere('created_by', '0|senior')
                     ->orWhere('created_by', 'LIKE', $userPattern)
                     ->orWhere('created_by', 'LIKE', $zeroPattern);
             })
-                // EXCLUSION: Do NOT show rows having more than one "|senior"
                 ->whereRaw("LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')");
-        })->whereNotNull('TransferRemark')
+        })
+            ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0);
 
@@ -658,11 +659,11 @@ class GoogleSheetController extends Controller
                     ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
             });
         }
+
         if ($date) {
             $query->whereDate('updated_at', $date);
         }
 
-        // Search or specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -673,22 +674,47 @@ class GoogleSheetController extends Controller
             });
         }
 
-        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
         $results = $query->orderBy('updated_at', 'desc')->get();
 
-        // ✅ Transform after getting all filtered data
-        $transformed = $results->map(function ($item) use ($authUser) {
-            $forwardedBy = '';
+        // -----------------------------
+        // FILTER: only assigned juniors
+        // -----------------------------
+        $assignedJuniorIds = $authUser->group ?? [];
+        $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds) {
+            if (empty($item->created_by)) return false;
 
+            $entries = explode(':', $item->created_by);
+            foreach ($entries as $entry) {
+                $parts = explode('|', $entry);
+                $userId = $parts[0] ?? null;
+                $role   = $parts[1] ?? null;
+
+                // Keep if junior is assigned
+                if ($role === 'junior' && in_array((int)$userId, $assignedJuniorIds)) {
+                    return true;
+                }
+
+                // Optionally include rows created by the senior themselves
+                if ($role === 'senior' && $userId == Auth::id()) {
+                    return true;
+                }
+            }
+
+            return false; // ignore everything else
+        });
+
+        // -----------------------------
+        // Transform data
+        // -----------------------------
+        $transformed = $filteredResults->map(function ($item) use ($authUser) {
+            $forwardedBy = '';
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
                 $names = [];
-
                 foreach ($entries as $entry) {
                     $parts = explode('|', $entry);
                     $userId = $parts[0] ?? null;
                     $role   = $parts[1] ?? 'unknown';
-
                     if ($userId == $authUser->id) {
                         $roleLabel = ($role === 'senior')
                             ? 'IT Senior Recruiter'
@@ -708,7 +734,6 @@ class GoogleSheetController extends Controller
                         $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
                 }
-
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -718,7 +743,9 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // ✅ Apply pagination AFTER transformation (like junior)
+        // -----------------------------
+        // Pagination
+        // -----------------------------
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -731,25 +758,31 @@ class GoogleSheetController extends Controller
                 'query' => [
                     'search' => $request->search,
                     'junior_user' => $request->junior_user,
-                    'date' => $request->date // ✅ add this
+                    'date' => $request->date
                 ]
             ]
         );
 
-        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
+        // -----------------------------
+        // Dropdown: only assigned juniors
+        // -----------------------------
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)
+            ->whereIn('role', ['junior', 'senior'])
+            ->whereIn('id', $assignedJuniorIds) // ✅ only assigned juniors
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-        // ✅ Handle AJAX pagination and search
+        // -----------------------------
+        // Return view
+        // -----------------------------
         if ($request->ajax()) {
             return view('database.partials.seniorfollow_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
         return view('database.seniorfollow', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
-
-
+    
     public function career(Request $request)
     {
         $authUser = Auth::user();
@@ -1597,7 +1630,7 @@ class GoogleSheetController extends Controller
 
         return view('database.seniortra',  ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
-    
+
     public function seniortraotp(Request $request)
     {
         $authUser = Auth::user();
