@@ -65,16 +65,17 @@ $script ='<script>
                             <div class="row">
                                 <div class="col-sm-6">
                                     <div class="mb-20">
-                                        <label for="role" class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                            Role <span class="text-danger-600">*</span>
+                                        <label class="form-label fw-semibold text-primary-light text-sm mb-8">
+                                            Assign Juniors
                                         </label>
-                                        <select name="role" id="role" class="form-control radius-8 form-select" required>
-                                            <option value="" disabled>Select Role</option>
-                                            <option value="junior" {{ $user->role == 'junior' ? 'selected' : '' }}>IT Recruiter</option>
-                                            <option value="senior" {{ $user->role == 'senior' ? 'selected' : '' }}>IT Senior Recruiter</option>
-                                            <option value="admin" {{ $user->role == 'admin' ? 'selected' : '' }}>Admin</option>
-                                            <option value="candidate" {{ $user->role == 'customer' ? 'selected' : '' }}>Customer</option>
-                                            <option value="accountant" {{ $user->role == 'accountant' ? 'selected' : '' }}>Support</option>
+
+                                        <select name="group[]" class="form-control radius-8 form-select" multiple>
+                                            @foreach($juniors as $junior)
+                                            <option value="{{ $junior->id }}"
+                                                {{ in_array($junior->id, $user->group ?? []) ? 'selected' : '' }}>
+                                                {{ $junior->name }} ({{ $junior->email }})
+                                            </option>
+                                            @endforeach
                                         </select>
                                     </div>
                                 </div>
@@ -88,6 +89,42 @@ $script ='<script>
                         </div>
                     </div>
                 </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row gy-4">
+    <div class="col-lg-8">
+        <div class="card h-100">
+            <div class="card-body p-24">
+                <div class="tab-content" id="pills-tabContent">
+                    <div class="tab-pane fade show active" id="pills-edit-profile" role="tabpanel">
+                        <div class="row">
+                            <div class="col-12 mt-3">
+                                <h6>Assigned Juniors</h6>
+
+                                @if(!empty($user->group))
+                                @foreach($juniors->whereIn('id', $user->group) as $junior)
+                                <div class="d-flex justify-content-between align-items-center border p-2 mb-2 radius-8">
+                                    <div>
+                                        {{ $junior->name }} ({{ $junior->email }})
+                                    </div>
+
+                                    <form action="{{ route('users.seniorgroup.remove', [$user->id, $junior->id]) }}" method="POST">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button class="btn btn-danger btn-sm">Remove</button>
+                                    </form>
+                                </div>
+                                @endforeach
+                                @else
+                                <p>No juniors assigned.</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
