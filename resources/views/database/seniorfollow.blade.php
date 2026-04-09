@@ -467,7 +467,7 @@
                 'Associate Degree': '#cce5ff',
                 'Aerospace Proj. Manag.': '#e2f0d9',
             };
-            const dateColor = "#e0f7fa";
+            
             const amountColors = "#e0f7fa";
 
             function updateSelectColor(select) {
