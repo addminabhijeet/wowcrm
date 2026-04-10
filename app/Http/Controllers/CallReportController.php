@@ -115,11 +115,11 @@ class CallReportController extends Controller
 
         $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user, $createdByKey) {
             $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
-                ->orWhere('created_by', 'LIKE', "{$createdByKey}|senior:{$createdByKey}|senior:0|accountant");
+                ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
         })
             ->where(function ($q) use ($user, $createdByKey) {
                 $q->where('created_by', 'LIKE', "%|junior:{$user->id}|%")
-                    ->orWhere('created_by', 'LIKE', "{$createdByKey}%");
+                    ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
             })
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
@@ -132,10 +132,6 @@ class CallReportController extends Controller
         )
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->where(function ($q) {
-                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
-                    ->orWhereNull('Exe_Remarks');
-            })
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
@@ -162,10 +158,6 @@ class CallReportController extends Controller
         )
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->where(function ($q) {
-                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
-                    ->orWhereNull('Exe_Remarks');
-            })
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
