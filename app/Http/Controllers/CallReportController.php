@@ -109,17 +109,7 @@ class CallReportController extends Controller
             ->where('transfers', 0)
             ->count();
 
-        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user, $createdByKey) {
-            $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
-                ->orWhere('created_by', 'LIKE', "{$createdByKey}|senior:{$createdByKey}|senior:0|accountant");
-        })
-            ->where(function ($q) use ($user, $createdByKey) {
-                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|%") // ✅ strict junior match
-                    ->orWhere('created_by', 'LIKE', "{$createdByKey}%");   // ✅ self case
-            })
-            ->whereDate('updated_at', $selectedDate)
-           
-            ->count();
+
 
 
         // Follow-up calls (Called & Mailed with TransferRemark)
