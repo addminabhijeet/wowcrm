@@ -44,8 +44,8 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Ready To Pay" calls
-        $readyToPaidCalls = GoogleSheetData::where(function ($q) use ($createdByKey) {
-            $q->where('created_by', 'LIKE', "%|junior:{$createdByKey}|senior:0|accountant")
+        $readyToPaidCalls = GoogleSheetData::where(function ($q) use ($user, $createdByKey) {
+            $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
                 ->orWhere('created_by', 'LIKE', "{$createdByKey}|senior:{$createdByKey}|senior:0|accountant");
         })
             ->where('Exe_Remarks', 'Ready To Pay')
@@ -107,11 +107,11 @@ class CallReportController extends Controller
             ->count();
 
         // Ready To Pay calls
-        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($createdByKey) {
-            $q->where('created_by', 'LIKE', "%|junior:{$createdByKey}|senior:0|accountant")
+        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user, $createdByKey) {
+            $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
                 ->orWhere('created_by', 'LIKE', "{$createdByKey}|senior:{$createdByKey}|senior:0|accountant");
         })
-            ->where('created_by', 'LIKE', "%{$createdByKey}%") // ✅ ensure login user match
+            ->where('created_by', 'LIKE', "%{$createdByKey}%") // keep your guard
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
