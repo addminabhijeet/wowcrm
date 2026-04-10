@@ -43,12 +43,14 @@ class CallReportController extends Controller
             ->where('transfers', 0)
             ->count();
 
-        // Total "Ready To Pay" calls
         $readyToPaidCalls = GoogleSheetData::where(function ($q) use ($user, $createdByKey) {
             $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
                 ->orWhere('created_by', 'LIKE', "{$createdByKey}|senior:{$createdByKey}|senior:0|accountant");
         })
-            ->where('created_by', 'LIKE', "%{$createdByKey}%") // ✅ ensure it belongs to this senior
+            ->where(function ($q) use ($user, $createdByKey) {
+                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|%") // ✅ strict junior match
+                    ->orWhere('created_by', 'LIKE', "{$createdByKey}%");   // ✅ allow self senior case
+            })
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
@@ -107,12 +109,14 @@ class CallReportController extends Controller
             ->where('transfers', 0)
             ->count();
 
-        // Ready To Pay calls
         $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user, $createdByKey) {
             $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
                 ->orWhere('created_by', 'LIKE', "{$createdByKey}|senior:{$createdByKey}|senior:0|accountant");
         })
-            ->where('created_by', 'LIKE', "%{$createdByKey}%") // keep your guard
+            ->where(function ($q) use ($user, $createdByKey) {
+                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|%") // ✅ strict junior match
+                    ->orWhere('created_by', 'LIKE', "{$createdByKey}%");   // ✅ self case
+            })
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
