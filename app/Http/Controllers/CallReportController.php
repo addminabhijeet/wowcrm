@@ -118,7 +118,7 @@ class CallReportController extends Controller
                     ->orWhere('created_by', 'LIKE', "{$createdByKey}%");   // ✅ self case
             })
             ->whereDate('updated_at', $selectedDate)
-            ->where('Exe_Remarks', 'Ready To Pay')
+           
             ->count();
 
 
