@@ -108,8 +108,8 @@ class CallReportController extends Controller
 
         // Ready To Pay calls
         $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user) {
-            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:{$user->id}\\|senior:0\\|senior$'");
+            $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
+                ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
         })
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
