@@ -130,7 +130,8 @@ class CallReportController extends Controller
         $SfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
-            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior'") // ✅ ensure starts with x|junior
+            ->whereRaw("created_by REGEXP '^[0-9]+\\|junior'")
+            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|senior:0\\|senior$'") // ✅ ensure starts with x|junior
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
