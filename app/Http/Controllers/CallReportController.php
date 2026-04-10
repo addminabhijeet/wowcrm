@@ -203,9 +203,13 @@ class CallReportController extends Controller
 
         // Hour-wise "Ready To Pay" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where(function ($q) {
-                $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-                    ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+            ->where(function ($q) use ($user) {
+                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
+                    ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
+            })
+            ->where(function ($q) use ($user) {
+                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|%")
+                    ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
             })
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
@@ -218,6 +222,10 @@ class CallReportController extends Controller
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where('created_by', "{$user->id}|senior:0|senior")
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            })
             ->whereDate('updated_at', $selectedDate)
             ->where('transfers', 0)
             ->groupBy('hour')
@@ -229,6 +237,10 @@ class CallReportController extends Controller
             ->where('created_by', "{$user->id}|senior:0|senior")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->whereNotNull('TransferRemark')
             ->where('transfers', 0)
             ->groupBy('hour')
@@ -244,6 +256,19 @@ class CallReportController extends Controller
             ->where('transfers', 0)
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
+
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
+
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
+
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -257,6 +282,19 @@ class CallReportController extends Controller
             ->where('transfers', 1)
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
+
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
+
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
+
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3224,9 +3262,13 @@ class CallReportController extends Controller
 
         // Hour-wise "Ready To Pay" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where(function ($q) {
-                $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-                    ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+            ->where(function ($q) use ($user) {
+                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
+                    ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
+            })
+            ->where(function ($q) use ($user) {
+                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|%")
+                    ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
             })
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
@@ -3236,8 +3278,12 @@ class CallReportController extends Controller
 
         // Hourly Called & Mailed
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', "{$juniorUser->id}|senior:0|senior")
+            ->where('created_by', "{$user->id}|senior:0|senior")
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            })
             ->whereDate('updated_at', $selectedDate)
             ->where('transfers', 0)
             ->groupBy('hour')
@@ -3247,9 +3293,13 @@ class CallReportController extends Controller
         // Hourly Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
 
         $hourlySelfFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', "{$juniorUser->id}|senior:0|senior")
+            ->where('created_by', "{$user->id}|senior:0|senior")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->whereNotNull('TransferRemark')
             ->where('transfers', 0)
             ->groupBy('hour')
@@ -3261,9 +3311,22 @@ class CallReportController extends Controller
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('transfers', 0)
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', 0)
+
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
+
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
+
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
+
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3273,9 +3336,22 @@ class CallReportController extends Controller
             ->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('transfers', 1)
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', 1)
+
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
+
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
+
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
+
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3666,10 +3742,11 @@ class CallReportController extends Controller
 
     public function allseniorweekly(Request $request, $userId)
     {
-        $juniorUser =  User::where('id', $userId)
+        $user =  User::where('id', $userId)
             ->where('is_deleted', 0)
             ->firstOrFail();
-        $createdByKey = "{$juniorUser->id}|senior";
+        $createdByKey = "{$user->id}|senior";
+        $juniorUser = $user;
 
         // ================================
         // Main logic with LIKE filters
@@ -3779,7 +3856,7 @@ class CallReportController extends Controller
         // Self follow-up calls (Called & Mailed / Ready To Pay with TransferRemark)
         $SselffollowupCalls = GoogleSheetData::where(
             'created_by',
-            "{$juniorUser->id}|senior:0|senior"
+            "{$user->id}|senior:0|senior"
         )
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
@@ -3787,6 +3864,10 @@ class CallReportController extends Controller
                 }
             })
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
@@ -3794,10 +3875,14 @@ class CallReportController extends Controller
 
 
         // Ready To Pay calls
-        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) {
-            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user) {
+            $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
+                ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
         })
+            ->where(function ($q) use ($user) {
+                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|%")
+                    ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
+            })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -3819,6 +3904,19 @@ class CallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
+
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
+
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
+
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
+
             ->count();
 
         // Transferred follow-up calls
@@ -3834,6 +3932,19 @@ class CallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
+
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
+
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
+
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
+
             ->count();
 
         // Other calls (excluding Called & Mailed)
@@ -3847,7 +3958,7 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = GoogleSheetData::where(
             'created_by',
-            "{$juniorUser->id}|senior:0|senior"
+            "{$user->id}|senior:0|senior"
         )
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
@@ -3855,6 +3966,11 @@ class CallReportController extends Controller
                 }
             })
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            })
+            ->where('transfers', 0)
             ->count();
 
         $StotalCalls =
@@ -3866,9 +3982,13 @@ class CallReportController extends Controller
 
         // Hour-wise "Ready To Pay" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where(function ($q) {
-                $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-                    ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+            ->where(function ($q) use ($user) {
+                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
+                    ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
+            })
+            ->where(function ($q) use ($user) {
+                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|%")
+                    ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
             })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
@@ -3882,16 +4002,18 @@ class CallReportController extends Controller
 
         // Hourly Called & Mailed
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where(
-                'created_by',
-                "{$juniorUser->id}|senior:0|senior"
-            )
+            ->where('created_by', "{$user->id}|senior:0|senior")
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
                 }
             })
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            })
+            ->where('transfers', 0)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3900,7 +4022,7 @@ class CallReportController extends Controller
         $hourlySelfFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
             ->where(
                 'created_by',
-                "{$juniorUser->id}|senior:0|senior"
+                "{$user->id}|senior:0|senior"
             )
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
@@ -3908,6 +4030,10 @@ class CallReportController extends Controller
                 }
             })
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
@@ -3924,9 +4050,22 @@ class CallReportController extends Controller
                 }
             })
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('transfers', 0)
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', 0)
+
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
+
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
+
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
+
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3940,9 +4079,22 @@ class CallReportController extends Controller
                 }
             })
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('transfers', 1)
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
-            ->where('transfers', 1)
+
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
+
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
+
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
+
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
