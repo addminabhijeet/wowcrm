@@ -187,7 +187,10 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = GoogleSheetData::where('created_by', "{$user->id}|senior:0|senior")
             ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereRaw("TRIM(TransferRemark) IS NOT NULL AND TRIM(TransferRemark) != ''")
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            })
             ->whereDate('updated_at', $selectedDate)
             ->where('transfers', 0)
             ->count();
