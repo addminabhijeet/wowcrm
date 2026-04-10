@@ -111,6 +111,7 @@ class CallReportController extends Controller
             $q->where('created_by', 'LIKE', "%|junior:{$createdByKey}|senior:0|accountant")
                 ->orWhere('created_by', 'LIKE', "{$createdByKey}|senior:{$createdByKey}|senior:0|accountant");
         })
+            ->where('created_by', 'LIKE', "%{$createdByKey}%") // ✅ ensure login user match
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
