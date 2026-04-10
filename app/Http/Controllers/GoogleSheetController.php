@@ -194,8 +194,19 @@ class GoogleSheetController extends Controller
             ->orderBy('sheet_row_number', 'desc') // latest row first
             ->first();
 
+        // ✅ NEW: restriction check (DO NOT remove existing logic)
+        if ($record && strpos($record->created_by, 'accountant') !== false) {
+            return response()->json([
+                'exists' => true,
+                'restricted' => true,
+                'message' => 'Candidate already enrolled.',
+                'data' => null
+            ]);
+        }
+
         return response()->json([
             'exists' => (bool) $record,
+            'restricted' => false,
             'data'   => $record
         ]);
     }
@@ -7512,19 +7523,9 @@ class GoogleSheetController extends Controller
                 $name = $rowData['Name'] ?? null;
                 $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
 
-                if (
-                    isset($rowData['Exe Remarks']) &&
-                    $rowData['Exe Remarks'] === 'Called & Mailed' &&
-                    !empty($email)
-                ) {
-                    if (strpos($row->created_by, 'accountant') !== false) {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Candidate already enrolled.'
-                        ]);
-                    }
+                // --- Send email if Exe_Remarks is "Called & Mailed" ---
+                if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed' && !empty($email)) {
                     try {
-                        $smtp = SmtpSetting::where('user_id', $user->id)->first();
                         $smtp = SmtpSetting::where('user_id', $user->id)->first();
                         if (!$smtp) {
                             return response()->json([
@@ -7902,6 +7903,15 @@ class GoogleSheetController extends Controller
 
             // --- Send Email if Exe_Remarks is "Called & Mailed" ---
             if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
+
+                // ❌ NEW RESTRICTION ADDED (NO LOGIC CHANGE)
+                if (strpos($record->created_by, 'accountant') !== false) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Candidate already enrolled.'
+                    ]);
+                }
+
                 try {
                     $smtp = SmtpSetting::where('user_id', $user->id)->first();
                     if (!$smtp) {
