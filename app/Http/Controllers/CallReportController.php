@@ -107,9 +107,9 @@ class CallReportController extends Controller
             ->count();
 
         // Ready To Pay calls
-        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) {
+        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user) {
             $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:{$user->id}\\|senior:0\\|senior$'");
         })
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
@@ -693,21 +693,16 @@ class CallReportController extends Controller
         [$year, $month] = explode('-', $selectedMonth);
 
         // Total "Called & Mailed" calls in month
-        $McalledAndMailedCalls = GoogleSheetData::whereRaw(
-            "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
-        )
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+        $McalledAndMailedCalls = GoogleSheetData::where('created_by', "{$user->id}|senior:0|senior")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('transfers', 0)
             ->count();
 
 
         // Self follow-up calls in month (Called & Mailed / Ready To Pay with TransferRemark)
-        $MselffollowupCalls = GoogleSheetData::whereRaw(
-            "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
-        )
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|junior:0\\|senior$'")
+        $MselffollowupCalls = GoogleSheetData::where('created_by', "{$user->id}|senior:0|senior")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
