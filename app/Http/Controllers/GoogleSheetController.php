@@ -1319,7 +1319,7 @@ class GoogleSheetController extends Controller
             })
             ->where('transfers', 0)
             ->where(function ($q) {
-                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
+                $q->whereRaw("TRIM(Exe_Remarks) != ?", ['Ready To Pay'])
                     ->orWhereNull('Exe_Remarks');
             })
             ->whereNotNull('TransferRemark')
