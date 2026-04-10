@@ -7756,6 +7756,21 @@ class GoogleSheetController extends Controller
 
             $user = Auth::user();
 
+
+            if (!empty($email)) {
+
+                $emailBlocked = GoogleSheetData::where('Email_Address', $email)
+                    ->where('created_by', 'like', '%accountant%')
+                    ->exists();
+
+                if ($emailBlocked) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Candidate already enrolled.'
+                    ]);
+                }
+            }
+
             //  Atomic duplicate email check
             if (!empty($email)) {
                 $emailExistsForUser = GoogleSheetData::where('Email_Address', $email)
