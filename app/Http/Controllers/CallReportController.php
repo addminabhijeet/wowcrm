@@ -130,7 +130,6 @@ class CallReportController extends Controller
         $SfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
-            ->whereRaw("created_by NOT REGEXP '^[0-9]+\\|senior:0\\|senior$'") // ✅ ensure starts with x|junior
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
@@ -145,7 +144,6 @@ class CallReportController extends Controller
                 $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
             })
 
-            // ✅ NEW CONDITION (for all other users)
             ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
                 $query->where('followupcount', $juniorUser->id);
             })
