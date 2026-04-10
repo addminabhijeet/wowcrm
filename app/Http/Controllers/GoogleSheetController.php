@@ -7927,19 +7927,7 @@ class GoogleSheetController extends Controller
 
             $mailMessage = 'No email sent.';
 
-
-
-            // --- Send Email if Exe_Remarks is "Called & Mailed" ---
             if ($exeRemarksValue === 'Called & Mailed' && !empty($email)) {
-
-                // ❌ NEW RESTRICTION ADDED (NO LOGIC CHANGE)
-                if (strpos($record->created_by, 'accountant') !== false) {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Candidate already enrolled.'
-                    ]);
-                }
-
                 try {
                     $smtp = SmtpSetting::where('user_id', $user->id)->first();
                     if (!$smtp) {
