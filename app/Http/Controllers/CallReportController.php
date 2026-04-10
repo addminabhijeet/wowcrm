@@ -126,12 +126,20 @@ class CallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
+
             ->when($juniorUser->id == 32, function ($query) {
                 $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
             })
+
             ->when($juniorUser->id == 80, function ($query) {
                 $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
             })
+
+            // ✅ NEW CONDITION (for all other users)
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
+
             ->count();
 
 
@@ -144,12 +152,19 @@ class CallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
+
             ->when($juniorUser->id == 32, function ($query) {
                 $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
             })
+
             ->when($juniorUser->id == 80, function ($query) {
                 $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
             })
+
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
+
             ->count();
 
         // Other calls (excluding Called & Mailed)
