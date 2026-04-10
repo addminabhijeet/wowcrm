@@ -105,6 +105,10 @@ class CallReportController extends Controller
         $SselffollowupCalls = GoogleSheetData::where('created_by', "{$user->id}|senior:0|senior")
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->whereNotNull('TransferRemark')
             ->where('transfers', 0)
             ->count();
@@ -114,8 +118,8 @@ class CallReportController extends Controller
                 ->orWhere('created_by', 'LIKE', "{$createdByKey}|senior:{$createdByKey}|senior:0|accountant");
         })
             ->where(function ($q) use ($user, $createdByKey) {
-                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|%") 
-                    ->orWhere('created_by', 'LIKE', "{$createdByKey}%"); 
+                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|%")
+                    ->orWhere('created_by', 'LIKE', "{$createdByKey}%");
             })
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
@@ -128,6 +132,10 @@ class CallReportController extends Controller
         )
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
@@ -154,6 +162,10 @@ class CallReportController extends Controller
         )
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
