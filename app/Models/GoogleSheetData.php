@@ -49,7 +49,8 @@ class GoogleSheetData extends Model
         'rejected',
         'transfers',
         'updateresume',
-        'transfer_date'
+        'transfer_date',
+        'sd',
     ];
 
 

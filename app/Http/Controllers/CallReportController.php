@@ -59,6 +59,7 @@ class CallReportController extends Controller
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('sd', Null)
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)

@@ -4756,7 +4756,7 @@ class GoogleSheetController extends Controller
 
             // NEW: mark only the current record as current
             $record->is_current = 1;
-
+            $record->sd = 'senior';
             // --- Column map ---
             $columnMap = [
                 'Date' => 'Date',
