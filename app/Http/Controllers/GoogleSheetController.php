@@ -1217,6 +1217,10 @@ class GoogleSheetController extends Controller
             ->where(function ($q) {
                 $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
             })
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            })
             ->where('transfers', 0)
             ->where('Exe_Remarks', 'Called & Mailed');
 
@@ -1314,6 +1318,10 @@ class GoogleSheetController extends Controller
                 $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
             })
             ->where('transfers', 0)
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
+                    ->orWhereNull('Exe_Remarks');
+            })
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '<>', '');
 
