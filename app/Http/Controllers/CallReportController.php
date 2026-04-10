@@ -44,9 +44,9 @@ class CallReportController extends Controller
             ->count();
 
         // Total "Ready To Pay" calls
-        $readyToPaidCalls = GoogleSheetData::where(function ($q) {
-            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
+        $readyToPaidCalls = GoogleSheetData::where(function ($q) use ($createdByKey) {
+            $q->where('created_by', 'LIKE', "%|junior:{$createdByKey}|senior:0|accountant")
+                ->orWhere('created_by', 'LIKE', "{$createdByKey}|senior:{$createdByKey}|senior:0|accountant");
         })
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
