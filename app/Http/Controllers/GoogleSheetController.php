@@ -189,12 +189,12 @@ class GoogleSheetController extends Controller
     {
         $email = $request->input('email');
 
-        // Fetch the latest record with the given email (use is_current = 1 for latest active)
+        // Fetch the latest record with the given email
         $record = GoogleSheetData::where('Email_Address', $email)
-            ->orderBy('sheet_row_number', 'desc') // latest row first
+            ->orderBy('sheet_row_number', 'desc')
             ->first();
 
-        // ✅ NEW: restriction check (DO NOT remove existing logic)
+        // ✅ NEW: restriction check FIRST (highest priority)
         if ($record && strpos($record->created_by, 'accountant') !== false) {
             return response()->json([
                 'exists' => true,
@@ -207,7 +207,7 @@ class GoogleSheetController extends Controller
         return response()->json([
             'exists' => (bool) $record,
             'restricted' => false,
-            'data'   => $record
+            'data' => $record
         ]);
     }
 
