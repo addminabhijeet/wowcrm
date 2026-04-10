@@ -48,6 +48,7 @@ class CallReportController extends Controller
             $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
                 ->orWhere('created_by', 'LIKE', "{$createdByKey}|senior:{$createdByKey}|senior:0|accountant");
         })
+            ->where('created_by', 'LIKE', "%{$createdByKey}%") // ✅ ensure it belongs to this senior
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
