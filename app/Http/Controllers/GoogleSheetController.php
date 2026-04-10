@@ -7512,9 +7512,19 @@ class GoogleSheetController extends Controller
                 $name = $rowData['Name'] ?? null;
                 $amount = isset($rowData['Amount']) ? $this->parseAmount($rowData['Amount']) : $row->Amount;
 
-                // --- Send email if Exe_Remarks is "Called & Mailed" ---
-                if (isset($rowData['Exe Remarks']) && $rowData['Exe Remarks'] === 'Called & Mailed' && !empty($email)) {
+                if (
+                    isset($rowData['Exe Remarks']) &&
+                    $rowData['Exe Remarks'] === 'Called & Mailed' &&
+                    !empty($email)
+                ) {
+                    if (strpos($row->created_by, 'accountant') !== false) {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Candidate already enrolled.'
+                        ]);
+                    }
                     try {
+                        $smtp = SmtpSetting::where('user_id', $user->id)->first();
                         $smtp = SmtpSetting::where('user_id', $user->id)->first();
                         if (!$smtp) {
                             return response()->json([
