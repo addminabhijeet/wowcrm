@@ -3918,6 +3918,9 @@ class GoogleSheetController extends Controller
                     ? $oldTransferRemark . PHP_EOL . $newTransferEntry
                     : $newTransferEntry
             );
+
+            // ✅ ADD THIS LINE (set followupcount)
+            $updateData['followupcount'] = Auth::id();
         }
 
 
