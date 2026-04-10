@@ -107,9 +107,9 @@ class CallReportController extends Controller
             ->count();
 
         // Ready To Pay calls
-        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user) {
-            $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
-                ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
+        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($createdByKey) {
+            $q->where('created_by', 'LIKE', "%|junior:{$createdByKey}|senior:0|accountant")
+                ->orWhere('created_by', 'LIKE', "{$createdByKey}|senior:{$createdByKey}|senior:0|accountant");
         })
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
