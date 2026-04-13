@@ -3976,6 +3976,52 @@ class GoogleSheetController extends Controller
             $updateData['callmailcount'] = implode(':', $entries);
         }
 
+        // ✅ NEW selffollowupcount logic (NO DUPLICATE)
+        if (
+            isset($rowData['Exe Remarks']) &&
+            $rowData['Exe Remarks'] === 'Called & Mailed' &&
+            $row->sd === 'senior' &&
+            !empty($row->TransferRemark)
+        ) {
+            $existingSelf = $row->selffollowupcount ?? '';
+            $currentUserId = Auth::id();
+            $currentDate = now()->format('Y-m-d');
+
+            $newEntry = $currentUserId . '|' . $currentDate;
+
+            $entries = array_filter(explode(':', $existingSelf));
+            $entries = array_map('trim', $entries);
+            $entries = array_unique($entries);
+
+            if (!in_array($newEntry, $entries)) {
+                $entries[] = $newEntry;
+            }
+
+            $updateData['selffollowupcount'] = implode(':', $entries);
+        }
+
+        // ✅ NEW readytopaycount logic (NO DUPLICATE)
+        if (
+            isset($rowData['Exe Remarks']) &&
+            $rowData['Exe Remarks'] === 'Ready To Pay'
+        ) {
+            $existingReady = $row->readytopaycount ?? '';
+            $currentUserId = Auth::id();
+            $currentDate = now()->format('Y-m-d');
+
+            $newEntry = $currentUserId . '|' . $currentDate;
+
+            $entries = array_filter(explode(':', $existingReady));
+            $entries = array_map('trim', $entries);
+            $entries = array_unique($entries);
+
+            if (!in_array($newEntry, $entries)) {
+                $entries[] = $newEntry;
+            }
+
+            $updateData['readytopaycount'] = implode(':', $entries);
+        }
+
         foreach ($updateData as $key => $value) {
             if ($value === '' && !in_array($key, ['Email_Address', 'Name', 'Date', 'Amount'])) {
                 $updateData[$key] = null;
@@ -4250,6 +4296,28 @@ class GoogleSheetController extends Controller
                     }
                 }
             }
+        }
+
+        // ✅ NEW readytopaycount logic (NO DUPLICATE)
+        if (
+            isset($rowData['Exe Remarks']) &&
+            $rowData['Exe Remarks'] === 'Ready To Pay'
+        ) {
+            $existingReady = $row->readytopaycount ?? '';
+            $currentUserId = Auth::id();
+            $currentDate = now()->format('Y-m-d');
+
+            $newEntry = $currentUserId . '|' . $currentDate;
+
+            $entries = array_filter(explode(':', $existingReady));
+            $entries = array_map('trim', $entries);
+            $entries = array_unique($entries);
+
+            if (!in_array($newEntry, $entries)) {
+                $entries[] = $newEntry;
+            }
+
+            $updateData['readytopaycount'] = implode(':', $entries);
         }
 
         foreach ($updateData as $key => $value) {
