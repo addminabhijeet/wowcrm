@@ -164,11 +164,11 @@ class CallReportController extends Controller
             ->where('transfers', 1)
 
             ->when($juniorUser->id == 32, function ($query) {
-                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+                $query->where('TransferRemark', 'like', '%Komal Pandey%');
             })
 
             ->when($juniorUser->id == 80, function ($query) {
-                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+                $query->where('TransferRemark', 'like', '%Vivek Pradhan%');
             })
 
             // ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
