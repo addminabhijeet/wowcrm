@@ -3285,29 +3285,9 @@ class CallReportController extends Controller
             ->count();
 
         $SfollowUpCalls = GoogleSheetData::whereRaw(
-            "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
+            "CONCAT(':', selffollowupcount, ':') LIKE ?",
+            ["%:{$user->id}|{$selectedDate}:%"]
         )
-
-            ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereNotNull('TransferRemark')
-            ->whereNull('sd')
-            ->where('TransferRemark', '!=', '')
-            ->where('transfers', 0)
-
-            ->when($juniorUser->id == 32, function ($query) use ($selectedDate) {
-                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%')
-                    ->where('followupcount', 'like', '%|' . $selectedDate . '%');
-            })
-
-            ->when($juniorUser->id == 80, function ($query) use ($selectedDate) {
-                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%')
-                    ->where('followupcount', 'like', '%|' . $selectedDate . '%');
-            })
-
-            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser, $selectedDate) {
-                $query->where('followupcount', 'like', '%' . $juniorUser->id . '|' . $selectedDate . '%');
-            })
-
             ->count();
 
         // Transferred follow-up calls
