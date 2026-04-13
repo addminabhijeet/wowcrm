@@ -3269,11 +3269,6 @@ $SselffollowupCalls = GoogleSheetData::whereRaw(
         "CONCAT(':', selffollowupcount, ':') LIKE ?",
         ["%:{$user->id}|{$selectedDate}:%"]
     )
-   
-    ->where(function ($q) {
-        $q->where('Exe_Remarks', '!=', 'Ready To Pay')
-          ->orWhereNull('Exe_Remarks');
-    })
     ->whereNotNull('TransferRemark')
     ->where('transfers', 0)
     ->count();
