@@ -1593,50 +1593,41 @@ class CallReportController extends Controller
 
     public function alljuniorlist(Request $request)
     {
-        // Get logged-in senior's group IDs
-        $groupIds = Auth::user()->group ?? [];
+        $user = Auth::user();
 
-        // Fetch only juniors whose id exists in senior's group
-        $juniorUsers = User::where('role', 'junior')
-            ->where('is_deleted', 0)
-            ->whereIn('id', $groupIds)
-            ->get();
+        $query = User::where('role', 'junior')
+            ->where('is_deleted', 0);
 
-        // Pass users to the view
+        if ($user->role !== 'admin') {
+            $groupIds = $user->group ?? [];
+            $query->whereIn('id', $groupIds);
+        }
+
+        $juniorUsers = $query->get();
         return view('reports.alljuniorlist', compact('juniorUsers'));
     }
 
     public function allseniorlist(Request $request)
     {
-        // Fetch all users with role 'senior'
         $seniorUsers = User::where('role', 'senior')->where('is_deleted', 0)->get();
-
-        // Pass users to the view
         return view('reports.allseniorlist', compact('seniorUsers'));
     }
 
     public function allaccountantlist(Request $request)
     {
-        // Fetch all users with role 'senior'
         $accountantUsers = User::where('role', 'accountant')->where('is_deleted', 0)->get();
-
-        // Pass users to the view
         return view('reports.allaccountantlist', compact('accountantUsers'));
     }
 
     public function alltrainerlist(Request $request)
     {
-        // Fetch all users with role 'trainer'
         $trainerUsers = User::where('role', 'trainer')->where('is_deleted', 0)->get();
-
-        // Pass users to the view
         return view('reports.alltrainerlist', compact('trainerUsers'));
     }
 
     public function reportsender(Request $request)
     {
         $juniorUsers = User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])->get();
-        // Pass users to the view
         return view('reports.reportsender', compact('juniorUsers'));
     }
 
