@@ -3734,6 +3734,7 @@ class CallReportController extends Controller
             'StransferedfollowUpCalls',
             'SfollowUpCalls',
           
+            
             'selectedDate',
 
 
