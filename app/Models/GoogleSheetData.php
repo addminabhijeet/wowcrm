@@ -49,7 +49,10 @@ class GoogleSheetData extends Model
         'rejected',
         'transfers',
         'updateresume',
+        'callmailcount',
+        'selffollowupcount',
         'transfer_date',
+        'readytopaycount',
         'sd',
     ];
 
