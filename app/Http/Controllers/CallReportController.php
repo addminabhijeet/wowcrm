@@ -3292,6 +3292,7 @@ class CallReportController extends Controller
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
+            ->whereNull('sd')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
 
@@ -3733,8 +3734,8 @@ class CallReportController extends Controller
             'SreadyToPaidCalls',
             'StransferedfollowUpCalls',
             'SfollowUpCalls',
-          
-            
+
+
             'selectedDate',
 
 
