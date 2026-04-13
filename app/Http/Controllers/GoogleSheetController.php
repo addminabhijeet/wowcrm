@@ -3955,6 +3955,27 @@ class GoogleSheetController extends Controller
             $updateData['followupcount'] = implode(':', $entries);
         }
 
+        if (
+            isset($rowData['Exe Remarks']) &&
+            $rowData['Exe Remarks'] === 'Called & Mailed'
+        ) {
+            $existingCallMail = $row->callmailcount ?? '';
+            $currentUserId = Auth::id();
+            $currentDate = now()->format('Y-m-d');
+
+            $newEntry = $currentUserId . '|' . $currentDate;
+
+            $entries = array_filter(explode(':', $existingCallMail));
+            $entries = array_map('trim', $entries);
+            $entries = array_unique($entries);
+
+            if (!in_array($newEntry, $entries)) {
+                $entries[] = $newEntry;
+            }
+
+            $updateData['callmailcount'] = implode(':', $entries);
+        }
+
         foreach ($updateData as $key => $value) {
             if ($value === '' && !in_array($key, ['Email_Address', 'Name', 'Date', 'Amount'])) {
                 $updateData[$key] = null;
