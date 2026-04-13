@@ -3733,7 +3733,7 @@ class CallReportController extends Controller
             'SreadyToPaidCalls',
             'StransferedfollowUpCalls',
             'SfollowUpCalls',
-            'SotherCalls',
+            
             'selectedDate',
 
 
