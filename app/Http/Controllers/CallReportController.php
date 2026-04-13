@@ -127,39 +127,52 @@ class CallReportController extends Controller
             ->count();
 
 
+        // Follow-up calls (Called & Mailed with TransferRemark)
         $SfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
+            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
+            ->whereNull('sd')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
 
-            ->when($juniorUser->id, function ($query) use ($juniorUser, $selectedDate) {
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
 
-                $date = date('Y-m-d', strtotime($selectedDate));
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
 
-                $query->whereRaw("followupcount REGEXP ?", [
-                    '(^|:)' . $juniorUser->id . '\\|' . $date
-                ]);
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
             })
 
             ->count();
 
 
+        // Transferred follow-up calls
         $StransferedfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
+            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
 
-            ->when($juniorUser->id, function ($query) use ($juniorUser, $selectedDate) {
-                $date = date('Y-m-d', strtotime($selectedDate));
-                $query->whereRaw("followupcount REGEXP ?", [
-                    '(^|:)' . $juniorUser->id . '\\|' . $date
-                ]);
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
+
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
+
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
             })
 
             ->count();
@@ -175,6 +188,10 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = GoogleSheetData::where('created_by', "{$user->id}|senior:0|senior")
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            })
             ->whereDate('updated_at', $selectedDate)
             ->where('transfers', 0)
             ->count();
@@ -1593,47 +1610,50 @@ class CallReportController extends Controller
 
     public function alljuniorlist(Request $request)
     {
-        $user = Auth::user();
+        // Get logged-in senior's group IDs
+        $groupIds = Auth::user()->group ?? [];
 
-        if ($user->role === 'admin') {
-            $juniorUsers = User::where('role', 'junior')
-                ->where('is_deleted', 0)
-                ->get();
-        } else {
-            $groupIds = is_array($user->group)
-                ? $user->group
-                : json_decode($user->group, true) ?? [];
+        // Fetch only juniors whose id exists in senior's group
+        $juniorUsers = User::where('role', 'junior')
+            ->where('is_deleted', 0)
+            ->whereIn('id', $groupIds)
+            ->get();
 
-            $juniorUsers = User::where('role', 'junior')
-                ->where('is_deleted', 0)
-                ->whereIn('id', $groupIds)
-                ->get();
-        }
-
+        // Pass users to the view
         return view('reports.alljuniorlist', compact('juniorUsers'));
     }
 
     public function allseniorlist(Request $request)
     {
+        // Fetch all users with role 'senior'
         $seniorUsers = User::where('role', 'senior')->where('is_deleted', 0)->get();
+
+        // Pass users to the view
         return view('reports.allseniorlist', compact('seniorUsers'));
     }
 
     public function allaccountantlist(Request $request)
     {
+        // Fetch all users with role 'senior'
         $accountantUsers = User::where('role', 'accountant')->where('is_deleted', 0)->get();
+
+        // Pass users to the view
         return view('reports.allaccountantlist', compact('accountantUsers'));
     }
 
     public function alltrainerlist(Request $request)
     {
+        // Fetch all users with role 'trainer'
         $trainerUsers = User::where('role', 'trainer')->where('is_deleted', 0)->get();
+
+        // Pass users to the view
         return view('reports.alltrainerlist', compact('trainerUsers'));
     }
 
     public function reportsender(Request $request)
     {
         $juniorUsers = User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])->get();
+        // Pass users to the view
         return view('reports.reportsender', compact('juniorUsers'));
     }
 
@@ -3265,21 +3285,26 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
+        // Follow-up calls (Called & Mailed with TransferRemark)
         $SfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
+            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
 
-            ->when($juniorUser->id, function ($query) use ($juniorUser, $selectedDate) {
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
 
-                $date = date('Y-m-d', strtotime($selectedDate));
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
 
-                $query->whereRaw("followupcount REGEXP ?", [
-                    '(^|:)' . $juniorUser->id . '\\|' . $date
-                ]);
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
             })
 
             ->count();
@@ -3288,16 +3313,22 @@ class CallReportController extends Controller
         $StransferedfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
+            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
 
-            ->when($juniorUser->id, function ($query) use ($juniorUser, $selectedDate) {
-                $date = date('Y-m-d', strtotime($selectedDate));
-                $query->whereRaw("followupcount REGEXP ?", [
-                    '(^|:)' . $juniorUser->id . '\\|' . $date
-                ]);
+            ->when($juniorUser->id == 32, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
+            })
+
+            ->when($juniorUser->id == 80, function ($query) {
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
+            })
+
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
             })
 
             ->count();
@@ -3305,6 +3336,10 @@ class CallReportController extends Controller
 
         $ScalledAndMailedCalls = GoogleSheetData::where('created_by', "{$user->id}|senior:0|senior")
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            })
             ->whereDate('updated_at', $selectedDate)
             ->where('transfers', 0)
             ->count();
@@ -3698,7 +3733,7 @@ class CallReportController extends Controller
             'SreadyToPaidCalls',
             'StransferedfollowUpCalls',
             'SfollowUpCalls',
-
+            'SotherCalls',
             'selectedDate',
 
 
