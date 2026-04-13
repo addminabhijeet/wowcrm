@@ -127,56 +127,39 @@ class CallReportController extends Controller
             ->count();
 
 
-        // Follow-up calls (Called & Mailed with TransferRemark)
         $SfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
-            // ->whereNull('sd')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
 
-            // ✅ NEW: match date inside TransferRemark
-            ->whereRaw("TransferRemark REGEXP ?", [
-                'on ' . date('d-m-Y', strtotime($selectedDate))
-            ])
+            ->when($juniorUser->id, function ($query) use ($juniorUser, $selectedDate) {
 
-            ->when($juniorUser->id == 32, function ($query) {
-                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
-            })
+                $date = date('Y-m-d', strtotime($selectedDate));
 
-            ->when($juniorUser->id == 80, function ($query) {
-                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
-            })
-
-            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
-                $query->where('followupcount', $juniorUser->id);
+                $query->whereRaw("followupcount REGEXP ?", [
+                    '(^|:)' . $juniorUser->id . '\\|' . $date
+                ]);
             })
 
             ->count();
 
 
-        // Transferred follow-up calls
         $StransferedfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
-            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
 
-            ->when($juniorUser->id == 32, function ($query) {
-                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
-            })
-
-            ->when($juniorUser->id == 80, function ($query) {
-                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
-            })
-
-            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
-                $query->where('followupcount', $juniorUser->id);
+            ->when($juniorUser->id, function ($query) use ($juniorUser, $selectedDate) {
+                $date = date('Y-m-d', strtotime($selectedDate));
+                $query->whereRaw("followupcount REGEXP ?", [
+                    '(^|:)' . $juniorUser->id . '\\|' . $date
+                ]);
             })
 
             ->count();
