@@ -3929,7 +3929,6 @@ class GoogleSheetController extends Controller
             $rowData['TransferRemark'] !== '' &&
             $rowData['TransferRemark'] !== $oldTransferRemark
         ) {
-            // TransferRemark changed
             $newTransferEntry = "{$rowData['TransferRemark']} | Updated by {$updatedBy} on {$updatedAt}";
 
             $updateData['TransferRemark'] = trim(
@@ -3938,11 +3937,23 @@ class GoogleSheetController extends Controller
                     : $newTransferEntry
             );
 
-            // ✅ ADD THIS LINE (set followupcount)
-            $updateData['followupcount'] = Auth::id();
+            // ✅ NEW followupcount logic (NO DUPLICATE)
+            $existing = $row->followupcount ?? '';
+            $currentUserId = Auth::id();
+            $currentDate = now()->format('Y-m-d');
+
+            $newEntry = $currentUserId . '|' . $currentDate;
+
+            $entries = array_filter(explode(':', $existing));
+            $entries = array_map('trim', $entries);
+            $entries = array_unique($entries);
+
+            if (!in_array($newEntry, $entries)) {
+                $entries[] = $newEntry;
+            }
+
+            $updateData['followupcount'] = implode(':', $entries);
         }
-
-
 
         foreach ($updateData as $key => $value) {
             if ($value === '' && !in_array($key, ['Email_Address', 'Name', 'Date', 'Amount'])) {
