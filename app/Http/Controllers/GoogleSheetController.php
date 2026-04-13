@@ -3951,6 +3951,7 @@ class GoogleSheetController extends Controller
 
         if (
             isset($rowData['Exe Remarks']) &&
+            $row->sd === 'senior' &&
             $rowData['Exe Remarks'] === 'Called & Mailed'
         ) {
             $existingCallMail = $row->callmailcount ?? '';
@@ -3974,8 +3975,10 @@ class GoogleSheetController extends Controller
         if (
             isset($rowData['Exe Remarks']) &&
             $rowData['Exe Remarks'] === 'Called & Mailed' &&
-            $row->sd === 'senior' &&
-            !empty($row->TransferRemark)
+            isset($rowData['TransferRemark']) &&
+            $rowData['TransferRemark'] !== '' &&
+            $rowData['TransferRemark'] !== $oldTransferRemark &&
+            $row->sd === null
         ) {
             $existingSelf = $row->selffollowupcount ?? '';
             $currentUserId = Auth::id();
