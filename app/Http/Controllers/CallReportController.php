@@ -1595,15 +1595,21 @@ class CallReportController extends Controller
     {
         $user = Auth::user();
 
-        $query = User::where('role', 'junior')
-            ->where('is_deleted', 0);
+        if ($user->role === 'admin') {
+            $juniorUsers = User::where('role', 'junior')
+                ->where('is_deleted', 0)
+                ->get();
+        } else {
+            $groupIds = is_array($user->group)
+                ? $user->group
+                : json_decode($user->group, true) ?? [];
 
-        if ($user->role !== 'admin') {
-            $groupIds = $user->group ?? [];
-            $query->whereIn('id', $groupIds);
+            $juniorUsers = User::where('role', 'junior')
+                ->where('is_deleted', 0)
+                ->whereIn('id', $groupIds)
+                ->get();
         }
 
-        $juniorUsers = $query->get();
         return view('reports.alljuniorlist', compact('juniorUsers'));
     }
 
