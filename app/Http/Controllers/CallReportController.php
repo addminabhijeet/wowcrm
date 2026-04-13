@@ -131,12 +131,16 @@ class CallReportController extends Controller
         $SfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
-            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
-            ->whereNull('sd')
+            // ->whereNull('sd')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
+
+            // ✅ NEW: match date inside TransferRemark
+            ->whereRaw("TransferRemark REGEXP ?", [
+                'on ' . date('d-m-Y', strtotime($selectedDate))
+            ])
 
             ->when($juniorUser->id == 32, function ($query) {
                 $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
@@ -3285,15 +3289,19 @@ class CallReportController extends Controller
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
-        // Follow-up calls (Called & Mailed with TransferRemark)
         $SfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
-            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
+            // ->whereNull('sd')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
+
+            // ✅ NEW: match date inside TransferRemark
+            ->whereRaw("TransferRemark REGEXP ?", [
+                'on ' . date('d-m-Y', strtotime($selectedDate))
+            ])
 
             ->when($juniorUser->id == 32, function ($query) {
                 $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
@@ -3313,11 +3321,15 @@ class CallReportController extends Controller
         $StransferedfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
-            ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
+
+            // ✅ NEW: match date inside TransferRemark
+            ->whereRaw("TransferRemark REGEXP ?", [
+                'on ' . date('d-m-Y', strtotime($selectedDate))
+            ])
 
             ->when($juniorUser->id == 32, function ($query) {
                 $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
@@ -3733,7 +3745,7 @@ class CallReportController extends Controller
             'SreadyToPaidCalls',
             'StransferedfollowUpCalls',
             'SfollowUpCalls',
-            
+
             'selectedDate',
 
 
