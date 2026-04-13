@@ -3921,30 +3921,24 @@ class GoogleSheetController extends Controller
             );
         }
 
-        // === Append TransferRemark like Remark (keep history) ===
+        // ✅ NEW selffollowupcount logic (NO DUPLICATE - WITH TransferRemark CHANGE CHECK)
         $oldTransferRemark = $row->TransferRemark ?? '';
 
         if (
+            isset($rowData['Exe Remarks']) &&
+            $rowData['Exe Remarks'] === 'Called & Mailed' &&
             isset($rowData['TransferRemark']) &&
             $rowData['TransferRemark'] !== '' &&
-            $rowData['TransferRemark'] !== $oldTransferRemark
+            $rowData['TransferRemark'] !== $oldTransferRemark &&
+            $row->sd === 'senior'
         ) {
-            $newTransferEntry = "{$rowData['TransferRemark']} | Updated by {$updatedBy} on {$updatedAt}";
-
-            $updateData['TransferRemark'] = trim(
-                $oldTransferRemark
-                    ? $oldTransferRemark . PHP_EOL . $newTransferEntry
-                    : $newTransferEntry
-            );
-
-            // ✅ NEW followupcount logic (NO DUPLICATE)
-            $existing = $row->followupcount ?? '';
+            $existingSelf = $row->selffollowupcount ?? '';
             $currentUserId = Auth::id();
             $currentDate = now()->format('Y-m-d');
 
             $newEntry = $currentUserId . '|' . $currentDate;
 
-            $entries = array_filter(explode(':', $existing));
+            $entries = array_filter(explode(':', $existingSelf));
             $entries = array_map('trim', $entries);
             $entries = array_unique($entries);
 
@@ -3952,7 +3946,7 @@ class GoogleSheetController extends Controller
                 $entries[] = $newEntry;
             }
 
-            $updateData['followupcount'] = implode(':', $entries);
+            $updateData['selffollowupcount'] = implode(':', $entries);
         }
 
         if (
