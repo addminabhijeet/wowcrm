@@ -59,7 +59,7 @@ class CallReportController extends Controller
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
         )
             ->where('Exe_Remarks', 'Called & Mailed')
-            // ->whereNull('sd')
+            ->whereNull('sd')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
@@ -134,21 +134,21 @@ class CallReportController extends Controller
             ->whereDate('updated_at', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
-            // ->whereNull('sd')
+            ->whereNull('sd')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
 
             ->when($juniorUser->id == 32, function ($query) {
-                $query->where('TransferRemark', 'like', '%Komal Pandey%');
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
             })
 
             ->when($juniorUser->id == 80, function ($query) {
-                $query->where('TransferRemark', 'like', '%Vivek Pradhan%');
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
             })
 
-            // ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
-            //     $query->where('followupcount', $juniorUser->id);
-            // })
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
 
             ->count();
 
@@ -164,16 +164,16 @@ class CallReportController extends Controller
             ->where('transfers', 1)
 
             ->when($juniorUser->id == 32, function ($query) {
-                $query->where('TransferRemark', 'like', '%Komal Pandey%');
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
             })
 
             ->when($juniorUser->id == 80, function ($query) {
-                $query->where('TransferRemark', 'like', '%Vivek Pradhan%');
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
             })
 
-            // ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
-            //     $query->where('followupcount', $juniorUser->id);
-            // })
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
 
             ->count();
 
@@ -3303,9 +3303,9 @@ class CallReportController extends Controller
                 $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
             })
 
-            // ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
-            //     $query->where('followupcount', $juniorUser->id);
-            // })
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
 
             ->count();
 
@@ -3320,16 +3320,16 @@ class CallReportController extends Controller
             ->where('transfers', 1)
 
             ->when($juniorUser->id == 32, function ($query) {
-                $query->where('TransferRemark', 'like', '%Komal Pandey%');
+                $query->where('TransferRemark', 'like', '%Updated by Komal Pandey%');
             })
 
             ->when($juniorUser->id == 80, function ($query) {
-                $query->where('TransferRemark', 'like', '%Vivek Pradhan%');
+                $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
             })
 
-            // ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
-            //     $query->where('followupcount', $juniorUser->id);
-            // })
+            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+                $query->where('followupcount', $juniorUser->id);
+            })
 
             ->count();
 
