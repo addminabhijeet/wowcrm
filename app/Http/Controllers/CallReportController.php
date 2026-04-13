@@ -3265,16 +3265,18 @@ class CallReportController extends Controller
             ->whereDate('updated_at', $selectedDate);
 
         // Selected date totals
-        $SselffollowupCalls = GoogleSheetData::where('created_by', "{$user->id}|senior:0|senior")
-            ->whereDate('updated_at', $selectedDate)
-            ->where('Exe_Remarks', 'Called & Mailed')
-            ->where(function ($q) {
-                $q->where('Exe_Remarks', '!=', 'Ready To Pay')
-                    ->orWhereNull('Exe_Remarks');
-            })
-            ->whereNotNull('TransferRemark')
-            ->where('transfers', 0)
-            ->count();
+$SselffollowupCalls = GoogleSheetData::whereRaw(
+        "CONCAT(':', selffollowupcount, ':') LIKE ?",
+        ["%:{$user->id}|{$selectedDate}:%"]
+    )
+   
+    ->where(function ($q) {
+        $q->where('Exe_Remarks', '!=', 'Ready To Pay')
+          ->orWhereNull('Exe_Remarks');
+    })
+    ->whereNotNull('TransferRemark')
+    ->where('transfers', 0)
+    ->count();
 
 
         $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user, $createdByKey) {
