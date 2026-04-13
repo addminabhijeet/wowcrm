@@ -3994,7 +3994,7 @@ class GoogleSheetController extends Controller
                 $entries[] = $newEntry;
             }
 
-            $updateData['selffollowupcount'] = implode(':', $entries);
+            $updateData['followupcount'] = implode(':', $entries);
         }
 
         // ✅ NEW readytopaycount logic (NO DUPLICATE)
