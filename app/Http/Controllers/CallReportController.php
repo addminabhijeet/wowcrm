@@ -146,9 +146,9 @@ class CallReportController extends Controller
                 $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
             })
 
-            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
-                $query->where('followupcount', $juniorUser->id);
-            })
+            // ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+            //     $query->where('followupcount', $juniorUser->id);
+            // })
 
             ->count();
 
@@ -171,9 +171,9 @@ class CallReportController extends Controller
                 $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
             })
 
-            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
-                $query->where('followupcount', $juniorUser->id);
-            })
+            // ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+            //     $query->where('followupcount', $juniorUser->id);
+            // })
 
             ->count();
 
@@ -3303,9 +3303,9 @@ class CallReportController extends Controller
                 $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
             })
 
-            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
-                $query->where('followupcount', $juniorUser->id);
-            })
+            // ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+            //     $query->where('followupcount', $juniorUser->id);
+            // })
 
             ->count();
 
@@ -3327,9 +3327,9 @@ class CallReportController extends Controller
                 $query->where('TransferRemark', 'like', '%Updated by Vivek Pradhan%');
             })
 
-            ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
-                $query->where('followupcount', $juniorUser->id);
-            })
+            // ->when(!in_array($juniorUser->id, [32, 80]), function ($query) use ($juniorUser) {
+            //     $query->where('followupcount', $juniorUser->id);
+            // })
 
             ->count();
 
