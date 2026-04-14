@@ -3202,6 +3202,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
+            ->where($transferRemarkFilter)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3214,6 +3215,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
+            ->where($transferRemarkFilter)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3609,6 +3611,18 @@ class PreCallReportController extends Controller
             ->firstOrFail();
         $createdByKey = "{$juniorUser->id}|senior";
 
+        $userNames = [
+            $juniorUser->id => $juniorUser->name
+        ];
+
+        $transferRemarkFilter = function ($query) use ($userNames) {
+            $query->where(function ($q) use ($userNames) {
+                foreach ($userNames as $id => $name) {
+                    $q->orWhere('TransferRemark', 'like', "%Updated by {$name}%");
+                }
+            });
+        };
+
         // ================================
         // Main logic with LIKE filters
         // ================================
@@ -3757,6 +3771,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
+            ->where($transferRemarkFilter)
             ->count();
 
         // Transferred follow-up calls
@@ -3772,6 +3787,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
+            ->where($transferRemarkFilter)
             ->count();
 
         // Other calls (excluding Called & Mailed)
@@ -3865,6 +3881,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
+            ->where($transferRemarkFilter)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3881,6 +3898,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
+            ->where($transferRemarkFilter)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -5195,6 +5213,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
+            ->where($transferRemarkFilter)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -5209,6 +5228,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
+            ->where($transferRemarkFilter)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
