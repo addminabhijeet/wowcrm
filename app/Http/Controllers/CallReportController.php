@@ -1421,19 +1421,27 @@ class CallReportController extends Controller
 
     public function alljuniorlist(Request $request)
     {
+        // Get logged-in user
+        $user = Auth::user();
+
         // Get logged-in senior's group IDs
-        $groupIds = Auth::user()->group ?? [];
+        $groupIds = $user->group ?? [];
 
-        // Fetch only juniors whose id exists in senior's group
-        $juniorUsers = User::where('role', 'junior')
-            ->where('is_deleted', 0)
-            ->whereIn('id', $groupIds)
-            ->get();
+        // Base query (same as your logic)
+        $query = User::where('role', 'junior')
+            ->where('is_deleted', 0);
 
-        // Pass users to the view
+        // ✅ Only restrict if NOT admin (new condition added)
+        if ($user->role !== 'admin') {
+            $query->whereIn('id', $groupIds);
+        }
+
+        // Fetch users
+        $juniorUsers = $query->get();
+
+        // Pass users to the view (unchanged)
         return view('reports.alljuniorlist', compact('juniorUsers'));
     }
-
     public function allseniorlist(Request $request)
     {
         // Fetch all users with role 'senior'
