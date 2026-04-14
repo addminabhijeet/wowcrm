@@ -164,7 +164,6 @@ class CallReportController extends Controller
                 "CONCAT(':', callmailcount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedDate}:%"]
             )
-            ->whereDate('updated_at', $selectedDate)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -177,7 +176,6 @@ class CallReportController extends Controller
                 "CONCAT(':', selffollowupcount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedDate}:%"]
             )
-            ->whereDate('updated_at', $selectedDate)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -191,7 +189,6 @@ class CallReportController extends Controller
                 "CONCAT(':', followupcount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedDate}:%"]
             )
-            ->whereDate('updated_at', $selectedDate)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -206,7 +203,6 @@ class CallReportController extends Controller
                 "CONCAT(':', transferfollowupcount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedDate}:%"]
             )
-            ->whereDate('updated_at', $selectedDate)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
