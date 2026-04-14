@@ -5024,7 +5024,7 @@ class CallReportController extends Controller
             ->count();
 
         // Self follow-up calls in month (Called & Mailed / Ready To Pay with TransferRemark)
-        $MselffollowupCalls = GoogleSheetData::where(
+        $MselffollowupCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', selffollowupcount, ':') LIKE ?",
             ["%:{$user->id}|{$selectedDate}:%"]
         )
