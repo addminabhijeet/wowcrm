@@ -3979,7 +3979,7 @@ class GoogleSheetController extends Controller
             $rowData['TransferRemark'] !== '' &&
             $rowData['TransferRemark'] !== $oldTransferRemark &&
             $row->sd === null &&
-            $row->transfers === 0
+            $row->transfers === 1
         ) {
             $existingSelf = $row->selffollowupcount ?? '';
             $currentUserId = Auth::id();
@@ -4006,7 +4006,7 @@ class GoogleSheetController extends Controller
             $rowData['TransferRemark'] !== '' &&
             $rowData['TransferRemark'] !== $oldTransferRemark &&
             $row->sd === null &&
-            $row->transfers === 1
+            $row->transfers === 0
         ) {
             $existingSelf = $row->selffollowupcount ?? '';
             $currentUserId = Auth::id();
