@@ -502,7 +502,7 @@ class CallReportController extends Controller
             'SreadyToPaidCalls',
             'StransferedfollowUpCalls',
             'SfollowUpCalls',
-       
+
             'selectedDate',
 
 
@@ -674,14 +674,14 @@ class CallReportController extends Controller
 
         $selectedDate = $selectedMonth . '-01';
         // Total "Called & Mailed" calls in month
-        $McalledAndMailedCalls = GoogleSheetData::where(
+        $McalledAndMailedCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', callmailcount, ':') LIKE ?",
             ["%:{$user->id}|{$selectedDate}:%"]
         )
             ->count();
 
         // Self follow-up calls in month (Called & Mailed / Ready To Pay with TransferRemark)
-        $MselffollowupCalls = GoogleSheetData::where(
+        $MselffollowupCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', selffollowupcount, ':') LIKE ?",
             ["%:{$user->id}|{$selectedDate}:%"]
         )
