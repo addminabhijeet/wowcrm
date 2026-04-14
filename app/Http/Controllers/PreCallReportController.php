@@ -3810,7 +3810,8 @@ class PreCallReportController extends Controller
             + $StransferedfollowUpCalls;
 
         // Hour-wise "Ready To Pay" counts
-        $hourlyReadyToPaid = GoogleSheetData::where('created_by', 'like', "%|junior:{$juniorUser->id}|senior:0|accountant")
+        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', "%|junior:{$juniorUser->id}|senior:0|accountant")
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
