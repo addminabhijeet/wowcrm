@@ -9,6 +9,7 @@ use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\LoginsController;
 use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\GoogleSheetController;
+use App\Http\Controllers\PreCallReportController;
 use App\Http\Controllers\CallReportController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TimerController;
@@ -300,7 +301,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/alltrainerlist/call-reports-allreport/{userId}', [CallReportController::class, 'allreport'])->name('call.reports.allreport');
     Route::get('/dashboard/alljuniormonthly/call-reports/{userId}', [CallReportController::class, 'alljuniormonthly'])->name('call.reports.alljuniormonthly');
     Route::get('/dashboard/allseniormonthly/call-reports/{userId}', [CallReportController::class, 'allseniormonthly'])->name('call.reports.allseniormonthly');
-    Route::get('/dashboard/preallseniormonthly/call-reports/{userId}', [CallReportController::class, 'preallseniormonthly'])->name('call.reports.preallseniormonthly');
+    Route::get('/dashboard/preallseniormonthly/call-reports/{userId}', [PreCallReportController::class, 'preallseniormonthly'])->name('call.reports.preallseniormonthly');
     Route::get('/dashboard/alltrainermonthly/call-reports/{userId}', [CallReportController::class, 'alltrainermonthly'])->name('call.reports.alltrainermonthly');
     Route::get('/dashboard/allaccountantmonthly/call-reports/{userId}', [CallReportController::class, 'allaccountantmonthly'])->name('call.reports.allaccountantmonthly');
     Route::get('/dashboard/alljuniordaily/call-reports/{userId}', [CallReportController::class, 'alljuniordaily'])->name('call.reports.alljuniordaily');
@@ -308,9 +309,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/allaccountantdaily/call-reports/{userId}', [CallReportController::class, 'allaccountantdaily'])->name('call.reports.allaccountantdaily');
     Route::get('/dashboard/alltrainerdaily/call-reports/{userId}', [CallReportController::class, 'alltrainerdaily'])->name('call.reports.alltrainerdaily');
     Route::get('/dashboard/allseniordaily/call-reports/{userId}', [CallReportController::class, 'allseniordaily'])->name('call.reports.allseniordaily');
-    Route::get('/dashboard/preallseniordaily/call-reports/{userId}', [CallReportController::class, 'preallseniordaily'])->name('call.reports.preallseniordaily');
+    Route::get('/dashboard/preallseniordaily/call-reports/{userId}', [PreCallReportController::class, 'preallseniordaily'])->name('call.reports.preallseniordaily');
     Route::get('/dashboard/allseniorweekly/call-reports/{userId}', [CallReportController::class, 'allseniorweekly'])->name('call.reports.allseniorweekly');
-    Route::get('/dashboard/preallseniorweekly/call-reports/{userId}', [CallReportController::class, 'preallseniorweekly'])->name('call.reports.preallseniorweekly');
+    Route::get('/dashboard/preallseniorweekly/call-reports/{userId}', [PreCallReportController::class, 'preallseniorweekly'])->name('call.reports.preallseniorweekly');
 
     Route::match(['get', 'post'], '/timer/update', [DashboardController::class, 'updateTimer'])->name('timer.update');
     Route::get('/dashboard/smtp/add', [DashboardController::class, 'add'])->name('smtp.add');
