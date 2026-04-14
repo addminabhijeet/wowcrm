@@ -3740,10 +3740,7 @@ class PreCallReportController extends Controller
 
 
         // Ready To Pay calls
-        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) {
-            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
-        })
+        $SreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%|junior:{$juniorUser->id}|senior:0|accountant")
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -3813,11 +3810,7 @@ class PreCallReportController extends Controller
             + $StransferedfollowUpCalls;
 
         // Hour-wise "Ready To Pay" counts
-        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where(function ($q) {
-                $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-                    ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
-            })
+        $hourlyReadyToPaid = GoogleSheetData::where('created_by', 'like', "%|junior:{$juniorUser->id}|senior:0|accountant")
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -5095,10 +5088,7 @@ class PreCallReportController extends Controller
             ->count();
 
         // Ready To Pay calls in month
-        $MreadyToPaidCalls = GoogleSheetData::where(function ($q) {
-            $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-                ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
-        })
+        $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%|junior:{$user->id}|senior:0|accountant")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
@@ -5173,11 +5163,7 @@ class PreCallReportController extends Controller
             ->toArray();
 
         // Daily Ready To Paid
-        $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
-            ->where(function ($q) {
-                $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
-                    ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
-            })
+        $dailyReadyToPaid = GoogleSheetData::where('created_by', 'like', "%|junior:{$user->id}|senior:0|accountant")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
