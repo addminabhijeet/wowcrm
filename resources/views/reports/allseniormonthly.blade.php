@@ -740,7 +740,7 @@
                                         <i class="bi bi-bar-chart-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="fw-bold d-block">Sr IT Recruiter<br>(Follow Up)</small>
+                                        <small class="fw-bold d-block">Follow Up</small>
                                         <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MfollowUpCalls }}</h4>
                                     </div>
                                 </div>
@@ -752,7 +752,7 @@
                                         <i class="bi bi-envelope-paper-fill"></i>
                                     </div>
                                     <div>
-                                        <small class="fw-bold d-block">Sr IT Recruiter<br>(Called & Mailed)</small>
+                                        <small class="fw-bold d-block">Called & Mailed</small>
                                         <h4 class="fw-bold text-dark mb-0 fs-3">{{ $McalledAndMailedCalls }}</h4>
                                     </div>
                                 </div>
@@ -764,7 +764,7 @@
                                         <i class="bi bi-cash-stack"></i>
                                     </div>
                                     <div>
-                                        <small class="fw-bold d-block">Sr IT Recruiter<br>(Self follow up)</small>
+                                        <small class="fw-bold d-block">Self follow up</small>
                                         <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MselffollowupCalls }}</h4>
                                     </div>
                                 </div>
@@ -776,7 +776,7 @@
                                         <i class="bi bi-cash-stack"></i>
                                     </div>
                                     <div>
-                                        <small class="fw-bold d-block">Sr IT Recruiter<br>(Transfered Follow Up)</small>
+                                        <small class="fw-bold d-block">Transfered Follow Up</small>
                                         <h4 class="fw-bold text-dark mb-0 fs-3">{{ $MtransferedfollowUpCalls }}</h4>
                                     </div>
                                 </div>
@@ -807,10 +807,10 @@
                                         <thead class="table-primary">
                                             <tr>
                                                 <th class="fw-bold">Date</th>
-                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Follow Up)</th>
-                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Called & Mailed)</th>
-                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Self follow up)</th>
-                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Transfered Follow Up)</th>
+                                                <th class="fw-bold text-center">Follow Up</th>
+                                                <th class="fw-bold text-center">Called & Mailed</th>
+                                                <th class="fw-bold text-center">Self follow up</th>
+                                                <th class="fw-bold text-center">Transfered Follow Up</th>
                                                 <th class="fw-bold text-center">Ready To Paid</th>
                                                 <!-- Replaces Transfers -->
                                             </tr>
@@ -1036,10 +1036,10 @@
                                         <thead class="table-primary">
                                             <tr>
                                                 <th class="fw-bold">Date</th>
-                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Follow Up)</th>
-                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Called & Mailed)</th>
-                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Self follow up)</th>
-                                                <th class="fw-bold text-center">Sr IT Recruiter<br>(Transfered Follow Up)</th>
+                                                <th class="fw-bold text-center">Follow Up</th>
+                                                <th class="fw-bold text-center">Called & Mailed</th>
+                                                <th class="fw-bold text-center">Self follow up</th>
+                                                <th class="fw-bold text-center">Transfered Follow Up</th>
                                                 <th class="fw-bold text-center">Ready To Paid</th>
                                             </tr>
                                         </thead>
