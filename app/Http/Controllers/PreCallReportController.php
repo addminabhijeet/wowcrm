@@ -4988,7 +4988,7 @@ class PreCallReportController extends Controller
         $transferRemarkFilter = function ($query) use ($userNames) {
             $query->where(function ($q) use ($userNames) {
                 foreach ($userNames as $id => $name) {
-                    $q->orWhere('TransferRemark', 'like', "%{$name}%");
+                    $q->orWhere('TransferRemark', 'like', "%Updated by {$name}%");
                 }
             });
         };
