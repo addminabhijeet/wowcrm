@@ -497,7 +497,7 @@ $role = Auth::user()->role;
                             Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('call.reports.allseniorlist') }}"><i
+                    <li><a href="{{ route('call.reports.preallseniorlist') }}"><i
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>(Previous) IT Senior Recruiter
                             Report</a></li>
                 </ul>
