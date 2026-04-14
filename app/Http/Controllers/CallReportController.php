@@ -801,7 +801,7 @@ class CallReportController extends Controller
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
-            
+
         // Daily Other Calls (excluding Called & Mailed)
         $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "%{$createdByKey}%")
@@ -5017,7 +5017,7 @@ class CallReportController extends Controller
 
         $selectedDate = $selectedMonth . '-01';
         // Total "Called & Mailed" calls in month
-        $McalledAndMailedCalls = GoogleSheetData::where(
+        $McalledAndMailedCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', callmailcount, ':') LIKE ?",
             ["%:{$user->id}|{$selectedDate}:%"]
         )
