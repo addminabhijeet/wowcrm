@@ -3272,16 +3272,10 @@ class CallReportController extends Controller
             ->count();
 
 
-        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user, $createdByKey) {
-            $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:0|accountant")
-                ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
-        })
-            ->where(function ($q) use ($user, $createdByKey) {
-                $q->where('created_by', 'LIKE', "%|junior:{$user->id}|%")
-                    ->orWhere('created_by', 'LIKE', "{$user->id}|senior:{$user->id}|senior:0|accountant");
-            })
-            ->whereDate('updated_at', $selectedDate)
-            ->where('Exe_Remarks', 'Ready To Pay')
+        $SreadyToPaidCalls = GoogleSheetData::whereRaw(
+            "CONCAT(':', readytopaycount, ':') LIKE ?",
+            ["%:{$user->id}|{$selectedDate}:%"]
+        )
             ->count();
 
         $SfollowUpCalls = GoogleSheetData::whereRaw(
