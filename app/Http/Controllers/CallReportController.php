@@ -673,42 +673,35 @@ class CallReportController extends Controller
         [$year, $month] = explode('-', $selectedMonth);
 
         $selectedDate = $selectedMonth . '-01';
-        // Total "Called & Mailed" calls in month
+        // Monthly "Called & Mailed"
         $McalledAndMailedCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', callmailcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
-            ->count();
+            ["%:{$user->id}|{$selectedMonth}-%"]
+        )->count();
 
-        // Self follow-up calls in month (Called & Mailed / Ready To Pay with TransferRemark)
+        // Monthly Self Follow-up
         $MselffollowupCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', selffollowupcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
-            ->count();
+            ["%:{$user->id}|{$selectedMonth}-%"]
+        )->count();
 
-        // Ready To Pay calls in month
+        // Monthly Ready To Pay
         $MreadyToPaidCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', readytopaycount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
-            ->count();
+            ["%:{$user->id}|{$selectedMonth}-%"]
+        )->count();
 
-        // Follow-up calls in month (Called & Mailed with TransferRemark)
+        // Monthly Follow-up
         $MfollowUpCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', followupcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
-            ->count();
+            ["%:{$user->id}|{$selectedMonth}-%"]
+        )->count();
 
-
-        // Transferred follow-up calls in month
+        // Monthly Transferred Follow-up
         $MtransferedfollowUpCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', transferfollowupcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
-            ->count();
-
+            ["%:{$user->id}|{$selectedMonth}-%"]
+        )->count();
 
         // Other calls in month (excluding Called & Mailed)
         $MotherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
@@ -732,7 +725,7 @@ class CallReportController extends Controller
         $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', callmailcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -744,7 +737,7 @@ class CallReportController extends Controller
         $dailyFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', followupcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -756,7 +749,7 @@ class CallReportController extends Controller
         $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', readytopaycount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -768,7 +761,7 @@ class CallReportController extends Controller
         $dailyCalledAndMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', callmailcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -781,7 +774,7 @@ class CallReportController extends Controller
         $dailySelfFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', selffollowupcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -793,8 +786,8 @@ class CallReportController extends Controller
         // Daily Transferred Follow-up (Called & Mailed with TransferRemark and transfers = 1)
         $dailyTransferredFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
-                "CONCAT(':', callmailcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                "CONCAT(':', transferfollowupcount, ':') LIKE ?",
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -3726,10 +3719,14 @@ class CallReportController extends Controller
                 }
             });
 
-        $SselffollowupCalls = GoogleSheetData::whereRaw(
-            "CONCAT(':', selffollowupcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
+        $SselffollowupCalls = GoogleSheetData::where(function ($q) use ($weekDates, $user) {
+            foreach ($weekDates as $date) {
+                $q->orWhereRaw(
+                    "CONCAT(':', selffollowupcount, ':') LIKE ?",
+                    ["%:{$user->id}|{$date}:%"]
+                );
+            }
+        })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -3737,10 +3734,15 @@ class CallReportController extends Controller
             })
             ->count();
 
-        $SreadyToPaidCalls = GoogleSheetData::whereRaw(
-            "CONCAT(':', readytopaycount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
+
+        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($weekDates, $user) {
+            foreach ($weekDates as $date) {
+                $q->orWhereRaw(
+                    "CONCAT(':', readytopaycount, ':') LIKE ?",
+                    ["%:{$user->id}|{$date}:%"]
+                );
+            }
+        })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -3748,10 +3750,15 @@ class CallReportController extends Controller
             })
             ->count();
 
-        $SfollowUpCalls = GoogleSheetData::whereRaw(
-            "CONCAT(':', followupcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
+
+        $SfollowUpCalls = GoogleSheetData::where(function ($q) use ($weekDates, $user) {
+            foreach ($weekDates as $date) {
+                $q->orWhereRaw(
+                    "CONCAT(':', followupcount, ':') LIKE ?",
+                    ["%:{$user->id}|{$date}:%"]
+                );
+            }
+        })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -3759,10 +3766,31 @@ class CallReportController extends Controller
             })
             ->count();
 
-        $StransferedfollowUpCalls = GoogleSheetData::whereRaw(
-            "CONCAT(':', transferfollowupcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
+
+        $StransferedfollowUpCalls = GoogleSheetData::where(function ($q) use ($weekDates, $user) {
+            foreach ($weekDates as $date) {
+                $q->orWhereRaw(
+                    "CONCAT(':', transferfollowupcount, ':') LIKE ?",
+                    ["%:{$user->id}|{$date}:%"]
+                );
+            }
+        })
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('updated_at', $date);
+                }
+            })
+            ->count();
+
+
+        $ScalledAndMailedCalls = GoogleSheetData::where(function ($q) use ($weekDates, $user) {
+            foreach ($weekDates as $date) {
+                $q->orWhereRaw(
+                    "CONCAT(':', callmailcount, ':') LIKE ?",
+                    ["%:{$user->id}|{$date}:%"]
+                );
+            }
+        })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -3778,18 +3806,6 @@ class CallReportController extends Controller
             })
             ->count();
 
-
-        $ScalledAndMailedCalls = GoogleSheetData::whereRaw(
-            "CONCAT(':', callmailcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
-            ->where(function ($q) use ($weekDates) {
-                foreach ($weekDates as $date) {
-                    $q->orWhereDate('updated_at', $date);
-                }
-            })
-            ->count();
-
         $StotalCalls =
             $ScalledAndMailedCalls
             + $SselffollowupCalls
@@ -3799,10 +3815,14 @@ class CallReportController extends Controller
 
         // Hour-wise "Ready To Pay" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->whereRaw(
-                "CONCAT(':', readytopaycount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
-            )
+            ->where(function ($q) use ($weekDates, $user) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereRaw(
+                        "CONCAT(':', readytopaycount, ':') LIKE ?",
+                        ["%:{$user->id}|{$date}:%"]
+                    );
+                }
+            })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -3812,11 +3832,17 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
+
+        // Hourly Called & Mailed
         $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->whereRaw(
-                "CONCAT(':', callmailcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
-            )
+            ->where(function ($q) use ($weekDates, $user) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereRaw(
+                        "CONCAT(':', callmailcount, ':') LIKE ?",
+                        ["%:{$user->id}|{$date}:%"]
+                    );
+                }
+            })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -3826,12 +3852,17 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Hourly Self Follow-up (Called & Mailed / Ready To Pay with TransferRemark)
+
+        // Hourly Self Follow-up
         $hourlySelfFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->whereRaw(
-                "CONCAT(':', selffollowupcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
-            )
+            ->where(function ($q) use ($weekDates, $user) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereRaw(
+                        "CONCAT(':', selffollowupcount, ':') LIKE ?",
+                        ["%:{$user->id}|{$date}:%"]
+                    );
+                }
+            })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -3841,12 +3872,17 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        // Hourly Follow-up (Called & Mailed with TransferRemark)
+
+        // Hourly Follow-up
         $hourlyFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->whereRaw(
-                "CONCAT(':', followupcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
-            )
+            ->where(function ($q) use ($weekDates, $user) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereRaw(
+                        "CONCAT(':', followupcount, ':') LIKE ?",
+                        ["%:{$user->id}|{$date}:%"]
+                    );
+                }
+            })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -3855,13 +3891,18 @@ class CallReportController extends Controller
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
+
 
         // Hourly Transferred Follow-up
         $hourlyTransferredFollowUp = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->whereRaw(
-                "CONCAT(':', transferfollowupcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
-            )
+            ->where(function ($q) use ($weekDates, $user) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereRaw(
+                        "CONCAT(':', transferfollowupcount, ':') LIKE ?",
+                        ["%:{$user->id}|{$date}:%"]
+                    );
+                }
+            })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -5033,41 +5074,35 @@ class CallReportController extends Controller
         [$year, $month] = explode('-', $selectedMonth);
 
         $selectedDate = $selectedMonth . '-01';
-        // Total "Called & Mailed" calls in month
+        // Monthly "Called & Mailed"
         $McalledAndMailedCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', callmailcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
-            ->count();
+            ["%:{$user->id}|{$selectedMonth}-%"]
+        )->count();
 
-        // Self follow-up calls in month (Called & Mailed / Ready To Pay with TransferRemark)
+        // Monthly Self Follow-up
         $MselffollowupCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', selffollowupcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
-            ->count();
+            ["%:{$user->id}|{$selectedMonth}-%"]
+        )->count();
 
-        // Ready To Pay calls in month
+        // Monthly Ready To Pay
         $MreadyToPaidCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', readytopaycount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
-            ->count();
+            ["%:{$user->id}|{$selectedMonth}-%"]
+        )->count();
 
-        // Follow-up calls in month (Called & Mailed with TransferRemark)
+        // Monthly Follow-up
         $MfollowUpCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', followupcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
-            ->count();
+            ["%:{$user->id}|{$selectedMonth}-%"]
+        )->count();
 
-
-        // Transferred follow-up calls in month
+        // Monthly Transferred Follow-up
         $MtransferedfollowUpCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', transferfollowupcount, ':') LIKE ?",
-            ["%:{$user->id}|{$selectedDate}:%"]
-        )
-            ->count();
+            ["%:{$user->id}|{$selectedMonth}-%"]
+        )->count();
 
         // Other calls in month (excluding Called & Mailed)
         $MotherCalls = GoogleSheetData::where('created_by', 'like', "%{$createdByKey}%")
@@ -5091,7 +5126,7 @@ class CallReportController extends Controller
         $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', callmailcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -5103,7 +5138,7 @@ class CallReportController extends Controller
         $dailyFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', followupcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -5115,7 +5150,7 @@ class CallReportController extends Controller
         $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', readytopaycount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -5127,7 +5162,7 @@ class CallReportController extends Controller
         $dailyCalledAndMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', callmailcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -5140,7 +5175,7 @@ class CallReportController extends Controller
         $dailySelfFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', selffollowupcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
@@ -5152,8 +5187,8 @@ class CallReportController extends Controller
         // Daily Transferred Follow-up (Called & Mailed with TransferRemark and transfers = 1)
         $dailyTransferredFollowUp = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->whereRaw(
-                "CONCAT(':', callmailcount, ':') LIKE ?",
-                ["%:{$user->id}|{$selectedDate}:%"]
+                "CONCAT(':', transferfollowupcount, ':') LIKE ?",
+                ["%:{$user->id}|{$selectedMonth}-%"]
             )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
