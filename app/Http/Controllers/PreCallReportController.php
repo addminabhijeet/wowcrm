@@ -3011,7 +3011,9 @@ class PreCallReportController extends Controller
             ->where('is_deleted', 0)
             ->firstOrFail();
         $createdByKey = "{$juniorUser->id}|senior";
-
+        $userNames = [
+            $juniorUser->id => $juniorUser->name
+        ];
         // ================================
         // Main logic with LIKE filters
         // ================================
@@ -3104,6 +3106,14 @@ class PreCallReportController extends Controller
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
+        $transferRemarkFilter = function ($query) use ($userNames) {
+            $query->where(function ($q) use ($userNames) {
+                foreach ($userNames as $id => $name) {
+                    $q->orWhere('TransferRemark', 'like', "%Updated by {$name}%");
+                }
+            });
+        };
+
         // Follow-up calls (Called & Mailed with TransferRemark)
         $SfollowUpCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'"
@@ -3113,6 +3123,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
+            ->where($transferRemarkFilter)
             ->count();
 
         // Transferred follow-up calls
@@ -3123,6 +3134,7 @@ class PreCallReportController extends Controller
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
+            ->where($transferRemarkFilter)
             ->where('transfers', 1)
             ->count();
 
