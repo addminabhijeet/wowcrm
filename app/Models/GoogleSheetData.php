@@ -59,7 +59,6 @@ class GoogleSheetData extends Model
 
 
     protected $casts = [
-        'followupcount' => 'array', // auto decode JSON
         'Date' => 'date',
         'Amount' => 'decimal:2',
     ];
