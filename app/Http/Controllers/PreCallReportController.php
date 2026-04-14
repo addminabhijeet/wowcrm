@@ -4981,6 +4981,18 @@ class PreCallReportController extends Controller
             ->where('is_deleted', 0)
             ->firstOrFail();
 
+        $userNames = [
+            $user->id => $user->name
+        ];
+
+        $transferRemarkFilter = function ($query) use ($userNames) {
+            $query->where(function ($q) use ($userNames) {
+                foreach ($userNames as $id => $name) {
+                    $q->orWhere('TransferRemark', 'like', "%{$name}%");
+                }
+            });
+        };
+
         // Total "Called & Mailed" calls
         $calledAndMailedCalls = GoogleSheetData::whereRaw(
             "created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'"
@@ -5090,6 +5102,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
+            ->where($transferRemarkFilter)
             ->count();
 
 
@@ -5103,6 +5116,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 1)
+            ->where($transferRemarkFilter)
             ->count();
 
         // Other calls in month (excluding Called & Mailed)
