@@ -53,6 +53,7 @@ class GoogleSheetData extends Model
         'selffollowupcount',
         'transfer_date',
         'readytopaycount',
+        'transferfollowupcount',
         'sd',
     ];
 

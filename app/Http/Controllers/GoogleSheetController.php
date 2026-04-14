@@ -3978,7 +3978,8 @@ class GoogleSheetController extends Controller
             isset($rowData['TransferRemark']) &&
             $rowData['TransferRemark'] !== '' &&
             $rowData['TransferRemark'] !== $oldTransferRemark &&
-            $row->sd === null
+            $row->sd === null &&
+            $row->transfers === 0
         ) {
             $existingSelf = $row->selffollowupcount ?? '';
             $currentUserId = Auth::id();
@@ -3995,6 +3996,33 @@ class GoogleSheetController extends Controller
             }
 
             $updateData['followupcount'] = implode(':', $entries);
+        }
+
+                // ✅ NEW selffollowupcount logic (NO DUPLICATE)
+        if (
+            isset($rowData['Exe Remarks']) &&
+            $rowData['Exe Remarks'] === 'Called & Mailed' &&
+            isset($rowData['TransferRemark']) &&
+            $rowData['TransferRemark'] !== '' &&
+            $rowData['TransferRemark'] !== $oldTransferRemark &&
+            $row->sd === null &&
+            $row->transfers === 1
+        ) {
+            $existingSelf = $row->selffollowupcount ?? '';
+            $currentUserId = Auth::id();
+            $currentDate = now()->format('Y-m-d');
+
+            $newEntry = $currentUserId . '|' . $currentDate;
+
+            $entries = array_filter(explode(':', $existingSelf));
+            $entries = array_map('trim', $entries);
+            $entries = array_unique($entries);
+
+            if (!in_array($newEntry, $entries)) {
+                $entries[] = $newEntry;
+            }
+
+            $updateData['transferfollowupcount'] = implode(':', $entries);
         }
 
         // ✅ NEW readytopaycount logic (NO DUPLICATE)
