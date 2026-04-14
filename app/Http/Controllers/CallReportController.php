@@ -1443,6 +1443,15 @@ class CallReportController extends Controller
         return view('reports.allseniorlist', compact('seniorUsers'));
     }
 
+    public function preallseniorlist(Request $request)
+    {
+        // Fetch all users with role 'senior'
+        $seniorUsers = User::where('role', 'senior')->where('is_deleted', 0)->get();
+
+        // Pass users to the view
+        return view('reports.preallseniorlist', compact('seniorUsers'));
+    }
+
     public function allaccountantlist(Request $request)
     {
         // Fetch all users with role 'senior'

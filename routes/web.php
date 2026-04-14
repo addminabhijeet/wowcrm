@@ -300,6 +300,7 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/dashboard/alltrainerlist/call-reports-allreport/{userId}', [CallReportController::class, 'allreport'])->name('call.reports.allreport');
     Route::get('/dashboard/alljuniormonthly/call-reports/{userId}', [CallReportController::class, 'alljuniormonthly'])->name('call.reports.alljuniormonthly');
     Route::get('/dashboard/allseniormonthly/call-reports/{userId}', [CallReportController::class, 'allseniormonthly'])->name('call.reports.allseniormonthly');
+    Route::get('/dashboard/preallseniormonthly/call-reports/{userId}', [CallReportController::class, 'preallseniormonthly'])->name('call.reports.preallseniormonthly');
     Route::get('/dashboard/alltrainermonthly/call-reports/{userId}', [CallReportController::class, 'alltrainermonthly'])->name('call.reports.alltrainermonthly');
     Route::get('/dashboard/allaccountantmonthly/call-reports/{userId}', [CallReportController::class, 'allaccountantmonthly'])->name('call.reports.allaccountantmonthly');
     Route::get('/dashboard/alljuniordaily/call-reports/{userId}', [CallReportController::class, 'alljuniordaily'])->name('call.reports.alljuniordaily');
