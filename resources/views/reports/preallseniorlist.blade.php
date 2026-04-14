@@ -70,15 +70,15 @@
                                 <td>{{ $user->role === 'senior' ? 'IT Senior Recruiter' : $user->role }}</td>
 
                                 <td class="text-center">
-                                    <a href="{{ route('call.reports.allseniormonthly', $user->id) }}"
+                                    <a href="{{ route('call.reports.preallseniormonthly', $user->id) }}"
                                         class="btn btn-sm btn-primary">
                                         View Monthly
                                     </a>
-                                    <a href="{{ route('call.reports.allseniorweekly', $user->id) }}"
+                                    <a href="{{ route('call.reports.preallseniorweekly', $user->id) }}"
                                         class="btn btn-sm btn-success">
                                         View weekly
                                     </a>
-                                    <a href="{{ route('call.reports.allseniordaily', $user->id) }}"
+                                    <a href="{{ route('call.reports.preallseniordaily', $user->id) }}"
                                         class="btn btn-sm btn-success">
                                         View Daily
                                     </a>
