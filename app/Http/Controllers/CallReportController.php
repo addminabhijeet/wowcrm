@@ -118,7 +118,7 @@ class CallReportController extends Controller
             ->count();
 
         $SfollowUpCalls = GoogleSheetData::whereRaw(
-            "CONCAT(':', selffollowupcount, ':') LIKE ?",
+            "CONCAT(':', followupcount, ':') LIKE ?",
             ["%:{$user->id}|{$selectedDate}:%"]
         )
             ->count();
@@ -3216,7 +3216,7 @@ class CallReportController extends Controller
             ->count();
 
         $SfollowUpCalls = GoogleSheetData::whereRaw(
-            "CONCAT(':', selffollowupcount, ':') LIKE ?",
+            "CONCAT(':', followupcount, ':') LIKE ?",
             ["%:{$user->id}|{$selectedDate}:%"]
         )
             ->count();
