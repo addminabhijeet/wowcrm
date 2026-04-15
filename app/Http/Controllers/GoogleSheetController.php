@@ -3998,7 +3998,7 @@ class GoogleSheetController extends Controller
             $updateData['followupcount'] = implode(':', $entries);
         }
 
-                // ✅ NEW selffollowupcount logic (NO DUPLICATE)
+        // ✅ NEW selffollowupcount logic (NO DUPLICATE)
         if (
             isset($rowData['Exe Remarks']) &&
             $rowData['Exe Remarks'] === 'Called & Mailed' &&
@@ -4172,7 +4172,9 @@ class GoogleSheetController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Fill Full Detail to Save.'
+                'message' => $e->getMessage(), // ✅ show exact error
+                'line' => $e->getLine(),       // optional (very useful)
+                'file' => $e->getFile()
             ]);
         }
     }
