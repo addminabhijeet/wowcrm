@@ -3120,7 +3120,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
-            ->where($transferRemarkFilter)
+            ->where($transferRemarkFilter) 
             ->count();
 
         // Transferred follow-up calls
