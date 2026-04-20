@@ -2083,7 +2083,6 @@ class GoogleSheetController extends Controller
         }
     }
 
-
     public function seniorpaid(Request $request)
     {
         $authUser = Auth::user();
@@ -2190,7 +2189,7 @@ class GoogleSheetController extends Controller
             'juniorUsers' => $juniorUsers
         ]);
     }
-    
+
     public function seniorcon(Request $request)
     {
         $authUser = Auth::user();
