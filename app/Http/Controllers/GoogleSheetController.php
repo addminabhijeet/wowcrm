@@ -2295,14 +2295,20 @@ class GoogleSheetController extends Controller
         // Pagination
         // -----------------------------
 
+        $page = request()->input('page', 1);
+
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage(request()->input('page', 1), 10),
+            $transformed->forPage($page, 10),
             $transformed->count(),
             10,
-            request()->input('page', 1),
+            $page,
             [
                 'path' => url()->current(),
-                'query' => $request->query()
+                'query' => [
+                    'search' => $request->search,
+                    'junior_user' => $request->junior_user,
+                    'row_id' => $request->row_id
+                ]
             ]
         );
 
