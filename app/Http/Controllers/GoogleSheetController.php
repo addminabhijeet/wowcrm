@@ -2104,6 +2104,8 @@ class GoogleSheetController extends Controller
         ");
         });
 
+        $query->where('Exe_Remarks', 'Ready To Pay');
+
         if ($rowId) {
             $query->where('id', $rowId);
         } elseif ($search && strlen($search) >= 3) {
@@ -2115,7 +2117,7 @@ class GoogleSheetController extends Controller
         }
 
         $results = $query->orderBy('updated_at', 'desc')->get();
-        
+
         $assignedJuniorIds = $authUser->group ?? [];
         $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds, $authUser) {
             if (empty($item->created_by)) return false;
