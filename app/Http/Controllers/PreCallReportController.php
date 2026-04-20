@@ -3098,12 +3098,13 @@ class PreCallReportController extends Controller
 
         // Ready To Pay calls
         $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($juniorUser) {
-
             $q->where('created_by', 'LIKE', "%:{$juniorUser}|senior%");
         })
-            ->where('created_by', 'LIKE', '%|accountant%')
+            ->where(function ($q) {
+                $q->where('created_by', 'LIKE', '%|accountant%');
+            })
             ->whereDate('updated_at', $selectedDate)
-            ->whereIn('Exe_Remarks', ['Verification Completed', 'Ready To Pay'])
+            ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
             ->count();
 
         $transferRemarkFilter = function ($query) use ($userNames) {
@@ -5088,10 +5089,11 @@ class PreCallReportController extends Controller
 
         // Ready To Pay calls in month
         $MreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user) {
-
-            // junior must exist
-            $q->where('created_by', 'LIKE', "%|junior:{$user->id}%");
+            $q->where('created_by', 'LIKE', "%:{$user}|senior%");
         })
+            ->where(function ($q) {
+                $q->where('created_by', 'LIKE', '%|accountant%');
+            })
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
