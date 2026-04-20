@@ -3100,6 +3100,9 @@ class PreCallReportController extends Controller
         $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($juniorUser) {
             $q->where('created_by', 'LIKE', "%:{$juniorUser}|senior%");
         })
+            ->where(function ($q) {
+                $q->where('created_by', 'LIKE', '%|accountant%');
+            })
             ->whereDate('updated_at', $selectedDate)
             ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
             ->count();
@@ -3742,6 +3745,9 @@ class PreCallReportController extends Controller
 
             $q->where('created_by', 'LIKE', "%:{$juniorUser->id}|senior%");
         })
+            ->where(function ($q) {
+                $q->where('created_by', 'LIKE', '%|accountant%');
+            })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -5087,6 +5093,9 @@ class PreCallReportController extends Controller
         $MreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user) {
             $q->where('created_by', 'LIKE', "%:{$user}|senior%");
         })
+            ->where(function ($q) {
+                $q->where('created_by', 'LIKE', '%|accountant%');
+            })
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
