@@ -2091,16 +2091,17 @@ class GoogleSheetController extends Controller
         $search = $request->input('search');
         $rowId = $request->input('row_id');
 
-        // -----------------------------
-        // Original query (no logic change)
-        // -----------------------------
-        $query = GoogleSheetData::where(function ($q) {
-            $q->where(function ($q2) {
-                $q2->whereRaw("created_by = '0|accountant'")
-                    ->orWhereRaw("created_by LIKE '0|accountant:%'")
-                    ->orWhereRaw("created_by LIKE '%:0|accountant'")
-                    ->orWhereRaw("created_by LIKE '%:0|accountant:%'");
-            });
+        $query = GoogleSheetData::query();
+
+        $authId = $authUser->id;
+
+        $query->where(function ($q) use ($authId) {
+            $q->whereRaw("
+        created_by REGEXP '^[0-9]+\\|junior:{$authId}\\|senior:0\\|accountant$'
+        ")
+                ->orWhereRaw("
+        created_by REGEXP '^[0-9]+\\|senior:{$authId}\\|senior:0\\|accountant$'
+        ");
         });
 
         if ($rowId) {
@@ -2113,10 +2114,8 @@ class GoogleSheetController extends Controller
             });
         }
 
-        $results = $query->get()->sortByDesc('updated_at')->values();
-        // -----------------------------
-        // Filter only assigned juniors
-        // -----------------------------
+        $results = $query->orderBy('updated_at', 'desc')->get();
+        
         $assignedJuniorIds = $authUser->group ?? [];
         $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds, $authUser) {
             if (empty($item->created_by)) return false;
