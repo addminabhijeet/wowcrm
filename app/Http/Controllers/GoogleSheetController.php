@@ -2113,8 +2113,7 @@ class GoogleSheetController extends Controller
             });
         }
 
-        $results = $query->orderBy('Date', 'desc')->get();
-
+        $results = $query->get()->sortByDesc('updated_at')->values();
         // -----------------------------
         // Filter only assigned juniors
         // -----------------------------
