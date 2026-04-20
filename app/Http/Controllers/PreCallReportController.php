@@ -3098,11 +3098,10 @@ class PreCallReportController extends Controller
 
         // Ready To Pay calls
         $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($juniorUser) {
-            $q->where('created_by', 'LIKE', "%:{$juniorUser}|senior%");
+
+            $q->where('created_by', 'LIKE', "%:{$juniorUser->id}|senior%");
         })
-            ->where(function ($q) {
-                $q->where('created_by', 'LIKE', '%|accountant%');
-            })
+            ->where('created_by', 'LIKE', '%|accountant%')
             ->whereDate('updated_at', $selectedDate)
             ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
             ->count();
@@ -3745,15 +3744,13 @@ class PreCallReportController extends Controller
 
             $q->where('created_by', 'LIKE', "%:{$juniorUser->id}|senior%");
         })
-            ->where(function ($q) {
-                $q->where('created_by', 'LIKE', '%|accountant%');
-            })
+            ->where('created_by', 'LIKE', '%|accountant%')
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
                 }
             })
-            ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
+            ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
         // Follow-up calls (Called & Mailed with TransferRemark)
@@ -5091,11 +5088,10 @@ class PreCallReportController extends Controller
 
         // Ready To Pay calls in month
         $MreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user) {
-            $q->where('created_by', 'LIKE', "%:{$user}|senior%");
+
+            $q->where('created_by', 'LIKE', "%:{$user->id}|senior%");
         })
-            ->where(function ($q) {
-                $q->where('created_by', 'LIKE', '%|accountant%');
-            })
+            ->where('created_by', 'LIKE', '%|accountant%')
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
