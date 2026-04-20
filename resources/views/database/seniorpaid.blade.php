@@ -1077,7 +1077,7 @@
                 }
 
                 $.ajax({
-                    url: "{{ route('senior.suggestions') }}",
+                    url: "{{ route('senior.suggestionspaid') }}",
                     type: 'GET',
                     data: {
                         query
