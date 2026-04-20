@@ -5089,7 +5089,7 @@ class PreCallReportController extends Controller
         // Ready To Pay calls in month
         $MreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user) {
 
-            $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:%|accountant%");
+            $q->where('created_by', 'LIKE', "%|junior:{$user->id}|senior:%");
         })
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
