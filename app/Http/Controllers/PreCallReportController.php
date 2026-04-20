@@ -3745,7 +3745,9 @@ class PreCallReportController extends Controller
 
             $q->where('created_by', 'LIKE', "%:{$juniorUser->id}|senior%");
         })
-            ->where('created_by', 'LIKE', '%|accountant%')
+            ->where(function ($q) {
+                $q->where('created_by', 'LIKE', '%|accountant%');
+            })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
