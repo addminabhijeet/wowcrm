@@ -3096,11 +3096,14 @@ class PreCallReportController extends Controller
             ->where('transfers', 0)
             ->count();
 
-
         // Ready To Pay calls
-        $SreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%|junior:{$juniorUser->id}|senior:0|accountant")
+        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($juniorUser) {
+
+            $q->where('created_by', 'LIKE', "%:{$juniorUser}|senior%");
+        })
+            ->where('created_by', 'LIKE', '%|accountant%')
             ->whereDate('updated_at', $selectedDate)
-            ->where('Exe_Remarks', 'Ready To Pay')
+            ->whereIn('Exe_Remarks', ['Verification Completed', 'Ready To Pay'])
             ->count();
 
         $transferRemarkFilter = function ($query) use ($userNames) {
@@ -3120,7 +3123,7 @@ class PreCallReportController extends Controller
             ->whereNotNull('TransferRemark')
             ->where('TransferRemark', '!=', '')
             ->where('transfers', 0)
-            ->where($transferRemarkFilter) 
+            ->where($transferRemarkFilter)
             ->count();
 
         // Transferred follow-up calls
@@ -3737,7 +3740,11 @@ class PreCallReportController extends Controller
 
 
         // Ready To Pay calls
-        $SreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%|junior:{$juniorUser->id}|senior:0|accountant")
+        $SreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($juniorUser) {
+
+            $q->where('created_by', 'LIKE', "%:{$juniorUser->id}|senior%");
+        })
+            ->where('created_by', 'LIKE', '%|accountant%')
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
@@ -5080,7 +5087,11 @@ class PreCallReportController extends Controller
             ->count();
 
         // Ready To Pay calls in month
-        $MreadyToPaidCalls = GoogleSheetData::where('created_by', 'like', "%|junior:{$user->id}|senior:0|accountant")
+        $MreadyToPaidCalls = GoogleSheetData::where(function ($q) use ($user) {
+
+            $q->where('created_by', 'LIKE', "%:{$user->id}|senior%");
+        })
+            ->where('created_by', 'LIKE', '%|accountant%')
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
