@@ -2206,7 +2206,6 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
-        $page = $request->input('page', 1);
 
         // -----------------------------
         // Original query (unchanged)
@@ -2295,14 +2294,16 @@ class GoogleSheetController extends Controller
         // -----------------------------
         // Pagination
         // -----------------------------
-        $perPage = 10;
-        $currentPage = $page;
+
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($currentPage, $perPage),
+            $transformed->forPage(request()->input('page', 1), 10),
             $transformed->count(),
-            $perPage,
-            $currentPage,
-            ['path' => url()->current(), 'query' => $request->query()]
+            10,
+            request()->input('page', 1),
+            [
+                'path' => url()->current(),
+                'query' => $request->query()
+            ]
         );
 
         // -----------------------------
