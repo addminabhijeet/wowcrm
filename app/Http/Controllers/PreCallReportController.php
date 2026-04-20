@@ -5173,10 +5173,10 @@ class PreCallReportController extends Controller
             ->toArray();
 
         // Daily Ready To Paid
-        $dailyReadyToPaid = GoogleSheetData::where(function ($q) use ($user) {
-
-            $q->where('created_by', 'LIKE', "%:{$user->id}|senior%");
-        })
+        $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+            ->where(function ($q) use ($user) {
+                $q->where('created_by', 'LIKE', "%:{$user->id}|senior%");
+            })
             ->where('created_by', 'LIKE', '%|accountant%')
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
