@@ -2096,12 +2096,8 @@ class GoogleSheetController extends Controller
         $authId = $authUser->id;
 
         $query->where(function ($q) use ($authId) {
-            $q->whereRaw("
-        created_by REGEXP '^[0-9]+\\|junior:{$authId}\\|senior:0\\|accountant$'
-        ")
-                ->orWhereRaw("
-        created_by REGEXP '^[0-9]+\\|senior:{$authId}\\|senior:0\\|accountant$'
-        ");
+            $q->where('created_by', 'LIKE', "%|junior:{$authId}|senior:0|accountant%")
+                ->orWhere('created_by', 'LIKE', "%|senior:{$authId}|senior:0|accountant%");
         });
 
         $query->where('Exe_Remarks', 'Ready To Pay');
