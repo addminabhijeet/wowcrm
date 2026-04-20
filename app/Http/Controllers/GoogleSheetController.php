@@ -2206,6 +2206,7 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
+        $page = $request->input('page', 1);
 
         // -----------------------------
         // Original query (unchanged)
@@ -2230,7 +2231,7 @@ class GoogleSheetController extends Controller
             });
         }
 
-        $results = $query->orderBy('Date', 'desc')->get();
+        $results = $query->orderBy('updated_at', 'desc')->get();
 
         // -----------------------------
         // Filter only assigned juniors
@@ -2295,19 +2296,19 @@ class GoogleSheetController extends Controller
         // Pagination
         // -----------------------------
 
-        $page = request()->input('page', 1);
-
+        $perPage = 10;
+        $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($page, 10),
+            $transformed->forPage($currentPage, $perPage),
             $transformed->count(),
-            10,
-            $page,
+            $perPage,
+            $currentPage,
             [
                 'path' => url()->current(),
                 'query' => [
                     'search' => $request->search,
                     'junior_user' => $request->junior_user,
-                    'row_id' => $request->row_id
+                    'date' => $request->date
                 ]
             ]
         );

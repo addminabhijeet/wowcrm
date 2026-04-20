@@ -1220,15 +1220,7 @@
              fetchTable('', 1, junior_user, rowId);
          });
 
-         // Pagination click (AJAX)
-         $(document).on('click', '.pagination a', function(e) {
-             e.preventDefault();
-             const page = $(this).attr('href').split('page=')[1];
-             const search = $('#senior-search').val().trim();
-             const junior_user = $('#junior-filter').val() || '';
-             const row_id = ''; // or store selected rowId if needed
-             fetchTable(search, page, junior_user, row_id);
-         });
+
 
          // Junior dropdown filter
          $(document).on('change', '#junior-filter', function() {
