@@ -3753,7 +3753,7 @@ class PreCallReportController extends Controller
                     $q->orWhereDate('updated_at', $date);
                 }
             })
-            ->where('Exe_Remarks', 'Ready To Pay')
+            ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
             ->count();
 
         // Follow-up calls (Called & Mailed with TransferRemark)
