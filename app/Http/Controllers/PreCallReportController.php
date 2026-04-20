@@ -3161,10 +3161,13 @@ class PreCallReportController extends Controller
             + $StransferedfollowUpCalls;
 
         // Hour-wise "Ready To Pay" counts
-        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "%|junior:{$juniorUser->id}|senior:0|accountant")
+        $hourlyReadyToPaid = GoogleSheetData::where(function ($q) use ($juniorUser) {
+
+            $q->where('created_by', 'LIKE', "%:{$juniorUser->id}|senior%");
+        })
+            ->where('created_by', 'LIKE', '%|accountant%')
             ->whereDate('updated_at', $selectedDate)
-            ->where('Exe_Remarks', 'Ready To Pay')
+            ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -3814,14 +3817,18 @@ class PreCallReportController extends Controller
             + $StransferedfollowUpCalls;
 
         // Hour-wise "Ready To Pay" counts
-        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
-            ->where('created_by', 'like', "%|junior:{$juniorUser->id}|senior:0|accountant")
+        $hourlyReadyToPaid = GoogleSheetData::where(function ($q) use ($juniorUser) {
+
+            $q->where('created_by', 'LIKE', "%:{$juniorUser->id}|senior%");
+        })
+            ->where('created_by', 'LIKE', '%|accountant%')
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('updated_at', $date);
                 }
             })
-            ->where('Exe_Remarks', 'Ready To Pay')
+            ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
+
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -5166,11 +5173,14 @@ class PreCallReportController extends Controller
             ->toArray();
 
         // Daily Ready To Paid
-        $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
-            ->where('created_by', 'like', "%|junior:{$user->id}|senior:0|accountant")
+        $dailyReadyToPaid = GoogleSheetData::where(function ($q) use ($user) {
+
+            $q->where('created_by', 'LIKE', "%:{$user->id}|senior%");
+        })
+            ->where('created_by', 'LIKE', '%|accountant%')
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->where('Exe_Remarks', 'Ready To Pay')
+            ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
