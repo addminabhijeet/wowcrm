@@ -2983,21 +2983,26 @@ class GoogleSheetController extends Controller
 
         if ($query && strlen($query) >= 3) {
             $results = GoogleSheetData::where(function ($q) use ($authUser) {
-                $userPattern = "%:" . $authUser->id . "|senior";
-                $zeroPattern = "%:0|accountant";
 
-                $q->where('created_by', $authUser->id . '|senior')
-                    ->orWhere('created_by', '0|accountant')
-                    ->orWhere('created_by', 'LIKE', $userPattern)
-                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+                // ✅ ONLY middle senior match
+                $q->where('created_by', 'LIKE', "%:{$authUser->id}|senior%");
             })
+                ->where('created_by', 'LIKE', '%|accountant%') // ✅ accountant anywhere
                 ->where(function ($q) use ($query) {
                     $q->where('Name', 'LIKE', "%{$query}%")
                         ->orWhere('Email_Address', 'LIKE', "%{$query}%")
                         ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
                 })
                 ->limit(10)
-                ->get(['id', 'sheet_row_number', 'Name', 'Email_Address', 'Phone_Number', 'Exe_Remarks', 'created_by']);
+                ->get([
+                    'id',
+                    'sheet_row_number',
+                    'Name',
+                    'Email_Address',
+                    'Phone_Number',
+                    'Exe_Remarks',
+                    'created_by'
+                ]);
         }
         // ✅ Transform the forwarded_by column like in senior()
         $transformed = collect($results)->map(function ($item) use ($authUser) {
