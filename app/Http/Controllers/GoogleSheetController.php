@@ -2225,18 +2225,16 @@ class GoogleSheetController extends Controller
         $rowId = $request->input('row_id');
         $page = $request->input('page', 1);
 
-        // -----------------------------
-        // Original query (unchanged)
-        // -----------------------------
-        $query = GoogleSheetData::where(function ($q) {
-            $q->where(function ($q2) {
-                $q2->where('created_by', 'LIKE', '%:0|accountant:0|senior')
-                    ->orWhere('created_by', 'LIKE', '0|accountant:0|senior')
-                    ->orWhere(function ($qq) {
-                        $qq->where('created_by', 'LIKE', '%|accountant:0|senior');
-                    });
-            });
+        $query = GoogleSheetData::query();
+
+        $authId = $authUser->id;
+
+        $query->where(function ($q) use ($authId) {
+            $q->where('created_by', 'LIKE', "%|junior:{$authId}|senior%")
+                ->orWhere('created_by', 'LIKE', "%|senior:{$authId}|senior%");
         });
+
+        $query->where('Exe_Remarks', 'Payment Completed');
 
         if ($rowId) {
             $query->where('id', $rowId);
