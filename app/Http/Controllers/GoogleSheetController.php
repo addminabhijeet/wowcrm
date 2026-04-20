@@ -2084,7 +2084,6 @@ class GoogleSheetController extends Controller
     }
 
 
-
     public function seniorpaid(Request $request)
     {
         $authUser = Auth::user();
@@ -2112,57 +2111,19 @@ class GoogleSheetController extends Controller
             });
         }
 
+        // ✅ NO PHP FILTERING — direct DB result
         $results = $query->orderBy('updated_at', 'desc')->get();
 
-        $assignedJuniorIds = $authUser->group ?? [];
-        $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds, $authUser, $search) {
-
-            if (empty($item->created_by)) return false;
-
-            // -----------------------------
-            // SEARCH FILTER (ADDED SAFELY)
-            // -----------------------------
-            if (!empty($search) && strlen($search) >= 3) {
-                $match =
-                    stripos($item->Name, $search) !== false ||
-                    stripos($item->Email_Address, $search) !== false ||
-                    stripos($item->Phone_Number, $search) !== false;
-
-                if (!$match) {
-                    return false;
-                }
-            }
-
-            // -----------------------------
-            // ORIGINAL LOGIC (UNCHANGED)
-            // -----------------------------
-            $entries = explode(':', $item->created_by);
-
-            foreach ($entries as $entry) {
-                $parts = explode('|', $entry);
-                $userId = $parts[0] ?? null;
-                $role   = $parts[1] ?? null;
-
-                if ($role === 'junior' && in_array((int)$userId, $assignedJuniorIds)) {
-                    return true;
-                }
-
-                if ($role === 'senior' && $userId == $authUser->id) {
-                    return true;
-                }
-            }
-
-            return false;
-        });
-
         // -----------------------------
-        // Transform forwarded_by
+        // Transform forwarded_by (UNCHANGED)
         // -----------------------------
-        $transformed = $filteredResults->map(function ($item) use ($authUser) {
+        $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
+
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
                 $names = [];
+
                 foreach ($entries as $entry) {
                     $parts = explode('|', $entry);
                     $userId = $parts[0] ?? null;
@@ -2178,6 +2139,7 @@ class GoogleSheetController extends Controller
                         $names[] = "{$name} ({$userId}) ({$role})";
                     }
                 }
+
                 $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
@@ -2195,12 +2157,17 @@ class GoogleSheetController extends Controller
             $transformed->count(),
             10,
             request()->input('page', 1),
-            ['path' => url()->current(), 'query' => $request->query()]
+            [
+                'path' => url()->current(),
+                'query' => $request->query()
+            ]
         );
 
         // -----------------------------
         // Dropdown: only assigned juniors
         // -----------------------------
+        $assignedJuniorIds = $authUser->group ?? [];
+
         $juniorUsers = \App\Models\User::where('is_deleted', 0)
             ->where('role', 'junior')
             ->whereIn('id', $assignedJuniorIds)
@@ -2212,11 +2179,18 @@ class GoogleSheetController extends Controller
         // Return view
         // -----------------------------
         if ($request->ajax()) {
-            return view('database.partials.career_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.career_table', [
+                'data' => $pagedData,
+                'juniorUsers' => $juniorUsers
+            ])->render();
         }
 
-        return view('database.seniorpaid', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+        return view('database.seniorpaid', [
+            'data' => $pagedData,
+            'juniorUsers' => $juniorUsers
+        ]);
     }
+    
     public function seniorcon(Request $request)
     {
         $authUser = Auth::user();
