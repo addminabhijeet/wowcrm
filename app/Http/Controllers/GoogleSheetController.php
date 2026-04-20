@@ -2115,27 +2115,44 @@ class GoogleSheetController extends Controller
         $results = $query->orderBy('updated_at', 'desc')->get();
 
         $assignedJuniorIds = $authUser->group ?? [];
-        $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds, $authUser) {
+        $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds, $authUser, $search) {
+
             if (empty($item->created_by)) return false;
 
+            // -----------------------------
+            // SEARCH FILTER (ADDED SAFELY)
+            // -----------------------------
+            if (!empty($search) && strlen($search) >= 3) {
+                $match =
+                    stripos($item->Name, $search) !== false ||
+                    stripos($item->Email_Address, $search) !== false ||
+                    stripos($item->Phone_Number, $search) !== false;
+
+                if (!$match) {
+                    return false;
+                }
+            }
+
+            // -----------------------------
+            // ORIGINAL LOGIC (UNCHANGED)
+            // -----------------------------
             $entries = explode(':', $item->created_by);
+
             foreach ($entries as $entry) {
                 $parts = explode('|', $entry);
                 $userId = $parts[0] ?? null;
                 $role   = $parts[1] ?? null;
 
-                // Keep if junior is assigned
                 if ($role === 'junior' && in_array((int)$userId, $assignedJuniorIds)) {
                     return true;
                 }
 
-                // Include rows created by the senior themselves
                 if ($role === 'senior' && $userId == $authUser->id) {
                     return true;
                 }
             }
 
-            return false; // ignore everything else
+            return false;
         });
 
         // -----------------------------
