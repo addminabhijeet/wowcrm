@@ -5094,7 +5094,7 @@ class PreCallReportController extends Controller
         })
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', $month)
-            ->whereIn('Exe_Remarks', ['Verification Completed', 'Ready To Pay'])
+            ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
             ->count();
 
         // Follow-up calls in month (Called & Mailed with TransferRemark)
