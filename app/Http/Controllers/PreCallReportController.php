@@ -5026,7 +5026,7 @@ class PreCallReportController extends Controller
             $q->whereRaw("created_by REGEXP '^[0-9]+\\|junior:0\\|senior$'")
                 ->orWhereRaw("created_by REGEXP '^[0-9]+\\|junior:[0-9]+\\|senior:0\\|senior$'");
         })
-            ->where('Exe_Remarks', 'Ready To Pay')
+            ->whereIn('Exe_Remarks', ['Verification Completed', 'Ready To Pay'])
             ->count();
 
         $followUpCalls = GoogleSheetData::whereRaw(
