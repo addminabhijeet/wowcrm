@@ -310,8 +310,18 @@ $script = '<script>
 
                         {{-- Remark --}}
                         <td colspan="2">
-                            <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                                rows="6" value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                            <!-- OLD REMARK (READONLY) -->
+                            <input type="text"
+                                class="form-control mb-1 old-remark"
+                                value="{{ $row->Remark ?? '' }}"
+                                readonly
+                                placeholder="Previous remark">
+
+                            <!-- NEW REMARK -->
+                            <input type="hidden"
+                                class="form-control new-remark"
+                                data-key="Remark"
+                                placeholder="Add new remark">
                         </td>
 
                         {{-- Status --}}
@@ -802,7 +812,8 @@ $script = '<script>
                         `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
                 } else if (k === 'Remark') {
                     cells +=
-                        `<td><input type="text" class="form-control remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td><td class="remark-extra" style="min-width:300px;"></td>`;
+                        `<td colspan="2"><input type="text" class="form-control mb-1 old-remark" placeholder="Previous remark" readonly>
+                                     <input type="text" class="form-control new-remark" data-key="Remark" placeholder="Add new remark"><span class="small-hint"></span></td>`;
                 } else if (k === 'Date' || k === 'Graduation Date') {
                     cells +=
                         `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
@@ -868,7 +879,20 @@ $script = '<script>
                     let value = cell.value;
                     rowData[key] = value;
                 });
-                console.log("Row data:", rowData);
+                // ✅ MERGE OLD + NEW REMARK (IMPORTANT)
+                const oldRemark = row.querySelector('.old-remark')?.value || '';
+                const newRemark = row.querySelector('.new-remark')?.value || '';
+
+                let finalRemark = '';
+
+                if (oldRemark && newRemark) {
+                    finalRemark = oldRemark + "\n" + newRemark;
+                } else {
+                    finalRemark = oldRemark || newRemark;
+                }
+
+                // override remark before sending
+                rowData['Remark'] = finalRemark;
 
                 // Create FormData object
                 let formData = new FormData();
@@ -1627,9 +1651,11 @@ $script = '<script>
                                 data.data.Amount ?
                                 `$${parseFloat(data.data.Amount).toFixed(2)}` :
                                 '';
+                            const oldRemarkEl = row.querySelector('.old-remark');
+                            const newRemarkEl = row.querySelector('.new-remark');
 
-                            row.querySelector('[data-key="Remark"]').value =
-                                data.data.Remark ?? '';
+                            if (oldRemarkEl) oldRemarkEl.value = data.data.Remark ?? '';
+                            if (newRemarkEl) newRemarkEl.value = '';
 
                             // ---------- DROPDOWNS (AUTO SELECT + TRIGGER CHANGE) ----------
                             const setSelect = (key, value) => {
@@ -1699,7 +1725,5 @@ $script = '<script>
         });
     });
 </script>
-
-
 
 @endsection
