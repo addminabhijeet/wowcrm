@@ -311,11 +311,10 @@ $script = '<script>
                         {{-- Remark --}}
                         <td colspan="2">
                             <!-- OLD REMARK (READONLY) -->
-                            <input type="text"
-                                class="form-control mb-1 old-remark"
-                                value="{{ $row->Remark ?? '' }}"
-                                readonly
-                                placeholder="Previous remark">
+                            <textarea class="form-control remark-autocomplete"
+                                data-key="Remark"
+                                rows="3"
+                                placeholder="Type remark">{{ $row->Remark ?? '' }}</textarea>
 
                             <!-- NEW REMARK -->
                             <input type="hidden"
@@ -812,8 +811,8 @@ $script = '<script>
                         `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
                 } else if (k === 'Remark') {
                     cells +=
-                        `<td colspan="2"><input type="text" class="form-control mb-1 old-remark" placeholder="Previous remark" readonly>
-                                     <input type="text" class="form-control new-remark" data-key="Remark" placeholder="Add new remark"><span class="small-hint"></span></td>`;
+                        `<td colspan="2"><textarea class="form-control mb-1 old-remark" rows="2" placeholder="Previous remark" readonly></textarea>
+                                        <textarea class="form-control new-remark" data-key="Remark" rows="2" placeholder="Add new remark"></textarea><span class="small-hint"></span></td>`;
                 } else if (k === 'Date' || k === 'Graduation Date') {
                     cells +=
                         `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
@@ -1089,6 +1088,14 @@ $script = '<script>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
+<style>
+    textarea.remark-autocomplete,
+    .old-remark,
+    .new-remark {
+        resize: vertical;
+        min-height: 60px;
+    }
+</style>
 <script>
     $(document).ready(function() {
 
