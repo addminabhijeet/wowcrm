@@ -115,7 +115,10 @@ class CallReportController extends Controller
             "CONCAT(':', readytopaycount, ':') LIKE ?",
             ["%:{$user->id}|{$selectedDate}:%"]
         )
-            ->count();
+            ->get()
+            ->sum(function ($item) {
+                return $item->installment == 1 ? 0.5 : 1;
+            });
 
         $SfollowUpCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', followupcount, ':') LIKE ?",
@@ -146,7 +149,8 @@ class CallReportController extends Controller
 
         // Hour-wise "Ready To Pay" counts
         $hourlyReadyToPaid = GoogleSheetData::selectRaw(
-            "HOUR(updated_at) as hour, COUNT(*) as count"
+            "HOUR(updated_at) as hour,
+     SUM(CASE WHEN installment = 1 THEN 0.5 ELSE 1 END) as count"
         )
             ->whereRaw(
                 "CONCAT(':', readytopaycount, ':') LIKE ?",
@@ -685,7 +689,11 @@ class CallReportController extends Controller
         $MreadyToPaidCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', readytopaycount, ':') LIKE ?",
             ["%:{$user->id}|{$selectedMonth}-%"]
-        )->count();
+        )
+            ->get()
+            ->sum(function ($item) {
+                return $item->installment == 1 ? 0.5 : 1;
+            });
 
         // Monthly Follow-up
         $MfollowUpCalls = GoogleSheetData::whereRaw(
@@ -742,7 +750,10 @@ class CallReportController extends Controller
             ->toArray();
 
         // Daily Ready To Paid
-        $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+        $dailyReadyToPaid = GoogleSheetData::selectRaw(
+            "DAY(updated_at) as day,
+            SUM(CASE WHEN installment = 1 THEN 0.5 ELSE 1 END) as count"
+        )
             ->whereRaw(
                 "CONCAT(':', readytopaycount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedMonth}-%"]
@@ -3089,7 +3100,8 @@ class CallReportController extends Controller
             "CONCAT(':', readytopaycount, ':') LIKE ?",
             ["%:{$user->id}|{$selectedDate}:%"]
         )
-            ->count();
+            ->selectRaw("SUM(CASE WHEN installment = 1 THEN 0.5 ELSE 1 END) as total")
+            ->value('total');
 
         $SfollowUpCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', followupcount, ':') LIKE ?",
@@ -3119,7 +3131,10 @@ class CallReportController extends Controller
             + $SfollowUpCalls
             + $StransferedfollowUpCalls;
 
-        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $hourlyReadyToPaid = GoogleSheetData::selectRaw(
+            "HOUR(updated_at) as hour,
+     SUM(CASE WHEN installment = 1 THEN 0.5 ELSE 1 END) as count"
+        )
             ->whereRaw(
                 "CONCAT(':', readytopaycount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedDate}:%"]
@@ -3698,7 +3713,15 @@ class CallReportController extends Controller
                     $q->orWhereDate('updated_at', $date);
                 }
             })
-            ->count();
+            ->selectRaw("
+                SUM(
+                    CASE 
+                        WHEN installment = 1 THEN 0.5 
+                        ELSE 1 
+                    END
+                ) as total
+            ")
+            ->value('total');
 
 
         $SfollowUpCalls = GoogleSheetData::where(function ($q) use ($weekDates, $user) {
@@ -3764,7 +3787,15 @@ class CallReportController extends Controller
             + $StransferedfollowUpCalls;
 
         // Hour-wise "Ready To Pay" counts
-        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $hourlyReadyToPaid = GoogleSheetData::selectRaw("
+                HOUR(updated_at) as hour,
+                SUM(
+                    CASE 
+                        WHEN installment = 1 THEN 0.5 
+                        ELSE 1 
+                    END
+                ) as count
+            ")
             ->where(function ($q) use ($weekDates, $user) {
                 foreach ($weekDates as $date) {
                     $q->orWhereRaw(
@@ -5040,7 +5071,16 @@ class CallReportController extends Controller
         $MreadyToPaidCalls = GoogleSheetData::whereRaw(
             "CONCAT(':', readytopaycount, ':') LIKE ?",
             ["%:{$user->id}|{$selectedMonth}-%"]
-        )->count();
+        )
+            ->selectRaw("
+                SUM(
+                    CASE 
+                        WHEN installment = 1 THEN 0.5 
+                        ELSE 1 
+                    END
+                ) as total
+            ")
+            ->value('total');
 
         // Monthly Follow-up
         $MfollowUpCalls = GoogleSheetData::whereRaw(
@@ -5097,7 +5137,15 @@ class CallReportController extends Controller
             ->toArray();
 
         // Daily Ready To Paid
-        $dailyReadyToPaid = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+        $dailyReadyToPaid = GoogleSheetData::selectRaw("
+                DAY(updated_at) as day,
+                SUM(
+                    CASE 
+                        WHEN installment = 1 THEN 0.5 
+                        ELSE 1 
+                    END
+                ) as count
+            ")
             ->whereRaw(
                 "CONCAT(':', readytopaycount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedMonth}-%"]
