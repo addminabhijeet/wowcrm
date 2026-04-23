@@ -4128,7 +4128,7 @@ class GoogleSheetController extends Controller
         }
 
         $exeRemark = isset($rowData['Exe Remarks'])
-            ? trim(strtolower($rowData['Exe Remarks']))
+            ? trim($rowData['Exe Remarks'])
             : null;
 
         if (
