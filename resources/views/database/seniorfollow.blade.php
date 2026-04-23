@@ -311,6 +311,7 @@ $script = '<script>
                             <input type="hidden"
                                 name="installment"
                                 class="installment-hidden"
+                                data-key="installment"
                                 value="{{ (int)($row->installment ?? 0) }}">
                         </td>
 
