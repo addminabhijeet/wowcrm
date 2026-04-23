@@ -2098,7 +2098,7 @@ class GoogleSheetController extends Controller
                 ->orWhere('created_by', 'LIKE', "%|senior:{$authId}|senior:0|accountant%");
         });
 
-        $query->where('Exe_Remarks', 'Ready To Pay');
+        $query->where('Exe_Remarks', 'Ready To Pay')->where('installment', 0);
 
         if ($rowId) {
             $query->where('id', $rowId);
