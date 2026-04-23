@@ -4127,10 +4127,6 @@ class GoogleSheetController extends Controller
             $updateData['readytopaycount'] = implode(':', $entries);
         }
 
-        // Normalize and verify Exe Remarks properly
-        $exeRemark = isset($rowData['Exe Remarks'])
-            ? trim(strtolower($rowData['Exe Remarks']))
-            : '';
 
         // Only set 1 if it is EXACTLY "Ready To Pay" after normalization
         if ($exeRemark === 'Ready To Pay') {
