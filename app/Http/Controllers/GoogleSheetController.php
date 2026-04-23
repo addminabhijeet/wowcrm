@@ -4130,7 +4130,7 @@ class GoogleSheetController extends Controller
         if (
             isset($rowData['installment']) &&
             (int)$rowData['installment'] === 1 &&
-            $exeRemark === 'ready to pay'
+            $exeRemark === 'Ready To Pay'
         ) {
             $updateData['installment'] = 1;
         } else {
