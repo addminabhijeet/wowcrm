@@ -55,12 +55,13 @@ class GoogleSheetData extends Model
         'readytopaycount',
         'transferfollowupcount',
         'sd',
+        'installment',
     ];
-
 
     protected $casts = [
         'Date' => 'date',
         'Amount' => 'decimal:2',
+        'installment' => 'boolean',
     ];
 
     public function getResumeUrlAttribute()
