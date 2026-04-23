@@ -2098,8 +2098,7 @@ class GoogleSheetController extends Controller
                 ->orWhere('created_by', 'LIKE', "%|senior:{$authId}|senior:0|accountant%");
         });
 
-        $query->where('Exe_Remarks', 'Ready To Pay')
-            ->where('installment', 1);
+        $query->where('Exe_Remarks', 'Ready To Pay');
 
         if ($rowId) {
             $query->where('id', $rowId);
@@ -2190,7 +2189,7 @@ class GoogleSheetController extends Controller
             'juniorUsers' => $juniorUsers
         ]);
     }
-
+    
     public function seniorpaidins(Request $request)
     {
         $authUser = Auth::user();
@@ -2206,7 +2205,7 @@ class GoogleSheetController extends Controller
                 ->orWhere('created_by', 'LIKE', "%|senior:{$authId}|senior:0|accountant%");
         });
 
-        $query->where('Exe_Remarks', 'Ready To Pay');
+        $query->where('Exe_Remarks', 'Ready To Pay')->where('installment', 1);
 
         if ($rowId) {
             $query->where('id', $rowId);
