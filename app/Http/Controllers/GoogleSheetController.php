@@ -4020,6 +4020,15 @@ class GoogleSheetController extends Controller
             $updateData['readytopaycount'] = implode(':', $entries);
         }
 
+        if (
+            isset($rowData['Exe Remarks']) &&
+            $rowData['Exe Remarks'] === 'Ready To Pay'
+        ) {
+            $updateData['installment'] = 1;
+        } else {
+            $updateData['installment'] = 0;
+        }
+
         foreach ($updateData as $key => $value) {
             if ($value === '' && !in_array($key, ['Email_Address', 'Name', 'Date', 'Amount'])) {
                 $updateData[$key] = null;

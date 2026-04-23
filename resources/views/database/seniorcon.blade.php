@@ -73,6 +73,7 @@
                          <th scope="col" class="text-center">Resume</th>
                          <th scope="col" class="text-center">Remark</th>
                          <th scope="col" class="text-center">Follow Up Remark</th>
+                         <th scope="col" class="text-center">Installment</th>
                          <th scope="col" class="text-center">Status</th>
                          @auth
                          @if (!in_array(auth()->user()->role, ['operation', 'admin']))
@@ -313,6 +314,21 @@
                                  class="form-control transferremark-autocomplete transferremark-hidden"
                                  data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}"
                                  placeholder="Type TransferRemark">
+                         </td>
+
+                         {{-- Installment --}}
+                         <td>
+                             <input type="checkbox"
+                                 class="form-check-input installment-checkbox"
+                                 data-key="installment"
+                                 value="1"
+                                 {{ !empty($row->installment) ? 'checked' : '' }}>
+
+                             <input type="hidden"
+                                 name="installment"
+                                 class="installment-hidden"
+                                 data-key="installment"
+                                 value="{{ $row->installment ?? 0 }}">
                          </td>
 
                          {{-- Status --}}

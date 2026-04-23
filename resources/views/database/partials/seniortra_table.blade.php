@@ -60,6 +60,7 @@
 
                 <th scope="col" class="text-center">Follow Up Remark</th>
                 <th scope="col" class="text-center">Rejected Remark</th>
+                <th scope="col" class="text-center">Installment</th>
                 <th scope="col" class="text-center">Status</th>
                 @auth
                 @if (auth()->user()->role !== 'operation')
@@ -270,6 +271,21 @@
 
                     <input type="hidden" name="RejectedRemark" class="rejectedremark-hidden"
                         data-key="RejectedRemark" value="{{ $row->RejectedRemark ?? '' }}">
+                </td>
+
+                {{-- Installment --}}
+                <td>
+                    <input type="checkbox"
+                        class="form-check-input installment-checkbox"
+                        data-key="installment"
+                        value="1"
+                        {{ !empty($row->installment) ? 'checked' : '' }}>
+
+                    <input type="hidden"
+                        name="installment"
+                        class="installment-hidden"
+                        data-key="installment"
+                        value="{{ $row->installment ?? 0 }}">
                 </td>
 
                 {{-- Status --}}

@@ -74,6 +74,7 @@ $script = '<script>
                         <th scope="col" class="text-center">Time Zone</th>
                         <th scope="col" class="text-center">Resume</th>
                         <th scope="col" class="text-center">Remarks</th>
+                        <th scope="col" class="text-center">Installment</th>
                         <th scope="col" class="text-center">Status</th>
                         <th scope="col" class="text-center">Actions</th>
 
@@ -261,6 +262,21 @@ $script = '<script>
                         <td>
                             <input type="text" class="form-control remark-autocomplete" data-key="Remark"
                                 value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                        </td>
+
+                        {{-- Installment --}}
+                        <td>
+                            <input type="checkbox"
+                                class="form-check-input installment-checkbox"
+                                data-key="installment"
+                                value="1"
+                                {{ !empty($row->installment) ? 'checked' : '' }}>
+
+                            <input type="hidden"
+                                name="installment"
+                                class="installment-hidden"
+                                data-key="installment"
+                                value="{{ $row->installment ?? 0 }}">
                         </td>
 
                         {{-- Status --}}
