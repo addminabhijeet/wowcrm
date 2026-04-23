@@ -305,16 +305,27 @@ $script = '<script>
                         <td>
                             <input type="checkbox"
                                 class="form-check-input installment-checkbox"
-                                data-key="installment"
                                 value="1"
-                                {{ !empty($row->installment) ? 'checked' : '' }}>
+                                {{ (int)$row->installment === 1 ? 'checked' : '' }}>
 
                             <input type="hidden"
                                 name="installment"
                                 class="installment-hidden"
-                                data-key="installment"
-                                value="{{ $row->installment ?? 0 }}">
+                                value="{{ (int)($row->installment ?? 0) }}">
                         </td>
+
+                        <script>
+                            document.addEventListener("DOMContentLoaded", function() {
+                                document.querySelectorAll(".installment-checkbox").forEach(function(checkbox) {
+                                    checkbox.addEventListener("change", function() {
+                                        let hiddenInput = this.closest("td").querySelector(".installment-hidden");
+
+                                        // Update hidden value based on checkbox state
+                                        hiddenInput.value = this.checked ? 1 : 0;
+                                    });
+                                });
+                            });
+                        </script>
 
 
                         {{-- Status --}}
