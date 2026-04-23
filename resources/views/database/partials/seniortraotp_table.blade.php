@@ -273,21 +273,53 @@
                         data-key="RejectedRemark" value="{{ $row->RejectedRemark ?? '' }}">
                 </td>
 
-
                 {{-- Installment --}}
                 <td>
                     <input type="checkbox"
                         class="form-check-input installment-checkbox"
-                        data-key="installment"
-                        value="1"
-                        {{ !empty($row->installment) ? 'checked' : '' }}>
+                        value="0"
+                        {{ (int)$row->installment === 1 ? 'checked' : '' }}>
 
                     <input type="hidden"
                         name="installment"
                         class="installment-hidden"
                         data-key="installment"
-                        value="{{ $row->installment ?? 0 }}">
+                        value="{{ (int)($row->installment ?? 0) }}">
                 </td>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+
+                        document.querySelectorAll(".installment-checkbox").forEach(function(checkbox) {
+                            checkbox.addEventListener("change", function() {
+                                let hiddenInput = this.closest("td").querySelector(".installment-hidden");
+                                hiddenInput.value = this.checked ? 1 : 0;
+                            });
+                        });
+
+                        // ✅ FIX: Sync BOTH installment + Exe Remarks before save
+                        document.querySelectorAll(".save-btn").forEach(function(btn) {
+                            btn.addEventListener("click", function() {
+
+                                let row = this.closest("tr");
+
+                                let checkbox = row.querySelector(".installment-checkbox");
+                                let hiddenInput = row.querySelector(".installment-hidden");
+
+                                // 🔥 Always sync installment
+                                hiddenInput.value = checkbox.checked ? 1 : 0;
+
+                                // 🔥 FORCE Exe Remarks value to be fresh
+                                let exeSelect = row.querySelector('[data-key="Exe Remarks"]');
+                                if (exeSelect) {
+                                    exeSelect.setAttribute("data-value", exeSelect.value);
+                                }
+
+                            });
+                        });
+
+                    });
+                </script>
 
                 {{-- Status --}}
                 <td>
