@@ -4127,10 +4127,14 @@ class GoogleSheetController extends Controller
             $updateData['readytopaycount'] = implode(':', $entries);
         }
 
+        $exeRemark = isset($rowData['Exe Remarks'])
+            ? trim(strtolower($rowData['Exe Remarks']))
+            : null;
+
         if (
             isset($rowData['installment']) &&
             (int)$rowData['installment'] === 1 &&
-            $rowData['Exe Remarks'] === 'Ready To Pay'
+            $exeRemark === 'Ready To Pay'
         ) {
             $updateData['installment'] = 1;
         } else {
