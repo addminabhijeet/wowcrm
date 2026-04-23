@@ -317,14 +317,29 @@ $script = '<script>
 
                         <script>
                             document.addEventListener("DOMContentLoaded", function() {
+
+                                // Keep checkbox + hidden in sync
                                 document.querySelectorAll(".installment-checkbox").forEach(function(checkbox) {
                                     checkbox.addEventListener("change", function() {
                                         let hiddenInput = this.closest("td").querySelector(".installment-hidden");
-
-                                        // Update hidden value based on checkbox state
                                         hiddenInput.value = this.checked ? 1 : 0;
                                     });
                                 });
+
+                                // 🔥 FORCE VALUE BEFORE SAVE CLICK
+                                document.querySelectorAll(".save-btn").forEach(function(btn) {
+                                    btn.addEventListener("click", function() {
+
+                                        let row = this.closest("tr");
+                                        let checkbox = row.querySelector(".installment-checkbox");
+                                        let hiddenInput = row.querySelector(".installment-hidden");
+
+                                        // ALWAYS set value before sending
+                                        hiddenInput.value = checkbox.checked ? 1 : 0;
+
+                                    });
+                                });
+
                             });
                         </script>
 
