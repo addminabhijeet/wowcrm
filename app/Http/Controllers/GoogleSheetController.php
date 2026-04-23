@@ -2178,13 +2178,13 @@ class GoogleSheetController extends Controller
         // Return view
         // -----------------------------
         if ($request->ajax()) {
-            return view('database.partials.career_table', [
+            return view('database.partials.seniorfollow', [
                 'data' => $pagedData,
                 'juniorUsers' => $juniorUsers
             ])->render();
         }
 
-        return view('database.seniorpaid', [
+        return view('database.seniorfollow', [
             'data' => $pagedData,
             'juniorUsers' => $juniorUsers
         ]);
