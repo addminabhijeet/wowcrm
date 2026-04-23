@@ -5298,6 +5298,11 @@ class GoogleSheetController extends Controller
             $record->created_by = $user->id . '|senior';
         }
 
+        $record->installment = (
+            isset($rowData['Exe Remarks']) &&
+            $rowData['Exe Remarks'] === 'Ready To Pay'
+        ) ? 1 : 0;
+
         // Handle resume file upload - Save actual file content
         if ($request->hasFile('resume')) {
             $file = $request->file('resume');
