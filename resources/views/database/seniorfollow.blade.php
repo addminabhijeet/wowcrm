@@ -318,7 +318,6 @@ $script = '<script>
                         <script>
                             document.addEventListener("DOMContentLoaded", function() {
 
-                                // Keep checkbox + hidden in sync
                                 document.querySelectorAll(".installment-checkbox").forEach(function(checkbox) {
                                     checkbox.addEventListener("change", function() {
                                         let hiddenInput = this.closest("td").querySelector(".installment-hidden");
@@ -326,23 +325,29 @@ $script = '<script>
                                     });
                                 });
 
-                                // 🔥 FORCE VALUE BEFORE SAVE CLICK
+                                // ✅ FIX: Sync BOTH installment + Exe Remarks before save
                                 document.querySelectorAll(".save-btn").forEach(function(btn) {
                                     btn.addEventListener("click", function() {
 
                                         let row = this.closest("tr");
+
                                         let checkbox = row.querySelector(".installment-checkbox");
                                         let hiddenInput = row.querySelector(".installment-hidden");
 
-                                        // ALWAYS set value before sending
+                                        // 🔥 Always sync installment
                                         hiddenInput.value = checkbox.checked ? 1 : 0;
+
+                                        // 🔥 FORCE Exe Remarks value to be fresh
+                                        let exeSelect = row.querySelector('[data-key="Exe Remarks"]');
+                                        if (exeSelect) {
+                                            exeSelect.setAttribute("data-value", exeSelect.value);
+                                        }
 
                                     });
                                 });
 
                             });
                         </script>
-
 
                         {{-- Status --}}
                         <td>
