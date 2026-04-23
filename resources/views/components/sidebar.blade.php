@@ -198,6 +198,12 @@ $role = Auth::user()->role;
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Pay</a>
                     </li>
                 </ul>
+
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.seniorpaidins') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Ready To Pay (Installment)</a>
+                    </li>
+                </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('google.sheet.seniorcon') }}"><i
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Verification

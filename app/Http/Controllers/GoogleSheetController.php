@@ -2189,6 +2189,113 @@ class GoogleSheetController extends Controller
             'juniorUsers' => $juniorUsers
         ]);
     }
+    
+    public function seniorpaidins(Request $request)
+    {
+        $authUser = Auth::user();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+
+        $query = GoogleSheetData::query();
+
+        $authId = $authUser->id;
+
+        $query->where(function ($q) use ($authId) {
+            $q->where('created_by', 'LIKE', "%|junior:{$authId}|senior:0|accountant%")
+                ->orWhere('created_by', 'LIKE', "%|senior:{$authId}|senior:0|accountant%");
+        });
+
+        $query->where('Exe_Remarks', 'Ready To Pay');
+
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // ✅ NO PHP FILTERING — direct DB result
+        $results = $query->orderBy('updated_at', 'desc')->get();
+
+        // -----------------------------
+        // Transform forwarded_by (UNCHANGED)
+        // -----------------------------
+        $transformed = $results->map(function ($item) use ($authUser) {
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                $names = [];
+
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $names[] = "SELF ({$userId}) ({$role})";
+                    } elseif ($userId == 0) {
+                        $names[] = "SYSTEM (0) ({$role})";
+                    } else {
+                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $names[] = "{$name} ({$userId}) ({$role})";
+                    }
+                }
+
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        // -----------------------------
+        // Pagination
+        // -----------------------------
+        $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transformed->forPage(request()->input('page', 1), 10),
+            $transformed->count(),
+            10,
+            request()->input('page', 1),
+            [
+                'path' => url()->current(),
+                'query' => $request->query()
+            ]
+        );
+
+        // -----------------------------
+        // Dropdown: only assigned juniors
+        // -----------------------------
+        $assignedJuniorIds = $authUser->group ?? [];
+
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)
+            ->where('role', 'junior')
+            ->whereIn('id', $assignedJuniorIds)
+            ->where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
+
+        // -----------------------------
+        // Return view
+        // -----------------------------
+        if ($request->ajax()) {
+            return view('database.partials.career_table', [
+                'data' => $pagedData,
+                'juniorUsers' => $juniorUsers
+            ])->render();
+        }
+
+        return view('database.seniorpaid', [
+            'data' => $pagedData,
+            'juniorUsers' => $juniorUsers
+        ]);
+    }
 
     public function seniorcon(Request $request)
     {
