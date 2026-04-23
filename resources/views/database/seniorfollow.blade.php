@@ -305,7 +305,7 @@ $script = '<script>
                         <td>
                             <input type="checkbox"
                                 class="form-check-input installment-checkbox"
-                                value="1"
+                                value="0"
                                 {{ (int)$row->installment === 1 ? 'checked' : '' }}>
 
                             <input type="hidden"
