@@ -3161,10 +3161,10 @@ class PreCallReportController extends Controller
             + $StransferedfollowUpCalls;
 
         // Hour-wise "Ready To Pay" counts
-        $hourlyReadyToPaid = GoogleSheetData::where(function ($q) use ($juniorUser) {
-
-            $q->where('created_by', 'LIKE', "%:{$juniorUser->id}|senior%");
-        })
+        $hourlyReadyToPaid = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where(function ($q) use ($juniorUser) {
+                $q->where('created_by', 'LIKE', "%:{$juniorUser->id}|senior%");
+            })
             ->where('created_by', 'LIKE', '%|accountant%')
             ->whereDate('updated_at', $selectedDate)
             ->whereIn('Exe_Remarks', ['Verification Completed', 'Payment Completed', 'Ready To Pay'])
