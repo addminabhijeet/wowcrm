@@ -4470,7 +4470,7 @@ class GoogleSheetController extends Controller
                     $smtp = SmtpSetting::where('user_id', $user->id)->first();
                     if (!$smtp) {
                         return response()->json([
-                            'message' => 'No SMTP settings found.'
+                            'message' => 'Updated Successfully'
                         ]);
                     } else {
                         // Configure mailer dynamically (same as test() method)
@@ -4802,7 +4802,7 @@ class GoogleSheetController extends Controller
                     $smtp = SmtpSetting::where('user_id', $user->id)->first();
                     if (!$smtp) {
                         return response()->json([
-                            'message' => 'No SMTP settings found.'
+                            'message' => 'Updated successfully'
                         ]);
                     } else {
                         // Configure mailer dynamically (same as test() method)
@@ -5097,7 +5097,7 @@ class GoogleSheetController extends Controller
                     $smtp = SmtpSetting::where('user_id', $user->id)->first();
                     if (!$smtp) {
                         return response()->json([
-                            'message' => 'No SMTP settings found.'
+                            'message' => 'Updated successfully'
                         ]);
                     } else {
                         // Configure mailer dynamically (same as test() method)
@@ -5350,7 +5350,7 @@ class GoogleSheetController extends Controller
                 $smtp = SmtpSetting::where('user_id', $user->id)->first();
                 if (!$smtp) {
                     return response()->json([
-                        'message' => 'No SMTP settings found.'
+                        'message' => 'Updated successfully'
                     ]);
                 } else {
                     // Configure mailer dynamically (same as test() method)
@@ -7486,7 +7486,7 @@ class GoogleSheetController extends Controller
                         $smtp = SmtpSetting::where('user_id', $user->id)->first();
                         if (!$smtp) {
                             return response()->json([
-                                'message' => 'No SMTP settings found.'
+                                'message' => 'Updated successfully'
                             ]);
                         } else {
                             // Configure mailer dynamically (same as test() method)
@@ -7782,7 +7782,7 @@ class GoogleSheetController extends Controller
                         $smtp = SmtpSetting::where('user_id', $user->id)->first();
                         if (!$smtp) {
                             return response()->json([
-                                'message' => 'No SMTP settings found.'
+                                'message' => 'Updated successfully'
                             ]);
                         } else {
                             // Configure mailer dynamically (same as test() method)
@@ -8172,7 +8172,7 @@ class GoogleSheetController extends Controller
                     $smtp = SmtpSetting::where('user_id', $user->id)->first();
                     if (!$smtp) {
                         return response()->json([
-                            'message' => 'No SMTP settings found.'
+                            'message' => 'Updated successfully'
                         ]);
                     } else {
                         // Configure mailer dynamically (same as test() method)
@@ -10274,7 +10274,7 @@ class GoogleSheetController extends Controller
                 $smtp = SmtpSetting::where('user_id', $user->id)->first();
                 if (!$smtp) {
                     return response()->json([
-                        'message' => 'No SMTP settings found.'
+                        'message' => 'Updated successfully'
                     ]);
                 } else {
                     // Configure mailer dynamically (same as test() method)
@@ -10848,7 +10848,7 @@ class GoogleSheetController extends Controller
                     $smtp = SmtpSetting::where('user_id', $user->id)->first();
                     if (!$smtp) {
                         return response()->json([
-                            'message' => 'No SMTP settings found.'
+                            'message' => 'Updated successfully'
                         ]);
                     } else {
                         // Configure mailer dynamically (same as test() method)
@@ -11125,7 +11125,7 @@ class GoogleSheetController extends Controller
                 $smtp = SmtpSetting::where('user_id', $user->id)->first();
                 if (!$smtp) {
                     return response()->json([
-                        'message' => 'No SMTP settings found.'
+                        'message' => 'Updated successfully'
                     ]);
                 } else {
                     // Configure mailer dynamically (same as test() method)
