@@ -431,7 +431,7 @@ $userImage = Auth::user()->image
                         clearInterval(backendSyncInterval);
                         const userRole = "{{ auth()->user()->role }}";
                         if (userRole !== 'accountant') {
-                            alert("Your 9-hour work session has ended.");
+                            console.log("9-hour work session ended");
                         }
                     }
                 })
