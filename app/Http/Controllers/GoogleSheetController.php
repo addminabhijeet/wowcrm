@@ -4002,31 +4002,27 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ NEW selffollowupcount logic (NO DUPLICATE - WITH TransferRemark CHANGE CHECK)
+        // === Append TransferRemark like Remark (keep history) ===
         $oldTransferRemark = $row->TransferRemark ?? '';
 
         if (
-            isset($rowData['Exe Remarks']) &&
-            $rowData['Exe Remarks'] === 'Called & Mailed' &&
             isset($rowData['TransferRemark']) &&
             $rowData['TransferRemark'] !== '' &&
-            $rowData['TransferRemark'] !== $oldTransferRemark &&
-            $row->sd === 'senior'
+            $rowData['TransferRemark'] !== $oldTransferRemark
         ) {
-            $existingSelf = $row->selffollowupcount ?? '';
-            $currentUserId = Auth::id();
-            $currentDate = now()->format('Y-m-d');
+            $newTransferEntry = "{$rowData['TransferRemark']} | Updated by {$updatedBy} on {$updatedAt}";
 
-            $newEntry = $currentUserId . '|' . $currentDate;
+            // Append to existing TransferRemark (keep history)
+            $existingTransferRemark =
+                $rowData['TransferRemark']
+                ?? $row->TransferRemark
+                ?? '';
 
-            $entries = array_filter(explode(':', $existingSelf));
-            $entries = array_map('trim', $entries);
-            $entries = array_unique($entries);
-
-            if (!in_array($newEntry, $entries)) {
-                $entries[] = $newEntry;
-            }
-
-            $updateData['selffollowupcount'] = implode(':', $entries);
+            $updateData['TransferRemark'] = trim(
+                $existingTransferRemark
+                    ? $existingTransferRemark . PHP_EOL . $newTransferEntry
+                    : $newTransferEntry
+            );
         }
 
         if (
