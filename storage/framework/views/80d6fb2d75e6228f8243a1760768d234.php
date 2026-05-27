@@ -1,7 +1,7 @@
 <?php
-    $userImage = Auth::user()->image
-        ? asset('assets/images/user-grid/' . Auth::user()->image)
-        : asset('assets/images/users/user1.png');
+$userImage = Auth::user()->image
+? asset('assets/images/user-grid/' . Auth::user()->image)
+: asset('assets/images/users/user1.png');
 ?>
 
 <div class="navbar-header">
@@ -18,75 +18,75 @@
                 </button>
 
                 <?php if (! (in_array(auth()->user()->role, [
-                        'admin',
-                        'career',
-                        'trainer',
-                        'support',
-                        'accountant',
-                        'operation',
-                        'seniorassociate',
-                        'resource',
-                    ]))): ?>
-                    <div
-                        style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
+                'admin',
+                'career',
+                'trainer',
+                'support',
+                'accountant',
+                'operation',
+                'seniorassociate',
+                'resource',
+                ]))): ?>
+                <div
+                    style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
 
 
-                        <div style="margin-right:10px;text-align:center;min-width:60px;">
-                            <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
-                                <iconify-icon icon="mdi:timer-outline" style="color:#dc3545;font-size:14px;"></iconify-icon>
-                                <small
-                                    style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Countdown</small>
-                            </div>
-                            <span id="countdown"
-                                style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">09:00:00</span>
+                    <div style="margin-right:10px;text-align:center;min-width:60px;">
+                        <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
+                            <iconify-icon icon="mdi:timer-outline" style="color:#dc3545;font-size:14px;"></iconify-icon>
+                            <small
+                                style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Countdown</small>
                         </div>
-
-
-                        <div style="width:1px;background:#dee2e6;margin:0 4px;"></div>
-
-
-                        <div style="margin-right:10px;text-align:center;min-width:60px;">
-                            <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
-                                <iconify-icon icon="mdi:clock-outline" style="color:#28a745;font-size:14px;"></iconify-icon>
-                                <small
-                                    style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Elapsed</small>
-                            </div>
-                            <span id="elapsed"
-                                style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">00:00:00</span>
-                        </div>
-
-                        <div id="controlButtons" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                            <button data-type="resumebreak"
-                                style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
-                                <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
-                            </button>
-
-                            <button data-type="lunch"
-                                style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
-                                <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
-                            </button>
-
-                            <button data-type="tea"
-                                style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
-                                <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
-                            </button>
-
-                            <button data-type="break"
-                                style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
-                                <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
-                            </button>
-                        </div>
-
-                        <div id="startButtonContainer"
-                            style="display:none;align-items:center;gap:4px;flex-wrap:wrap;margin-left:4px;">
-                            <button id="startButton"
-                                style="width:65px;height:28px;border-radius:14px;background:#28a745;border:1px solid #1e7e34;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">
-                                <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Start
-                            </button>
-                        </div>
-
-
+                        <span id="countdown"
+                            style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">09:00:00</span>
                     </div>
+
+
+                    <div style="width:1px;background:#dee2e6;margin:0 4px;"></div>
+
+
+                    <div style="margin-right:10px;text-align:center;min-width:60px;">
+                        <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
+                            <iconify-icon icon="mdi:clock-outline" style="color:#28a745;font-size:14px;"></iconify-icon>
+                            <small
+                                style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Elapsed</small>
+                        </div>
+                        <span id="elapsed"
+                            style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">00:00:00</span>
+                    </div>
+
+                    <div id="controlButtons" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+                        <button data-type="resumebreak"
+                            style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
+                            <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
+                        </button>
+
+                        <button data-type="lunch"
+                            style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
+                            <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
+                        </button>
+
+                        <button data-type="tea"
+                            style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
+                            <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
+                        </button>
+
+                        <button data-type="break"
+                            style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
+                            <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
+                        </button>
+                    </div>
+
+                    <div id="startButtonContainer"
+                        style="display:none;align-items:center;gap:4px;flex-wrap:wrap;margin-left:4px;">
+                        <button id="startButton"
+                            style="width:65px;height:28px;border-radius:14px;background:#28a745;border:1px solid #1e7e34;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">
+                            <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Start
+                        </button>
+                    </div>
+
+
+                </div>
                 <?php endif; ?>
             </div>
         </div>
@@ -425,15 +425,6 @@
                     elapsedSeconds = data.elapsed_seconds;
                     status = data.status;
                     updateUI();
-
-                    if (data.logout) {
-                        console.warn("[Sync] Work session ended. Logging out...");
-                        clearInterval(backendSyncInterval);
-                        const userRole = "<?php echo e(auth()->user()->role); ?>";
-                        if (userRole !== 'accountant') {
-                            alert("Your 9-hour work session has ended.");
-                        }
-                    }
                 })
                 .catch(err => console.error("[Sync] Timer sync failed:", err));
         }
@@ -527,19 +518,20 @@
 
 
 
-
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
         const startButton = document.getElementById('startButton');
 
+        // Assign Blade outputs to JS variables first
+        const timerStartUrl = "<?php echo e(route('timer.start')); ?>";
+        const csrfToken = "<?php echo e(csrf_token()); ?>";
 
         // Check if today's timer already exists
-        fetch('<?php echo e(route('timer.start')); ?>', {
+        fetch(timerStartUrl, {
                 method: 'POST',
                 headers: {
-                    'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
+                    'X-CSRF-TOKEN': csrfToken,
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -548,16 +540,15 @@
             })
             .then(res => res.json())
             .then(data => {})
-            .catch(err => console.error('❌ Error checking timer existence:', err));
+            .catch(err => console.error('Error checking timer existence:', err));
 
         // On Start button click
         startButton.addEventListener('click', function() {
 
-
-            fetch('<?php echo e(route('timer.start')); ?>', {
+            fetch(timerStartUrl, {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
+                        'X-CSRF-TOKEN': csrfToken,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({}) // No check parameter here
@@ -565,31 +556,34 @@
                 .then(res => res.json())
                 .then(data => {
 
-
                     if (data.success || data.exists || data.timer) {
                         alert('⏱ Timer is running for today!');
                     } else {
-                        console.error('⚠️ Unexpected response while starting timer:', data);
-                        alert('⚠️ Something went wrong starting the timer.');
+                        console.error('Unexpected response while starting timer:', data);
+                        alert('Something went wrong starting the timer.');
                     }
                 })
                 .catch(err => {
-                    console.error('❌ Error starting timer:', err);
+                    console.error('Error starting timer:', err);
                 });
         });
     });
 </script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
+
         const startButtonContainer = document.getElementById('startButtonContainer');
+
+        // Assign Blade outputs to JS variables
+        const timerStartHideUrl = "<?php echo e(route('timer.starthide')); ?>";
+        const csrfToken = "<?php echo e(csrf_token()); ?>";
 
         // Function to check timer status
         function checkTimerStatus() {
-            fetch('<?php echo e(route('timer.starthide')); ?>', {
+            fetch(timerStartHideUrl, {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
+                        'X-CSRF-TOKEN': csrfToken,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
@@ -607,7 +601,7 @@
                     }
                 })
                 .catch(err => {
-                    console.error('❌ Error checking timer:', err);
+                    console.error('Error checking timer:', err);
                     if (err instanceof TypeError) {
                         console.error('TypeError - likely a network or CORS issue');
                     }
@@ -619,17 +613,21 @@
 
         // Re-check every 1 second
         setInterval(checkTimerStatus, 1000);
+
     });
 </script>
-
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
+        // Assign Blade outputs to JS variables
+        const checkPauseButtonsUrl = "<?php echo e(route('timer.checkPauseButtons')); ?>";
+        const csrfToken = "<?php echo e(csrf_token()); ?>";
+
         function updatePauseButtons() {
-            fetch('<?php echo e(route('timer.checkPauseButtons')); ?>', {
+            fetch(checkPauseButtonsUrl, {
                     method: 'POST',
                     headers: {
-                        'X-CSRF-TOKEN': '<?php echo e(csrf_token()); ?>',
+                        'X-CSRF-TOKEN': csrfToken,
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({})
@@ -643,10 +641,10 @@
                     );
 
                     const resumeBtn = document.querySelector(
-                        '#controlButtons button[data-type="resumebreak"]');
+                        '#controlButtons button[data-type="resumebreak"]'
+                    );
 
-                    if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type ===
-                        'break') {
+                    if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
                         // Hide lunch/tea/break buttons
                         buttonsToHide.forEach(btn => {
                             if (btn) btn.style.display = 'none';
@@ -664,17 +662,17 @@
                         if (resumeBtn) resumeBtn.style.display = 'none';
                     }
                 })
-                .catch(err => console.error('❌ Error checking pause buttons:', err));
+                .catch(err => console.error('Error checking pause buttons:', err));
         }
 
         // Initial check
         updatePauseButtons();
 
-        // Check every 2 seconds
+        // Check every 1 second
         setInterval(updatePauseButtons, 1000);
+
     });
 </script>
-
 <script>
     (function() {
 
@@ -721,7 +719,7 @@
                     const latestId = response.id;
                     const latestTime = response.created_at; // timestamp
 
-                    // 🚀 ONLY show dropdown if BOTH are new:
+
                     // 1. ID changed
                     // 2. timestamp is newer
                     if (response.unread_count > 0 &&
@@ -828,5 +826,4 @@
     .flash-new {
         animation: flashNew 0.9s ease;
     }
-</style>
-<?php /**PATH /var/www/norloxsolutionscrm.com/wowcrm/resources/views/components/navbar.blade.php ENDPATH**/ ?>
+</style><?php /**PATH /var/www/norloxsolutionscrm.com/wowcrm/resources/views/components/navbar.blade.php ENDPATH**/ ?>
