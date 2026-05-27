@@ -28,8 +28,7 @@ $userImage = Auth::user()->image
                 'resource',
                 ]))
                 <div
-                    style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
-
+                    style="display:none;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
 
                     <div style="margin-right:10px;text-align:center;min-width:60px;">
                         <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
