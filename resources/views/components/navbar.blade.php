@@ -425,15 +425,6 @@ $userImage = Auth::user()->image
                     elapsedSeconds = data.elapsed_seconds;
                     status = data.status;
                     updateUI();
-
-                    if (data.logout) {
-                        console.warn("[Sync] Work session ended. Logging out...");
-                        clearInterval(backendSyncInterval);
-                        const userRole = "{{ auth()->user()->role }}";
-                        if (userRole !== 'accountant') {
-                            console.log("9-hour work session ended");
-                        }
-                    }
                 })
                 .catch(err => console.error("[Sync] Timer sync failed:", err));
         }
