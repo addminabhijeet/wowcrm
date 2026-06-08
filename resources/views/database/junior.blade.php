@@ -321,10 +321,10 @@ $script = '<script>
                             <textarea class="form-control remark-autocomplete"
                                 data-key="Remark"
                                 rows="3"
-                                placeholder="Type remark">{{ $row->Remark ?? '' }}</textarea>
+                                placeholder="Type remark" readonly>{{ $row->Remark ?? '' }}</textarea>
 
                             <!-- NEW REMARK -->
-                            <input type="hidden"
+                            <input type="text"
                                 class="form-control new-remark"
                                 data-key="Remark"
                                 placeholder="Add new remark">
