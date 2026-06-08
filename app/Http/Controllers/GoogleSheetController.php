@@ -7715,45 +7715,44 @@ class GoogleSheetController extends Controller
                 $updateData['created_by'] = $row->created_by;
             }
 
-            // === Append remark if Exe Remarks changed ===
-            $oldExeRemarks = $row->Exe_Remarks;
+            // ===============================
+            // SAFE REMARK APPEND LOGIC
+            // ===============================
+
+            // get old DB remark
+            $existingRemark = $row->Remark ?? '';
+
+            // new remark coming from frontend
+            $newRemark = $rowData['Remark'] ?? '';
+
+            // detect Exe Remarks change
+            $exeChanged =
+                isset($rowData['Exe Remarks']) &&
+                $rowData['Exe Remarks'] !== $row->Exe_Remarks;
 
             $updatedBy = Auth::user()->name;
             $updatedAt = now()->format('d-m-Y H:i');
 
-            if (
-                isset($rowData['Exe Remarks']) &&
-                $rowData['Exe Remarks'] !== $oldExeRemarks
-            ) {
-                $newRemarkEntry = "{$rowData['Exe Remarks']} | Updated by {$updatedBy} on {$updatedAt}";
+            // base remark to append
+            $logRemark = '';
 
-                // Append to existing remark (keep history)
-                $existingRemark =
-                    $rowData['Remark']
-                    ?? $row->Remark
-                    ?? '';
-
-                $updateData['Remark'] = trim(
-                    $existingRemark
-                        ? $existingRemark . PHP_EOL . $newRemarkEntry
-                        : $newRemarkEntry
-                );
+            if ($exeChanged) {
+                $logRemark = "{$rowData['Exe Remarks']} | Updated by {$updatedBy} on {$updatedAt}";
             } else {
-                // Exe Remarks NOT changed → still log update info
-                $newRemarkEntry = "Updated by {$updatedBy} on {$updatedAt}";
-
-                $existingRemark =
-                    $rowData['Remark']
-                    ?? $row->Remark
-                    ?? '';
-
-                $updateData['Remark'] = trim(
-                    $existingRemark
-                        ? $existingRemark . PHP_EOL . $newRemarkEntry
-                        : $newRemarkEntry
-                );
+                $logRemark = "Updated by {$updatedBy} on {$updatedAt}";
             }
 
+            // FINAL MERGED REMARK (IMPORTANT FIX)
+            $finalRemark = trim($existingRemark);
+
+            if (!empty($newRemark) && $newRemark !== $existingRemark) {
+                $finalRemark .= PHP_EOL . $newRemark;
+            }
+
+            $finalRemark .= PHP_EOL . $logRemark;
+
+            // assign back
+            $updateData['Remark'] = trim($finalRemark);
 
 
             foreach ($updateData as $key => $value) {
