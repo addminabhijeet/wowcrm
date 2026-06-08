@@ -317,13 +317,17 @@ $script = '<script>
 
                         {{-- Remark --}}
                         <td colspan="2">
-                            <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
-                                rows="6">{{ $row->Remark ?? '' }}</textarea>
+                            <!-- OLD REMARK (READONLY) -->
+                            <textarea class="form-control remark-autocomplete"
+                                data-key="Remark"
+                                rows="3"
+                                placeholder="Type remark">{{ $row->Remark ?? '' }}</textarea>
 
-                            <input type="hidden" name="Remark"
-                                class="form-control remark-autocomplete remark-hidden" data-key="Remark"
-                                value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
-
+                            <!-- NEW REMARK -->
+                            <input type="hidden"
+                                class="form-control new-remark"
+                                data-key="Remark"
+                                placeholder="Add new remark">
                         </td>
 
                         {{-- Status --}}
@@ -876,8 +880,12 @@ $script = '<script>
 
                 // Collect all data from the row
                 let rowData = {};
-                // Sync textarea → hidden input (same row only)
-                // MERGE OLD + NEW REMARK
+                row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
+                    let key = cell.dataset.key;
+                    let value = cell.value;
+                    rowData[key] = value;
+                });
+                // ✅ MERGE OLD + NEW REMARK (IMPORTANT)
                 const oldRemark = row.querySelector('.old-remark')?.value || '';
                 const newRemark = row.querySelector('.new-remark')?.value || '';
 
@@ -889,7 +897,7 @@ $script = '<script>
                     finalRemark = oldRemark || newRemark;
                 }
 
-                // FINAL PAYLOAD
+                // override remark before sending
                 rowData['Remark'] = finalRemark;
 
                 // Create FormData object
@@ -1657,8 +1665,11 @@ $script = '<script>
                                 data.data.Amount ?
                                 `$${parseFloat(data.data.Amount).toFixed(2)}` :
                                 '';
-                            row.querySelector('[data-key="Remark"]').value =
-                                data.data.Remark ?? '';
+                            const oldRemarkEl = row.querySelector('.old-remark');
+                            const newRemarkEl = row.querySelector('.new-remark');
+
+                            if (oldRemarkEl) oldRemarkEl.value = data.data.Remark ?? '';
+                            if (newRemarkEl) newRemarkEl.value = '';
 
                             // ---------- DROPDOWNS (AUTO SELECT + TRIGGER CHANGE) ----------
                             const setSelect = (key, value) => {
@@ -1725,47 +1736,6 @@ $script = '<script>
 
         bottomScrollWrapper.addEventListener("scroll", function() {
             topScrollWrapper.scrollLeft = bottomScrollWrapper.scrollLeft;
-        });
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const form = document.querySelector('form');
-        if (!form) return;
-
-        // Function to sync a textarea to its corresponding input
-        function syncTextareaToInput(textarea) {
-            const td = textarea.closest('td');
-            if (!td) return;
-
-            const textareaName = textarea.getAttribute('name');
-            if (!textareaName) return;
-
-            // Map _hidden textarea to input with same name minus _hidden
-            const inputName = textareaName.replace('_hidden', '');
-            const input = td.querySelector('input[name="' + inputName + '"]');
-            if (!input) return;
-
-            // Trim value before assigning
-            input.value = textarea.value.trim();
-        }
-
-        // 🔁 Real-time sync on input for all textareas with *_autocomplete class
-        document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-            function(textarea) {
-                textarea.addEventListener('input', function() {
-                    syncTextareaToInput(textarea);
-                });
-            });
-
-        // 🛡️ Final sync before form submit
-        form.addEventListener('submit', function() {
-            document.querySelectorAll(
-                'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-                function(textarea) {
-                    syncTextareaToInput(textarea);
-                });
         });
     });
 </script>
