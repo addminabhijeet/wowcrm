@@ -876,11 +876,20 @@ $script = '<script>
 
                 // Collect all data from the row
                 let rowData = {};
-                row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
-                    let key = cell.dataset.key;
-                    let value = cell.value;
-                    rowData[key] = value;
+                // Sync textarea → hidden input (same row only)
+                row.querySelectorAll('textarea.remark-autocomplete').forEach(textarea => {
+                    const hidden = row.querySelector('input[name="Remark"]');
+                    if (hidden) {
+                        hidden.value = textarea.value.trim();
+                    }
                 });
+
+                // ✅ ADD TEXTAREA SUPPORT (Remark only)
+                const remarkTextarea = row.querySelector('textarea.remark-autocomplete');
+                if (remarkTextarea) {
+                    rowData['Remark'] = remarkTextarea.value.trim();
+                }
+
                 // ✅ MERGE OLD + NEW REMARK (IMPORTANT)
                 const oldRemark = row.querySelector('.old-remark')?.value || '';
                 const newRemark = row.querySelector('.new-remark')?.value || '';
@@ -892,6 +901,8 @@ $script = '<script>
                 } else {
                     finalRemark = oldRemark || newRemark;
                 }
+
+
 
                 // override remark before sending
                 rowData['Remark'] = finalRemark;
