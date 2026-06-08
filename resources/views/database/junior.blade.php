@@ -317,13 +317,17 @@ $script = '<script>
 
                         {{-- Remark --}}
                         <td colspan="2">
-                            <textarea class="form-control remark-autocomplete old-remark"
-                                rows="3" readonly>{{ $row->Remark ?? '' }}</textarea>
-
-                            <input type="hidden"
-                                class="new-remark"
+                            <!-- OLD REMARK (READONLY) -->
+                            <textarea class="form-control remark-autocomplete"
                                 data-key="Remark"
-                                value="">
+                                rows="3"
+                                placeholder="Type remark">{{ $row->Remark ?? '' }}</textarea>
+
+                            <!-- NEW REMARK -->
+                            <input type="hidden"
+                                class="form-control new-remark"
+                                data-key="Remark"
+                                placeholder="Add new remark">
                         </td>
 
                         {{-- Status --}}
@@ -1030,16 +1034,6 @@ $script = '<script>
         document.addEventListener('click', function(e) {
             if (!$(e.target).closest('#loc-suggestions, .location-autocomplete').length)
                 $('#loc-suggestions').remove();
-        });
-        tableBody.addEventListener('input', function(e) {
-            const row = e.target.closest('tr');
-            if (!row) return;
-
-            const hidden = row.querySelector('.new-remark');
-
-            if (hidden && (e.target.matches('.old-remark') || e.target.matches('.remark-autocomplete'))) {
-                hidden.value = e.target.value.trim();
-            }
         });
 
         // Real-time validation
