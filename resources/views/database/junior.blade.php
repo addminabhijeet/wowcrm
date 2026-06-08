@@ -318,10 +318,10 @@ $script = '<script>
                         {{-- Remark --}}
                         <td colspan="2">
                             <!-- OLD REMARK (READONLY) -->
-                            <textarea class="form-control remark-autocomplete"
+                            <input class="form-control remark-autocomplete"
                                 data-key="Remark"
                                 rows="3"
-                                placeholder="Type remark">{{ $row->Remark ?? '' }}</textarea>
+                                placeholder="Type remark">{{ $row->Remark ?? '' }}</input>
 
                             <!-- NEW REMARK -->
                             <input type="hidden"
