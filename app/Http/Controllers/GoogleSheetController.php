@@ -7728,10 +7728,7 @@ class GoogleSheetController extends Controller
                 $newRemarkEntry = "{$rowData['Exe Remarks']} | Updated by {$updatedBy} on {$updatedAt}";
 
                 // Append to existing remark (keep history)
-                $existingRemark =
-                    $rowData['Remark']
-                    ?? $row->Remark
-                    ?? '';
+                $existingRemark = $row->Remark ?? '';
 
                 $updateData['Remark'] = trim(
                     $existingRemark
