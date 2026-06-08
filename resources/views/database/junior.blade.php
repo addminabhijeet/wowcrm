@@ -877,20 +877,7 @@ $script = '<script>
                 // Collect all data from the row
                 let rowData = {};
                 // Sync textarea → hidden input (same row only)
-                row.querySelectorAll('textarea.remark-autocomplete').forEach(textarea => {
-                    const hidden = row.querySelector('input[name="Remark"]');
-                    if (hidden) {
-                        hidden.value = textarea.value.trim();
-                    }
-                });
-
-                // ✅ ADD TEXTAREA SUPPORT (Remark only)
-                const remarkTextarea = row.querySelector('textarea.remark-autocomplete');
-                if (remarkTextarea) {
-                    rowData['Remark'] = remarkTextarea.value.trim();
-                }
-
-                // ✅ MERGE OLD + NEW REMARK (IMPORTANT)
+                // MERGE OLD + NEW REMARK
                 const oldRemark = row.querySelector('.old-remark')?.value || '';
                 const newRemark = row.querySelector('.new-remark')?.value || '';
 
@@ -902,9 +889,7 @@ $script = '<script>
                     finalRemark = oldRemark || newRemark;
                 }
 
-
-
-                // override remark before sending
+                // FINAL PAYLOAD
                 rowData['Remark'] = finalRemark;
 
                 // Create FormData object
