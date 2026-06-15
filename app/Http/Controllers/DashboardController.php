@@ -1633,7 +1633,7 @@ class DashboardController extends Controller
 
         $allowedIps = AllowedIp::all();
 
-        return view('target.editall', compact('allowedIps'));
+        return view('target.allowedall', compact('allowedIps'));
     }
 
     public function addIp(Request $request)
