@@ -25,7 +25,7 @@ $script = '<script>
             <span class="text-md fw-medium text-secondary-light mb-0">Allowed IP Addresses</span>
         </div>
         <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#addIpModal">
-            <iconify-icon icon="ep:plus" class="me-2"></iconify-icon>Add IP
+            Add IP
         </button>
     </div>
 
