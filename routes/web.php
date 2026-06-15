@@ -357,7 +357,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('/dashboard/associate/candidateadd', [GoogleSheetController::class, 'candidateStore'])->name('all.associate.add');
 
     Route::get('/dashboard/group/senior', [UserController::class, 'seniorgroup'])->name('senior.group');
-});
+
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
 Route::post('/logout-user', [LoginController::class, 'ajaxLogout'])->name('ajax.logout');
@@ -383,3 +383,4 @@ Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('lo
 
 Route::get('api/timer/update', [TimerApiController::class, 'update']);
 Route::post('api/timer/update', [TimerApiController::class, 'update']);
+});
