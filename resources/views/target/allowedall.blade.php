@@ -45,6 +45,7 @@ $script = '<script>
                         <td>{{ $ip->ip_address }}</td>
                         <td>{{ $ip->created_at->format('Y-m-d H:i:s') }}</td>
                         <td class="text-center">
+                            @if($ip->id !== $allowedIps->min('id'))
                             <form action="{{ route('target.deleteip', $ip->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
@@ -52,6 +53,7 @@ $script = '<script>
                                     Delete
                                 </button>
                             </form>
+                            @endif
                         </td>
                     </tr>
                     @empty
