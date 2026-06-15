@@ -1646,13 +1646,13 @@ class DashboardController extends Controller
             'ip_address' => $request->ip_address
         ]);
 
-        return redirect()->route('target.editall')->with('success', 'IP address added successfully');
+        return redirect()->route('target.allowedall')->with('success', 'IP address added successfully');
     }
 
     public function deleteIp($id)
     {
         AllowedIp::find($id)->delete();
 
-        return redirect()->route('target.editall')->with('success', 'IP address deleted successfully');
+        return redirect()->route('target.allowedall')->with('success', 'IP address deleted successfully');
     }
 }
