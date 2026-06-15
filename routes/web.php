@@ -367,7 +367,7 @@ Route::post('/logincheckStatus-user', [LoginController::class, 'ajaxCheckStatus'
 Route::get('/template/{id}/edit', [EmailTemplateController::class, 'edit'])->name('template.edit');
 Route::put('/email-template/{id}', [EmailTemplateController::class, 'update'])->name('template.update');
 
-Route::get('/', [Controller::class, 'index'])->name('home');
+
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/registersubmit', [RegisterController::class, 'register'])->name('register.submit');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -384,3 +384,5 @@ Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('lo
 Route::get('api/timer/update', [TimerApiController::class, 'update']);
 Route::post('api/timer/update', [TimerApiController::class, 'update']);
 });
+
+Route::get('/', [Controller::class, 'index'])->name('home');
