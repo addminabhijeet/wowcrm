@@ -45,7 +45,7 @@ $script = '<script>
                         <td>{{ $ip->ip_address }}</td>
                         <td>{{ $ip->created_at->format('Y-m-d H:i:s') }}</td>
                         <td class="text-center">
-                            <form action="{{ route('target.deleteIp', $ip->id) }}" method="POST" style="display:inline;">
+                            <form action="{{ route('target.deleteip', $ip->id) }}" method="POST" style="display:inline;">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
@@ -75,7 +75,7 @@ $script = '<script>
             </div>
 
             <div class="modal-body p-24">
-                <form action="{{ route('target.addIp') }}" method="POST">
+                <form action="{{ route('target.addip') }}" method="POST">
                     @csrf
                     <div class="mb-20">
                         <label class="form-label fw-semibold text-primary-light text-sm mb-8">IP Address</label>
