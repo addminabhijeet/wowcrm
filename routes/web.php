@@ -320,8 +320,10 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('dashboard/target/save/{user}', [DashboardController::class, 'targetSave'])->name('target.save');
     Route::post('dashboard/target/delete/{user}', [DashboardController::class, 'targetDelete'])->name('target.delete');
     Route::get('/dashboard/target/targetall', [DashboardController::class, 'targetall'])->name('target.all');
+    Route::get('/dashboard/target/allowedall', [DashboardController::class, 'allowedall'])->name('allowed.all');
     Route::post('/dashboard/upload-generated-pdfs', [DashboardController::class, 'uploadGeneratedPdfs'])->name('upload.generated.pdfs');
-
+    Route::post('target/add-ip', [DashboardController::class, 'addIp'])->name('target.addip');
+    Route::delete('target/delete-ip/{id}', [DashboardController::class, 'deleteIp'])->name('target.deleteip');
 
     Route::put('/dashboard/smtp/allupdate', [DashboardController::class, 'addupdate'])->name('smtp.addupdate');
     Route::put('/dashboard/smtp/update/{user}', [DashboardController::class, 'update'])->name('smtp.update');

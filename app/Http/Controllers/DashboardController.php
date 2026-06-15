@@ -18,6 +18,7 @@ use Carbon\Carbon;
 use Carbon\CarbonPeriod;
 use App\Models\GoogleSheetData;
 use App\Models\Holiday;
+use App\Models\AllowedIp;
 use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
 use Symfony\Component\Mailer\Mailer;
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
@@ -1261,12 +1262,6 @@ class DashboardController extends Controller
         return view('smtp.editall', compact('juniorUsers'));
     }
 
-    public function targetall()
-    {
-        $targetUsers = User::whereIn('role', ['senior', 'junior'])->where('is_deleted', 0)->get();
-        return view('target.editall', compact('targetUsers'));
-    }
-
     public function targetedit($id)
     {
         $targetUsers = User::whereIn('role', ['senior', 'junior'])
@@ -1631,5 +1626,33 @@ class DashboardController extends Controller
                 'message' => '❌ Failed to send test email: ' . $e->getMessage(),
             ]);
         }
+    }
+
+    public function allowedall()
+    {
+
+        $allowedIps = AllowedIp::all();
+
+        return view('target.editall', compact('allowedIps'));
+    }
+
+    public function addIp(Request $request)
+    {
+        $request->validate([
+            'ip_address' => 'required|ip|unique:allowed_ips,ip_address'
+        ]);
+
+        AllowedIp::create([
+            'ip_address' => $request->ip_address
+        ]);
+
+        return redirect()->route('target.editall')->with('success', 'IP address added successfully');
+    }
+
+    public function deleteIp($id)
+    {
+        AllowedIp::find($id)->delete();
+
+        return redirect()->route('target.editall')->with('success', 'IP address deleted successfully');
     }
 }
