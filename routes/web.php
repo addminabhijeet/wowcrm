@@ -21,7 +21,7 @@ use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\CandidateDetailsController;
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/admin/index', [UserController::class, 'index'])->name('users.admin');
     Route::get('/dashboard/admin/create', [UserController::class, 'admincreate'])->name('users.admin.create');
@@ -357,7 +357,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/dashboard/associate/candidateadd', [GoogleSheetController::class, 'candidateStore'])->name('all.associate.add');
 
     Route::get('/dashboard/group/senior', [UserController::class, 'seniorgroup'])->name('senior.group');
-
+});
 
 Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
 Route::post('/logout-user', [LoginController::class, 'ajaxLogout'])->name('ajax.logout');
@@ -367,7 +367,7 @@ Route::post('/logincheckStatus-user', [LoginController::class, 'ajaxCheckStatus'
 Route::get('/template/{id}/edit', [EmailTemplateController::class, 'edit'])->name('template.edit');
 Route::put('/email-template/{id}', [EmailTemplateController::class, 'update'])->name('template.update');
 
-
+Route::get('/', [Controller::class, 'index'])->name('home');
 Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('/registersubmit', [RegisterController::class, 'register'])->name('register.submit');
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
@@ -383,6 +383,3 @@ Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('lo
 
 Route::get('api/timer/update', [TimerApiController::class, 'update']);
 Route::post('api/timer/update', [TimerApiController::class, 'update']);
-});
-
-Route::get('/', [Controller::class, 'index'])->name('home');
