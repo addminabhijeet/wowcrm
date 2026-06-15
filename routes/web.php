@@ -21,10 +21,7 @@ use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\CandidateDetailsController;
 
-
-
-
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/admin/index', [UserController::class, 'index'])->name('users.admin');
     Route::get('/dashboard/admin/create', [UserController::class, 'admincreate'])->name('users.admin.create');
