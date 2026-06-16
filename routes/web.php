@@ -361,27 +361,30 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/group/senior', [UserController::class, 'seniorgroup'])->name('senior.group');
 });
 
-Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
-Route::post('/logout-user', [LoginController::class, 'ajaxLogout'])->name('ajax.logout');
-Route::post('/login-user', [LoginController::class, 'ajaxLogin'])->name('ajax.login');
-Route::post('/logincheckStatus-user', [LoginController::class, 'ajaxCheckStatus'])->name('ajax.logincheckStatus');
+Route::middleware(['allowedip'])->group(function () {
+    Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
+    Route::post('/logout-user', [LoginController::class, 'ajaxLogout'])->name('ajax.logout');
+    Route::post('/login-user', [LoginController::class, 'ajaxLogin'])->name('ajax.login');
+    Route::post('/logincheckStatus-user', [LoginController::class, 'ajaxCheckStatus'])->name('ajax.logincheckStatus');
 
-Route::get('/template/{id}/edit', [EmailTemplateController::class, 'edit'])->name('template.edit');
-Route::put('/email-template/{id}', [EmailTemplateController::class, 'update'])->name('template.update');
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/registersubmit', [RegisterController::class, 'register'])->name('register.submit');
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/loginsubmit', [LoginController::class, 'login'])->name('login.submit');
+    Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+
+    Route::get('/template/{id}/edit', [EmailTemplateController::class, 'edit'])->name('template.edit');
+    Route::put('/email-template/{id}', [EmailTemplateController::class, 'update'])->name('template.update');
+
+    Route::post('/resumes/upload/{id}', [ResumeController::class, 'upload'])->name('resumes.upload')->middleware('auth');
+    Route::patch('/resumes/{id}/status', [ResumeController::class, 'updateStatus'])->name('resumes.updateStatus');
+    Route::patch('/payment/{id}/status', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
+    Route::patch('/training/{id}/trastatus', [PaymentController::class, 'traupdateStatus'])->name('training.updateStatus');
+    Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('login.history');
+
+
+    Route::get('api/timer/update', [TimerApiController::class, 'update']);
+    Route::post('api/timer/update', [TimerApiController::class, 'update']);
+});
 
 Route::get('/', [Controller::class, 'index'])->name('home');
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/registersubmit', [RegisterController::class, 'register'])->name('register.submit');
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/loginsubmit', [LoginController::class, 'login'])->name('login.submit');
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
-
-Route::post('/resumes/upload/{id}', [ResumeController::class, 'upload'])->name('resumes.upload')->middleware('auth');
-Route::patch('/resumes/{id}/status', [ResumeController::class, 'updateStatus'])->name('resumes.updateStatus');
-Route::patch('/payment/{id}/status', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
-Route::patch('/training/{id}/trastatus', [PaymentController::class, 'traupdateStatus'])->name('training.updateStatus');
-Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('login.history');
-
-
-Route::get('api/timer/update', [TimerApiController::class, 'update']);
-Route::post('api/timer/update', [TimerApiController::class, 'update']);
