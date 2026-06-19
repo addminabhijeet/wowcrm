@@ -11,6 +11,7 @@ use App\Http\Controllers\CalendarController;
 use App\Http\Controllers\GoogleSheetController;
 use App\Http\Controllers\PreCallReportController;
 use App\Http\Controllers\CallReportController;
+use App\Http\Controllers\ChatController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TimerController;
 use App\Http\Controllers\UserController;
@@ -287,6 +288,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/admin/call-reports', [CallReportController::class, 'index'])->name('call.reports.index');
     Route::get('/dashboard/junior/call-reports', [CallReportController::class, 'junior'])->name('call.reports.junior');
+    Route::get('/dashboard/junior/chat', [ChatController::class, 'junior'])->name('chat.junior');
     Route::get('/dashboard/juniormonthly/call-reports', [CallReportController::class, 'juniormonthly'])->name('call.reports.juniormonthly');
     Route::get('/dashboard/senior/call-reports', [CallReportController::class, 'senior'])->name('call.reports.senior');
     Route::get('/dashboard/seniormonthly/call-reports', [CallReportController::class, 'seniormonthly'])->name('call.reports.seniormonthly');
