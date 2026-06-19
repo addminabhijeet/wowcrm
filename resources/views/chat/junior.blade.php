@@ -24,13 +24,13 @@
                         </button>
                         <ul class="dropdown-menu dropdown-menu-lg-end border">
                             <li>
-                                <a  href="{{ route('chatProfile') }}" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2">
+                                <a  href="" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2">
                                     <iconify-icon icon="fluent:person-32-regular"></iconify-icon>
                                     Profile
                                 </a>
                             </li>
                             <li>
-                                <a  href="{{ route('chatProfile') }}" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2">
+                                <a  href="" class="dropdown-item rounded text-secondary-light bg-hover-neutral-200 text-hover-neutral-900 d-flex align-items-center gap-2">
                                     <iconify-icon icon="carbon:settings"></iconify-icon>
                                     Settings
                                 </a>
