@@ -548,15 +548,21 @@ $subTitle = 'Chat';
 
             window.chatEditor = editor;
 
-            // Increase editor height
-            editor.editing.view.change(writer => {
+            // Send message on Enter
+            editor.editing.view.document.on('enter', (evt, data) => {
 
-                writer.setStyle(
-                    'min-height',
-                    '250px',
-                    editor.editing.view.document.getRoot()
-                );
+                // Shift+Enter creates a new line
+                if (data.isSoft) {
+                    return;
+                }
 
+                data.preventDefault();
+                evt.stop();
+
+                document.getElementById('chatMessage').value =
+                    editor.getData();
+
+                document.querySelector('.chat-message-box').submit();
             });
 
             editor.model.document.on('change:data', () => {

@@ -39,7 +39,11 @@ class Chat extends Model
         'is_edited' => 'boolean',
     ];
 
-    protected $appends = ['formatted_time', 'file_size_formatted'];
+    protected $appends = [
+        'formatted_time',
+        'file_size_formatted',
+        'message_preview',
+    ];
 
     public function sender()
     {
