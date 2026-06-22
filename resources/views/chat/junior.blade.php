@@ -220,13 +220,16 @@ $subTitle = 'Chat';
                 <!-- Editor -->
                 <div id="editor"
                     class="form-control border-0 shadow-none"
-                    contenteditable="true"
                     style="
                         min-height:100px;
                         overflow-y:auto;
-                        outline:none;
                     ">
                 </div>
+
+                <input
+                    type="hidden"
+                    name="chatMessage"
+                    id="chatMessage">
 
             </div>
 
@@ -325,5 +328,67 @@ $subTitle = 'Chat';
         }
 
     });
+</script>
+<script>
+
+const {
+    InlineEditor,
+    Bold,
+    Italic,
+    Strikethrough,
+    List,
+    Undo,
+    Essentials
+} = CKEDITOR;
+
+let chatEditor;
+
+InlineEditor
+    .create(document.querySelector('#editor'), {
+        plugins: [
+            Essentials,
+            Bold,
+            Italic,
+            Strikethrough,
+            List,
+            Undo
+        ],
+        toolbar: [
+            'bold',
+            'italic',
+            'strikethrough',
+            'bulletedList',
+            'numberedList',
+            '|',
+            'undo',
+            'redo'
+        ]
+    })
+    .then(editor => {
+
+        chatEditor = editor;
+
+        editor.model.document.on('change:data', () => {
+
+            document.getElementById('chatMessage').value =
+                editor.getData();
+
+        });
+
+        document.querySelector('.chat-message-box')
+            ?.addEventListener('submit', function () {
+
+                document.getElementById('chatMessage').value =
+                    editor.getData();
+
+            });
+
+    })
+    .catch(error => {
+
+        console.error(error);
+
+    });
+
 </script>
 @endsection
