@@ -315,13 +315,16 @@ $subTitle = 'Chat';
             <div class="border rounded p-2 w-100">
 
                 <!-- Editor -->
+
                 <div id="editor"
                     class="form-control border-0 shadow-none"
                     style="
-                        min-height:100px;
-                        overflow-y:auto;
-                    ">
+                    min-height:250px;
+                    max-height:400px;
+                    overflow-y:auto;
+                ">
                 </div>
+
 
                 <input
                     type="hidden"
