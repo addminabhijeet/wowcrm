@@ -95,6 +95,17 @@ $role = Auth::user()->role;
                     </li>
                 </ul>
             </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Chat</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="<?php echo e(route('chat.junior')); ?>"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Chat</a></li>
+                </ul>
+            </li>
             <?php endif; ?>
 
             
@@ -247,6 +258,17 @@ $role = Auth::user()->role;
                     <li><a href="<?php echo e(route('timer.senior')); ?>"><i
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Report</a>
                     </li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Chat</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="<?php echo e(route('chat.junior')); ?>"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Chat</a></li>
                 </ul>
             </li>
             <?php endif; ?>
@@ -571,6 +593,18 @@ $role = Auth::user()->role;
                 <ul class="sidebar-submenu">
                     <li><a href="<?php echo e(route('target.all')); ?>"><i
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All User Target</a>
+                    </li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:target-20-regular" class="menu-icon"></iconify-icon>
+                    <span>Allowed IP</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="<?php echo e(route('allowed.all')); ?>"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All Allowed IPs</a>
                     </li>
                 </ul>
             </li>

@@ -36,7 +36,12 @@ $script = '<script>
                 <tbody>
                     <tr>
                         <td class="fw-semibold text-primary">
-                            <?php echo e($exeRemarkCounts['total_calls'] ?? 0); ?>
+                            <?php echo e(($exeRemarkCounts['not_interested'] ?? 0) +
+                                ($exeRemarkCounts['vm'] ?? 0) +
+                                ($exeRemarkCounts['busy'] ?? 0) +
+                                ($exeRemarkCounts['others'] ?? 0) +
+                                ($exeRemarkCounts['interested'] ?? 0) +
+                                ($exeRemarkCounts['called_and_mailed'] ?? 0)); ?>
 
                         </td>
                         <td class="fw-semibold text-danger">
@@ -327,10 +332,10 @@ $script = '<script>
                             <textarea class="form-control remark-autocomplete"
                                 data-key="Remark"
                                 rows="3"
-                                placeholder="Type remark"><?php echo e($row->Remark ?? ''); ?></textarea>
+                                placeholder="Type remark" readonly><?php echo e($row->Remark ?? ''); ?></textarea>
 
                             <!-- NEW REMARK -->
-                            <input type="hidden"
+                            <input type="text"
                                 class="form-control new-remark"
                                 data-key="Remark"
                                 placeholder="Add new remark">
@@ -894,15 +899,16 @@ $script = '<script>
                     rowData[key] = value;
                 });
                 // ✅ MERGE OLD + NEW REMARK (IMPORTANT)
-                const oldRemark = row.querySelector('.old-remark')?.value || '';
+                // ✅ MERGE OLD + NEW REMARK (FIXED WITHOUT CHANGING FLOW)
+                const oldRemark = row.querySelector('textarea.remark-autocomplete')?.value || '';
                 const newRemark = row.querySelector('.new-remark')?.value || '';
 
-                let finalRemark = '';
+                let finalRemark = oldRemark.trim();
 
-                if (oldRemark && newRemark) {
-                    finalRemark = oldRemark + "\n" + newRemark;
-                } else {
-                    finalRemark = oldRemark || newRemark;
+                if (newRemark.trim()) {
+                    finalRemark = finalRemark ?
+                        finalRemark + "\n" + newRemark.trim() :
+                        newRemark.trim();
                 }
 
                 // override remark before sending

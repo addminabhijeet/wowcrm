@@ -28,8 +28,7 @@ $userImage = Auth::user()->image
                 'resource',
                 ]))): ?>
                 <div
-                    style="display:flex;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
-
+                    style="display:none;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
 
                     <div style="margin-right:10px;text-align:center;min-width:60px;">
                         <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
@@ -98,9 +97,27 @@ $userImage = Auth::user()->image
 
                 <div class="dropdown">
                     <button
-                        class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
+                        class="position-relative has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
                         type="button" data-bs-toggle="dropdown">
+
                         <iconify-icon icon="mage:email" class="text-primary-light text-xl"></iconify-icon>
+
+                        <span id="message-badge"
+                            class="badge position-absolute top-0 start-100 translate-middle rounded-pill bg-danger d-none"
+                            style="
+                                font-size:11px;
+                                min-width:22px;
+                                height:22px;
+                                display:inline-flex;
+                                align-items:center;
+                                justify-content:center;
+                                box-shadow:0 0 8px rgba(255,0,0,0.5);
+                                background:rgba(255,0,0,0.85);
+                                backdrop-filter:blur(8px);
+                            ">
+                            0
+                        </span>
+
                     </button>
                     <div class="dropdown-menu to-top dropdown-menu-lg p-0">
                         <div
@@ -109,36 +126,19 @@ $userImage = Auth::user()->image
                                 <h6 class="text-lg text-primary-light fw-semibold mb-0">Message</h6>
                             </div>
                             <span
-                                class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">05</span>
+                                id="message-count"
+                                class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">
+                                0
+                            </span>
                         </div>
 
-                        <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
-
-                            <a href="javascript:void(0)"
-                                class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
-                                <div
-                                    class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
-                                    <span class="w-40-px h-40-px rounded-circle flex-shrink-0 position-relative">
-                                        <img src="<?php echo e(asset('assets/images/notification/profile-3.png')); ?>"
-                                            alt="">
-                                        <span
-                                            class="w-8-px h-8-px bg-success-main rounded-circle position-absolute end-0 bottom-0"></span>
-                                    </span>
-                                    <div>
-                                        <h6 class="text-md fw-semibold mb-4">Kathryn Murphy</h6>
-                                        <p class="mb-0 text-sm text-secondary-light text-w-100-px">hey! there i’m...</p>
-                                    </div>
-                                </div>
-                                <div class="d-flex flex-column align-items-end">
-                                    <span class="text-sm text-secondary-light flex-shrink-0">12:30 PM</span>
-                                    <span
-                                        class="mt-4 text-xs text-base w-16-px h-16-px d-flex justify-content-center align-items-center bg-warning-main rounded-circle">8</span>
-                                </div>
-                            </a>
-
+                        <div
+                            id="chat-message-list"
+                            class="max-h-400-px overflow-y-auto scroll-sm pe-4">
                         </div>
+
                         <div class="text-center py-12 px-16">
-                            <a href="javascript:void(0)" class="text-primary-600 fw-semibold text-md">See All
+                            <a href="<?php echo e(route('chat.index')); ?>" class="text-primary-600 fw-semibold text-md">See All
                                 Message</a>
                         </div>
                     </div>
@@ -826,4 +826,107 @@ $userImage = Auth::user()->image
     .flash-new {
         animation: flashNew 0.9s ease;
     }
-</style><?php /**PATH /var/www/norloxsolutionscrm.com/wowcrm/resources/views/components/navbar.blade.php ENDPATH**/ ?>
+</style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        function loadMessages() {
+
+            fetch("<?php echo e(route('chat.latestMessages')); ?>")
+                .then(response => response.json())
+                .then(data => {
+
+                    const countElement = document.getElementById('message-count');
+
+                    if (countElement) {
+                        countElement.innerText = data.count;
+                    }
+
+                    const messageBadge = document.getElementById('message-badge');
+
+                    if (messageBadge) {
+
+                        if (data.count > 0) {
+
+                            messageBadge.innerText =
+                                data.count > 99 ? '99+' : data.count;
+
+                            messageBadge.classList.remove('d-none');
+
+                        } else {
+
+                            messageBadge.classList.add('d-none');
+
+                        }
+
+                    }
+
+                    let html = '';
+
+                    data.users.forEach(user => {
+                        const chatBaseUrl = "<?php echo e(route('chat.index')); ?>";
+                        html += `
+                        <a href="${chatBaseUrl}?user=${user.id}"
+                           class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
+
+                            <div class="d-flex align-items-center gap-3">
+
+                                <span class="w-40-px h-40-px rounded-circle">
+
+                                    <img
+                                        src="${user.image ?
+                                        '/storage/app/public/' + user.image :
+                                        '/assets/images/user-grid/user-grid-bg1.png'}"
+                                        class="w-40-px h-40-px rounded-circle">
+
+                                </span>
+
+                                <div>
+
+                                    <h6 class="text-md fw-semibold mb-1">
+                                        ${user.name}
+                                    </h6>
+
+                                    <p class="mb-0 text-sm text-secondary-light">
+
+                                        ${
+                                            user.lastChat?.message ??
+                                            user.lastChat?.file_name ??
+                                            'New message'
+                                        }
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="text-end">
+
+                                <span class="mt-1 text-xs text-base w-16-px h-16-px d-flex justify-content-center align-items-center bg-warning-main rounded-circle">
+                                    ${user.unreadCount}
+                                </span>
+
+                            </div>
+
+                        </a>
+                    `;
+                    });
+
+                    const listElement = document.getElementById('chat-message-list');
+
+                    if (listElement) {
+                        listElement.innerHTML = html;
+                    }
+                }).catch(err => {
+                    console.error('Error loading messages:', err);
+                });
+
+        }
+
+        loadMessages();
+
+        setInterval(loadMessages, 5000);
+
+    });
+</script><?php /**PATH /var/www/norloxsolutionscrm.com/wowcrm/resources/views/components/navbar.blade.php ENDPATH**/ ?>

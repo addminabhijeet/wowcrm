@@ -36,7 +36,12 @@
                     <tbody>
                         <tr>
                             <td class="fw-semibold text-primary">
-                                <?php echo e($exeRemarkCounts['total_calls'] ?? 0); ?>
+                                <?php echo e(($exeRemarkCounts['not_interested'] ?? 0) +
+                                    ($exeRemarkCounts['vm'] ?? 0) +
+                                    ($exeRemarkCounts['busy'] ?? 0) +
+                                    ($exeRemarkCounts['others'] ?? 0) +
+                                    ($exeRemarkCounts['interested'] ?? 0) +
+                                    ($exeRemarkCounts['called_and_mailed'] ?? 0)); ?>
 
                             </td>
                             <td class="fw-semibold text-danger">
