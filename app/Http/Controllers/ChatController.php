@@ -59,7 +59,11 @@ class ChatController extends Controller
                 }
 
                 return $chatUser;
-            });
+            })->sortByDesc(function ($chatUser) {
+
+                return optional($chatUser->lastChat)->created_at;
+            })
+            ->values();
 
         $activeUser = $users
             ->where('id', $selectedUserId)
