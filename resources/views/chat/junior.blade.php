@@ -89,7 +89,14 @@ $subTitle = 'Chat';
 
                             @if(!empty($chatUser->lastChat?->message))
 
-                            {{ \Illuminate\Support\Str::limit(trim(html_entity_decode(strip_tags($chatUser->lastChat->message))),50) }}
+                            {{ \Illuminate\Support\Str::limit(
+                                preg_replace(
+                                    '/\s+/',
+                                    ' ',
+                                    trim(strip_tags(html_entity_decode($chatUser->lastChat->message)))
+                                ),
+                                50
+                            ) }}
 
                             @elseif(!empty($chatUser->lastChat?->file_name))
 
