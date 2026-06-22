@@ -11,7 +11,12 @@ $subTitle = 'Chat';
     <div class="chat-sidebar card">
         <div class="chat-sidebar-single active top-profile">
             <div class="img">
-                <img src="{{ asset('assets/images/chat/1.png') }}" alt="image">
+                <img
+                    src="{{ $activeUser && $activeUser->image
+                        ? asset('storage/app/public/' . $activeUser->image)
+                        : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                    alt="{{ $activeUser->name ?? 'User' }}"
+                    class="w-40-px h-40-px rounded-circle object-fit-cover">
             </div>
             <div class="info">
                 <h6 class="text-md mb-0">
@@ -38,7 +43,12 @@ $subTitle = 'Chat';
                 class="chat-sidebar-single text-decoration-none">
 
                 <div class="img">
-                    <img src="{{ asset('assets/images/chat/2.png') }}" alt="image">
+                    <img
+                        src="{{ $chatUser->image
+                            ? asset('storage/app/public/' . $chatUser->image)
+                            : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                        alt="{{ $chatUser->name }}"
+                        class="w-40-px h-40-px rounded-circle object-fit-cover">
                 </div>
 
                 <div class="info">
@@ -66,7 +76,12 @@ $subTitle = 'Chat';
     <div class="chat-main card">
         <div class="chat-sidebar-single active">
             <div class="img">
-                <img src="{{ asset('assets/images/chat/11.png') }}" alt="image">
+                <img
+                    src="{{ $activeUser && $activeUser->image
+            ? asset('storage/app/public/' . $activeUser->image)
+            : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                    alt="{{ $activeUser->name ?? 'User' }}"
+                    class="w-40-px h-40-px rounded-circle object-fit-cover">
             </div>
             <div class="info">
                 <h6 class="text-md mb-0">
@@ -104,9 +119,11 @@ $subTitle = 'Chat';
             <div class="chat-single-message left">
 
                 <img
-                    src="{{ asset('assets/images/chat/11.png') }}"
-                    class="avatar-lg object-fit-cover rounded-circle"
-                    alt="image">
+                    src="{{ $activeUser && $activeUser->image
+                        ? asset('storage/app/public/' . $activeUser->image)
+                        : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                    alt="{{ $activeUser->name ?? 'User' }}"
+                    class="avatar-lg object-fit-cover rounded-circle">
 
                 <div class="chat-message-content">
 
