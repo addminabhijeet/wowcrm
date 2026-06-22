@@ -84,7 +84,8 @@ $subTitle = 'Chat';
                             {{ $chatUser->name }}
                         </h6>
 
-                        <p class="mb-0 text-xs text-truncate">
+                        <p class="mb-0 text-xs text-truncate"
+                            id="last-message-{{ $chatUser->id }}">
 
                             @if(!empty($chatUser->lastChat?->message))
 
@@ -107,19 +108,21 @@ $subTitle = 'Chat';
                     <!-- Time + Unread Count -->
                     <div class="ms-2 text-end flex-shrink-0">
 
-                        <small class="d-block text-neutral-400">
+                        <small class="d-block text-neutral-400"
+                            id="last-time-{{ $chatUser->id }}">
                             {{ $chatUser->lastChatDisplay }}
                         </small>
 
-                        @if($chatUser->unreadCount > 0)
-
                         <span
+                            id="unread-count-{{ $chatUser->id }}"
                             class="badge rounded-pill bg-success mt-1"
-                            style="min-width:22px;">
+                            @if(!$chatUser->unreadCount)
+                            style="min-width:22px; display:none;"
+                            @else
+                            style="min-width:22px;"
+                            @endif>
                             {{ $chatUser->unreadCount }}
                         </span>
-
-                        @endif
 
                     </div>
 
@@ -593,5 +596,58 @@ $subTitle = 'Chat';
         }
 
     });
+</script>
+<script>
+    function refreshUsers() {
+
+        $.ajax({
+            url: "{{ route('chat.refreshUsers') }}",
+            type: "GET",
+            success: function(users) {
+
+                users.forEach(function(user) {
+
+                    // Update last message
+                    let lastMessage = "No messages yet";
+
+                    if (user.lastChat) {
+
+                        if (user.lastChat.message) {
+
+                            lastMessage = user.lastChat.message;
+
+                        } else if (user.lastChat.file_name) {
+
+                            lastMessage = user.lastChat.file_name;
+                        }
+                    }
+
+                    $("#last-message-" + user.id).text(lastMessage);
+
+                    // Update time
+                    $("#last-time-" + user.id).text(user.lastChatDisplay);
+
+                    // Update unread badge
+                    let badge = $("#unread-count-" + user.id);
+
+                    if (user.unreadCount > 0) {
+
+                        badge.text(user.unreadCount);
+                        badge.show();
+
+                    } else {
+
+                        badge.hide();
+                    }
+
+                });
+
+            }
+        });
+
+    }
+
+    // Refresh every 3 seconds
+    setInterval(refreshUsers, 3000);
 </script>
 @endsection

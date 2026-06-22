@@ -222,4 +222,49 @@ class ChatController extends Controller
             'users' => $chatUsers,
         ]);
     }
+
+    public function refreshChatUsers()
+    {
+        $user = Auth::user();
+
+        $chatUsers = User::whereIn('role', ['junior', 'senior'])
+            ->where('is_deleted', 0)
+            ->where('id', '!=', $user->id)
+            ->get()
+            ->map(function ($chatUser) use ($user) {
+
+                $chatUser->lastChat = Chat::conversation(
+                    $user->id,
+                    $chatUser->id
+                )
+                    ->reorder('created_at', 'desc')
+                    ->first();
+
+                $chatUser->unreadCount = Chat::where('sender_id', $chatUser->id)
+                    ->where('receiver_id', $user->id)
+                    ->where('is_read', false)
+                    ->count();
+
+                if ($chatUser->lastChat) {
+
+                    $createdAt = $chatUser->lastChat->created_at;
+
+                    $chatUser->lastChatDisplay = $createdAt->isToday()
+                        ? $createdAt->format('h:i A')
+                        : $createdAt->format('d M Y');
+                } else {
+
+                    $chatUser->lastChatDisplay = '';
+                }
+
+                return $chatUser;
+            })
+            ->sortByDesc(function ($chatUser) {
+
+                return optional($chatUser->lastChat)->created_at;
+            })
+            ->values();
+
+        return response()->json($chatUsers);
+    }
 }
