@@ -625,6 +625,7 @@ $subTitle = 'Chat';
 
     });
 </script>
+
 <script>
     const authUserId = parseInt("{{ Auth::id() }}");
 
@@ -644,8 +645,23 @@ $subTitle = 'Chat';
 
                 let users = response.users;
                 let messages = response.messages;
+                let activeUser = response.activeUser;
 
-                let activeUserId = $("#activeUserId").val();
+                // Update active user hidden field
+                if (activeUser && activeUser.id) {
+
+                    $("#activeUserId").val(activeUser.id);
+
+                    $("#active-user-name-left").text(activeUser.name);
+                    $("#active-user-name-right").text(activeUser.name);
+
+                    let image = activeUser.image ?
+                        "/storage/app/public/" + activeUser.image :
+                        "/assets/images/user-grid/user-grid-bg1.png";
+
+                    $("#active-user-image-left").attr("src", image);
+                    $("#active-user-image-right").attr("src", image);
+                }
 
                 users.forEach(function(user) {
 
@@ -663,7 +679,6 @@ $subTitle = 'Chat';
                             lastMessage = user.lastChat.file_name;
 
                         }
-
                     }
 
                     $("#last-message-" + user.id).text(lastMessage);
@@ -685,21 +700,6 @@ $subTitle = 'Chat';
 
                     }
 
-                    // Update active user header
-                    if (user.id == activeUserId) {
-
-                        $("#active-user-name-left").text(user.name);
-                        $("#active-user-name-right").text(user.name);
-
-                        let image = user.image ?
-                            "/storage/app/public/" + user.image :
-                            "/assets/images/user-grid/user-grid-bg1.png";
-
-                        $("#active-user-image-left").attr("src", image);
-                        $("#active-user-image-right").attr("src", image);
-
-                    }
-
                 });
 
                 // Update active conversation
@@ -713,12 +713,14 @@ $subTitle = 'Chat';
                             <div class="chat-single-message right">
                                 <div class="chat-message-content">
 
-                                    ${message.message
+                                    ${
+                                        message.message
                                         ? `<div class="mb-2">${message.message}</div>`
                                         : ''
                                     }
 
                                     <p class="chat-time mb-0 text-white">
+
                                         <span class="text-white">
                                             ${message.formatted_time}
                                         </span>
@@ -726,9 +728,11 @@ $subTitle = 'Chat';
                                         <br>
 
                                         <small class="text-white">
-                                            ${message.is_read
+                                            ${
+                                                message.is_read
                                                 ? 'Seen ' + message.read_time
-                                                : 'Delivered'}
+                                                : 'Delivered'
+                                            }
                                         </small>
 
                                     </p>
@@ -743,15 +747,18 @@ $subTitle = 'Chat';
                             <div class="chat-single-message left">
                                 <div class="chat-message-content">
 
-                                    ${message.message
+                                    ${
+                                        message.message
                                         ? `<div class="mb-2">${message.message}</div>`
                                         : ''
                                     }
 
                                     <p class="chat-time mb-0">
+
                                         <span>
                                             ${message.formatted_time}
                                         </span>
+
                                     </p>
 
                                 </div>
@@ -786,4 +793,6 @@ $subTitle = 'Chat';
 
     setInterval(refreshUsers, 3000);
 </script>
+
+
 @endsection

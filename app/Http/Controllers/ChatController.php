@@ -222,11 +222,12 @@ class ChatController extends Controller
             'users' => $chatUsers,
         ]);
     }
-    
+
     public function refreshChatUsers(Request $request)
     {
         $user = Auth::user();
 
+        // Refresh all users
         $chatUsers = User::whereIn('role', ['junior', 'senior'])
             ->where('is_deleted', 0)
             ->where('id', '!=', $user->id)
@@ -265,17 +266,44 @@ class ChatController extends Controller
             })
             ->values();
 
+        // Active user from Blade
+        $activeUser = null;
+
+        if (!empty($request->active_user_id)) {
+
+            $activeUser = User::where('id', $request->active_user_id)
+                ->where('is_deleted', 0)
+                ->first();
+        }
+
+        // Default to first user if active user not found
+        if (!$activeUser) {
+
+            $activeUser = $chatUsers->first();
+        }
+
         $messages = collect();
 
-        if ($request->active_user_id) {
+        if ($activeUser) {
 
+            // Mark unread messages from active user as read
+            Chat::where('sender_id', $activeUser->id)
+                ->where('receiver_id', $user->id)
+                ->where('is_read', false)
+                ->update([
+                    'is_read' => true,
+                    'read_at' => now(),
+                ]);
+
+            // Refresh conversation
             $messages = Chat::conversation(
                 $user->id,
-                $request->active_user_id
+                $activeUser->id
             )
                 ->whereNull('parent_id')
                 ->with([
                     'replies' => function ($q) {
+
                         $q->orderBy('id', 'asc');
                     }
                 ])
@@ -284,7 +312,14 @@ class ChatController extends Controller
 
         return response()->json([
             'users' => $chatUsers,
-            'messages' => $messages
+
+            'activeUser' => [
+                'id' => $activeUser?->id,
+                'name' => $activeUser?->name,
+                'image' => $activeUser?->image,
+            ],
+
+            'messages' => $messages,
         ]);
     }
 }
