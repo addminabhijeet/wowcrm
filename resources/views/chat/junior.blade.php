@@ -110,6 +110,16 @@ $subTitle = 'Chat';
                         {{ $chatUser->lastChatDisplay }}
                     </p>
 
+                    @if($chatUser->unreadCount > 0)
+
+                    <div
+                        class="badge rounded-pill bg-success mt-1"
+                        style="min-width:24px;">
+                        {{ $chatUser->unreadCount }}
+                    </div>
+
+                    @endif
+
                 </div>
 
             </a>

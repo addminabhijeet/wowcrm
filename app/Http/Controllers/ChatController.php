@@ -45,6 +45,12 @@ class ChatController extends Controller
                     ->reorder('created_at', 'desc')
                     ->first();
 
+                // WhatsApp-like unread count
+                $chatUser->unreadCount = Chat::where('sender_id', $chatUser->id)
+                    ->where('receiver_id', $user->id)
+                    ->where('is_read', false)
+                    ->count();
+
                 if ($chatUser->lastChat) {
 
                     $createdAt = $chatUser->lastChat->created_at;
