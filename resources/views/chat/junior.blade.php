@@ -330,19 +330,22 @@ $subTitle = 'Chat';
 
             </div>
 
+
             <input
                 type="file"
                 id="fileInput"
                 name="attachment"
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.txt,.ppt,.pptx,*/*"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.txt,.ppt,.pptx"
                 hidden>
 
             <input
                 type="file"
                 id="imageInput"
-                name="attachment"
+                name="image_attachment"
                 accept="image/*"
                 hidden>
+
+
 
             <div class="chat-message-box-action">
                 <div id="attachmentPreview"

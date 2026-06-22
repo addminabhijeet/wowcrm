@@ -80,9 +80,9 @@ class ChatController extends Controller
             'messages'
         ));
     }
+
     public function send(Request $request)
     {
-
         $chat = new Chat();
 
         $chat->sender_id = Auth::id();
@@ -91,9 +91,20 @@ class ChatController extends Controller
         // Save text if present
         $chat->message = $request->input('chatMessage', '');
 
+        $file = null;
+
+        // File selected from attachment button
         if ($request->hasFile('attachment')) {
 
             $file = $request->file('attachment');
+        }
+        // Image selected from image button
+        elseif ($request->hasFile('image_attachment')) {
+
+            $file = $request->file('image_attachment');
+        }
+
+        if ($file) {
 
             $path = $file->store('chat-files', 'public');
 
@@ -114,11 +125,8 @@ class ChatController extends Controller
 
                 $chat->message_type = 'audio';
             } elseif (
-
-                str_contains($mime, 'pdf') ||
-
+                str_contains(strtolower($mime), 'pdf') ||
                 strtolower($file->getClientOriginalExtension()) === 'pdf'
-
             ) {
 
                 $chat->message_type = 'pdf';
