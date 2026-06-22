@@ -335,7 +335,7 @@ $subTitle = 'Chat';
             @endforeach
 
         </div>
-        
+
         <form
             class="chat-message-box"
             method="POST"
@@ -452,50 +452,53 @@ $subTitle = 'Chat';
 
     });
 
+    let attachmentPreview = document.getElementById('attachmentPreview');
+
     document.getElementById('fileInput').addEventListener('change', function() {
 
-        let preview = document.getElementById('attachmentPreview');
-
-        preview.style.display = 'block';
-
-        let html = '';
+        attachmentPreview.style.display = 'block';
 
         Array.from(this.files).forEach(file => {
 
-            html += `
-        <div class="border rounded p-2 mb-2">
-            📄 ${file.name}
-            <br>
-            <small>${(file.size/1024).toFixed(2)} KB</small>
-        </div>`;
+            attachmentPreview.insertAdjacentHTML(
+                'beforeend',
+                `
+            <div class="border rounded p-2 mb-2">
+                📄 ${file.name}
+                <br>
+                <small>${(file.size / 1024).toFixed(2)} KB</small>
+            </div>
+            `
+            );
+
         });
 
-        preview.innerHTML += html;
     });
 
     document.getElementById('imageInput').addEventListener('change', function() {
 
-        let preview = document.getElementById('attachmentPreview');
-
-        preview.style.display = 'block';
-
-        let html = '';
+        attachmentPreview.style.display = 'block';
 
         Array.from(this.files).forEach(file => {
 
             let url = URL.createObjectURL(file);
 
-            html += `
-        <div class="border rounded p-2 mb-2">
-            <img src="${url}"
-                class="rounded"
-                style="max-width:200px;max-height:200px">
+            attachmentPreview.insertAdjacentHTML(
+                'beforeend',
+                `
+            <div class="border rounded p-2 mb-2">
+                <img
+                    src="${url}"
+                    class="rounded"
+                    style="max-width:200px;max-height:200px">
 
-            <div class="mt-2">${file.name}</div>
-        </div>`;
+                <div class="mt-2">${file.name}</div>
+            </div>
+            `
+            );
+
         });
 
-        preview.innerHTML += html;
     });
 </script>
 <script>
