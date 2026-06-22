@@ -11,6 +11,10 @@ if (editorElement) {
             StarterKit,
         ],
         content: '',
+        onUpdate({ editor }) {
+            document.getElementById('chatMessage').value =
+                editor.getHTML();
+        }
     })
 
     document.getElementById('boldBtn')?.addEventListener('click', () => {
@@ -29,11 +33,35 @@ if (editorElement) {
         editor.chain().focus().toggleBulletList().run()
     })
 
+    // Attach editor content before submitting
     document.querySelector('.chat-message-box')
-        ?.addEventListener('submit', function () {
+        ?.addEventListener('submit', function (e) {
+
+            const html = editor.getHTML();
+
+            // remove empty paragraph
+            if (html === '<p></p>') {
+                document.getElementById('chatMessage').value = '';
+            } else {
+                document.getElementById('chatMessage').value = html;
+            }
+        });
+
+    // Attach text when selecting files/images also
+    document.getElementById('fileInput')
+        ?.addEventListener('change', function () {
 
             document.getElementById('chatMessage').value =
                 editor.getHTML();
 
         });
+
+    document.getElementById('imageInput')
+        ?.addEventListener('change', function () {
+
+            document.getElementById('chatMessage').value =
+                editor.getHTML();
+
+        });
+
 }
