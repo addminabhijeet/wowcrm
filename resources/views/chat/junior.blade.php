@@ -463,6 +463,17 @@ $subTitle = 'Chat';
 
             window.chatEditor = editor;
 
+            // Increase editor height
+            editor.editing.view.change(writer => {
+
+                writer.setStyle(
+                    'min-height',
+                    '250px',
+                    editor.editing.view.document.getRoot()
+                );
+
+            });
+
             editor.model.document.on('change:data', () => {
 
                 document.getElementById('chatMessage').value =
