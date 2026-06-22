@@ -387,6 +387,11 @@ $subTitle = 'Chat';
                 name="receiver_id"
                 value="{{ $activeUser->id ?? '' }}">
 
+            <input
+                type="hidden"
+                id="activeUserId"
+                value="{{ $activeUser->id ?? '' }}">
+
             <div class="border rounded p-2 w-100">
 
                 <!-- Editor -->
@@ -626,7 +631,9 @@ $subTitle = 'Chat';
         $.ajax({
             url: "{{ route('chat.refreshUsers') }}",
             type: "GET",
-            success: function(users) {
+            success: function(response) {
+
+                let users = response.users;
 
                 let activeUserId = $("#activeUserId").val();
 

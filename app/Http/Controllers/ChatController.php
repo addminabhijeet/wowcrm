@@ -222,8 +222,8 @@ class ChatController extends Controller
             'users' => $chatUsers,
         ]);
     }
-
-    public function refreshChatUsers()
+    
+    public function refreshChatUsers(Request $request)
     {
         $user = Auth::user();
 
@@ -265,6 +265,26 @@ class ChatController extends Controller
             })
             ->values();
 
-        return response()->json($chatUsers);
+        $messages = collect();
+
+        if ($request->active_user_id) {
+
+            $messages = Chat::conversation(
+                $user->id,
+                $request->active_user_id
+            )
+                ->whereNull('parent_id')
+                ->with([
+                    'replies' => function ($q) {
+                        $q->orderBy('id', 'asc');
+                    }
+                ])
+                ->get();
+        }
+
+        return response()->json([
+            'users' => $chatUsers,
+            'messages' => $messages
+        ]);
     }
 }
