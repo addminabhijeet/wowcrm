@@ -140,7 +140,7 @@ $subTitle = 'Chat';
             </div>
         </div>
 
-        <div class="chat-message-list">
+        <div class="chat-message-list" id="chatMessageList">
 
             @foreach($messages as $message)
 
@@ -540,5 +540,21 @@ $subTitle = 'Chat';
             console.error(error);
 
         });
+</script>
+<script>
+    window.addEventListener('load', function() {
+
+        const chatBox = document.getElementById('chatMessageList');
+
+        if (chatBox) {
+
+            chatBox.scrollTo({
+                top: chatBox.scrollHeight,
+                behavior: 'smooth'
+            });
+
+        }
+
+    });
 </script>
 @endsection
