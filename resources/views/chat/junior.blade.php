@@ -370,8 +370,9 @@ $subTitle = 'Chat';
         </div>
 
         <form
-            id="chatForm"
             class="chat-message-box"
+            method="POST"
+            action="{{ route('chat.send') }}"
             enctype="multipart/form-data">
 
             @csrf
@@ -445,15 +446,12 @@ $subTitle = 'Chat';
 
                 </button>
 
-                <button
-                    type="submit"
-                    id="sendBtn"
+                <button type="submit"
                     class="btn btn-sm btn-primary-600 radius-8 d-inline-flex align-items-center gap-1">
-
                     Send
                     <iconify-icon icon="f7:paperplane"></iconify-icon>
-
                 </button>
+
             </div>
 
         </form>
@@ -595,118 +593,5 @@ $subTitle = 'Chat';
         }
 
     });
-</script>
-<script>
-    document.getElementById('chatForm').addEventListener(
-        'submit',
-        function(e) {
-
-            e.preventDefault();
-
-            document.getElementById('chatMessage').value =
-                window.chatEditor.getData();
-
-            let formData = new FormData(this);
-
-            fetch("{{ route('chat.send.ajax') }}", {
-                    method: "POST",
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    body: formData
-                })
-                .then(response => response.text())
-                .then(() => {
-
-                    window.chatEditor.setData('');
-
-                    document.getElementById('attachmentPreview')
-                        .innerHTML = '';
-
-                    document.getElementById('attachmentPreview')
-                        .style.display = 'none';
-
-                    loadMessages();
-
-                    pdfFiles = new DataTransfer();
-                    imageFiles = new DataTransfer();
-
-                    document.getElementById('fileInput').value = '';
-                    document.getElementById('imageInput').value = '';
-
-                });
-
-        });
-</script>
-<script>
-    const currentUserId = "{{ Auth::id() }}";
-
-    function loadMessages() {
-        let userId = "{{ $activeUser->id ?? '' }}";
-
-        if (!userId) return;
-
-        fetch("{{ route('chat.messages', ':id') }}"
-                .replace(':id', userId))
-            .then(response => response.json())
-            .then(messages => {
-
-                let html = '';
-
-                messages.forEach(function(message) {
-
-                    let side =
-                        message.sender_id == currentUserId ?
-                        'right' :
-                        'left';
-
-                    html += `
-            <div class="chat-single-message ${side}">
-                <div class="chat-message-content">
-
-                    ${
-                        message.message
-                        ?
-                        `<div class="mb-2">
-                            ${message.message}
-                        </div>`
-                        :
-                        ''
-                    }
-
-                    <p class="chat-time mb-0">
-                        ${message.formatted_time}
-                    </p>
-
-                </div>
-            </div>
-            `;
-
-                });
-
-                let box = document.getElementById('chatMessageList');
-
-                let isNearBottom =
-                    box.scrollHeight - box.scrollTop - box.clientHeight < 100;
-
-                box.innerHTML = html;
-
-                if (isNearBottom) {
-
-                    box.scrollTop = box.scrollHeight;
-
-                }
-
-            });
-
-    }
-
-    loadMessages();
-
-    setInterval(function() {
-
-        loadMessages();
-
-    }, 2000);
 </script>
 @endsection

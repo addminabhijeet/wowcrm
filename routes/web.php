@@ -363,9 +363,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/group/senior', [UserController::class, 'seniorgroup'])->name('senior.group');
     Route::get('/chat', [ChatController::class, 'junior'])->name('chat.index');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
-    Route::get('/latest-messages', [ChatController::class, 'latestMessages'])->name('chat.latestMessages');
-    Route::get('/chat/messages/{user}', [ChatController::class, 'getMessages'])->name('chat.messages');
-    Route::post('/chat/send-ajax', [ChatController::class, 'send'])->name('chat.send.ajax');
+    Route::get('/latest-messages',[ChatController::class, 'latestMessages'])->name('chat.latestMessages');
 });
 
 Route::middleware(['allowedip'])->group(function () {

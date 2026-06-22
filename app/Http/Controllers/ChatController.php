@@ -182,44 +182,7 @@ class ChatController extends Controller
             $chat->save();
         }
 
-        if ($request->ajax()) {
-
-            return response()->json([
-                'success' => true
-            ]);
-        }
-
         return back();
-    }
-    
-    public function getMessages($userId)
-    {
-        $user = Auth::user();
-
-        Chat::where('sender_id', $userId)
-            ->where('receiver_id', $user->id)
-            ->where('is_read', false)
-            ->update([
-                'is_read' => true,
-                'read_at' => now()
-            ]);
-
-        $messages = Chat::conversation(
-            $user->id,
-            $userId
-        )
-            ->whereNull('parent_id')
-            ->with([
-                'replies' => function ($q) {
-                    $q->orderBy('id', 'asc');
-                }
-            ])
-            ->get();
-
-        return view(
-            'chat.messages',
-            compact('messages')
-        )->render();
     }
 
     public function latestMessages()
