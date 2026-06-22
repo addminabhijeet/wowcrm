@@ -548,10 +548,24 @@ $subTitle = 'Chat';
 
             window.chatEditor = editor;
 
+            // Increase editor height
+            editor.editing.view.change(writer => {
+
+                writer.setStyle(
+                    'min-height',
+                    '400px',
+                    editor.editing.view.document.getRoot()
+                );
+
+            });
+
+            editor.ui.view.editable.element.style.minHeight = '400px';
+            editor.ui.view.editable.element.style.maxHeight = '600px';
+            editor.ui.view.editable.element.style.overflowY = 'auto';
+
             // Send message on Enter
             editor.editing.view.document.on('enter', (evt, data) => {
 
-                // Shift+Enter creates a new line
                 if (data.isSoft) {
                     return;
                 }
