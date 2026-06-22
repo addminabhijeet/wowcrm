@@ -103,4 +103,20 @@ class Chat extends Model
         return $query->where('receiver_id', $userId)
             ->where('is_read', false);
     }
+
+    public function getReadTimeAttribute()
+    {
+        if (!$this->read_at) {
+            return '';
+        }
+
+        return $this->read_at->isToday()
+            ? $this->read_at->format('h:i A')
+            : $this->read_at->format('d M Y');
+    }
+
+    public function getSeenStatusAttribute()
+    {
+        return $this->is_read ? 'Seen' : 'Delivered';
+    }
 }

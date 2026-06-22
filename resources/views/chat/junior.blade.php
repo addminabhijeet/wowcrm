@@ -227,6 +227,26 @@ $subTitle = 'Chat';
                         <span>
                             {{ $message->formatted_time }}
                         </span>
+
+                        @if($message->sender_id == auth()->id())
+
+                        @if($message->is_read)
+
+                        <br>
+                        <small class="text-success">
+                            Seen {{ $message->read_time }}
+                        </small>
+
+                        @else
+
+                        <br>
+                        <small class="text-muted">
+                            Delivered
+                        </small>
+
+                        @endif
+
+                        @endif
                     </p>
 
                 </div>

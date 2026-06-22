@@ -67,10 +67,18 @@ class ChatController extends Controller
         $activeUser = $users
             ->where('id', $selectedUserId)
             ->first() ?? $users->first();
-
         $messages = collect();
 
         if ($activeUser) {
+
+            // Mark all unread messages from this user as read
+            Chat::where('sender_id', $activeUser->id)
+                ->where('receiver_id', $user->id)
+                ->where('is_read', false)
+                ->update([
+                    'is_read' => true,
+                    'read_at' => now(),
+                ]);
 
             $messages = Chat::conversation(
                 $user->id,
