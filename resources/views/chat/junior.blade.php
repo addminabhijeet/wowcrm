@@ -188,35 +188,6 @@ $subTitle = 'Chat';
 
             <div class="border rounded p-2 w-100">
 
-                <!-- Toolbar -->
-                <div class="btn-toolbar gap-1 mb-2">
-
-                    <button type="button"
-                        id="boldBtn"
-                        class="btn btn-light btn-sm">
-                        <iconify-icon icon="mdi:format-bold"></iconify-icon>
-                    </button>
-
-                    <button type="button"
-                        id="italicBtn"
-                        class="btn btn-light btn-sm">
-                        <iconify-icon icon="mdi:format-italic"></iconify-icon>
-                    </button>
-
-                    <button type="button"
-                        id="strikeBtn"
-                        class="btn btn-light btn-sm">
-                        <iconify-icon icon="mdi:format-strikethrough"></iconify-icon>
-                    </button>
-
-                    <button type="button"
-                        id="bulletBtn"
-                        class="btn btn-light btn-sm">
-                        <iconify-icon icon="mdi:format-list-bulleted"></iconify-icon>
-                    </button>
-
-                </div>
-
                 <!-- Editor -->
                 <div id="editor"
                     class="form-control border-0 shadow-none"
@@ -232,11 +203,6 @@ $subTitle = 'Chat';
                     id="chatMessage">
 
             </div>
-
-            <!-- Hidden input sent to Laravel -->
-            <input type="hidden"
-                name="chatMessage"
-                id="chatMessage">
 
             <input
                 type="file"
@@ -330,65 +296,79 @@ $subTitle = 'Chat';
     });
 </script>
 <script>
+    const {
+        InlineEditor,
+        Bold,
+        Italic,
+        Strikethrough,
+        List,
+        Undo,
+        Essentials
+    } = CKEDITOR;
 
-const {
-    InlineEditor,
-    Bold,
-    Italic,
-    Strikethrough,
-    List,
-    Undo,
-    Essentials
-} = CKEDITOR;
+    let chatEditor;
 
-let chatEditor;
+    InlineEditor
+        .create(document.querySelector('#editor'), {
+            plugins: [
+                Essentials,
+                Bold,
+                Italic,
+                Strikethrough,
+                List,
+                Undo
+            ],
+            toolbar: [
+                'bold',
+                'italic',
+                'strikethrough',
+                'bulletedList',
+                'numberedList',
+                '|',
+                'undo',
+                'redo'
+            ]
+        })
+        .then(editor => {
 
-InlineEditor
-    .create(document.querySelector('#editor'), {
-        plugins: [
-            Essentials,
-            Bold,
-            Italic,
-            Strikethrough,
-            List,
-            Undo
-        ],
-        toolbar: [
-            'bold',
-            'italic',
-            'strikethrough',
-            'bulletedList',
-            'numberedList',
-            '|',
-            'undo',
-            'redo'
-        ]
-    })
-    .then(editor => {
+            chatEditor = editor;
 
-        chatEditor = editor;
-
-        editor.model.document.on('change:data', () => {
-
-            document.getElementById('chatMessage').value =
-                editor.getData();
-
-        });
-
-        document.querySelector('.chat-message-box')
-            ?.addEventListener('submit', function () {
+            editor.model.document.on('change:data', () => {
 
                 document.getElementById('chatMessage').value =
                     editor.getData();
 
             });
 
-    })
-    .catch(error => {
+            document.querySelector('.chat-message-box')
+                ?.addEventListener('submit', function() {
 
-        console.error(error);
+                    document.getElementById('chatMessage').value =
+                        editor.getData();
 
-    });
+                });
 
+            document.getElementById('fileInput')
+                ?.addEventListener('change', function() {
+
+                    document.getElementById('chatMessage').value =
+                        editor.getData();
+
+                });
+
+            document.getElementById('imageInput')
+                ?.addEventListener('change', function() {
+
+                    document.getElementById('chatMessage').value =
+                        editor.getData();
+
+                });
+
+        })
+        .catch(error => {
+
+            console.error(error);
+
+        });
 </script>
 @endsection

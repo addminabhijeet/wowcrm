@@ -88,13 +88,20 @@ class ChatController extends Controller
             'attachment' => 'nullable|file|max:51200',
         ]);
 
+        if (
+            empty($request->input('chatMessage')) &&
+            !$request->hasFile('attachment')
+        ) {
+            return back();
+        }
+
         $chat = new Chat();
 
         $chat->sender_id = Auth::id();
         $chat->receiver_id = $request->receiver_id;
 
         // Save text if present
-        $chat->message = $request->chatMessage;
+        $chat->message = $request->input('chatMessage', '');
 
         if ($request->hasFile('attachment')) {
 
