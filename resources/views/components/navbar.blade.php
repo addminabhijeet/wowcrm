@@ -97,9 +97,27 @@ $userImage = Auth::user()->image
 
                 <div class="dropdown">
                     <button
-                        class="has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
+                        class="position-relative has-indicator w-40-px h-40-px bg-neutral-200 rounded-circle d-flex justify-content-center align-items-center"
                         type="button" data-bs-toggle="dropdown">
+
                         <iconify-icon icon="mage:email" class="text-primary-light text-xl"></iconify-icon>
+
+                        <span id="message-badge"
+                            class="badge position-absolute top-0 start-100 translate-middle rounded-pill bg-danger d-none"
+                            style="
+                                font-size:11px;
+                                min-width:22px;
+                                height:22px;
+                                display:inline-flex;
+                                align-items:center;
+                                justify-content:center;
+                                box-shadow:0 0 8px rgba(255,0,0,0.5);
+                                background:rgba(255,0,0,0.85);
+                                backdrop-filter:blur(8px);
+                            ">
+                            0
+                        </span>
+
                     </button>
                     <div class="dropdown-menu to-top dropdown-menu-lg p-0">
                         <div
@@ -822,6 +840,25 @@ $userImage = Auth::user()->image
 
                     if (countElement) {
                         countElement.innerText = data.count;
+                    }
+
+                    const messageBadge = document.getElementById('message-badge');
+
+                    if (messageBadge) {
+
+                        if (data.count > 0) {
+
+                            messageBadge.innerText =
+                                data.count > 99 ? '99+' : data.count;
+
+                            messageBadge.classList.remove('d-none');
+
+                        } else {
+
+                            messageBadge.classList.add('d-none');
+
+                        }
+
                     }
 
                     let html = '';
