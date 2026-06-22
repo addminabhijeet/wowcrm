@@ -630,31 +630,23 @@ $subTitle = 'Chat';
     const authUserId = parseInt("{{ Auth::id() }}");
 
     function refreshUsers() {
-
         $.ajax({
-
             url: "{{ route('chat.refreshUsers') }}",
-
             type: "GET",
-
             data: {
                 active_user_id: $("#activeUserId").val()
             },
-
             success: function(response) {
-
                 let users = response.users;
                 let messages = response.messages;
                 let activeUser = response.activeUser;
 
                 // Update active user hidden field
                 if (activeUser && activeUser.id) {
-
                     $("#activeUserId").val(activeUser.id);
-
                     $("#active-user-name-left").text(activeUser.name);
                     $("#active-user-name-right").text(activeUser.name);
-
+                    $("input[name='receiver_id']").val(activeUser.id);
                     let image = activeUser.image ?
                         "/storage/app/public/" + activeUser.image :
                         "/assets/images/user-grid/user-grid-bg1.png";
@@ -664,131 +656,205 @@ $subTitle = 'Chat';
                 }
 
                 users.forEach(function(user) {
-
                     // Update last message
                     let lastMessage = "No messages yet";
 
                     if (user.lastChat) {
-
                         if (user.lastChat.message_preview) {
-
                             lastMessage = user.lastChat.message_preview;
-
                         } else if (user.lastChat.file_name) {
-
                             lastMessage = user.lastChat.file_name;
-
                         }
                     }
 
                     $("#last-message-" + user.id).text(lastMessage);
-
-                    // Update time
                     $("#last-time-" + user.id).text(user.lastChatDisplay);
 
                     // Update unread badge
                     let badge = $("#unread-count-" + user.id);
 
                     if (user.unreadCount > 0) {
-
                         badge.text(user.unreadCount);
                         badge.show();
-
                     } else {
-
                         badge.hide();
-
                     }
-
                 });
 
-                // Update active conversation
+                // Update active conversation with COMPLETE message rendering
                 let html = '';
 
                 messages.forEach(function(message) {
-
                     if (message.sender_id == authUserId) {
-
+                        // RIGHT SIDE (sent by current user)
                         html += `
-                            <div class="chat-single-message right">
-                                <div class="chat-message-content">
+                        <div class="chat-single-message right">
+                            <div class="chat-message-content">
+                    `;
 
-                                    ${
-                                        message.message
-                                        ? `<div class="mb-2">${message.message}</div>`
-                                        : ''
-                                    }
+                        // Main message text
+                        if (message.message) {
+                            html += `<div class="mb-2">${message.message}</div>`;
+                        }
 
-                                    <p class="chat-time mb-0 text-white">
-
-                                        <span class="text-white">
-                                            ${message.formatted_time}
-                                        </span>
-
+                        // Render all replies (attachments)
+                        if (message.replies && message.replies.length > 0) {
+                            message.replies.forEach(function(reply) {
+                                if (reply.message_type === 'image' && reply.file_path) {
+                                    html += `
+                                    <div class="mb-2">
+                                        <img 
+                                            src="/storage/app/public/${reply.file_path}" 
+                                            class="img-fluid rounded" 
+                                            style="max-width:300px;cursor:pointer"
+                                            onclick="window.open(this.src,'_blank')">
+                                    </div>
+                                `;
+                                } else if (reply.message_type === 'pdf' && reply.file_path) {
+                                    html += `
+                                    <div class="mb-2">
+                                        <iframe 
+                                            src="/storage/app/public/${reply.file_path}" 
+                                            width="100%" 
+                                            height="500" 
+                                            class="border rounded">
+                                        </iframe>
+                                        <div class="mt-2">
+                                            <a 
+                                                href="/storage/app/public/${reply.file_path}" 
+                                                target="_blank" 
+                                                class="btn btn-sm btn-primary">
+                                                Download PDF
+                                            </a>
+                                        </div>
+                                    </div>
+                                `;
+                                } else if ((reply.message_type === 'file' || reply.message_type === 'document') && reply.file_path) {
+                                    html += `
+                                    <div class="border rounded p-2 mb-2">
+                                        📄 ${reply.file_name}
                                         <br>
+                                        <small>${reply.file_size_formatted}</small>
+                                        <br>
+                                        <a 
+                                            href="/storage/app/public/${reply.file_path}" 
+                                            download 
+                                            class="btn btn-sm btn-primary mt-2">
+                                            Download
+                                        </a>
+                                    </div>
+                                `;
+                                }
+                            });
+                        }
 
-                                        <small class="text-white">
-                                            ${
-                                                message.is_read
-                                                ? 'Seen ' + message.read_time
-                                                : 'Delivered'
-                                            }
-                                        </small>
-
-                                    </p>
-
-                                </div>
+                        // Timestamp and read status
+                        html += `
+                                <p class="chat-time mb-0 text-white">
+                                    <span class="text-white">${message.formatted_time}</span>
+                                    <br>
+                                    <small class="text-white">
+                                        ${message.is_read ? 'Seen ' + message.read_time : 'Delivered'}
+                                    </small>
+                                </p>
                             </div>
-                        `;
+                        </div>
+                    `;
 
                     } else {
-
+                        // LEFT SIDE (received from other user)
                         html += `
-                            <div class="chat-single-message left">
-                                <div class="chat-message-content">
+                        <div class="chat-single-message left">
+                            <img 
+                            src="${activeUser && activeUser.image
+                                ? '/storage/app/public/' + activeUser.image
+                                : '/assets/images/user-grid/user-grid-bg1.png'}"
+                                onerror="this.src='/assets/images/user-grid/user-grid-bg1.png'"
+                                alt="${activeUser ? activeUser.name : 'User'}"
+                                class="avatar-lg object-fit-cover rounded-circle">
+                            <div class="chat-message-content">
+                    `;
 
-                                    ${
-                                        message.message
-                                        ? `<div class="mb-2">${message.message}</div>`
-                                        : ''
-                                    }
+                        // Main message text
+                        if (message.message) {
+                            html += `<div class="mb-2">${message.message}</div>`;
+                        }
 
-                                    <p class="chat-time mb-0">
+                        // Render all replies (attachments)
+                        if (message.replies && message.replies.length > 0) {
+                            message.replies.forEach(function(reply) {
+                                if (reply.message_type === 'image' && reply.file_path) {
+                                    html += `
+                                    <div class="mb-2">
+                                        <img 
+                                            src="/storage/app/public/${reply.file_path}" 
+                                            class="img-fluid rounded" 
+                                            style="max-width:300px;cursor:pointer"
+                                            onclick="window.open(this.src,'_blank')">
+                                    </div>
+                                `;
+                                } else if (reply.message_type === 'pdf' && reply.file_path) {
+                                    html += `
+                                    <div class="mb-2">
+                                        <iframe 
+                                            src="/storage/app/public/${reply.file_path}" 
+                                            width="100%" 
+                                            height="500" 
+                                            class="border rounded">
+                                        </iframe>
+                                        <div class="mt-2">
+                                            <a 
+                                                href="/storage/app/public/${reply.file_path}" 
+                                                target="_blank" 
+                                                class="btn btn-sm btn-primary">
+                                                Download PDF
+                                            </a>
+                                        </div>
+                                    </div>
+                                `;
+                                } else if ((reply.message_type === 'file' || reply.message_type === 'document') && reply.file_path) {
+                                    html += `
+                                    <div class="border rounded p-2 mb-2">
+                                        📄 ${reply.file_name}
+                                        <br>
+                                        <small>${reply.file_size_formatted}</small>
+                                        <br>
+                                        <a 
+                                            href="/storage/app/public/${reply.file_path}" 
+                                            download 
+                                            class="btn btn-sm btn-primary mt-2">
+                                            Download
+                                        </a>
+                                    </div>
+                                `;
+                                }
+                            });
+                        }
 
-                                        <span>
-                                            ${message.formatted_time}
-                                        </span>
-
-                                    </p>
-
-                                </div>
+                        // Timestamp
+                        html += `
+                                <p class="chat-time mb-0">
+                                    <span>${message.formatted_time}</span>
+                                </p>
                             </div>
-                        `;
-
+                        </div>
+                    `;
                     }
-
                 });
 
-                $("#chatMessageList").html(html);
-
-                let chatBox = document.getElementById('chatMessageList');
-
-                if (chatBox) {
-
-                    chatBox.scrollTop = chatBox.scrollHeight;
-
+                if ($("#chatMessageList").html() !== html) {
+                    $("#chatMessageList").html(html);
                 }
 
+                let chatBox = document.getElementById('chatMessageList');
+                if (chatBox) {
+                    chatBox.scrollTop = chatBox.scrollHeight;
+                }
             },
-
             error: function(xhr) {
-
                 console.log(xhr.responseText);
-
             }
-
         });
-
     }
 
     setInterval(refreshUsers, 3000);
