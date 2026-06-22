@@ -553,14 +553,14 @@ $subTitle = 'Chat';
 
                 writer.setStyle(
                     'min-height',
-                    '400px',
+                    '300px',
                     editor.editing.view.document.getRoot()
                 );
 
             });
 
-            editor.ui.view.editable.element.style.minHeight = '400px';
-            editor.ui.view.editable.element.style.maxHeight = '600px';
+            editor.ui.view.editable.element.style.minHeight = '300px';
+            editor.ui.view.editable.element.style.maxHeight = '400px';
             editor.ui.view.editable.element.style.overflowY = 'auto';
 
             // Send message on Enter
