@@ -249,7 +249,7 @@ $subTitle = 'Chat';
 
     </div>
 </div>
-<script src="https://cdn.ckeditor.com/ckeditor5/47.1.0/ckeditor5.umd.js"></script>
+<script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 <script>
     let searchTimeout;
 
@@ -297,42 +297,11 @@ $subTitle = 'Chat';
     });
 </script>
 <script>
-    const {
-        InlineEditor,
-        Bold,
-        Italic,
-        Strikethrough,
-        List,
-        Undo,
-        Essentials
-    } = CKEDITOR;
-
-    let chatEditor;
-
-    InlineEditor
-        .create(document.querySelector('#editor'), {
-            plugins: [
-                Essentials,
-                Bold,
-                Italic,
-                Strikethrough,
-                List,
-                Undo
-            ],
-            toolbar: [
-                'bold',
-                'italic',
-                'strikethrough',
-                'bulletedList',
-                'numberedList',
-                '|',
-                'undo',
-                'redo'
-            ]
-        })
+    ClassicEditor
+        .create(document.querySelector('#editor'))
         .then(editor => {
 
-            chatEditor = editor;
+            window.chatEditor = editor;
 
             editor.model.document.on('change:data', () => {
 
@@ -343,22 +312,6 @@ $subTitle = 'Chat';
 
             document.querySelector('.chat-message-box')
                 ?.addEventListener('submit', function() {
-
-                    document.getElementById('chatMessage').value =
-                        editor.getData();
-
-                });
-
-            document.getElementById('fileInput')
-                ?.addEventListener('change', function() {
-
-                    document.getElementById('chatMessage').value =
-                        editor.getData();
-
-                });
-
-            document.getElementById('imageInput')
-                ?.addEventListener('change', function() {
 
                     document.getElementById('chatMessage').value =
                         editor.getData();
