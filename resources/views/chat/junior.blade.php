@@ -452,13 +452,14 @@ $subTitle = 'Chat';
 
     });
 
-    let attachmentPreview = document.getElementById('attachmentPreview');
+    let pdfFiles = new DataTransfer();
 
     document.getElementById('fileInput').addEventListener('change', function() {
 
-        attachmentPreview.style.display = 'block';
-
         Array.from(this.files).forEach(file => {
+            pdfFiles.items.add(file);
+
+            attachmentPreview.style.display = 'block';
 
             attachmentPreview.insertAdjacentHTML(
                 'beforeend',
@@ -470,18 +471,21 @@ $subTitle = 'Chat';
             </div>
             `
             );
-
         });
 
+        this.files = pdfFiles.files;
     });
+    let imageFiles = new DataTransfer();
 
     document.getElementById('imageInput').addEventListener('change', function() {
 
-        attachmentPreview.style.display = 'block';
-
         Array.from(this.files).forEach(file => {
 
+            imageFiles.items.add(file);
+
             let url = URL.createObjectURL(file);
+
+            attachmentPreview.style.display = 'block';
 
             attachmentPreview.insertAdjacentHTML(
                 'beforeend',
@@ -496,9 +500,9 @@ $subTitle = 'Chat';
             </div>
             `
             );
-
         });
 
+        this.files = imageFiles.files;
     });
 </script>
 <script>

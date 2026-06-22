@@ -115,17 +115,21 @@ class ChatController extends Controller
 
         if ($request->hasFile('attachment')) {
 
-            foreach ($request->file('attachment') as $file) {
+            foreach ((array)$request->file('attachment') as $file) {
 
-                $allFiles[] = $file;
+                if ($file) {
+                    $allFiles[] = $file;
+                }
             }
         }
 
         if ($request->hasFile('image_attachment')) {
 
-            foreach ($request->file('image_attachment') as $file) {
+            foreach ((array)$request->file('image_attachment') as $file) {
 
-                $allFiles[] = $file;
+                if ($file) {
+                    $allFiles[] = $file;
+                }
             }
         }
 
