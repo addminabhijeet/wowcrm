@@ -12,19 +12,20 @@ $subTitle = 'Chat';
         <div class="chat-sidebar-single active top-profile">
             <div class="img">
                 <img
+                    id="active-user-image-left"
                     src="{{ $activeUser && $activeUser->image
-                        ? asset('storage/app/public/' . $activeUser->image)
-                        : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                    ? asset('storage/app/public/' . $activeUser->image)
+                    : asset('assets/images/user-grid/user-grid-bg1.png') }}"
                     onerror="this.src='/assets/images/user-grid/user-grid-bg1.png'"
                     alt="{{ $activeUser->name ?? 'User' }}"
                     class="w-40-px h-40-px rounded-circle object-fit-cover">
             </div>
             <div class="info">
-                <h6 class="text-md mb-0">
+                <h6 class="text-md mb-0" id="active-user-name-left">
                     {{ $activeUser->name ?? '' }}
                 </h6>
 
-                <p class="mb-0">
+                <p class="mb-0" id="active-user-status-left">
                     Available
                 </p>
             </div>
@@ -138,6 +139,7 @@ $subTitle = 'Chat';
         <div class="chat-sidebar-single active">
             <div class="img">
                 <img
+                    id="active-user-image-right"
                     src="{{ $activeUser && $activeUser->image
                         ? asset('storage/app/public/' . $activeUser->image)
                         : asset('assets/images/user-grid/user-grid-bg1.png') }}"
@@ -146,11 +148,11 @@ $subTitle = 'Chat';
                     class="w-40-px h-40-px rounded-circle object-fit-cover">
             </div>
             <div class="info">
-                <h6 class="text-md mb-0">
+                <h6 class="text-md mb-0" id="active-user-name-right">
                     {{ $activeUser->name ?? '' }}
                 </h6>
 
-                <p class="mb-0">
+                <p class="mb-0" id="active-user-status-right">
                     Available
                 </p>
             </div>
@@ -626,6 +628,8 @@ $subTitle = 'Chat';
             type: "GET",
             success: function(users) {
 
+                let activeUserId = $("#activeUserId").val();
+
                 users.forEach(function(user) {
 
                     // Update last message
@@ -659,6 +663,20 @@ $subTitle = 'Chat';
                     } else {
 
                         badge.hide();
+                    }
+
+                    // Update active user section also
+                    if (user.id == activeUserId) {
+
+                        $("#active-user-name-left").text(user.name);
+                        $("#active-user-name-right").text(user.name);
+
+                        let image = user.image ?
+                            "/storage/app/public/" + user.image :
+                            "/assets/images/user-grid/user-grid-bg1.png";
+
+                        $("#active-user-image-left").attr("src", image);
+                        $("#active-user-image-right").attr("src", image);
                     }
 
                 });
