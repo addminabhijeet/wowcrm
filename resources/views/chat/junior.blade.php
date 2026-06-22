@@ -32,13 +32,16 @@ $subTitle = 'Chat';
         </div><!-- chat-sidebar-single end -->
         <div class="chat-search">
 
-            <form id="searchForm" method="GET" action="{{ route('chat.junior') }}">
+            <form id="searchForm"
+                method="GET"
+                action="{{ route('chat.junior') }}"
+                class="d-flex align-items-center position-relative">
 
                 @if(request('user'))
                 <input type="hidden" name="user" value="{{ request('user') }}">
                 @endif
 
-                <span class="icon">
+                <span class="icon position-absolute ms-3 d-flex align-items-center">
                     <iconify-icon icon="iconoir:search"></iconify-icon>
                 </span>
 
@@ -48,6 +51,7 @@ $subTitle = 'Chat';
                     name="search"
                     value="{{ request('search') }}"
                     autocomplete="off"
+                    class="form-control ps-5"
                     placeholder="Search by name, email">
 
             </form>
