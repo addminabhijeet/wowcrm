@@ -71,12 +71,17 @@ class ChatController extends Controller
         $messages = collect();
 
         if ($activeUser) {
+
             $messages = Chat::conversation(
                 $user->id,
                 $activeUser->id
             )
                 ->whereNull('parent_id')
-                ->with('replies')
+                ->with([
+                    'replies' => function ($q) {
+                        $q->orderBy('id', 'asc');
+                    }
+                ])
                 ->get();
         }
 

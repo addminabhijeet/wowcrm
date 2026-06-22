@@ -58,7 +58,8 @@ class Chat extends Model
 
     public function replies()
     {
-        return $this->hasMany(Chat::class, 'parent_id');
+        return $this->hasMany(Chat::class, 'parent_id')
+            ->orderBy('id', 'asc');
     }
 
     public function getFormattedTimeAttribute()
