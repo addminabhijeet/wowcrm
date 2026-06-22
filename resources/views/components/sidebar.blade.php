@@ -260,6 +260,17 @@ $role = Auth::user()->role;
                     </li>
                 </ul>
             </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="flowbite:users-group-outline" class="menu-icon"></iconify-icon>
+                    <span>Chat</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('chat.junior') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Chat</a></li>
+                </ul>
+            </li>
             @endif
 
             {{-- ================= Support ================= --}}
