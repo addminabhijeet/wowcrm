@@ -83,33 +83,49 @@ class ChatController extends Controller
             'messages'
         ));
     }
-
+    
     public function send(Request $request)
     {
-        $chat = new Chat();
+        // Main message
+        $parentChat = new Chat();
 
-        $chat->sender_id = Auth::id();
-        $chat->receiver_id = $request->receiver_id;
+        $parentChat->sender_id = Auth::id();
+        $parentChat->receiver_id = $request->receiver_id;
+        $parentChat->message = $request->input('chatMessage', '');
+        $parentChat->message_type = 'text';
 
-        // Save text if present
-        $chat->message = $request->input('chatMessage', '');
+        $parentChat->save();
 
-        $file = null;
+        // Merge image files and pdf files
+        $allFiles = [];
 
-        // File selected from attachment button
         if ($request->hasFile('attachment')) {
 
-            $file = $request->file('attachment');
-        }
-        // Image selected from image button
-        elseif ($request->hasFile('image_attachment')) {
+            foreach ($request->file('attachment') as $file) {
 
-            $file = $request->file('image_attachment');
+                $allFiles[] = $file;
+            }
         }
 
-        if ($file) {
+        if ($request->hasFile('image_attachment')) {
+
+            foreach ($request->file('image_attachment') as $file) {
+
+                $allFiles[] = $file;
+            }
+        }
+
+        foreach ($allFiles as $file) {
 
             $path = $file->store('chat-files', 'public');
+
+            $chat = new Chat();
+
+            $chat->sender_id = Auth::id();
+            $chat->receiver_id = $request->receiver_id;
+
+            // connect with parent message
+            $chat->parent_id = $parentChat->id;
 
             $chat->file_name = $file->getClientOriginalName();
             $chat->file_path = $path;
@@ -121,15 +137,9 @@ class ChatController extends Controller
             if (str_starts_with($mime, 'image/')) {
 
                 $chat->message_type = 'image';
-            } elseif (str_starts_with($mime, 'video/')) {
-
-                $chat->message_type = 'video';
-            } elseif (str_starts_with($mime, 'audio/')) {
-
-                $chat->message_type = 'audio';
             } elseif (
-                str_contains(strtolower($mime), 'pdf') ||
-                strtolower($file->getClientOriginalExtension()) === 'pdf'
+                str_contains(strtolower($mime), 'pdf')
+                || strtolower($file->getClientOriginalExtension()) == 'pdf'
             ) {
 
                 $chat->message_type = 'pdf';
@@ -137,12 +147,9 @@ class ChatController extends Controller
 
                 $chat->message_type = 'file';
             }
-        } else {
 
-            $chat->message_type = 'text';
+            $chat->save();
         }
-
-        $chat->save();
 
         return back();
     }

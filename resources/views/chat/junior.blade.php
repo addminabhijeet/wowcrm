@@ -357,15 +357,17 @@ $subTitle = 'Chat';
             <input
                 type="file"
                 id="fileInput"
-                name="attachment"
-                accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.txt,.ppt,.pptx"
+                name="attachment[]"
+                accept=".pdf"
+                multiple
                 hidden>
 
             <input
                 type="file"
                 id="imageInput"
-                name="image_attachment"
+                name="image_attachment[]"
                 accept="image/*"
+                multiple
                 hidden>
 
 
@@ -435,29 +437,47 @@ $subTitle = 'Chat';
 
     document.getElementById('fileInput').addEventListener('change', function() {
 
-        if (this.files.length > 0) {
+        let html = '';
 
-            let file = this.files[0];
+        Array.from(this.files).forEach(file => {
+
+            html += `
+        <div class="border rounded p-2 mb-2">
+            📄 ${file.name}
+            <br>
+            <small>${(file.size/1024).toFixed(2)} KB</small>
+        </div>`;
+        });
+
+        if (html !== '') {
 
             document.getElementById('attachmentPreview').style.display = 'block';
-
-            document.getElementById('attachmentPreview').innerHTML =
-                `
-            <div class="border rounded p-2">
-                📄 ${file.name}
-                <br>
-                <small>${(file.size/1024).toFixed(2)} KB</small>
-            </div>
-            `;
+            document.getElementById('attachmentPreview').innerHTML += html;
         }
-
     });
 
     document.getElementById('imageInput').addEventListener('change', function() {
 
         if (this.files.length > 0) {
 
-            let file = this.files[0];
+            let html = '';
+
+            Array.from(this.files).forEach(file => {
+
+                let url = URL.createObjectURL(file);
+
+                html += `
+                <div class="border rounded p-2 mb-2">
+                    <img src="${url}"
+                        class="rounded"
+                        style="max-width:200px;max-height:200px">
+
+                    <div class="mt-2">${file.name}</div>
+                </div>`;
+            });
+
+            document.getElementById('attachmentPreview').style.display = 'block';
+            document.getElementById('attachmentPreview').innerHTML += html;
 
             let url = URL.createObjectURL(file);
 
