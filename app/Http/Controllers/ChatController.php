@@ -184,4 +184,42 @@ class ChatController extends Controller
 
         return back();
     }
+
+    public function latestMessages()
+    {
+        $user = Auth::user();
+
+        $chatUsers = User::whereIn('role', ['junior', 'senior'])
+            ->where('is_deleted', 0)
+            ->where('id', '!=', $user->id)
+            ->get()
+            ->map(function ($chatUser) use ($user) {
+
+                $chatUser->lastChat = Chat::conversation(
+                    $user->id,
+                    $chatUser->id
+                )
+                    ->reorder('created_at', 'desc')
+                    ->first();
+
+                $chatUser->unreadCount = Chat::where('sender_id', $chatUser->id)
+                    ->where('receiver_id', $user->id)
+                    ->where('is_read', false)
+                    ->count();
+
+                return $chatUser;
+            })
+            ->filter(function ($chatUser) {
+                return $chatUser->unreadCount > 0;
+            })
+            ->sortByDesc(function ($chatUser) {
+                return optional($chatUser->lastChat)->created_at;
+            })
+            ->values();
+
+        return response()->json([
+            'count' => $chatUsers->sum('unreadCount'),
+            'users' => $chatUsers,
+        ]);
+    }
 }

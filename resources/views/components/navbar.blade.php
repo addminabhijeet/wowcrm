@@ -108,34 +108,17 @@ $userImage = Auth::user()->image
                                 <h6 class="text-lg text-primary-light fw-semibold mb-0">Message</h6>
                             </div>
                             <span
-                                class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">05</span>
+                                id="message-count"
+                                class="text-primary-600 fw-semibold text-lg w-40-px h-40-px rounded-circle bg-base d-flex justify-content-center align-items-center">
+                                0
+                            </span>
                         </div>
 
-                        <div class="max-h-400-px overflow-y-auto scroll-sm pe-4">
-
-                            <a href="javascript:void(0)"
-                                class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
-                                <div
-                                    class="text-black hover-bg-transparent hover-text-primary d-flex align-items-center gap-3">
-                                    <span class="w-40-px h-40-px rounded-circle flex-shrink-0 position-relative">
-                                        <img src="{{ asset('assets/images/notification/profile-3.png') }}"
-                                            alt="">
-                                        <span
-                                            class="w-8-px h-8-px bg-success-main rounded-circle position-absolute end-0 bottom-0"></span>
-                                    </span>
-                                    <div>
-                                        <h6 class="text-md fw-semibold mb-4">Kathryn Murphy</h6>
-                                        <p class="mb-0 text-sm text-secondary-light text-w-100-px">hey! there i’m...</p>
-                                    </div>
-                                </div>
-                                <div class="d-flex flex-column align-items-end">
-                                    <span class="text-sm text-secondary-light flex-shrink-0">12:30 PM</span>
-                                    <span
-                                        class="mt-4 text-xs text-base w-16-px h-16-px d-flex justify-content-center align-items-center bg-warning-main rounded-circle">8</span>
-                                </div>
-                            </a>
-
+                        <div
+                            id="chat-message-list"
+                            class="max-h-400-px overflow-y-auto scroll-sm pe-4">
                         </div>
+
                         <div class="text-center py-12 px-16">
                             <a href="javascript:void(0)" class="text-primary-600 fw-semibold text-md">See All
                                 Message</a>
@@ -826,3 +809,87 @@ $userImage = Auth::user()->image
         animation: flashNew 0.9s ease;
     }
 </style>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+
+        function loadMessages() {
+
+            fetch("{{ route('chat.latestMessages') }}")
+                .then(response => response.json())
+                .then(data => {
+
+                    const countElement = document.getElementById('message-count');
+
+                    if (countElement) {
+                        countElement.innerText = data.count;
+                    }
+
+                    let html = '';
+
+                    data.users.forEach(user => {
+                        const chatBaseUrl = "{{ route('chat.index') }}";
+                        html += `
+                        <a href="${chatBaseUrl}?user=${user.id}"
+                           class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
+
+                            <div class="d-flex align-items-center gap-3">
+
+                                <span class="w-40-px h-40-px rounded-circle">
+
+                                    <img
+                                        src="${user.image ?
+                                        '/storage/app/public/' + user.image :
+                                        '/assets/images/user-grid/user-grid-bg1.png'}"
+                                        class="w-40-px h-40-px rounded-circle">
+
+                                </span>
+
+                                <div>
+
+                                    <h6 class="text-md fw-semibold mb-1">
+                                        ${user.name}
+                                    </h6>
+
+                                    <p class="mb-0 text-sm text-secondary-light">
+
+                                        ${
+                                            user.lastChat?.message ??
+                                            user.lastChat?.file_name ??
+                                            'New message'
+                                        }
+
+                                    </p>
+
+                                </div>
+
+                            </div>
+
+                            <div class="text-end">
+
+                                <span class="mt-1 text-xs text-base w-16-px h-16-px d-flex justify-content-center align-items-center bg-warning-main rounded-circle">
+                                    ${user.unreadCount}
+                                </span>
+
+                            </div>
+
+                        </a>
+                    `;
+                    });
+
+                    const listElement = document.getElementById('chat-message-list');
+
+                    if (listElement) {
+                        listElement.innerHTML = html;
+                    }
+                }).catch(err => {
+                    console.error('Error loading messages:', err);
+                });
+
+        }
+
+        loadMessages();
+
+        setInterval(loadMessages, 5000);
+
+    });
+</script>
