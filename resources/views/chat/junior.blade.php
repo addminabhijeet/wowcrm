@@ -62,11 +62,12 @@ $subTitle = 'Chat';
             @foreach($users as $chatUser)
 
             <a href="{{ route('chat.junior', ['user' => $chatUser->id]) }}"
-                class="chat-sidebar-single text-decoration-none">
+                class="chat-sidebar-single text-decoration-none d-flex align-items-center">
 
-                <div class="d-flex align-items-center flex-grow-1">
+                <div class="d-flex align-items-center w-100">
 
-                    <div class="img me-2">
+                    <!-- Profile Image -->
+                    <div class="img me-2 flex-shrink-0">
                         <img
                             src="{{ $chatUser->image
                 ? asset('storage/app/public/' . $chatUser->image)
@@ -76,7 +77,8 @@ $subTitle = 'Chat';
                             class="w-40-px h-40-px rounded-circle object-fit-cover">
                     </div>
 
-                    <div class="info flex-grow-1 overflow-hidden">
+                    <!-- Name + Last Message -->
+                    <div class="flex-grow-1 overflow-hidden">
 
                         <h6 class="text-sm mb-1">
                             {{ $chatUser->name }}
@@ -86,7 +88,7 @@ $subTitle = 'Chat';
 
                             @if(!empty($chatUser->lastChat?->message))
 
-                            {{ \Illuminate\Support\Str::limit(trim(html_entity_decode(strip_tags($chatUser->lastChat->message))), 50) }}
+                            {{ \Illuminate\Support\Str::limit(trim(html_entity_decode(strip_tags($chatUser->lastChat->message))),50) }}
 
                             @elseif(!empty($chatUser->lastChat?->file_name))
 
@@ -99,6 +101,25 @@ $subTitle = 'Chat';
                             @endif
 
                         </p>
+
+                    </div>
+
+                    <!-- Time + Unread Count -->
+                    <div class="ms-2 text-end flex-shrink-0">
+
+                        <small class="d-block text-neutral-400">
+                            {{ $chatUser->lastChatDisplay }}
+                        </small>
+
+                        @if($chatUser->unreadCount > 0)
+
+                        <span
+                            class="badge rounded-pill bg-success mt-1"
+                            style="min-width:22px;">
+                            {{ $chatUser->unreadCount }}
+                        </span>
+
+                        @endif
 
                     </div>
 
