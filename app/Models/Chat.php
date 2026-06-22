@@ -43,6 +43,8 @@ class Chat extends Model
         'formatted_time',
         'file_size_formatted',
         'message_preview',
+        'read_time',
+        'seen_status',
     ];
 
     public function sender()
