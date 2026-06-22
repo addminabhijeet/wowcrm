@@ -80,7 +80,11 @@ $subTitle = 'Chat';
                     </h6>
 
                     <p class="mb-0 text-xs text-truncate">
-                        {{ strip_tags($chatUser->lastChat?->message ?? '') ?: 'No messages yet' }}
+                        {{
+                            !empty($chatUser->lastChat?->message)
+                                ? strip_tags($chatUser->lastChat->message)
+                                : ($chatUser->lastChat?->file_name ?? 'No messages yet')
+                        }}
                     </p>
                 </div>
 

@@ -38,12 +38,11 @@ class ChatController extends Controller
             })
             ->get()
             ->map(function ($chatUser) use ($user) {
-
                 $chatUser->lastChat = Chat::conversation(
                     $user->id,
                     $chatUser->id
                 )
-                    ->latest()
+                    ->reorder('created_at', 'desc')
                     ->first();
 
                 if ($chatUser->lastChat) {
