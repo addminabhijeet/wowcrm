@@ -83,7 +83,7 @@ class ChatController extends Controller
             'messages'
         ));
     }
-    
+
     public function send(Request $request)
     {
         // Main message
@@ -94,7 +94,14 @@ class ChatController extends Controller
         $parentChat->message = $request->input('chatMessage', '');
         $parentChat->message_type = 'text';
 
-        $parentChat->save();
+        if (
+            !empty(trim(strip_tags($request->chatMessage))) ||
+            $request->hasFile('attachment') ||
+            $request->hasFile('image_attachment')
+        ) {
+
+            $parentChat->save();
+        }
 
         // Merge image files and pdf files
         $allFiles = [];
@@ -124,8 +131,7 @@ class ChatController extends Controller
             $chat->sender_id = Auth::id();
             $chat->receiver_id = $request->receiver_id;
 
-            // connect with parent message
-            $chat->parent_id = $parentChat->id;
+            $chat->parent_id = $parentChat->exists ? $parentChat->id : null;
 
             $chat->file_name = $file->getClientOriginalName();
             $chat->file_path = $path;

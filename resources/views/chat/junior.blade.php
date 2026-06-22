@@ -437,6 +437,10 @@ $subTitle = 'Chat';
 
     document.getElementById('fileInput').addEventListener('change', function() {
 
+        let preview = document.getElementById('attachmentPreview');
+
+        preview.style.display = 'block';
+
         let html = '';
 
         Array.from(this.files).forEach(file => {
@@ -449,51 +453,32 @@ $subTitle = 'Chat';
         </div>`;
         });
 
-        if (html !== '') {
-
-            document.getElementById('attachmentPreview').style.display = 'block';
-            document.getElementById('attachmentPreview').innerHTML += html;
-        }
+        preview.innerHTML += html;
     });
 
     document.getElementById('imageInput').addEventListener('change', function() {
 
-        if (this.files.length > 0) {
+        let preview = document.getElementById('attachmentPreview');
 
-            let html = '';
+        preview.style.display = 'block';
 
-            Array.from(this.files).forEach(file => {
+        let html = '';
 
-                let url = URL.createObjectURL(file);
-
-                html += `
-                <div class="border rounded p-2 mb-2">
-                    <img src="${url}"
-                        class="rounded"
-                        style="max-width:200px;max-height:200px">
-
-                    <div class="mt-2">${file.name}</div>
-                </div>`;
-            });
-
-            document.getElementById('attachmentPreview').style.display = 'block';
-            document.getElementById('attachmentPreview').innerHTML += html;
+        Array.from(this.files).forEach(file => {
 
             let url = URL.createObjectURL(file);
 
-            document.getElementById('attachmentPreview').style.display = 'block';
+            html += `
+        <div class="border rounded p-2 mb-2">
+            <img src="${url}"
+                class="rounded"
+                style="max-width:200px;max-height:200px">
 
-            document.getElementById('attachmentPreview').innerHTML =
-                `
-            <div class="border rounded p-2">
-                <img src="${url}"
-                     style="max-width:200px;max-height:200px"
-                     class="rounded">
-                <div class="mt-2">${file.name}</div>
-            </div>
-            `;
-        }
+            <div class="mt-2">${file.name}</div>
+        </div>`;
+        });
 
+        preview.innerHTML += html;
     });
 </script>
 <script>
