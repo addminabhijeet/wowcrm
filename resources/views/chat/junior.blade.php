@@ -209,7 +209,12 @@ $subTitle = 'Chat';
                 <!-- Editor -->
                 <div id="editor"
                     class="form-control border-0 shadow-none"
-                    style="min-height:100px">
+                    contenteditable="true"
+                    style="
+                        min-height:100px;
+                        overflow-y:auto;
+                        outline:none;
+                    ">
                 </div>
 
             </div>
@@ -219,14 +224,35 @@ $subTitle = 'Chat';
                 name="chatMessage"
                 id="chatMessage">
 
+            <input
+                type="file"
+                id="fileInput"
+                hidden>
+
+            <input
+                type="file"
+                id="imageInput"
+                accept="image/*"
+                hidden>
+
             <div class="chat-message-box-action">
 
-                <button type="button" class="text-xl">
+                <button
+                    type="button"
+                    id="fileBtn"
+                    class="text-xl">
+
                     <iconify-icon icon="ph:link"></iconify-icon>
+
                 </button>
 
-                <button type="button" class="text-xl">
+                <button
+                    type="button"
+                    id="imageBtn"
+                    class="text-xl">
+
                     <iconify-icon icon="solar:gallery-linear"></iconify-icon>
+
                 </button>
 
                 <button type="submit"
@@ -251,6 +277,39 @@ $subTitle = 'Chat';
         searchTimeout = setTimeout(() => {
             document.getElementById('searchForm').submit();
         }, 300);
+
+    });
+</script>
+<script>
+    document.getElementById('fileBtn').addEventListener('click', function() {
+
+        document.getElementById('fileInput').click();
+
+    });
+
+    document.getElementById('imageBtn').addEventListener('click', function() {
+
+        document.getElementById('imageInput').click();
+
+    });
+
+    document.getElementById('fileInput').addEventListener('change', function() {
+
+        if (this.files.length > 0) {
+
+            console.log('Selected file:', this.files[0].name);
+
+        }
+
+    });
+
+    document.getElementById('imageInput').addEventListener('change', function() {
+
+        if (this.files.length > 0) {
+
+            console.log('Selected image:', this.files[0].name);
+
+        }
 
     });
 </script>

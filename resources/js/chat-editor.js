@@ -30,10 +30,18 @@ if (editorElement) {
     })
 
     document.querySelector('.chat-message-box')
-        ?.addEventListener('submit', function () {
+        ?.addEventListener('submit', function (e) {
 
-            document.getElementById('chatMessage').value =
-                editor.getHTML()
+            const content = editor.getHTML();
 
-        })
+            if (content === '<p></p>') {
+
+                e.preventDefault();
+                return;
+
+            }
+
+            document.getElementById('chatMessage').value = content;
+
+        });
 }
