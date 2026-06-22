@@ -616,10 +616,8 @@ $subTitle = 'Chat';
 
         if (chatBox) {
 
-            chatBox.scrollTo({
-                top: chatBox.scrollHeight,
-                behavior: 'smooth'
-            });
+            // Scroll to bottom only once when page first opens
+            chatBox.scrollTop = chatBox.scrollHeight;
 
         }
 
@@ -841,14 +839,29 @@ $subTitle = 'Chat';
                     `;
                     }
                 });
+                let chatBox = document.getElementById('chatMessageList');
+
+                // Check whether user is near bottom before refresh
+                let shouldScroll =
+                    chatBox.scrollHeight - chatBox.scrollTop - chatBox.clientHeight < 100;
+
+                // Save current scroll position
+                let currentScrollTop = chatBox.scrollTop;
 
                 if ($("#chatMessageList").html() !== html) {
-                    $("#chatMessageList").html(html);
-                }
 
-                let chatBox = document.getElementById('chatMessageList');
-                if (chatBox) {
-                    chatBox.scrollTop = chatBox.scrollHeight;
+                    $("#chatMessageList").html(html);
+
+                    if (shouldScroll) {
+
+                        // User is at bottom → continue auto-scroll
+                        chatBox.scrollTop = chatBox.scrollHeight;
+
+                    } else {
+
+                        // User is reading old messages → keep position
+                        chatBox.scrollTop = currentScrollTop;
+                    }
                 }
             },
             error: function(xhr) {
