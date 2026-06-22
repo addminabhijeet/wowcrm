@@ -628,6 +628,7 @@ $subTitle = 'Chat';
 
 <script>
     const authUserId = parseInt("{{ Auth::id() }}");
+    let previousChatHtml = '';
 
     function refreshUsers() {
         $.ajax({
@@ -842,13 +843,31 @@ $subTitle = 'Chat';
                     }
                 });
 
-                if ($("#chatMessageList").html() !== html) {
-                    $("#chatMessageList").html(html);
-                }
+                // Update chat only when something has changed
+                if (previousChatHtml !== html) {
 
-                let chatBox = document.getElementById('chatMessageList');
-                if (chatBox) {
-                    chatBox.scrollTop = chatBox.scrollHeight;
+                    let chatBox = document.getElementById('chatMessageList');
+
+                    // Preserve scroll position
+                    let oldScrollTop = chatBox.scrollTop;
+                    let oldScrollHeight = chatBox.scrollHeight;
+                    let isAtBottom =
+                        oldScrollHeight - oldScrollTop <= chatBox.clientHeight + 50;
+
+                    $("#chatMessageList").html(html);
+
+                    // Restore scrolling
+                    if (isAtBottom) {
+
+                        chatBox.scrollTop = chatBox.scrollHeight;
+
+                    } else {
+
+                        chatBox.scrollTop = oldScrollTop;
+
+                    }
+
+                    previousChatHtml = html;
                 }
             },
             error: function(xhr) {
