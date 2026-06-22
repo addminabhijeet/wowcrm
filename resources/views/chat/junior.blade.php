@@ -281,10 +281,12 @@ $subTitle = 'Chat';
 
         if (this.files.length > 0) {
 
+            let form = document.querySelector('.chat-message-box');
+
             document.getElementById('chatMessage').value =
                 window.chatEditor ? window.chatEditor.getData() : '';
 
-            this.closest('form').submit();
+            form.submit();
 
         }
 
@@ -294,10 +296,12 @@ $subTitle = 'Chat';
 
         if (this.files.length > 0) {
 
+            let form = document.querySelector('.chat-message-box');
+
             document.getElementById('chatMessage').value =
                 window.chatEditor ? window.chatEditor.getData() : '';
 
-            this.closest('form').submit();
+            form.submit();
 
         }
 
