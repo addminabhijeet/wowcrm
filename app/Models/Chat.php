@@ -119,4 +119,12 @@ class Chat extends Model
     {
         return $this->is_read ? 'Seen' : 'Delivered';
     }
+
+    public function getMessagePreviewAttribute()
+    {
+        return \Illuminate\Support\Str::limit(
+            trim(strip_tags(html_entity_decode($this->message))),
+            50
+        );
+    }
 }
