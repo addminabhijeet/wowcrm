@@ -103,24 +103,10 @@ class ChatController extends Controller
             $parentChat->save();
         }
 
-        // Merge image files and pdf files
-        $allFiles = [];
-
-        if ($request->hasFile('attachment')) {
-
-            foreach ($request->file('attachment') as $file) {
-
-                $allFiles[] = $file;
-            }
-        }
-
-        if ($request->hasFile('image_attachment')) {
-
-            foreach ($request->file('image_attachment') as $file) {
-
-                $allFiles[] = $file;
-            }
-        }
+        $allFiles = array_merge(
+            $request->file('attachment', []),
+            $request->file('image_attachment', [])
+        );
 
         foreach ($allFiles as $file) {
 
