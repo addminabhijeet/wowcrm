@@ -80,7 +80,6 @@ class ChatController extends Controller
             'messages'
         ));
     }
-
     public function send(Request $request)
     {
         $request->validate([
@@ -93,6 +92,9 @@ class ChatController extends Controller
 
         $chat->sender_id = Auth::id();
         $chat->receiver_id = $request->receiver_id;
+
+        // Save text if present
+        $chat->message = $request->chatMessage;
 
         if ($request->hasFile('attachment')) {
 
@@ -123,7 +125,6 @@ class ChatController extends Controller
             }
         } else {
 
-            $chat->message = $request->chatMessage;
             $chat->message_type = 'text';
         }
 
