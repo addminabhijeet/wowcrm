@@ -80,4 +80,55 @@ class ChatController extends Controller
             'messages'
         ));
     }
+
+    public function send(Request $request)
+    {
+        $request->validate([
+            'receiver_id' => 'required|exists:users,id',
+            'chatMessage' => 'nullable|string',
+            'attachment' => 'nullable|file|max:51200',
+        ]);
+
+        $chat = new Chat();
+
+        $chat->sender_id = Auth::id();
+        $chat->receiver_id = $request->receiver_id;
+
+        if ($request->hasFile('attachment')) {
+
+            $file = $request->file('attachment');
+
+            $path = $file->store('chat-files', 'public');
+
+            $chat->file_name = $file->getClientOriginalName();
+            $chat->file_path = $path;
+            $chat->file_size = $file->getSize();
+            $chat->mime_type = $file->getMimeType();
+
+            if (str_starts_with($file->getMimeType(), 'image/')) {
+
+                $chat->message_type = 'image';
+            } elseif (str_starts_with($file->getMimeType(), 'video/')) {
+
+                $chat->message_type = 'video';
+            } elseif (str_starts_with($file->getMimeType(), 'audio/')) {
+
+                $chat->message_type = 'audio';
+            } elseif ($file->extension() === 'pdf') {
+
+                $chat->message_type = 'pdf';
+            } else {
+
+                $chat->message_type = 'file';
+            }
+        } else {
+
+            $chat->message = $request->chatMessage;
+            $chat->message_type = 'text';
+        }
+
+        $chat->save();
+
+        return back();
+    }
 }

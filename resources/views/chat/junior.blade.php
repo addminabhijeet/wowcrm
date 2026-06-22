@@ -173,7 +173,18 @@ $subTitle = 'Chat';
             @endforeach
         </div>
 
-        <form class="chat-message-box">
+        <form
+            class="chat-message-box"
+            method="POST"
+            action="{{ route('chat.send') }}"
+            enctype="multipart/form-data">
+
+            @csrf
+
+            <input
+                type="hidden"
+                name="receiver_id"
+                value="{{ $activeUser->id ?? '' }}">
 
             <div class="border rounded p-2 w-100">
 
@@ -227,11 +238,13 @@ $subTitle = 'Chat';
             <input
                 type="file"
                 id="fileInput"
+                name="attachment"
                 hidden>
 
             <input
                 type="file"
                 id="imageInput"
+                name="attachment"
                 accept="image/*"
                 hidden>
 
@@ -297,7 +310,7 @@ $subTitle = 'Chat';
 
         if (this.files.length > 0) {
 
-            console.log('Selected file:', this.files[0].name);
+            document.querySelector('.chat-message-box').submit();
 
         }
 
@@ -307,7 +320,7 @@ $subTitle = 'Chat';
 
         if (this.files.length > 0) {
 
-            console.log('Selected image:', this.files[0].name);
+            document.querySelector('.chat-message-box').submit();
 
         }
 

@@ -362,14 +362,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/group/senior', [UserController::class, 'seniorgroup'])->name('senior.group');
     Route::get('/chat', [ChatController::class, 'junior'])->name('chat.index');
-    Route::get('/users', [ChatController::class, 'getUsers']);
-    Route::get('/conversation/{userId}', [ChatController::class, 'getConversation']);
-    Route::post('/send', [ChatController::class, 'sendMessage']);
-    Route::put('/messages/{messageId}', [ChatController::class, 'editMessage']);
-    Route::delete('/messages/{messageId}', [ChatController::class, 'deleteMessage']);
-    Route::post('/mark-read', [ChatController::class, 'markAsRead']);
-    Route::get('/download/{messageId}', [ChatController::class, 'downloadFile']);
-    Route::get('/search', [ChatController::class, 'searchMessages']);
+    Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
 });
 
 Route::middleware(['allowedip'])->group(function () {
