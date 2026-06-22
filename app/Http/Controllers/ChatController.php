@@ -74,7 +74,10 @@ class ChatController extends Controller
             $messages = Chat::conversation(
                 $user->id,
                 $activeUser->id
-            )->get();
+            )
+                ->whereNull('parent_id')
+                ->with('replies')
+                ->get();
         }
 
         return view('chat.junior', compact(

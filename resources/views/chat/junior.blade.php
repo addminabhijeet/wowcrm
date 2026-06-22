@@ -138,13 +138,16 @@ $subTitle = 'Chat';
                     Available
                 </p>
             </div>
-        </div><!-- chat-sidebar-single end -->
+        </div>
+
         <div class="chat-message-list">
+
             @foreach($messages as $message)
 
             @if($message->sender_id == auth()->id())
 
             <div class="chat-single-message right">
+
                 <div class="chat-message-content">
 
                     @if(!empty($message->message))
@@ -153,56 +156,60 @@ $subTitle = 'Chat';
                     </div>
                     @endif
 
-                    @if($message->message_type == 'image' && $message->file_path)
+                    @foreach($message->replies as $reply)
+
+                    @if($reply->message_type == 'image' && $reply->file_path)
 
                     <div class="mb-2">
                         <img
-                            src="{{ asset('storage/app/public/'.$message->file_path) }}"
+                            src="{{ asset('storage/app/public/'.$reply->file_path) }}"
                             class="img-fluid rounded"
                             style="max-width:300px;cursor:pointer"
                             onclick="window.open(this.src,'_blank')">
                     </div>
 
-                    @elseif($message->message_type == 'pdf' && $message->file_path)
+                    @elseif($reply->message_type == 'pdf' && $reply->file_path)
 
                     <div class="mb-2">
 
                         <iframe
-                            src="{{ asset('storage/app/public/'.$message->file_path) }}"
+                            src="{{ asset('storage/app/public/'.$reply->file_path) }}"
                             width="100%"
                             height="500"
                             class="border rounded">
                         </iframe>
 
                         <div class="mt-2">
+
                             <a
-                                href="{{ asset('storage/app/public/'.$message->file_path) }}"
+                                href="{{ asset('storage/app/public/'.$reply->file_path) }}"
                                 target="_blank"
                                 class="btn btn-sm btn-primary">
 
                                 Download PDF
 
                             </a>
+
                         </div>
 
                     </div>
 
-                    @elseif(in_array($message->message_type,['file','document']) && $message->file_path)
+                    @elseif(in_array($reply->message_type,['file','document']) && $reply->file_path)
 
                     <div class="border rounded p-2 mb-2">
 
-                        📄 {{ $message->file_name }}
+                        📄 {{ $reply->file_name }}
 
                         <br>
 
                         <small>
-                            {{ $message->file_size_formatted }}
+                            {{ $reply->file_size_formatted }}
                         </small>
 
                         <br>
 
                         <a
-                            href="{{ asset('storage/app/public/'.$message->file_path) }}"
+                            href="{{ asset('storage/app/public/'.$reply->file_path) }}"
                             download
                             class="btn btn-sm btn-primary mt-2">
 
@@ -214,6 +221,8 @@ $subTitle = 'Chat';
 
                     @endif
 
+                    @endforeach
+
                     <p class="chat-time mb-0">
                         <span>
                             {{ $message->formatted_time }}
@@ -221,6 +230,7 @@ $subTitle = 'Chat';
                     </p>
 
                 </div>
+
             </div>
 
             @else
@@ -243,56 +253,60 @@ $subTitle = 'Chat';
                     </div>
                     @endif
 
-                    @if($message->message_type == 'image' && $message->file_path)
+                    @foreach($message->replies as $reply)
+
+                    @if($reply->message_type == 'image' && $reply->file_path)
 
                     <div class="mb-2">
                         <img
-                            src="{{ asset('storage/app/public/'.$message->file_path) }}"
+                            src="{{ asset('storage/app/public/'.$reply->file_path) }}"
                             class="img-fluid rounded"
                             style="max-width:300px;cursor:pointer"
                             onclick="window.open(this.src,'_blank')">
                     </div>
 
-                    @elseif($message->message_type == 'pdf' && $message->file_path)
+                    @elseif($reply->message_type == 'pdf' && $reply->file_path)
 
                     <div class="mb-2">
 
                         <iframe
-                            src="{{ asset('storage/app/public/'.$message->file_path) }}"
+                            src="{{ asset('storage/app/public/'.$reply->file_path) }}"
                             width="100%"
                             height="500"
                             class="border rounded">
                         </iframe>
 
                         <div class="mt-2">
+
                             <a
-                                href="{{ asset('storage/app/public/'.$message->file_path) }}"
+                                href="{{ asset('storage/app/public/'.$reply->file_path) }}"
                                 target="_blank"
                                 class="btn btn-sm btn-primary">
 
                                 Download PDF
 
                             </a>
+
                         </div>
 
                     </div>
 
-                    @elseif(in_array($message->message_type,['file','document']) && $message->file_path)
+                    @elseif(in_array($reply->message_type,['file','document']) && $reply->file_path)
 
                     <div class="border rounded p-2 mb-2">
 
-                        📄 {{ $message->file_name }}
+                        📄 {{ $reply->file_name }}
 
                         <br>
 
                         <small>
-                            {{ $message->file_size_formatted }}
+                            {{ $reply->file_size_formatted }}
                         </small>
 
                         <br>
 
                         <a
-                            href="{{ asset('storage/app/public/'.$message->file_path) }}"
+                            href="{{ asset('storage/app/public/'.$reply->file_path) }}"
                             download
                             class="btn btn-sm btn-primary mt-2">
 
@@ -303,6 +317,8 @@ $subTitle = 'Chat';
                     </div>
 
                     @endif
+
+                    @endforeach
 
                     <p class="chat-time mb-0">
                         <span>
@@ -317,8 +333,9 @@ $subTitle = 'Chat';
             @endif
 
             @endforeach
-        </div>
 
+        </div>
+        
         <form
             class="chat-message-box"
             method="POST"
