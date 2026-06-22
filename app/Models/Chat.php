@@ -79,18 +79,22 @@ class Chat extends Model
 
     public function scopeConversation($query, $userId, $otherUserId)
     {
-        return $query->where(function ($q) use ($userId, $otherUserId) {
-            $q->where([
-                ['sender_id', $userId],
-                ['receiver_id', $otherUserId],
-            ])->orWhere([
-                ['sender_id', $otherUserId],
-                ['receiver_id', $userId],
-            ]);
-        })
-        ->whereNull('is_deleted_by_sender')
-        ->whereNull('is_deleted_by_receiver')
-        ->orderBy('created_at', 'asc');
+        return $query
+            ->where(function ($q) use ($userId, $otherUserId) {
+
+                $q->where(function ($qq) use ($userId, $otherUserId) {
+
+                    $qq->where('sender_id', $userId)
+                        ->where('receiver_id', $otherUserId);
+                })->orWhere(function ($qq) use ($userId, $otherUserId) {
+
+                    $qq->where('sender_id', $otherUserId)
+                        ->where('receiver_id', $userId);
+                });
+            })
+            ->where('is_deleted_by_sender', 0)
+            ->where('is_deleted_by_receiver', 0)
+            ->orderBy('created_at', 'asc');
     }
 
     public function scopeUnread($query, $userId)

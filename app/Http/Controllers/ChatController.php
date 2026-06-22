@@ -39,9 +39,11 @@ class ChatController extends Controller
             ->get()
             ->map(function ($chatUser) use ($user) {
 
-                $chatUser->lastChat = Chat::conversation($user->id, $chatUser->id)
-                    ->latest('created_at')
-                    ->latest('id')
+                $chatUser->lastChat = Chat::conversation(
+                    $user->id,
+                    $chatUser->id
+                )
+                    ->latest()
                     ->first();
 
                 if ($chatUser->lastChat) {
@@ -51,24 +53,6 @@ class ChatController extends Controller
                     $chatUser->lastChatDisplay = $createdAt->isToday()
                         ? $createdAt->format('h:i A')
                         : $createdAt->format('d M Y');
-                } else {
-
-                    $chatUser->lastChatDisplay = '';
-                }
-
-                if ($chatUser->lastChat) {
-
-                    if ($chatUser->lastChat->created_at->isToday()) {
-
-                        // Today → show time
-                        $chatUser->lastChatDisplay =
-                            $chatUser->lastChat->created_at->format('h:i A');
-                    } else {
-
-                        // Previous days → show date
-                        $chatUser->lastChatDisplay =
-                            $chatUser->lastChat->created_at->format('d M Y');
-                    }
                 } else {
 
                     $chatUser->lastChatDisplay = '';
