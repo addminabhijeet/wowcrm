@@ -114,16 +114,21 @@ class ChatController extends Controller
             $chat->file_size = $file->getSize();
             $chat->mime_type = $file->getMimeType();
 
-            if (str_starts_with($file->getMimeType(), 'image/')) {
+            $mime = $file->getMimeType();
+
+            if (str_starts_with($mime, 'image/')) {
 
                 $chat->message_type = 'image';
-            } elseif (str_starts_with($file->getMimeType(), 'video/')) {
+            } elseif (str_starts_with($mime, 'video/')) {
 
                 $chat->message_type = 'video';
-            } elseif (str_starts_with($file->getMimeType(), 'audio/')) {
+            } elseif (str_starts_with($mime, 'audio/')) {
 
                 $chat->message_type = 'audio';
-            } elseif ($file->extension() === 'pdf') {
+            } elseif (
+                $mime === 'application/pdf' ||
+                strtolower($file->getClientOriginalExtension()) === 'pdf'
+            ) {
 
                 $chat->message_type = 'pdf';
             } else {

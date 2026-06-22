@@ -208,6 +208,7 @@ $subTitle = 'Chat';
                 type="file"
                 id="fileInput"
                 name="attachment"
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.txt,.ppt,.pptx,*/*"
                 hidden>
 
             <input
@@ -280,7 +281,10 @@ $subTitle = 'Chat';
 
         if (this.files.length > 0) {
 
-            document.querySelector('.chat-message-box').submit();
+            document.getElementById('chatMessage').value =
+                window.chatEditor ? window.chatEditor.getData() : '';
+
+            this.closest('form').submit();
 
         }
 
@@ -290,7 +294,10 @@ $subTitle = 'Chat';
 
         if (this.files.length > 0) {
 
-            document.querySelector('.chat-message-box').submit();
+            document.getElementById('chatMessage').value =
+                window.chatEditor ? window.chatEditor.getData() : '';
+
+            this.closest('form').submit();
 
         }
 
