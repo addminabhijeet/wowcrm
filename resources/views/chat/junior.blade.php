@@ -57,7 +57,7 @@ $subTitle = 'Chat';
             </form>
 
         </div>
-        <div class="chat-all-list" id="chatUserList">
+        <div class="chat-all-list">
 
             @foreach($users as $chatUser)
 
@@ -458,7 +458,6 @@ $subTitle = 'Chat';
 
     </div>
 </div>
-<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
 <script src="https://cdn.ckeditor.com/ckeditor5/39.0.1/classic/ckeditor.js"></script>
 <script>
     let searchTimeout;
@@ -594,83 +593,5 @@ $subTitle = 'Chat';
         }
 
     });
-</script>
-<script>
-    function loadLatestMessages() {
-
-        $.get("{{ route('chat.latestMessages') }}", function(response) {
-
-            $("#messageCountBadge").text(response.count);
-
-            let html = "";
-
-            response.users.forEach(function(user) {
-
-                let image = user.image ?
-                    "/storage/app/public/" + user.image :
-                    "/assets/images/user-grid/user-grid-bg1.png";
-
-                let lastMessage = "No messages yet";
-
-                if (user.lastChat) {
-
-                    if (user.lastChat.message) {
-
-                        lastMessage = $('<div>')
-                            .html(user.lastChat.message)
-                            .text()
-                            .substring(0, 50);
-
-                    } else if (user.lastChat.file_name) {
-
-                        lastMessage = user.lastChat.file_name;
-                    }
-                }
-
-                html += `
-        <a href="{{ route('chat.index') }}?user=${user.id}"
-           class="chat-sidebar-single text-decoration-none d-flex align-items-center">
-
-            <div class="d-flex align-items-center w-100">
-
-                <div class="img me-2 flex-shrink-0">
-                    <img src="${image}"
-                         class="w-40-px h-40-px rounded-circle object-fit-cover">
-                </div>
-
-                <div class="flex-grow-1 overflow-hidden">
-                    <h6 class="text-sm mb-1">${user.name}</h6>
-
-                    <p class="mb-0 text-xs text-truncate">
-                        ${lastMessage}
-                    </p>
-                </div>
-
-                <div class="ms-2 text-end flex-shrink-0">
-
-                    <span class="badge rounded-pill bg-success mt-1">
-                        ${user.unreadCount}
-                    </span>
-
-                </div>
-
-            </div>
-
-        </a>`;
-            });
-
-            $("#chatUserList").html(html);
-
-        });
-
-    }
-
-    // First load
-    loadLatestMessages();
-
-    // Refresh every 3 seconds
-    setInterval(function() {
-        loadLatestMessages();
-    }, 3000);
 </script>
 @endsection
