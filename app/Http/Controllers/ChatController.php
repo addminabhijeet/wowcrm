@@ -13,11 +13,22 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 class ChatController extends Controller
 {
 
-    // Display chat page
     public function junior(Request $request)
     {
         $user = Auth::user();
-        $users = User::where('id', '!=', $user->id)->get();
+
+        $users = User::whereIn('role', ['junior', 'senior'])
+            ->where('is_deleted', 0)
+            ->where('id', '!=', $user->id)
+            ->get()
+            ->map(function ($chatUser) use ($user) {
+
+                $chatUser->lastChat = Chat::conversation($user->id, $chatUser->id)
+                    ->latest()
+                    ->first();
+
+                return $chatUser;
+            });
 
         return view('chat.junior', compact('users'));
     }
