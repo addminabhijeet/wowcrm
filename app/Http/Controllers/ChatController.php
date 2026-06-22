@@ -114,8 +114,11 @@ class ChatController extends Controller
 
                 $chat->message_type = 'audio';
             } elseif (
-                $mime === 'application/pdf' ||
+
+                str_contains($mime, 'pdf') ||
+
                 strtolower($file->getClientOriginalExtension()) === 'pdf'
+
             ) {
 
                 $chat->message_type = 'pdf';

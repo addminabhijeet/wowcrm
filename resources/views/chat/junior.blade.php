@@ -137,7 +137,7 @@ $subTitle = 'Chat';
 
                     <div class="mb-2">
                         <img
-                            src="{{ asset('storage/'.$message->file_path) }}"
+                            src="{{ asset('storage/app/public/'.$message->file_path) }}"
                             class="img-fluid rounded"
                             style="max-width:300px;cursor:pointer"
                             onclick="window.open(this.src,'_blank')">
@@ -148,7 +148,7 @@ $subTitle = 'Chat';
                     <div class="mb-2">
 
                         <iframe
-                            src="{{ asset('storage/'.$message->file_path) }}"
+                            src="{{ asset('storage/app/public/'.$message->file_path) }}"
                             width="100%"
                             height="500"
                             class="border rounded">
@@ -156,7 +156,7 @@ $subTitle = 'Chat';
 
                         <div class="mt-2">
                             <a
-                                href="{{ asset('storage/'.$message->file_path) }}"
+                                href="{{ asset('storage/app/public/'.$message->file_path) }}"
                                 target="_blank"
                                 class="btn btn-sm btn-primary">
 
@@ -182,7 +182,7 @@ $subTitle = 'Chat';
                         <br>
 
                         <a
-                            href="{{ asset('storage/'.$message->file_path) }}"
+                            href="{{ asset('storage/app/public/'.$message->file_path) }}"
                             download
                             class="btn btn-sm btn-primary mt-2">
 
@@ -227,7 +227,7 @@ $subTitle = 'Chat';
 
                     <div class="mb-2">
                         <img
-                            src="{{ asset('storage/'.$message->file_path) }}"
+                            src="{{ asset('storage/app/public/'.$message->file_path) }}"
                             class="img-fluid rounded"
                             style="max-width:300px;cursor:pointer"
                             onclick="window.open(this.src,'_blank')">
@@ -238,7 +238,7 @@ $subTitle = 'Chat';
                     <div class="mb-2">
 
                         <iframe
-                            src="{{ asset('storage/'.$message->file_path) }}"
+                            src="{{ asset('storage/app/public/'.$message->file_path) }}"
                             width="100%"
                             height="500"
                             class="border rounded">
