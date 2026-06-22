@@ -64,32 +64,44 @@ $subTitle = 'Chat';
             <a href="{{ route('chat.junior', ['user' => $chatUser->id]) }}"
                 class="chat-sidebar-single text-decoration-none">
 
-                <div class="img">
-                    <img
-                        src="{{ $chatUser->image
-                            ? asset('storage/app/public/' . $chatUser->image)
-                            : asset('assets/images/user-grid/user-grid-bg1.png') }}"
-                        onerror="this.src='/assets/images/user-grid/user-grid-bg1.png'"
-                        alt="{{ $chatUser->name }}"
-                        class="w-40-px h-40-px rounded-circle object-fit-cover">
-                </div>
+                <div class="d-flex align-items-center flex-grow-1">
 
-                <div class="info">
-                    <h6 class="text-sm mb-1">
-                        {{ $chatUser->name }}
-                    </h6>
+                    <div class="img me-2">
+                        <img
+                            src="{{ $chatUser->image
+                ? asset('storage/app/public/' . $chatUser->image)
+                : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                            onerror="this.src='/assets/images/user-grid/user-grid-bg1.png'"
+                            alt="{{ $chatUser->name }}"
+                            class="w-40-px h-40-px rounded-circle object-fit-cover">
+                    </div>
 
-                    <p class="mb-0 text-xs text-truncate">
+                    <div class="info flex-grow-1 overflow-hidden">
 
-                        @if(!empty($chatUser->lastChat?->message))
-                        {{ Str::limit(trim(html_entity_decode(strip_tags($chatUser->lastChat->message))), 50) }}
-                        @elseif(!empty($chatUser->lastChat?->file_name))
-                        {{ $chatUser->lastChat->file_name }}
-                        @else
-                        No messages yet
-                        @endif
+                        <h6 class="text-sm mb-1">
+                            {{ $chatUser->name }}
+                        </h6>
 
-                    </p>
+                        <p class="mb-0 text-xs text-truncate">
+
+                            @if(!empty($chatUser->lastChat?->message))
+
+                            {{ \Illuminate\Support\Str::limit(trim(html_entity_decode(strip_tags($chatUser->lastChat->message))), 50) }}
+
+                            @elseif(!empty($chatUser->lastChat?->file_name))
+
+                            {{ $chatUser->lastChat->file_name }}
+
+                            @else
+
+                            No messages yet
+
+                            @endif
+
+                        </p>
+
+                    </div>
+
                 </div>
 
                 <div class="action text-end">
