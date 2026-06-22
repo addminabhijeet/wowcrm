@@ -17,10 +17,25 @@ class ChatController extends Controller
     {
         $user = Auth::user();
         $selectedUserId = $request->user;
+        $search = $request->search;
 
         $users = User::whereIn('role', ['junior', 'senior'])
             ->where('is_deleted', 0)
             ->where('id', '!=', $user->id)
+            ->when($search, function ($query) use ($search) {
+
+                $query->where(function ($q) use ($search) {
+
+                    $q->where('name', 'like', "%{$search}%")
+                        ->orWhere('email', 'like', "%{$search}%")
+                        ->orWhere('phone', 'like', "%{$search}%")
+                        ->orWhere('gender', 'like', "%{$search}%")
+                        ->orWhere('role', 'like', "%{$search}%")
+                        ->orWhere('group', 'like', "%{$search}%")
+                        ->orWhere('target', 'like', "%{$search}%")
+                        ->orWhere('target_date', 'like', "%{$search}%");
+                });
+            })
             ->get()
             ->map(function ($chatUser) use ($user) {
 

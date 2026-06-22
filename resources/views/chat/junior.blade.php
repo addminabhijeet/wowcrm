@@ -31,10 +31,27 @@ $subTitle = 'Chat';
 
         </div><!-- chat-sidebar-single end -->
         <div class="chat-search">
-            <span class="icon">
-                <iconify-icon icon="iconoir:search"></iconify-icon>
-            </span>
-            <input type="text" name="#0" autocomplete="off" placeholder="Search...">
+
+            <form id="searchForm" method="GET" action="{{ route('chat.junior') }}">
+
+                @if(request('user'))
+                <input type="hidden" name="user" value="{{ request('user') }}">
+                @endif
+
+                <span class="icon">
+                    <iconify-icon icon="iconoir:search"></iconify-icon>
+                </span>
+
+                <input
+                    type="text"
+                    id="searchInput"
+                    name="search"
+                    value="{{ request('search') }}"
+                    autocomplete="off"
+                    placeholder="Search by name, email, phone, role...">
+
+            </form>
+
         </div>
         <div class="chat-all-list">
 
@@ -224,5 +241,17 @@ $subTitle = 'Chat';
 
     </div>
 </div>
+<script>
+    let searchTimeout;
 
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+
+        clearTimeout(searchTimeout);
+
+        searchTimeout = setTimeout(() => {
+            document.getElementById('searchForm').submit();
+        }, 300);
+
+    });
+</script>
 @endsection
