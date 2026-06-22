@@ -223,8 +223,8 @@ $subTitle = 'Chat';
 
                     @endforeach
 
-                    <p class="chat-time mb-0">
-                        <span>
+                    <p class="chat-time mb-0 text-white">
+                        <span class="text-white">
                             {{ $message->formatted_time }}
                         </span>
 
@@ -233,14 +233,14 @@ $subTitle = 'Chat';
                         @if($message->is_read)
 
                         <br>
-                        <small class="text-success">
+                        <small class="text-white">
                             Seen {{ $message->read_time }}
                         </small>
 
                         @else
 
                         <br>
-                        <small class="text-muted">
+                        <small class="text-white">
                             Delivered
                         </small>
 
