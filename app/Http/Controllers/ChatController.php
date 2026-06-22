@@ -82,18 +82,6 @@ class ChatController extends Controller
     }
     public function send(Request $request)
     {
-        $request->validate([
-            'receiver_id' => 'required|exists:users,id',
-            'chatMessage' => 'nullable|string',
-            'attachment' => 'nullable|file|max:51200',
-        ]);
-
-        if (
-            empty($request->input('chatMessage')) &&
-            !$request->hasFile('attachment')
-        ) {
-            return back();
-        }
 
         $chat = new Chat();
 
