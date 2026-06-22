@@ -80,11 +80,15 @@ $subTitle = 'Chat';
                     </h6>
 
                     <p class="mb-0 text-xs text-truncate">
-                        {{
-                            !empty($chatUser->lastChat?->message)
-                                ? html_entity_decode(strip_tags($chatUser->lastChat->message))
-                                : ($chatUser->lastChat?->file_name ?? 'No messages yet')
-                        }}
+
+                        @if(!empty($chatUser->lastChat?->message))
+                        {{ Str::limit(trim(html_entity_decode(strip_tags($chatUser->lastChat->message))), 50) }}
+                        @elseif(!empty($chatUser->lastChat?->file_name))
+                        {{ $chatUser->lastChat->file_name }}
+                        @else
+                        No messages yet
+                        @endif
+
                     </p>
                 </div>
 
