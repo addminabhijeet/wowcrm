@@ -626,6 +626,8 @@ $subTitle = 'Chat';
     });
 </script>
 <script>
+    const authUserId = parseInt("{{ Auth::id() }}");
+
     function refreshUsers() {
 
         $.ajax({
@@ -659,7 +661,9 @@ $subTitle = 'Chat';
                         } else if (user.lastChat.file_name) {
 
                             lastMessage = user.lastChat.file_name;
+
                         }
+
                     }
 
                     $("#last-message-" + user.id).text(lastMessage);
@@ -678,6 +682,7 @@ $subTitle = 'Chat';
                     } else {
 
                         badge.hide();
+
                     }
 
                     // Update active user header
@@ -692,12 +697,80 @@ $subTitle = 'Chat';
 
                         $("#active-user-image-left").attr("src", image);
                         $("#active-user-image-right").attr("src", image);
+
                     }
 
                 });
 
-                // Check active conversation messages
-                console.log(messages);
+                // Update active conversation
+                let html = '';
+
+                messages.forEach(function(message) {
+
+                    if (message.sender_id == authUserId) {
+
+                        html += `
+                            <div class="chat-single-message right">
+                                <div class="chat-message-content">
+
+                                    ${message.message
+                                        ? `<div class="mb-2">${message.message}</div>`
+                                        : ''
+                                    }
+
+                                    <p class="chat-time mb-0 text-white">
+                                        <span class="text-white">
+                                            ${message.formatted_time}
+                                        </span>
+
+                                        <br>
+
+                                        <small class="text-white">
+                                            ${message.is_read
+                                                ? 'Seen ' + message.read_time
+                                                : 'Delivered'}
+                                        </small>
+
+                                    </p>
+
+                                </div>
+                            </div>
+                        `;
+
+                    } else {
+
+                        html += `
+                            <div class="chat-single-message left">
+                                <div class="chat-message-content">
+
+                                    ${message.message
+                                        ? `<div class="mb-2">${message.message}</div>`
+                                        : ''
+                                    }
+
+                                    <p class="chat-time mb-0">
+                                        <span>
+                                            ${message.formatted_time}
+                                        </span>
+                                    </p>
+
+                                </div>
+                            </div>
+                        `;
+
+                    }
+
+                });
+
+                $("#chatMessageList").html(html);
+
+                let chatBox = document.getElementById('chatMessageList');
+
+                if (chatBox) {
+
+                    chatBox.scrollTop = chatBox.scrollHeight;
+
+                }
 
             },
 
@@ -711,7 +784,6 @@ $subTitle = 'Chat';
 
     }
 
-    // Refresh every 3 seconds
     setInterval(refreshUsers, 3000);
 </script>
 @endsection
