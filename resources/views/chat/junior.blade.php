@@ -48,7 +48,7 @@ $subTitle = 'Chat';
                     name="search"
                     value="{{ request('search') }}"
                     autocomplete="off"
-                    placeholder="Search by name, email, phone, role...">
+                    placeholder="Search by name, email">
 
             </form>
 
