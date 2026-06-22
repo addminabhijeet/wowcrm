@@ -14,8 +14,13 @@ $subTitle = 'Chat';
                 <img src="{{ asset('assets/images/chat/1.png') }}" alt="image">
             </div>
             <div class="info">
-                <h6 class="text-md mb-0">Kathryn Murphy</h6>
-                <p class="mb-0">Available</p>
+                <h6 class="text-md mb-0">
+                    {{ $activeUser->name ?? '' }}
+                </h6>
+
+                <p class="mb-0">
+                    Available
+                </p>
             </div>
 
         </div><!-- chat-sidebar-single end -->
@@ -29,7 +34,8 @@ $subTitle = 'Chat';
 
             @foreach($users as $chatUser)
 
-            <div class="chat-sidebar-single">
+            <a href="{{ route('chat.junior', ['user' => $chatUser->id]) }}"
+                class="chat-sidebar-single text-decoration-none">
 
                 <div class="img">
                     <img src="{{ asset('assets/images/chat/2.png') }}" alt="image">
@@ -51,7 +57,7 @@ $subTitle = 'Chat';
                     </p>
                 </div>
 
-            </div>
+            </a>
 
             @endforeach
 
@@ -63,37 +69,64 @@ $subTitle = 'Chat';
                 <img src="{{ asset('assets/images/chat/11.png') }}" alt="image">
             </div>
             <div class="info">
-                <h6 class="text-md mb-0">Kathryn Murphy</h6>
-                <p class="mb-0">Available</p>
+                <h6 class="text-md mb-0">
+                    {{ $activeUser->name ?? '' }}
+                </h6>
+
+                <p class="mb-0">
+                    Available
+                </p>
             </div>
         </div><!-- chat-sidebar-single end -->
         <div class="chat-message-list">
-            <div class="chat-single-message left">
-                <img src="{{ asset('assets/images/chat/11.png') }}" alt="image" class="avatar-lg object-fit-cover rounded-circle">
-                <div class="chat-message-content">
-                    <p class="mb-3">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters.</p>
-                    <p class="chat-time mb-0">
-                        <span>6.30 pm</span>
-                    </p>
-                </div>
-            </div><!-- chat-single-message end -->
+            @foreach($messages as $message)
+
+            @if($message->sender_id == auth()->id())
+
             <div class="chat-single-message right">
                 <div class="chat-message-content">
-                    <p class="mb-3">It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters.</p>
-                    <p class="chat-time mb-0">
-                        <span>6.30 pm</span>
+
+                    <p class="mb-3">
+                        {!! $message->message !!}
                     </p>
+
+                    <p class="chat-time mb-0">
+                        <span>
+                            {{ $message->formatted_time }}
+                        </span>
+                    </p>
+
                 </div>
-            </div><!-- chat-single-message end -->
+            </div>
+
+            @else
+
             <div class="chat-single-message left">
-                <img src="{{ asset('assets/images/chat/11.png') }}" alt="image" class="avatar-lg object-fit-cover rounded-circle">
+
+                <img
+                    src="{{ asset('assets/images/chat/11.png') }}"
+                    class="avatar-lg object-fit-cover rounded-circle"
+                    alt="image">
+
                 <div class="chat-message-content">
-                    <p class="mb-3">The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default.Contrary to popular belief, Lorem Ipsum is not simply random text is the model text for your company.</p>
-                    <p class="chat-time mb-0">
-                        <span>6.30 pm</span>
+
+                    <p class="mb-3">
+                        {!! $message->message !!}
                     </p>
+
+                    <p class="chat-time mb-0">
+                        <span>
+                            {{ $message->formatted_time }}
+                        </span>
+                    </p>
+
                 </div>
-            </div><!-- chat-single-message end -->
+
+            </div>
+
+            @endif
+
+            @endforeach
         </div>
 
         <form class="chat-message-box">

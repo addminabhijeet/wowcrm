@@ -16,6 +16,7 @@ class ChatController extends Controller
     public function junior(Request $request)
     {
         $user = Auth::user();
+        $selectedUserId = $request->user;
 
         $users = User::whereIn('role', ['junior', 'senior'])
             ->where('is_deleted', 0)
@@ -30,6 +31,23 @@ class ChatController extends Controller
                 return $chatUser;
             });
 
-        return view('chat.junior', compact('users'));
+        $activeUser = $users
+            ->where('id', $selectedUserId)
+            ->first() ?? $users->first();
+
+        $messages = collect();
+
+        if ($activeUser) {
+            $messages = Chat::conversation(
+                $user->id,
+                $activeUser->id
+            )->get();
+        }
+
+        return view('chat.junior', compact(
+            'users',
+            'activeUser',
+            'messages'
+        ));
     }
 }
