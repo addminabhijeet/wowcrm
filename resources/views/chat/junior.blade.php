@@ -629,11 +629,19 @@ $subTitle = 'Chat';
     function refreshUsers() {
 
         $.ajax({
+
             url: "{{ route('chat.refreshUsers') }}",
+
             type: "GET",
+
+            data: {
+                active_user_id: $("#activeUserId").val()
+            },
+
             success: function(response) {
 
                 let users = response.users;
+                let messages = response.messages;
 
                 let activeUserId = $("#activeUserId").val();
 
@@ -672,7 +680,7 @@ $subTitle = 'Chat';
                         badge.hide();
                     }
 
-                    // Update active user section also
+                    // Update active user header
                     if (user.id == activeUserId) {
 
                         $("#active-user-name-left").text(user.name);
@@ -688,7 +696,17 @@ $subTitle = 'Chat';
 
                 });
 
+                // Check active conversation messages
+                console.log(messages);
+
+            },
+
+            error: function(xhr) {
+
+                console.log(xhr.responseText);
+
             }
+
         });
 
     }
