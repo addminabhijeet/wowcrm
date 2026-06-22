@@ -249,6 +249,7 @@ $subTitle = 'Chat';
 
     </div>
 </div>
+<script src="https://cdn.ckeditor.com/ckeditor5/47.1.0/ckeditor5.umd.js"></script>
 <script>
     let searchTimeout;
 
