@@ -15,6 +15,7 @@ $subTitle = 'Chat';
                     src="{{ $activeUser && $activeUser->image
                         ? asset('storage/app/public/' . $activeUser->image)
                         : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                    onerror="this.src='/assets/images/user-grid/user-grid-bg1.png'"
                     alt="{{ $activeUser->name ?? 'User' }}"
                     class="w-40-px h-40-px rounded-circle object-fit-cover">
             </div>
@@ -47,6 +48,7 @@ $subTitle = 'Chat';
                         src="{{ $chatUser->image
                             ? asset('storage/app/public/' . $chatUser->image)
                             : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                        onerror="this.src='/assets/images/user-grid/user-grid-bg1.png'"
                         alt="{{ $chatUser->name }}"
                         class="w-40-px h-40-px rounded-circle object-fit-cover">
                 </div>
@@ -84,8 +86,9 @@ $subTitle = 'Chat';
             <div class="img">
                 <img
                     src="{{ $activeUser && $activeUser->image
-            ? asset('storage/app/public/' . $activeUser->image)
-            : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                        ? asset('storage/app/public/' . $activeUser->image)
+                        : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                    onerror="this.src='/assets/images/user-grid/user-grid-bg1.png'"
                     alt="{{ $activeUser->name ?? 'User' }}"
                     class="w-40-px h-40-px rounded-circle object-fit-cover">
             </div>
@@ -128,6 +131,7 @@ $subTitle = 'Chat';
                     src="{{ $activeUser && $activeUser->image
                         ? asset('storage/app/public/' . $activeUser->image)
                         : asset('assets/images/user-grid/user-grid-bg1.png') }}"
+                    onerror="this.src='/assets/images/user-grid/user-grid-bg1.png'"
                     alt="{{ $activeUser->name ?? 'User' }}"
                     class="avatar-lg object-fit-cover rounded-circle">
 
