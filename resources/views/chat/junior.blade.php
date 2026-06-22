@@ -56,15 +56,21 @@ $subTitle = 'Chat';
                         {{ $chatUser->name }}
                     </h6>
 
-                    <p class="mb-0 text-xs">
+                    <p class="mb-0 text-xs text-truncate">
                         {{ $chatUser->lastChat?->message ?? 'No messages yet' }}
                     </p>
                 </div>
 
                 <div class="action text-end">
+
                     <p class="mb-0 text-neutral-400 text-xs lh-1">
-                        {{ $chatUser->lastChat?->formatted_time ?? '' }}
+                        {{ $chatUser->lastChatTime }}
                     </p>
+
+                    <small class="text-neutral-500">
+                        {{ $chatUser->lastChatDate }}
+                    </small>
+
                 </div>
 
             </a>

@@ -25,8 +25,17 @@ class ChatController extends Controller
             ->map(function ($chatUser) use ($user) {
 
                 $chatUser->lastChat = Chat::conversation($user->id, $chatUser->id)
-                    ->latest()
+                    ->latest('created_at')
+                    ->latest('id')
                     ->first();
+
+                $chatUser->lastChatDate = $chatUser->lastChat
+                    ? $chatUser->lastChat->created_at->format('d M Y')
+                    : '';
+
+                $chatUser->lastChatTime = $chatUser->lastChat
+                    ? $chatUser->lastChat->created_at->format('h:i A')
+                    : '';
 
                 return $chatUser;
             });
