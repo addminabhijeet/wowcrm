@@ -82,7 +82,7 @@ $subTitle = 'Chat';
                     <p class="mb-0 text-xs text-truncate">
                         {{
                             !empty($chatUser->lastChat?->message)
-                                ? strip_tags($chatUser->lastChat->message)
+                                ? html_entity_decode(strip_tags($chatUser->lastChat->message))
                                 : ($chatUser->lastChat?->file_name ?? 'No messages yet')
                         }}
                     </p>
