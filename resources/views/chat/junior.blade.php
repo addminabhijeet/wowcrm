@@ -219,6 +219,10 @@ $subTitle = 'Chat';
                 hidden>
 
             <div class="chat-message-box-action">
+                <div id="attachmentPreview"
+                    class="mb-2"
+                    style="display:none">
+                </div>
 
                 <button
                     type="button"
@@ -281,13 +285,18 @@ $subTitle = 'Chat';
 
         if (this.files.length > 0) {
 
-            let form = document.querySelector('.chat-message-box');
+            let file = this.files[0];
 
-            document.getElementById('chatMessage').value =
-                window.chatEditor ? window.chatEditor.getData() : '';
+            document.getElementById('attachmentPreview').style.display = 'block';
 
-            form.submit();
-
+            document.getElementById('attachmentPreview').innerHTML =
+                `
+            <div class="border rounded p-2">
+                📄 ${file.name}
+                <br>
+                <small>${(file.size/1024).toFixed(2)} KB</small>
+            </div>
+            `;
         }
 
     });
@@ -296,13 +305,21 @@ $subTitle = 'Chat';
 
         if (this.files.length > 0) {
 
-            let form = document.querySelector('.chat-message-box');
+            let file = this.files[0];
 
-            document.getElementById('chatMessage').value =
-                window.chatEditor ? window.chatEditor.getData() : '';
+            let url = URL.createObjectURL(file);
 
-            form.submit();
+            document.getElementById('attachmentPreview').style.display = 'block';
 
+            document.getElementById('attachmentPreview').innerHTML =
+                `
+            <div class="border rounded p-2">
+                <img src="${url}"
+                     style="max-width:200px;max-height:200px"
+                     class="rounded">
+                <div class="mt-2">${file.name}</div>
+            </div>
+            `;
         }
 
     });
