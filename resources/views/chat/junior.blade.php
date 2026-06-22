@@ -548,19 +548,20 @@ $subTitle = 'Chat';
 
             window.chatEditor = editor;
 
-            // Increase editor height
+            // Preserve sidebar height
+            document.querySelector('.chat-sidebar').style.height = '100%';
+            document.querySelector('.chat-all-list').style.overflowY = 'auto';
             editor.editing.view.change(writer => {
 
                 writer.setStyle(
-                    'min-height',
+                    'height',
                     '300px',
                     editor.editing.view.document.getRoot()
                 );
 
             });
 
-            editor.ui.view.editable.element.style.minHeight = '300px';
-            editor.ui.view.editable.element.style.maxHeight = '400px';
+            editor.ui.view.editable.element.style.height = '300px';
             editor.ui.view.editable.element.style.overflowY = 'auto';
 
             // Send message on Enter
