@@ -44,13 +44,35 @@ class ChatController extends Controller
                     ->latest('id')
                     ->first();
 
-                $chatUser->lastChatDate = $chatUser->lastChat
-                    ? $chatUser->lastChat->created_at->format('d M Y')
-                    : '';
+                if ($chatUser->lastChat) {
 
-                $chatUser->lastChatTime = $chatUser->lastChat
-                    ? $chatUser->lastChat->created_at->format('h:i A')
-                    : '';
+                    $createdAt = $chatUser->lastChat->created_at;
+
+                    $chatUser->lastChatDisplay = $createdAt->isToday()
+                        ? $createdAt->format('h:i A')
+                        : $createdAt->format('d M Y');
+                } else {
+
+                    $chatUser->lastChatDisplay = '';
+                }
+
+                if ($chatUser->lastChat) {
+
+                    if ($chatUser->lastChat->created_at->isToday()) {
+
+                        // Today → show time
+                        $chatUser->lastChatDisplay =
+                            $chatUser->lastChat->created_at->format('h:i A');
+                    } else {
+
+                        // Previous days → show date
+                        $chatUser->lastChatDisplay =
+                            $chatUser->lastChat->created_at->format('d M Y');
+                    }
+                } else {
+
+                    $chatUser->lastChatDisplay = '';
+                }
 
                 return $chatUser;
             });

@@ -83,12 +83,8 @@ $subTitle = 'Chat';
                 <div class="action text-end">
 
                     <p class="mb-0 text-neutral-400 text-xs lh-1">
-                        {{ $chatUser->lastChatTime }}
+                        {{ $chatUser->lastChatDisplay }}
                     </p>
-
-                    <small class="text-neutral-500">
-                        {{ $chatUser->lastChatDate }}
-                    </small>
 
                 </div>
 
