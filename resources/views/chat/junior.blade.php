@@ -127,9 +127,72 @@ $subTitle = 'Chat';
             <div class="chat-single-message right">
                 <div class="chat-message-content">
 
-                    <p class="mb-3">
+                    @if(!empty($message->message))
+                    <div class="mb-2">
                         {!! $message->message !!}
-                    </p>
+                    </div>
+                    @endif
+
+                    @if($message->message_type == 'image' && $message->file_path)
+
+                    <div class="mb-2">
+                        <img
+                            src="{{ asset('storage/'.$message->file_path) }}"
+                            class="img-fluid rounded"
+                            style="max-width:300px;cursor:pointer"
+                            onclick="window.open(this.src,'_blank')">
+                    </div>
+
+                    @elseif($message->message_type == 'pdf' && $message->file_path)
+
+                    <div class="mb-2">
+
+                        <iframe
+                            src="{{ asset('storage/'.$message->file_path) }}"
+                            width="100%"
+                            height="500"
+                            class="border rounded">
+                        </iframe>
+
+                        <div class="mt-2">
+                            <a
+                                href="{{ asset('storage/'.$message->file_path) }}"
+                                target="_blank"
+                                class="btn btn-sm btn-primary">
+
+                                Download PDF
+
+                            </a>
+                        </div>
+
+                    </div>
+
+                    @elseif(in_array($message->message_type,['file','document']) && $message->file_path)
+
+                    <div class="border rounded p-2 mb-2">
+
+                        📄 {{ $message->file_name }}
+
+                        <br>
+
+                        <small>
+                            {{ $message->file_size_formatted }}
+                        </small>
+
+                        <br>
+
+                        <a
+                            href="{{ asset('storage/'.$message->file_path) }}"
+                            download
+                            class="btn btn-sm btn-primary mt-2">
+
+                            Download
+
+                        </a>
+
+                    </div>
+
+                    @endif
 
                     <p class="chat-time mb-0">
                         <span>
@@ -154,9 +217,72 @@ $subTitle = 'Chat';
 
                 <div class="chat-message-content">
 
-                    <p class="mb-3">
+                    @if(!empty($message->message))
+                    <div class="mb-2">
                         {!! $message->message !!}
-                    </p>
+                    </div>
+                    @endif
+
+                    @if($message->message_type == 'image' && $message->file_path)
+
+                    <div class="mb-2">
+                        <img
+                            src="{{ asset('storage/'.$message->file_path) }}"
+                            class="img-fluid rounded"
+                            style="max-width:300px;cursor:pointer"
+                            onclick="window.open(this.src,'_blank')">
+                    </div>
+
+                    @elseif($message->message_type == 'pdf' && $message->file_path)
+
+                    <div class="mb-2">
+
+                        <iframe
+                            src="{{ asset('storage/'.$message->file_path) }}"
+                            width="100%"
+                            height="500"
+                            class="border rounded">
+                        </iframe>
+
+                        <div class="mt-2">
+                            <a
+                                href="{{ asset('storage/app/public/'.$message->file_path) }}"
+                                target="_blank"
+                                class="btn btn-sm btn-primary">
+
+                                Download PDF
+
+                            </a>
+                        </div>
+
+                    </div>
+
+                    @elseif(in_array($message->message_type,['file','document']) && $message->file_path)
+
+                    <div class="border rounded p-2 mb-2">
+
+                        📄 {{ $message->file_name }}
+
+                        <br>
+
+                        <small>
+                            {{ $message->file_size_formatted }}
+                        </small>
+
+                        <br>
+
+                        <a
+                            href="{{ asset('storage/app/public/'.$message->file_path) }}"
+                            download
+                            class="btn btn-sm btn-primary mt-2">
+
+                            Download
+
+                        </a>
+
+                    </div>
+
+                    @endif
 
                     <p class="chat-time mb-0">
                         <span>
