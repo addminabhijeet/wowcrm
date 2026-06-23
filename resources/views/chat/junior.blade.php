@@ -158,6 +158,11 @@ $subTitle = 'Chat';
             </div>
         </div>
 
+        <input
+            type="hidden"
+            id="lastMessageId"
+            value="{{ $messages->last()?->id }}">
+
         <div class="chat-message-list" id="chatMessageList">
 
             @foreach($messages as $message)
@@ -951,19 +956,27 @@ $subTitle = 'Chat';
                 // Save current scroll position
                 let currentScrollTop = chatBox.scrollTop;
 
-                if ($("#chatMessageList").html() !== html) {
+                // Get current last message id
+                let currentLastMessageId =
+                    $("#lastMessageId").val();
+
+                // Update chat only if a new message exists
+                if (response.lastMessageId != currentLastMessageId) {
+
+                    $("#lastMessageId")
+                        .val(response.lastMessageId);
 
                     $("#chatMessageList").html(html);
 
                     if (shouldScroll) {
 
-                        // User is at bottom → continue auto-scroll
-                        chatBox.scrollTop = chatBox.scrollHeight;
+                        chatBox.scrollTop =
+                            chatBox.scrollHeight;
 
                     } else {
 
-                        // User is reading old messages → keep position
-                        chatBox.scrollTop = currentScrollTop;
+                        chatBox.scrollTop =
+                            currentScrollTop;
                     }
                 }
             },

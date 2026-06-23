@@ -325,6 +325,8 @@ class ChatController extends Controller
             ],
 
             'messages' => $messages,
+
+            'lastMessageId' => $messages->last()?->id,
         ]);
     }
 }
