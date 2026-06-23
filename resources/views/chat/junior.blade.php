@@ -483,16 +483,11 @@ $subTitle = 'Chat';
                 <button
                     type="button"
                     id="emojiBtn"
-                    class="btn btn-sm btn-light">
+                    class="text-xl">
 
-                    <button
-                        type="button"
-                        id="emojiBtn"
-                        class="text-xl">
-
-                        <iconify-icon icon="fluent-emoji-high-contrast:grinning-face"></iconify-icon>
-
-                    </button>
+                    <iconify-icon
+                        icon="fluent-emoji-high-contrast:grinning-face">
+                    </iconify-icon>
 
                 </button>
 
