@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Chat extends Model
@@ -86,8 +87,11 @@ class Chat extends Model
         return round($bytes, 2) . ' ' . $units[$pow];
     }
 
-    public function scopeConversation($query, $userId, $otherUserId)
-    {
+    public function scopeConversation(
+        Builder $query,
+        int $userId,
+        int $otherUserId
+    ): Builder {
         return $query
             ->where(function ($q) use ($userId, $otherUserId) {
 
@@ -106,8 +110,10 @@ class Chat extends Model
             ->orderBy('created_at', 'asc');
     }
 
-    public function scopeUnread($query, $userId)
-    {
+    public function scopeUnread(
+        Builder $query,
+        int $userId
+    ): Builder {
         return $query->where('receiver_id', $userId)
             ->where('is_read', false);
     }
