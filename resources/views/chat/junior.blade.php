@@ -204,7 +204,7 @@ $subTitle = 'Chat';
                                 target="_blank"
                                 class="btn btn-sm btn-primary">
 
-                                Download PDF
+                                View PDF
 
                             </a>
 
