@@ -608,14 +608,15 @@ $subTitle = 'Chat';
         this.files = imageFiles.files;
     });
 </script>
-<script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.js"></script>
 <script>
     ClassicEditor
         .create(document.querySelector('#editor'))
         .then(editor => {
 
             window.chatEditor = editor;
-            const picker = new EmojiButton();
+            console.log(EmojiButton);
+            const picker = new EmojiButton.EmojiButton();
 
             document
                 .getElementById('emojiBtn')
@@ -627,12 +628,12 @@ $subTitle = 'Chat';
 
                 });
 
-            picker.on('emoji', emoji => {
+            picker.on('emoji', selection => {
 
                 editor.model.change(writer => {
 
                     writer.insertText(
-                        emoji,
+                        selection.emoji,
                         editor.model.document.selection.getFirstPosition()
                     );
 
