@@ -288,7 +288,6 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/admin/call-reports', [CallReportController::class, 'index'])->name('call.reports.index');
     Route::get('/dashboard/junior/call-reports', [CallReportController::class, 'junior'])->name('call.reports.junior');
-    Route::get('/dashboard/junior/chat', [ChatController::class, 'junior'])->name('chat.junior');
     Route::get('/dashboard/juniormonthly/call-reports', [CallReportController::class, 'juniormonthly'])->name('call.reports.juniormonthly');
     Route::get('/dashboard/senior/call-reports', [CallReportController::class, 'senior'])->name('call.reports.senior');
     Route::get('/dashboard/seniormonthly/call-reports', [CallReportController::class, 'seniormonthly'])->name('call.reports.seniormonthly');
@@ -361,7 +360,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('/dashboard/associate/candidateadd', [GoogleSheetController::class, 'candidateStore'])->name('all.associate.add');
 
     Route::get('/dashboard/group/senior', [UserController::class, 'seniorgroup'])->name('senior.group');
-    Route::get('/chat', [ChatController::class, 'junior'])->name('chat.index');
+    Route::get('/dashboard/junior/chat', [ChatController::class, 'junior'])->name('chat.junior');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
     Route::get('/latest-messages', [ChatController::class, 'latestMessages'])->name('chat.latestMessages');
     Route::get('/chat/refresh-users', [ChatController::class, 'refreshChatUsers'])->name('chat.refreshUsers');
