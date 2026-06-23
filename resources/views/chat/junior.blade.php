@@ -626,8 +626,13 @@ $subTitle = 'Chat';
 
 <script>
     const authUserId = parseInt("{{ Auth::id() }}");
+    let refreshRunning = false;
 
     function refreshUsers() {
+        if (refreshRunning) {
+            return;
+        }
+        refreshRunning = true;
         $.ajax({
             url: "{{ route('chat.refreshUsers') }}",
             type: "GET",
@@ -866,11 +871,14 @@ $subTitle = 'Chat';
             },
             error: function(xhr) {
                 console.log(xhr.responseText);
+            },
+            complete: function() {
+                refreshRunning = false;
             }
         });
     }
 
-    setInterval(refreshUsers, 3000);
+    setInterval(refreshUsers, 6000);
 </script>
 
 
