@@ -190,21 +190,27 @@ $subTitle = 'Chat';
 
                     <div class="mb-2">
 
-                        <iframe
-                            src="{{ asset('storage/app/public/'.$reply->file_path) }}"
-                            width="100%"
-                            height="500"
-                            class="border rounded">
-                        </iframe>
+                        <a
+                            href="{{ asset('storage/app/public/'.$reply->file_path) }}"
+                            target="_blank">
+
+                            <iframe
+                                src="{{ asset('storage/app/public/'.$reply->file_path) }}"
+                                width="100%"
+                                height="500"
+                                class="border rounded">
+                            </iframe>
+
+                        </a>
 
                         <div class="mt-2">
 
                             <a
                                 href="{{ asset('storage/app/public/'.$reply->file_path) }}"
-                                target="_blank"
+                                download="{{ $reply->file_name }}"
                                 class="btn btn-sm btn-primary">
 
-                                View PDF
+                                Download PDF
 
                             </a>
 
@@ -296,11 +302,26 @@ $subTitle = 'Chat';
                     @if($reply->message_type == 'image' && $reply->file_path)
 
                     <div class="mb-2">
+
                         <img
                             src="{{ asset('storage/app/public/'.$reply->file_path) }}"
                             class="img-fluid rounded"
                             style="max-width:300px;cursor:pointer"
                             onclick="window.open(this.src,'_blank')">
+
+                        <div class="mt-2">
+
+                            <a
+                                href="{{ asset('storage/app/public/'.$reply->file_path) }}"
+                                download="{{ $reply->file_name }}"
+                                class="btn btn-sm btn-primary">
+
+                                Download Image
+
+                            </a>
+
+                        </div>
+
                     </div>
 
                     @elseif($reply->message_type == 'pdf' && $reply->file_path)
@@ -705,33 +726,61 @@ $subTitle = 'Chat';
                             message.replies.forEach(function(reply) {
                                 if (reply.message_type === 'image' && reply.file_path) {
                                     html += `
-                                    <div class="mb-2">
-                                        <img 
-                                            src="/storage/app/public/${reply.file_path}" 
-                                            class="img-fluid rounded" 
-                                            style="max-width:300px;cursor:pointer"
-                                            onclick="window.open(this.src,'_blank')">
-                                    </div>
-                                `;
+                                        <div class="mb-2">
+
+                                            <img
+                                                src="/storage/app/public/${reply.file_path}"
+                                                class="img-fluid rounded"
+                                                style="max-width:300px;cursor:pointer"
+                                                onclick="window.open(this.src,'_blank')">
+
+                                            <div class="mt-2">
+
+                                                <a
+                                                    href="/storage/app/public/${reply.file_path}"
+                                                    download="${reply.file_name}"
+                                                    class="btn btn-sm btn-primary">
+
+                                                    Download Image
+
+                                                </a>
+
+                                            </div>
+
+                                        </div>
+                                        `;
                                 } else if (reply.message_type === 'pdf' && reply.file_path) {
                                     html += `
-                                    <div class="mb-2">
-                                        <iframe 
-                                            src="/storage/app/public/${reply.file_path}" 
-                                            width="100%" 
-                                            height="500" 
-                                            class="border rounded">
-                                        </iframe>
-                                        <div class="mt-2">
-                                            <a 
-                                                href="/storage/app/public/${reply.file_path}" 
-                                                target="_blank" 
-                                                class="btn btn-sm btn-primary">
-                                                Download PDF
+                                        <div class="mb-2">
+
+                                            <a
+                                                href="/storage/app/public/${reply.file_path}"
+                                                target="_blank">
+
+                                                <iframe
+                                                    src="/storage/app/public/${reply.file_path}"
+                                                    width="100%"
+                                                    height="500"
+                                                    class="border rounded">
+                                                </iframe>
+
                                             </a>
+
+                                            <div class="mt-2">
+
+                                                <a
+                                                    href="/storage/app/public/${reply.file_path}"
+                                                    download="${reply.file_name}"
+                                                    class="btn btn-sm btn-primary">
+
+                                                    Download PDF
+
+                                                </a>
+
+                                            </div>
+
                                         </div>
-                                    </div>
-                                `;
+                                        `;
                                 } else if ((reply.message_type === 'file' || reply.message_type === 'document') && reply.file_path) {
                                     html += `
                                     <div class="border rounded p-2 mb-2">
