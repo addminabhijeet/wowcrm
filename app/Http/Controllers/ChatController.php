@@ -110,6 +110,11 @@ class ChatController extends Controller
     {
         // Main message
         $parentChat = new Chat();
+        $request->validate([
+            'receiver_id' => 'required|exists:users,id',
+            'attachment.*' => 'nullable|file|max:10240',
+            'image_attachment.*' => 'nullable|image|max:10240',
+        ]);
 
         $parentChat->sender_id = Auth::id();
         $parentChat->receiver_id = $request->receiver_id;

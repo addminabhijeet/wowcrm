@@ -70,12 +70,14 @@ class Chat extends Model
 
     public function getFormattedTimeAttribute()
     {
-        return $this->created_at->format('h:i A');
+        return $this->created_at
+            ? $this->created_at->format('h:i A')
+            : '';
     }
 
     public function getFileSizeFormattedAttribute()
     {
-        $bytes = $this->file_size;
+        $bytes = $this->file_size ?? 0;
         $units = ['B', 'KB', 'MB', 'GB'];
         $bytes = max($bytes, 0);
         $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
@@ -129,7 +131,7 @@ class Chat extends Model
     public function getMessagePreviewAttribute()
     {
         return \Illuminate\Support\Str::limit(
-            trim(strip_tags(html_entity_decode($this->message))),
+            trim(strip_tags(html_entity_decode($this->message ?? ''))),
             50
         );
     }
