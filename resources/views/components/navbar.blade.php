@@ -138,7 +138,7 @@ $userImage = Auth::user()->image
                         </div>
 
                         <div class="text-center py-12 px-16">
-                            <a href="{{ route('chat.index') }}" class="text-primary-600 fw-semibold text-md">See All
+                            <a href="{{ route('chat.junior') }}" class="text-primary-600 fw-semibold text-md">See All
                                 Message</a>
                         </div>
                     </div>
