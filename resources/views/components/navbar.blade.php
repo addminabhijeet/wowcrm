@@ -864,7 +864,7 @@ $userImage = Auth::user()->image
                     let html = '';
 
                     data.users.forEach(user => {
-                        const chatBaseUrl = "{{ route('chat.index') }}";
+                        const chatBaseUrl = "{{ route('chat.junior') }}";
                         html += `
                         <a href="${chatBaseUrl}?user=${user.id}"
                            class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
