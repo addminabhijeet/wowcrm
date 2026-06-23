@@ -478,7 +478,25 @@ $subTitle = 'Chat';
                 hidden>
 
 
+            <div class="mb-2">
 
+                <button
+                    type="button"
+                    id="emojiBtn"
+                    class="btn btn-sm btn-light">
+
+                    <button
+                        type="button"
+                        id="emojiBtn"
+                        class="text-xl">
+
+                        <iconify-icon icon="fluent-emoji-high-contrast:grinning-face"></iconify-icon>
+
+                    </button>
+
+                </button>
+
+            </div>
             <div class="chat-message-box-action">
                 <div id="attachmentPreview"
                     class="mb-2"
@@ -595,12 +613,37 @@ $subTitle = 'Chat';
         this.files = imageFiles.files;
     });
 </script>
+<script src="https://cdn.jsdelivr.net/npm/@joeattardi/emoji-button@4.6.4/dist/index.min.js"></script>
 <script>
     ClassicEditor
         .create(document.querySelector('#editor'))
         .then(editor => {
 
             window.chatEditor = editor;
+            const picker = new EmojiButton();
+
+            document
+                .getElementById('emojiBtn')
+                .addEventListener('click', () => {
+
+                    picker.togglePicker(
+                        document.getElementById('emojiBtn')
+                    );
+
+                });
+
+            picker.on('emoji', emoji => {
+
+                editor.model.change(writer => {
+
+                    writer.insertText(
+                        emoji,
+                        editor.model.document.selection.getFirstPosition()
+                    );
+
+                });
+
+            });
 
             // Preserve sidebar height
             document.querySelector('.chat-sidebar').style.height = '100%';
