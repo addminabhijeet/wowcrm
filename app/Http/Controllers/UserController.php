@@ -364,35 +364,40 @@ class UserController extends Controller
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email,' . $user->id,
             'phone'       => 'nullable|string|max:20',
-            'gender' => 'nullable|string',
             'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
-            'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'password'    => 'nullable|string|min:6|confirmed',
         ]);
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
-        // Handle Image Upload directly to public/user_images
+        /* ================= IMAGE UPLOAD FIX ================= */
+
         if ($request->hasFile('image')) {
             $file = $request->file('image');
 
-            // Generate unique filename
+            $uploadPath = 'user_images';
+
+            // Ensure directory exists
+            if (!File::exists(public_path($uploadPath))) {
+                File::makeDirectory(public_path($uploadPath), 0755, true);
+            }
+
             $timestamp = now()->format('Ymd_His');
-            $filename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+            $filename  = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
             $extension = $file->getClientOriginalExtension();
-            $newName = Str::slug($filename) . "_{$timestamp}.{$extension}";
+            $newName   = Str::slug($filename) . "_{$timestamp}.{$extension}";
 
             try {
-                // Move file directly to public/user_images
-                $file->move(public_path('user_images'), $newName);
+                // Same upload method as juniorupdate()
+                $file->storeAs($uploadPath, $newName, 'public');
 
-                // Delete old image if exists
-                if ($user->image && file_exists(public_path($user->image))) {
-                    unlink(public_path($user->image));
+                // Delete old image
+                if ($user->image && File::exists(public_path($user->image))) {
+                    File::delete(public_path($user->image));
                 }
 
-                // Store relative path for asset()
-                $validated['image'] = 'user_images/' . $newName;
+                // Save relative path
+                $validated['image'] = $uploadPath . '/' . $newName;
             } catch (\Exception $e) {
                 return back()->with('error', 'Image upload failed: ' . $e->getMessage());
             }
