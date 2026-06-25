@@ -1432,7 +1432,7 @@ class CallReportController extends Controller
             ->where('is_deleted', 0);
 
         // ✅ Only restrict if NOT admin (new condition added)
-        if ($user->role !== 'admin') {
+        if (!in_array($user->role, ['admin', 'career'])) {
             $query->whereIn('id', $groupIds);
         }
 
