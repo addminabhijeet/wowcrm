@@ -932,6 +932,23 @@ $role = Auth::user()->role;
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
                 </ul>
             </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:document-20-regular" class="menu-icon"></iconify-icon>
+                    <span>Report</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.alljuniorlist') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter
+                            Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.allseniorlist') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter
+                            Report</a></li>
+                </ul>
+            </li>
             @endif
 
             {{-- ================= Trainer ================= --}}
