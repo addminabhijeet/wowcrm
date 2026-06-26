@@ -112,7 +112,6 @@ $script = '<script>
             <table class="table bordered-table sm-table mb-0">
                 <thead>
                     <tr>
-                        <th scope="col" class="text-center" style="width:60px;">Copy</th>
                         <th scope="col" class="text-center">Row</th>
                         <th scope="col" class="text-center">Date</th>
                         <th scope="col" class="text-center">Name</th>
@@ -139,16 +138,16 @@ $script = '<script>
                 <tbody id="sheet-table-body">
                     @foreach ($data as $row)
                     <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
-                        <td class="text-center">
+                        <td class="text-center align-middle">
                             <button
                                 type="button"
-                                class="btn btn-sm btn-primary copy-row-btn"
-                                title="Copy Entire Row">
-                                <i class="fas fa-copy"></i>
+                                class="btn btn-link btn-sm p-0 me-1 copy-row-btn"
+                                title="Copy Row">
+                                <i class="fas fa-copy text-primary"></i>
                             </button>
-                        </td>
 
-                        <td>{{ $row->sheet_row_number }}</td>
+                            <strong>{{ $row->sheet_row_number }}</strong>
+                        </td>
 
                         {{-- Date --}}
                         <td>
