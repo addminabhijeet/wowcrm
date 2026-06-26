@@ -141,11 +141,10 @@ $script = '<script>
                         <td class="text-center align-middle">
                             <button
                                 type="button"
-                                class="btn btn-link btn-sm p-0 me-1 copy-row-btn"
-                                title="Copy Row">
-                                <i class="fas fa-copy text-primary"></i>
+                                class="btn btn-sm btn-primary copy-row-btn"
+                                title="Copy Entire Row">
+                                <i class="fas fa-copy"></i>
                             </button>
-
                             <strong>{{ $row->sheet_row_number }}</strong>
                         </td>
 
