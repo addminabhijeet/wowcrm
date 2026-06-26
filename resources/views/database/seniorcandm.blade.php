@@ -85,20 +85,13 @@ $script = '<script>
                     <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
 
                         <td class="text-center align-middle">
-
                             <button
                                 type="button"
-                                class="btn btn-link btn-sm p-0 me-1 copy-row-btn"
+                                class="btn btn-sm btn-primary copy-row-btn"
                                 title="Copy Entire Row">
-
-                                <i class="fas fa-copy text-primary"></i>
-
+                                <i class="fas fa-copy"></i>
                             </button>
-
-                            <strong class="row-number">
-                                {{ $row->sheet_row_number }}
-                            </strong>
-
+                            <strong>{{ $row->sheet_row_number }}</strong>
                         </td>
 
 
@@ -1661,37 +1654,39 @@ $script = '<script>
 
         const row = btn.closest("tr");
 
-        // Row Number
-        const rowNo = row.querySelector(".row-number")?.innerText.trim() || "";
-
         let values = [];
 
-        // Include Row Number first
-        values.push("Row : " + rowNo);
-
-        // Copy all visible fields
         row.querySelectorAll("input, select, textarea").forEach(function(el) {
 
+            // Skip hidden/file inputs
             if (el.type === "hidden" || el.type === "file") return;
 
             values.push(el.value.trim());
-
         });
 
-        const copiedText = values.join("\n");
+        // Include row number
+        const rowNo = row.querySelector("td:nth-child(2)").innerText.trim();
+
+        const text =
+            "Row : " + rowNo + "\n\n" +
+            values.join("\t");
 
         try {
 
-            await navigator.clipboard.writeText(copiedText);
+            await navigator.clipboard.writeText(text);
 
-            const originalHtml = btn.innerHTML;
+            const icon = btn.innerHTML;
 
-            btn.innerHTML =
-                '<i class="fas fa-check text-success"></i>';
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+
+            btn.classList.remove("btn-primary");
+            btn.classList.add("btn-success");
 
             setTimeout(function() {
 
-                btn.innerHTML = originalHtml;
+                btn.innerHTML = icon;
+                btn.classList.remove("btn-success");
+                btn.classList.add("btn-primary");
 
             }, 1000);
 
@@ -1703,6 +1698,4 @@ $script = '<script>
 
     });
 </script>
-
-
 @endsection
