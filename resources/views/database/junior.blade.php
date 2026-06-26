@@ -112,6 +112,7 @@ $script = '<script>
             <table class="table bordered-table sm-table mb-0">
                 <thead>
                     <tr>
+                        <th scope="col" class="text-center" style="width:60px;">Copy</th>
                         <th scope="col" class="text-center">Row</th>
                         <th scope="col" class="text-center">Date</th>
                         <th scope="col" class="text-center">Name</th>
@@ -138,6 +139,14 @@ $script = '<script>
                 <tbody id="sheet-table-body">
                     @foreach ($data as $row)
                     <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
+                        <td class="text-center">
+                            <button
+                                type="button"
+                                class="btn btn-sm btn-primary copy-row-btn"
+                                title="Copy Entire Row">
+                                <i class="fas fa-copy"></i>
+                            </button>
+                        </td>
 
                         <td>{{ $row->sheet_row_number }}</td>
 
@@ -1738,6 +1747,59 @@ $script = '<script>
         bottomScrollWrapper.addEventListener("scroll", function() {
             topScrollWrapper.scrollLeft = bottomScrollWrapper.scrollLeft;
         });
+    });
+</script>
+
+<script>
+    document.addEventListener("click", async function(e) {
+
+        const btn = e.target.closest(".copy-row-btn");
+        if (!btn) return;
+
+        const row = btn.closest("tr");
+
+        let values = [];
+
+        row.querySelectorAll("input, select, textarea").forEach(function(el) {
+
+            // Skip hidden/file inputs
+            if (el.type === "hidden" || el.type === "file") return;
+
+            values.push(el.value.trim());
+        });
+
+        // Include row number
+        const rowNo = row.querySelector("td:nth-child(2)").innerText.trim();
+
+        const text =
+            "Row : " + rowNo + "\n\n" +
+            values.join("\t");
+
+        try {
+
+            await navigator.clipboard.writeText(text);
+
+            const icon = btn.innerHTML;
+
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+
+            btn.classList.remove("btn-primary");
+            btn.classList.add("btn-success");
+
+            setTimeout(function() {
+
+                btn.innerHTML = icon;
+                btn.classList.remove("btn-success");
+                btn.classList.add("btn-primary");
+
+            }, 1000);
+
+        } catch (err) {
+
+            alert("Unable to copy.");
+
+        }
+
     });
 </script>
 
