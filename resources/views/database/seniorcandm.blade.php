@@ -84,7 +84,23 @@ $script = '<script>
                     @foreach ($data as $row)
                     <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
 
-                        <td>{{ $row->sheet_row_number }}</td>
+                        <td class="text-center align-middle">
+
+                            <button
+                                type="button"
+                                class="btn btn-link btn-sm p-0 me-1 copy-row-btn"
+                                title="Copy Entire Row">
+
+                                <i class="fas fa-copy text-primary"></i>
+
+                            </button>
+
+                            <strong class="row-number">
+                                {{ $row->sheet_row_number }}
+                            </strong>
+
+                        </td>
+
 
                         {{-- Date --}}
                         <td>
@@ -263,7 +279,7 @@ $script = '<script>
                             <input type="text" class="form-control remark-autocomplete" data-key="Remark"
                                 value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                         </td>
-                        
+
                         {{-- Installment --}}
                         <td>
                             <input type="checkbox"
@@ -1637,7 +1653,56 @@ $script = '<script>
         });
     });
 </script>
+<script>
+    document.addEventListener("click", async function(e) {
 
+        const btn = e.target.closest(".copy-row-btn");
+        if (!btn) return;
+
+        const row = btn.closest("tr");
+
+        // Row Number
+        const rowNo = row.querySelector(".row-number")?.innerText.trim() || "";
+
+        let values = [];
+
+        // Include Row Number first
+        values.push("Row : " + rowNo);
+
+        // Copy all visible fields
+        row.querySelectorAll("input, select, textarea").forEach(function(el) {
+
+            if (el.type === "hidden" || el.type === "file") return;
+
+            values.push(el.value.trim());
+
+        });
+
+        const copiedText = values.join("\n");
+
+        try {
+
+            await navigator.clipboard.writeText(copiedText);
+
+            const originalHtml = btn.innerHTML;
+
+            btn.innerHTML =
+                '<i class="fas fa-check text-success"></i>';
+
+            setTimeout(function() {
+
+                btn.innerHTML = originalHtml;
+
+            }, 1000);
+
+        } catch (err) {
+
+            alert("Unable to copy.");
+
+        }
+
+    });
+</script>
 
 
 @endsection
