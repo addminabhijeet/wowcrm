@@ -196,7 +196,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('/dashboard/senior/google-sheet/seniorstore', [GoogleSheetController::class, 'seniorstore'])->name('seniorstore');
     Route::post('/dashboard/senior/google-sheet/seniorstoremod', [GoogleSheetController::class, 'seniorstoremod'])->name('seniorstoremod');
     Route::get('/dashboard/senior/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewseniorResume'])->name('viewseniorResume');
-    Route::get('/dashboard/senior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadseniorResume'])->name('download.resume');
+    Route::get('/dashboard/senior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadseniorResume'])->name('downloadseniorResume');
     Route::get('/dashboard/senior/google-sheet/view-updateresume/{id}', [GoogleSheetController::class, 'viewseniorUpdateResume'])->name('view.updateresume');
     Route::get('/dashboard/senior/google-sheet/download-updateresume/{id}', [GoogleSheetController::class, 'downloadseniorUpdateResume'])->name('download.updateresume');
     Route::get('/dashboard/senior/google-sheet/view-acceptance/{id}', [GoogleSheetController::class, 'viewseniorAcceptance'])->name('view.acceptance');
@@ -249,7 +249,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('/dashboard/junior/google-sheet/juniorupdate', [GoogleSheetController::class, 'juniorupdate'])->name('juniorupdate');
     Route::post('/dashboard/junior/google-sheet/juniorupdaterejected', [GoogleSheetController::class, 'juniorupdaterejected'])->name('juniorupdaterejected');
     Route::get('/dashboard/junior/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewjuniorResume'])->name('viewjuniorResume');
-    Route::get('/dashboard/junior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadjuniorResume'])->name('download.resume');
+    Route::get('/dashboard/junior/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadjuniorResume'])->name('downloadjuniorResume');
 
     Route::get('/dashboard/trainer/google-sheet', [GoogleSheetController::class, 'trainer'])->name('google.sheet.trainer');
     Route::get('/dashboard/trainer/google-sheet-completed', [GoogleSheetController::class, 'trainercompleted'])->name('google.sheet.trainercompleted');
@@ -259,7 +259,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('/dashboard/trainer/google-sheet/trainerstore', [GoogleSheetController::class, 'trainertore'])->name('trainerstore');
     Route::post('/dashboard/trainer/google-sheet/trainerupdate', [GoogleSheetController::class, 'trainerupdate'])->name('trainerupdate');
     Route::get('/dashboard/trainer/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewtrainerResume'])->name('viewtrainerResume');
-    Route::get('/dashboard/trainer/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadtrainerResume'])->name('download.resume');
+    Route::get('/dashboard/trainer/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadtrainerResume'])->name('downloadtrainerResume');
 
     Route::get('/dashboard/accountant/google-sheet', [GoogleSheetController::class, 'accountant'])->name('google.sheet.accountant');
     Route::post('/dashboard/accountant/google-sheet/fetch', [GoogleSheetController::class, 'accountantfetch'])->name('google.sheet.accountantfetch');
@@ -271,7 +271,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('/dashboard/accountant/google-sheet/accountantupdatecon', [GoogleSheetController::class, 'accountantupdatecon'])->name('accountantupdatecon');
     Route::post('/dashboard/accountant/google-sheet/accountantupdatever', [GoogleSheetController::class, 'accountantupdatever'])->name('accountantupdatever');
     Route::get('/dashboard/accountant/google-sheet/view-resume/{id}', [GoogleSheetController::class, 'viewaccountantResume'])->name('viewaccountantResume');
-    Route::get('/dashboard/accountant/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadaccountantResume'])->name('download.resume');
+    Route::get('/dashboard/accountant/google-sheet/download-resume/{id}', [GoogleSheetController::class, 'downloadaccountantResume'])->name('downloadaccountantResume');
     Route::post('/dashboard/check-email', [GoogleSheetController::class, 'checkEmail'])->name('check.uniqueemail');
 
     Route::get('/dashboard/accountant/candidate', [CandidateController::class, 'accountant'])->name('candidate.accountant');
