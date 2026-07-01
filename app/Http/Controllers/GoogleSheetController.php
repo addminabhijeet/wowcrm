@@ -1989,7 +1989,7 @@ class GoogleSheetController extends Controller
             return view('database.partials.seniortrafollow_table', [
                 'data' => $pagedData,
                 'juniorUsers' => $juniorUsers
-            ]);
+            ])->render();
         }
 
         return view('database.seniortrafollow', [
