@@ -775,9 +775,11 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        // -----------------------------
+        // Pagination
+        // -----------------------------
         $perPage = 10;
         $currentPage = $page;
-
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
             $transformed->forPage($currentPage, $perPage),
             $transformed->count(),
@@ -785,7 +787,11 @@ class GoogleSheetController extends Controller
             $currentPage,
             [
                 'path' => url()->current(),
-                'query' => $request->query()
+                'query' => [
+                    'search' => $request->search,
+                    'junior_user' => $request->junior_user,
+                    'date' => $request->date
+                ]
             ]
         );
 
