@@ -1123,9 +1123,9 @@ $script = '<script>
             };
         }
 
-        /* -----------------------------
-           Fetch Table (single source)
-        ----------------------------- */
+        /* ------------------------------ */
+        /* Fetch Table (Enhanced Version) */
+        /* ------------------------------ */
         function fetchTable({
             search = '',
             page = 1,
@@ -1133,35 +1133,51 @@ $script = '<script>
             row_id = ''
         } = {}) {
 
+            // Ensure page is a number
+            page = parseInt(page) || 1;
+
+            console.log('Fetching table with params:', {
+                search,
+                page,
+                junior_user,
+                row_id
+            });
+
             $.ajax({
                 url: "{{ route('google.sheet.seniortrafollow') }}",
                 type: "GET",
                 data: {
-                    search,
-                    page,
-                    junior_user,
-                    row_id
+                    search: search,
+                    page: page,
+                    junior_user: junior_user,
+                    row_id: row_id
                 },
                 success: function(res) {
                     $('#senior-table-wrapper').html(res);
+
+                    // Re-initialize all event handlers for newly added DOM elements
+                    applyInitialState(document);
+
+                    console.log('Table updated successfully');
                 },
                 error: function(err) {
-                    console.error(err);
+                    console.error('Fetch error:', err);
+                    alert('Error loading table. Check console for details.');
                 }
             });
         }
 
-        /* -----------------------------
-           Live Suggestions
-        ----------------------------- */
+        /* ------------------------------ */
+        /* Live Suggestions */
+        /* ------------------------------ */
         const loadSuggestions = debounce(function() {
-
             const query = $('#senior-search').val().trim();
             const junior_user = $('#junior-filter').val();
 
             if (query.length < 3) {
                 $('#search-suggestions').hide().empty();
                 fetchTable({
+                    page: 1, // Reset to first page
                     junior_user
                 });
                 return;
@@ -1175,22 +1191,21 @@ $script = '<script>
                     junior_user
                 },
                 success: function(res) {
-
                     let html = '';
 
                     if (res.length) {
                         res.forEach(item => {
                             html += `
-                        <a href="#"
-                           class="list-group-item list-group-item-action"
-                           data-id="${item.id}">
-                           ${item.sheet_row_number} |
-                           ${item.Name} |
-                           ${item.Email_Address} |
-                           ${item.Phone_Number} |
-                           ${item.Exe_Remarks} |
-                           ${item.forwarded_by}
-                        </a>`;
+                    <a href="#"
+                       class="list-group-item list-group-item-action"
+                       data-id="${item.id}">
+                       ${item.sheet_row_number} |
+                       ${item.Name} |
+                       ${item.Email_Address} |
+                       ${item.Phone_Number} |
+                       ${item.Exe_Remarks} |
+                       ${item.forwarded_by}
+                    </a>`;
                         });
                     } else {
                         html = `<span class="list-group-item">No results found</span>`;
@@ -1199,9 +1214,7 @@ $script = '<script>
                     $('#search-suggestions').html(html).show();
                 }
             });
-
         }, 300);
-
         $('#senior-search').on('input', loadSuggestions);
 
         /* -----------------------------
@@ -1219,28 +1232,44 @@ $script = '<script>
             $('#search-suggestions').hide().empty();
         });
 
-        /* -----------------------------
-           Junior Filter Change
-        ----------------------------- */
+        /* ------------------------------ */
+        /* Junior Filter Change */
+        /* ------------------------------ */
         $('#junior-filter').on('change', function() {
             fetchTable({
+                page: 1, // Reset to first page
                 junior_user: this.value,
                 search: $('#senior-search').val().trim()
             });
         });
+        /* ----------------------------- */
+        /* PAGINATION FIX (🔥 IMPROVED) */
+        /* ----------------------------- */
 
-        /* -----------------------------
-           PAGINATION FIX (🔥 KEY PART)
-        ----------------------------- */
+        // Use document delegation for dynamically created pagination links
         $(document).on('click', '.pagination a', function(e) {
             e.preventDefault();
+            e.stopPropagation();
 
-            const page = new URL($(this).attr('href')).searchParams.get('page');
+            const href = $(this).attr('href');
+
+            // Extract page number from URL
+            const url = new URL(href, window.location.origin);
+            const page = url.searchParams.get('page') || 1;
+
+            const junior_user = $('#junior-filter').val();
+            const search = $('#senior-search').val().trim();
+
+            console.log('Pagination clicked:', {
+                page,
+                junior_user,
+                search
+            });
 
             fetchTable({
                 page,
-                junior_user: $('#junior-filter').val(),
-                search: $('#senior-search').val().trim()
+                junior_user,
+                search
             });
         });
 
