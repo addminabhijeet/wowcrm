@@ -1976,24 +1976,13 @@ class GoogleSheetController extends Controller
         // Pagination
         // -----------------------------
         $perPage = 10;
-
-        // Let Laravel detect the current page automatically
-        $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
-
-        $items = $transformed
-            ->values()                     // reset collection keys
-            ->forPage($currentPage, $perPage);
-
+        $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $items,
+            $transformed->forPage($currentPage, $perPage),
             $transformed->count(),
             $perPage,
             $currentPage,
-            [
-                'path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath(),
-                'pageName' => 'page',
-                'query' => $request->except('page'),
-            ]
+            ['path' => url()->current(), 'query' => $request->query()]
         );
 
         // -----------------------------
