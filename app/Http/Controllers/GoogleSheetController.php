@@ -1866,9 +1866,8 @@ class GoogleSheetController extends Controller
         $userPattern = "%:" . $authUser->id . "|senior";
         $zeroPattern = "%:0|senior";
 
-        // -----------------------------
-        // Original query (do not change)
-        // -----------------------------
+        // ... (keep all existing query code exactly the same)
+
         $query = GoogleSheetData::where(function ($outer) use ($authUser, $userPattern, $zeroPattern) {
             $outer->where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
                 $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
@@ -1910,9 +1909,7 @@ class GoogleSheetController extends Controller
 
         $results = $query->orderBy('updated_at', 'desc')->get();
 
-        // -----------------------------
         // Filter only assigned juniors
-        // -----------------------------
         $assignedJuniorIds = $authUser->group ?? [];
         $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds, $authUser) {
             if (empty($item->created_by)) return false;
@@ -1923,12 +1920,10 @@ class GoogleSheetController extends Controller
                 $userId = $parts[0] ?? null;
                 $role   = $parts[1] ?? null;
 
-                // Keep if junior is assigned
                 if ($role === 'junior' && in_array((int)$userId, $assignedJuniorIds)) {
                     return true;
                 }
 
-                // Include rows created by the senior themselves
                 if ($role === 'senior' && $userId == $authUser->id) {
                     return true;
                 }
@@ -1937,9 +1932,7 @@ class GoogleSheetController extends Controller
             return false;
         });
 
-        // -----------------------------
         // Transform forwarded_by
-        // -----------------------------
         $transformed = $filteredResults->map(function ($item) use ($authUser) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
@@ -1972,9 +1965,7 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // -----------------------------
         // Pagination
-        // -----------------------------
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
@@ -1985,9 +1976,7 @@ class GoogleSheetController extends Controller
             ['path' => url()->current(), 'query' => $request->query()]
         );
 
-        // -----------------------------
         // Dropdown: only assigned juniors
-        // -----------------------------
         $juniorUsers = \App\Models\User::where('is_deleted', 0)
             ->where('role', 'junior')
             ->whereIn('id', $assignedJuniorIds)
@@ -1995,17 +1984,19 @@ class GoogleSheetController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-        // -----------------------------
-        // Return view
-        // -----------------------------
+        // ✅ FIX: Return partial view for AJAX requests
         if ($request->ajax()) {
-            return view('database.partials.seniortrafollow_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.seniortrafollow_table', [
+                'data' => $pagedData,
+                'juniorUsers' => $juniorUsers
+            ]);
         }
 
-        return view('database.seniortrafollow', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+        return view('database.seniortrafollow', [
+            'data' => $pagedData,
+            'juniorUsers' => $juniorUsers
+        ]);
     }
-
-
     public function seniorcandmupdate(Request $request)
     {
         $id = $request->input('id');
