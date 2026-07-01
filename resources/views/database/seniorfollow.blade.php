@@ -1125,7 +1125,14 @@ $script = '<script>
             };
         }
 
-        function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
+        function fetchTable({
+            search = '',
+            page = 1,
+            junior_user = '',
+            row_id = '',
+            date = ''
+        } = {}) {
+
             $.ajax({
                 url: "{{ route('google.sheet.seniorfollow') }}",
                 type: 'GET',
@@ -1134,7 +1141,7 @@ $script = '<script>
                     page,
                     junior_user,
                     row_id,
-                    date // ✅ added
+                    date
                 },
                 success: function(res) {
                     $('#senior-table-wrapper').html(res);

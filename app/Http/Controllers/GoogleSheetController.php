@@ -738,7 +738,7 @@ class GoogleSheetController extends Controller
         // -----------------------------
         // Transform data
         // -----------------------------
-        $transformed = $filteredResults->values()->map(function ($item) use ($authUser) {
+        $transformed = $filteredResults->map(function ($item) use ($authUser) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
@@ -776,18 +776,16 @@ class GoogleSheetController extends Controller
         });
 
         $perPage = 10;
-        $currentPage = \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPage();
-
-        $items = $transformed->values();
+        $currentPage = $page;
 
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $items->slice(($currentPage - 1) * $perPage, $perPage)->values(),
-            $items->count(),
+            $transformed->forPage($currentPage, $perPage),
+            $transformed->count(),
             $perPage,
             $currentPage,
             [
-                'path' => \Illuminate\Pagination\LengthAwarePaginator::resolveCurrentPath(),
-                'query' => $request->query(),
+                'path' => url()->current(),
+                'query' => $request->query()
             ]
         );
 
