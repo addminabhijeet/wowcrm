@@ -1143,10 +1143,6 @@ $script = '<script>
                 },
                 success: function(res) {
                     $('#senior-table-wrapper').html(res);
-
-                    // Keep current filter values after AJAX refresh
-                    $('#senior-search').val(search);
-                    $('#junior-filter').val(junior_user);
                 },
                 error: function(err) {
                     console.error(err);
@@ -1164,9 +1160,7 @@ $script = '<script>
 
             if (query.length < 3) {
                 $('#search-suggestions').hide().empty();
-                fetchTable({
-                    junior_user
-                });
+                fetchTable('', 1, junior_user, '');
                 return;
             }
 
@@ -1174,8 +1168,8 @@ $script = '<script>
                 url: "{{ route('seniortrafollow.suggestions') }}",
                 type: "GET",
                 data: {
-                    query,
-                    junior_user
+                    query: query,
+                    junior_user: junior_user
                 },
                 success: function(res) {
                     let html = '';
@@ -1215,10 +1209,7 @@ $script = '<script>
             $('#senior-search').val($(this).text());
             $('#search-suggestions').hide().empty();
 
-            fetchTable({
-                row_id,
-                junior_user
-            });
+            fetchTable('', 1, junior_user, row_id);
         });
 
         /* ======================== */
