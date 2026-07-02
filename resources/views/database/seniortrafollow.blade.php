@@ -1143,6 +1143,10 @@ $script = '<script>
                 },
                 success: function(res) {
                     $('#senior-table-wrapper').html(res);
+
+                    // Keep current filter values after AJAX refresh
+                    $('#senior-search').val(search);
+                    $('#junior-filter').val(junior_user);
                 },
                 error: function(err) {
                     console.error(err);
@@ -1210,7 +1214,7 @@ $script = '<script>
 
             $('#senior-search').val($(this).text());
             $('#search-suggestions').hide().empty();
-            
+
             fetchTable({
                 row_id,
                 junior_user
