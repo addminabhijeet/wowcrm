@@ -1158,14 +1158,15 @@ $script = '<script>
         /* ======================== */
         /* LIVE SUGGESTIONS */
         /* ======================== */
-        const loadSuggestions = debounce(function() {
+        const loadSuggestions = debounce(function() { 
             const query = $('#senior-search').val().trim();
             const junior_user = $('#junior-filter').val();
 
             if (query.length < 3) {
                 $('#search-suggestions').hide().empty();
                 fetchTable({
-                    junior_user
+                    page: 1,
+                    junior_user: junior_user
                 });
                 return;
             }
@@ -1216,8 +1217,10 @@ $script = '<script>
             $('#search-suggestions').hide().empty();
 
             fetchTable({
-                row_id,
-                junior_user
+                row_id: row_id,
+                page: 1,
+                junior_user: junior_user,
+                search: $('#senior-search').val().trim()
             });
         });
 
@@ -1229,6 +1232,24 @@ $script = '<script>
                 junior_user: this.value,
                 search: $('#senior-search').val().trim()
             });
+        });
+
+        /* ======================== */
+        /* PAGINATION */
+        /* ======================== */
+        $(document).on('click', '#senior-table-wrapper .pagination a', function(e) {
+
+            e.preventDefault();
+
+            const url = new URL($(this).attr('href'));
+            const page = url.searchParams.get('page') || 1;
+
+            fetchTable({
+                page: page,
+                search: $('#senior-search').val().trim(),
+                junior_user: $('#junior-filter').val()
+            });
+
         });
 
         /* ======================== */
