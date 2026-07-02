@@ -1161,7 +1161,6 @@ $script = '<script>
             if (query.length < 3) {
                 $('#search-suggestions').hide().empty();
                 fetchTable({
-                    page: 1,
                     junior_user
                 });
                 return;
@@ -1206,13 +1205,16 @@ $script = '<script>
         $(document).on('click', '#search-suggestions a', function(e) {
             e.preventDefault();
 
-            fetchTable({
-                row_id: $(this).data('id'),
-                junior_user: $('#junior-filter').val()
-            });
+            const row_id = $(this).data('id');
+            const junior_user = $('#junior-filter').val();
 
             $('#senior-search').val($(this).text());
             $('#search-suggestions').hide().empty();
+            
+            fetchTable({
+                row_id,
+                junior_user
+            });
         });
 
         /* ======================== */
@@ -1220,7 +1222,6 @@ $script = '<script>
         /* ======================== */
         $('#junior-filter').on('change', function() {
             fetchTable({
-                page: 1,
                 junior_user: this.value,
                 search: $('#senior-search').val().trim()
             });
