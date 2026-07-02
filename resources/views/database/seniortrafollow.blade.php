@@ -1123,37 +1123,6 @@ $script = '<script>
         }
 
         /* ======================== */
-        /* PAGINATION HANDLER */
-        /* ======================== */
-        function attachPaginationHandlers() {
-            $(document).off('click', '.pagination a').on('click', '.pagination a', function(e) {
-                e.preventDefault();
-                e.stopPropagation();
-
-                const href = $(this).attr('href');
-                if (!href) return;
-
-                const url = new URL(href, window.location.origin);
-                const page = url.searchParams.get('page') || 1;
-
-                const junior_user = $('#junior-filter').val();
-                const search = $('#senior-search').val().trim();
-
-                console.log('Pagination:', {
-                    page,
-                    junior_user,
-                    search
-                });
-
-                fetchTable({
-                    page: parseInt(page),
-                    junior_user,
-                    search
-                });
-            });
-        }
-
-        /* ======================== */
         /* FETCH TABLE */
         /* ======================== */
         function fetchTable({
@@ -1163,40 +1132,21 @@ $script = '<script>
             row_id = ''
         } = {}) {
 
-            page = parseInt(page) || 1;
-
             $.ajax({
                 url: "{{ route('google.sheet.seniortrafollow') }}",
                 type: "GET",
-                dataType: "html",
-                cache: false,
                 data: {
-                    search: search,
-                    page: page,
-                    junior_user: junior_user,
-                    row_id: row_id
+                    search,
+                    page,
+                    junior_user,
+                    row_id
                 },
-
                 success: function(res) {
-
                     $('#senior-table-wrapper').html(res);
-
-                    attachPaginationHandlers();
-
-                    if (typeof applyInitialState === 'function') {
-                        applyInitialState(document);
-                    }
-
                 },
-
-                error: function(xhr) {
-
-                    console.log(xhr.status);
-
-                    console.log(xhr.responseText);
-
-                    alert(xhr.responseText);
-
+                error: function(err) {
+                    console.error(err);
+                    alert('Error loading table.');
                 }
             });
         }
@@ -1284,11 +1234,6 @@ $script = '<script>
                 $('#search-suggestions').hide().empty();
             }
         });
-
-        /* ======================== */
-        /* INITIAL SETUP */
-        /* ======================== */
-        attachPaginationHandlers(); // ✅ Attach on page load
 
     });
 </script>
