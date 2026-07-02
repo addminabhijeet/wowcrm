@@ -1967,14 +1967,20 @@ class GoogleSheetController extends Controller
 
         // Pagination
         $perPage = 10;
-        $currentPage = $page;
+        $currentPage = max((int) $request->input('page', 1), 1);
+
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($currentPage, $perPage),
+            $transformed->forPage($currentPage, $perPage)->values(),
             $transformed->count(),
             $perPage,
             $currentPage,
-            ['path' => url()->current(), 'query' => $request->query()]
+            [
+                'path' => $request->url(),
+                'query' => $request->except('page'),
+            ]
         );
+
+        $pagedData->appends($request->except('page'));
 
         // Dropdown: only assigned juniors
         $juniorUsers = \App\Models\User::where('is_deleted', 0)

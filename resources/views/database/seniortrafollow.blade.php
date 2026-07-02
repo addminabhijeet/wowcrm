@@ -1168,20 +1168,35 @@ $script = '<script>
             $.ajax({
                 url: "{{ route('google.sheet.seniortrafollow') }}",
                 type: "GET",
+                dataType: "html",
+                cache: false,
                 data: {
-                    search,
-                    page,
-                    junior_user,
-                    row_id
+                    search: search,
+                    page: page,
+                    junior_user: junior_user,
+                    row_id: row_id
                 },
+
                 success: function(res) {
+
                     $('#senior-table-wrapper').html(res);
-                    attachPaginationHandlers(); // ✅ KEY FIX
-                    applyInitialState(document);
+
+                    attachPaginationHandlers();
+
+                    if (typeof applyInitialState === 'function') {
+                        applyInitialState(document);
+                    }
+
                 },
-                error: function(err) {
-                    console.error(err);
-                    alert('Error loading table.');
+
+                error: function(xhr) {
+
+                    console.log(xhr.status);
+
+                    console.log(xhr.responseText);
+
+                    alert(xhr.responseText);
+
                 }
             });
         }
