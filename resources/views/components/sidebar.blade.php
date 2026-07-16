@@ -551,8 +551,6 @@ $role = Auth::user()->role;
                 </ul>
             </li>
 
-            
-
             <li class="dropdown">
                 <a href="javascript:void(0)">
                     <iconify-icon icon="fluent:mail-20-regular" class="menu-icon"></iconify-icon>
