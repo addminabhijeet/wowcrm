@@ -43,6 +43,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('/dashboard/admin/senior/store', [UserController::class, 'seniorstore'])->name('users.senior.store');
     Route::get('/dashboard/admin/senior/{id}/edit', [UserController::class, 'senioredit'])->name('users.senior.edit');
     Route::get('/dashboard/admin/senior/{id}/editgroup', [UserController::class, 'senioreditgroup'])->name('users.senior.editgroup');
+    Route::get('/dashboard/admin/senior/{id}/editgroupmail', [UserController::class, 'senioreditgroupmail'])->name('users.senior.editgroupmail');
     Route::put('/dashboard/admin/senior/update/{id}', [UserController::class, 'seniorupdate'])->name('users.senior.update');
     Route::put('/dashboard/admin/seniorgroup/update/{id}', [UserController::class, 'seniorgroupupdate'])->name('users.seniorgroup.update');
     Route::delete('/dashboard/admin/seniorgroup/{senior}/remove/{id}', [UserController::class, 'seniorgroupremove'])->name('users.seniorgroup.remove');

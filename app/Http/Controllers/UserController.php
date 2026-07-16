@@ -450,6 +450,33 @@ class UserController extends Controller
         return view('user.senioreditgroup', compact('user', 'juniors'));
     }
 
+    public function senioreditgroupmail($id)
+    {
+        $user = User::findOrFail($id);
+
+        $groupIds = User::where('id', '!=', $id)
+            ->whereNotNull('group')
+            ->pluck('group')
+            ->toArray();
+
+        $assignedJuniorIds = [];
+
+        foreach ($groupIds as $group) {
+            if (is_array($group)) {
+                $assignedJuniorIds = array_merge($assignedJuniorIds, $group);
+            }
+        }
+
+        $assignedJuniorIds = array_unique($assignedJuniorIds);
+
+        $juniors = User::where('role', 'junior')
+            ->where('is_deleted', 0)
+            ->whereNotIn('id', $assignedJuniorIds)
+            ->get();
+
+        return view('user.senioreditgroupmail', compact('user', 'juniors'));
+    }
+
     public function seniorgroupupdate(Request $request, $id)
     {
         $user = User::findOrFail($id);
