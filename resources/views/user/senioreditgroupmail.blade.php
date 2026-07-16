@@ -55,7 +55,7 @@ $script ='<script>
                     @method('PUT')
                     <div class="tab-content" id="pills-tabContent">
                         <div class="tab-pane fade show active" id="pills-edit-profile" role="tabpanel">
-                            <div class="row align-items-end"> <!-- ✅ align properly -->
+                            <div class="row align-items-end">
 
                                 <!-- Dropdown -->
                                 <div class="col-sm-6">
@@ -64,11 +64,11 @@ $script ='<script>
                                             Select Junior <span class="text-danger-600">*</span>
                                         </label>
 
-                                        <select name="group[]" id="junior" class="form-control radius-8 form-select" required>
+                                        <select name="mail[]" id="junior" class="form-control radius-8 form-select" required>
                                             <option value="" disabled selected>Select Junior</option>
 
                                             @foreach($juniors as $junior)
-                                            @if(!in_array($junior->id, $user->group ?? []))
+                                            @if(!in_array($junior->id, $user->mail ?? []))
                                             <option value="{{ $junior->id }}">
                                                 {{ $junior->name }}
                                             </option>
@@ -105,9 +105,10 @@ $script ='<script>
                         <div class="row">
                             <div class="col-12 mt-3">
                                 <h6>Assigned Juniors</h6>
-                                @if(!empty($user->group))
+
+                                @if(!empty($user->mail))
                                 @php
-                                $assignedJuniors = \App\Models\User::whereIn('id', $user->group)->get();
+                                $assignedJuniors = \App\Models\User::whereIn('id', $user->mail)->get();
                                 @endphp
 
                                 @foreach($assignedJuniors as $junior)
@@ -123,9 +124,11 @@ $script ='<script>
                                     </form>
                                 </div>
                                 @endforeach
+
                                 @else
                                 <p>No juniors assigned.</p>
                                 @endif
+
                             </div>
                         </div>
                     </div>
@@ -134,7 +137,5 @@ $script ='<script>
         </div>
     </div>
 </div>
-
-
 
 @endsection
