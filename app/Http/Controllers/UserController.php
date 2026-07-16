@@ -454,16 +454,16 @@ class UserController extends Controller
     {
         $user = User::findOrFail($id);
 
-        $groupIds = User::where('id', '!=', $id)
-            ->whereNotNull('group')
-            ->pluck('group')
+        $mailIds = User::where('id', '!=', $id)
+            ->whereNotNull('mail')
+            ->pluck('mail')
             ->toArray();
 
         $assignedJuniorIds = [];
 
-        foreach ($groupIds as $group) {
-            if (is_array($group)) {
-                $assignedJuniorIds = array_merge($assignedJuniorIds, $group);
+        foreach ($mailIds as $mail) {
+            if (is_array($mail)) {
+                $assignedJuniorIds = array_merge($assignedJuniorIds, $mail);
             }
         }
 
@@ -482,16 +482,16 @@ class UserController extends Controller
         $user = User::findOrFail($id);
 
         $validated = $request->validate([
-            'group' => 'nullable|array',
-            'group.*' => 'exists:users,id'
+            'mail' => 'nullable|array',
+            'mail.*' => 'exists:users,id'
         ]);
 
-        $existingGroups = $user->group ?? [];
-        $newGroup = $request->group ?? [];
+        $existingMail = $user->mail ?? [];
+        $newMail = $request->mail ?? [];
 
-        $mergedGroups = array_unique(array_merge($existingGroups, $newGroup));
+        $mergedMail = array_unique(array_merge($existingMail, $newMail));
 
-        $validated['group'] = $mergedGroups;
+        $validated['mail'] = $mergedMail;
 
         $user->update($validated);
 
@@ -518,17 +518,16 @@ class UserController extends Controller
     {
         $user = User::findOrFail($seniorId);
 
-        $groups = $user->group ?? [];
+        $mail = $user->mail ?? [];
 
-        // Remove junior id
-        $groups = array_values(array_diff($groups, [$juniorId]));
+        // Remove junior id 
+        $mail = array_values(array_diff($mail, [$juniorId]));
 
-        $user->group = $groups;
+        $user->mail = $mail;
         $user->save();
 
         return back()->with('success', 'Junior removed successfully');
     }
-
     // ======================
     // DELETE
     // ======================

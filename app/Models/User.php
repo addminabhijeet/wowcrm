@@ -28,6 +28,7 @@ class User extends Authenticatable
         'target_date',
         'due_date',
         'group',
+        'mail', // Added
     ];
 
     /**
@@ -50,6 +51,7 @@ class User extends Authenticatable
         'password' => 'hashed',
         'status' => 'boolean',
         'group' => 'array',
+        'mail' => 'array', // Added
     ];
 
     // User.php
