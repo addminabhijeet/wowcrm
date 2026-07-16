@@ -50,7 +50,7 @@ $script ='<script>
     <div class="col-12">
         <div class="card h-100">
             <div class="card-body p-24">
-                <form action="{{ route('users.seniorgroup.update', $user->id) }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('users.seniorgroupmail.update', $user->id) }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     @method('PUT')
                     <div class="tab-content" id="pills-tabContent">
@@ -116,7 +116,7 @@ $script ='<script>
                                         {{ $junior->name }} ({{ $junior->email }})
                                     </div>
 
-                                    <form action="{{ route('users.seniorgroup.remove', [$user->id, $junior->id]) }}" method="POST">
+                                    <form action="{{ route('users.seniorgroupmail.remove', [$user->id, $junior->id]) }}" method="POST">
                                         @csrf
                                         @method('DELETE')
                                         <button class="btn btn-danger btn-sm">Remove</button>
