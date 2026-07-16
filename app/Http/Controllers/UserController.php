@@ -303,6 +303,14 @@ class UserController extends Controller
         return view('user.seniorgroup', compact('users'));
     }
 
+    public function seniorgroupmail()
+    {
+        $users = User::where('role', 'senior')
+            ->where('is_deleted', 0)
+            ->get();
+        return view('user.seniorgroupmail', compact('users'));
+    }
+
     public function seniorcreate()
     {
         return view('user.seniorcreate');

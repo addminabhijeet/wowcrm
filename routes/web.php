@@ -357,6 +357,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('/dashboard/associate/candidateadd', [GoogleSheetController::class, 'candidateStore'])->name('all.associate.add');
 
     Route::get('/dashboard/group/senior', [UserController::class, 'seniorgroup'])->name('senior.group');
+    Route::get('/dashboard/group/senior/mail', [UserController::class, 'seniorgroupmail'])->name('senior.groupmail');
     Route::get('/dashboard/junior/chat', [ChatController::class, 'junior'])->name('chat.junior');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
     Route::get('/latest-messages', [ChatController::class, 'latestMessages'])->name('chat.latestMessages');

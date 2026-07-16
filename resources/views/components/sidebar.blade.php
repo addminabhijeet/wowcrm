@@ -927,6 +927,16 @@ $role = Auth::user()->role;
                             Report</a></li>
                 </ul>
             </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:people-20-filled" class="menu-icon"></iconify-icon>
+                    <span>Group</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('senior.groupmail') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Group Report</a></li>
+                </ul>
+            </li>
             @endif
 
             {{-- ================= Trainer ================= --}}
