@@ -310,7 +310,6 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/allseniorweekly/call-reports/{userId}', [CallReportController::class, 'allseniorweekly'])->name('call.reports.allseniorweekly');
     Route::get('/dashboard/preallseniorweekly/call-reports/{userId}', [PreCallReportController::class, 'preallseniorweekly'])->name('call.reports.preallseniorweekly');
 
-    Route::match(['get', 'post'], '/timer/update', [DashboardController::class, 'updateTimer'])->name('timer.update');
     Route::get('/dashboard/smtp/add', [DashboardController::class, 'add'])->name('smtp.add');
     Route::get('/dashboard/smtp/edit/{user}', [DashboardController::class, 'edit'])->name('smtp.edit');
     Route::get('/dashboard/smtp/editall', [DashboardController::class, 'editall'])->name('smtp.editall');
@@ -384,10 +383,6 @@ Route::middleware(['allowedip'])->group(function () {
     Route::patch('/payment/{id}/status', [PaymentController::class, 'updateStatus'])->name('payment.updateStatus');
     Route::patch('/training/{id}/trastatus', [PaymentController::class, 'traupdateStatus'])->name('training.updateStatus');
     Route::get('/login-history', [LoginController::class, 'loginHistory'])->name('login.history');
-
-
-    Route::get('api/timer/update', [TimerApiController::class, 'update']);
-    Route::post('api/timer/update', [TimerApiController::class, 'update']);
 });
 
 Route::get('/', [Controller::class, 'index'])->name('home');
