@@ -551,27 +551,7 @@ $role = Auth::user()->role;
                 </ul>
             </li>
 
-            <li class="dropdown">
-                <a href="javascript:void(0)">
-                    <iconify-icon icon="fluent:timer-20-regular" class="menu-icon"></iconify-icon>
-                    <span>Timer</span>
-                </a>
-                <ul class="sidebar-submenu">
-                    <li><a href="{{ route('timer.allsenior') }}"><i
-                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter
-                            Timer</a></li>
-                </ul>
-                <ul class="sidebar-submenu">
-                    <li><a href="{{ route('timer.senior') }}"><i
-                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter
-                            Timer</a></li>
-                </ul>
-                <ul class="sidebar-submenu">
-                    <li><a href="{{ route('timer.admin') }}"><i
-                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Setting</a>
-                    </li>
-                </ul>
-            </li>
+            
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
