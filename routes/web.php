@@ -46,7 +46,9 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/admin/senior/{id}/editgroupmail', [UserController::class, 'senioreditgroupmail'])->name('users.senior.editgroupmail');
     Route::put('/dashboard/admin/senior/update/{id}', [UserController::class, 'seniorupdate'])->name('users.senior.update');
     Route::put('/dashboard/admin/seniorgroup/update/{id}', [UserController::class, 'seniorgroupupdate'])->name('users.seniorgroup.update');
+    Route::put('/dashboard/admin/seniorgroupmail/update/{id}', [UserController::class, 'seniorgroupmailupdate'])->name('users.seniorgroupmail.update');
     Route::delete('/dashboard/admin/seniorgroup/{senior}/remove/{id}', [UserController::class, 'seniorgroupremove'])->name('users.seniorgroup.remove');
+    Route::delete('/dashboard/admin/seniorgroupmail/{senior}/remove/{id}', [UserController::class, 'seniorgroupmailremove'])->name('users.seniorgroupmail.remove');
     Route::get('/dashboard/admin/senior/destroy/{id}', [UserController::class, 'seniordestroy'])->name('users.senior.destroy');
 
     Route::get('/dashboard/admin/trainer', [UserController::class, 'trainer'])->name('users.trainer');

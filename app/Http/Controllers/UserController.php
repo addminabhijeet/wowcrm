@@ -477,7 +477,7 @@ class UserController extends Controller
         return view('user.senioreditgroupmail', compact('user', 'juniors'));
     }
 
-    public function seniorgroupupdate(Request $request, $id)
+    public function seniorgroupmailupdate(Request $request, $id)
     {
         $user = User::findOrFail($id);
 
@@ -495,11 +495,26 @@ class UserController extends Controller
 
         $user->update($validated);
 
-        return redirect()->route("users.senior.editgroup", $user->id)
+        return redirect()->route("users.senior.editgroupmail", $user->id)
             ->with('success', 'Updated successfully!');
     }
 
     public function seniorgroupremove($seniorId, $juniorId)
+    {
+        $user = User::findOrFail($seniorId);
+
+        $groups = $user->group ?? [];
+
+        // Remove junior id
+        $groups = array_values(array_diff($groups, [$juniorId]));
+
+        $user->group = $groups;
+        $user->save();
+
+        return back()->with('success', 'Junior removed successfully');
+    }
+
+    public function seniorgroupmailremove($seniorId, $juniorId)
     {
         $user = User::findOrFail($seniorId);
 
