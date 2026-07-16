@@ -19,22 +19,6 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
     <div class="col-12">
         <div class="card h-100 p-0">
             <div class="card-body p-24">
-
-                <div class="d-flex flex-wrap align-items-center gap-1 justify-content-between mb-16">
-                    {{-- <ul class="nav border-gradient-tab nav-pills mb-0" id="pills-tab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link d-flex align-items-center active" id="pills-to-do-list-tab" data-bs-toggle="pill" data-bs-target="#pills-to-do-list" type="button" role="tab" aria-controls="pills-to-do-list" aria-selected="true">
-                                Active
-                                <span class="text-sm fw-semibold py-6 px-12 bg-neutral-500 rounded-pill text-white line-height-1 ms-12 notification-alert">35</span>
-                            </button>
-                        </li>
-                    </ul> --}}
-                    <a  href="{{ route('users.senior.create') }}" class="btn btn-primary text-sm btn-sm px-12 py-12 radius-8 d-flex align-items-center gap-2">
-                        <iconify-icon icon="ic:baseline-plus" class="icon text-xl line-height-1"></iconify-icon>
-                        Add New Senior
-                    </a>
-                </div>
-
                 <div class="tab-content" id="pills-tabContent">
                     <div class="tab-pane fade show active" id="pills-to-do-list" role="tabpanel" aria-labelledby="pills-to-do-list-tab" tabindex="0">
                         <div class="table-responsive scroll-sm">
