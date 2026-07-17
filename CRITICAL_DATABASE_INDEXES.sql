@@ -57,13 +57,6 @@ ALTER TABLE chats ADD INDEX idx_created_desc (created_at DESC);
 -- ============================================================================
 -- 6. OTHER IMPORTANT TABLES
 -- ============================================================================
--- Payments
-ALTER TABLE payments ADD INDEX idx_user_id (user_id);
-ALTER TABLE payments ADD INDEX idx_created_at (created_at DESC);
-
--- Attendance
-ALTER TABLE attendance ADD INDEX idx_user_id_date (user_id, attendance_date);
-
 -- Logins
 ALTER TABLE logins ADD INDEX idx_user_id (user_id);
 ALTER TABLE logins ADD INDEX idx_created_at (created_at DESC);
