@@ -67,9 +67,9 @@ class CandidateController extends Controller
             'junior_user' => $juniorUserId,
         ]);
 
-        // Fetch all users upfront to avoid N+1 queries (cache for 5 min)
+        // Cache all active users for 5 minutes to avoid N+1 queries
         $allUsers = Cache::remember('active_users_list', 300, function () {
-            return \App\Models\User::where('is_deleted', 0)->get()->keyBy('id');
+            return \App\Models\User::where('is_deleted', 0)->where('status', 1)->get()->keyBy('id');
         });
 
         // Map forwarded_by dynamically (multi-level like senior)
