@@ -65,16 +65,17 @@ class TimerController extends Controller
         // Existing code (login users)
         $login_user = User::where('status')->where('is_deleted', 0)->get();
 
-        // Fetch latest timers for all juniors at once (avoid N+1)
+        // Fetch latest timers efficiently using subquery
         $juniorIds = $juniors->pluck('id')->toArray();
-        $allTimers = UserTimerLog::whereIn('user_id', $juniorIds)
-            ->orderBy('created_at', 'desc')
+        $latestTimers = UserTimerLog::whereIn('user_id', $juniorIds)
+            ->whereIn('id', function ($query) use ($juniorIds) {
+                $query->select(\DB::raw('MAX(id)'))
+                    ->from('user_timer_logs')
+                    ->whereIn('user_id', $juniorIds)
+                    ->groupBy('user_id');
+            })
             ->get()
-            ->groupBy('user_id')
-            ->mapWithKeys(function ($group) {
-                return [$group->first()->user_id => $group->first()];
-            });
-        $latestTimers = $allTimers;
+            ->keyBy('user_id');
 
         $timers = $juniors->map(function ($junior) use ($workDaySeconds, $latestTimers) {
             $timer = $latestTimers->get($junior->id);
@@ -120,15 +121,17 @@ class TimerController extends Controller
         $juniors = User::where('role', 'senior')->where('is_deleted', 0)->get();
         $login_user = User::where('status')->where('is_deleted', 0)->get();
 
-        // Fetch latest timers for all seniors at once (avoid N+1)
+        // Fetch latest timers efficiently using subquery
         $seniorIds = $juniors->pluck('id')->toArray();
         $latestTimers = UserTimerLog::whereIn('user_id', $seniorIds)
-            ->orderBy('created_at', 'desc')
+            ->whereIn('id', function ($query) use ($seniorIds) {
+                $query->select(\DB::raw('MAX(id)'))
+                    ->from('user_timer_logs')
+                    ->whereIn('user_id', $seniorIds)
+                    ->groupBy('user_id');
+            })
             ->get()
-            ->groupBy('user_id')
-            ->mapWithKeys(function ($group) {
-                return [$group->first()->user_id => $group->first()];
-            });
+            ->keyBy('user_id');
 
         $timers = $juniors->map(function ($junior) use ($workDaySeconds, $latestTimers) {
             $timer = $latestTimers->get($junior->id);
@@ -200,15 +203,17 @@ class TimerController extends Controller
         // Fetch all juniors
         $juniors = User::where('role', 'junior')->where('is_deleted', 0)->get();
 
-        // Fetch latest timers for all juniors at once (avoid N+1)
+        // Fetch latest timers efficiently using subquery
         $juniorIds = $juniors->pluck('id')->toArray();
         $latestTimers = UserTimerLog::whereIn('user_id', $juniorIds)
-            ->orderBy('created_at', 'desc')
+            ->whereIn('id', function ($query) use ($juniorIds) {
+                $query->select(\DB::raw('MAX(id)'))
+                    ->from('user_timer_logs')
+                    ->whereIn('user_id', $juniorIds)
+                    ->groupBy('user_id');
+            })
             ->get()
-            ->groupBy('user_id')
-            ->mapWithKeys(function ($group) {
-                return [$group->first()->user_id => $group->first()];
-            });
+            ->keyBy('user_id');
 
         $timers = $juniors->map(function ($junior) use ($workDaySeconds, $latestTimers) {
             $timer = $latestTimers->get($junior->id);

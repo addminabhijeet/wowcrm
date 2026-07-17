@@ -66,8 +66,10 @@ class CandidateController extends Controller
             'junior_user' => $juniorUserId,
         ]);
 
-        // Fetch all users upfront to avoid N+1 queries
-        $allUsers = \App\Models\User::where('is_deleted', 0)->get()->keyBy('id');
+        // Fetch all users upfront to avoid N+1 queries (cache for 5 min)
+        $allUsers = \Illuminate\Support\Facades\Cache::remember('active_users_list', 300, function () {
+            return \App\Models\User::where('is_deleted', 0)->get()->keyBy('id');
+        });
 
         // Map forwarded_by dynamically (multi-level like senior)
         $data->getCollection()->transform(function ($item) use ($authUser, $allUsers) {
