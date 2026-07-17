@@ -127,11 +127,11 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/writer', [DashboardController::class, 'writer'])->name('dashboard.writer');
     Route::get('/dashboard/resource', [DashboardController::class, 'resource'])->name('dashboard.resource');
     Route::get('/dashboard/operation', [DashboardController::class, 'operation'])->name('dashboard.operation');
-    Route::get('/button/status', [DashboardController::class, 'getButtonStatus'])->name('button.status');
-    Route::post('/dashboard/start-timer', [DashboardController::class, 'startTimer'])->name('timer.start');
-    Route::post('/dashboard/start-timer-hide', [DashboardController::class, 'startTimerHide'])->name('timer.starthide');
-    Route::post('/dashboard/check-pause-buttons', [DashboardController::class, 'checkPauseButtons'])->name('timer.checkPauseButtons');
-    Route::post('/dashboard/check-pause-buttons-senior', [DashboardController::class, 'checkPauseButtonsSenior'])->name('timer.checkPauseButtonsSenior');
+    Route::get('/button/status', function() { return response()->json(['button_status' => 0]); })->name('button.status');
+    Route::post('/dashboard/start-timer', function() { return response()->json(['success' => false]); })->name('timer.start');
+    Route::post('/dashboard/start-timer-hide', function() { return response()->json(['exists' => true]); })->name('timer.starthide');
+    Route::post('/dashboard/check-pause-buttons', function() { return response()->json(['pause_type' => null]); })->name('timer.checkPauseButtons');
+    Route::post('/dashboard/check-pause-buttons-senior', function() { return response()->json(['pause_type' => null]); })->name('timer.checkPauseButtonsSenior');
 
     Route::get('/dashboard/admin/calendar/{month?}/{year?}', [CalendarController::class, 'index'])->name('calendar.index');
     Route::get('/dashboard/accountant/calendar/{month?}/{year?}', [CalendarController::class, 'accountantUser'])->name('calendar.accountantUser');
@@ -332,15 +332,15 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('/dashboard/send-payment-mail/{id}', [DashboardController::class, 'sendPaymentMail'])->name('send.payment.mail');
     Route::get('/dashboard/senior/seniortimer', [TimerController::class, 'seniorTimers'])->name('timer.senior');
     Route::get('/dashboard/senior/allseniortimer', [TimerController::class, 'allseniorTimers'])->name('timer.allsenior');
-    Route::get('/timer/all-juniors', [TimerController::class, 'allJuniorTimers'])->name('timer.alljuniors');
+    Route::get('/timer/all-juniors', function() { return response()->json([]); })->name('timer.alljuniors');
     Route::get('/dashboard/junior/juniortimer', [TimerController::class, 'juniorTimers'])->name('timer.junior');
-    Route::post('/timer/toggle-button-status', [TimerController::class, 'toggleButtonStatus'])->name('timer.toggleButtonStatus');
-    Route::post('/timer/toggle-all-status', [TimerController::class, 'toggleAllStatus'])->name('timer.toggleAllStatus');
+    Route::post('/timer/toggle-button-status', function() { return response()->json(['success' => false, 'message' => 'Timer is disabled']); })->name('timer.toggleButtonStatus');
+    Route::post('/timer/toggle-all-status', function() { return response()->json(['success' => false, 'message' => 'Timer is disabled']); })->name('timer.toggleAllStatus');
     Route::get('/dashboard/admin/timer-settings', [TimerController::class, 'index'])->name('timer.admin');
     Route::post('/timers/work-day', [TimerController::class, 'updateWorkDay'])->name('timer.updateWorkDay');
     Route::post('/timers/base-time', [TimerController::class, 'updateBaseTime'])->name('timer.updateBaseTime');
 
-    Route::get('/timers/latest-pause-types', [DashboardController::class, 'getLatestPauseTypes'])->name('timers.latestPauseTypes');
+    Route::get('/timers/latest-pause-types', function() { return response()->json([]); })->name('timers.latestPauseTypes');
 
     Route::get('/dashboard/accountant/pdf/acceptance', [PdfController::class, 'acceptance'])->name('pdf.acceptance');
     Route::get('/dashboard/accountant/pdf/consultation', [PdfController::class, 'consultation'])->name('pdf.consultation');
