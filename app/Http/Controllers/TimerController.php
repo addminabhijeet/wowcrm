@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserTimerPause;
 use App\Models\TimerSetting;
+use Illuminate\Support\Facades\DB;
 
 class TimerController extends Controller
 {
