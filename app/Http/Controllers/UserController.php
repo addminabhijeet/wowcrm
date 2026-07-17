@@ -1417,4 +1417,49 @@ class UserController extends Controller
         return redirect()->route("users.writer")
             ->with('success',  ' deleted successfully!');
     }
+
+    // ======================
+    // BULK OPERATIONS
+    // ======================
+    public function bulkAction(Request $request)
+    {
+        $validated = $request->validate([
+            'action' => 'required|in:status,role,delete',
+            'user_ids' => 'required|array|min:1',
+            'user_ids.*' => 'integer|exists:users,id',
+            'status' => 'nullable|boolean',
+            'role' => 'nullable|string|in:junior,admin,senior,customer,accountant,trainer,associate,operation,resource,support,writer',
+        ]);
+
+        $userIds = $validated['user_ids'];
+        $operation = $validated['action'];
+        $data = [];
+
+        if ($operation === 'status') {
+            $data['status'] = $validated['status'] ?? 0;
+        } elseif ($operation === 'role') {
+            $data['role'] = $validated['role'] ?? 'user';
+        }
+
+        // Dispatch to queue for background processing
+        \App\Services\QueueService::bulkUpdateUsers($operation, $userIds, $data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Bulk ' . $operation . ' operation queued for ' . count($userIds) . ' users'
+        ]);
+    }
+
+    // ======================
+    // CACHE WARMER
+    // ======================
+    public function warmCache()
+    {
+        \App\Services\QueueService::fillCache();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Cache warming job dispatched'
+        ]);
+    }
 }

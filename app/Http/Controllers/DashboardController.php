@@ -40,20 +40,27 @@ class DashboardController extends Controller
 
     public function index()
     {
-        // Only users who are not deleted
-        $users = User::where('is_deleted', 0)->get();
+        // Cache user list for 5 minutes instead of querying every time
+        $users = \Illuminate\Support\Facades\Cache::remember('all_active_users', 300, function () {
+            return User::where('is_deleted', 0)->get();
+        });
 
-        // Only new (not deleted) users created in the last 30 days
-        $newUsers = User::where('is_deleted', 0)
-            ->where('created_at', '>=', Carbon::now()->subDays(30))
-            ->get();
+        // Cache new users list
+        $newUsers = \Illuminate\Support\Facades\Cache::remember('new_users_30days', 300, function () {
+            return User::where('is_deleted', 0)
+                ->where('created_at', '>=', Carbon::now()->subDays(30))
+                ->get();
+        });
 
         return view('dashboard.admin', compact('users', 'newUsers'));
     }
 
     public function adminnotification()
     {
-        $users = User::where('is_deleted', 0)->get();
+        // Cache user list instead of querying every time
+        $users = \Illuminate\Support\Facades\Cache::remember('all_active_users', 300, function () {
+            return User::where('is_deleted', 0)->get();
+        });
 
         $admin = Auth::user();
 
