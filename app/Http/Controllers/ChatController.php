@@ -36,31 +36,20 @@ class ChatController extends Controller
                         ->orWhere('target_date', 'like', "%{$search}%");
                 });
             })
-            ->get();
-
-        // Fetch all chat data at once to avoid N+1 queries
-        $userIds = $users->pluck('id')->toArray();
-        $lastChats = Chat::whereIn('sender_id', array_merge([$user->id], $userIds))
-            ->whereIn('receiver_id', array_merge([$user->id], $userIds))
             ->get()
-            ->groupBy(function ($chat) use ($user) {
-                $otherId = $chat->sender_id == $user->id ? $chat->receiver_id : $chat->sender_id;
-                return $otherId;
-            })
-            ->map(function ($group) {
-                return $group->sortByDesc('created_at')->first();
-            });
+            ->map(function ($chatUser) use ($user) {
+                $chatUser->lastChat = Chat::conversation(
+                    $user->id,
+                    $chatUser->id
+                )
+                    ->reorder('created_at', 'desc')
+                    ->first();
 
-        $unreadCounts = Chat::whereIn('sender_id', $userIds)
-            ->where('receiver_id', $user->id)
-            ->where('is_read', false)
-            ->groupBy('sender_id')
-            ->selectRaw('sender_id, count(*) as count')
-            ->pluck('count', 'sender_id');
-
-        $users = $users->map(function ($chatUser) use ($user, $lastChats, $unreadCounts) {
-                $chatUser->lastChat = $lastChats->get($chatUser->id);
-                $chatUser->unreadCount = $unreadCounts->get($chatUser->id, 0);
+                // WhatsApp-like unread count
+                $chatUser->unreadCount = Chat::where('sender_id', $chatUser->id)
+                    ->where('receiver_id', $user->id)
+                    ->where('is_read', false)
+                    ->count();
 
                 if ($chatUser->lastChat) {
 
