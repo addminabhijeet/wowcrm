@@ -4,6 +4,7 @@ namespace App\Traits;
 
 use App\Jobs\ProcessCacheFill;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 trait InvalidatesCache
 {
@@ -24,13 +25,17 @@ trait InvalidatesCache
 
     private static function clearUserCache()
     {
-        Cache::forget('all_active_users');
-        Cache::forget('new_users_30days');
-        Cache::forget('active_users_list');
-        Cache::forget('all_users_count');
-        Cache::forget('active_users_count');
+        try {
+            Cache::forget('all_active_users');
+            Cache::forget('new_users_30days');
+            Cache::forget('active_users_list');
+            Cache::forget('all_users_count');
+            Cache::forget('active_users_count');
 
-        // Refill cache in background
-        dispatch(new ProcessCacheFill());
+            // Refill cache in background
+            \dispatch(new ProcessCacheFill());
+        } catch (\Exception $e) {
+            \Log::error('Cache invalidation failed: ' . $e->getMessage());
+        }
     }
 }
