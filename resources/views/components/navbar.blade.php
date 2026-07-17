@@ -381,7 +381,7 @@ $userImage = Auth::user()->image
 
         // Initial check + periodic refresh
         checkButtonStatus();
-        setInterval(checkButtonStatus, 1000);
+        setInterval(checkButtonStatus, 30000);
     });
 </script>
 
@@ -481,7 +481,7 @@ $userImage = Auth::user()->image
         checkTimerStatus();
 
         // Re-check every 1 second
-        setInterval(checkTimerStatus, 1000);
+        setInterval(checkTimerStatus, 30000);
 
     });
 </script>
@@ -538,7 +538,7 @@ $userImage = Auth::user()->image
         updatePauseButtons();
 
         // Check every 1 second
-        setInterval(updatePauseButtons, 1000);
+        setInterval(updatePauseButtons, 30000);
 
     });
 </script>
@@ -551,7 +551,7 @@ $userImage = Auth::user()->image
         let lastNotificationTime = localStorage.getItem("last_notification_time") || null;
 
         let dropdownTimer = null;
-        const pollInterval = 10000;
+        const pollInterval = 60000;
 
         const latestBox = document.querySelector('#latest-notification-box');
         const dropdownBtn = document.querySelector('#notificationDropdownBtn');
@@ -795,7 +795,7 @@ $userImage = Auth::user()->image
 
         loadMessages();
 
-        setInterval(loadMessages, 5000);
+        setInterval(loadMessages, 30000);
 
     });
 </script>

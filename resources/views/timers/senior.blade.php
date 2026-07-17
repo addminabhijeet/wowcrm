@@ -287,7 +287,7 @@
                 })
                 .catch(err => console.error("Timer fetch error:", err));
         }
-        setInterval(updateAllTimers, 1000); // sync with DB every second
+        setInterval(updateAllTimers, 30000); // sync with DB every 30 seconds
     </script>
 
     <script>
@@ -380,7 +380,7 @@
 
             // Initial check and polling
             checkButtonStatus();
-            setInterval(checkButtonStatus, 1000);
+            setInterval(checkButtonStatus, 30000);
         });
     </script>
 
@@ -492,7 +492,7 @@
         checkButtonStatus();
 
         // Poll every 1 second
-        setInterval(checkButtonStatus, 1000);
+        setInterval(checkButtonStatus, 30000);
     </script>
 
     <script>
@@ -588,7 +588,7 @@
             }
 
             // Check status every 1 second
-            setInterval(checkButtonStatus, 1000);
+            setInterval(checkButtonStatus, 30000);
 
         });
     </script>
@@ -645,7 +645,7 @@
 
             // Run immediately and then every second
             updatePauseBadges();
-            setInterval(updatePauseBadges, 1000);
+            setInterval(updatePauseBadges, 30000);
         });
     </script>
 
@@ -714,7 +714,7 @@
             updatePauseButtonsPerUser();
 
             // Check every second
-            setInterval(updatePauseButtonsPerUser, 1000);
+            setInterval(updatePauseButtonsPerUser, 30000);
         });
     </script>
 @endsection

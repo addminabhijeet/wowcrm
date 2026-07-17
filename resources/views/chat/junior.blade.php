@@ -989,7 +989,7 @@ $subTitle = 'Chat';
         });
     }
 
-    setInterval(refreshUsers, 6000);
+    setInterval(refreshUsers, 30000);
 </script>
 
 
