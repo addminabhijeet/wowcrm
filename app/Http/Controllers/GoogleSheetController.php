@@ -9,6 +9,7 @@ use App\Models\Notification;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cache;
 use App\Models\SmtpSetting;
 use Illuminate\Support\Str;
 use App\Models\EmailTemplate;
@@ -65,7 +66,7 @@ class GoogleSheetController extends Controller
         $results = $query->orderBy('updated_at', 'desc')->paginate($perPage, ['*'], 'page', $page);
 
         // ✅ Fetch all users upfront to avoid N+1 queries
-        $allUsers = \Illuminate\Support\Facades\Cache::remember('active_users_list_sheet', 300, function () {
+        $allUsers = Cache::remember('active_users_list_sheet', 300, function () {
             return \App\Models\User::where('is_deleted', 0)->get()->keyBy('id');
         });
 

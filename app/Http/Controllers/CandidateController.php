@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\GoogleSheetData;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Cache;
 use App\Models\SmtpSetting;
 use Illuminate\Support\Str;
 use App\Models\EmailTemplate;
@@ -67,7 +68,7 @@ class CandidateController extends Controller
         ]);
 
         // Fetch all users upfront to avoid N+1 queries (cache for 5 min)
-        $allUsers = \Illuminate\Support\Facades\Cache::remember('active_users_list', 300, function () {
+        $allUsers = Cache::remember('active_users_list', 300, function () {
             return \App\Models\User::where('is_deleted', 0)->get()->keyBy('id');
         });
 
