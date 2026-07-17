@@ -64,8 +64,13 @@ class GoogleSheetController extends Controller
         $perPage = 10;
         $results = $query->orderBy('updated_at', 'desc')->paginate($perPage, ['*'], 'page', $page);
 
+        // ✅ Fetch all users upfront to avoid N+1 queries
+        $allUsers = \Illuminate\Support\Facades\Cache::remember('active_users_list_sheet', 300, function () {
+            return \App\Models\User::where('is_deleted', 0)->get()->keyBy('id');
+        });
+
         // ✅ Transform only current page results
-        $results->getCollection()->transform(function ($item) use ($authUser) {
+        $results->getCollection()->transform(function ($item) use ($authUser, $allUsers) {
             $forwardedBy = 'N/A';
 
             if (!empty($item->created_by)) {
@@ -84,7 +89,7 @@ class GoogleSheetController extends Controller
                     } elseif ($userId == 0) {
                         $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
-                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $user = $allUsers->get($userId);
                         $name = $user ? $user->name : 'Unknown';
                         $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
