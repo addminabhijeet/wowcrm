@@ -138,7 +138,7 @@ $userImage = Auth::user()->image
                         </div>
 
                         <div class="text-center py-12 px-16">
-                            <a href="<?php echo e(route('chat.index')); ?>" class="text-primary-600 fw-semibold text-md">See All
+                            <a href="<?php echo e(route('chat.junior')); ?>" class="text-primary-600 fw-semibold text-md">See All
                                 Message</a>
                         </div>
                     </div>
@@ -346,137 +346,6 @@ $userImage = Auth::user()->image
 </style>
 
 <div id="statusOverlay"></div>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-
-        // ===============================
-        // Timer Variables
-        // ===============================
-        let backendSyncInterval;
-        let remainingSeconds = Number("<?php echo e($remaining_seconds ?? 0); ?>");
-        let elapsedSeconds = Number("<?php echo e($elapsed_seconds ?? 0); ?>");
-        let status = "<?php echo e($status ?? 'running'); ?>";
-
-        let overlayTimeout;
-        let isInactive = false;
-
-        // ===============================
-        // Helper Functions
-        // ===============================
-        function formatTime(sec) {
-            sec = Math.floor(sec);
-            const h = Math.floor(sec / 3600);
-            const m = Math.floor((sec % 3600) / 60);
-            const s = sec % 60;
-            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function updateUI() {
-            const countdownElem = document.getElementById('countdown');
-            const elapsedElem = document.getElementById('elapsed');
-            if (countdownElem) countdownElem.innerText = formatTime(remainingSeconds);
-            if (elapsedElem) elapsedElem.innerText = formatTime(elapsedSeconds);
-        }
-
-        function showOverlay(message) {
-            const overlay = document.getElementById('statusOverlay');
-            if (!overlay) return;
-            overlay.innerText = message;
-            overlay.classList.add('show');
-            clearTimeout(overlayTimeout);
-            overlayTimeout = setTimeout(() => {
-                overlay.classList.remove('show');
-            }, 3000);
-        }
-
-        document.addEventListener('visibilitychange', function() {
-            isInactive = document.hidden;
-        });
-
-        // ===============================
-        // Backend Sync
-        // ===============================
-
-        function syncWithBackend() {
-            fetch("<?php echo e(route('timer.update')); ?>", {
-                    method: "POST",
-                    headers: {
-                        "X-CSRF-TOKEN": "<?php echo e(csrf_token()); ?>",
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({
-                        action: 'tick',
-                        is_inactive: isInactive
-                    })
-                })
-                .then(res => res.json())
-                .then(data => {
-                    if (!data.success) {
-                        console.warn("[Sync] No success response");
-                        return;
-                    }
-
-                    if (data.notice_status === 1 && data.message) {
-                        showOverlay(data.message);
-                    }
-
-                    remainingSeconds = data.remaining_seconds;
-                    elapsedSeconds = data.elapsed_seconds;
-                    status = data.status;
-                    updateUI();
-                })
-                .catch(err => console.error("[Sync] Timer sync failed:", err));
-        }
-
-        // ===============================
-        // Control Buttons (Pause/Resume/etc)
-        // ===============================
-        const controlButtonsContainer = document.getElementById('controlButtons');
-        if (controlButtonsContainer) {
-            controlButtonsContainer.querySelectorAll('button').forEach(btn => {
-                btn.addEventListener('click', () => {
-                    const type = btn.getAttribute('data-type');
-                    fetch("<?php echo e(route('timer.update')); ?>", {
-                            method: "POST",
-                            headers: {
-                                "X-CSRF-TOKEN": "<?php echo e(csrf_token()); ?>",
-                                "Content-Type": "application/json"
-                            },
-                            body: JSON.stringify({
-                                action: type
-                            })
-                        })
-                        .then(res => res.json())
-                        .then(data => {
-                            if (data.success === false && data.notice_status === 1) {
-                                showOverlay(data.message ||
-                                    "Please wait for senior to enable.");
-                                return;
-                            }
-
-                            remainingSeconds = data.remaining_seconds;
-                            elapsedSeconds = data.elapsed_seconds;
-                            status = data.status;
-                            updateUI();
-                        })
-                        .catch(err => console.error("[Action] Failed to send:", err));
-                });
-            });
-        }
-
-        // ===============================
-        // Initialize Timer
-        // ===============================
-        updateUI();
-        backendSyncInterval = setInterval(syncWithBackend, 1000);
-
-    });
-</script>
-
-
-
-
 <script>
     document.addEventListener("DOMContentLoaded", function() {
         const controlButtons = document.getElementById('controlButtons');
@@ -512,7 +381,7 @@ $userImage = Auth::user()->image
 
         // Initial check + periodic refresh
         checkButtonStatus();
-        setInterval(checkButtonStatus, 1000);
+        setInterval(checkButtonStatus, 30000);
     });
 </script>
 
@@ -612,7 +481,7 @@ $userImage = Auth::user()->image
         checkTimerStatus();
 
         // Re-check every 1 second
-        setInterval(checkTimerStatus, 1000);
+        setInterval(checkTimerStatus, 30000);
 
     });
 </script>
@@ -669,7 +538,7 @@ $userImage = Auth::user()->image
         updatePauseButtons();
 
         // Check every 1 second
-        setInterval(updatePauseButtons, 1000);
+        setInterval(updatePauseButtons, 30000);
 
     });
 </script>
@@ -682,7 +551,7 @@ $userImage = Auth::user()->image
         let lastNotificationTime = localStorage.getItem("last_notification_time") || null;
 
         let dropdownTimer = null;
-        const pollInterval = 10000;
+        const pollInterval = 60000;
 
         const latestBox = document.querySelector('#latest-notification-box');
         const dropdownBtn = document.querySelector('#notificationDropdownBtn');
@@ -864,7 +733,7 @@ $userImage = Auth::user()->image
                     let html = '';
 
                     data.users.forEach(user => {
-                        const chatBaseUrl = "<?php echo e(route('chat.index')); ?>";
+                        const chatBaseUrl = "<?php echo e(route('chat.junior')); ?>";
                         html += `
                         <a href="${chatBaseUrl}?user=${user.id}"
                            class="px-24 py-12 d-flex align-items-start gap-3 mb-2 justify-content-between">
@@ -926,7 +795,7 @@ $userImage = Auth::user()->image
 
         loadMessages();
 
-        setInterval(loadMessages, 5000);
+        setInterval(loadMessages, 30000);
 
     });
 </script><?php /**PATH /var/www/norloxsolutionscrm.com/wowcrm/resources/views/components/navbar.blade.php ENDPATH**/ ?>

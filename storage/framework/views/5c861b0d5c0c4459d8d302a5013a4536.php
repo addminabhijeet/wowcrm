@@ -553,28 +553,6 @@ $role = Auth::user()->role;
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
-                    <iconify-icon icon="fluent:timer-20-regular" class="menu-icon"></iconify-icon>
-                    <span>Timer</span>
-                </a>
-                <ul class="sidebar-submenu">
-                    <li><a href="<?php echo e(route('timer.allsenior')); ?>"><i
-                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter
-                            Timer</a></li>
-                </ul>
-                <ul class="sidebar-submenu">
-                    <li><a href="<?php echo e(route('timer.senior')); ?>"><i
-                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter
-                            Timer</a></li>
-                </ul>
-                <ul class="sidebar-submenu">
-                    <li><a href="<?php echo e(route('timer.admin')); ?>"><i
-                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Timer Setting</a>
-                    </li>
-                </ul>
-            </li>
-
-            <li class="dropdown">
-                <a href="javascript:void(0)">
                     <iconify-icon icon="fluent:mail-20-regular" class="menu-icon"></iconify-icon>
                     <span>SMTP</span>
                 </a>
@@ -930,6 +908,33 @@ $role = Auth::user()->role;
                 <ul class="sidebar-submenu">
                     <li><a href="<?php echo e(route('google.sheet.career')); ?>"><i
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Database</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:document-20-regular" class="menu-icon"></iconify-icon>
+                    <span>Report</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="<?php echo e(route('call.reports.alljuniorlist')); ?>"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter
+                            Report</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="<?php echo e(route('call.reports.allseniorlist')); ?>"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter
+                            Report</a></li>
+                </ul>
+            </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:people-20-filled" class="menu-icon"></iconify-icon>
+                    <span>Group</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="<?php echo e(route('senior.groupmail')); ?>"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Group Report</a></li>
                 </ul>
             </li>
             <?php endif; ?>
