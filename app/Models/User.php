@@ -6,10 +6,11 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use App\Traits\InvalidatesCache;
+use App\Traits\OptimizedQueries;
 
 class User extends Authenticatable
 {
-    use HasFactory, Notifiable, InvalidatesCache;
+    use HasFactory, Notifiable, InvalidatesCache, OptimizedQueries;
 
     /**
      * The attributes that are mass assignable.

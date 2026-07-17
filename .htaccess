@@ -22,7 +22,12 @@
 
 <IfModule mod_deflate.c>
     AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json
-    AddOutputFilterByType DEFLATE application/x-javascript application/xml+rss
+    AddOutputFilterByType DEFLATE application/x-javascript application/xml+rss application/rss+xml
+    AddOutputFilterByType DEFLATE font/woff font/woff2 font/ttf
+
+    # Don't compress already compressed files
+    SetEnvIfNoCase Request_URI \.(?:gif|jpe?g|png|rar|zip|exe|gzip)$ no-gzip
+    SetEnvIfNoCase Request_URI \.woff2$ no-gzip
 </IfModule>
 
 <IfModule mod_expires.c>
