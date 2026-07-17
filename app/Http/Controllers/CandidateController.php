@@ -66,8 +66,11 @@ class CandidateController extends Controller
             'junior_user' => $juniorUserId,
         ]);
 
+        // Fetch all users upfront to avoid N+1 queries
+        $allUsers = \App\Models\User::where('is_deleted', 0)->get()->keyBy('id');
+
         // Map forwarded_by dynamically (multi-level like senior)
-        $data->getCollection()->transform(function ($item) use ($authUser) {
+        $data->getCollection()->transform(function ($item) use ($authUser, $allUsers) {
             $forwardedBy = '';
 
             if (!empty($item->created_by)) {
@@ -84,7 +87,7 @@ class CandidateController extends Controller
                     } elseif ($userId == 0) {
                         $names[] = "SYSTEM (0) ({$role})";
                     } else {
-                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $user = $allUsers->get($userId);
                         $name = $user ? $user->name : 'Unknown';
                         $names[] = "{$name} ({$userId}) ({$role})";
                     }

@@ -59,14 +59,25 @@ class TimerController extends Controller
         // Fetch only juniors assigned to this senior
         $juniors = User::where('role', 'junior')
             ->where('is_deleted', 0)
-            ->whereIn('id', $groupIds) // filter for assigned juniors
+            ->whereIn('id', $groupIds)
             ->get();
 
         // Existing code (login users)
         $login_user = User::where('status')->where('is_deleted', 0)->get();
 
-        $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
-            $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
+        // Fetch latest timers for all juniors at once (avoid N+1)
+        $juniorIds = $juniors->pluck('id')->toArray();
+        $allTimers = UserTimerLog::whereIn('user_id', $juniorIds)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('user_id')
+            ->mapWithKeys(function ($group) {
+                return [$group->first()->user_id => $group->first()];
+            });
+        $latestTimers = $allTimers;
+
+        $timers = $juniors->map(function ($junior) use ($workDaySeconds, $latestTimers) {
+            $timer = $latestTimers->get($junior->id);
 
             if ($timer) {
                 $remaining_seconds = $timer->remaining_seconds;
@@ -108,8 +119,19 @@ class TimerController extends Controller
 
         $juniors = User::where('role', 'senior')->where('is_deleted', 0)->get();
         $login_user = User::where('status')->where('is_deleted', 0)->get();
-        $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
-            $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
+
+        // Fetch latest timers for all seniors at once (avoid N+1)
+        $seniorIds = $juniors->pluck('id')->toArray();
+        $latestTimers = UserTimerLog::whereIn('user_id', $seniorIds)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('user_id')
+            ->mapWithKeys(function ($group) {
+                return [$group->first()->user_id => $group->first()];
+            });
+
+        $timers = $juniors->map(function ($junior) use ($workDaySeconds, $latestTimers) {
+            $timer = $latestTimers->get($junior->id);
 
             if ($timer) {
                 $remaining_seconds = $timer->remaining_seconds;
@@ -178,8 +200,18 @@ class TimerController extends Controller
         // Fetch all juniors
         $juniors = User::where('role', 'junior')->where('is_deleted', 0)->get();
 
-        $timers = $juniors->map(function ($junior) use ($workDaySeconds) {
-            $timer = UserTimerLog::where('user_id', $junior->id)->latest()->first();
+        // Fetch latest timers for all juniors at once (avoid N+1)
+        $juniorIds = $juniors->pluck('id')->toArray();
+        $latestTimers = UserTimerLog::whereIn('user_id', $juniorIds)
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->groupBy('user_id')
+            ->mapWithKeys(function ($group) {
+                return [$group->first()->user_id => $group->first()];
+            });
+
+        $timers = $juniors->map(function ($junior) use ($workDaySeconds, $latestTimers) {
+            $timer = $latestTimers->get($junior->id);
 
             // Default to full workday if no timer exists
             $remaining_seconds = $workDaySeconds;
