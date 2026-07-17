@@ -17,7 +17,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'admin')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
         return view('user.admin', compact('users'));
     }
 
@@ -147,7 +147,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'junior')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
 
         return view('user.junior', compact('users'));
     }
@@ -291,7 +291,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'senior')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
         return view('user.senior', compact('users'));
     }
 
@@ -299,7 +299,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'senior')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
         return view('user.seniorgroup', compact('users'));
     }
 
@@ -307,7 +307,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'senior')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
         return view('user.seniorgroupmail', compact('users'));
     }
 
@@ -545,7 +545,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'trainer')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
         return view('user.trainer', compact('users'));
     }
 
@@ -667,7 +667,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'accountant')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
         return view('user.accountant', compact('users'));
     }
 
@@ -789,7 +789,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'operation')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
         return view('user.operation', compact('users'));
     }
 
@@ -912,7 +912,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'customer')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
         return view('user.customer', compact('users'));
     }
 
@@ -1036,7 +1036,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'associate')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
         return view('user.associate', compact('users'));
     }
 
@@ -1165,7 +1165,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'support')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
         return view('user.support', compact('users'));
     }
 
@@ -1294,7 +1294,7 @@ class UserController extends Controller
     {
         $users = User::where('role', 'writer')
             ->where('is_deleted', 0)
-            ->get();
+            ->paginate(50);
         return view('user.writer', compact('users'));
     }
 
