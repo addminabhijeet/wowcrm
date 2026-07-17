@@ -40,13 +40,15 @@ class Chat extends Model
         'is_edited' => 'boolean',
     ];
 
-    protected $appends = [
-        'formatted_time',
-        'file_size_formatted',
-        'message_preview',
-        'read_time',
-        'seen_status',
-    ];
+    // REMOVED $appends - was causing N×5 expensive accessor calls on every record!
+    // Instead, accessors are only called when explicitly requested
+    // protected $appends = [
+    //     'formatted_time',
+    //     'file_size_formatted',
+    //     'message_preview',
+    //     'read_time',
+    //     'seen_status',
+    // ];
 
     public function sender()
     {
