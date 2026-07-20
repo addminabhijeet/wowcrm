@@ -2284,6 +2284,65 @@ class CallReportController extends Controller
         ));
     }
 
+    public function seniorgroupmailchart(Request $request)
+    {
+        // Selected date (always today)
+        $selectedDate = date('Y-m-d');
+        $selectedMonth = date('Y-m', strtotime($selectedDate));
+        [$year, $month] = explode('-', $selectedMonth);
+
+        $users = User::whereIn('role', ['senior', 'junior'])
+            ->where('is_deleted', 0)
+            ->paginate(50);
+
+        $seniors = User::where('role', 'senior')
+            ->where('is_deleted', 0)
+            ->get();
+
+        foreach ($seniors as $senior) {
+
+            $juniorIds = is_array($senior->mail) ? $senior->mail : [];
+
+            $senior->juniors = User::whereIn('id', $juniorIds)
+                ->where('role', 'junior')
+                ->where('is_deleted', 0)
+                ->get();
+
+            foreach ($senior->juniors as $juniorUser) {
+
+                $createdByKey = "{$juniorUser->id}|junior";
+
+                $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+                    ->where('created_by', 'like', "{$createdByKey}%")
+                    ->whereDate('updated_at', $selectedDate)
+                    ->where('Exe_Remarks', 'Called & Mailed')
+                    ->whereDate('followup', $selectedDate)
+                    ->groupBy('hour')
+                    ->pluck('count', 'hour')
+                    ->toArray();
+
+                $juniorUser->t8to9am   = $hourlyCalledMailed[8] ?? 0;
+                $juniorUser->t9to10am  = $hourlyCalledMailed[9] ?? 0;
+                $juniorUser->t10to11am = $hourlyCalledMailed[10] ?? 0;
+                $juniorUser->t11to12pm = $hourlyCalledMailed[11] ?? 0;
+                $juniorUser->t12to1pm  = $hourlyCalledMailed[12] ?? 0;
+                $juniorUser->t1to2pm   = $hourlyCalledMailed[13] ?? 0;
+                $juniorUser->t2to3pm   = $hourlyCalledMailed[14] ?? 0;
+                $juniorUser->t3to4pm   = $hourlyCalledMailed[15] ?? 0;
+                $juniorUser->t4to5pm   = $hourlyCalledMailed[16] ?? 0;
+                $juniorUser->t5to6pm   = $hourlyCalledMailed[17] ?? 0;
+                $juniorUser->t6to7pm   = $hourlyCalledMailed[18] ?? 0;
+                $juniorUser->t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+            }
+        }
+
+        return view('user.seniorgroupmailchart', compact(
+            'selectedDate',
+            'users',
+            'seniors'
+        ));
+    }
+
     public function alljuniorweekly(Request $request, $userId)
     {
         // Get the junior user
