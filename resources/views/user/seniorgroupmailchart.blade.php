@@ -24,9 +24,18 @@ $timeSlots = [
     @foreach($timeSlots as $slot)
 
     <div class="card mb-5">
-        <div class="card-body">
+        <div class="card-body" id="copySection{{ $loop->index }}">
 
-            <h4>C&amp;M Count</h4>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <h4 class="mb-0">C&amp;M Count</h4>
+
+                <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    onclick="copySection('copySection{{ $loop->index }}', this)">
+                    Copy
+                </button>
+            </div>
 
             <p><strong>Date:</strong> {{ \Carbon\Carbon::today()->format('d-m-Y') }}</p>
 
@@ -75,5 +84,28 @@ $timeSlots = [
     @endforeach
 
 </div>
+<script>
+    function copySection(sectionId, button) {
 
+        const element = document.getElementById(sectionId);
+
+        const text = element.innerText;
+
+        navigator.clipboard.writeText(text).then(function() {
+
+            const oldText = button.innerHTML;
+
+            button.innerHTML = 'Copied ✓';
+
+            setTimeout(function() {
+                button.innerHTML = oldText;
+            }, 1500);
+
+        }).catch(function(err) {
+            alert('Failed to copy.');
+            console.error(err);
+        });
+
+    }
+</script>
 @endsection
