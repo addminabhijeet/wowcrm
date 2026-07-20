@@ -1,19 +1,4 @@
 @extends('layout.layout')
-
-@php
-$title='Users -> IT Senior Recruiter';
-$role = auth()->user()->role ?? '';
-if($role === 'admin'){
-    $subTitle = 'Super Admin';
-} elseif ($role === 'operation') {
-    $subTitle = 'Operation Manager';
-} else{
-    $subTitle = 'role';
-}
-$script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
-@endphp
-
-
 @section('content')
 <div class="mt-5">
     @foreach($seniors as $senior)
