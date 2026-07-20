@@ -42,6 +42,23 @@ $timeSlots = [
 'title' => '4:00am - 5:00am',
 'fields' => ['t6to7pm', 't7to8pm']
 ],
+[
+'title' => 'Total C&M Count',
+'fields' => [
+'t8to9am',
+'t9to10am',
+'t10to11am',
+'t11to12pm',
+'t12to1pm',
+'t1to2pm',
+'t2to3pm',
+'t3to4pm',
+'t4to5pm',
+'t5to6pm',
+'t6to7pm',
+'t7to8pm'
+]
+],
 ];
 @endphp
 
@@ -127,12 +144,18 @@ $timeSlots = [
     @endforeach
 
 </div>
-
 <script>
     function copySection(sectionId, button) {
 
         const element = document.getElementById(sectionId);
+
+        // Hide the button temporarily so its text isn't copied
+        button.style.display = 'none';
+
         const text = element.innerText;
+
+        // Show the button again
+        button.style.display = '';
 
         navigator.clipboard.writeText(text).then(function() {
 
