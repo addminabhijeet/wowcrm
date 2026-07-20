@@ -5,40 +5,41 @@
 @php
 $timeSlots = [
 [
-'title' => '10:00am - 11:00am',
+// Merge 8-9 AM + 9-10 AM + 10-11 AM
+'title' => '8:00pm - 9:00pm',
 'fields' => ['t8to9am', 't9to10am', 't10to11am']
 ],
 [
-'title' => '11:00am - 12:00pm',
+'title' => '9:00pm - 10:00pm',
 'fields' => ['t11to12pm']
 ],
 [
-'title' => '12:00pm - 1:00pm',
+'title' => '10:00pm - 11:00pm',
 'fields' => ['t12to1pm']
 ],
 [
-'title' => '1:00pm - 2:00pm',
+'title' => '11:00pm - 12:00am',
 'fields' => ['t1to2pm']
 ],
 [
-'title' => '2:00pm - 3:00pm',
+'title' => '12:00am - 1:00am',
 'fields' => ['t2to3pm']
 ],
 [
-'title' => '3:00pm - 4:00pm',
+'title' => '1:00am - 2:00am',
 'fields' => ['t3to4pm']
 ],
 [
-'title' => '4:00pm - 5:00pm',
+'title' => '2:00am - 3:00am',
 'fields' => ['t4to5pm']
 ],
 [
-'title' => '5:00pm - 6:00pm',
+'title' => '3:00am - 4:00am',
 'fields' => ['t5to6pm']
 ],
 [
-// Last slot ends at 7 PM and includes both 6-7 PM & 7-8 PM counts
-'title' => '6:00pm - 7:00pm',
+// Merge 6-7 PM + 7-8 PM
+'title' => '4:00am - 5:00am',
 'fields' => ['t6to7pm', 't7to8pm']
 ],
 ];
@@ -92,12 +93,11 @@ $timeSlots = [
             $count = 0;
 
             foreach ($slot['fields'] as $field) {
-            $count += $junior->{$field} ?? 0;
+            $count += ($junior->{$field} ?? 0);
             }
             @endphp
 
             {{ $junior->name }} - {{ $count }}
-
             <br>
 
             @endforeach
@@ -109,9 +109,7 @@ $timeSlots = [
             @endif
 
             <br>
-
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
-
             <br><br>
 
             @endforeach
@@ -134,24 +132,22 @@ $timeSlots = [
     function copySection(sectionId, button) {
 
         const element = document.getElementById(sectionId);
-
         const text = element.innerText;
 
         navigator.clipboard.writeText(text).then(function() {
 
-            const oldText = button.innerHTML;
+            const originalText = button.innerHTML;
 
-            button.innerHTML = 'Copied ✓';
+            button.innerHTML = 'Copied';
 
             setTimeout(function() {
-                button.innerHTML = oldText;
+                button.innerHTML = originalText;
             }, 1500);
 
-        }).catch(function(err) {
+        }).catch(function(error) {
 
+            console.error(error);
             alert('Failed to copy.');
-
-            console.error(err);
 
         });
 
