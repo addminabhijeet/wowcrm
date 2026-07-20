@@ -1,4 +1,5 @@
 @extends('layout.layout')
+@section('content')
 <div class="mt-5">
     @foreach($seniors as $senior)
     <div class="card mb-3">
@@ -31,3 +32,4 @@
     </div>
     @endforeach
 </div>
+@endsection
