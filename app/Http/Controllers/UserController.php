@@ -311,6 +311,29 @@ class UserController extends Controller
         return view('user.seniorgroupmail', compact('users'));
     }
 
+    public function seniorgroupmailchart()
+    {
+        $users = User::whereIn('role', ['senior', 'junior'])
+            ->where('is_deleted', 0)
+            ->paginate(50);
+
+        // Add this only
+        $seniors = User::where('role', 'senior')
+            ->where('is_deleted', 0)
+            ->get();
+
+        foreach ($seniors as $senior) {
+            $juniorIds = is_array($senior->mail) ? $senior->mail : [];
+
+            $senior->juniors = User::whereIn('id', $juniorIds)
+                ->where('role', 'junior')
+                ->where('is_deleted', 0)
+                ->get();
+        }
+
+        return view('user.seniorgroupmailchart', compact('users', 'seniors'));
+    }
+
     public function seniorcreate()
     {
         return view('user.seniorcreate');
