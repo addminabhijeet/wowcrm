@@ -379,7 +379,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/group/senior', [UserController::class, 'seniorgroup'])->name('senior.group');
     Route::get('/dashboard/group/senior/mail', [UserController::class, 'seniorgroupmail'])->name('senior.groupmail');
-    Route::get('/dashboard/group/senior/mail/chart', [UserController::class, 'seniorgroupmailchart'])->name('senior.groupmailchart');
+    Route::get('/dashboard/group/senior/mail/chart', [CallReportController::class, 'seniorgroupmailchart'])->name('senior.groupmailchart');
     Route::get('/dashboard/junior/chat', [ChatController::class, 'junior'])->name('chat.junior');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
     Route::get('/latest-messages', [ChatController::class, 'latestMessages'])->name('chat.latestMessages');

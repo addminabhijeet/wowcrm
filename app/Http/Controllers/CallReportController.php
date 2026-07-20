@@ -2283,7 +2283,7 @@ class CallReportController extends Controller
             'MAvgtotaltransfers',
         ));
     }
-
+    
     public function seniorgroupmailchart(Request $request)
     {
         // Selected date (always today)
