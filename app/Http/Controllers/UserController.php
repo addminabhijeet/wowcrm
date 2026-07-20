@@ -311,6 +311,15 @@ class UserController extends Controller
         return view('user.seniorgroupmail', compact('users'));
     }
 
+    public function seniorgroupmailchart()
+    {
+        $users = User::whereIn('role', ['senior', 'junior'])
+            ->where('is_deleted', 0)
+            ->paginate(50);
+
+        return view('user.seniorgroupmailchart', compact('users'));
+    }
+
     public function seniorcreate()
     {
         return view('user.seniorcreate');

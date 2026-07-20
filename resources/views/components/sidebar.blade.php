@@ -936,6 +936,9 @@ $role = Auth::user()->role;
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('senior.groupmail') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Group Report</a></li>
                 </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('senior.groupmailchart') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Group Report</a></li>
+                </ul>
             </li>
             @endif
 
