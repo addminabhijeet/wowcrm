@@ -26,7 +26,7 @@ $timeSlots = [
     <div class="card mb-5">
         <div class="card-body">
 
-            <h4><strong>C&amp;M Count</strong></h4>
+            <h4>C&amp;M Count</h4>
 
             <p><strong>Date:</strong> {{ \Carbon\Carbon::today()->format('d-m-Y') }}</p>
 
@@ -35,7 +35,7 @@ $timeSlots = [
             @foreach($seniors as $senior)
 
             <h5 class="mt-4">
-                <strong>Team - {{ $senior->name }}</strong>
+                Team - {{ $senior->name }}
             </h5>
 
             <div>....................................</div>
