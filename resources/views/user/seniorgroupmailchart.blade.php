@@ -10,17 +10,10 @@
         <div class="card-body">
             @if($senior->juniors->count())
             <table class="table table-bordered mb-0">
-                <thead>
-                    <tr>
-                        <th>Junior Name</th>
-                        <th>Email</th>
-                    </tr>
-                </thead>
                 <tbody>
                     @foreach($senior->juniors as $junior)
                     <tr>
                         <td>{{ $junior->name }}</td>
-                        <td>{{ $junior->email }}</td>
                     </tr>
                     @endforeach
                 </tbody>
