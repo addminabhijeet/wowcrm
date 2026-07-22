@@ -2191,15 +2191,38 @@ class CallReportController extends Controller
 
         $html = view('reports.allreport', compact('reports'))->render();
 
+        // ✅ Clean HTML for DomPDF compatibility
+        $html = preg_replace('/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/i', '', $html);
+        $html = preg_replace('/<style[^>]*>.*?<\/style>/is', '', $html);
+        $html = preg_replace('/iconify-icon[^>]*icon="[^"]*"[^>]*>/i', '', $html);
+        $html = preg_replace('/<i\s+class="[^"]*"[^>]*><\/i>/i', '', $html);
+        $html = str_replace('&nbsp;', ' ', $html);
+
+        // ✅ Add basic inline styles for PDF
+        $basicStyles = '<style>
+            body { font-family: Arial, sans-serif; color: #000; }
+            table { width: 100%; border-collapse: collapse; margin: 10px 0; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+            th { background: #f0f0f0; font-weight: bold; }
+            .card { border: 1px solid #ddd; margin: 10px 0; padding: 10px; }
+            .badge { background: #ddd; padding: 3px 6px; display: inline-block; }
+            h1, h2, h3, h4, h5, h6 { margin: 10px 0 5px 0; }
+            .pdf-page { page-break-after: always; padding: 20px; }
+        </style>';
+
+        if (strpos($html, '<head>') !== false) {
+            $html = str_replace('<head>', '<head>' . $basicStyles, $html);
+        } elseif (strpos($html, '<!DOCTYPE') !== false) {
+            $html = preg_replace('/(<!DOCTYPE[^>]*>)/i', '$1' . $basicStyles, $html);
+        } else {
+            $html = $basicStyles . $html;
+        }
+
         $options = new \Dompdf\Options();
         $options->set('isHtml5ParserEnabled', true);
-        $options->set('isPhpEnabled', true);
-        $options->set('isRemoteEnabled', true);
+        $options->set('isPhpEnabled', false);
+        $options->set('isRemoteEnabled', false);
         $options->set('isFontSubsettingEnabled', false);
-        $options->set('chroot', public_path());
-        $options->set('baseUrl', public_path());
-        $options->set('fontHeightRatio', 1.2);
-        $options->set('dpi', 96);
 
         $pdf = new \Dompdf\Dompdf($options);
         $pdf->loadHtml($html, 'UTF-8');
