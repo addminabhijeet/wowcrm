@@ -82,6 +82,23 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <script>
+        document.getElementById('selectAllUsers').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+
+        document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const allCheckboxes = document.querySelectorAll('.user-checkbox');
+                const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+                document.getElementById('selectAllUsers').checked = checkedCount === allCheckboxes.length;
+            });
+        });
+    </script>
+
+    <script>
         document.getElementById('multiReportBtn').addEventListener('click', function() {
 
             const selectedUsers = Array.from(document.querySelectorAll('.user-checkbox:checked'))
