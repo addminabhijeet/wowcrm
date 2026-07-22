@@ -112,9 +112,15 @@ $timeSlots = [
             foreach ($slot['fields'] as $field) {
             $count += ($junior->{$field} ?? 0);
             }
+
+            $todayLogin = \App\Models\Logins::where('user_id', $junior->id)
+                ->whereDate('logged_in_at', \Carbon\Carbon::today())
+                ->exists();
+
+            $displayValue = $todayLogin ? $count : 'ab';
             @endphp
 
-            {{ $junior->name }} - {{ $count }}
+            {{ $junior->name }} - {{ $displayValue }}
             <br>
 
             @endforeach
