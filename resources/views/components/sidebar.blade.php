@@ -64,6 +64,11 @@ $role = Auth::user()->role;
                     </li>
                 </ul>
                 <ul class="sidebar-submenu">
+                    <li><a href="{{ route('google.sheet.juniorvm') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>VM</a>
+                    </li>
+                </ul>
+                <ul class="sidebar-submenu">
                     <li><a href="{{ route('google.sheet.juniorrej') }}"><i
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Rejected</a>
                     </li>
