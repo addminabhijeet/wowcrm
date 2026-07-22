@@ -6205,7 +6205,7 @@ class GoogleSheetController extends Controller
             })
                 // EXCLUSION: Do NOT show rows having more than one "|junior"
                 ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
-        })->where('transfers', '!=', 1)->where('rejected', 0);
+        })->where('transfers', '!=', 1)->where('rejected', 0)->whereNotIn('Exe_Remarks', ['Others', 'VM']);
 
 
         // Filter by selected junior
