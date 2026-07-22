@@ -1060,29 +1060,27 @@
             clonedElement.prepend(printStyle);
 
             // ✅ Wait for all assets/styles to load and render all 100+ items in loop
-            await new Promise(resolve => setTimeout(resolve, 200000));
+            await new Promise(resolve => setTimeout(resolve, 2000000));
 
             // ✅ Proper A4 PDF dimensions in pixels
             const a4WidthPx = 1175;
             const a4HeightPx = Math.round(a4WidthPx * 1.4142);
 
-            // ✅ PDF generation options optimized for 100+ items with reduced scale and quality
+            // ✅ PDF generation options (same as working alljuniordaily.blade.php)
             const opt = {
                 margin: [0, 0, 0, 0],
                 filename: 'monthly-report.pdf',
                 image: {
                     type: 'jpeg',
-                    quality: 0.75
+                    quality: 0.98
                 },
                 html2canvas: {
-                    scale: 1.2,
+                    scale: 3,
                     useCORS: true,
                     scrollY: 0,
                     backgroundColor: "#ffffff",
                     logging: false,
                     letterRendering: true,
-                    allowTaint: true,
-                    timeout: 60000
                 },
                 jsPDF: {
                     unit: 'px',
@@ -1090,7 +1088,7 @@
                     orientation: 'portrait',
                 },
                 pagebreak: {
-                    mode: ['css', 'legacy']
+                    mode: ['avoid-all', 'css', 'legacy']
                 }
             };
 
