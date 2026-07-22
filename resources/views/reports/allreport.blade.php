@@ -979,149 +979,40 @@
         @endforeach
     </div>
     <script>
-        document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-            const element = document.getElementById("pdf");
+        document.getElementById("downloadPdfBtn").addEventListener("click", function() {
+            const btn = this;
+            const originalText = btn.innerHTML;
 
-            // ✅ Clone element to apply isolated print styles
-            const clonedElement = element.cloneNode(true);
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Generating PDF...';
 
-            // ✅ Add black & white print style dynamically (for PDF only)
-            const printStyle = document.createElement("style");
-            printStyle.textContent = `
-        * {
-            color: #000 !important;
-            box-shadow: none !important;
-            text-shadow: none !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-        }
-        body { background: #fff !important; margin: 0 !important; }
-        h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
-            color: #000 !important;
-            font-weight: 800 !important;
-        }
-        .icon-wrapper {
-            background: #fff !important;
-            border: 2px solid #000 !important;
-            border-radius: 50% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-        iconify-icon,
-        i,
-        .icon-wrapper iconify-icon {
-            color: #000 !important;
-        }
-        [style*="background: linear-gradient"],
-        [style*="background-color"] {
-            background: #fff !important;
-        }
-        .card {
-            background: #fff !important;
-            border: 2px solid #000 !important;
-            color: #000 !important;
-            box-shadow: none !important;
-            transition: none !important;
-        }
-        [onmouseover], [onmouseout] {
-            transform: none !important;
-            box-shadow: none !important;
-        }
-        table, th, td {
-            border: 2px solid #000 !important;
-            color: #000 !important;
-            font-weight: 800 !important;
-            background: #fff !important;
-        }
-        .badge {
-            background: #ddd !important;
-            color: #000 !important;
-            font-weight: 900 !important;
-            border: 2px solid #000 !important;
-            padding: 4px 8px !important;
-        }
-        i, iconify-icon {
-            color: #000 !important;
-        }
-        input, select, label {
-            color: #000 !important;
-            font-weight: 800 !important;
-        }
-        .pdf-page {
-            page-break-after: always !important;
-            break-after: page !important;
-        }
-        @page {
-            size: A4 portrait;
-            margin: 0;
-        }
-    `;
-            clonedElement.prepend(printStyle);
+            const selectedDate = document.getElementById('selected_date').value;
+            const userId = "{{ request()->route('userId') }}";
 
-            // ✅ Ensure element has content before proceeding
-            if (!clonedElement || clonedElement.innerText.trim() === '') {
-                alert('No content to export');
-                throw new Error('Empty content');
-            }
+            const form = document.createElement('form');
+            form.method = 'POST';
+            form.action = "{{ route('call.reports.allreport.pdf', ['userId' => request()->route('userId')]) }}";
 
-            // ✅ Wait longer for large content to render (up to 100 items)
-            await new Promise(resolve => setTimeout(resolve, 3000));
+            const dateInput = document.createElement('input');
+            dateInput.type = 'hidden';
+            dateInput.name = 'selected_date';
+            dateInput.value = selectedDate;
 
-            // ✅ Proper A4 PDF dimensions in pixels
-            const a4WidthPx = 1175;
-            const a4HeightPx = Math.round(a4WidthPx * 1.4142);
+            const tokenInput = document.createElement('input');
+            tokenInput.type = 'hidden';
+            tokenInput.name = '_token';
+            tokenInput.value = "{{ csrf_token() }}";
 
-            // ✅ PDF generation options optimized for large datasets (50-100 items)
-            const opt = {
-                margin: [0, 0, 0, 0],
-                filename: 'monthly-report.pdf',
-                image: {
-                    type: 'jpeg',
-                    quality: 0.90
-                },
-                html2canvas: {
-                    scale: 1,
-                    useCORS: true,
-                    scrollY: 0,
-                    backgroundColor: "#ffffff",
-                    logging: false,
-                    letterRendering: true,
-                    allowTaint: true,
-                    proxy: null,
-                    timeout: 30000,
-                    onclone: function(clonedDoc) {
-                        clonedDoc.body.style.margin = '0';
-                        clonedDoc.body.style.padding = '0';
-                        clonedDoc.body.style.overflow = 'visible';
-                    }
-                },
-                jsPDF: {
-                    unit: 'px',
-                    format: [a4WidthPx, a4HeightPx],
-                    orientation: 'portrait',
-                    compress: true
-                },
-                pagebreak: {
-                    mode: ['css', 'legacy'],
-                    before: '.pdf-page',
-                    avoid: ['tr', 'td']
-                }
-            };
+            form.appendChild(dateInput);
+            form.appendChild(tokenInput);
+            document.body.appendChild(form);
+            form.submit();
 
-            // Convert Iconify icons to inline SVG images for html2canvas visibility
-            clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
-                const svg = document.createElement("img");
-                const iconName = icon.getAttribute("icon");
-                svg.src = `https://api.iconify.design/${iconName}.svg?color=%23000`;
-                svg.width = 34;
-                svg.height = 34;
-                icon.replaceWith(svg);
-            });
-
-
-            // ✅ Generate the full-page PDF
-            await html2pdf().set(opt).from(clonedElement).save();
+            setTimeout(() => {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+                document.body.removeChild(form);
+            }, 2000);
         });
     </script>
 @endsection

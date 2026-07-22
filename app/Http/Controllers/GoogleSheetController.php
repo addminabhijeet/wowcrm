@@ -6723,7 +6723,7 @@ class GoogleSheetController extends Controller
         ];
 
         if ($request->ajax()) {
-            return view('database.partials.juniorvm_table', [
+            return view('database.partials.juniorother_table', [
                 'data' => $pagedData,
                 'juniorUsers' => $juniorUsers,
                 'exeRemarkCounts' => $exeRemarkCounts
