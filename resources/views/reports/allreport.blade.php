@@ -1059,37 +1059,53 @@
     `;
             clonedElement.prepend(printStyle);
 
-            // ✅ Wait for a short time to ensure all assets/styles load
-            await new Promise(resolve => setTimeout(resolve, 100));
+            // ✅ Ensure element has content before proceeding
+            if (!clonedElement || clonedElement.innerText.trim() === '') {
+                alert('No content to export');
+                throw new Error('Empty content');
+            }
+
+            // ✅ Wait longer for large content to render (up to 100 items)
+            await new Promise(resolve => setTimeout(resolve, 3000));
 
             // ✅ Proper A4 PDF dimensions in pixels
             const a4WidthPx = 1175;
             const a4HeightPx = Math.round(a4WidthPx * 1.4142);
 
-            // ✅ PDF generation options (optimized for full A4 coverage)
+            // ✅ PDF generation options optimized for large datasets (50-100 items)
             const opt = {
                 margin: [0, 0, 0, 0],
                 filename: 'monthly-report.pdf',
                 image: {
                     type: 'jpeg',
-                    quality: 0.98
+                    quality: 0.90
                 },
                 html2canvas: {
-                    scale: 2,
+                    scale: 1,
                     useCORS: true,
                     scrollY: 0,
                     backgroundColor: "#ffffff",
                     logging: false,
                     letterRendering: true,
                     allowTaint: true,
+                    proxy: null,
+                    timeout: 30000,
+                    onclone: function(clonedDoc) {
+                        clonedDoc.body.style.margin = '0';
+                        clonedDoc.body.style.padding = '0';
+                        clonedDoc.body.style.overflow = 'visible';
+                    }
                 },
                 jsPDF: {
                     unit: 'px',
                     format: [a4WidthPx, a4HeightPx],
                     orientation: 'portrait',
+                    compress: true
                 },
                 pagebreak: {
-                    mode: ['css', 'legacy']
+                    mode: ['css', 'legacy'],
+                    before: '.pdf-page',
+                    avoid: ['tr', 'td']
                 }
             };
 
