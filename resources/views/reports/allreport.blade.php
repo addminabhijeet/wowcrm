@@ -1059,111 +1059,52 @@
     `;
             clonedElement.prepend(printStyle);
 
+            // ✅ Wait for a short time to ensure all assets/styles load
+            await new Promise(resolve => setTimeout(resolve, 100));
+
+            // ✅ Proper A4 PDF dimensions in pixels
             const a4WidthPx = 1175;
             const a4HeightPx = Math.round(a4WidthPx * 1.4142);
 
-            // ✅ Get all individual report pages from the foreach loop
-            const pdfPages = clonedElement.querySelectorAll('.pdf-page');
+            // ✅ PDF generation options (same as working alljuniordaily.blade.php)
+            const opt = {
+                margin: [0, 0, 0, 0],
+                filename: 'monthly-report.pdf',
+                image: {
+                    type: 'jpeg',
+                    quality: 0.98
+                },
+                html2canvas: {
+                    scale: 3,
+                    useCORS: true,
+                    scrollY: 0,
+                    backgroundColor: "#ffffff",
+                    logging: false,
+                    letterRendering: true,
+                },
+                jsPDF: {
+                    unit: 'px',
+                    format: [a4WidthPx, a4HeightPx],
+                    orientation: 'portrait',
+                },
+                pagebreak: {
+                    mode: ['avoid-all', 'css', 'legacy']
+                }
+            };
 
-            if (pdfPages.length === 0) {
-                alert('No content to export');
-                return;
-            }
-
-            // ✅ Create PDF document
-            const pdf = new jsPDF({
-                unit: 'px',
-                format: [a4WidthPx, a4HeightPx],
-                orientation: 'portrait',
-                compress: true
+            // Convert Iconify icons to inline SVG images for html2canvas visibility
+            clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
+                const svg = document.createElement("img");
+                const iconName = icon.getAttribute("icon");
+                svg.src = `https://api.iconify.design/${iconName}.svg?color=%23000`;
+                svg.width = 34;
+                svg.height = 34;
+                svg.style.filter = "contrast(250%) brightness(0%)";
+                icon.replaceWith(svg);
             });
 
-            let firstPage = true;
-
-            // ✅ Process each page individually to handle 100+ items
-            for (let i = 0; i < pdfPages.length; i++) {
-                const pageElement = pdfPages[i];
-
-                // ✅ Create temporary container for this page
-                const tempContainer = document.createElement('div');
-                tempContainer.style.margin = '0';
-                tempContainer.style.padding = '0';
-                tempContainer.style.width = a4WidthPx + 'px';
-                tempContainer.style.backgroundColor = '#ffffff';
-
-                // ✅ Clone this specific page
-                const pageCopy = pageElement.cloneNode(true);
-
-                // ✅ Add styles to this page copy
-                const pageStyle = document.createElement("style");
-                pageStyle.textContent = `
-            * {
-                color: #000 !important;
-                box-shadow: none !important;
-                text-shadow: none !important;
-                -webkit-print-color-adjust: exact !important;
-                print-color-adjust: exact !important;
-            }
-            body { background: #fff !important; margin: 0 !important; }
-            h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
-                color: #000 !important;
-                font-weight: 800 !important;
-            }
-            .card { background: #fff !important; border: 2px solid #000 !important; color: #000 !important; box-shadow: none !important; }
-            table, th, td { border: 2px solid #000 !important; color: #000 !important; font-weight: 800 !important; background: #fff !important; }
-            .badge { background: #ddd !important; color: #000 !important; font-weight: 900 !important; border: 2px solid #000 !important; padding: 4px 8px !important; }
-            i, iconify-icon { color: #000 !important; }
-            input, select, label { color: #000 !important; font-weight: 800 !important; }
-            [style*="background: linear-gradient"], [style*="background-color"] { background: #fff !important; }
-            [onmouseover], [onmouseout] { transform: none !important; box-shadow: none !important; }
-        `;
-                pageCopy.prepend(pageStyle);
-
-                // ✅ Convert icons in this page
-                pageCopy.querySelectorAll("iconify-icon").forEach(icon => {
-                    const svg = document.createElement("img");
-                    const iconName = icon.getAttribute("icon");
-                    svg.src = `https://api.iconify.design/${iconName}.svg?color=%23000`;
-                    svg.width = 34;
-                    svg.height = 34;
-                    icon.replaceWith(svg);
-                });
-
-                tempContainer.appendChild(pageCopy);
-
-                // ✅ Wait a moment before rendering
-                await new Promise(resolve => setTimeout(resolve, 300));
-
-                // ✅ Render this page to canvas
-                try {
-                    const canvas = await html2canvas(tempContainer, {
-                        scale: 1,
-                        useCORS: true,
-                        backgroundColor: "#ffffff",
-                        logging: false,
-                        allowTaint: true,
-                        timeout: 15000
-                    });
-
-                    const imgData = canvas.toDataURL('image/jpeg', 0.85);
-
-                    if (!firstPage) {
-                        pdf.addPage([a4WidthPx, a4HeightPx]);
-                    }
-
-                    pdf.addImage(imgData, 'JPEG', 0, 0, a4WidthPx, a4HeightPx);
-                    firstPage = false;
-
-                } catch (err) {
-                    console.error('Error rendering page ' + (i + 1), err);
-                }
-
-                // ✅ Clean up temporary container
-                tempContainer.remove();
-            }
-
-            // ✅ Save the combined PDF
-            pdf.save('monthly-report.pdf');
+            // ✅ Generate the full-page PDF (same approach as alljuniordaily)
+            await html2pdf().set(opt).from(clonedElement).save();
         });
     </script>
 @endsection
