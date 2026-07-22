@@ -2190,14 +2190,20 @@ class CallReportController extends Controller
         });
 
         $html = view('reports.allreport', compact('reports'))->render();
-        $pdf = app('dompdf.wrapper');
-        $pdf->loadHTML($html);
-        $pdf->setPaper('A4', 'portrait');
-        $pdf->setOption('isHtml5ParserEnabled', true);
-        $pdf->setOption('isPhpEnabled', true);
-        $pdf->setOption('chroot', public_path());
 
-        return $pdf->download('monthly-report.pdf');
+        $options = new \Dompdf\Options();
+        $options->set('isHtml5ParserEnabled', true);
+        $options->set('isPhpEnabled', true);
+        $options->set('chroot', public_path());
+
+        $pdf = new \Dompdf\Dompdf($options);
+        $pdf->loadHtml($html);
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->render();
+
+        return response($pdf->output(), 200)
+            ->header('Content-Type', 'application/pdf')
+            ->header('Content-Disposition', 'attachment; filename="monthly-report.pdf"');
     }
 
 
