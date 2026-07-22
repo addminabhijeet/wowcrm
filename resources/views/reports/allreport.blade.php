@@ -1059,8 +1059,8 @@
     `;
             clonedElement.prepend(printStyle);
 
-            // ✅ Wait for a short time to ensure all assets/styles load
-            await new Promise(resolve => setTimeout(resolve, 10000));
+            // ✅ Wait for all assets/styles to load and render all 100+ items in loop
+            await new Promise(resolve => setTimeout(resolve, 20000));
 
             // ✅ Proper A4 PDF dimensions in pixels
             const a4WidthPx = 1175;
