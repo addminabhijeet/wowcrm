@@ -2191,13 +2191,65 @@ class CallReportController extends Controller
 
         $html = view('reports.allreport', compact('reports'))->render();
 
+        // ✅ Inject PDF-optimized CSS for proper styling in DomPDF
+        $pdfStyles = '<style>
+            * { margin: 0; padding: 0; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+            body { background: #fff; font-family: Arial, sans-serif; }
+            .card { background: #fff !important; border: 1px solid #ddd; page-break-inside: avoid; }
+            .card-body { padding: 15px; }
+            table { width: 100%; border-collapse: collapse; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: left; }
+            th { background: #f5f5f5; font-weight: bold; }
+            .badge { background: #ddd; padding: 4px 8px; border-radius: 3px; }
+            .text-center { text-align: center; }
+            .mb-0 { margin-bottom: 0; }
+            .mb-1 { margin-bottom: 4px; }
+            .mb-2 { margin-bottom: 8px; }
+            .mb-3 { margin-bottom: 12px; }
+            .mb-4 { margin-bottom: 16px; }
+            .mt-1 { margin-top: 4px; }
+            .mt-24 { margin-top: 20px; }
+            .d-flex { display: flex; }
+            .justify-content-between { justify-content: space-between; }
+            .align-items-center { align-items: center; }
+            .gap-1 { gap: 4px; }
+            .gap-2 { gap: 8px; }
+            .gap-3 { gap: 12px; }
+            .row { display: flex; flex-wrap: wrap; }
+            .col { flex: 1; min-width: 0; }
+            .col-md-3 { flex: 0 0 25%; }
+            .col-xxl-8 { flex: 0 0 66.67%; }
+            .col-xxl-4 { flex: 0 0 33.33%; }
+            .col-lg-6 { flex: 0 0 50%; }
+            .g-3 { gap: 12px; }
+            .gy-4 { row-gap: 16px; }
+            .fw-bold { font-weight: bold; }
+            .fw-semibold { font-weight: 600; }
+            .text-dark { color: #000; }
+            .text-secondary-light { color: #666; }
+            .h-100 { height: 100%; }
+            h1, h2, h3, h4, h5, h6 { font-weight: bold; margin-bottom: 8px; }
+            h5 { font-size: 16px; }
+            h6 { font-size: 14px; }
+            small { font-size: 12px; }
+            p { margin-bottom: 8px; }
+            .pdf-page { page-break-after: always; padding: 20px; }
+            i, iconify-icon { display: inline-block; }
+        </style>';
+
+        $html = str_replace('</head>', $pdfStyles . '</head>', $html);
+        $html = str_replace('</body>', '', $html);
+
         $options = new \Dompdf\Options();
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isPhpEnabled', true);
+        $options->set('isRemoteEnabled', true);
         $options->set('chroot', public_path());
+        $options->set('baseUrl', public_path());
+        $options->set('fontHeightRatio', 1.2);
 
         $pdf = new \Dompdf\Dompdf($options);
-        $pdf->loadHtml($html);
+        $pdf->loadHtml($html, 'UTF-8');
         $pdf->setPaper('A4', 'portrait');
         $pdf->render();
 
