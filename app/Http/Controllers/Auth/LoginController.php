@@ -99,8 +99,6 @@ class LoginController extends Controller
                     return redirect()->route('dashboard.career');
                 case 'resource':
                     return redirect()->route('dashboard.resource');
-                case 'support':
-                    return redirect()->route('dashboard.support');
                 default:
                     abort(403, 'Unauthorized action.');
             }
