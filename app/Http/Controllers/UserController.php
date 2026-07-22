@@ -69,13 +69,13 @@ class UserController extends Controller
     // ======================
     // EDIT / UPDATE
     // ======================
-    public function adminedit($id)
+    public function adminedit(int $id)
     {
         $user = User::findOrFail($id);
         return view('user.adminedit', compact('user'));
     }
 
-    public function adminupdate(Request $request, $id)
+    public function adminupdate(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -133,7 +133,7 @@ class UserController extends Controller
     // ======================
     // DELETE
     // ======================
-    public function admindestroy($id)
+    public function admindestroy(int $id)
     {
         $user = User::findOrFail($id);
         $user->is_deleted = 1; // Mark as deleted
@@ -205,13 +205,13 @@ class UserController extends Controller
     // ======================
     // EDIT / UPDATE
     // ======================
-    public function junioredit($id)
+    public function junioredit(int $id)
     {
         $user = User::findOrFail($id);
         return view('user.junioredit', compact('user'));
     }
 
-    public function juniorupdate(Request $request, $id)
+    public function juniorupdate(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -277,7 +277,7 @@ class UserController extends Controller
     // ======================
     // DELETE
     // ======================
-    public function juniordestroy($id)
+    public function juniordestroy(int $id)
     {
         $user = User::findOrFail($id);
         $user->is_deleted = 1; // Mark as deleted
@@ -381,13 +381,13 @@ class UserController extends Controller
     // ======================
     // EDIT / UPDATE
     // ======================
-    public function senioredit($id)
+    public function senioredit(int $id)
     {
         $user = User::findOrFail($id);
         return view('user.senioredit', compact('user'));
     }
 
-    public function seniorupdate(Request $request, $id)
+    public function seniorupdate(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -446,7 +446,7 @@ class UserController extends Controller
             ->with('success', ' updated successfully!');
     }
 
-    public function senioreditgroup($id)
+    public function senioreditgroup(int $id)
     {
         $user = User::findOrFail($id);
 
@@ -473,7 +473,7 @@ class UserController extends Controller
         return view('user.senioreditgroup', compact('user', 'juniors'));
     }
 
-    public function senioreditgroupmail($id)
+    public function senioreditgroupmail(int $id)
     {
         $user = User::findOrFail($id);
 
@@ -500,7 +500,7 @@ class UserController extends Controller
         return view('user.senioreditgroupmail', compact('user', 'juniors'));
     }
 
-    public function seniorgroupmailupdate(Request $request, $id)
+    public function seniorgroupmailupdate(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -522,7 +522,7 @@ class UserController extends Controller
             ->with('success', 'Updated successfully!');
     }
 
-    public function seniorgroupremove($seniorId, $juniorId)
+    public function seniorgroupremove(int $seniorId, int $juniorId)
     {
         $user = User::findOrFail($seniorId);
 
@@ -537,7 +537,7 @@ class UserController extends Controller
         return back()->with('success', 'Junior removed successfully');
     }
 
-    public function seniorgroupmailremove($seniorId, $juniorId)
+    public function seniorgroupmailremove(int $seniorId, int $juniorId)
     {
         $user = User::findOrFail($seniorId);
 
@@ -554,7 +554,7 @@ class UserController extends Controller
     // ======================
     // DELETE
     // ======================
-    public function seniordestroy($id)
+    public function seniordestroy(int $id)
     {
         $user = User::findOrFail($id);
         $user->is_deleted = 1; // Mark as deleted
@@ -620,13 +620,13 @@ class UserController extends Controller
     // ======================
     // EDIT / UPDATE
     // ======================
-    public function traineredit($id)
+    public function traineredit(int $id)
     {
         $user = User::findOrFail($id);
         return view('user.traineredit', compact('user'));
     }
 
-    public function trainerupdate(Request $request, $id)
+    public function trainerupdate(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -676,7 +676,7 @@ class UserController extends Controller
     // ======================
     // DELETE
     // ======================
-    public function trainerdestroy($id)
+    public function trainerdestroy(int $id)
     {
         $user = User::findOrFail($id);
         $user->is_deleted = 1; // Mark as deleted
@@ -742,13 +742,13 @@ class UserController extends Controller
     // ======================
     // EDIT / UPDATE
     // ======================
-    public function accountantedit($id)
+    public function accountantedit(int $id)
     {
         $user = User::findOrFail($id);
         return view('user.accountantedit', compact('user'));
     }
 
-    public function accountantupdate(Request $request, $id)
+    public function accountantupdate(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -798,7 +798,7 @@ class UserController extends Controller
     // ======================
     // DELETE
     // ======================
-    public function accountantdestroy($id)
+    public function accountantdestroy(int $id)
     {
         $user = User::findOrFail($id);
         $user->is_deleted = 1; // Mark as deleted
@@ -864,13 +864,13 @@ class UserController extends Controller
     // ======================
     // EDIT / UPDATE
     // ======================
-    public function operationedit($id)
+    public function operationedit(int $id)
     {
         $user = User::findOrFail($id);
         return view('user.operationedit', compact('user'));
     }
 
-    public function operationupdate(Request $request, $id)
+    public function operationupdate(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -920,7 +920,7 @@ class UserController extends Controller
     // ======================
     // DELETE
     // ======================
-    public function operationdestroy($id)
+    public function operationdestroy(int $id)
     {
         $user = User::findOrFail($id);
         $user->is_deleted = 1; // Mark as deleted
@@ -987,13 +987,13 @@ class UserController extends Controller
     // ======================
     // EDIT / UPDATE
     // ======================
-    public function customeredit($id)
+    public function customeredit(int $id)
     {
         $user = User::findOrFail($id);
         return view('user.customeredit', compact('user'));
     }
 
-    public function customerupdate(Request $request, $id)
+    public function customerupdate(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -1044,7 +1044,7 @@ class UserController extends Controller
     // ======================
     // DELETE
     // ======================
-    public function customerdestroy($id)
+    public function customerdestroy(int $id)
     {
         $user = User::findOrFail($id);
         $user->is_deleted = 1; // Mark as deleted
@@ -1110,13 +1110,13 @@ class UserController extends Controller
     // ======================
     // EDIT / UPDATE
     // ======================
-    public function associateedit($id)
+    public function associateedit(int $id)
     {
         $user = User::findOrFail($id);
         return view('user.associateedit', compact('user'));
     }
 
-    public function associateupdate(Request $request, $id)
+    public function associateupdate(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -1173,7 +1173,7 @@ class UserController extends Controller
     // ======================
     // DELETE
     // ======================
-    public function associatedestroy($id)
+    public function associatedestroy(int $id)
     {
         $user = User::findOrFail($id);
         $user->is_deleted = 1; // Mark as deleted
@@ -1239,13 +1239,13 @@ class UserController extends Controller
     // ======================
     // EDIT / UPDATE
     // ======================
-    public function supportedit($id)
+    public function supportedit(int $id)
     {
         $user = User::findOrFail($id);
         return view('user.supportedit', compact('user'));
     }
 
-    public function supportupdate(Request $request, $id)
+    public function supportupdate(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -1302,7 +1302,7 @@ class UserController extends Controller
     // ======================
     // DELETE
     // ======================
-    public function supportdestroy($id)
+    public function supportdestroy(int $id)
     {
         $user = User::findOrFail($id);
         $user->is_deleted = 1; // Mark as deleted
@@ -1368,13 +1368,13 @@ class UserController extends Controller
     // ======================
     // EDIT / UPDATE
     // ======================
-    public function writteredit($id)
+    public function writteredit(int $id)
     {
         $user = User::findOrFail($id);
         return view('user.writteredit', compact('user'));
     }
 
-    public function writterupdate(Request $request, $id)
+    public function writterupdate(Request $request, int $id)
     {
         $user = User::findOrFail($id);
 
@@ -1431,7 +1431,7 @@ class UserController extends Controller
     // ======================
     // DELETE
     // ======================
-    public function writterdestroy($id)
+    public function writterdestroy(int $id)
     {
         $user = User::findOrFail($id);
         $user->is_deleted = 1; // Mark as deleted

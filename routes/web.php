@@ -249,6 +249,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/junior/google-sheet', [GoogleSheetController::class, 'junior'])->name('google.sheet.junior');
     Route::get('/dashboard/junior/google-sheet-other', [GoogleSheetController::class, 'juniorother'])->name('google.sheet.juniorother');
+    Route::get('/dashboard/junior/google-sheet-vm', [GoogleSheetController::class, 'juniorvm'])->name('google.sheet.juniorvm');
     Route::get('/dashboard/junior/google-sheet-rej', [GoogleSheetController::class, 'juniorrej'])->name('google.sheet.juniorrej');
     Route::get('/dashboard/junior/google-sheet-candm', [GoogleSheetController::class, 'juniorcandm'])->name('google.sheet.junior.candm');
     Route::get('/dashboard/junior/google-sheet-tra', [GoogleSheetController::class, 'juniortra'])->name('google.sheet.junior.tra');

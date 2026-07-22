@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\UserTimerLog;
+use App\Models\Logins;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\UserTimerPause;
@@ -59,6 +60,14 @@ class LoginController extends Controller
                         'event_time' => now(),
                     ]);
                 }
+
+                // Store login details in logins table
+                Logins::create([
+                    'user_id' => $user->id,
+                    'ip_address' => $request->ip(),
+                    'user_agent' => $request->userAgent(),
+                    'logged_in_at' => now(),
+                ]);
             }
             // =============================================
 
@@ -90,8 +99,6 @@ class LoginController extends Controller
                     return redirect()->route('dashboard.career');
                 case 'resource':
                     return redirect()->route('dashboard.resource');
-                case 'support':
-                    return redirect()->route('dashboard.support');
                 default:
                     abort(403, 'Unauthorized action.');
             }
