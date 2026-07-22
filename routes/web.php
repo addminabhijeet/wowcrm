@@ -310,6 +310,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/alltrainerlist/call-reports', [CallReportController::class, 'alltrainerlist'])->name('call.reports.alltrainerlist');
     Route::get('/dashboard/alltrainerlist/call-reports-sender', [CallReportController::class, 'reportsender'])->name('call.reports.sender');
     Route::get('/dashboard/alltrainerlist/call-reports-allreport/{userId}', [CallReportController::class, 'allreport'])->name('call.reports.allreport');
+    Route::post('/dashboard/alltrainerlist/call-reports-allreport-pdf/{userId}', [CallReportController::class, 'allreportPdf'])->name('call.reports.allreport.pdf');
     Route::get('/dashboard/alljuniormonthly/call-reports/{userId}', [CallReportController::class, 'alljuniormonthly'])->name('call.reports.alljuniormonthly');
     Route::get('/dashboard/allseniormonthly/call-reports/{userId}', [CallReportController::class, 'allseniormonthly'])->name('call.reports.allseniormonthly');
     Route::get('/dashboard/preallseniormonthly/call-reports/{userId}', [PreCallReportController::class, 'preallseniormonthly'])->name('call.reports.preallseniormonthly');

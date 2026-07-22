@@ -1892,6 +1892,314 @@ class CallReportController extends Controller
         return view('reports.allreport', compact('reports'));
     }
 
+    public function allreportPdf(Request $request, $userId)
+    {
+        $userIds = explode(',', $userId);
+
+        $users = User::whereIn('id', $userIds)
+            ->where('is_deleted', 0)
+            ->get();
+
+        abort_if($users->isEmpty(), 404);
+
+        $reports = [];
+
+        foreach ($users as $juniorUser) {
+
+            $createdByKey = "{$juniorUser->id}|junior";
+
+            $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
+
+            $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->count();
+
+            $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->count();
+
+            $hourlyCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->groupBy('hour')
+                ->orderBy('hour')
+                ->pluck('count', 'hour')
+                ->toArray();
+
+            $selectedDate = $request->input('selected_date', date('Y-m-d'));
+            $selectedMonth = date('Y-m', strtotime($selectedDate));
+            [$year, $month] = explode('-', $selectedMonth);
+
+            $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereDate('updated_at', $selectedDate);
+            $tquery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereDate('updated_at', $selectedDate);
+
+            $StotalCalls = $query->count();
+
+            $ScalledAndMailedCalls = (clone $query)
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->whereDate('followup', $selectedDate)
+                ->count();
+
+            $SotherCalls = (clone $query)
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->count();
+
+            $Stotaltransfers = (clone $query)
+                ->where(function ($q) {
+                    $q->where('transfers', 1);
+                })
+                ->count();
+
+            $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereDate('updated_at', $selectedDate)
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->whereDate('followup', $selectedDate)
+                ->groupBy('hour')
+                ->pluck('count', 'hour')
+                ->toArray();
+
+            $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereDate('updated_at', $selectedDate)
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->groupBy('hour')
+                ->pluck('count', 'hour')
+                ->toArray();
+
+            $hourlyTransfers = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereDate('updated_at', $selectedDate)
+                ->where('transfers', 1)
+                ->groupBy('hour')
+                ->pluck('count', 'hour')
+                ->toArray();
+
+            $holidayDates = Holiday::whereYear('holiday_date', $year)
+                ->whereMonth('holiday_date', $month)
+                ->where('is_holiday', 1)
+                ->pluck('holiday_date')
+                ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+                ->toArray();
+
+            $t8to9am = $hourlyCalledMailed[8] ?? 0;
+            $t9to10am = $hourlyCalledMailed[9] ?? 0;
+            $t10to11am = $hourlyCalledMailed[10] ?? 0;
+            $t11to12pm = $hourlyCalledMailed[11] ?? 0;
+            $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
+            $t1to2pm   = $hourlyCalledMailed[13] ?? 0;
+            $t2to3pm   = $hourlyCalledMailed[14] ?? 0;
+            $t3to4pm   = $hourlyCalledMailed[15] ?? 0;
+            $t4to5pm   = $hourlyCalledMailed[16] ?? 0;
+            $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
+            $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
+            $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+
+            $tr8to9am  = $hourlyTransfers[8]  ?? 0;
+            $tr9to10am = $hourlyTransfers[9]  ?? 0;
+            $tr10to11am = $hourlyTransfers[10] ?? 0;
+            $tr11to12pm = $hourlyTransfers[11] ?? 0;
+            $tr12to1pm = $hourlyTransfers[12] ?? 0;
+            $tr1to2pm  = $hourlyTransfers[13] ?? 0;
+            $tr2to3pm  = $hourlyTransfers[14] ?? 0;
+            $tr3to4pm  = $hourlyTransfers[15] ?? 0;
+            $tr4to5pm  = $hourlyTransfers[16] ?? 0;
+            $tr5to6pm  = $hourlyTransfers[17] ?? 0;
+            $tr6to7pm  = $hourlyTransfers[18] ?? 0;
+            $tr7to8pm  = $hourlyTransfers[19] ?? 0;
+
+            $o8to9am = $hourlyOtherCalls[8] ?? 0;
+            $o9to10am = $hourlyOtherCalls[9] ?? 0;
+            $o10to11am = $hourlyOtherCalls[10] ?? 0;
+            $o11to12pm = $hourlyOtherCalls[11] ?? 0;
+            $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
+            $o1to2pm   = $hourlyOtherCalls[13] ?? 0;
+            $o2to3pm   = $hourlyOtherCalls[14] ?? 0;
+            $o3to4pm   = $hourlyOtherCalls[15] ?? 0;
+            $o4to5pm   = $hourlyOtherCalls[16] ?? 0;
+            $o5to6pm   = $hourlyOtherCalls[17] ?? 0;
+            $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
+            $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
+
+            $Mtotaltransfers = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where('transfers', 1)
+                ->count();
+
+            $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->count();
+
+            $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
+            $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+
+            $targetIndex = null;
+            foreach ($targetDates as $index => $date) {
+                $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
+                    ? $date
+                    : Carbon::parse($date)->format('Y-m');
+
+                if ($monthPart === $selectedMonth) {
+                    $targetIndex = $index;
+                    break;
+                }
+            }
+
+            $targetGiven = isset($targetValues[$targetIndex])
+                ? (int) $targetValues[$targetIndex]
+                : ((int) ($targetValues[0] ?? 0));
+
+            $matchedDate = $targetDates[$targetIndex] ?? null;
+
+            if ($matchedDate) {
+                if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
+                    $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
+                } else {
+                    $carbonDate = Carbon::parse($matchedDate);
+                }
+
+                $diff     = now()->floatDiffInDays($carbonDate, false);
+                $daysLeft = max(0, ceil($diff));
+            } else {
+                $daysLeft = 0;
+            }
+
+            $targetAchieved = GoogleSheetData::whereRaw(
+                "created_by REGEXP '^{$juniorUser->id}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+            )
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', (int) $month)
+                ->sum('Amount');
+
+            $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+
+            $events = UserTimerPause::where('user_id', $juniorUser->id)
+                ->whereYear('event_time', $year)
+                ->whereMonth('event_time', $month)
+                ->orderBy('event_time', 'asc')
+                ->get();
+
+            $groupedEvents = $events->groupBy(function ($event) {
+                return Carbon::parse($event->event_time)->format('Y-m-d');
+            });
+
+            $startOfMonth = Carbon::create($year, $month, 1);
+            $endOfMonth   = $startOfMonth->copy()->endOfMonth();
+            $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
+
+            $presentDays = 0;
+            $absentDays = 0;
+            $workingDays = 0;
+            $nonWorkingDays = 0;
+
+            foreach ($daysInMonth as $date) {
+                $dateStr = $date->format('Y-m-d');
+                $dayOfWeek = $date->dayOfWeek;
+                $isWeekend = in_array($dayOfWeek, [Carbon::SUNDAY, Carbon::SATURDAY]);
+                $isHoliday = in_array($dateStr, $holidayDates);
+
+                if ($isWeekend || $isHoliday) {
+                    $nonWorkingDays++;
+                } else {
+                    $workingDays++;
+                    if (isset($groupedEvents[$dateStr])) {
+                        $presentDays++;
+                    } else {
+                        $absentDays++;
+                    }
+                }
+            }
+
+            $MAvgTotalCalls = $workingDays > 0 ? round($totalCalls / $workingDays, 2) : 0;
+            $MAvgtotaltransfers = $workingDays > 0 ? round($Mtotaltransfers / $workingDays, 2) : 0;
+
+            $reports[] = compact(
+                'juniorUser',
+                'totalCalls',
+                'calledAndMailedCalls',
+                'otherCalls',
+                't8to9am',
+                't9to10am',
+                't10to11am',
+                't11to12pm',
+                't12to1pm',
+                't1to2pm',
+                't2to3pm',
+                't3to4pm',
+                't4to5pm',
+                't5to6pm',
+                't6to7pm',
+                't7to8pm',
+                'tr8to9am',
+                'tr9to10am',
+                'tr10to11am',
+                'tr11to12pm',
+                'tr12to1pm',
+                'tr1to2pm',
+                'tr2to3pm',
+                'tr3to4pm',
+                'tr4to5pm',
+                'tr5to6pm',
+                'tr6to7pm',
+                'tr7to8pm',
+                'o8to9am',
+                'o9to10am',
+                'o10to11am',
+                'o11to12pm',
+                'o12to1pm',
+                'o1to2pm',
+                'o2to3pm',
+                'o3to4pm',
+                'o4to5pm',
+                'o5to6pm',
+                'o6to7pm',
+                'o7to8pm',
+                'StotalCalls',
+                'ScalledAndMailedCalls',
+                'SotherCalls',
+                'Stotaltransfers',
+                'targetGiven',
+                'targetAchieved',
+                'targetYetToAchieve',
+                'daysLeft',
+                'presentDays',
+                'absentDays',
+                'workingDays',
+                'nonWorkingDays',
+                'MAvgTotalCalls',
+                'Mtotaltransfers',
+                'MAvgtotaltransfers',
+            );
+        }
+
+        usort($reports, function ($a, $b) {
+            return $a['ScalledAndMailedCalls'] <=> $b['ScalledAndMailedCalls'];
+        });
+
+        $html = view('reports.allreport', compact('reports'))->render();
+        $pdf = app('dompdf.wrapper');
+        $pdf->loadHTML($html);
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->setOption('isHtml5ParserEnabled', true);
+        $pdf->setOption('isPhpEnabled', true);
+        $pdf->setOption('chroot', public_path());
+
+        return $pdf->download('monthly-report.pdf');
+    }
+
 
     public function alljuniordaily(Request $request, $userId)
     {
