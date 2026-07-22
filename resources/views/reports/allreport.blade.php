@@ -1066,21 +1066,23 @@
             const a4WidthPx = 1175;
             const a4HeightPx = Math.round(a4WidthPx * 1.4142);
 
-            // ✅ PDF generation options (same as working alljuniordaily.blade.php)
+            // ✅ PDF generation options optimized for 100+ items with reduced scale and quality
             const opt = {
                 margin: [0, 0, 0, 0],
                 filename: 'monthly-report.pdf',
                 image: {
                     type: 'jpeg',
-                    quality: 0.98
+                    quality: 0.75
                 },
                 html2canvas: {
-                    scale: 3,
+                    scale: 1.2,
                     useCORS: true,
                     scrollY: 0,
                     backgroundColor: "#ffffff",
                     logging: false,
                     letterRendering: true,
+                    allowTaint: true,
+                    timeout: 60000
                 },
                 jsPDF: {
                     unit: 'px',
@@ -1088,7 +1090,7 @@
                     orientation: 'portrait',
                 },
                 pagebreak: {
-                    mode: ['avoid-all', 'css', 'legacy']
+                    mode: ['css', 'legacy']
                 }
             };
 
