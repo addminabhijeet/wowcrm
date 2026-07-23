@@ -1150,29 +1150,23 @@
                     }
                 }).from(pages[0]).toPdf().get('pdf');
 
-                // ✅ Render every page through the identical path so the style matches
+                // ✅ Remove the auto-created page so every page is sized to its content
+                pdf.deletePage(1);
+
+                // ✅ Render every page through the identical path so the style matches.
+                //    Each page is sized to full width with its natural (aspect-correct)
+                //    height, so the content fills the width and never exceeds/stretches
+                //    beyond the page height.
                 for (let i = 0; i < pages.length; i++) {
                     const canvas = await renderCanvas(pages[i]);
                     const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
-                    // Scale to fit WITHIN the A4 page (width or height, whichever is
-                    // tighter) while keeping the aspect ratio, so content never
-                    // exceeds the A4 height. Same for every page.
-                    const fitRatio = Math.min(a4WidthPx / canvas.width, a4HeightPx / canvas.height);
-                    const imgWidth = canvas.width * fitRatio;
-                    const imgHeight = canvas.height * fitRatio;
+                    // Full width, keep aspect ratio (no stretch).
+                    const imgWidth = a4WidthPx;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-                    // First iteration reuses the existing page; clear it first.
-                    if (i === 0) {
-                        pdf.setPage(1);
-                        const pageW = pdf.internal.pageSize.getWidth();
-                        const pageH = pdf.internal.pageSize.getHeight();
-                        pdf.setFillColor(255, 255, 255);
-                        pdf.rect(0, 0, pageW, pageH, 'F');
-                    } else {
-                        pdf.addPage([a4WidthPx, a4HeightPx], 'portrait');
-                    }
-
+                    // Page is exactly as tall as its content -> content can never cross it.
+                    pdf.addPage([imgWidth, imgHeight], 'portrait');
                     pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
                 }
 
