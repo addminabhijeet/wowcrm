@@ -1154,8 +1154,13 @@
                     const canvas = await renderCanvas(pages[i]);
                     const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
+                    // Fit-to-width and keep the aspect ratio (same as page 1) so the
+                    // design is not stretched to the full page height.
+                    const imgWidth = a4WidthPx;
+                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+
                     pdf.addPage([a4WidthPx, a4HeightPx], 'portrait');
-                    pdf.addImage(imgData, 'JPEG', 0, 0, a4WidthPx, a4HeightPx);
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
                 }
 
                 // ✅ Clean up the off-screen node and save
