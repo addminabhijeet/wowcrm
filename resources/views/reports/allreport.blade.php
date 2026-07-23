@@ -551,7 +551,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <div class="d-flex justify-content-end mb-3">
-        <button id="downloadPdfBtn" class="btn btn-danger btn-sm">
+        <button id="downloadPdfBtn" class="btn btn-danger btn-sm" type="button">
             <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
         </button>
     </div>
@@ -980,148 +980,47 @@
     </div>
     <script>
         document.getElementById("downloadPdfBtn").addEventListener("click", async function() {
-            const element = document.getElementById("pdfContent");
+            const btn = this;
+            const originalText = btn.innerHTML;
 
-            // ✅ Clone element to apply isolated print styles
-            const clonedElement = element.cloneNode(true);
+            btn.disabled = true;
+            btn.innerHTML = '<i class="bi bi-hourglass-split me-1"></i> Generating PDF...';
 
-            // ✅ Add black & white print style dynamically (for PDF only)
-            const printStyle = document.createElement("style");
-            printStyle.textContent = `
-        * {
-            color: #000 !important;
-            box-shadow: none !important;
-            text-shadow: none !important;
-            -webkit-print-color-adjust: exact !important;
-            print-color-adjust: exact !important;
-            filter: contrast(250%) brightness(0%) !important;
-        }
-        body { background: #fff !important; margin: 0 !important; }
-        h1, h2, h3, h4, h5, h6, p, label, span, small, th, td {
-            color: #000 !important;
-            font-weight: 800 !important;
-            filter: contrast(250%) brightness(0%) !important;
-        }
-        .icon-wrapper {
-            background: #fff !important;
-            border: 2px solid #000 !important;
-            border-radius: 50% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-        }
-        iconify-icon,
-        i,
-        .icon-wrapper iconify-icon {
-            color: #000 !important;
-            filter: grayscale(100%) contrast(200%) brightness(0%) !important;
-        }
-        [style*="background: linear-gradient"],
-        [style*="background-color"] {
-            background: #fff !important;
-        }
-        .card {
-            background: #fff !important;
-            border: 2px solid #000 !important;
-            color: #000 !important;
-            box-shadow: none !important;
-            transition: none !important;
-            filter: contrast(250%) brightness(0%) !important;
-        }
-        [onmouseover], [onmouseout] {
-            transform: none !important;
-            box-shadow: none !important;
-        }
-        table, th, td {
-            border: 2px solid #000 !important;
-            color: #000 !important;
-            font-weight: 800 !important;
-            background: #fff !important;
-            -webkit-text-stroke: 0.3px #000 !important;
-            filter: contrast(250%) brightness(0%) !important;
-        }
-        .badge {
-            background: #ddd !important;
-            color: #000 !important;
-            font-weight: 900 !important;
-            border: 2px solid #000 !important;
-            padding: 4px 8px !important;
-            filter: contrast(250%) brightness(0%) !important;
-        }
-        i, iconify-icon {
-            color: #000 !important;
-            filter: contrast(250%) brightness(0%) !important;
-        }
-        input, select, label {
-            color: #000 !important;
-            font-weight: 800 !important;
-            -webkit-text-stroke: 0.2px #000 !important;
-            filter: contrast(250%) brightness(0%) !important;
-        }
-        #semiCircleGauge, #areaChart, #dailyIconBarChart {
-            background: #fff !important;
-            min-height: 80px !important;
-            filter: contrast(250%) brightness(0%) !important;
-        }
-        .card-body, .row, .col {
-            padding: 10px !important;
-            margin: 0 !important;
-            filter: contrast(250%) brightness(0%) !important;
-        }
-        @page {
-            size: A4 portrait;
-            margin: 0;
-        }
-    `;
-            clonedElement.prepend(printStyle);
+            try {
+                const element = document.getElementById("pdfContent");
+                const htmlContent = element.innerHTML;
 
-            // ✅ Wait for a short time to ensure all assets/styles load
-            await new Promise(resolve => setTimeout(resolve, 5));
+                // Send to backend for PDF generation
+                const formData = new FormData();
+                formData.append('html_content', htmlContent);
+                formData.append('_token', "{{ csrf_token() }}");
 
-            // ✅ Proper A4 PDF dimensions in pixels
-            const a4WidthPx = 1175;
-            const a4HeightPx = Math.round(a4WidthPx * 1.4142);
+                const response = await fetch("{{ route('call.reports.allreport.pdf', ['userId' => request()->route('userId')]) }}", {
+                    method: 'POST',
+                    body: formData
+                });
 
-            // ✅ PDF generation options (optimized for full A4 coverage)
-            const opt = {
-                margin: [0, 0, 0, 0],
-                filename: 'allreport.pdf',
-                image: {
-                    type: 'jpeg',
-                    quality: 0.98
-                },
-                html2canvas: {
-                    scale: 3,
-                    useCORS: true,
-                    scrollY: 0,
-                    backgroundColor: "#ffffff",
-                    logging: false,
-                    letterRendering: true,
-                },
-                jsPDF: {
-                    unit: 'px',
-                    format: [a4WidthPx, a4HeightPx],
-                    orientation: 'portrait',
-                },
-                pagebreak: {
-                    mode: ['avoid-all', 'css', 'legacy']
+                if (response.ok) {
+                    const blob = await response.blob();
+                    const url = window.URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = 'allreport.pdf';
+                    document.body.appendChild(a);
+                    a.click();
+                    window.URL.revokeObjectURL(url);
+                    document.body.removeChild(a);
+                } else {
+                    alert('Failed to generate PDF');
+                    console.error('Response status:', response.status);
                 }
-            };
-
-            // Convert Iconify icons to inline SVG images for html2canvas visibility
-            clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
-                const svg = document.createElement("img");
-                const iconName = icon.getAttribute("icon");
-                svg.src = `https://api.iconify.design/${iconName}.svg?color=%23000`;
-                svg.width = 34;
-                svg.height = 34;
-                svg.style.filter = "contrast(250%) brightness(0%)";
-                icon.replaceWith(svg);
-            });
-
-
-            // ✅ Generate the full-page PDF
-            await html2pdf().set(opt).from(clonedElement).save();
+            } catch (error) {
+                console.error('PDF generation error:', error);
+                alert('Error generating PDF: ' + error.message);
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
         });
     </script>
 @endsection

@@ -1894,6 +1894,157 @@ class CallReportController extends Controller
 
     public function allreportPdf(Request $request, $userId)
     {
+        // If HTML content is sent from frontend, use it directly
+        if ($request->has('html_content') && $request->input('html_content')) {
+            $html = $request->input('html_content');
+
+            // Clean HTML for DomPDF compatibility
+            $html = preg_replace('/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/i', '', $html);
+
+            // Add comprehensive PDF styling
+            $pdfStyles = '<style>
+                * {
+                    margin: 0;
+                    padding: 0;
+                    color: #000 !important;
+                    text-decoration: none !important;
+                }
+                body {
+                    font-family: Arial, sans-serif;
+                    color: #000;
+                    background: #fff;
+                    font-size: 12px;
+                    line-height: 1.4;
+                }
+                .pdf-page {
+                    page-break-after: always;
+                    padding: 15px;
+                    margin-bottom: 20px;
+                }
+                .row {
+                    display: table;
+                    width: 100%;
+                    margin-bottom: 10px;
+                }
+                .col {
+                    display: table-cell;
+                    padding: 5px;
+                    vertical-align: top;
+                }
+                .card {
+                    background: #fff !important;
+                    border: 2px solid #000 !important;
+                    padding: 10px;
+                    margin: 5px 0;
+                    page-break-inside: avoid;
+                }
+                .card-body {
+                    background: #fff !important;
+                    color: #000 !important;
+                    padding: 8px;
+                }
+                table {
+                    width: 100%;
+                    border-collapse: collapse;
+                    margin: 10px 0;
+                    page-break-inside: avoid;
+                }
+                th, td {
+                    border: 1px solid #000 !important;
+                    padding: 6px !important;
+                    text-align: left;
+                    color: #000 !important;
+                    font-weight: bold;
+                    background: #fff !important;
+                }
+                th {
+                    background: #ddd !important;
+                    font-weight: bold !important;
+                }
+                .badge {
+                    background: #ddd !important;
+                    border: 1px solid #000 !important;
+                    color: #000 !important;
+                    padding: 3px 6px !important;
+                    display: inline-block;
+                    font-weight: bold;
+                }
+                h1, h2, h3, h4, h5, h6 {
+                    color: #000 !important;
+                    font-weight: bold !important;
+                    margin: 8px 0 5px 0;
+                }
+                h3 { font-size: 14px; }
+                h4, h5, h6 { font-size: 12px; }
+                p, span, small, label {
+                    color: #000 !important;
+                    font-weight: normal;
+                }
+                .text-center { text-align: center; }
+                .text-right { text-align: right; }
+                .fw-bold { font-weight: bold; }
+                .mb-0 { margin-bottom: 0; }
+                .mb-1 { margin-bottom: 4px; }
+                .mb-2 { margin-bottom: 8px; }
+                .mb-3 { margin-bottom: 12px; }
+                .mb-4 { margin-bottom: 16px; }
+                .mt-1 { margin-top: 4px; }
+                .mt-2 { margin-top: 8px; }
+                .d-flex { display: flex; }
+                .justify-content-between { justify-content: space-between; }
+                .align-items-center { align-items: center; }
+                .gap-2 { gap: 8px; }
+                .gap-3 { gap: 12px; }
+                .gap-4 { gap: 16px; }
+                [style*="background: linear-gradient"],
+                [style*="background-color: rgba"] {
+                    background: #fff !important;
+                }
+                img {
+                    max-width: 100%;
+                    height: auto;
+                }
+                @page {
+                    size: A4 portrait;
+                    margin: 10mm;
+                }
+            </style>';
+
+            // Wrap HTML with proper structure
+            $fullHtml = '<!DOCTYPE html>
+                <html>
+                <head>
+                    <meta charset="UTF-8">
+                    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                    ' . $pdfStyles . '
+                </head>
+                <body>
+                    ' . $html . '
+                </body>
+                </html>';
+
+            $options = new \Dompdf\Options();
+            $options->set('isHtml5ParserEnabled', true);
+            $options->set('isPhpEnabled', false);
+            $options->set('isRemoteEnabled', false);
+            $options->set('isFontSubsettingEnabled', false);
+
+            $pdf = new \Dompdf\Dompdf($options);
+            $pdf->loadHtml($fullHtml, 'UTF-8');
+            $pdf->setPaper('A4', 'portrait');
+            $pdf->render();
+
+            return response($pdf->output(), 200)
+                ->header('Content-Type', 'application/pdf')
+                ->header('Content-Disposition', 'inline; filename="allreport.pdf"');
+        }
+
+        // Fallback: Generate from database if no HTML content provided
+        return $this->generateAllReportPdf($request, $userId);
+    }
+
+    private function generateAllReportPdf(Request $request, $userId)
+    {
         $userIds = explode(',', $userId);
 
         $users = User::whereIn('id', $userIds)
@@ -2190,39 +2341,31 @@ class CallReportController extends Controller
         });
 
         $html = view('reports.allreport', compact('reports'))->render();
-
-        // ✅ Clean HTML for DomPDF compatibility
         $html = preg_replace('/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/i', '', $html);
-        $html = preg_replace('/<style[^>]*>.*?<\/style>/is', '', $html);
-        $html = preg_replace('/iconify-icon[^>]*icon="[^"]*"[^>]*>/i', '', $html);
-        $html = preg_replace('/<i\s+class="[^"]*"[^>]*><\/i>/i', '', $html);
-        $html = str_replace('&nbsp;', ' ', $html);
 
-        // ✅ Add basic inline styles for PDF
-        $basicStyles = '<style>
+        $pdfStyles = '<style>
+            * { color: #000 !important; }
             body { font-family: Arial, sans-serif; color: #000; }
             table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-            th, td { border: 1px solid #000; padding: 8px; text-align: left; }
-            th { background: #f0f0f0; font-weight: bold; }
+            th, td { border: 1px solid #000; padding: 8px; text-align: left; color: #000 !important; font-weight: bold; }
+            th { background: #f0f0f0; }
             .card { border: 1px solid #ddd; margin: 10px 0; padding: 10px; }
             .badge { background: #ddd; padding: 3px 6px; display: inline-block; }
             h1, h2, h3, h4, h5, h6 { margin: 10px 0 5px 0; }
             .pdf-page { page-break-after: always; padding: 20px; }
+            @page { size: A4 portrait; margin: 10mm; }
         </style>';
 
         if (strpos($html, '<head>') !== false) {
-            $html = str_replace('<head>', '<head>' . $basicStyles, $html);
-        } elseif (strpos($html, '<!DOCTYPE') !== false) {
-            $html = preg_replace('/(<!DOCTYPE[^>]*>)/i', '$1' . $basicStyles, $html);
+            $html = str_replace('<head>', '<head>' . $pdfStyles, $html);
         } else {
-            $html = $basicStyles . $html;
+            $html = $pdfStyles . $html;
         }
 
         $options = new \Dompdf\Options();
         $options->set('isHtml5ParserEnabled', true);
         $options->set('isPhpEnabled', false);
         $options->set('isRemoteEnabled', false);
-        $options->set('isFontSubsettingEnabled', false);
 
         $pdf = new \Dompdf\Dompdf($options);
         $pdf->loadHtml($html, 'UTF-8');
@@ -2231,7 +2374,7 @@ class CallReportController extends Controller
 
         return response($pdf->output(), 200)
             ->header('Content-Type', 'application/pdf')
-            ->header('Content-Disposition', 'attachment; filename="monthly-report.pdf"');
+            ->header('Content-Disposition', 'attachment; filename="allreport.pdf"');
     }
 
 
