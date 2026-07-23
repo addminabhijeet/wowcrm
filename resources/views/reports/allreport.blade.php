@@ -1155,9 +1155,12 @@
                     const canvas = await renderCanvas(pages[i]);
                     const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
-                    // Fit-to-width and keep the aspect ratio (same for every page).
-                    const imgWidth = a4WidthPx;
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                    // Scale to fit WITHIN the A4 page (width or height, whichever is
+                    // tighter) while keeping the aspect ratio, so content never
+                    // exceeds the A4 height. Same for every page.
+                    const fitRatio = Math.min(a4WidthPx / canvas.width, a4HeightPx / canvas.height);
+                    const imgWidth = canvas.width * fitRatio;
+                    const imgHeight = canvas.height * fitRatio;
 
                     // First iteration reuses the existing page; clear it first.
                     if (i === 0) {
