@@ -1178,9 +1178,19 @@
                     pdfFileName = `Report_${dd}_${mm}_${yyyy}.pdf`;
                 }
 
-                // ✅ Clean up the off-screen node and save
+                // ✅ Clean up the off-screen node and download with the correct filename
                 document.body.removeChild(offscreen);
-                pdf.save(pdfFileName);
+
+                // Force download with the correct filename
+                const pdfBlob = pdf.output('blob');
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                const downloadLink = document.createElement('a');
+                downloadLink.href = pdfUrl;
+                downloadLink.download = pdfFileName;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                URL.revokeObjectURL(pdfUrl);
             } catch (error) {
                 console.error('PDF generation error:', error);
                 alert('Error generating PDF: ' + error.message);
