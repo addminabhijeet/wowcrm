@@ -472,7 +472,7 @@ class GoogleSheetController extends Controller
 
 
     // Add a method to serve the PDF files
-    public function viewadminResume($id)
+    public function viewadminResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -493,7 +493,7 @@ class GoogleSheetController extends Controller
     }
 
     // Add a method to download the PDF files
-    public function downloadadminResume($id)
+    public function downloadadminResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -5452,7 +5452,7 @@ class GoogleSheetController extends Controller
 
 
     // Add a method to serve the PDF files
-    public function viewseniorResume($id)
+    public function viewseniorResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -5511,7 +5511,7 @@ class GoogleSheetController extends Controller
     }
 
     // Add a method to serve the PDF files
-    public function viewseniorUpdateResume($id)
+    public function viewseniorUpdateResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -5571,7 +5571,7 @@ class GoogleSheetController extends Controller
 
 
 
-    public function viewseniorAcceptanceSign($id)
+    public function viewseniorAcceptanceSign(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -5629,7 +5629,7 @@ class GoogleSheetController extends Controller
         abort(415, 'Unsupported file format');
     }
 
-    public function viewseniorAcceptance($id)
+    public function viewseniorAcceptance(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -5688,7 +5688,7 @@ class GoogleSheetController extends Controller
     }
 
 
-    public function viewseniorConsultation($id)
+    public function viewseniorConsultation(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -5746,7 +5746,7 @@ class GoogleSheetController extends Controller
         abort(415, 'Unsupported file format');
     }
 
-    public function viewseniorDelivery($id)
+    public function viewseniorDelivery(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -5804,7 +5804,7 @@ class GoogleSheetController extends Controller
         abort(415, 'Unsupported file format');
     }
 
-    public function viewseniorDeliverySign($id)
+    public function viewseniorDeliverySign(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -5862,7 +5862,7 @@ class GoogleSheetController extends Controller
         abort(415, 'Unsupported file format');
     }
 
-    public function viewseniorPayment($id)
+    public function viewseniorPayment(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -5920,7 +5920,7 @@ class GoogleSheetController extends Controller
         abort(415, 'Unsupported file format');
     }
 
-    public function viewseniorPaymentSign($id)
+    public function viewseniorPaymentSign(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -5979,7 +5979,7 @@ class GoogleSheetController extends Controller
     }
 
     // Add a method to download the PDF files
-    public function downloadseniorResume($id)
+    public function downloadseniorResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -5997,7 +5997,7 @@ class GoogleSheetController extends Controller
     }
 
     // Add a method to download the PDF files
-    public function downloadseniorUpdateResume($id)
+    public function downloadseniorUpdateResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -6014,7 +6014,7 @@ class GoogleSheetController extends Controller
         return response()->download($filePath, basename($filePath));
     }
 
-    public function downloadseniorAcceptance($id)
+    public function downloadseniorAcceptance(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -6030,7 +6030,7 @@ class GoogleSheetController extends Controller
 
         return response()->download($filePath, basename($filePath));
     }
-    public function downloadseniorConsultation($id)
+    public function downloadseniorConsultation(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -6046,7 +6046,7 @@ class GoogleSheetController extends Controller
 
         return response()->download($filePath, basename($filePath));
     }
-    public function downloadseniorDelivery($id)
+    public function downloadseniorDelivery(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -6062,7 +6062,7 @@ class GoogleSheetController extends Controller
 
         return response()->download($filePath, basename($filePath));
     }
-    public function downloadseniorDeliverySign($id)
+    public function downloadseniorDeliverySign(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -6078,7 +6078,7 @@ class GoogleSheetController extends Controller
 
         return response()->download($filePath, basename($filePath));
     }
-    public function downloadseniorPayment($id)
+    public function downloadseniorPayment(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -6094,7 +6094,7 @@ class GoogleSheetController extends Controller
 
         return response()->download($filePath, basename($filePath));
     }
-    public function downloadseniorPaymentSign($id)
+    public function downloadseniorPaymentSign(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -6112,7 +6112,7 @@ class GoogleSheetController extends Controller
     }
 
 
-    public function viewseniorAudio($id)
+    public function viewseniorAudio(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -6141,7 +6141,7 @@ class GoogleSheetController extends Controller
         ]);
     }
 
-    public function downloadseniorAudio($id)
+    public function downloadseniorAudio(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -6159,7 +6159,7 @@ class GoogleSheetController extends Controller
     }
 
 
-    private function parseDate($dateString)
+    private function parseDate(string $dateString)
     {
         try {
             return \Carbon\Carbon::createFromFormat('m/d/Y', $dateString)->format('Y-m-d');
@@ -6168,7 +6168,7 @@ class GoogleSheetController extends Controller
         }
     }
 
-    private function parseAmount($amountString)
+    private function parseAmount(string $amountString)
     {
         if (is_null($amountString) || $amountString === '') {
             return null;
@@ -8458,7 +8458,7 @@ class GoogleSheetController extends Controller
 
 
     // Add a method to serve the PDF files
-    public function viewJuniorResume($id)
+    public function viewJuniorResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -8518,7 +8518,7 @@ class GoogleSheetController extends Controller
 
 
     // Add a method to download the PDF files
-    public function downloadjuniorResume($id)
+    public function downloadjuniorResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -10259,7 +10259,7 @@ class GoogleSheetController extends Controller
     }
 
 
-    private function getFirstCallerName($createdBy)
+    private function getFirstCallerName(string $createdBy)
     {
         if (empty($createdBy)) {
             return 'N/A';
@@ -10557,7 +10557,7 @@ class GoogleSheetController extends Controller
     }
 
     // Add a method to serve the PDF files
-    public function viewaccountantResume($id)
+    public function viewaccountantResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -10578,7 +10578,7 @@ class GoogleSheetController extends Controller
     }
 
     // Add a method to download the PDF files
-    public function downloadaccountantResume($id)
+    public function downloadaccountantResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -11408,7 +11408,7 @@ class GoogleSheetController extends Controller
     }
 
     // Add a method to serve the PDF files
-    public function viewtrainerResume($id)
+    public function viewtrainerResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
@@ -11429,7 +11429,7 @@ class GoogleSheetController extends Controller
     }
 
     // Add a method to download the PDF files
-    public function downloadtrainerResume($id)
+    public function downloadtrainerResume(int $id)
     {
         $row = GoogleSheetData::find($id);
 
