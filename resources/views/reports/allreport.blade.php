@@ -1082,39 +1082,6 @@
         `;
                 clonedElement.prepend(printStyle);
 
-                // ✅ Wait for a short time to ensure all assets/styles load
-                await new Promise(resolve => setTimeout(resolve, 5));
-
-                // ✅ Proper A4 PDF dimensions in pixels
-                const a4WidthPx = 1175;
-                const a4HeightPx = Math.round(a4WidthPx * 1.4142);
-
-                // ✅ PDF generation options (optimized for full A4 coverage)
-                const opt = {
-                    margin: [0, 0, 0, 0],
-                    filename: 'allreport.pdf',
-                    image: {
-                        type: 'jpeg',
-                        quality: 0.98
-                    },
-                    html2canvas: {
-                        scale: 3,
-                        useCORS: true,
-                        scrollY: 0,
-                        backgroundColor: "#ffffff",
-                        logging: false,
-                        letterRendering: true,
-                    },
-                    jsPDF: {
-                        unit: 'px',
-                        format: [a4WidthPx, a4HeightPx],
-                        orientation: 'portrait',
-                    },
-                    pagebreak: {
-                        mode: ['avoid-all', 'css', 'legacy']
-                    }
-                };
-
                 // Convert Iconify icons to inline SVG images for html2canvas visibility
                 clonedElement.querySelectorAll("iconify-icon").forEach(icon => {
                     const svg = document.createElement("img");
@@ -1126,8 +1093,60 @@
                     icon.replaceWith(svg);
                 });
 
-                // ✅ Generate the full-page PDF
-                await html2pdf().set(opt).from(clonedElement).save();
+                // ✅ Proper A4 PDF dimensions in pixels
+                const a4WidthPx = 1175;
+                const a4HeightPx = Math.round(a4WidthPx * 1.4142);
+
+                // ✅ Mount the cloned content off-screen so styles apply and layout computes
+                //    (rendering the whole thing at once overflows the browser canvas limit
+                //     at ~100 pages and produces a blank PDF, so we render each page alone)
+                const offscreen = document.createElement("div");
+                offscreen.style.position = "fixed";
+                offscreen.style.left = "-99999px";
+                offscreen.style.top = "0";
+                offscreen.style.width = a4WidthPx + "px";
+                offscreen.style.background = "#ffffff";
+                offscreen.appendChild(clonedElement);
+                document.body.appendChild(offscreen);
+
+                // ✅ Wait for a short time to ensure all assets/styles load
+                await new Promise(resolve => setTimeout(resolve, 50));
+
+                // ✅ Grab the html2canvas / jsPDF bundled inside html2pdf
+                const html2canvasLib = window.html2canvas;
+                const jsPDFLib = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+
+                const pdf = new jsPDFLib({
+                    unit: 'px',
+                    format: [a4WidthPx, a4HeightPx],
+                    orientation: 'portrait',
+                });
+
+                // ✅ Render each report page individually into the same PDF
+                const pages = clonedElement.querySelectorAll(".pdf-page");
+
+                for (let i = 0; i < pages.length; i++) {
+                    const canvas = await html2canvasLib(pages[i], {
+                        scale: 3,
+                        useCORS: true,
+                        scrollY: 0,
+                        backgroundColor: "#ffffff",
+                        logging: false,
+                        letterRendering: true,
+                    });
+
+                    const imgData = canvas.toDataURL('image/jpeg', 0.98);
+
+                    if (i > 0) {
+                        pdf.addPage([a4WidthPx, a4HeightPx], 'portrait');
+                    }
+
+                    pdf.addImage(imgData, 'JPEG', 0, 0, a4WidthPx, a4HeightPx);
+                }
+
+                // ✅ Clean up the off-screen node and save
+                document.body.removeChild(offscreen);
+                pdf.save('allreport.pdf');
             } catch (error) {
                 console.error('PDF generation error:', error);
                 alert('Error generating PDF: ' + error.message);
