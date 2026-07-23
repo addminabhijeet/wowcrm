@@ -1131,7 +1131,8 @@
                         html2canvas: html2canvasOpt
                     }).from(el).toCanvas().get('canvas');
 
-                // ✅ Build the real jsPDF instance via html2pdf (page 0 already rendered into it)
+                // ✅ Get a real jsPDF instance via html2pdf, then clear the auto-created
+                //    page so EVERY page (including the first) is rendered the same way.
                 const pdf = await html2pdf().set({
                     margin: [0, 0, 0, 0],
                     image: {
@@ -1149,17 +1150,26 @@
                     }
                 }).from(pages[0]).toPdf().get('pdf');
 
-                // ✅ Append the remaining pages into the same PDF instance
-                for (let i = 1; i < pages.length; i++) {
+                // ✅ Render every page through the identical path so the style matches
+                for (let i = 0; i < pages.length; i++) {
                     const canvas = await renderCanvas(pages[i]);
                     const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
-                    // Fit-to-width and keep the aspect ratio (same as page 1) so the
-                    // design is not stretched to the full page height.
+                    // Fit-to-width and keep the aspect ratio (same for every page).
                     const imgWidth = a4WidthPx;
                     const imgHeight = (canvas.height * imgWidth) / canvas.width;
 
-                    pdf.addPage([a4WidthPx, a4HeightPx], 'portrait');
+                    // First iteration reuses the existing page; clear it first.
+                    if (i === 0) {
+                        pdf.setPage(1);
+                        const pageW = pdf.internal.pageSize.getWidth();
+                        const pageH = pdf.internal.pageSize.getHeight();
+                        pdf.setFillColor(255, 255, 255);
+                        pdf.rect(0, 0, pageW, pageH, 'F');
+                    } else {
+                        pdf.addPage([a4WidthPx, a4HeightPx], 'portrait');
+                    }
+
                     pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
                 }
 
