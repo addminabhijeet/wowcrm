@@ -707,9 +707,9 @@
                                     <form method="GET"
                                         action="{{ route('call.reports.alljuniordaily', ['userId' => request()->route('userId')]) }}"
                                         class="d-flex align-items-center gap-2">
-                                        <label for="selected_date" class="form-label mb-0 fw-semibold small">Select
+                                        <label for="selected_date-{{ $index }}" class="form-label mb-0 fw-semibold small">Select
                                             Date:</label>
-                                        <input type="date" name="selected_date" id="selected_date"
+                                        <input type="date" name="selected_date" id="selected_date-{{ $index }}"
                                             value="{{ request('selected_date', date('Y-m-d')) }}"
                                             class="form-control form-control-sm" onchange="this.form.submit()">
                                     </form>
@@ -1170,9 +1170,8 @@
                 }
 
                 // ✅ Build the file name from the selected date -> Report_DD_MM_YYYY.pdf
-                const selectedDate = document.getElementById('selected_date')
-                    ? document.getElementById('selected_date').value
-                    : '';
+                const selectedDateInput = document.querySelector('input[name="selected_date"]');
+                const selectedDate = selectedDateInput ? selectedDateInput.value : '';
                 let pdfFileName = 'Report.pdf';
                 if (selectedDate) {
                     const [yyyy, mm, dd] = selectedDate.split('-');
