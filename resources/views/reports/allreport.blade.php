@@ -1112,29 +1112,43 @@
                 // ✅ Wait for a short time to ensure all assets/styles load
                 await new Promise(resolve => setTimeout(resolve, 50));
 
-                // ✅ Grab the html2canvas / jsPDF bundled inside html2pdf
-                const html2canvasLib = window.html2canvas;
-                const jsPDFLib = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+                // ✅ Render each report page individually into the same PDF
+                const pages = clonedElement.querySelectorAll(".pdf-page");
 
-                const pdf = new jsPDFLib({
+                // Shared html2canvas settings (same quality as before)
+                const html2canvasOpt = {
+                    scale: 3,
+                    useCORS: true,
+                    scrollY: 0,
+                    backgroundColor: "#ffffff",
+                    logging: false,
+                    letterRendering: true,
+                };
+
+                // Render a single element to a canvas using html2pdf's bundled html2canvas
+                const renderCanvas = (el) =>
+                    html2pdf().set({
+                        html2canvas: html2canvasOpt
+                    }).from(el).toCanvas().get('canvas');
+
+                // Obtain the jsPDF constructor from html2pdf's bundled library
+                const tmpPdf = await html2pdf().set({
+                    jsPDF: {
+                        unit: 'px',
+                        format: [a4WidthPx, a4HeightPx],
+                        orientation: 'portrait'
+                    }
+                }).from(pages[0]).toPdf().get('pdf');
+                const jsPDFCtor = tmpPdf.constructor;
+
+                const pdf = new jsPDFCtor({
                     unit: 'px',
                     format: [a4WidthPx, a4HeightPx],
                     orientation: 'portrait',
                 });
 
-                // ✅ Render each report page individually into the same PDF
-                const pages = clonedElement.querySelectorAll(".pdf-page");
-
                 for (let i = 0; i < pages.length; i++) {
-                    const canvas = await html2canvasLib(pages[i], {
-                        scale: 3,
-                        useCORS: true,
-                        scrollY: 0,
-                        backgroundColor: "#ffffff",
-                        logging: false,
-                        letterRendering: true,
-                    });
-
+                    const canvas = await renderCanvas(pages[i]);
                     const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
                     if (i > 0) {
