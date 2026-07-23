@@ -1155,7 +1155,7 @@
 
                 // ✅ Image size on the page (change these to resize the content).
                 //    The page itself stays fixed at A4 (a4WidthPx x a4HeightPx).
-                const imgWidth = 1175;
+                const imgWidth = 1100;
                 const imgHeight = Math.round(a4WidthPx * 2.0);
 
                 // ✅ Render every page through the identical path so the style matches.
