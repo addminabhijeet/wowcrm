@@ -707,9 +707,9 @@
                                     <form method="GET"
                                         action="{{ route('call.reports.alljuniordaily', ['userId' => request()->route('userId')]) }}"
                                         class="d-flex align-items-center gap-2">
-                                        <label for="selected_date" class="form-label mb-0 fw-semibold small">Select
+                                        <label for="selected_date-{{ $index }}" class="form-label mb-0 fw-semibold small">Select
                                             Date:</label>
-                                        <input type="date" name="selected_date" id="selected_date"
+                                        <input type="date" name="selected_date" id="selected_date-{{ $index }}"
                                             value="{{ request('selected_date', date('Y-m-d')) }}"
                                             class="form-control form-control-sm" onchange="this.form.submit()">
                                     </form>
@@ -1169,9 +1169,28 @@
                     pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
                 }
 
-                // ✅ Clean up the off-screen node and save
+                // ✅ Build the file name from the selected date -> Report_DD_MM_YYYY.pdf
+                const selectedDateInput = document.querySelector('input[name="selected_date"]');
+                const selectedDate = selectedDateInput ? selectedDateInput.value : '';
+                let pdfFileName = 'Report.pdf';
+                if (selectedDate) {
+                    const [yyyy, mm, dd] = selectedDate.split('-');
+                    pdfFileName = `Report_${dd}_${mm}_${yyyy}.pdf`;
+                }
+
+                // ✅ Clean up the off-screen node and download with the correct filename
                 document.body.removeChild(offscreen);
-                pdf.save('allreport.pdf');
+
+                // Force download with the correct filename
+                const pdfBlob = pdf.output('blob');
+                const pdfUrl = URL.createObjectURL(pdfBlob);
+                const downloadLink = document.createElement('a');
+                downloadLink.href = pdfUrl;
+                downloadLink.download = pdfFileName;
+                document.body.appendChild(downloadLink);
+                downloadLink.click();
+                document.body.removeChild(downloadLink);
+                URL.revokeObjectURL(pdfUrl);
             } catch (error) {
                 console.error('PDF generation error:', error);
                 alert('Error generating PDF: ' + error.message);
