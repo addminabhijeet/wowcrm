@@ -1131,30 +1131,30 @@
                         html2canvas: html2canvasOpt
                     }).from(el).toCanvas().get('canvas');
 
-                // Obtain the jsPDF constructor from html2pdf's bundled library
-                const tmpPdf = await html2pdf().set({
+                // ✅ Build the real jsPDF instance via html2pdf (page 0 already rendered into it)
+                const pdf = await html2pdf().set({
+                    margin: [0, 0, 0, 0],
+                    image: {
+                        type: 'jpeg',
+                        quality: 0.98
+                    },
+                    html2canvas: html2canvasOpt,
                     jsPDF: {
                         unit: 'px',
                         format: [a4WidthPx, a4HeightPx],
                         orientation: 'portrait'
+                    },
+                    pagebreak: {
+                        mode: ['avoid-all', 'css', 'legacy']
                     }
                 }).from(pages[0]).toPdf().get('pdf');
-                const jsPDFCtor = tmpPdf.constructor;
 
-                const pdf = new jsPDFCtor({
-                    unit: 'px',
-                    format: [a4WidthPx, a4HeightPx],
-                    orientation: 'portrait',
-                });
-
-                for (let i = 0; i < pages.length; i++) {
+                // ✅ Append the remaining pages into the same PDF instance
+                for (let i = 1; i < pages.length; i++) {
                     const canvas = await renderCanvas(pages[i]);
                     const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
-                    if (i > 0) {
-                        pdf.addPage([a4WidthPx, a4HeightPx], 'portrait');
-                    }
-
+                    pdf.addPage([a4WidthPx, a4HeightPx], 'portrait');
                     pdf.addImage(imgData, 'JPEG', 0, 0, a4WidthPx, a4HeightPx);
                 }
 
