@@ -1150,24 +1150,19 @@
                     }
                 }).from(pages[0]).toPdf().get('pdf');
 
-                // ✅ Remove the auto-created page so every page is sized to its content
+                // ✅ Remove the auto-created page so every page uses the same A4 size
                 pdf.deletePage(1);
 
                 // ✅ Render every page through the identical path so the style matches.
-                //    Each page is sized to full width with its natural (aspect-correct)
-                //    height, so the content fills the width and never exceeds/stretches
-                //    beyond the page height.
+                //    Every page uses the exact same A4 width and height (same as the
+                //    reference: format [a4WidthPx, a4HeightPx]) so all pages are uniform.
                 for (let i = 0; i < pages.length; i++) {
                     const canvas = await renderCanvas(pages[i]);
                     const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
-                    // Full width, keep aspect ratio (no stretch).
-                    const imgWidth = a4WidthPx;
-                    const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-                    // Page is exactly as tall as its content -> content can never cross it.
-                    pdf.addPage([imgWidth, imgHeight], 'portrait');
-                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
+                    // Same fixed A4 width and height for every page.
+                    pdf.addPage([a4WidthPx, a4HeightPx], 'portrait');
+                    pdf.addImage(imgData, 'JPEG', 0, 0, a4WidthPx, a4HeightPx);
                 }
 
                 // ✅ Clean up the off-screen node and save
