@@ -1106,7 +1106,7 @@ $script = '<script>
             }
 
             activeRequest = $.ajax({
-                url: "{{ route('google.sheet.junior') }}",
+                url: "{{ route('google.sheet.juniorother') }}",
                 type: 'GET',
                 data: {
                     search: search,
