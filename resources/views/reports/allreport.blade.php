@@ -1169,9 +1169,19 @@
                     pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
                 }
 
+                // ✅ Build the file name from the selected date -> Report_DD_MM_YYYY.pdf
+                const selectedDate = document.getElementById('selected_date')
+                    ? document.getElementById('selected_date').value
+                    : '';
+                let pdfFileName = 'Report.pdf';
+                if (selectedDate) {
+                    const [yyyy, mm, dd] = selectedDate.split('-');
+                    pdfFileName = `Report_${dd}_${mm}_${yyyy}.pdf`;
+                }
+
                 // ✅ Clean up the off-screen node and save
                 document.body.removeChild(offscreen);
-                pdf.save('allreport.pdf');
+                pdf.save(pdfFileName);
             } catch (error) {
                 console.error('PDF generation error:', error);
                 alert('Error generating PDF: ' + error.message);
