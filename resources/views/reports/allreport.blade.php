@@ -1153,16 +1153,20 @@
                 // ✅ Remove the auto-created page so every page uses the same A4 size
                 pdf.deletePage(1);
 
+                // ✅ Image size on the page (change these to resize the content).
+                //    The page itself stays fixed at A4 (a4WidthPx x a4HeightPx).
+                const imgWidth = 1175;
+                const imgHeight = Math.round(a4WidthPx * 1.4142);
+
                 // ✅ Render every page through the identical path so the style matches.
-                //    Every page uses the exact same A4 width and height (same as the
-                //    reference: format [a4WidthPx, a4HeightPx]) so all pages are uniform.
+                //    The page is always fixed A4; only the image size uses imgWidth/imgHeight.
                 for (let i = 0; i < pages.length; i++) {
                     const canvas = await renderCanvas(pages[i]);
                     const imgData = canvas.toDataURL('image/jpeg', 0.98);
 
-                    // Same fixed A4 width and height for every page.
+                    // Page stays fixed A4; image uses the adjustable imgWidth/imgHeight.
                     pdf.addPage([a4WidthPx, a4HeightPx], 'portrait');
-                    pdf.addImage(imgData, 'JPEG', 0, 0, a4WidthPx, a4HeightPx);
+                    pdf.addImage(imgData, 'JPEG', 0, 0, imgWidth, imgHeight);
                 }
 
                 // ✅ Clean up the off-screen node and save
