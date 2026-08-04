@@ -242,17 +242,12 @@
 
                 {{-- Remark --}}
                 <td>
-                    <!-- OLD REMARK (READONLY) -->
-                    <textarea class="form-control remark-autocomplete"
-                        data-key="Remark"
-                        rows="3"
-                        placeholder="Type remark" readonly>{{ $row->Remark ?? '' }}</textarea>
+                    <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
+                        rows="6">{{ $row->Remark ?? '' }}</textarea>
 
-                    <!-- NEW REMARK -->
-                    <input type="text"
-                        class="form-control new-remark"
-                        data-key="Remark"
-                        placeholder="Add new remark">
+                    <input type="hidden" name="Remark"
+                        class="form-control remark-autocomplete remark-hidden" data-key="Remark"
+                        value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                 </td>
 
                 {{-- Status --}}
@@ -281,32 +276,70 @@
             @endforeach
         </tbody>
         <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.querySelector('form');
+                if (!form) return;
+
+                // Function to sync a textarea to its corresponding input
+                function syncTextareaToInput(textarea) {
+                    const td = textarea.closest('td');
+                    if (!td) return;
+
+                    const textareaName = textarea.getAttribute('name');
+                    if (!textareaName) return;
+
+                    // Map _hidden textarea to input with same name minus _hidden
+                    const inputName = textareaName.replace('_hidden', '');
+                    const input = td.querySelector('input[name="' + inputName + '"]');
+                    if (!input) return;
+
+                    // Trim value before assigning
+                    input.value = textarea.value.trim();
+                }
+
+                // 🔁 Real-time sync on input for all textareas with *_autocomplete class
+                document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                    function(textarea) {
+                        textarea.addEventListener('input', function() {
+                            syncTextareaToInput(textarea);
+                        });
+                    });
+
+                // 🛡️ Final sync before form submit
+                form.addEventListener('submit', function() {
+                    document.querySelectorAll(
+                        'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                        function(textarea) {
+                            syncTextareaToInput(textarea);
+                        });
+                });
+            });
             $(document).ready(function() {
                 $('.save-btn').click(function() {
                     let rowId = $(this).data('id');
                     let $tr = $('#row-' + rowId);
 
+                    // 🔁 Sync textarea values to hidden inputs BEFORE collecting data
+                    $tr.find('textarea').each(function() {
+                        let $textarea = $(this);
+                        let $td = $textarea.closest('td');
+
+                        if ($textarea.hasClass('remark-autocomplete')) {
+                            $td.find('input[name="Remark"]').val($textarea.val().trim());
+                        }
+
+                        if ($textarea.hasClass('transferremark-autocomplete')) {
+                            $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
+                        }
+                    });
+
                     let data = {};
 
-                    // ✅ Collect data from inputs and selects
+                    // ✅ Now safely collect data
                     $tr.find('input[data-key], select[data-key]').each(function() {
                         let key = $(this).data('key');
                         data[key] = $(this).val();
                     });
-
-                    // ✅ MERGE OLD + NEW REMARK (IMPORTANT - prevents duplication)
-                    const oldRemark = $tr.find('textarea.remark-autocomplete')?.val() || '';
-                    const newRemark = $tr.find('.new-remark')?.val() || '';
-
-                    let finalRemark = oldRemark.trim();
-
-                    if (newRemark.trim()) {
-                        finalRemark = finalRemark ?
-                            finalRemark + "\n" + newRemark.trim() :
-                            newRemark.trim();
-                    }
-
-                    data['Remark'] = finalRemark;
 
                     let formData = new FormData();
                     formData.append('id', rowId);
@@ -341,22 +374,6 @@
                 });
             });
         </script>
-        <style>
-            textarea.remark-autocomplete,
-            .new-remark {
-                resize: vertical;
-                min-height: 60px;
-            }
-
-            textarea.remark-autocomplete[readonly] {
-                background-color: #f5f5f5;
-                cursor: default;
-            }
-
-            .new-remark {
-                margin-top: 5px;
-            }
-        </style>
     </table>
     @endif
 </div>
