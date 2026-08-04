@@ -253,8 +253,8 @@ class GoogleSheetController extends Controller
             $mergedRemark = implode(' || ', $remarks);
             $record->Remark = $mergedRemark;
 
-            // ✅ CHECK FOR "Called & Mailed" PATTERN IN MERGED REMARKS - FIND ALL OCCURRENCES
-            if (preg_match_all('/Called\s*&\s*Mailed\s*\|\s*Updated\s+by\s+.+?\s+on\s+(\d{2})-(\d{2})-(\d{4})\s+\d{2}:\d{2}/', $mergedRemark, $matches, PREG_PATTERN_ORDER)) {
+            // ✅ CHECK FOR "Called & Mailed" PATTERN IN MERGED REMARKS - FIND ALL OCCURRENCES (both "Added by" and "Updated by")
+            if (preg_match_all('/Called\s*&\s*Mailed\s*\|\s*(?:Added|Updated)\s+by\s+.+?\s+on\s+(\d{2})-(\d{2})-(\d{4})\s+\d{2}:\d{2}/', $mergedRemark, $matches, PREG_PATTERN_ORDER)) {
                 $latestContactDate = null;
 
                 // ✅ FIND THE LATEST DATE AMONG ALL "Called & Mailed" ENTRIES
