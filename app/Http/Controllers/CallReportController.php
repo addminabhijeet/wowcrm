@@ -5185,8 +5185,9 @@ class CallReportController extends Controller
                 continue;
             }
 
-            // Check if this working day has ANY calls (Called & Mailed or Transfers)
+            // Check if this working day has ANY calls (Called & Mailed, Other Calls, or Transfers)
             if ((isset($dailyCalledMailed[$dayOfMonth]) && $dailyCalledMailed[$dayOfMonth] > 0) ||
+                (isset($dailyOtherCalls[$dayOfMonth]) && $dailyOtherCalls[$dayOfMonth] > 0) ||
                 (isset($dailyTransfers[$dayOfMonth]) && $dailyTransfers[$dayOfMonth] > 0)) {
                 $daysWithAnyCallsCount++;
             }
