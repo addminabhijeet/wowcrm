@@ -261,7 +261,7 @@ class GoogleSheetController extends Controller
 
                 $lastContactDate = \Carbon\Carbon::createFromDate($year, $month, $day);
                 $today = \Carbon\Carbon::now('Asia/Kolkata')->startOfDay();
-                $daysDifference = (int) $today->diffInDays($lastContactDate);
+                $daysDifference = (int) abs($today->diffInDays($lastContactDate));
 
                 // ✅ CHECK IF 20 DAYS HAVE PASSED SINCE LAST CONTACT
                 if ($daysDifference < 20) {
