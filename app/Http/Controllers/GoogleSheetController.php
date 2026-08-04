@@ -233,6 +233,16 @@ class GoogleSheetController extends Controller
             ]);
         }
 
+        // ✅ Merge remarks from ALL USERS for the same Email_Address
+        if ($record) {
+            $allRemarksFromAllUsers = GoogleSheetData::where('Email_Address', $email)
+                ->pluck('Remark')
+                ->all();
+
+            // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
+            $record->Remark = implode(' || ', $allRemarksFromAllUsers);
+        }
+
         return response()->json([
             'exists' => (bool) $record,
             'restricted' => false,
