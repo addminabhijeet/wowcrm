@@ -6258,7 +6258,7 @@ class GoogleSheetController extends Controller
                             : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
-                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                        $user = User::where('is_deleted', 0)->find($userId);
                         $name = $user ? $user->name : 'Unknown';
                         $roleLabel = ($role === 'senior')
                             ? 'IT Senior Recruiter'
@@ -6276,18 +6276,21 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // ✅ Merge remarks for items with same Email_Address
-        $grouped = $transformed->groupBy('Email_Address');
-        $merged = $grouped->map(function ($group) {
-            $firstItem = $group->first();
-            $remarks = $group->map(function ($item) {
-                return $item->Remark ?? '';
-            })->all();
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        // Keep display filter (current user data) but fetch remarks from all users
+        $transformed = $transformed->map(function ($item) {
+            // For each email address, fetch ALL remarks from all users (no filtering)
+            if (!empty($item->Email_Address)) {
+                $allRemarksFromAllUsers = GoogleSheetData::where('Email_Address', $item->Email_Address)
+                    ->pluck('Remark')
+                    ->all();
 
-            $firstItem->Remark = implode(' || ', $remarks);
-            return $firstItem;
-        })->values();
-        $transformed = $merged;
+                // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
+                $item->Remark = implode(' || ', $allRemarksFromAllUsers);
+            }
+
+            return $item;
+        });
 
         // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
