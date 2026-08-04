@@ -5171,9 +5171,19 @@ class CallReportController extends Controller
         }
 
         $absentDays = max(0, $absentDays - $futureWorkingDays);
-        // --- Averages ---
-        $MAvgTotalCalls     = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
-        $MAvgtotaltransfers = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
+
+        // --- NEW: Count days with actual calls (for per-day average) ---
+        $daysWithCalledMailed = count(array_filter($dailyCalledMailed, fn($count) => $count > 0));
+        $daysWithTransfers = count(array_filter($dailyTransfers, fn($count) => $count > 0));
+        $daysWithAnyCalls = count(array_filter($dailyCalledMailed + $dailyTransfers, fn($count) => $count > 0));
+
+        // --- Update Present/Absent based on days with calls ---
+        $presentDays = $daysWithAnyCalls; // Days with any call activity
+        $absentDays = max(0, $workingDays - $daysWithAnyCalls); // Working days with no calls
+
+        // --- Averages (based on days with calls) ---
+        $MAvgTotalCalls     = $daysWithCalledMailed > 0 ? intval($McalledAndMailedCalls / $daysWithCalledMailed) : 0;
+        $MAvgtotaltransfers = $daysWithTransfers > 0 ? intval($Mtotaltransfers / $daysWithTransfers) : 0;
 
         return view('reports.alljuniormonthly', compact(
             'juniorUser',
