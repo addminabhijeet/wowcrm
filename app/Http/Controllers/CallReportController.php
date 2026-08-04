@@ -5172,18 +5172,55 @@ class CallReportController extends Controller
 
         $absentDays = max(0, $absentDays - $futureWorkingDays);
 
-        // --- NEW: Count days with actual calls (for per-day average) ---
-        $daysWithCalledMailed = count(array_filter($dailyCalledMailed, fn($count) => $count > 0));
-        $daysWithTransfers = count(array_filter($dailyTransfers, fn($count) => $count > 0));
-        $daysWithAnyCalls = count(array_filter($dailyCalledMailed + $dailyTransfers, fn($count) => $count > 0));
+        // --- NEW: Count days with actual calls (excluding weekends & holidays) ---
+        $daysWithCalledMailedCount = 0;
+        $daysWithTransfersCount = 0;
+        $daysWithAnyCallsCount = 0;
+
+        // Loop through working days (not weekends/holidays)
+        foreach ($daysInMonth as $day) {
+            $dateStr = $day->format('Y-m-d');
+            $dayOfMonth = (int)$day->format('d');
+
+            // Skip weekends and holidays
+            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+                continue;
+            }
+
+            // Check if this working day has "Called & Mailed" calls
+            if (isset($dailyCalledMailed[$dayOfMonth]) && $dailyCalledMailed[$dayOfMonth] > 0) {
+                $daysWithCalledMailedCount++;
+                $daysWithAnyCallsCount++;
+            }
+            // Check if this working day has transfers (but didn't have Called & Mailed counted above)
+            elseif (isset($dailyTransfers[$dayOfMonth]) && $dailyTransfers[$dayOfMonth] > 0) {
+                $daysWithTransfersCount++;
+                $daysWithAnyCallsCount++;
+            }
+        }
+
+        // If a day has both Called & Mailed and Transfers, count it for transfers too
+        foreach ($daysInMonth as $day) {
+            $dateStr = $day->format('Y-m-d');
+            $dayOfMonth = (int)$day->format('d');
+
+            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+                continue;
+            }
+
+            if (isset($dailyCalledMailed[$dayOfMonth]) && $dailyCalledMailed[$dayOfMonth] > 0 &&
+                isset($dailyTransfers[$dayOfMonth]) && $dailyTransfers[$dayOfMonth] > 0) {
+                $daysWithTransfersCount++;
+            }
+        }
 
         // --- Update Present/Absent based on days with calls ---
-        $presentDays = $daysWithAnyCalls; // Days with any call activity
-        $absentDays = max(0, $workingDays - $daysWithAnyCalls); // Working days with no calls
+        $presentDays = $daysWithAnyCallsCount; // Working days with any call activity
+        $absentDays = max(0, $workingDays - $daysWithAnyCallsCount); // Working days with no calls
 
-        // --- Averages (based on days with calls) ---
-        $MAvgTotalCalls     = $daysWithCalledMailed > 0 ? intval($McalledAndMailedCalls / $daysWithCalledMailed) : 0;
-        $MAvgtotaltransfers = $daysWithTransfers > 0 ? intval($Mtotaltransfers / $daysWithTransfers) : 0;
+        // --- Averages (based on working days with calls) ---
+        $MAvgTotalCalls     = $daysWithCalledMailedCount > 0 ? intval($McalledAndMailedCalls / $daysWithCalledMailedCount) : 0;
+        $MAvgtotaltransfers = $daysWithTransfersCount > 0 ? intval($Mtotaltransfers / $daysWithTransfersCount) : 0;
 
         return view('reports.alljuniormonthly', compact(
             'juniorUser',
