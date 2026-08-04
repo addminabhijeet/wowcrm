@@ -1047,6 +1047,7 @@ $script = '<script>
             activeRequest = $.ajax({
                 url: "{{ route('google.sheet.junior.candm') }}",
                 type: 'GET',
+                cache: false,  // ✅ Disable browser caching for fresh data
                 data: {
                     search: search,
                     page: page,
