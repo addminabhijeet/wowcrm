@@ -254,7 +254,7 @@ class GoogleSheetController extends Controller
             $record->Remark = $mergedRemark;
 
             // ✅ CHECK FOR "Called & Mailed" PATTERN IN MERGED REMARKS
-            if (preg_match('/Called\s*&\s*Mailed\s*\|\s*Updated\s+by\s+[^o]+on\s+(\d{2})-(\d{2})-(\d{4})\s+\d{2}:\d{2}/', $mergedRemark, $matches)) {
+            if (preg_match('/Called\s*&\s*Mailed\s*\|\s*Updated\s+by\s+.+?\s+on\s+(\d{2})-(\d{2})-(\d{4})\s+\d{2}:\d{2}/', $mergedRemark, $matches)) {
                 $day = intval($matches[1]);
                 $month = intval($matches[2]);
                 $year = intval($matches[3]);
