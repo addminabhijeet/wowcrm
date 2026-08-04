@@ -6276,6 +6276,19 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        // ✅ Merge remarks for items with same Email_Address
+        $grouped = $transformed->groupBy('Email_Address');
+        $merged = $grouped->map(function ($group) {
+            $firstItem = $group->first();
+            $remarks = $group->map(function ($item) {
+                return $item->Remark ?? '';
+            })->all();
+
+            $firstItem->Remark = implode(' || ', $remarks);
+            return $firstItem;
+        })->values();
+        $transformed = $merged;
+
         // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
