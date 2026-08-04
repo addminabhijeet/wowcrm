@@ -812,7 +812,19 @@ $script = '<script>
                 );
 
                 if (remarkInput) {
-                    rowData["Remark"] = remarkInput.value;
+                    // ✅ MERGE OLD + NEW REMARK (IMPORTANT - prevents duplication)
+                    const oldRemark = row.querySelector('textarea.remark-autocomplete')?.value || '';
+                    const newRemark = row.querySelector('.new-remark')?.value || '';
+
+                    let finalRemark = oldRemark.trim();
+
+                    if (newRemark.trim()) {
+                        finalRemark = finalRemark ?
+                            finalRemark + "\n" + newRemark.trim() :
+                            newRemark.trim();
+                    }
+
+                    rowData["Remark"] = finalRemark;
                 }
                 if (followUpInput) {
                     rowData["1st Follow Up Remarks"] = followUpInput.value;

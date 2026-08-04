@@ -907,6 +907,21 @@ $script = '<script>
                     let value = cell.value;
                     rowData[key] = value;
                 });
+
+                // ✅ MERGE OLD + NEW REMARK (IMPORTANT - prevents duplication)
+                const oldRemark = row.querySelector('textarea.remark-autocomplete')?.value || '';
+                const newRemark = row.querySelector('.new-remark')?.value || '';
+
+                let finalRemark = oldRemark.trim();
+
+                if (newRemark.trim()) {
+                    finalRemark = finalRemark ?
+                        finalRemark + "\n" + newRemark.trim() :
+                        newRemark.trim();
+                }
+
+                rowData['Remark'] = finalRemark;
+
                 console.log("Row data:", rowData);
 
                 // Create FormData object
