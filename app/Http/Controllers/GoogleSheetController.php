@@ -24,6 +24,29 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class GoogleSheetController extends Controller
 {
+    /**
+     * Merge remarks from ALL USERS for items with same Email_Address
+     *
+     * @param \Illuminate\Support\Collection $transformed - Collection of items with Email_Address
+     * @return \Illuminate\Support\Collection - Items with merged remarks
+     */
+    private function mergeRemarksFromAllUsers($transformed)
+    {
+        return $transformed->map(function ($item) {
+            // For each email address, fetch ALL remarks from all users (no filtering)
+            if (!empty($item->Email_Address)) {
+                $allRemarksFromAllUsers = GoogleSheetData::where('Email_Address', $item->Email_Address)
+                    ->pluck('Remark')
+                    ->all();
+
+                // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
+                $item->Remark = implode(' || ', $allRemarksFromAllUsers);
+            }
+
+            return $item;
+        });
+    }
+
     public function admin(Request $request)
     {
         $authUser = Auth::user();
@@ -628,6 +651,9 @@ class GoogleSheetController extends Controller
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
+
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
         // -----------------------------
         // Pagination
@@ -1519,6 +1545,9 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $this->mergeRemarksFromAllUsers($transformed);
+
         // -----------------------------
         // Pagination
         // -----------------------------
@@ -1970,6 +1999,9 @@ class GoogleSheetController extends Controller
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
+
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
         // Pagination
         $perPage = 10;
@@ -6277,20 +6309,7 @@ class GoogleSheetController extends Controller
         });
 
         // ✅ Merge remarks from ALL USERS for items with same Email_Address
-        // Keep display filter (current user data) but fetch remarks from all users
-        $transformed = $transformed->map(function ($item) {
-            // For each email address, fetch ALL remarks from all users (no filtering)
-            if (!empty($item->Email_Address)) {
-                $allRemarksFromAllUsers = GoogleSheetData::where('Email_Address', $item->Email_Address)
-                    ->pluck('Remark')
-                    ->all();
-
-                // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
-                $item->Remark = implode(' || ', $allRemarksFromAllUsers);
-            }
-
-            return $item;
-        });
+        $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
         // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
@@ -6476,6 +6495,9 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $this->mergeRemarksFromAllUsers($transformed);
+
         // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
@@ -6659,6 +6681,9 @@ class GoogleSheetController extends Controller
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
+
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
         // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
@@ -6844,6 +6869,9 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $this->mergeRemarksFromAllUsers($transformed);
+
         // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
@@ -7028,6 +7056,9 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $this->mergeRemarksFromAllUsers($transformed);
+
         // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
         $currentPage = $page;
@@ -7209,6 +7240,9 @@ class GoogleSheetController extends Controller
             $item->forwarded_by = $forwardedBy;
             return $item;
         });
+
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
         // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
