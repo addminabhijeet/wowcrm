@@ -402,6 +402,9 @@
                         },
                         success: function(response) {
                             alert(response.message);
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
                         },
                         error: function() {
                             alert('AJAX error');
