@@ -3451,6 +3451,7 @@ class GoogleSheetController extends Controller
                 'Email_Address',
                 'Phone_Number',
                 'Exe_Remarks',
+                'Remark',
                 'created_by'
             ]);
 
@@ -3471,7 +3472,7 @@ class GoogleSheetController extends Controller
                     $label = $role === 'senior' ? 'IT Senior Recruiter' : 'IT Recruiter';
                     $names[] = "SYSTEM (0) ({$label})";
                 } else {
-                    $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                    $user = User::where('is_deleted', 0)->find($userId);
                     $name = $user ? $user->name : 'Unknown';
                     $label = $role === 'senior' ? 'IT Senior Recruiter' : 'IT Recruiter';
                     $names[] = "{$name} ({$userId}) ({$label})";
@@ -3479,6 +3480,21 @@ class GoogleSheetController extends Controller
             }
 
             $item->forwarded_by = implode(' → ', $names);
+            return $item;
+        });
+
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $transformed->map(function ($item) {
+            // For each email address, fetch ALL remarks from all users (no filtering)
+            if (!empty($item->Email_Address)) {
+                $allRemarksFromAllUsers = GoogleSheetData::where('Email_Address', $item->Email_Address)
+                    ->pluck('Remark')
+                    ->all();
+
+                // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
+                $item->Remark = implode(' || ', $allRemarksFromAllUsers);
+            }
+
             return $item;
         });
 
@@ -3529,6 +3545,7 @@ class GoogleSheetController extends Controller
                 'Email_Address',
                 'Phone_Number',
                 'Exe_Remarks',
+                'Remark',
                 'created_by'
             ]);
 
@@ -3549,7 +3566,7 @@ class GoogleSheetController extends Controller
                     $label = $role === 'senior' ? 'IT Senior Recruiter' : 'IT Recruiter';
                     $names[] = "SYSTEM (0) ({$label})";
                 } else {
-                    $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                    $user = User::where('is_deleted', 0)->find($userId);
                     $name = $user ? $user->name : 'Unknown';
                     $label = $role === 'senior' ? 'IT Senior Recruiter' : 'IT Recruiter';
                     $names[] = "{$name} ({$userId}) ({$label})";
@@ -3557,6 +3574,21 @@ class GoogleSheetController extends Controller
             }
 
             $item->forwarded_by = implode(' → ', $names);
+            return $item;
+        });
+
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $transformed->map(function ($item) {
+            // For each email address, fetch ALL remarks from all users (no filtering)
+            if (!empty($item->Email_Address)) {
+                $allRemarksFromAllUsers = GoogleSheetData::where('Email_Address', $item->Email_Address)
+                    ->pluck('Remark')
+                    ->all();
+
+                // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
+                $item->Remark = implode(' || ', $allRemarksFromAllUsers);
+            }
+
             return $item;
         });
 
@@ -3611,6 +3643,7 @@ class GoogleSheetController extends Controller
                 'Email_Address',
                 'Phone_Number',
                 'Exe_Remarks',
+                'Remark',
                 'created_by'
             ]);
 
@@ -3635,7 +3668,7 @@ class GoogleSheetController extends Controller
                         : 'IT Recruiter';
                     $names[] = "SYSTEM (0) ({$label})";
                 } else {
-                    $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                    $user = User::where('is_deleted', 0)->find($userId);
                     $name = $user ? $user->name : 'Unknown';
                     $label = $role === 'senior'
                         ? 'IT Senior Recruiter'
@@ -3645,6 +3678,21 @@ class GoogleSheetController extends Controller
             }
 
             $item->forwarded_by = implode(' → ', $names);
+            return $item;
+        });
+
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $transformed->map(function ($item) {
+            // For each email address, fetch ALL remarks from all users (no filtering)
+            if (!empty($item->Email_Address)) {
+                $allRemarksFromAllUsers = GoogleSheetData::where('Email_Address', $item->Email_Address)
+                    ->pluck('Remark')
+                    ->all();
+
+                // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
+                $item->Remark = implode(' || ', $allRemarksFromAllUsers);
+            }
+
             return $item;
         });
 
@@ -3698,6 +3746,7 @@ class GoogleSheetController extends Controller
                 'Email_Address',
                 'Phone_Number',
                 'Exe_Remarks',
+                'Remark',
                 'created_by'
             ]);
 
@@ -3722,7 +3771,7 @@ class GoogleSheetController extends Controller
                         : 'IT Recruiter';
                     $names[] = "SYSTEM (0) ({$label})";
                 } else {
-                    $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                    $user = User::where('is_deleted', 0)->find($userId);
                     $name = $user ? $user->name : 'Unknown';
                     $label = $role === 'senior'
                         ? 'IT Senior Recruiter'
@@ -3732,6 +3781,21 @@ class GoogleSheetController extends Controller
             }
 
             $item->forwarded_by = implode(' → ', $names);
+            return $item;
+        });
+
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $transformed->map(function ($item) {
+            // For each email address, fetch ALL remarks from all users (no filtering)
+            if (!empty($item->Email_Address)) {
+                $allRemarksFromAllUsers = GoogleSheetData::where('Email_Address', $item->Email_Address)
+                    ->pluck('Remark')
+                    ->all();
+
+                // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
+                $item->Remark = implode(' || ', $allRemarksFromAllUsers);
+            }
+
             return $item;
         });
 
