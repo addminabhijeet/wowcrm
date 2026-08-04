@@ -35,7 +35,7 @@ class GoogleSheetController extends Controller
         return $transformed->map(function ($item) {
             // For each email address, fetch ALL remarks from all users (no filtering)
             if (!empty($item->Email_Address)) {
-                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->get(['Remark']);
+                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->orderBy('id', 'asc')->get();
                 $remarks = [];
 
                 foreach ($allRecords as $record) {
@@ -238,7 +238,7 @@ class GoogleSheetController extends Controller
 
         // ✅ Merge remarks from ALL USERS for the same Email_Address
         if ($record) {
-            $allRecords = GoogleSheetData::where('Email_Address', $email)->get(['Remark']);
+            $allRecords = GoogleSheetData::where('Email_Address', $email)->orderBy('id', 'asc')->get();
             $remarks = [];
 
             foreach ($allRecords as $rec) {
@@ -3493,7 +3493,7 @@ class GoogleSheetController extends Controller
         $transformed = $transformed->map(function ($item) {
             // For each email address, fetch ALL remarks from all users (no filtering)
             if (!empty($item->Email_Address)) {
-                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->get(['Remark']);
+                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->orderBy('id', 'asc')->get();
                 $remarks = [];
 
                 foreach ($allRecords as $record) {
@@ -3590,7 +3590,7 @@ class GoogleSheetController extends Controller
         $transformed = $transformed->map(function ($item) {
             // For each email address, fetch ALL remarks from all users (no filtering)
             if (!empty($item->Email_Address)) {
-                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->get(['Remark']);
+                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->orderBy('id', 'asc')->get();
                 $remarks = [];
 
                 foreach ($allRecords as $record) {
@@ -3697,7 +3697,7 @@ class GoogleSheetController extends Controller
         $transformed = $transformed->map(function ($item) {
             // For each email address, fetch ALL remarks from all users (no filtering)
             if (!empty($item->Email_Address)) {
-                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->get(['Remark']);
+                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->orderBy('id', 'asc')->get();
                 $remarks = [];
 
                 foreach ($allRecords as $record) {
@@ -3803,7 +3803,7 @@ class GoogleSheetController extends Controller
         $transformed = $transformed->map(function ($item) {
             // For each email address, fetch ALL remarks from all users (no filtering)
             if (!empty($item->Email_Address)) {
-                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->get(['Remark']);
+                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->orderBy('id', 'asc')->get();
                 $remarks = [];
 
                 foreach ($allRecords as $record) {
