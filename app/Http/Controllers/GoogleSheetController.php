@@ -261,12 +261,12 @@ class GoogleSheetController extends Controller
 
                 $lastContactDate = \Carbon\Carbon::createFromDate($year, $month, $day);
                 $today = \Carbon\Carbon::now('Asia/Kolkata')->startOfDay();
-                $daysDifference = $today->diffInDays($lastContactDate);
+                $daysDifference = (int) $today->diffInDays($lastContactDate);
 
                 // ✅ CHECK IF 20 DAYS HAVE PASSED SINCE LAST CONTACT
                 if ($daysDifference < 20) {
                     $canContact = false;
-                    $daysUntilContact = 20 - $daysDifference;
+                    $daysUntilContact = (int) (20 - $daysDifference);
                     $contactMessage = "Please contact after {$daysUntilContact} days";
                 }
             }
