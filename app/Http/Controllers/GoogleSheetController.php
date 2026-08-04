@@ -237,6 +237,10 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Merge remarks from ALL USERS for the same Email_Address
+        $canContact = true;
+        $daysUntilContact = 0;
+        $contactMessage = '';
+
         if ($record) {
             $allRecords = GoogleSheetData::where('Email_Address', $email)->orderBy('id', 'asc')->get();
             $remarks = [];
@@ -246,12 +250,34 @@ class GoogleSheetController extends Controller
             }
 
             // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
-            $record->Remark = implode(' || ', $remarks);
+            $mergedRemark = implode(' || ', $remarks);
+            $record->Remark = $mergedRemark;
+
+            // ✅ CHECK FOR "Called & Mailed" PATTERN IN MERGED REMARKS
+            if (preg_match('/Called\s*&\s*Mailed\s*\|\s*Updated\s+by\s+[^o]+on\s+(\d{2})-(\d{2})-(\d{4})\s+\d{2}:\d{2}/', $mergedRemark, $matches)) {
+                $day = intval($matches[1]);
+                $month = intval($matches[2]);
+                $year = intval($matches[3]);
+
+                $lastContactDate = \Carbon\Carbon::createFromDate($year, $month, $day);
+                $today = \Carbon\Carbon::now('Asia/Kolkata')->startOfDay();
+                $daysDifference = $today->diffInDays($lastContactDate);
+
+                // ✅ CHECK IF 20 DAYS HAVE PASSED SINCE LAST CONTACT
+                if ($daysDifference < 20) {
+                    $canContact = false;
+                    $daysUntilContact = 20 - $daysDifference;
+                    $contactMessage = "Please contact after {$daysUntilContact} days";
+                }
+            }
         }
 
         return response()->json([
             'exists' => (bool) $record,
             'restricted' => false,
+            'canContact' => $canContact,
+            'daysUntilContact' => $daysUntilContact,
+            'contactMessage' => $contactMessage,
             'data' => $record
         ]);
     }

@@ -1680,11 +1680,24 @@ $script = '<script>
                             setSelect('Time Zone', data.data.Time_Zone);
                             setSelect('Exe Remarks', data.data.Exe_Remarks);
 
+                            // ---------- CHECK IF CONTACT CAN BE MADE ----------
+                            const saveBtn = row.querySelector('.save-btn');
+                            if (!data.canContact && saveBtn) {
+                                saveBtn.style.display = 'none';
+                            }
+
                             // ---------- VISUAL FEEDBACK ----------
                             input.classList.remove('is-invalid');
                             input.classList.add('is-valid');
-                            hint.textContent = 'Existing record loaded.';
-                            hint.style.color = 'blue';
+
+                            if (!data.canContact && data.contactMessage) {
+                                hint.textContent = data.contactMessage;
+                                hint.style.color = 'red';
+                                hint.style.fontWeight = 'bold';
+                            } else {
+                                hint.textContent = 'Existing record loaded.';
+                                hint.style.color = 'blue';
+                            }
 
                         } else {
 
