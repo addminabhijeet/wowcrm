@@ -123,7 +123,7 @@ $script = '<script>
                         <th scope="col" class="text-center">1st Follow Up Remarks</th>
                         <th scope="col" class="text-center">Time Zone</th>
                         <th scope="col" class="text-center">Resume</th>
-                        <th scope="col" class="text-center">Remark</th>
+                        <th scope="col" class="text-center" colspan="2">Remark</th>
                         <th scope="col" class="text-center">Status</th>
 
                     </tr>
