@@ -1612,6 +1612,9 @@ $script = '<script>
             return `${mm}/${dd}/${yyyy}`;
         };
 
+        // ==========================================
+        // EMAIL ADDRESS SEARCH
+        // ==========================================
         document.addEventListener('input', function(e) {
 
             if (!e.target.matches('.email-input')) return;
@@ -1724,6 +1727,134 @@ $script = '<script>
                             input.classList.remove('is-invalid');
                             input.classList.add('is-valid');
                             hint.textContent = 'Email available.';
+                            hint.style.color = 'green';
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        hint.textContent = '⚠️ Server error. Try again.';
+                        hint.style.color = 'orange';
+                    });
+
+            }, 500);
+        });
+
+        // ==========================================
+        // PHONE NUMBER SEARCH (SAME LOGIC AS EMAIL)
+        // ==========================================
+        document.addEventListener('input', function(e) {
+
+            if (!e.target.matches('.phone-input')) return;
+
+            const input = e.target;
+            const phoneNumber = input.value.trim().replace(/\D/g, ''); // Extract only digits
+            const hint = input.nextElementSibling;
+
+            // Validate: phone number should have exactly 10 digits
+            if (phoneNumber.length !== 10) {
+                hint.textContent = '';
+                input.classList.remove('is-invalid', 'is-valid');
+                return;
+            }
+
+            clearTimeout(input._phoneCheckTimer);
+
+            input._phoneCheckTimer = setTimeout(() => {
+
+                fetch("{{ route('check.uniqueemail') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            phone_number: phoneNumber
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+
+                        if (data.restricted) {
+                            const hint = input.nextElementSibling;
+                            input.classList.remove('is-valid');
+                            input.classList.add('is-invalid');
+
+                            hint.textContent = data.message;
+                            hint.style.color = 'red';
+                            return;
+                        }
+
+                        if (data.exists && data.data) {
+
+                            const row = input.closest('tr');
+
+                            // ---------- INPUT FIELDS ----------
+                            row.querySelector('[data-key="Email Address"]').value =
+                                data.data.Email_Address ?? '';
+
+                            row.querySelector('[data-key="Name"]').value =
+                                data.data.Name ?? '';
+
+                            row.querySelector('[data-key="Location"]').value =
+                                data.data.Location ?? '';
+
+                            row.querySelector('[data-key="Graduation Date"]').value =
+                                formatDateMDY(data.data.Graduation_Date);
+
+                            row.querySelector('[data-key="Amount"]').value =
+                                data.data.Amount ?
+                                `$${parseFloat(data.data.Amount).toFixed(2)}` :
+                                '';
+                            const oldRemarkEl = row.querySelector('.old-remark');
+                            const newRemarkEl = row.querySelector('.new-remark');
+
+                            if (oldRemarkEl) oldRemarkEl.value = data.data.Remark ?? '';
+                            if (newRemarkEl) newRemarkEl.value = '';
+
+                            // ---------- DROPDOWNS (AUTO SELECT + TRIGGER CHANGE) ----------
+                            const setSelect = (key, value) => {
+                                const select = row.querySelector(`[data-key="${key}"]`);
+                                if (!select || value === null) return;
+
+                                select.value = value;
+                                select.dispatchEvent(new Event('change', {
+                                    bubbles: true
+                                }));
+                            };
+
+                            setSelect('Relocation', data.data.Relocation);
+                            setSelect('Immigration', data.data.Immigration);
+                            setSelect('Course', data.data.Course);
+                            setSelect('Qualification', data.data.Qualification);
+                            setSelect('1st Follow Up Remarks', data.data
+                                .First_Follow_Up_Remarks);
+                            setSelect('Time Zone', data.data.Time_Zone);
+                            setSelect('Exe Remarks', data.data.Exe_Remarks);
+
+                            // ---------- CHECK IF CONTACT CAN BE MADE ----------
+                            const saveBtn = row.querySelector('.save-btn');
+                            if (!data.canContact && saveBtn) {
+                                saveBtn.style.display = 'none';
+                            }
+
+                            // ---------- VISUAL FEEDBACK ----------
+                            input.classList.remove('is-invalid');
+                            input.classList.add('is-valid');
+
+                            if (!data.canContact && data.contactMessage) {
+                                hint.textContent = data.contactMessage;
+                                hint.style.color = 'red';
+                                hint.style.fontWeight = 'bold';
+                            } else {
+                                hint.textContent = 'Existing record loaded.';
+                                hint.style.color = 'blue';
+                            }
+
+                        } else {
+
+                            input.classList.remove('is-invalid');
+                            input.classList.add('is-valid');
+                            hint.textContent = 'Phone number available.';
                             hint.style.color = 'green';
                         }
                     })
