@@ -220,11 +220,24 @@ class GoogleSheetController extends Controller
     public function checkEmail(Request $request)
     {
         $email = $request->input('email');
+        $phoneNumber = $request->input('phone_number');
 
-        // Fetch the latest record with the given email
-        $record = GoogleSheetData::where('Email_Address', $email)
-            ->orderBy('sheet_row_number', 'desc')
-            ->first();
+        // Determine search type and fetch the latest record
+        if ($phoneNumber) {
+            // Search by Phone_Number
+            $record = GoogleSheetData::where('Phone_Number', $phoneNumber)
+                ->orderBy('sheet_row_number', 'desc')
+                ->first();
+            $searchField = 'Phone_Number';
+            $searchValue = $phoneNumber;
+        } else {
+            // Search by Email_Address (original logic)
+            $record = GoogleSheetData::where('Email_Address', $email)
+                ->orderBy('sheet_row_number', 'desc')
+                ->first();
+            $searchField = 'Email_Address';
+            $searchValue = $email;
+        }
 
         // ✅ NEW: restriction check FIRST (highest priority)
         if ($record && strpos($record->created_by, 'accountant') !== false) {
@@ -236,13 +249,13 @@ class GoogleSheetController extends Controller
             ]);
         }
 
-        // ✅ Merge remarks from ALL USERS for the same Email_Address
+        // ✅ Merge remarks from ALL USERS for the same search field (Email_Address or Phone_Number)
         $canContact = true;
         $daysUntilContact = 0;
         $contactMessage = '';
 
         if ($record) {
-            $allRecords = GoogleSheetData::where('Email_Address', $email)->orderBy('id', 'asc')->get();
+            $allRecords = GoogleSheetData::where($searchField, $searchValue)->orderBy('id', 'asc')->get();
             $remarks = [];
 
             foreach ($allRecords as $rec) {
