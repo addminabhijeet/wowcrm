@@ -224,8 +224,8 @@ class GoogleSheetController extends Controller
 
         // Determine search type and fetch the latest record
         if ($phoneNumber) {
-            // Search by Phone_Number
-            $record = GoogleSheetData::where('Phone_Number', $phoneNumber)
+            // Search by Phone_Number (normalize by removing non-digits)
+            $record = GoogleSheetData::whereRaw("REPLACE(REPLACE(REPLACE(Phone_Number, '-', ''), ' ', ''), '(', '') = ?", [$phoneNumber])
                 ->orderBy('sheet_row_number', 'desc')
                 ->first();
             $searchField = 'Phone_Number';
@@ -255,7 +255,14 @@ class GoogleSheetController extends Controller
         $contactMessage = '';
 
         if ($record) {
-            $allRecords = GoogleSheetData::where($searchField, $searchValue)->orderBy('id', 'asc')->get();
+            // Fetch all records for remarks merging (normalize phone search if applicable)
+            if ($phoneNumber) {
+                $allRecords = GoogleSheetData::whereRaw("REPLACE(REPLACE(REPLACE(Phone_Number, '-', ''), ' ', ''), '(', '') = ?", [$phoneNumber])
+                    ->orderBy('id', 'asc')
+                    ->get();
+            } else {
+                $allRecords = GoogleSheetData::where($searchField, $searchValue)->orderBy('id', 'asc')->get();
+            }
             $remarks = [];
 
             foreach ($allRecords as $rec) {
