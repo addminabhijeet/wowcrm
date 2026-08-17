@@ -103,7 +103,7 @@ $script = '<script>
                         <th scope="col" class="text-center">Resume</th>
                         <th scope="col" class="text-center" colspan="2">Remarks</th>
                         <th scope="col" class="text-center">Status</th>
-                        <th scope="col" class="text-center">Actions</th>
+                       
 
                     </tr>
                 </thead>
@@ -321,16 +321,6 @@ $script = '<script>
                                 </option>
                                 @endforeach
                             </select>
-                        </td>
-
-
-                        <td class="text-center">
-
-                            <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
-                                <i class="fas fa-save"></i> Save
-                            </button>
-
-
                         </td>
 
                     </tr>
