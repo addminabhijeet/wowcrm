@@ -115,12 +115,6 @@ $script = '<script>
                             <strong>{{ $row->sheet_row_number }}</strong>
                         </td>
 
-                        {{-- Date --}}
-                        <td>
-                            <input type="text" class="form-control date-picker" data-key="Date"
-                                value="{{ $row->Date ? \Carbon\Carbon::parse($row->Date)->format('m/d/Y') : '' }}">
-                        </td>
-
                         {{-- Name --}}
                         <td>
                             <input type="text" class="form-control name-input" data-key="Name"
