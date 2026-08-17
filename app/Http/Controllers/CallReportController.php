@@ -1451,6 +1451,15 @@ class CallReportController extends Controller
         return view('reports.allseniorlist', compact('seniorUsers'));
     }
 
+    public function neverreached(Request $request)
+    {
+        // Fetch all users with role 'senior'
+        $seniorUsers = User::where('role', 'senior')->where('is_deleted', 0)->get();
+
+        // Pass users to the view
+        return view('reports.allseniorlist', compact('seniorUsers'));
+    }
+
     public function preallseniorlist(Request $request)
     {
         // Fetch all users with role 'senior'
@@ -2768,7 +2777,7 @@ class CallReportController extends Controller
             'MAvgtotaltransfers',
         ));
     }
-    
+
     public function seniorgroupmailchart(Request $request)
     {
         // Selected date (always today)
@@ -5188,7 +5197,8 @@ class CallReportController extends Controller
             // Check if this working day has ANY calls (Called & Mailed, Other Calls, or Transfers)
             if ((isset($dailyCalledMailed[$dayOfMonth]) && $dailyCalledMailed[$dayOfMonth] > 0) ||
                 (isset($dailyOtherCalls[$dayOfMonth]) && $dailyOtherCalls[$dayOfMonth] > 0) ||
-                (isset($dailyTransfers[$dayOfMonth]) && $dailyTransfers[$dayOfMonth] > 0)) {
+                (isset($dailyTransfers[$dayOfMonth]) && $dailyTransfers[$dayOfMonth] > 0)
+            ) {
                 $daysWithAnyCallsCount++;
             }
         }
