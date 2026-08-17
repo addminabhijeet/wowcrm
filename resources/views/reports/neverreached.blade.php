@@ -24,14 +24,44 @@ $script = '<script>
         <div class="d-flex align-items-center flex-wrap gap-3">
 
             <form class="navbar-search position-relative d-flex gap-2" autocomplete="off">
-            
+
                 <input type="date" id="date-filter" class="bg-base h-40-px w-auto form-control"
-                    title="Filter by Date">
+                    title="Filter From Date" value="{{ request('date') }}"
+                    onchange="neverreachedApplyDateRange()">
+
+                <input type="date" id="date-filter-to" class="bg-base h-40-px w-auto form-control"
+                    title="Filter To Date" value="{{ request('date_to') }}"
+                    onchange="neverreachedApplyDateRange()">
 
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
 
                 <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
+
+            <script>
+                // ✅ Reloads the page with the selected From/To dates as query params,
+                // filtering results whose remark date falls between them.
+                function neverreachedApplyDateRange() {
+                    const url = new URL(window.location.href);
+                    const from = document.getElementById('date-filter').value;
+                    const to = document.getElementById('date-filter-to').value;
+
+                    if (from) {
+                        url.searchParams.set('date', from);
+                    } else {
+                        url.searchParams.delete('date');
+                    }
+
+                    if (to) {
+                        url.searchParams.set('date_to', to);
+                    } else {
+                        url.searchParams.delete('date_to');
+                    }
+
+                    url.searchParams.delete('page');
+                    window.location.href = url.toString();
+                }
+            </script>
 
         </div>
     </div>

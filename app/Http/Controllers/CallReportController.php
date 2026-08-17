@@ -1490,6 +1490,8 @@ class CallReportController extends Controller
     public function neverreached(Request $request)
     {
         $page = $request->input('page', 1); // ✅ Ensure page input handled
+        $dateFrom = $request->input('date');    // ✅ existing date selection
+        $dateTo   = $request->input('date_to'); // ✅ newly added second date selection
 
         // ✅ created_by check removed — show rows for ALL users, not just $authUser
         $query = GoogleSheetData::where('transfers', '!=', 1)->where('rejected', 0)->whereNotIn('Exe_Remarks', ['Others', 'VM']);
@@ -1502,10 +1504,28 @@ class CallReportController extends Controller
         // ✅ Merge remarks from ALL USERS for items with same Email_Address
         $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
-        // ✅ Keep only rows whose merged remark has exactly ONE date (e.g. "on 20-03-2026")
-        $transformed = $transformed->filter(function ($item) {
-            preg_match_all('/on\s+\d{2}-\d{2}-\d{4}/i', $item->Remark ?? '', $matches);
-            return count($matches[0]) === 1;
+        // ✅ Keep only rows whose merged remark has exactly ONE date (e.g. "on 20-03-2026"),
+        // and — when a date range is selected — that single (signal) date must fall between it.
+        $transformed = $transformed->filter(function ($item) use ($dateFrom, $dateTo) {
+            preg_match_all('/on\s+(\d{2}-\d{2}-\d{4})/i', $item->Remark ?? '', $matches);
+
+            if (count($matches[0]) !== 1) {
+                return false;
+            }
+
+            if ($dateFrom || $dateTo) {
+                $remarkDate = Carbon::createFromFormat('d-m-Y', $matches[1][0])->startOfDay();
+
+                if ($dateFrom && $remarkDate->lt(Carbon::parse($dateFrom)->startOfDay())) {
+                    return false;
+                }
+
+                if ($dateTo && $remarkDate->gt(Carbon::parse($dateTo)->endOfDay())) {
+                    return false;
+                }
+            }
+
+            return true;
         })->values();
 
         // ✅ Apply pagination AFTER transformation (like junior)
@@ -1519,9 +1539,9 @@ class CallReportController extends Controller
             [
                 'path'  => url()->current(),
                 'query' => [
-                    'search'      => $request->search,
                     'junior_user' => $request->junior_user,
-                    'date'        => $request->date, // ✅ keep date
+                    'date'        => $request->date,    // ✅ keep date
+                    'date_to'     => $request->date_to,  // ✅ keep date_to
                 ]
             ]
         );
