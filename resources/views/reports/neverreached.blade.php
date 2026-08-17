@@ -88,15 +88,8 @@ $script = '<script>
                         <th scope="col" class="text-center">Name</th>
                         <th scope="col" class="text-center">Email Address</th>
                         <th scope="col" class="text-center">Phone Number</th>
-                        <th scope="col" class="text-center">Location</th>
-                        <th scope="col" class="text-center">Relocation</th>
-                        <th scope="col" class="text-center">Graduation Date</th>
-                        <th scope="col" class="text-center">Immigration</th>
-                        <th scope="col" class="text-center">Course</th>
                         <th scope="col" class="text-center">Amount</th>
-                        <th scope="col" class="text-center">Qualification</th>
                         <th scope="col" class="text-center">1st Follow Up Remarks</th>
-                        <th scope="col" class="text-center">Time Zone</th>
                         <th scope="col" class="text-center">Resume</th>
                         <th scope="col" class="text-center" colspan="2">Remarks</th>
                         <th scope="col" class="text-center">Status</th>
@@ -134,103 +127,12 @@ $script = '<script>
                                 placeholder="US number">
                         </td>
 
-                        {{-- Location --}}
-                        <td>
-                            <input type="text" class="form-control location-autocomplete"
-                                data-key="Location" value="{{ $row->Location ?? '' }}"
-                                placeholder="Type location">
-                        </td>
-
-
-
-
-                        {{-- Relocation --}}
-                        <td>
-                            @php $relOptions = ['YES','NO','']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Relocation">
-                                <option value="">-- Select --</option>
-                                @foreach ($relOptions as $option)
-                                <option value="{{ $option }}"
-                                    {{ $row->Relocation === $option ? 'selected' : '' }}>
-                                    {{ $option }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-                        {{-- Graduation Date --}}
-                        <td>
-                            <input type="text" class="form-control date-picker" data-key="Graduation Date"
-                                value="{{ $row->Graduation_Date ? \Carbon\Carbon::parse($row->Graduation_Date)->format('m/d/Y') : '' }}">
-                        </td>
-
-                        {{-- Immigration --}}
-                        <td>
-                            @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','L2S','']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Immigration">
-                                <option value="">-- Select --</option>
-                                @foreach ($immOptions as $option)
-                                <option value="{{ $option }}"
-                                    {{ $row->Immigration === $option ? 'selected' : '' }}>
-                                    {{ $option }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-                        {{-- Course --}}
-                        <td>
-                            @php $courseOptions = ['BA','DA','SAS','JAVA','QA','SQL','PYTHON','DOT NET','']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Course">
-                                <option value="">-- Select --</option>
-                                @foreach ($courseOptions as $option)
-                                <option value="{{ $option }}"
-                                    {{ $row->Course === $option ? 'selected' : '' }}>
-                                    {{ $option }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
-
                         {{-- Amount --}}
                         <td>
                             <input type="text" class="form-control amount-input" data-key="Amount"
                                 value="{{ $row->Amount ? '$' . number_format($row->Amount, 2) : '' }}"
                                 placeholder="Amount(469)">
                         </td>
-
-                        {{-- Qualification --}}
-                        <td>
-                            @php
-                            $qualificationOptions = [
-                            'Masters',
-                            'Masters of Science',
-                            'Bachelors',
-                            'PG',
-                            'MBA',
-                            'PG Diploma',
-                            'M.Tech',
-                            'B.Tech',
-                            'MA',
-                            'Associate Degree',
-                            'Aerospace Proj. Manag.',
-                            '',
-                            ];
-                            @endphp
-
-                            <select class="form-select dynamic-dropdown" data-key="Qualification">
-                                <option value="">-- Select --</option>
-                                @foreach ($qualificationOptions as $option)
-                                <option value="{{ $option }}"
-                                    {{ $row->Qualification === $option ? 'selected' : '' }}>
-                                    {{ $option }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
-
-
-
 
                         {{-- 1st Follow Up Remarks --}}
                         <td>
@@ -246,19 +148,7 @@ $script = '<script>
                             </select>
                         </td>
 
-                        {{-- Time Zone --}}
-                        <td>
-                            @php $timezoneOptions = ['EST','CST','MST','PST','']; @endphp
-                            <select class="form-select dynamic-dropdown" data-key="Time Zone">
-                                <option value="">-- Select --</option>
-                                @foreach ($timezoneOptions as $option)
-                                <option value="{{ $option }}"
-                                    {{ $row->Time_Zone === $option ? 'selected' : '' }}>
-                                    {{ $option }}
-                                </option>
-                                @endforeach
-                            </select>
-                        </td>
+
 
                         {{-- View (Resume) --}}
                         <td>
@@ -1011,7 +901,7 @@ $script = '<script>
             activeRequest = $.ajax({
                 url: "{{ route('google.sheet.junior') }}",
                 type: 'GET',
-                cache: false,  // ✅ Disable browser caching for fresh data
+                cache: false, // ✅ Disable browser caching for fresh data
                 data: {
                     search: search,
                     page: page,
