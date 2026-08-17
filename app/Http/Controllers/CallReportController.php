@@ -1484,17 +1484,8 @@ class CallReportController extends Controller
         $page = $request->input('page', 1); // ✅ Ensure page input handled
         $date = $request->input('date');
 
-        $userPattern = "%:" . $authUser->id . "|junior";
-
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
-            $q->where(function ($q2) use ($authUser, $userPattern) {
-
-                $q2->where('created_by', $authUser->id . '|junior')
-                    ->orWhere('created_by', 'LIKE', $userPattern);
-            })
-                // EXCLUSION: Do NOT show rows having more than one "|junior"
-                ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
-        })->where('transfers', '!=', 1)->where('rejected', 0)->whereNotIn('Exe_Remarks', ['Others', 'VM']);
+        // ✅ created_by check removed — show rows for ALL users, not just $authUser
+        $query = GoogleSheetData::where('transfers', '!=', 1)->where('rejected', 0)->whereNotIn('Exe_Remarks', ['Others', 'VM']);
 
 
         // Filter by selected junior
@@ -1567,6 +1558,12 @@ class CallReportController extends Controller
 
         // ✅ Merge remarks from ALL USERS for items with same Email_Address
         $transformed = $this->mergeRemarksFromAllUsers($transformed);
+
+        // ✅ Keep only rows whose merged remark has exactly ONE date (e.g. "on 20-03-2026")
+        $transformed = $transformed->filter(function ($item) {
+            preg_match_all('/on\s+\d{2}-\d{2}-\d{4}/i', $item->Remark ?? '', $matches);
+            return count($matches[0]) === 1;
+        })->values();
 
         // ✅ Apply pagination AFTER transformation (like junior)
         $perPage = 10;
