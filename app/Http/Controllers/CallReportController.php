@@ -11,11 +11,35 @@ use Carbon\Carbon;
 use App\Models\UserTimerPause;
 use App\Models\Holiday;
 
-
-
 class CallReportController extends Controller
 {
     public function index() {}
+
+    /**
+     * Merge remarks from ALL USERS for items with same Email_Address
+     *
+     * @param \Illuminate\Support\Collection $transformed - Collection of items with Email_Address
+     * @return \Illuminate\Support\Collection - Items with merged remarks
+     */
+    private function mergeRemarksFromAllUsers($transformed)
+    {
+        return $transformed->map(function ($item) {
+            // For each email address, fetch ALL remarks from all users (no filtering)
+            if (!empty($item->Email_Address)) {
+                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->orderBy('id', 'asc')->get();
+                $remarks = [];
+
+                foreach ($allRecords as $record) {
+                    $remarks[] = $record->Remark ?? '';
+                }
+
+                // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
+                $item->Remark = implode(' || ', $remarks);
+            }
+
+            return $item;
+        });
+    }
 
     public function senior(Request $request)
     {
@@ -1453,11 +1477,186 @@ class CallReportController extends Controller
 
     public function neverreached(Request $request)
     {
-        // Fetch all users with role 'senior'
-        $seniorUsers = User::where('role', 'senior')->where('is_deleted', 0)->get();
+        $authUser = Auth::user();
+        $search = $request->input('search');
+        $rowId = $request->input('row_id');
+        $juniorUserId = $request->input('junior_user'); // dropdown value
+        $page = $request->input('page', 1); // ✅ Ensure page input handled
+        $date = $request->input('date');
 
-        // Pass users to the view
-        return view('reports.allseniorlist', compact('seniorUsers'));
+        $userPattern = "%:" . $authUser->id . "|junior";
+
+        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
+            $q->where(function ($q2) use ($authUser, $userPattern) {
+
+                $q2->where('created_by', $authUser->id . '|junior')
+                    ->orWhere('created_by', 'LIKE', $userPattern);
+            })
+                // EXCLUSION: Do NOT show rows having more than one "|junior"
+                ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
+        })->where('transfers', '!=', 1)->where('rejected', 0)->whereNotIn('Exe_Remarks', ['Others', 'VM']);
+
+
+        // Filter by selected junior
+        if ($juniorUserId) {
+            $query->where(function ($q) use ($juniorUserId) {
+                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
+            })->where('transfers', '!=', 1);
+        }
+
+        if ($date) {
+            $query->whereDate('updated_at', $date);
+        }
+
+        // Search or specific row filter
+        if ($rowId) {
+            $query->where('id', $rowId);
+        } elseif ($search && strlen($search) >= 3) {
+            $query->where(function ($q) use ($search) {
+                $q->where('Name', 'LIKE', "%{$search}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
+            });
+        }
+
+        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
+        $results = $query->orderBy('updated_at', 'desc')->get();
+
+        // ✅ Transform after getting all filtered data
+        $transformed = $results->map(function ($item) use ($authUser) {
+            $forwardedBy = '';
+
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                $names = [];
+
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? 'unknown';
+
+                    if ($userId == $authUser->id) {
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SELF ({$userId}) ({$roleLabel})";
+                    } elseif ($userId == 0) {
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SYSTEM (0) ({$roleLabel})";
+                    } else {
+                        $user = User::where('is_deleted', 0)->find($userId);
+                        $name = $user ? $user->name : 'Unknown';
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "{$name} ({$userId}) ({$roleLabel})";
+                    }
+                }
+
+                $forwardedBy = implode(' → ', $names);
+            } else {
+                $forwardedBy = 'N/A';
+            }
+
+            $item->forwarded_by = $forwardedBy;
+            return $item;
+        });
+
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        $transformed = $this->mergeRemarksFromAllUsers($transformed);
+
+        // ✅ Apply pagination AFTER transformation (like junior)
+        $perPage = 10;
+        $currentPage = $page;
+        $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
+            $transformed->forPage($currentPage, $perPage),
+            $transformed->count(),
+            $perPage,
+            $currentPage,
+            [
+                'path'  => url()->current(),
+                'query' => [
+                    'search'      => $request->search,
+                    'junior_user' => $request->junior_user,
+                    'date'        => $request->date, // ✅ keep date
+                ]
+            ]
+        );
+
+        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
+            ->where('status', 1)
+            ->orderBy('name', 'asc')
+            ->get(['id', 'name', 'email', 'phone', 'gender']);
+
+        $todayDate = Carbon::now('America/New_York')->toDateString();
+        $createdByKey = $authUser->id . '|junior';
+
+        // Base query for today & this user
+        $todayBaseQuery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->whereDate('updated_at', $todayDate);
+
+
+        // Total calls today
+        $StotalCalls = (clone $todayBaseQuery)->count();
+
+        // Individual Exe Remark counts
+        $ScalledAndMailedCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereDate('followup', $todayDate)
+            ->count();
+
+        $SnotInterestedCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'Not Interested')
+            ->whereNull('TransferRemark')
+            ->count();
+
+        $SinterestedCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'Interested')
+            ->whereNull('TransferRemark')
+            ->count();
+
+        $SothersCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'Others')
+            ->whereNull('TransferRemark')
+            ->count();
+
+        $SvmCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'VM')
+            ->whereNull('TransferRemark')
+            ->count();
+
+        $SbusyCalls = (clone $todayBaseQuery)
+            ->where('Exe_Remarks', 'Busy')
+            ->whereNull('TransferRemark')
+            ->count();
+
+        // Grouped array (easy to use in Blade / AJAX)
+        $exeRemarkCounts = [
+            'total_calls'       => $StotalCalls,
+            'called_and_mailed' => $ScalledAndMailedCalls,
+            'not_interested'    => $SnotInterestedCalls,
+            'interested'        => $SinterestedCalls,
+            'others'            => $SothersCalls,
+            'vm'                => $SvmCalls,
+            'busy'              => $SbusyCalls,
+        ];
+
+        if ($request->ajax()) {
+            return view('database.partials.junior_table', [
+                'data' => $pagedData,
+                'juniorUsers' => $juniorUsers,
+                'exeRemarkCounts' => $exeRemarkCounts
+            ])->render();
+        }
+
+        return view('reports.neverreached', [
+            'data' => $pagedData,
+            'juniorUsers' => $juniorUsers,
+            'exeRemarkCounts' => $exeRemarkCounts
+        ]);
     }
 
     public function preallseniorlist(Request $request)
