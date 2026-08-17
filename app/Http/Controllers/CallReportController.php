@@ -23,15 +23,27 @@ class CallReportController extends Controller
      */
     private function mergeRemarksFromAllUsers($transformed)
     {
-        return $transformed->map(function ($item) {
-            // For each email address, fetch ALL remarks from all users (no filtering)
-            if (!empty($item->Email_Address)) {
-                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->orderBy('id', 'asc')->get();
-                $remarks = [];
+        // ✅ Batch-fetch remarks for all Email_Addresses in ONE query instead of
+        // running a separate query per row (was causing N+1 queries / request timeout).
+        $emails = $transformed->pluck('Email_Address')->filter()->unique()->values();
 
-                foreach ($allRecords as $record) {
-                    $remarks[] = $record->Remark ?? '';
-                }
+        if ($emails->isEmpty()) {
+            return $transformed;
+        }
+
+        $remarksByEmail = GoogleSheetData::whereIn('Email_Address', $emails)
+            ->orderBy('id', 'asc')
+            ->get(['Email_Address', 'Remark'])
+            ->groupBy('Email_Address');
+
+        return $transformed->map(function ($item) use ($remarksByEmail) {
+            // For each email address, use ALL remarks from all users (no filtering)
+            if (!empty($item->Email_Address) && isset($remarksByEmail[$item->Email_Address])) {
+                $remarks = $remarksByEmail[$item->Email_Address]
+                    ->map(function ($record) {
+                        return $record->Remark ?? '';
+                    })
+                    ->all();
 
                 // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
                 $item->Remark = implode(' || ', $remarks);
@@ -1513,12 +1525,6 @@ class CallReportController extends Controller
                 ]
             ]
         );
-
-        if ($request->ajax()) {
-            return view('database.partials.junior_table', [
-                'data' => $pagedData,
-            ])->render();
-        }
 
         return view('reports.neverreached', [
             'data' => $pagedData,
