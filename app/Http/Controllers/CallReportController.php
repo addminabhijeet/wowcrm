@@ -1494,7 +1494,10 @@ class CallReportController extends Controller
         $dateTo   = $request->input('date_to'); // ✅ newly added second date selection
 
         // ✅ created_by check removed — show rows for ALL users, not just $authUser
-        $query = GoogleSheetData::where('transfers', '!=', 1)->where('rejected', 0);
+        $query = GoogleSheetData::where('transfers', '!=', 1)->where('rejected', 0)
+            // ✅ Exclude rows whose created_by chains a junior segment into "0|senior"
+            // e.g. "36|junior:0|senior" should NOT show
+            ->whereRaw("created_by NOT REGEXP '[0-9]+\\\\|junior:0\\\\|senior'");
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
         $results = $query->orderBy('updated_at', 'desc')->get();
