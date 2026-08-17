@@ -1644,6 +1644,36 @@ class CallReportController extends Controller
             'busy'              => $SbusyCalls,
         ];
 
+        // ✅ Target widgets (view requires these; computed for the logged-in user's current month)
+        $targetValues = array_map('trim', explode('|', $authUser->target ?? ''));
+        $targetDates  = array_map('trim', explode('|', $authUser->target_date ?? ''));
+        $selectedMonth = Carbon::now('America/New_York')->format('Y-m');
+
+        $targetIndex = null;
+        foreach ($targetDates as $index => $tDate) {
+            $monthPart = preg_match('/^\d{4}-\d{2}$/', $tDate)
+                ? $tDate
+                : (($tDate !== '') ? Carbon::parse($tDate)->format('Y-m') : null);
+
+            if ($monthPart === $selectedMonth) {
+                $targetIndex = $index;
+                break;
+            }
+        }
+
+        $targetGiven = isset($targetValues[$targetIndex])
+            ? (int) $targetValues[$targetIndex]
+            : ((int) ($targetValues[0] ?? 0));
+
+        $targetAchieved = (int) GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$authUser->id}\\\\|junior(.*)?$'"
+        )
+            ->whereYear('updated_at', Carbon::now('America/New_York')->year)
+            ->whereMonth('updated_at', Carbon::now('America/New_York')->month)
+            ->sum('Amount');
+
+        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+
         if ($request->ajax()) {
             return view('database.partials.junior_table', [
                 'data' => $pagedData,
@@ -1655,7 +1685,10 @@ class CallReportController extends Controller
         return view('reports.neverreached', [
             'data' => $pagedData,
             'juniorUsers' => $juniorUsers,
-            'exeRemarkCounts' => $exeRemarkCounts
+            'exeRemarkCounts' => $exeRemarkCounts,
+            'targetGiven' => $targetGiven,
+            'targetAchieved' => $targetAchieved,
+            'targetYetToAchieve' => $targetYetToAchieve,
         ]);
     }
 
