@@ -1477,77 +1477,15 @@ class CallReportController extends Controller
 
     public function neverreached(Request $request)
     {
-        $authUser = Auth::user();
-        $rowId = $request->input('row_id');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
         $page = $request->input('page', 1); // ✅ Ensure page input handled
-        $date = $request->input('date');
 
         // ✅ created_by check removed — show rows for ALL users, not just $authUser
         $query = GoogleSheetData::where('transfers', '!=', 1)->where('rejected', 0)->whereNotIn('Exe_Remarks', ['Others', 'VM']);
 
-
-        // Filter by selected junior
-        if ($juniorUserId) {
-            $query->where(function ($q) use ($juniorUserId) {
-                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
-            })->where('transfers', '!=', 1);
-        }
-
-        if ($date) {
-            $query->whereDate('updated_at', $date);
-        }
-
-        // Specific row filter
-        if ($rowId) {
-            $query->where('id', $rowId);
-        }
-
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
         $results = $query->orderBy('updated_at', 'desc')->get();
 
-        // ✅ Transform after getting all filtered data
-        $transformed = $results->map(function ($item) use ($authUser) {
-            $forwardedBy = '';
-
-            if (!empty($item->created_by)) {
-                $entries = explode(':', $item->created_by);
-                $names = [];
-
-                foreach ($entries as $entry) {
-                    $parts = explode('|', $entry);
-                    $userId = $parts[0] ?? null;
-                    $role   = $parts[1] ?? 'unknown';
-
-                    if ($userId == $authUser->id) {
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
-                        $names[] = "SELF ({$userId}) ({$roleLabel})";
-                    } elseif ($userId == 0) {
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
-                        $names[] = "SYSTEM (0) ({$roleLabel})";
-                    } else {
-                        $user = User::where('is_deleted', 0)->find($userId);
-                        $name = $user ? $user->name : 'Unknown';
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
-                        $names[] = "{$name} ({$userId}) ({$roleLabel})";
-                    }
-                }
-
-                $forwardedBy = implode(' → ', $names);
-            } else {
-                $forwardedBy = 'N/A';
-            }
-
-            $item->forwarded_by = $forwardedBy;
-            return $item;
-        });
+        $transformed = $results;
 
         // ✅ Merge remarks from ALL USERS for items with same Email_Address
         $transformed = $this->mergeRemarksFromAllUsers($transformed);
@@ -1576,21 +1514,14 @@ class CallReportController extends Controller
             ]
         );
 
-        $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
-            ->where('status', 1)
-            ->orderBy('name', 'asc')
-            ->get(['id', 'name', 'email', 'phone', 'gender']);
-
         if ($request->ajax()) {
             return view('database.partials.junior_table', [
                 'data' => $pagedData,
-                'juniorUsers' => $juniorUsers,
             ])->render();
         }
 
         return view('reports.neverreached', [
             'data' => $pagedData,
-            'juniorUsers' => $juniorUsers,
         ]);
     }
 
