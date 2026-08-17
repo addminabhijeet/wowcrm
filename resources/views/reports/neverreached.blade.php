@@ -85,26 +85,21 @@ $script = '<script>
                 <thead>
                     <tr>
                         <th scope="col" class="text-center">Row</th>
-                        <th scope="col" class="text-center">Date</th>
                         <th scope="col" class="text-center">Name</th>
                         <th scope="col" class="text-center">Email Address</th>
                         <th scope="col" class="text-center">Phone Number</th>
                         <th scope="col" class="text-center">Location</th>
-
                         <th scope="col" class="text-center">Relocation</th>
                         <th scope="col" class="text-center">Graduation Date</th>
                         <th scope="col" class="text-center">Immigration</th>
                         <th scope="col" class="text-center">Course</th>
                         <th scope="col" class="text-center">Amount</th>
                         <th scope="col" class="text-center">Qualification</th>
-
                         <th scope="col" class="text-center">1st Follow Up Remarks</th>
                         <th scope="col" class="text-center">Time Zone</th>
                         <th scope="col" class="text-center">Resume</th>
                         <th scope="col" class="text-center" colspan="2">Remarks</th>
                         <th scope="col" class="text-center">Status</th>
-                       
-
                     </tr>
                 </thead>
                 <tbody id="sheet-table-body">
