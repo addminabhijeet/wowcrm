@@ -1478,7 +1478,6 @@ class CallReportController extends Controller
     public function neverreached(Request $request)
     {
         $authUser = Auth::user();
-        $search = $request->input('search');
         $rowId = $request->input('row_id');
         $juniorUserId = $request->input('junior_user'); // dropdown value
         $page = $request->input('page', 1); // ✅ Ensure page input handled
@@ -1500,15 +1499,9 @@ class CallReportController extends Controller
             $query->whereDate('updated_at', $date);
         }
 
-        // Search or specific row filter
+        // Specific row filter
         if ($rowId) {
             $query->where('id', $rowId);
-        } elseif ($search && strlen($search) >= 3) {
-            $query->where(function ($q) use ($search) {
-                $q->where('Name', 'LIKE', "%{$search}%")
-                    ->orWhere('Email_Address', 'LIKE', "%{$search}%")
-                    ->orWhere('Phone_Number', 'LIKE', "%{$search}%");
-            });
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
@@ -1588,104 +1581,16 @@ class CallReportController extends Controller
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-        $todayDate = Carbon::now('America/New_York')->toDateString();
-        $createdByKey = $authUser->id . '|junior';
-
-        // Base query for today & this user
-        $todayBaseQuery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereDate('updated_at', $todayDate);
-
-
-        // Total calls today
-        $StotalCalls = (clone $todayBaseQuery)->count();
-
-        // Individual Exe Remark counts
-        $ScalledAndMailedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Called & Mailed')
-            ->whereDate('followup', $todayDate)
-            ->count();
-
-        $SnotInterestedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Not Interested')
-            ->whereNull('TransferRemark')
-            ->count();
-
-        $SinterestedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Interested')
-            ->whereNull('TransferRemark')
-            ->count();
-
-        $SothersCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Others')
-            ->whereNull('TransferRemark')
-            ->count();
-
-        $SvmCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'VM')
-            ->whereNull('TransferRemark')
-            ->count();
-
-        $SbusyCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Busy')
-            ->whereNull('TransferRemark')
-            ->count();
-
-        // Grouped array (easy to use in Blade / AJAX)
-        $exeRemarkCounts = [
-            'total_calls'       => $StotalCalls,
-            'called_and_mailed' => $ScalledAndMailedCalls,
-            'not_interested'    => $SnotInterestedCalls,
-            'interested'        => $SinterestedCalls,
-            'others'            => $SothersCalls,
-            'vm'                => $SvmCalls,
-            'busy'              => $SbusyCalls,
-        ];
-
-        // ✅ Target widgets (view requires these; computed for the logged-in user's current month)
-        $targetValues = array_map('trim', explode('|', $authUser->target ?? ''));
-        $targetDates  = array_map('trim', explode('|', $authUser->target_date ?? ''));
-        $selectedMonth = Carbon::now('America/New_York')->format('Y-m');
-
-        $targetIndex = null;
-        foreach ($targetDates as $index => $tDate) {
-            $monthPart = preg_match('/^\d{4}-\d{2}$/', $tDate)
-                ? $tDate
-                : (($tDate !== '') ? Carbon::parse($tDate)->format('Y-m') : null);
-
-            if ($monthPart === $selectedMonth) {
-                $targetIndex = $index;
-                break;
-            }
-        }
-
-        $targetGiven = isset($targetValues[$targetIndex])
-            ? (int) $targetValues[$targetIndex]
-            : ((int) ($targetValues[0] ?? 0));
-
-        $targetAchieved = (int) GoogleSheetData::whereRaw(
-            "created_by REGEXP '^{$authUser->id}\\\\|junior(.*)?$'"
-        )
-            ->whereYear('updated_at', Carbon::now('America/New_York')->year)
-            ->whereMonth('updated_at', Carbon::now('America/New_York')->month)
-            ->sum('Amount');
-
-        $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
-
         if ($request->ajax()) {
             return view('database.partials.junior_table', [
                 'data' => $pagedData,
                 'juniorUsers' => $juniorUsers,
-                'exeRemarkCounts' => $exeRemarkCounts
             ])->render();
         }
 
         return view('reports.neverreached', [
             'data' => $pagedData,
             'juniorUsers' => $juniorUsers,
-            'exeRemarkCounts' => $exeRemarkCounts,
-            'targetGiven' => $targetGiven,
-            'targetAchieved' => $targetAchieved,
-            'targetYetToAchieve' => $targetYetToAchieve,
         ]);
     }
 
