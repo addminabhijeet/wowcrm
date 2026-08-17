@@ -24,9 +24,7 @@ $script = '<script>
         <div class="d-flex align-items-center flex-wrap gap-3">
 
             <form class="navbar-search position-relative d-flex gap-2" autocomplete="off">
-                <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
-                    placeholder="Search Name, Email, Phone">
-
+            
                 <input type="date" id="date-filter" class="bg-base h-40-px w-auto form-control"
                     title="Filter by Date">
 
