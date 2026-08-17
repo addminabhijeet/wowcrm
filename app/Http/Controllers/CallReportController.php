@@ -1494,7 +1494,7 @@ class CallReportController extends Controller
         $dateTo   = $request->input('date_to'); // ✅ newly added second date selection
 
         // ✅ created_by check removed — show rows for ALL users, not just $authUser
-        $query = GoogleSheetData::where('transfers', '!=', 1)->where('rejected', 0)->whereNotIn('Exe_Remarks', ['Others', 'VM']);
+        $query = GoogleSheetData::where('transfers', '!=', 1)->where('rejected', 0);
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
         $results = $query->orderBy('updated_at', 'desc')->get();
