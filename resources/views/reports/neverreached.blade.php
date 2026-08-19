@@ -70,9 +70,11 @@ $script = '<script>
     <div class="card-body p-24" id="senior-table-wrapper">
         <!-- Excel Export Button -->
         <div class="d-flex justify-content-end mb-3">
-            <a href="#" id="neverreached-excel-btn" class="btn btn-sm btn-success">
-                <iconify-icon icon="mdi:file-excel" class="icon me-1"></iconify-icon>
-                Export to Excel
+            <a href="#" id="neverreached-excel-btn"
+                class="btn btn-sm btn-success d-inline-flex align-items-center gap-1 px-3 py-1"
+                style="width:auto; line-height:1.2;">
+                <iconify-icon icon="mdi:file-excel" class="icon" style="font-size:16px;"></iconify-icon>
+                <span>Export to Excel</span>
             </a>
         </div>
         <script>
