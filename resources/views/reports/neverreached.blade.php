@@ -68,6 +68,24 @@ $script = '<script>
 
 
     <div class="card-body p-24" id="senior-table-wrapper">
+        <!-- Excel Export Button -->
+        <div class="d-flex justify-content-end mb-3">
+            <a href="#" id="neverreached-excel-btn" class="btn btn-sm btn-success">
+                <iconify-icon icon="mdi:file-excel" class="icon me-1"></iconify-icon>
+                Export to Excel
+            </a>
+        </div>
+        <script>
+            document.getElementById('neverreached-excel-btn')?.addEventListener('click', function(e) {
+                e.preventDefault();
+                const url = new URL("{{ route('call.reports.neverreached.export') }}");
+                const from = document.getElementById('date-filter')?.value;
+                const to = document.getElementById('date-filter-to')?.value;
+                if (from) url.searchParams.set('date', from);
+                if (to) url.searchParams.set('date_to', to);
+                window.location.href = url.toString();
+            });
+        </script>
         <!-- Extra Scroll Bar Above -->
         <!-- Extra Scroll Bar Above -->
         <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">

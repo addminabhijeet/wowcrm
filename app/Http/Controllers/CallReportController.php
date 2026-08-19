@@ -1554,6 +1554,77 @@ class CallReportController extends Controller
         ]);
     }
 
+    // ✅ Exports ALL (non-paginated) "Never Reached" rows matching the same
+    // filters used by neverreached() into an Excel-openable file.
+    public function neverreachedExport(Request $request)
+    {
+        $dateFrom = $request->input('date');
+        $dateTo   = $request->input('date_to');
+
+        $query = GoogleSheetData::where('transfers', '!=', 1)->where('rejected', 0)
+            ->whereRaw("created_by NOT REGEXP '[0-9]+\\\\|junior:0\\\\|senior'");
+
+        $results = $query->orderBy('updated_at', 'desc')->get();
+
+        $transformed = $this->mergeRemarksFromAllUsers($results);
+
+        $transformed = $transformed->filter(function ($item) use ($dateFrom, $dateTo) {
+            preg_match_all('/on\s+(\d{2}-\d{2}-\d{4})/i', $item->Remark ?? '', $matches);
+
+            if (count($matches[0]) !== 1) {
+                return false;
+            }
+
+            if ($dateFrom || $dateTo) {
+                $remarkDate = Carbon::createFromFormat('d-m-Y', $matches[1][0])->startOfDay();
+
+                if ($dateFrom && $remarkDate->lt(Carbon::parse($dateFrom)->startOfDay())) {
+                    return false;
+                }
+
+                if ($dateTo && $remarkDate->gt(Carbon::parse($dateTo)->endOfDay())) {
+                    return false;
+                }
+            }
+
+            return true;
+        })->values();
+
+        $fileName = 'never-reached-' . now()->format('Y-m-d_His') . '.xls';
+
+        $headers = [
+            'Content-Type'        => 'application/vnd.ms-excel; charset=UTF-8',
+            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
+        ];
+
+        $callback = function () use ($transformed) {
+            echo "\xEF\xBB\xBF"; // UTF-8 BOM so Excel renders special characters correctly
+            echo '<table border="1"><thead><tr>';
+            foreach (['Row', 'Name', 'Email Address', 'Phone Number', 'Amount', '1st Follow Up Remarks', 'Remarks', 'Status'] as $head) {
+                echo '<th>' . e($head) . '</th>';
+            }
+            echo '</tr></thead><tbody>';
+
+            foreach ($transformed as $row) {
+                $amount = $row->Amount ? '$' . number_format($row->Amount, 2) : '';
+                echo '<tr>';
+                echo '<td>' . e($row->sheet_row_number) . '</td>';
+                echo '<td>' . e($row->Name ?? '') . '</td>';
+                echo '<td>' . e($row->Email_Address ?? '') . '</td>';
+                echo '<td>' . e($row->Phone_Number ?? '') . '</td>';
+                echo '<td>' . e($amount) . '</td>';
+                echo '<td>' . e($row->First_Follow_Up_Remarks ?? '') . '</td>';
+                echo '<td>' . e($row->Remark ?? '') . '</td>';
+                echo '<td>' . e($row->Exe_Remarks ?? '') . '</td>';
+                echo '</tr>';
+            }
+
+            echo '</tbody></table>';
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
+
     public function preallseniorlist(Request $request)
     {
         // Fetch all users with role 'senior'

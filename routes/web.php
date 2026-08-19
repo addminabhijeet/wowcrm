@@ -307,6 +307,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/preallseniorlist/call-reports', [CallReportController::class, 'preallseniorlist'])->name('call.reports.preallseniorlist');
     Route::get('/dashboard/allseniorlist/call-reports', [CallReportController::class, 'allseniorlist'])->name('call.reports.allseniorlist');
     Route::get('/dashboard/neverreached/call-reports', [CallReportController::class, 'neverreached'])->name('call.reports.neverreached');
+    Route::get('/dashboard/neverreached/call-reports/export', [CallReportController::class, 'neverreachedExport'])->name('call.reports.neverreached.export');
     Route::get('/dashboard/allaccountantlist/call-reports', [CallReportController::class, 'allaccountantlist'])->name('call.reports.allaccountantlist');
     Route::get('/dashboard/alltrainerlist/call-reports', [CallReportController::class, 'alltrainerlist'])->name('call.reports.alltrainerlist');
     Route::get('/dashboard/alltrainerlist/call-reports-sender', [CallReportController::class, 'reportsender'])->name('call.reports.sender');
