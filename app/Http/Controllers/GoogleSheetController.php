@@ -5105,6 +5105,7 @@ class GoogleSheetController extends Controller
             $phone = $rowData['Phone Number'] ?? null;
             $name  = $rowData['Name'] ?? null;
             $date  = $rowData['Date'] ?? null;
+            $exeRemarks = $rowData['Exe Remarks'] ?? null;
 
             if (empty($name)) {
                 return response()->json(['success' => false, 'message' => 'Name is required.']);
@@ -5120,6 +5121,10 @@ class GoogleSheetController extends Controller
 
             if (empty($phone)) {
                 return response()->json(['success' => false, 'message' => 'Phone is required.']);
+            }
+
+            if (empty($exeRemarks)) {
+                return response()->json(['success' => false, 'message' => 'Exe Remarks is required.']);
             }
 
             $user = Auth::user();
@@ -8365,6 +8370,7 @@ class GoogleSheetController extends Controller
             $phone = $rowData['Phone Number'] ?? null;
             $name  = $rowData['Name'] ?? null;
             $date  = $rowData['Date'] ?? null;
+            $exeRemarks = $rowData['Exe Remarks'] ?? null;
 
             if (empty($name)) {
                 return response()->json(['success' => false, 'message' => 'Name is required.']);
@@ -8380,6 +8386,10 @@ class GoogleSheetController extends Controller
 
             if (empty($phone)) {
                 return response()->json(['success' => false, 'message' => 'Phone is required.']);
+            }
+
+            if (empty($exeRemarks)) {
+                return response()->json(['success' => false, 'message' => 'Exe Remarks is required.']);
             }
 
             $user = Auth::user();
