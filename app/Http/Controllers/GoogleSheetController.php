@@ -274,24 +274,34 @@ class GoogleSheetController extends Controller
             $record->Remark = $mergedRemark;
 
             // ✅ CHECK FOR "Called & Mailed" PATTERN IN MERGED REMARKS - FIND ALL OCCURRENCES (both "Added by" and "Updated by")
-            if (preg_match_all('/Called\s*&\s*Mailed\s*\|\s*(?:Added|Updated)\s+by\s+.+?\s+on\s+(\d{2})-(\d{2})-(\d{4})\s+\d{2}:\d{2}/', $mergedRemark, $matches, PREG_PATTERN_ORDER)) {
+            if (preg_match_all('/Called\s*&\s*Mailed\s*\|\s*(?:Added|Updated)\s+by\s+(.+?)\s+on\s+(\d{2})-(\d{2})-(\d{4})\s+\d{2}:\d{2}/', $mergedRemark, $matches, PREG_PATTERN_ORDER)) {
                 $latestContactDate = null;
+                $latestContactUserName = null;
 
                 // ✅ FIND THE LATEST DATE AMONG ALL "Called & Mailed" ENTRIES
                 for ($i = 0; $i < count($matches[0]); $i++) {
-                    $day = intval($matches[1][$i]);
-                    $month = intval($matches[2][$i]);
-                    $year = intval($matches[3][$i]);
+                    $userName = trim($matches[1][$i]);
+                    $day = intval($matches[2][$i]);
+                    $month = intval($matches[3][$i]);
+                    $year = intval($matches[4][$i]);
 
                     $contactDate = \Carbon\Carbon::createFromDate($year, $month, $day);
 
                     if ($latestContactDate === null || $contactDate->isAfter($latestContactDate)) {
                         $latestContactDate = $contactDate;
+                        $latestContactUserName = $userName;
                     }
                 }
 
-                // ✅ CHECK IF 20 DAYS HAVE PASSED SINCE LATEST CONTACT
-                if ($latestContactDate !== null) {
+                // ✅ CHECK IF USER WHO MADE THE LATEST CONTACT IS DELETED
+                $userIsDeleted = false;
+                if ($latestContactUserName !== null) {
+                    $contactUser = \App\Models\User::where('name', $latestContactUserName)->first();
+                    $userIsDeleted = $contactUser && $contactUser->status === false;
+                }
+
+                // ✅ CHECK IF 20 DAYS HAVE PASSED SINCE LATEST CONTACT (ONLY IF USER IS NOT DELETED)
+                if ($latestContactDate !== null && !$userIsDeleted) {
                     $today = \Carbon\Carbon::now('Asia/Kolkata')->startOfDay();
                     $daysDifference = (int) abs($today->diffInDays($latestContactDate));
 
