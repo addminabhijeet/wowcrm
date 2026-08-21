@@ -272,7 +272,7 @@
                     <input type="hidden" name="RejectedRemark" class="rejectedremark-hidden"
                         data-key="RejectedRemark" value="{{ $row->RejectedRemark ?? '' }}">
                 </td>
-
+                
                 {{-- Installment --}}
                 <td>
                     <input type="checkbox"
@@ -348,8 +348,6 @@
                 @endif
                 @endauth
             </tr>
-
-
             @endforeach
         </tbody>
         <script>
@@ -471,13 +469,13 @@
                     }
 
                     $.ajax({
-                        url: "{{ route('seniorupdate ') }}",
+                        url: "{{ route('seniorupdate') }}",
                         type: 'POST',
                         data: formData,
                         contentType: false,
                         processData: false,
                         headers: {
-                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            'X-CSRF-TOKEN': "{{ csrf_token() }}"
                         },
                         success: function(response) {
                             alert(response.message);
