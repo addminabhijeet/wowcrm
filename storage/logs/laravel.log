@@ -11752,3 +11752,22 @@ Did you mean this?
 #13 C:\\xampp\\htdocs\\wowcrm\\index.php(17): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
 #14 {main}
 "} 
+[2026-08-21 13:35:44] local.ERROR: rename(C:\xampp\htdocs\wowcrm\bootstrap\cache\pac9576.tmp,C:\xampp\htdocs\wowcrm\bootstrap\cache/packages.php): Access is denied (code: 5) {"exception":"[object] (ErrorException(code: 0): rename(C:\\xampp\\htdocs\\wowcrm\\bootstrap\\cache\\pac9576.tmp,C:\\xampp\\htdocs\\wowcrm\\bootstrap\\cache/packages.php): Access is denied (code: 5) at C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php:233)
+[stacktrace]
+#0 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\HandleExceptions.php(258): Illuminate\\Foundation\\Bootstrap\\HandleExceptions->handleError(2, 'rename(C:\\\\xampp...', 'C:\\\\xampp\\\\htdocs...', 233)
+#1 [internal function]: Illuminate\\Foundation\\Bootstrap\\HandleExceptions->Illuminate\\Foundation\\Bootstrap\\{closure}(2, 'rename(C:\\\\xampp...', 'C:\\\\xampp\\\\htdocs...', 233)
+#2 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Filesystem\\Filesystem.php(233): rename('C:\\\\xampp\\\\htdocs...', 'C:\\\\xampp\\\\htdocs...')
+#3 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(182): Illuminate\\Filesystem\\Filesystem->replace('C:\\\\xampp\\\\htdocs...', '<?php return ar...')
+#4 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(132): Illuminate\\Foundation\\PackageManifest->write(Array)
+#5 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(108): Illuminate\\Foundation\\PackageManifest->build()
+#6 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(91): Illuminate\\Foundation\\PackageManifest->getManifest()
+#7 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\PackageManifest.php(80): Illuminate\\Foundation\\PackageManifest->config('aliases')
+#8 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Bootstrap\\RegisterFacades.php(26): Illuminate\\Foundation\\PackageManifest->aliases()
+#9 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(342): Illuminate\\Foundation\\Bootstrap\\RegisterFacades->bootstrap(Object(Illuminate\\Foundation\\Application))
+#10 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(187): Illuminate\\Foundation\\Application->bootstrapWith(Array)
+#11 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(171): Illuminate\\Foundation\\Http\\Kernel->bootstrap()
+#12 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Http\\Kernel.php(145): Illuminate\\Foundation\\Http\\Kernel->sendRequestThroughRouter(Object(Illuminate\\Http\\Request))
+#13 C:\\xampp\\htdocs\\wowcrm\\vendor\\laravel\\framework\\src\\Illuminate\\Foundation\\Application.php(1220): Illuminate\\Foundation\\Http\\Kernel->handle(Object(Illuminate\\Http\\Request))
+#14 C:\\xampp\\htdocs\\wowcrm\\index.php(17): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
+#15 {main}
+"} 
