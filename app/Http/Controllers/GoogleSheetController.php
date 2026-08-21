@@ -1790,7 +1790,8 @@ class GoogleSheetController extends Controller
                 'query' => [
                     'search' => $request->search,
                     'junior_user' => $request->junior_user,
-                    'date' => $request->date
+                    'date' => $request->date,
+                    'row_id' => $request->row_id
                 ]
             ]
         );
@@ -1950,7 +1951,8 @@ class GoogleSheetController extends Controller
                 'query' => [
                     'search' => $request->search,
                     'junior_user' => $request->junior_user,
-                    'date' => $request->date
+                    'date' => $request->date,
+                    'row_id' => $request->row_id
                 ]
             ]
         );
@@ -2710,6 +2712,7 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $query = $request->input('query');
         $juniorUserId = $request->input('junior_user');
+        $date = $request->input('date');
 
         $results = [];
 
@@ -2744,6 +2747,11 @@ class GoogleSheetController extends Controller
                     $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
                         ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
                 });
+            }
+
+            // ✅ ADD DATE FILTER (same as seniortra)
+            if ($date) {
+                $queryBuilder->whereDate('updated_at', $date);
             }
 
             // Add search filter
@@ -2839,6 +2847,7 @@ class GoogleSheetController extends Controller
         $authUser = Auth::user();
         $query = $request->input('query');
         $juniorUserId = $request->input('junior_user');
+        $date = $request->input('date');
 
         $results = [];
 
@@ -2874,6 +2883,11 @@ class GoogleSheetController extends Controller
                     $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
                         ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
                 });
+            }
+
+            // ✅ ADD DATE FILTER (same as seniortraotp)
+            if ($date) {
+                $queryBuilder->whereDate('updated_at', $date);
             }
 
             // Add search filter

@@ -1200,7 +1200,8 @@ $script = '<script>
                 type: 'GET',
                 data: {
                     query: query,
-                    junior_user: junior_user
+                    junior_user: junior_user,
+                    date: date
                 },
                 success: function(res) {
                     let suggestions = '';
@@ -1226,35 +1227,40 @@ $script = '<script>
 
         $('#senior-search').on('input', showSuggestions);
 
-        // Click suggestion
+        // Click suggestion - Direct click handler
         $(document).on('click', '#search-suggestions a', function(e) {
             e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
 
-            const rowId = $(this).data('id');
-            const junior_user = $('#junior-filter').val();
-            const date = $('#date-filter').val();
+            const rowId = $(this).attr('data-id');
+            const junior_user = $('#junior-filter').val() || '';
+            const date = $('#date-filter').val() || '';
 
-            $('#senior-search').val($(this).text());
-            $('#search-suggestions').empty().hide();
+            console.log('Suggestion clicked:', {rowId, junior_user, date}); // Debug log
 
-            fetchTable('', 1, junior_user, rowId, date);
+            if (rowId && rowId.length > 0) {
+                $('#senior-search').val($(this).text());
+                $('#search-suggestions').hide();
+
+                // ✅ Call fetchTable with row_id to display the selected item
+                fetchTable('', 1, junior_user, rowId, date);
+            }
         });
 
         // Junior dropdown filter
         $(document).on('change', '#junior-filter', function() {
             const junior_user = $(this).val();
             const search = $('#senior-search').val().trim();
-            fetchTable(search, 1, junior_user);
+            const date = $('#date-filter').val();
+            fetchTable(search, 1, junior_user, '', date);
         });
 
         $('#date-filter').on('change', function() {
-            fetchTable(
-                $('#senior-search').val().trim(),
-                1,
-                $('#junior-filter').val(),
-                '',
-                $(this).val()
-            );
+            const search = $('#senior-search').val().trim();
+            const junior_user = $('#junior-filter').val();
+            const date = $(this).val();
+            fetchTable(search, 1, junior_user, '', date);
         });
 
         // Click outside suggestions to hide
