@@ -22,8 +22,6 @@ use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\CandidateDetailsController;
 
-// ✅ Authenticated routes with access control
-// 'web' middleware is applied by default from routes/web.php
 Route::middleware(['allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/admin/index', [UserController::class, 'index'])->name('users.admin');
@@ -392,9 +390,6 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/chat/refresh-users', [ChatController::class, 'refreshChatUsers'])->name('chat.refreshUsers');
 });
 
-// ✅ Login/Auth routes with IP restriction
-// 'web' middleware is applied by default from routes/web.php
-// Only add 'allowedip' for IP-based access control
 Route::middleware(['allowedip'])->group(function () {
     Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
     Route::post('/logout-user', [LoginController::class, 'ajaxLogout'])->name('ajax.logout');
