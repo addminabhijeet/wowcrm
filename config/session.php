@@ -112,9 +112,11 @@ return [
     | rid of old sessions from storage. Here are the chances that it will
     | happen on a given request. By default, the odds are 2 out of 100.
     |
+    | ✅ INCREASED to 5/100 to prevent session file accumulation that causes 419 errors
+    |
     */
 
-    'lottery' => [2, 100],
+    'lottery' => [5, 100],
 
     /*
     |--------------------------------------------------------------------------
