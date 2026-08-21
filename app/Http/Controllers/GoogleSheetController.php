@@ -2714,38 +2714,79 @@ class GoogleSheetController extends Controller
         $results = [];
 
         if ($query && strlen($query) >= 3) {
-            $results = GoogleSheetData::where(function ($q) use ($authUser) {
+            // ✅ USE SAME BASE QUERY AS seniortra() METHOD
+            $userPattern = "%:" . $authUser->id . "|junior";
+            $zeroPattern = "%:0|senior";
 
-                $userPattern = "%:" . $authUser->id . "|senior";
-                $zeroPattern = "%:0|senior";
+            $queryBuilder = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
 
-                $q->where('created_by', $authUser->id . '|senior')
-                    ->orWhere('created_by', '0|senior')
-                    ->orWhere('created_by', 'LIKE', $userPattern)
-                    ->orWhere('created_by', 'LIKE', $zeroPattern);
+                $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+
+                    $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+                        $q2->where('created_by', $authUser->id . '|junior')
+                            ->orWhere('created_by', 'LIKE', $zeroPattern);
+                    })
+                        ->whereRaw(
+                            "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
+                        );
+                })
+                    ->orWhere('created_by', $authUser->id . '|junior:0|senior');
             })
-                // ✅ APPLY JUNIOR FILTER (SAME AS seniortra)
-                ->when($juniorUserId, function ($q) use ($juniorUserId) {
-                    $q->where(function ($sub) use ($juniorUserId) {
-                        $sub->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                            ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
-                    });
+                // ✅ ADD TRANSFER STATUS FILTERS (same as seniortra)
+                ->where(function ($q) {
+                    $q->whereNull('TransferRemark')
+                        ->orWhere('TransferRemark', '');
                 })
-                ->where(function ($q) use ($query) {
-                    $q->where('Name', 'LIKE', "%{$query}%")
-                        ->orWhere('Email_Address', 'LIKE', "%{$query}%")
-                        ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
-                })
-                ->limit(10)
-                ->get([
-                    'id',
-                    'sheet_row_number',
-                    'Name',
-                    'Email_Address',
-                    'Phone_Number',
-                    'Exe_Remarks',
-                    'created_by'
-                ]);
+                ->where('transfers', 0);
+
+            if ($juniorUserId) {
+                $queryBuilder->where(function ($q) use ($juniorUserId) {
+                    $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                        ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+                });
+            }
+
+            // Add search filter
+            $queryBuilder->where(function ($q) use ($query) {
+                $q->where('Name', 'LIKE', "%{$query}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$query}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
+            });
+
+            $results = $queryBuilder->limit(10)->get([
+                'id',
+                'sheet_row_number',
+                'Name',
+                'Email_Address',
+                'Phone_Number',
+                'Exe_Remarks',
+                'created_by'
+            ]);
+
+            // ✅ APPLY JUNIOR GROUP FILTER (same as seniortra)
+            $assignedJuniorIds = $authUser->group ?? [];
+            $results = $results->filter(function ($item) use ($assignedJuniorIds, $authUser) {
+                if (empty($item->created_by)) return false;
+
+                $entries = explode(':', $item->created_by);
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? null;
+
+                    // Keep if junior is assigned
+                    if ($role === 'junior' && in_array((int)$userId, $assignedJuniorIds)) {
+                        return true;
+                    }
+
+                    // Optionally include rows created by the senior themselves
+                    if ($role === 'senior' && $userId == $authUser->id) {
+                        return true;
+                    }
+                }
+
+                return false; // ignore everything else
+            });
         }
 
         $transformed = collect($results)->map(function ($item) use ($authUser) {
@@ -2761,13 +2802,22 @@ class GoogleSheetController extends Controller
                     $role   = $parts[1] ?? 'unknown';
 
                     if ($userId == $authUser->id) {
-                        $names[] = "SELF ({$userId}) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SELF ({$userId}) ({$roleLabel})";
                     } elseif ($userId == 0) {
-                        $names[] = "SYSTEM (0) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
                         $user = \App\Models\User::where('is_deleted', 0)->find($userId);
                         $name = $user ? $user->name : 'Unknown';
-                        $names[] = "{$name} ({$userId}) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
                 }
 
@@ -2793,38 +2843,80 @@ class GoogleSheetController extends Controller
         $results = [];
 
         if ($query && strlen($query) >= 3) {
-            $results = GoogleSheetData::where(function ($q) use ($authUser) {
+            // ✅ USE SAME BASE QUERY AS seniortraotp() METHOD
+            $userPattern = "%:" . $authUser->id . "|junior";
+            $zeroPattern = "%:0|senior";
 
-                $userPattern = "%:" . $authUser->id . "|senior";
-                $zeroPattern = "%:0|senior";
+            $queryBuilder = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
 
-                $q->where('created_by', $authUser->id . '|senior')
-                    ->orWhere('created_by', '0|senior')
-                    ->orWhere('created_by', 'LIKE', $userPattern)
-                    ->orWhere('created_by', 'LIKE', $zeroPattern);
-            })
-                // ✅ APPLY JUNIOR FILTER (SAME AS seniortra)
-                ->when($juniorUserId, function ($q) use ($juniorUserId) {
-                    $q->where(function ($sub) use ($juniorUserId) {
-                        $sub->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                            ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
-                    });
+                $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+
+                    $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+                        $q2->where('created_by', $authUser->id . '|junior')
+                            ->orWhere('created_by', 'LIKE', $zeroPattern);
+                    })
+                        ->whereRaw(
+                            "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
+                        );
                 })
-                ->where(function ($q) use ($query) {
-                    $q->where('Name', 'LIKE', "%{$query}%")
-                        ->orWhere('Email_Address', 'LIKE', "%{$query}%")
-                        ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
-                })->where('Immigration', 'STEM OPT')
-                ->limit(10)
-                ->get([
-                    'id',
-                    'sheet_row_number',
-                    'Name',
-                    'Email_Address',
-                    'Phone_Number',
-                    'Exe_Remarks',
-                    'created_by'
-                ]);
+                    ->orWhere('created_by', $authUser->id . '|junior:0|senior');
+            })
+                // ✅ ADD TRANSFER STATUS FILTERS (same as seniortraotp)
+                ->where(function ($q) {
+                    $q->whereNull('TransferRemark')
+                        ->orWhere('TransferRemark', '');
+                })
+                ->where('transfers', 0)
+                ->where('Immigration', 'STEM OPT');
+
+            if ($juniorUserId) {
+                $queryBuilder->where(function ($q) use ($juniorUserId) {
+                    $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
+                        ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
+                });
+            }
+
+            // Add search filter
+            $queryBuilder->where(function ($q) use ($query) {
+                $q->where('Name', 'LIKE', "%{$query}%")
+                    ->orWhere('Email_Address', 'LIKE', "%{$query}%")
+                    ->orWhere('Phone_Number', 'LIKE', "%{$query}%");
+            });
+
+            $results = $queryBuilder->limit(10)->get([
+                'id',
+                'sheet_row_number',
+                'Name',
+                'Email_Address',
+                'Phone_Number',
+                'Exe_Remarks',
+                'created_by'
+            ]);
+
+            // ✅ APPLY JUNIOR GROUP FILTER (same as seniortraotp)
+            $assignedJuniorIds = $authUser->group ?? [];
+            $results = $results->filter(function ($item) use ($assignedJuniorIds, $authUser) {
+                if (empty($item->created_by)) return false;
+
+                $entries = explode(':', $item->created_by);
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    $role   = $parts[1] ?? null;
+
+                    // Keep if junior is assigned
+                    if ($role === 'junior' && in_array((int)$userId, $assignedJuniorIds)) {
+                        return true;
+                    }
+
+                    // Optionally include rows created by the senior themselves
+                    if ($role === 'senior' && $userId == $authUser->id) {
+                        return true;
+                    }
+                }
+
+                return false; // ignore everything else
+            });
         }
 
         $transformed = collect($results)->map(function ($item) use ($authUser) {
@@ -2840,13 +2932,22 @@ class GoogleSheetController extends Controller
                     $role   = $parts[1] ?? 'unknown';
 
                     if ($userId == $authUser->id) {
-                        $names[] = "SELF ({$userId}) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SELF ({$userId}) ({$roleLabel})";
                     } elseif ($userId == 0) {
-                        $names[] = "SYSTEM (0) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
                         $user = \App\Models\User::where('is_deleted', 0)->find($userId);
                         $name = $user ? $user->name : 'Unknown';
-                        $names[] = "{$name} ({$userId}) ({$role})";
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
                 }
 
