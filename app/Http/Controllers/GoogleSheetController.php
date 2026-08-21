@@ -1528,31 +1528,41 @@ class GoogleSheetController extends Controller
     }
     public function seniormod(Request $request)
     {
-        $authUser = Auth::user(); // use authenticated user
+        $authUser = Auth::user();
         $search = $request->input('search');
         $rowId = $request->input('row_id');
+        $juniorUserId = $request->input('junior_user');
+        $page = $request->input('page', 1);
         $date = $request->input('date');
-        $juniorUserId = $request->input('junior_user'); // dropdown value
-        $page = $request->input('page', 1); // ensure page input handled
+        $userPattern = "%:" . $authUser->id . "|junior";
+        $zeroPattern = "%:0|senior";
 
-        $userPattern = "%" . $authUser->id . "|junior";
+        $query = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
 
-        // -----------------------------
-        // Original query - DO NOT CHANGE
-        // -----------------------------
-        $query = GoogleSheetData::where(function ($q) use ($authUser, $userPattern) {
-            $q->where('created_by', $authUser->id . '|junior')
-                ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior'])
-                ->orWhere('created_by', 'LIKE', $userPattern);
-        });
+            $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
+
+                $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
+                    $q2->where('created_by', $authUser->id . '|junior')
+                        ->orWhere('created_by', 'LIKE', $zeroPattern);
+                })
+                    ->whereRaw(
+                        "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
+                    );
+            })
+                ->orWhere('created_by', $authUser->id . '|junior:0|senior');
+        })
+            ->where(function ($q) {
+                $q->whereNull('TransferRemark')
+                    ->orWhere('TransferRemark', '');
+            })
+            ->where('transfers', 0);
 
         if ($juniorUserId) {
             $query->where(function ($q) use ($juniorUserId) {
                 $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                    ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$juniorUserId . '|junior', $juniorUserId . '|junior']);
+                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
             });
         }
-
         if ($date) {
             $query->whereDate('updated_at', $date);
         }
@@ -1568,11 +1578,8 @@ class GoogleSheetController extends Controller
 
         $results = $query->orderBy('updated_at', 'desc')->get();
 
-        // -----------------------------
-        // FILTER: only assigned juniors
-        // -----------------------------
         $assignedJuniorIds = $authUser->group ?? [];
-        $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds, $authUser) {
+        $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds) {
             if (empty($item->created_by)) return false;
 
             $entries = explode(':', $item->created_by);
@@ -1587,7 +1594,7 @@ class GoogleSheetController extends Controller
                 }
 
                 // Optionally include rows created by the senior themselves
-                if ($role === 'senior' && $userId == $authUser->id) {
+                if ($role === 'senior' && $userId == Auth::id()) {
                     return true;
                 }
             }
@@ -1595,9 +1602,6 @@ class GoogleSheetController extends Controller
             return false; // ignore everything else
         });
 
-        // -----------------------------
-        // Transform data
-        // -----------------------------
         $transformed = $filteredResults->map(function ($item) use ($authUser) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
@@ -1608,15 +1612,21 @@ class GoogleSheetController extends Controller
                     $userId = $parts[0] ?? null;
                     $role   = $parts[1] ?? 'unknown';
                     if ($userId == $authUser->id) {
-                        $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "SELF ({$userId}) ({$roleLabel})";
                     } elseif ($userId == 0) {
-                        $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
                         $user = \App\Models\User::where('is_deleted', 0)->find($userId);
                         $name = $user ? $user->name : 'Unknown';
-                        $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
+                        $roleLabel = ($role === 'senior')
+                            ? 'IT Senior Recruiter'
+                            : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
                 }
@@ -1629,35 +1639,31 @@ class GoogleSheetController extends Controller
             return $item;
         });
 
-        // ✅ Merge remarks from ALL USERS for items with same Email_Address
-        $transformed = $this->mergeRemarksFromAllUsers($transformed);
-
-        // -----------------------------
-        // Pagination
-        // -----------------------------
         $perPage = 10;
         $currentPage = $page;
-        $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
+        $pagedData = new LengthAwarePaginator(
             $transformed->forPage($currentPage, $perPage),
             $transformed->count(),
             $perPage,
             $currentPage,
-            ['path' => url()->current(), 'query' => $request->query()]
+            [
+                'path' => url()->current(),
+                'query' => [
+                    'search' => $request->search,
+                    'junior_user' => $request->junior_user,
+                    'date' => $request->date,
+                    'row_id' => $request->row_id
+                ]
+            ]
         );
 
-        // -----------------------------
-        // Dropdown: only assigned juniors
-        // -----------------------------
         $juniorUsers = \App\Models\User::where('is_deleted', 0)
-            ->where('role', 'junior')
+            ->whereIn('role', ['junior', 'senior'])
             ->whereIn('id', $assignedJuniorIds) // ✅ only assigned juniors
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
-        // -----------------------------
-        // Return view
-        // -----------------------------
         if ($request->ajax()) {
             return view('database.partials.seniormod_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
