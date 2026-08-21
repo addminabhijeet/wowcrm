@@ -390,7 +390,9 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/chat/refresh-users', [ChatController::class, 'refreshChatUsers'])->name('chat.refreshUsers');
 });
 
-Route::middleware(['allowedip'])->group(function () {
+// ✅ FIX 419: Add 'web' middleware to enable session and CSRF protection
+// Previously only had 'allowedip' which excluded session/CSRF middleware
+Route::middleware(['web', 'allowedip'])->group(function () {
     Route::get('/admin/logins', [LoginsController::class, 'index'])->name('logins');
     Route::post('/logout-user', [LoginController::class, 'ajaxLogout'])->name('ajax.logout');
     Route::post('/login-user', [LoginController::class, 'ajaxLogin'])->name('ajax.login');
