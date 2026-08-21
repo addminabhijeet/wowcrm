@@ -1,0 +1,4 @@
+# ✅ Storage framework directories - temporary files (DO NOT commit)
+storage/framework/sessions/
+storage/framework/views/
+storage/framework/cache/
