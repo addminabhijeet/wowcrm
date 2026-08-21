@@ -10538,3 +10538,13 @@ Did you mean this?
 #19 C:\\xampp\\htdocs\\wowcrm\\index.php(17): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
 #20 {main}
 "} 
+[2026-08-21 11:43:50] local.ERROR: Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, int given in Command line code:26
+Stack trace:
+#0 {main}
+  thrown {"exception":"[object] (Symfony\\Component\\ErrorHandler\\Error\\FatalError(code: 0): Uncaught TypeError: count(): Argument #1 ($value) must be of type Countable|array, int given in Command line code:26
+Stack trace:
+#0 {main}
+  thrown at Command line code:26)
+[stacktrace]
+#0 {main}
+"} 
