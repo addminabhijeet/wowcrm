@@ -2875,8 +2875,7 @@ class GoogleSheetController extends Controller
                     $q->whereNull('TransferRemark')
                         ->orWhere('TransferRemark', '');
                 })
-                ->where('transfers', 0)
-                ->where('Immigration', 'STEM OPT');
+                ->where('transfers', 0);
 
             if ($juniorUserId) {
                 $queryBuilder->where(function ($q) use ($juniorUserId) {
