@@ -22,7 +22,9 @@ use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\CandidateDetailsController;
 
-Route::middleware(['allowedip', 'auth'])->group(function () {
+// ✅ FIX LOGOUT ISSUE: Add 'web' middleware to authenticated routes
+// Without 'web', session/CSRF/cookie handling is disabled, causing logout redirects
+Route::middleware(['web', 'allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/admin/index', [UserController::class, 'index'])->name('users.admin');
     Route::get('/dashboard/admin/create', [UserController::class, 'admincreate'])->name('users.admin.create');
