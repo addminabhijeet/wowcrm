@@ -1535,16 +1535,14 @@ class GoogleSheetController extends Controller
         $page = $request->input('page', 1);
         $date = $request->input('date');
 
-        $query = GoogleSheetData::where('created_by', $authUser->id . '|junior')
+        $createdByValue = $juniorUserId ? $juniorUserId . '|junior' : $authUser->id . '|junior';
+
+        $query = GoogleSheetData::where('created_by', $createdByValue)
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
             })
             ->where('transfers', 0);
-
-        if ($juniorUserId) {
-            $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
-        }
         if ($date) {
             $query->whereDate('updated_at', $date);
         }
@@ -1564,50 +1562,41 @@ class GoogleSheetController extends Controller
         $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds) {
             if (empty($item->created_by)) return false;
 
-            $entries = explode(':', $item->created_by);
-            foreach ($entries as $entry) {
-                $parts = explode('|', $entry);
-                $userId = $parts[0] ?? null;
-                $role   = $parts[1] ?? null;
+            $parts = explode('|', $item->created_by);
+            $userId = $parts[0] ?? null;
+            $role   = $parts[1] ?? null;
 
-                // Keep if junior is assigned
-                if ($role === 'junior' && in_array((int)$userId, $assignedJuniorIds)) {
-                    return true;
-                }
+            if ($role === 'junior' && in_array((int)$userId, $assignedJuniorIds)) {
+                return true;
             }
 
-            return false; // ignore everything else
+            return false;
         });
 
         $transformed = $filteredResults->map(function ($item) use ($authUser) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
-                $entries = explode(':', $item->created_by);
-                $names = [];
-                foreach ($entries as $entry) {
-                    $parts = explode('|', $entry);
-                    $userId = $parts[0] ?? null;
-                    $role   = $parts[1] ?? 'unknown';
-                    if ($userId == $authUser->id) {
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
-                        $names[] = "SELF ({$userId}) ({$roleLabel})";
-                    } elseif ($userId == 0) {
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
-                        $names[] = "SYSTEM (0) ({$roleLabel})";
-                    } else {
-                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
-                        $name = $user ? $user->name : 'Unknown';
-                        $roleLabel = ($role === 'senior')
-                            ? 'IT Senior Recruiter'
-                            : (($role === 'junior') ? 'IT Recruiter' : $role);
-                        $names[] = "{$name} ({$userId}) ({$roleLabel})";
-                    }
+                $parts = explode('|', $item->created_by);
+                $userId = $parts[0] ?? null;
+                $role   = $parts[1] ?? 'unknown';
+                if ($userId == $authUser->id) {
+                    $roleLabel = ($role === 'senior')
+                        ? 'IT Senior Recruiter'
+                        : (($role === 'junior') ? 'IT Recruiter' : $role);
+                    $forwardedBy = "SELF ({$userId}) ({$roleLabel})";
+                } elseif ($userId == 0) {
+                    $roleLabel = ($role === 'senior')
+                        ? 'IT Senior Recruiter'
+                        : (($role === 'junior') ? 'IT Recruiter' : $role);
+                    $forwardedBy = "SYSTEM (0) ({$roleLabel})";
+                } else {
+                    $user = \App\Models\User::where('is_deleted', 0)->find($userId);
+                    $name = $user ? $user->name : 'Unknown';
+                    $roleLabel = ($role === 'senior')
+                        ? 'IT Senior Recruiter'
+                        : (($role === 'junior') ? 'IT Recruiter' : $role);
+                    $forwardedBy = "{$name} ({$userId}) ({$roleLabel})";
                 }
-                $forwardedBy = implode(' → ', $names);
             } else {
                 $forwardedBy = 'N/A';
             }
