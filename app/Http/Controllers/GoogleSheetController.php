@@ -1534,23 +1534,8 @@ class GoogleSheetController extends Controller
         $juniorUserId = $request->input('junior_user');
         $page = $request->input('page', 1);
         $date = $request->input('date');
-        $userPattern = "%:" . $authUser->id . "|junior";
-        $zeroPattern = "%:0|senior";
 
-        $query = GoogleSheetData::where(function ($main) use ($authUser, $userPattern, $zeroPattern) {
-
-            $main->where(function ($q) use ($authUser, $userPattern, $zeroPattern) {
-
-                $q->where(function ($q2) use ($authUser, $userPattern, $zeroPattern) {
-                    $q2->where('created_by', $authUser->id . '|junior')
-                        ->orWhere('created_by', 'LIKE', $zeroPattern);
-                })
-                    ->whereRaw(
-                        "LENGTH(created_by) - LENGTH(REPLACE(created_by, '|senior', '')) = LENGTH('|senior')"
-                    );
-            })
-                ->orWhere('created_by', $authUser->id . '|junior:0|senior');
-        })
+        $query = GoogleSheetData::where('created_by', $authUser->id . '|junior')
             ->where(function ($q) {
                 $q->whereNull('TransferRemark')
                     ->orWhere('TransferRemark', '');
@@ -1558,10 +1543,7 @@ class GoogleSheetController extends Controller
             ->where('transfers', 0);
 
         if ($juniorUserId) {
-            $query->where(function ($q) use ($juniorUserId) {
-                $q->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%')
-                    ->orWhere('created_by', 'LIKE', '%' . $juniorUserId . '|senior%');
-            });
+            $query->where('created_by', 'LIKE', '%' . $juniorUserId . '|junior%');
         }
         if ($date) {
             $query->whereDate('updated_at', $date);
@@ -1590,11 +1572,6 @@ class GoogleSheetController extends Controller
 
                 // Keep if junior is assigned
                 if ($role === 'junior' && in_array((int)$userId, $assignedJuniorIds)) {
-                    return true;
-                }
-
-                // Optionally include rows created by the senior themselves
-                if ($role === 'senior' && $userId == Auth::id()) {
                     return true;
                 }
             }
@@ -1658,17 +1635,17 @@ class GoogleSheetController extends Controller
         );
 
         $juniorUsers = \App\Models\User::where('is_deleted', 0)
-            ->whereIn('role', ['junior', 'senior'])
+            ->whereIn('role', ['junior'])
             ->whereIn('id', $assignedJuniorIds) // ✅ only assigned juniors
             ->where('status', 1)
             ->orderBy('name', 'asc')
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
         if ($request->ajax()) {
-            return view('database.partials.seniortra_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.seniormod_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
-        return view('database.seniortra', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+        return view('database.seniormod', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
     public function seniortra(Request $request)
