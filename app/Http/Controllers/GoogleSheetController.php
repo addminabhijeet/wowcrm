@@ -1665,10 +1665,10 @@ class GoogleSheetController extends Controller
             ->get(['id', 'name', 'email', 'phone', 'gender']);
 
         if ($request->ajax()) {
-            return view('database.partials.seniormod_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
+            return view('database.partials.seniortra_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
-        return view('database.seniormod', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+        return view('database.seniortra', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
     public function seniortra(Request $request)
