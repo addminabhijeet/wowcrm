@@ -1543,7 +1543,9 @@ class GoogleSheetController extends Controller
         } else {
             $assignedJuniorIds = (array)$groupRaw;
         }
-        $assignedJuniorIds = array_map(function ($id) { return (int)$id; }, $assignedJuniorIds);
+        $assignedJuniorIds = array_map(function ($id) {
+            return (int)$id;
+        }, $assignedJuniorIds);
 
         if ($juniorUserId) {
             // If specific junior selected, show only items from that junior
@@ -1663,7 +1665,7 @@ class GoogleSheetController extends Controller
             return view('database.partials.seniormod_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
-        return view('database.juniorother', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+        return view('database.seniormod', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
     public function seniortra(Request $request)
