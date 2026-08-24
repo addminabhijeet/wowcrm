@@ -1535,14 +1535,44 @@ class GoogleSheetController extends Controller
         $page = $request->input('page', 1);
         $date = $request->input('date');
 
-        $createdByValue = $juniorUserId ? $juniorUserId . '|junior' : $authUser->id . '|junior';
+        $groupRaw = $authUser->group ?? [];
 
-        $query = GoogleSheetData::where('created_by', $createdByValue)
-            ->where(function ($q) {
-                $q->whereNull('TransferRemark')
-                    ->orWhere('TransferRemark', '');
-            })
-            ->where('transfers', 0);
+        // Ensure $assignedJuniorIds is array and cast all values to int
+        if (is_string($groupRaw)) {
+            $assignedJuniorIds = json_decode($groupRaw, true) ?? [];
+        } else {
+            $assignedJuniorIds = (array)$groupRaw;
+        }
+        $assignedJuniorIds = array_map(function ($id) { return (int)$id; }, $assignedJuniorIds);
+
+        if ($juniorUserId) {
+            // If specific junior selected, show only items from that junior
+            $createdByValue = $juniorUserId . '|junior';
+            $query = GoogleSheetData::where('created_by', $createdByValue)
+                ->where(function ($q) {
+                    $q->whereNull('TransferRemark')
+                        ->orWhere('TransferRemark', '');
+                })
+                ->where('transfers', 0);
+        } else {
+            // Show items from ALL assigned juniors using whereIn
+            if (empty($assignedJuniorIds)) {
+                $query = GoogleSheetData::whereRaw('1=0'); // Force empty result if no assigned juniors
+            } else {
+                // Build created_by patterns for each junior
+                $createdByPatterns = array_map(function ($jId) {
+                    return $jId . '|junior';
+                }, $assignedJuniorIds);
+
+                $query = GoogleSheetData::whereIn('created_by', $createdByPatterns)
+                    ->where(function ($q) {
+                        $q->whereNull('TransferRemark')
+                            ->orWhere('TransferRemark', '');
+                    })
+                    ->where('transfers', 0);
+            }
+        }
+
         if ($date) {
             $query->whereDate('updated_at', $date);
         }
@@ -1558,7 +1588,6 @@ class GoogleSheetController extends Controller
 
         $results = $query->orderBy('updated_at', 'desc')->get();
 
-        $assignedJuniorIds = $authUser->group ?? [];
         $filteredResults = $results->filter(function ($item) use ($assignedJuniorIds) {
             if (empty($item->created_by)) return false;
 
@@ -1634,7 +1663,7 @@ class GoogleSheetController extends Controller
             return view('database.partials.seniormod_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers])->render();
         }
 
-        return view('database.seniormod', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
+        return view('database.juniorother', ['data' => $pagedData, 'juniorUsers' => $juniorUsers]);
     }
 
     public function seniortra(Request $request)
