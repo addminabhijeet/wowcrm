@@ -22,7 +22,7 @@ $script = '<script>
     <div
         class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
         <div class="d-flex align-items-center flex-wrap gap-3">
-
+            <!-- Search Input -->
             <form class="navbar-search position-relative d-flex gap-2" autocomplete="off">
                 <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
                     placeholder="Search Name, Email, Phone">
@@ -40,14 +40,16 @@ $script = '<script>
                 <option value="">Select IT Recruiter</option>
                 @foreach ($juniorUsers as $junior)
                 <option value="{{ $junior->id }}">
-                    {{ $junior->name }} {{ $junior->gender ? '(' . $junior->gender . ')' : '' }}
+                    {{ $junior->name }}
+                    @if ($junior->gender)
+                    ({{ $junior->gender }})
+                    @endif
                 </option>
                 @endforeach
             </select>
 
+
         </div>
-
-
     </div>
 
     <div class="card-body p-24" id="senior-table-wrapper">
@@ -84,7 +86,9 @@ $script = '<script>
                         <th scope="col" class="text-center">Forwarded By</th>
                         <th scope="col" class="text-center">Resume</th>
                         <th scope="col" class="text-center">Remark</th>
+
                         <th scope="col" class="text-center">Follow Up Remark</th>
+                        <th scope="col" class="text-center">Rejected Remark</th>
                         <th scope="col" class="text-center">Installment</th>
                         <th scope="col" class="text-center">Status</th>
                         @auth
@@ -107,7 +111,6 @@ $script = '<script>
                             </button>
                             <strong>{{ $row->sheet_row_number }}</strong>
                         </td>
-
 
                         {{-- Date --}}
                         <td>
@@ -309,6 +312,16 @@ $script = '<script>
                                 placeholder="Type TransferRemark">
                         </td>
 
+                        {{-- RejectedRemark --}}
+                        <td>
+                            <textarea type="text" name="RejectedRemark_hidden" class="form-control rejectedremark-autocomplete data-field"
+                                data-key="RejectedRemark" placeholder="Type rejected remark" rows="6">{{ $row->RejectedRemark ?? '' }}</textarea>
+
+                            <input type="hidden" name="RejectedRemark"
+                                class="form-control rejectedremark-autocomplete rejectedremark-hidden"
+                                data-key="RejectedRemark" value="{{ $row->RejectedRemark ?? '' }}"
+                                placeholder="Type rejected remark">
+                        </td>
 
                         {{-- Installment --}}
                         <td>
@@ -378,6 +391,10 @@ $script = '<script>
                             <button class="btn btn-sm btn-success save-btn"
                                 data-id="{{ $row->id }}">
                                 <i class="fas fa-save"></i> Save
+                            </button>
+                            <button class="btn btn-sm btn-warning rejected-btn"
+                                data-id="{{ $row->id }}">
+                                <i class="fas fa-exchange-alt"></i> Rejected
                             </button>
                         </td>
                         @endif
@@ -1117,24 +1134,32 @@ $script = '<script>
 <script>
     $(document).ready(function() {
 
+        // -----------------------------
+        // Helper: Debounce
+        // -----------------------------
         function debounce(func, wait) {
             let timeout;
             return function() {
+                const context = this,
+                    args = arguments;
                 clearTimeout(timeout);
-                timeout = setTimeout(() => func.apply(this, arguments), wait);
+                timeout = setTimeout(() => func.apply(context, args), wait);
             };
         }
 
+        // -----------------------------
+        // Fetch Table Data via AJAX
+        // -----------------------------
         function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
             $.ajax({
-                url: "{{ route('google.sheet.seniorfollow') }}",
+                url: "{{ route('google.sheet.seniortra') }}",
                 type: 'GET',
                 data: {
                     search,
                     page,
                     junior_user,
                     row_id,
-                    date // ✅ added
+                    date
                 },
                 success: function(res) {
                     $('#senior-table-wrapper').html(res);
@@ -1145,7 +1170,9 @@ $script = '<script>
             });
         }
 
-        // 🔍 SEARCH SUGGESTIONS
+        // -----------------------------
+        // Live Search Suggestions
+        // -----------------------------
         const showSuggestions = debounce(function() {
             const query = $('#senior-search').val().trim();
             const junior_user = $('#junior-filter').val(); // assuming dropdown ID is junior-filter
@@ -1160,34 +1187,30 @@ $script = '<script>
             }
 
             $.ajax({
-                url: "{{ route('seniorfollow.suggestions') }}",
+                url: "{{ route('seniortra.suggestions') }}",
                 type: 'GET',
                 data: {
-                    query,
-                    junior_user
-                }, // ✅ FIXED
+                    query: query,
+                    junior_user: junior_user,
+                    date: date
+                },
                 success: function(res) {
-
-                    let html = '';
-
+                    let suggestions = '';
                     if (res.length) {
                         res.forEach(item => {
-                            html += `
-                            <a href="#" class="list-group-item list-group-item-action"
-                               data-id="${item.id}">
-                                ${item.sheet_row_number} |
-                                ${item.Name} |
-                                ${item.Email_Address} |
-                                ${item.Phone_Number} |
-                                ${item.Exe_Remarks} |
-                                ${item.forwarded_by}
-                            </a>`;
+                            suggestions += `
+                    <a href="#"
+                       class="list-group-item list-group-item-action"
+                       data-id="${item.id}">
+                       ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} |
+                       ${item.Phone_Number} | ${item.Exe_Remarks} | ${item.forwarded_by}
+                    </a>`;
                         });
                     } else {
-                        html = '<span class="list-group-item">No results found</span>';
+                        suggestions =
+                            '<span class="list-group-item">No results found</span>';
                     }
-
-                    $('#search-suggestions').html(html).show();
+                    $('#search-suggestions').html(suggestions).show();
                 }
             });
 
@@ -1195,54 +1218,58 @@ $script = '<script>
 
         $('#senior-search').on('input', showSuggestions);
 
-        // 🔹 CLICK ON SUGGESTION
+        // Click suggestion - Direct click handler
         $(document).on('click', '#search-suggestions a', function(e) {
             e.preventDefault();
+            e.stopPropagation();
+            e.stopImmediatePropagation();
 
-            const rowId = $(this).data('id');
-            const junior_user = $('#junior-filter').val();
-            const date = $('#date-filter').val();
+            const rowId = $(this).attr('data-id');
+            const junior_user = $('#junior-filter').val() || '';
+            const date = $('#date-filter').val() || '';
 
-            $('#senior-search').val($(this).text());
-            $('#search-suggestions').empty().hide();
+            console.log('Suggestion clicked:', {rowId, junior_user, date}); // Debug log
 
-            fetchTable('', 1, junior_user, rowId, date);
+            if (rowId && rowId.length > 0) {
+                $('#senior-search').val($(this).text());
+                $('#search-suggestions').hide();
+
+                // ✅ Call fetchTable with row_id to display the selected item
+                fetchTable('', 1, junior_user, rowId, date);
+            }
         });
 
-        // 🔹 JUNIOR FILTER CHANGE (WITH PAGINATION)
-        $('#junior-filter').on('change', function() {
+        // Junior dropdown filter
+        $(document).on('change', '#junior-filter', function() {
             const junior_user = $(this).val();
             const search = $('#senior-search').val().trim();
-            fetchTable(search, 1, junior_user);
+            const date = $('#date-filter').val();
+            fetchTable(search, 1, junior_user, '', date);
         });
 
         $('#date-filter').on('change', function() {
-            fetchTable(
-                $('#senior-search').val().trim(),
-                1,
-                $('#junior-filter').val(),
-                '',
-                $(this).val()
-            );
+            const search = $('#senior-search').val().trim();
+            const junior_user = $('#junior-filter').val();
+            const date = $(this).val();
+            fetchTable(search, 1, junior_user, '', date);
         });
 
-        // 🔹 HIDE SUGGESTIONS ON OUTSIDE CLICK
+        // Click outside suggestions to hide
         $(document).click(function(e) {
             if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
-                $('#search-suggestions').hide().empty();
+                $('#search-suggestions').empty().hide();
             }
         });
 
     });
 </script>
 
-
 <script>
-    $(document).on("click", ".transfers-btn", function() {
+    $(document).on("click", ".rejected-btn", function() {
         let id = $(this).data("id");
 
         $.ajax({
-            url: "{{ route('junior.transfers.update') }}",
+            url: "{{ route('junior.rejected.update') }}",
             method: "POST",
             data: {
                 id: id,
@@ -1250,7 +1277,7 @@ $script = '<script>
             },
             success: function(res) {
                 if (res.success) {
-                    alert("Transfer Updated!");
+                    alert("Rejected Updated!");
                 } else {
                     alert(res.message);
                 }
@@ -1510,6 +1537,8 @@ $script = '<script>
     }
 </style>
 
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
@@ -1640,30 +1669,28 @@ $script = '<script>
             const input = td.querySelector('input[name="' + inputName + '"]');
             if (!input) return;
 
-            // Trim value before assigning
             input.value = textarea.value.trim();
         }
 
-        // 🔁 Real-time sync on input for all textareas with *_autocomplete class
-        document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-            function(textarea) {
-                textarea.addEventListener('input', function() {
-                    syncTextareaToInput(textarea);
-                });
+        // 🔁 Real-time sync (extended only)
+        document.querySelectorAll(
+            'textarea.remark-autocomplete, textarea.transferremark-autocomplete, textarea.rejectedremark-autocomplete'
+        ).forEach(function(textarea) {
+            textarea.addEventListener('input', function() {
+                syncTextareaToInput(textarea);
             });
+        });
 
-        // 🛡️ Final sync before form submit
+        // 🛡️ Final sync before submit (extended only)
         form.addEventListener('submit', function() {
             document.querySelectorAll(
-                'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
-                function(textarea) {
-                    syncTextareaToInput(textarea);
-                });
+                'textarea.remark-autocomplete, textarea.transferremark-autocomplete, textarea.rejectedremark-autocomplete'
+            ).forEach(function(textarea) {
+                syncTextareaToInput(textarea);
+            });
         });
     });
 </script>
-
-
 <script>
     document.addEventListener("click", async function(e) {
 
@@ -1716,5 +1743,4 @@ $script = '<script>
 
     });
 </script>
-
 @endsection
