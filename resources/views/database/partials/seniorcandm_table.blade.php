@@ -56,7 +56,7 @@
                 <th scope="col" class="text-center">Time Zone</th>
                 <th scope="col" class="text-center">Resume</th>
                 <th scope="col" class="text-center">Remarks</th>
-                <th scope="col" class="text-center">Installment</th>
+
                 <th scope="col" class="text-center">Status</th>
                 <th scope="col" class="text-center">Actions</th>
 
@@ -246,19 +246,7 @@
                     <input type="text" class="form-control remark-autocomplete" data-key="Remark"
                         value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                 </td>
-                {{-- Installment --}}
-                <td>
-                    <input type="checkbox"
-                        class="form-check-input installment-checkbox"
-                        value="0"
-                        {{ (int)$row->installment === 1 ? 'checked' : '' }}>
 
-                    <input type="hidden"
-                        name="installment"
-                        class="installment-hidden"
-                        data-key="installment"
-                        value="{{ (int)($row->installment ?? 0) }}">
-                </td>
 
                 <script>
                     document.addEventListener("DOMContentLoaded", function() {
@@ -293,7 +281,7 @@
 
                     });
                 </script>
-                
+
                 {{-- Status --}}
                 <td>
                     @php $exeOptions = ['Called & Mailed','Not Interested','Interested','Others','Ready To Pay','VM','Busy']; @endphp
