@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-$title = 'Users Grid';
+$title = 'Database';
 $role = auth()->user()->role ?? '';
 if ($role === 'admin') {
 $subTitle = 'Super Admin';
@@ -19,25 +19,26 @@ $script = '<script>
 @section('content')
 
 
-
-
-
-
 <div class="card h-100 p-0 radius-12">
     <div
         class="card-header border-bottom bg-base py-16 px-24 d-flex align-items-center flex-wrap gap-3 justify-content-between">
         <div class="d-flex align-items-center flex-wrap gap-3">
 
-            <!-- SEARCH -->
-            <form class="navbar-search position-relative" autocomplete="off">
+            <form class="navbar-search position-relative d-flex gap-2" autocomplete="off">
                 <input type="text" id="senior-search" class="bg-base h-40-px w-auto form-control"
                     placeholder="Search Name, Email, Phone">
+
+                <input type="date" id="date-filter" class="bg-base h-40-px w-auto form-control"
+                    title="Filter by Date">
+
                 <iconify-icon icon="ion:search-outline" class="icon"></iconify-icon>
+
                 <div id="search-suggestions" class="list-group position-absolute w-100" style="z-index:1000;"></div>
             </form>
 
         </div>
     </div>
+
 
     <div class="card-body p-24" id="senior-table-wrapper">
         <!-- Extra Scroll Bar Above -->
@@ -725,6 +726,7 @@ $script = '<script>
             });
         }
 
+
         function addBlankRow() {
             let colKeys = [];
             let firstRow = tableBody.querySelector("tr");
@@ -747,7 +749,7 @@ $script = '<script>
                         'Aerospace Proj. Manag.'
                     ];
                     if (k === 'Exe Remarks') opts = ['Called & Mailed', 'Not Interested',
-                        'Not Connected', 'Did Not Connect', 'Others', 'N/A', 'VM', 'Busy'
+                        'Interested', 'Others', 'VM', 'Busy'
                     ];
                     if (k === 'Immigration') opts = ['F1 CPT', 'F1 OPT', 'STEM OPT', 'H1B', 'B2', 'B1',
                         'H4', 'H4 EAD', 'GC/PR', 'GC EAD', 'USC', 'L2S'
@@ -768,7 +770,8 @@ $script = '<script>
                         `<td><input type="text" class="form-control location-autocomplete" data-key="${k}" placeholder="Location"><span class="small-hint"></span></td>`;
                 } else if (k === 'Remark') {
                     cells +=
-                        `<td><input type="text" class="form-control Remark-autocomplete" data-key="${k}" placeholder="Remark"><span class="small-hint"></span></td>`;
+                        `<td colspan="2"><textarea class="form-control mb-1 old-remark" rows="2" placeholder="Previous remark" readonly></textarea>
+                                        <textarea class="form-control new-remark" data-key="Remark" rows="2" placeholder="Add new remark"></textarea><span class="small-hint"></span></td>`;
                 } else if (k === 'Date' || k === 'Graduation Date') {
                     cells +=
                         `<td><input type="text" class="form-control date-picker" data-key="${k}" placeholder="${k} (MM/DD/YYYY)"><span class="small-hint"></span></td>`;
@@ -834,7 +837,21 @@ $script = '<script>
                     let value = cell.value;
                     rowData[key] = value;
                 });
-                console.log("Row data:", rowData);
+                // ✅ MERGE OLD + NEW REMARK (IMPORTANT)
+                // ✅ MERGE OLD + NEW REMARK (FIXED WITHOUT CHANGING FLOW)
+                const oldRemark = row.querySelector('textarea.remark-autocomplete')?.value || '';
+                const newRemark = row.querySelector('.new-remark')?.value || '';
+
+                let finalRemark = oldRemark.trim();
+
+                if (newRemark.trim()) {
+                    finalRemark = finalRemark ?
+                        finalRemark + "\n" + newRemark.trim() :
+                        newRemark.trim();
+                }
+
+                // override remark before sending
+                rowData['Remark'] = finalRemark;
 
                 // Create FormData object
                 let formData = new FormData();
@@ -850,10 +867,10 @@ $script = '<script>
                 // Determine URL and method
                 let url, method;
                 if (id === "new") {
-                    url = "{{ route('seniorstore') }}";
+                    url = "{{ route('juniorstore') }}";
                     method = "POST";
                 } else {
-                    url = "{{ route('seniorupdate') }}";
+                    url = "{{ route('juniorupdate') }}";
                     method = "POST";
                     formData.append("id", id);
                 }
@@ -876,6 +893,9 @@ $script = '<script>
                         console.log("Response from server:", data);
                         if (data.success) {
                             alert("Saved successfully");
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
                             if (id === "new") {
                                 // Update row with new ID
                                 row.dataset.id = data.id;
@@ -1028,69 +1048,111 @@ $script = '<script>
 <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
 
-
+<style>
+    textarea.remark-autocomplete,
+    .old-remark,
+    .new-remark {
+        resize: vertical;
+        min-height: 60px;
+    }
+</style>
 <script>
     $(document).ready(function() {
 
-        function debounce(fn, delay) {
-            let timer;
+        let activeRequest = null;
+
+        function debounce(func, wait) {
+            let timeout;
             return function() {
-                clearTimeout(timer);
-                timer = setTimeout(() => fn.apply(this, arguments), delay);
+                const context = this,
+                    args = arguments;
+                clearTimeout(timeout);
+                timeout = setTimeout(() => func.apply(context, args), wait);
             };
         }
 
-        function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
-            $.ajax({
-                url: "{{ route('google.sheet.seniorcandm') }}",
+        function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
+
+            // 🔒 Abort previous request to prevent hang
+            if (activeRequest) {
+                activeRequest.abort();
+            }
+
+            activeRequest = $.ajax({
+                url: "{{ route('google.sheet.junior') }}",
+                type: 'GET',
+                cache: false, // ✅ Disable browser caching for fresh data
                 data: {
-                    search,
-                    page,
-                    junior_user,
-                    row_id
+                    search: search,
+                    page: page,
+                    junior_user: junior_user,
+                    row_id: row_id,
+                    date: date
                 },
                 success: function(res) {
                     $('#senior-table-wrapper').html(res);
+                },
+                error: function(err) {
+                    if (err.statusText !== 'abort') {
+                        console.error(err);
+                    }
+                },
+                complete: function() {
+                    activeRequest = null;
                 }
             });
         }
 
-        // 🔍 LIVE SEARCH SUGGESTIONS
+        // ----------------------------------
+        // Live Search Suggestions
+        // ----------------------------------
         const showSuggestions = debounce(function() {
 
-            const query = $('#senior-search').val().trim();
+            const search = $('#senior-search').val().trim();
             const junior_user = $('#junior-filter').val();
+            const date = $('#date-filter').val();
 
-            if (query.length < 3) {
-                $('#search-suggestions').hide().empty();
-                fetchTable('', 1, junior_user);
+            if (search.length < 3) {
+                $('#search-suggestions').empty().hide();
+
+                // 🔁 behave EXACTLY like cleared search
+                fetchTable('', 1, junior_user, '', date);
                 return;
             }
 
             $.ajax({
-                url: "{{ route('seniorcandm.suggestions') }}",
+                url: "{{ route('junior.suggestions') }}",
+                type: 'GET',
                 data: {
-                    query,
-                    junior_user
+                    query: search, // ✅ required
+                    junior_user: junior_user
+                    // ❌ date intentionally excluded (backend logic)
                 },
                 success: function(res) {
 
-                    let html = '';
+                    let suggestions = '';
 
                     if (res.length) {
                         res.forEach(item => {
-                            html += `
-                        <a href="#" class="list-group-item list-group-item-action"
-                           data-id="${item.id}">
-                            ${item.sheet_row_number} | ${item.Name} | ${item.Email_Address} |
-                            ${item.Phone_Number} | ${item.forwarded_by}
-                        </a>`;
+                            suggestions += `
+                            <a href="#"
+                               class="list-group-item list-group-item-action"
+                               data-id="${item.id}"
+                               data-name="${item.Name}">
+                               ${item.sheet_row_number} |
+                               ${item.Name} |
+                               ${item.Email_Address} |
+                               ${item.Phone_Number} |
+                               ${item.Exe_Remarks} |
+                               ${item.forwarded_by}
+                            </a>`;
                         });
                     } else {
-                        html = '<span class="list-group-item">No results found</span>';
+                        suggestions =
+                            '<span class="list-group-item">No results found</span>';
                     }
 
-                    $('#search-suggestions').html(html).show();
+                    $('#search-suggestions').html(suggestions).show();
                 }
             });
 
@@ -1098,26 +1160,64 @@ $script = '<script>
 
         $('#senior-search').on('input', showSuggestions);
 
-        // 📌 CLICK SUGGESTION
+        // ----------------------------------
+        // Suggestion click
+        // ----------------------------------
         $(document).on('click', '#search-suggestions a', function(e) {
             e.preventDefault();
 
             const rowId = $(this).data('id');
+            const name = $(this).data('name');
             const junior_user = $('#junior-filter').val();
+            const date = $('#date-filter').val();
 
-            $('#search-suggestions').hide().empty();
-            fetchTable('', 1, junior_user, rowId);
+            $('#senior-search').val(name);
+            $('#search-suggestions').empty().hide();
+
+            // 🎯 row_id intentionally set
+            fetchTable('', 1, junior_user, rowId, date);
         });
 
-        // 👤 JUNIOR FILTER
-        $('#junior-filter').on('change', function() {
-            fetchTable($('#senior-search').val(), 1, this.value);
+        // ----------------------------------
+        // Date Filter (FIXED)
+        // ----------------------------------
+        $('#date-filter').on('change', function() {
+
+            // ❗ reset row_id EXACTLY like search
+            fetchTable(
+                $('#senior-search').val().trim(),
+                1,
+                $('#junior-filter').val(),
+                '',
+                $(this).val()
+            );
         });
 
-        // ❌ HIDE SUGGESTIONS
-        $(document).on('click', function(e) {
+        // ----------------------------------
+        // Junior Filter (FIXED)
+        // ----------------------------------
+        $(document).on('change', '#junior-filter', function() {
+
+            fetchTable(
+                $('#senior-search').val().trim(),
+                1,
+                $(this).val(),
+                '',
+                $('#date-filter').val()
+            );
+        });
+
+        // ----------------------------------
+        // AJAX Pagination
+        // ----------------------------------
+
+
+        // ----------------------------------
+        // Hide suggestions on outside click
+        // ----------------------------------
+        $(document).click(function(e) {
             if (!$(e.target).closest('#senior-search, #search-suggestions').length) {
-                $('#search-suggestions').hide().empty();
+                $('#search-suggestions').empty().hide();
             }
         });
 
@@ -1420,23 +1520,6 @@ $script = '<script>
     }
 </style>
 
-<script>
-    document.getElementById('junior-filter').addEventListener('change', function() {
-        let juniorId = this.value;
-        let search = document.getElementById('senior-search').value;
-
-        fetch("{{ route('google.sheet.seniorcandm') }}?junior_user=" + juniorId + "&search=" + search, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest'
-                }
-            })
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('senior-table-wrapper').innerHTML = html;
-            });
-    });
-</script>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
@@ -1453,6 +1536,7 @@ $script = '<script>
         });
     });
 </script>
+
 <script>
     document.addEventListener('DOMContentLoaded', function() {
 
@@ -1473,6 +1557,9 @@ $script = '<script>
             return `${mm}/${dd}/${yyyy}`;
         };
 
+        // ==========================================
+        // EMAIL ADDRESS SEARCH
+        // ==========================================
         document.addEventListener('input', function(e) {
 
             if (!e.target.matches('.email-input')) return;
@@ -1535,9 +1622,11 @@ $script = '<script>
                                 data.data.Amount ?
                                 `$${parseFloat(data.data.Amount).toFixed(2)}` :
                                 '';
+                            const oldRemarkEl = row.querySelector('.old-remark');
+                            const newRemarkEl = row.querySelector('.new-remark');
 
-                            row.querySelector('[data-key="Remark"]').value =
-                                data.data.Remark ?? '';
+                            if (oldRemarkEl) oldRemarkEl.value = data.data.Remark ?? '';
+                            if (newRemarkEl) newRemarkEl.value = '';
 
                             // ---------- DROPDOWNS (AUTO SELECT + TRIGGER CHANGE) ----------
                             const setSelect = (key, value) => {
@@ -1559,17 +1648,158 @@ $script = '<script>
                             setSelect('Time Zone', data.data.Time_Zone);
                             setSelect('Exe Remarks', data.data.Exe_Remarks);
 
+                            // ---------- CHECK IF CONTACT CAN BE MADE ----------
+                            const saveBtn = row.querySelector('.save-btn');
+                            if (!data.canContact && saveBtn) {
+                                saveBtn.style.display = 'none';
+                            }
+
                             // ---------- VISUAL FEEDBACK ----------
                             input.classList.remove('is-invalid');
                             input.classList.add('is-valid');
-                            hint.textContent = 'Existing record loaded.';
-                            hint.style.color = 'blue';
+
+                            if (!data.canContact && data.contactMessage) {
+                                hint.textContent = data.contactMessage;
+                                hint.style.color = 'red';
+                                hint.style.fontWeight = 'bold';
+                            } else {
+                                hint.textContent = 'Existing record loaded.';
+                                hint.style.color = 'blue';
+                            }
 
                         } else {
 
                             input.classList.remove('is-invalid');
                             input.classList.add('is-valid');
                             hint.textContent = 'Email available.';
+                            hint.style.color = 'green';
+                        }
+                    })
+                    .catch(err => {
+                        console.error(err);
+                        hint.textContent = '⚠️ Server error. Try again.';
+                        hint.style.color = 'orange';
+                    });
+
+            }, 500);
+        });
+
+        // ==========================================
+        // PHONE NUMBER SEARCH (SAME LOGIC AS EMAIL)
+        // ==========================================
+        document.addEventListener('input', function(e) {
+
+            if (!e.target.matches('.phone-input')) return;
+
+            const input = e.target;
+            const phoneNumber = input.value.trim().replace(/\D/g, ''); // Extract only digits
+            const hint = input.nextElementSibling;
+
+            // Validate: phone number should have exactly 10 digits
+            if (phoneNumber.length !== 10) {
+                hint.textContent = '';
+                input.classList.remove('is-invalid', 'is-valid');
+                return;
+            }
+
+            clearTimeout(input._phoneCheckTimer);
+
+            input._phoneCheckTimer = setTimeout(() => {
+
+                fetch("{{ route('check.uniqueemail') }}", {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-CSRF-TOKEN': csrfToken
+                        },
+                        body: JSON.stringify({
+                            phone_number: phoneNumber
+                        })
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+
+                        if (data.restricted) {
+                            const hint = input.nextElementSibling;
+                            input.classList.remove('is-valid');
+                            input.classList.add('is-invalid');
+
+                            hint.textContent = data.message;
+                            hint.style.color = 'red';
+                            return;
+                        }
+
+                        if (data.exists && data.data) {
+
+                            const row = input.closest('tr');
+
+                            // ---------- INPUT FIELDS ----------
+                            row.querySelector('[data-key="Email Address"]').value =
+                                data.data.Email_Address ?? '';
+
+                            row.querySelector('[data-key="Name"]').value =
+                                data.data.Name ?? '';
+
+                            row.querySelector('[data-key="Location"]').value =
+                                data.data.Location ?? '';
+
+                            row.querySelector('[data-key="Graduation Date"]').value =
+                                formatDateMDY(data.data.Graduation_Date);
+
+                            row.querySelector('[data-key="Amount"]').value =
+                                data.data.Amount ?
+                                `$${parseFloat(data.data.Amount).toFixed(2)}` :
+                                '';
+                            const oldRemarkEl = row.querySelector('.old-remark');
+                            const newRemarkEl = row.querySelector('.new-remark');
+
+                            if (oldRemarkEl) oldRemarkEl.value = data.data.Remark ?? '';
+                            if (newRemarkEl) newRemarkEl.value = '';
+
+                            // ---------- DROPDOWNS (AUTO SELECT + TRIGGER CHANGE) ----------
+                            const setSelect = (key, value) => {
+                                const select = row.querySelector(`[data-key="${key}"]`);
+                                if (!select || value === null) return;
+
+                                select.value = value;
+                                select.dispatchEvent(new Event('change', {
+                                    bubbles: true
+                                }));
+                            };
+
+                            setSelect('Relocation', data.data.Relocation);
+                            setSelect('Immigration', data.data.Immigration);
+                            setSelect('Course', data.data.Course);
+                            setSelect('Qualification', data.data.Qualification);
+                            setSelect('1st Follow Up Remarks', data.data
+                                .First_Follow_Up_Remarks);
+                            setSelect('Time Zone', data.data.Time_Zone);
+                            setSelect('Exe Remarks', data.data.Exe_Remarks);
+
+                            // ---------- CHECK IF CONTACT CAN BE MADE ----------
+                            const saveBtn = row.querySelector('.save-btn');
+                            if (!data.canContact && saveBtn) {
+                                saveBtn.style.display = 'none';
+                            }
+
+                            // ---------- VISUAL FEEDBACK ----------
+                            input.classList.remove('is-invalid');
+                            input.classList.add('is-valid');
+
+                            if (!data.canContact && data.contactMessage) {
+                                hint.textContent = data.contactMessage;
+                                hint.style.color = 'red';
+                                hint.style.fontWeight = 'bold';
+                            } else {
+                                hint.textContent = 'Existing record loaded.';
+                                hint.style.color = 'blue';
+                            }
+
+                        } else {
+
+                            input.classList.remove('is-invalid');
+                            input.classList.add('is-valid');
+                            hint.textContent = 'Phone number available.';
                             hint.style.color = 'green';
                         }
                     })
@@ -1607,6 +1837,7 @@ $script = '<script>
         });
     });
 </script>
+
 <script>
     document.addEventListener("click", async function(e) {
 
@@ -1659,4 +1890,5 @@ $script = '<script>
 
     });
 </script>
+
 @endsection
