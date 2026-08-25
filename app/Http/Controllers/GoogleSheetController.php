@@ -851,10 +851,34 @@ class GoogleSheetController extends Controller
             return false; // ignore everything else
         });
 
+        // ✅ OPTIMIZATION: Pre-fetch all users to avoid N+1 query problem
+        $userIds = [];
+        foreach ($filteredResults as $item) {
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    if ($userId && $userId != 0 && $userId != $authUser->id) {
+                        $userIds[$userId] = $userId;
+                    }
+                }
+            }
+        }
+
+        $usersMap = [];
+        if (!empty($userIds)) {
+            $usersMap = \App\Models\User::where('is_deleted', 0)
+                ->whereIn('id', array_values($userIds))
+                ->get(['id', 'name'])
+                ->keyBy('id')
+                ->toArray();
+        }
+
         // -----------------------------
         // Transform data
         // -----------------------------
-        $transformed = $filteredResults->map(function ($item) use ($authUser) {
+        $transformed = $filteredResults->map(function ($item) use ($authUser, $usersMap) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
@@ -874,8 +898,8 @@ class GoogleSheetController extends Controller
                             : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
-                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
-                        $name = $user ? $user->name : 'Unknown';
+                        $user = $usersMap[$userId] ?? null;
+                        $name = $user ? $user['name'] : 'Unknown';
                         $roleLabel = ($role === 'senior')
                             ? 'IT Senior Recruiter'
                             : (($role === 'junior') ? 'IT Recruiter' : $role);
@@ -1767,7 +1791,31 @@ class GoogleSheetController extends Controller
             return false; // ignore everything else
         });
 
-        $transformed = $filteredResults->map(function ($item) use ($authUser) {
+        // ✅ OPTIMIZATION: Pre-fetch all users to avoid N+1 query problem
+        $userIds = [];
+        foreach ($filteredResults as $item) {
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    if ($userId && $userId != 0 && $userId != $authUser->id) {
+                        $userIds[$userId] = $userId;
+                    }
+                }
+            }
+        }
+
+        $usersMap = [];
+        if (!empty($userIds)) {
+            $usersMap = \App\Models\User::where('is_deleted', 0)
+                ->whereIn('id', array_values($userIds))
+                ->get(['id', 'name'])
+                ->keyBy('id')
+                ->toArray();
+        }
+
+        $transformed = $filteredResults->map(function ($item) use ($authUser, $usersMap) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
@@ -1787,8 +1835,9 @@ class GoogleSheetController extends Controller
                             : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
-                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
-                        $name = $user ? $user->name : 'Unknown';
+                        // ✅ OPTIMIZATION: Use pre-fetched users instead of database query
+                        $user = $usersMap[$userId] ?? null;
+                        $name = $user ? $user['name'] : 'Unknown';
                         $roleLabel = ($role === 'senior')
                             ? 'IT Senior Recruiter'
                             : (($role === 'junior') ? 'IT Recruiter' : $role);
@@ -2079,8 +2128,32 @@ class GoogleSheetController extends Controller
             return false;
         });
 
+        // ✅ OPTIMIZATION: Pre-fetch all users to avoid N+1 query problem
+        $userIds = [];
+        foreach ($filteredResults as $item) {
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    if ($userId && $userId != 0 && $userId != $authUser->id) {
+                        $userIds[$userId] = $userId;
+                    }
+                }
+            }
+        }
+
+        $usersMap = [];
+        if (!empty($userIds)) {
+            $usersMap = \App\Models\User::where('is_deleted', 0)
+                ->whereIn('id', array_values($userIds))
+                ->get(['id', 'name'])
+                ->keyBy('id')
+                ->toArray();
+        }
+
         // Transform forwarded_by
-        $transformed = $filteredResults->map(function ($item) use ($authUser) {
+        $transformed = $filteredResults->map(function ($item) use ($authUser, $usersMap) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
                 $entries = explode(':', $item->created_by);
@@ -2097,8 +2170,9 @@ class GoogleSheetController extends Controller
                         $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
-                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
-                        $name = $user ? $user->name : 'Unknown';
+                        // ✅ OPTIMIZATION: Use pre-fetched users instead of database query
+                        $user = $usersMap[$userId] ?? null;
+                        $name = $user ? $user['name'] : 'Unknown';
                         $roleLabel = ($role === 'senior') ? 'IT Senior Recruiter' : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "{$name} ({$userId}) ({$roleLabel})";
                     }
