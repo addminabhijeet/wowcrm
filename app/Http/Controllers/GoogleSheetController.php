@@ -300,14 +300,14 @@ class GoogleSheetController extends Controller
                     $userIsDeleted = $contactUser && $contactUser->status === false;
                 }
 
-                // ✅ CHECK IF 20 DAYS HAVE PASSED SINCE LATEST CONTACT (ONLY IF USER IS NOT DELETED)
+                // ✅ CHECK IF 30 DAYS HAVE PASSED SINCE LATEST CONTACT (ONLY IF USER IS NOT DELETED)
                 if ($latestContactDate !== null && !$userIsDeleted) {
                     $today = \Carbon\Carbon::now('Asia/Kolkata')->startOfDay();
                     $daysDifference = (int) abs($today->diffInDays($latestContactDate));
 
-                    if ($daysDifference < 20) {
+                    if ($daysDifference < 30) {
                         $canContact = false;
-                        $daysUntilContact = (int) (20 - $daysDifference);
+                        $daysUntilContact = (int) (30 - $daysDifference);
                         $contactMessage = "Please contact after {$daysUntilContact} days";
                     }
                 }
