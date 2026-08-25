@@ -1604,7 +1604,29 @@ class GoogleSheetController extends Controller
             return false;
         });
 
-        $transformed = $filteredResults->map(function ($item) use ($authUser) {
+        // ✅ OPTIMIZATION: Pre-fetch all users to avoid N+1 query problem
+        $userIds = $filteredResults
+            ->map(function ($item) {
+                $parts = explode('|', $item->created_by ?? '');
+                return $parts[0] ?? null;
+            })
+            ->filter(function ($id) use ($authUser) {
+                return $id && $id != 0 && $id != $authUser->id;
+            })
+            ->unique()
+            ->values()
+            ->toArray();
+
+        $usersMap = [];
+        if (!empty($userIds)) {
+            $usersMap = \App\Models\User::where('is_deleted', 0)
+                ->whereIn('id', $userIds)
+                ->get(['id', 'name'])
+                ->keyBy('id')
+                ->toArray();
+        }
+
+        $transformed = $filteredResults->map(function ($item) use ($authUser, $usersMap) {
             $forwardedBy = '';
             if (!empty($item->created_by)) {
                 $parts = explode('|', $item->created_by);
@@ -1621,8 +1643,9 @@ class GoogleSheetController extends Controller
                         : (($role === 'junior') ? 'IT Recruiter' : $role);
                     $forwardedBy = "SYSTEM (0) ({$roleLabel})";
                 } else {
-                    $user = \App\Models\User::where('is_deleted', 0)->find($userId);
-                    $name = $user ? $user->name : 'Unknown';
+                    // ✅ OPTIMIZATION: Use pre-fetched users instead of database query
+                    $user = $usersMap[$userId] ?? null;
+                    $name = $user ? $user['name'] : 'Unknown';
                     $roleLabel = ($role === 'senior')
                         ? 'IT Senior Recruiter'
                         : (($role === 'junior') ? 'IT Recruiter' : $role);
