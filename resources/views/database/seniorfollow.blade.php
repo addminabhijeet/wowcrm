@@ -1152,7 +1152,7 @@ $script = '<script>
         // -----------------------------
         function fetchTable(search = '', page = 1, junior_user = '', row_id = '', date = '') {
             $.ajax({
-                url: "{{ route('google.sheet.seniortra') }}",
+                url: "{{ route('google.sheet.seniorfollow') }}",
                 type: 'GET',
                 data: {
                     search,
@@ -1187,7 +1187,7 @@ $script = '<script>
             }
 
             $.ajax({
-                url: "{{ route('seniortra.suggestions') }}",
+                url: "{{ route('seniorfollow.suggestions') }}",
                 type: 'GET',
                 data: {
                     query: query,
