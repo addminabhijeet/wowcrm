@@ -418,7 +418,7 @@
                     }
 
                     $.ajax({
-                        url: "{{ route('seniorupdate ') }}",
+                        url: "{{ route('seniorupdate') }}",
                         type: 'POST',
                         data: formData,
                         contentType: false,

@@ -397,7 +397,7 @@
                     }
 
                     $.ajax({
-                        url: "{{ route('juniorupdate ') }}",
+                        url: "{{ route('juniorupdate') }}",
                         type: 'POST',
                         data: formData,
                         contentType: false,
