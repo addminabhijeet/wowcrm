@@ -2296,7 +2296,7 @@ class GoogleSheetController extends Controller
         // Return view
         // -----------------------------
         if ($request->ajax()) {
-            return view('database.partials.seniorpaid', [
+            return view('database.partials.seniorpaid_table', [
                 'data' => $pagedData,
                 'juniorUsers' => $juniorUsers
             ])->render();
