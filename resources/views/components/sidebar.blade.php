@@ -165,7 +165,7 @@ $role = Auth::user()->role;
 
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('google.sheet.seniorfollow') }}"><i
-                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT
                             Recruiter<br>(Follow
                             Up)</a></li>
                 </ul>
@@ -202,7 +202,7 @@ $role = Auth::user()->role;
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('google.sheet.seniortrafollow') }}"><i
-                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Sr IT Recruiter
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Recruiter
                             <br>(Transfered Follow Up)</a>
                     </li>
                 </ul>
