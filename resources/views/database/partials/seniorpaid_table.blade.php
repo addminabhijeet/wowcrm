@@ -60,11 +60,7 @@
                 <th scope="col" class="text-center">Follow Up Remark</th>
                 <th scope="col" class="text-center">Installment</th>
                 <th scope="col" class="text-center">Status</th>
-                @auth
-                @if (auth()->user()->role !== 'operation')
-                <th scope="col" class="text-center">Actions</th>
-                @endif
-                @endauth
+
             </tr>
         </thead>
         <tbody id="sheet-table-body">
@@ -335,15 +331,7 @@
                     </select>
                 </td>
 
-                @auth
-                @if (auth()->user()->role !== 'operation')
-                <td class="text-center">
-                    <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
-                        <i class="fas fa-save"></i> Save
-                    </button>
-                </td>
-                @endif
-                @endauth
+
             </tr>
             @endforeach
         </tbody>
