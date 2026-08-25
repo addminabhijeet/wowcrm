@@ -1101,7 +1101,7 @@ $script = '<script>
         // -----------------------------
         function fetchTable(search = '', page = 1, junior_user = '', row_id = '') {
             $.ajax({
-                url: "{{ route('google.sheet.senior') }}",
+                url: "{{ route('google.sheet.seniorpaid') }}",
                 type: 'GET',
                 data: {
                     search,
@@ -1135,7 +1135,7 @@ $script = '<script>
                 url: "{{ route('senior.suggestionspaid') }}",
                 type: 'GET',
                 data: {
-                    query
+                    query: query
                 },
                 success: function(res) {
                     let suggestions = '';

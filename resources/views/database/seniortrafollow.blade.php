@@ -1160,7 +1160,12 @@ $script = '<script>
 
             if (query.length < 3) {
                 $('#search-suggestions').hide().empty();
-                fetchTable('', 1, junior_user, '');
+                fetchTable({
+                    search: '',
+                    page: 1,
+                    junior_user: junior_user,
+                    row_id: ''
+                });
                 return;
             }
 
@@ -1209,7 +1214,12 @@ $script = '<script>
             $('#senior-search').val($(this).text());
             $('#search-suggestions').hide().empty();
 
-            fetchTable('', 1, junior_user, row_id);
+            fetchTable({
+                search: '',
+                page: 1,
+                junior_user: junior_user,
+                row_id: row_id
+            });
         });
 
         /* ======================== */
