@@ -56,7 +56,6 @@
                 <th scope="col" class="text-center">Time Zone</th>
                 <th scope="col" class="text-center">Resume</th>
                 <th scope="col" class="text-center">Remarks</th>
-
                 <th scope="col" class="text-center">Status</th>
                 <th scope="col" class="text-center">Actions</th>
 
@@ -242,49 +241,23 @@
 
 
                 {{-- Remark --}}
-                <td>
-                    <input type="text" class="form-control remark-autocomplete" data-key="Remark"
-                        value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
+                <td colspan="2">
+                    <!-- OLD REMARK (READONLY) -->
+                    <textarea class="form-control remark-autocomplete"
+                        data-key="Remark"
+                        rows="3"
+                        placeholder="Type remark" readonly>{{ $row->Remark ?? '' }}</textarea>
+
+                    <!-- NEW REMARK -->
+                    <input type="text"
+                        class="form-control new-remark"
+                        data-key="Remark"
+                        placeholder="Add new remark">
                 </td>
-
-
-                <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-
-                        document.querySelectorAll(".installment-checkbox").forEach(function(checkbox) {
-                            checkbox.addEventListener("change", function() {
-                                let hiddenInput = this.closest("td").querySelector(".installment-hidden");
-                                hiddenInput.value = this.checked ? 1 : 0;
-                            });
-                        });
-
-                        // ✅ FIX: Sync BOTH installment + Exe Remarks before save
-                        document.querySelectorAll(".save-btn").forEach(function(btn) {
-                            btn.addEventListener("click", function() {
-
-                                let row = this.closest("tr");
-
-                                let checkbox = row.querySelector(".installment-checkbox");
-                                let hiddenInput = row.querySelector(".installment-hidden");
-
-                                // 🔥 Always sync installment
-                                hiddenInput.value = checkbox.checked ? 1 : 0;
-
-                                // 🔥 FORCE Exe Remarks value to be fresh
-                                let exeSelect = row.querySelector('[data-key="Exe Remarks"]');
-                                if (exeSelect) {
-                                    exeSelect.setAttribute("data-value", exeSelect.value);
-                                }
-
-                            });
-                        });
-
-                    });
-                </script>
 
                 {{-- Status --}}
                 <td>
-                    @php $exeOptions = ['Called & Mailed','Not Interested','Interested','Others','Ready To Pay','VM','Busy']; @endphp
+                    @php $exeOptions = ['Called & Mailed','Not Interested','Interested','Others','VM','Busy']; @endphp
                     <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                         <option value="">-- Select Status--</option>
                         @foreach ($exeOptions as $option)
@@ -304,8 +277,6 @@
                     </button>
 
                 </td>
-
-
             </tr>
             @endforeach
         </tbody>
@@ -395,6 +366,9 @@
                         },
                         success: function(response) {
                             alert(response.message);
+                            setTimeout(() => {
+                                location.reload();
+                            }, 1000);
                         },
                         error: function() {
                             alert('AJAX error');
