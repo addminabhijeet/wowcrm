@@ -35,9 +35,37 @@ $script = '<script>
     <div class="card-body p-24" id="senior-table-wrapper">
         <!-- Extra Scroll Bar Above -->
         <!-- Extra Scroll Bar Above -->
-        <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper">
-            <div id="top-scroll"></div>
+        <div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper"
+            style="
+                overflow-x: auto;
+                overflow-y: hidden;
+                scrollbar-gutter: stable;
+                height: 20px;
+            ">
+            <div id="top-scroll" style="height: 1px;"></div>
         </div>
+        <script>
+            $(document).ready(function() {
+                // Set top-scroll width equal to table width
+                function syncTopScroll() {
+                    var tableWidth = $('#sheet-table')[0].scrollWidth;
+                    $('#top-scroll').width(tableWidth);
+                }
+
+                syncTopScroll(); // initial sync
+                $(window).resize(syncTopScroll); // update on window resize
+
+                // Scroll table when top-scroll is moved
+                $('#top-scroll-wrapper').on('scroll', function() {
+                    $('.table-responsive.scroll-sm').scrollLeft($(this).scrollLeft());
+                });
+
+                // Scroll top-scroll when table is scrolled
+                $('.table-responsive.scroll-sm').on('scroll', function() {
+                    $('#top-scroll-wrapper').scrollLeft($(this).scrollLeft());
+                });
+            });
+        </script>
 
         <!-- Main Table Scroll -->
         <div class="table-responsive scroll-sm" id="bottom-scroll-wrapper">
@@ -69,7 +97,11 @@ $script = '<script>
                         <th scope="col" class="text-center">Follow Up Remark</th>
                         <th scope="col" class="text-center">Installment</th>
                         <th scope="col" class="text-center">Status</th>
-
+                        @auth
+                        @if (auth()->user()->role !== 'operation')
+                        <th scope="col" class="text-center">Actions</th>
+                        @endif
+                        @endauth
                     </tr>
                 </thead>
                 <tbody id="sheet-table-body">
@@ -347,7 +379,15 @@ $script = '<script>
                             </select>
                         </td>
 
-
+                        @auth
+                        @if (auth()->user()->role !== 'operation')
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
+                                <i class="fas fa-save"></i> Save
+                            </button>
+                        </td>
+                        @endif
+                        @endauth
                     </tr>
                     @endforeach
                 </tbody>

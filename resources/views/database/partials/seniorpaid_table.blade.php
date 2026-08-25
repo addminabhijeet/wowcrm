@@ -1,7 +1,40 @@
 @if ($data->isEmpty())
 <p class="text-muted">No data found. Fetch a Google Sheet first.</p>
 @else
+<div class="table-responsive scroll-sm mb-2" id="top-scroll-wrapper"
+    style="
+        overflow-x: auto;
+        overflow-y: hidden;
+        scrollbar-gutter: stable;
+        height: 20px;
+    ">
+    <div id="top-scroll" style="height: 1px;"></div>
+</div>
+<script>
+    $(document).ready(function() {
+        // Set top-scroll width equal to table width
+        function syncTopScroll() {
+            var tableWidth = $('#sheet-table')[0].scrollWidth;
+            $('#top-scroll').width(tableWidth);
+        }
+
+        syncTopScroll(); // initial sync
+        $(window).resize(syncTopScroll); // update on window resize
+
+        // Scroll table when top-scroll is moved
+        $('#top-scroll-wrapper').on('scroll', function() {
+            $('.table-responsive.scroll-sm').scrollLeft($(this).scrollLeft());
+        });
+
+        // Scroll top-scroll when table is scrolled
+        $('.table-responsive.scroll-sm').on('scroll', function() {
+            $('#top-scroll-wrapper').scrollLeft($(this).scrollLeft());
+        });
+    });
+</script>
+
 <div class="table-responsive scroll-sm">
+
     <table class="table bordered-table sm-table mb-0">
         <thead>
             <tr>
@@ -18,21 +51,28 @@
                 <th scope="col" class="text-center">Course</th>
                 <th scope="col" class="text-center">Amount</th>
                 <th scope="col" class="text-center">Qualification</th>
-
-                <th scope="col" class="text-center">1st Follow Up Remarks</th>
                 <th scope="col" class="text-center">Time Zone</th>
+                <th scope="col" class="text-center">1st Follow Up Remarks</th>
+
                 <th scope="col" class="text-center">Forwarded By</th>
                 <th scope="col" class="text-center">Resume</th>
                 <th scope="col" class="text-center">Remark</th>
+                <th scope="col" class="text-center">Follow Up Remark</th>
+                <th scope="col" class="text-center">Installment</th>
                 <th scope="col" class="text-center">Status</th>
-                <th scope="col" class="text-center">Actions</th>
+                @endauth
             </tr>
         </thead>
         <tbody id="sheet-table-body">
             @foreach ($data as $row)
             <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
 
-                <td>{{ $row->sheet_row_number }}</td>
+                <td class="text-center align-middle">
+                    <button type="button" class="btn btn-sm btn-primary copy-row-btn" title="Copy Entire Row">
+                        <i class="fas fa-copy"></i>
+                    </button>
+                    <strong>{{ $row->sheet_row_number }}</strong>
+                </td>
 
                 {{-- Date --}}
                 <td>
@@ -88,7 +128,7 @@
 
                 {{-- Immigration --}}
                 <td>
-                    @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
+                    @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','L2S']; @endphp
                     <select class="form-select dynamic-dropdown" data-key="Immigration">
                         <option value="">--Immigration --</option>
                         @foreach ($immOptions as $option)
@@ -150,7 +190,19 @@
                     </select>
                 </td>
 
-
+                {{-- Time Zone --}}
+                <td>
+                    @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
+                    <select class="form-select dynamic-dropdown" data-key="Time Zone">
+                        <option value="">-- Time Zone --</option>
+                        @foreach ($timezoneOptions as $option)
+                        <option value="{{ $option }}"
+                            {{ $row->Time_Zone === $option ? 'selected' : '' }}>
+                            {{ $option }}
+                        </option>
+                        @endforeach
+                    </select>
+                </td>
 
                 {{-- 1st Follow Up Remarks --}}
                 <td>
@@ -168,19 +220,7 @@
 
 
 
-                {{-- Time Zone --}}
-                <td>
-                    @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
-                    <select class="form-select dynamic-dropdown" data-key="Time Zone">
-                        <option value="">-- Time Zone --</option>
-                        @foreach ($timezoneOptions as $option)
-                        <option value="{{ $option }}"
-                            {{ $row->Time_Zone === $option ? 'selected' : '' }}>
-                            {{ $option }}
-                        </option>
-                        @endforeach
-                    </select>
-                </td>
+
 
                 {{-- Forwarded By --}}
                 <td>
@@ -213,14 +253,73 @@
 
                 {{-- Remark --}}
                 <td>
-                    <input type="text" class="form-control remark-autocomplete" data-key="Remark"
+                    <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
+                        rows="6">{{ $row->Remark ?? '' }}</textarea>
+
+                    <input type="hidden" name="Remark"
+                        class="form-control remark-autocomplete remark-hidden" data-key="Remark"
                         value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                 </td>
 
+                {{-- TransferRemark --}}
+                <td>
+                    <textarea class="form-control transferremark-autocomplete" rows="6" placeholder="Type remark">{{ $row->TransferRemark ?? '' }}</textarea>
 
+                    <input type="hidden" name="TransferRemark" class="transferremark-hidden"
+                        data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}">
+
+                </td>
+                {{-- Installment --}}
+                <td>
+                    <input type="checkbox"
+                        class="form-check-input installment-checkbox"
+                        value="0"
+                        {{ (int)$row->installment === 1 ? 'checked' : '' }}>
+
+                    <input type="hidden"
+                        name="installment"
+                        class="installment-hidden"
+                        data-key="installment"
+                        value="{{ (int)($row->installment ?? 0) }}">
+                </td>
+
+                <script>
+                    document.addEventListener("DOMContentLoaded", function() {
+
+                        document.querySelectorAll(".installment-checkbox").forEach(function(checkbox) {
+                            checkbox.addEventListener("change", function() {
+                                let hiddenInput = this.closest("td").querySelector(".installment-hidden");
+                                hiddenInput.value = this.checked ? 1 : 0;
+                            });
+                        });
+
+                        // ✅ FIX: Sync BOTH installment + Exe Remarks before save
+                        document.querySelectorAll(".save-btn").forEach(function(btn) {
+                            btn.addEventListener("click", function() {
+
+                                let row = this.closest("tr");
+
+                                let checkbox = row.querySelector(".installment-checkbox");
+                                let hiddenInput = row.querySelector(".installment-hidden");
+
+                                // 🔥 Always sync installment
+                                hiddenInput.value = checkbox.checked ? 1 : 0;
+
+                                // 🔥 FORCE Exe Remarks value to be fresh
+                                let exeSelect = row.querySelector('[data-key="Exe Remarks"]');
+                                if (exeSelect) {
+                                    exeSelect.setAttribute("data-value", exeSelect.value);
+                                }
+
+                            });
+                        });
+
+                    });
+                </script>
+                
                 {{-- Status --}}
                 <td>
-                    @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy']; @endphp
+                    @php $exeOptions = ['Called & Mailed','Ready To Pay']; @endphp
                     <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                         <option value="">-- Status --</option>
                         @foreach ($exeOptions as $option)
@@ -232,34 +331,81 @@
                     </select>
                 </td>
 
+                @endauth
             </tr>
             @endforeach
         </tbody>
         <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const form = document.querySelector('form');
+                if (!form) return;
+
+                // Function to sync a textarea to its corresponding input
+                function syncTextareaToInput(textarea) {
+                    const td = textarea.closest('td');
+                    if (!td) return;
+
+                    const textareaName = textarea.getAttribute('name');
+                    if (!textareaName) return;
+
+                    // Map _hidden textarea to input with same name minus _hidden
+                    const inputName = textareaName.replace('_hidden', '');
+                    const input = td.querySelector('input[name="' + inputName + '"]');
+                    if (!input) return;
+
+                    // Trim value before assigning
+                    input.value = textarea.value.trim();
+                }
+
+                // 🔁 Real-time sync on input for all textareas with *_autocomplete class
+                document.querySelectorAll('textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                    function(textarea) {
+                        textarea.addEventListener('input', function() {
+                            syncTextareaToInput(textarea);
+                        });
+                    });
+
+                // 🛡️ Final sync before form submit
+                form.addEventListener('submit', function() {
+                    document.querySelectorAll(
+                        'textarea.remark-autocomplete, textarea.transferremark-autocomplete').forEach(
+                        function(textarea) {
+                            syncTextareaToInput(textarea);
+                        });
+                });
+            });
             $(document).ready(function() {
                 $('.save-btn').click(function() {
                     let rowId = $(this).data('id');
                     let $tr = $('#row-' + rowId);
 
-                    // Collect row data
-                    let data = {};
-                    $tr.find('input, select').each(function() {
-                        let key = $(this).data('key');
-                        if (key) {
-                            if ($(this).is('select')) {
-                                data[key] = $(this).val();
-                            } else {
-                                data[key] = $(this).val();
-                            }
+                    // 🔁 Sync textarea values to hidden inputs BEFORE collecting data
+                    $tr.find('textarea').each(function() {
+                        let $textarea = $(this);
+                        let $td = $textarea.closest('td');
+
+                        if ($textarea.hasClass('remark-autocomplete')) {
+                            $td.find('input[name="Remark"]').val($textarea.val().trim());
                         }
+
+                        if ($textarea.hasClass('transferremark-autocomplete')) {
+                            $td.find('input[name="TransferRemark"]').val($textarea.val().trim());
+                        }
+                    });
+
+                    let data = {};
+
+                    // ✅ Now safely collect data
+                    $tr.find('input[data-key], select[data-key]').each(function() {
+                        let key = $(this).data('key');
+                        data[key] = $(this).val();
                     });
 
                     let formData = new FormData();
                     formData.append('id', rowId);
                     formData.append('data', JSON.stringify(data));
 
-                    // Attach resume file if uploaded
-                    let fileInput = $tr.find('input.resume-input')[0];
+                    let fileInput = $tr.find('.resume-input')[0];
                     if (fileInput && fileInput.files.length > 0) {
                         formData.append('resume', fileInput.files[0]);
                     }
@@ -274,26 +420,10 @@
                             'X-CSRF-TOKEN': '{{ csrf_token() }}'
                         },
                         success: function(response) {
-                            if (response.success) {
-                                alert(response.message);
-                                // Optionally update resume buttons dynamically
-                                if (response.row.resume_exists) {
-                                    let viewBtn = $tr.find('.view-btn');
-                                    viewBtn.attr('href',
-                                            '/dashboard/senior/google-sheet/view-resume/' + rowId)
-                                        .removeClass('d-none');
-                                    let downloadBtn = $tr.find('.download-btn');
-                                    downloadBtn.attr('href',
-                                        '/dashboard/senior/google-sheet/download-resume/' +
-                                        rowId).removeClass('d-none');
-                                    $tr.find('.upload-btn').text('Change File');
-                                }
-                            } else {
-                                alert(response.message);
-                            }
+                            alert(response.message);
                         },
-                        error: function(err) {
-                            alert('AJAX error: ' + err.responseText);
+                        error: function() {
+                            alert('AJAX error');
                         }
                     });
                 });
@@ -315,3 +445,4 @@
     </div>
 </div>
 @endif
+</div>
