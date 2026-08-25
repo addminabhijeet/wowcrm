@@ -867,10 +867,10 @@ $script = '<script>
                 // Determine URL and method
                 let url, method;
                 if (id === "new") {
-                    url = "{{ route('juniorstore') }}";
+                    url = "{{ route('seniorstore') }}";
                     method = "POST";
                 } else {
-                    url = "{{ route('juniorupdate') }}";
+                    url = "{{ route('seniorupdate') }}";
                     method = "POST";
                     formData.append("id", id);
                 }
@@ -1079,7 +1079,7 @@ $script = '<script>
             }
 
             activeRequest = $.ajax({
-                url: "{{ route('google.sheet.junior') }}",
+                url: "{{ route('google.sheet.senior') }}",
                 type: 'GET',
                 cache: false, // ✅ Disable browser caching for fresh data
                 data: {
@@ -1121,7 +1121,7 @@ $script = '<script>
             }
 
             $.ajax({
-                url: "{{ route('junior.suggestions') }}",
+                url: "{{ route('senior.suggestions') }}",
                 type: 'GET',
                 data: {
                     query: search, // ✅ required
