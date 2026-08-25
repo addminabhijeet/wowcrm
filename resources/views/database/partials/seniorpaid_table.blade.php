@@ -18,31 +18,21 @@
                 <th scope="col" class="text-center">Course</th>
                 <th scope="col" class="text-center">Amount</th>
                 <th scope="col" class="text-center">Qualification</th>
-                <th scope="col" class="text-center">Time Zone</th>
-                <th scope="col" class="text-center">1st Follow Up Remarks</th>
 
+                <th scope="col" class="text-center">1st Follow Up Remarks</th>
+                <th scope="col" class="text-center">Time Zone</th>
                 <th scope="col" class="text-center">Forwarded By</th>
                 <th scope="col" class="text-center">Resume</th>
                 <th scope="col" class="text-center">Remark</th>
-                <th scope="col" class="text-center">Follow Up Remark</th>
-                <th scope="col" class="text-center">Installment</th>
                 <th scope="col" class="text-center">Status</th>
-
+                <th scope="col" class="text-center">Actions</th>
             </tr>
         </thead>
         <tbody id="sheet-table-body">
             @foreach ($data as $row)
             <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
 
-                <td class="text-center align-middle">
-                    <button
-                        type="button"
-                        class="btn btn-sm btn-primary copy-row-btn"
-                        title="Copy Entire Row">
-                        <i class="fas fa-copy"></i>
-                    </button>
-                    <strong>{{ $row->sheet_row_number }}</strong>
-                </td>
+                <td>{{ $row->sheet_row_number }}</td>
 
                 {{-- Date --}}
                 <td>
@@ -98,7 +88,7 @@
 
                 {{-- Immigration --}}
                 <td>
-                    @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC','L2S']; @endphp
+                    @php $immOptions = ['F1 CPT','F1 OPT','STEM OPT','H1B','B2','B1','H4','H4 EAD', 'GC/PR','USC']; @endphp
                     <select class="form-select dynamic-dropdown" data-key="Immigration">
                         <option value="">--Immigration --</option>
                         @foreach ($immOptions as $option)
@@ -160,19 +150,7 @@
                     </select>
                 </td>
 
-                {{-- Time Zone --}}
-                <td>
-                    @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
-                    <select class="form-select dynamic-dropdown" data-key="Time Zone">
-                        <option value="">-- Time Zone --</option>
-                        @foreach ($timezoneOptions as $option)
-                        <option value="{{ $option }}"
-                            {{ $row->Time_Zone === $option ? 'selected' : '' }}>
-                            {{ $option }}
-                        </option>
-                        @endforeach
-                    </select>
-                </td>
+
 
                 {{-- 1st Follow Up Remarks --}}
                 <td>
@@ -190,13 +168,24 @@
 
 
 
-
+                {{-- Time Zone --}}
+                <td>
+                    @php $timezoneOptions = ['EST','CST','MST','PST']; @endphp
+                    <select class="form-select dynamic-dropdown" data-key="Time Zone">
+                        <option value="">-- Time Zone --</option>
+                        @foreach ($timezoneOptions as $option)
+                        <option value="{{ $option }}"
+                            {{ $row->Time_Zone === $option ? 'selected' : '' }}>
+                            {{ $option }}
+                        </option>
+                        @endforeach
+                    </select>
+                </td>
 
                 {{-- Forwarded By --}}
                 <td>
-                    <input type="text" class="form-control forwardedBy-input"
-                        data-key="forwardedBy" value="{{ $row->forwarded_by ?? '' }}"
-                        placeholder="Forwarded By" readonly>
+                    <input type="text" class="form-control forwardedBy-input" data-key="forwardedBy"
+                        value="{{ $row->forwarded_by ?? '' }}" placeholder="Forwarded By" readonly>
                 </td>
 
                 {{-- View (Resume) --}}
@@ -215,8 +204,8 @@
                     <a href="{{ url('dashboard/junior/google-sheet/download-resume/' . $row->id) }}"
                         class="btn btn-sm btn-secondary download-btn">Download</a>
                     @else
-                    <a href="#" target="_blank"
-                        class="btn btn-sm btn-primary view-btn d-none">View File</a>
+                    <a href="#" target="_blank" class="btn btn-sm btn-primary view-btn d-none">View
+                        File</a>
                     <a href="#" download
                         class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                     @endif
@@ -224,76 +213,14 @@
 
                 {{-- Remark --}}
                 <td>
-                    <textarea type="text" name="Remark_hidden" class="form-control remark-autocomplete" placeholder="Type remark"
-                        rows="6">{{ $row->Remark ?? '' }}</textarea>
-
-                    <input type="hidden" name="Remark"
-                        class="form-control remark-autocomplete remark-hidden" data-key="Remark"
+                    <input type="text" class="form-control remark-autocomplete" data-key="Remark"
                         value="{{ $row->Remark ?? '' }}" placeholder="Type remark">
                 </td>
 
-                {{-- TransferRemark --}}
-                <td>
-                    <textarea type="text" name="TransferRemark_hidden" class="form-control transferremark-autocomplete data-field"
-                        data-key="TransferRemark" placeholder="Type remark" rows="6">{{ $row->TransferRemark ?? '' }}</textarea>
-
-                    <input type="hidden" name="TransferRemark"
-                        class="form-control transferremark-autocomplete transferremark-hidden"
-                        data-key="TransferRemark" value="{{ $row->TransferRemark ?? '' }}"
-                        placeholder="Type TransferRemark">
-                </td>
-
-                {{-- Installment --}}
-                <td>
-                    <input type="checkbox"
-                        class="form-check-input installment-checkbox"
-                        value="0"
-                        {{ (int)$row->installment === 1 ? 'checked' : '' }}>
-
-                    <input type="hidden"
-                        name="installment"
-                        class="installment-hidden"
-                        data-key="installment"
-                        value="{{ (int)($row->installment ?? 0) }}">
-                </td>
-
-                <script>
-                    document.addEventListener("DOMContentLoaded", function() {
-
-                        document.querySelectorAll(".installment-checkbox").forEach(function(checkbox) {
-                            checkbox.addEventListener("change", function() {
-                                let hiddenInput = this.closest("td").querySelector(".installment-hidden");
-                                hiddenInput.value = this.checked ? 1 : 0;
-                            });
-                        });
-
-                        // ✅ FIX: Sync BOTH installment + Exe Remarks before save
-                        document.querySelectorAll(".save-btn").forEach(function(btn) {
-                            btn.addEventListener("click", function() {
-
-                                let row = this.closest("tr");
-
-                                let checkbox = row.querySelector(".installment-checkbox");
-                                let hiddenInput = row.querySelector(".installment-hidden");
-
-                                // 🔥 Always sync installment
-                                hiddenInput.value = checkbox.checked ? 1 : 0;
-
-                                // 🔥 FORCE Exe Remarks value to be fresh
-                                let exeSelect = row.querySelector('[data-key="Exe Remarks"]');
-                                if (exeSelect) {
-                                    exeSelect.setAttribute("data-value", exeSelect.value);
-                                }
-
-                            });
-                        });
-
-                    });
-                </script>
 
                 {{-- Status --}}
                 <td>
-                    @php $exeOptions = ['Called & Mailed','Ready To Pay']; @endphp
+                    @php $exeOptions = ['Called & Mailed','Not Interested','Not Connected','Did Not Pickup','Others','Ready To Pay','VM','Busy']; @endphp
                     <select class="form-select dynamic-dropdown" data-key="Exe Remarks">
                         <option value="">-- Status --</option>
                         @foreach ($exeOptions as $option)
@@ -305,83 +232,79 @@
                     </select>
                 </td>
 
-
             </tr>
             @endforeach
         </tbody>
-    </table>
-    @endforeach
+        <script>
+            $(document).ready(function() {
+                $('.save-btn').click(function() {
+                    let rowId = $(this).data('id');
+                    let $tr = $('#row-' + rowId);
 
-    <script>
-        $(document).ready(function() {
-            $('.save-btn').click(function() {
-                let rowId = $(this).data('id');
-                let $tr = $('#row-' + rowId);
-
-                // Collect row data
-                let data = {};
-                $tr.find('input, select').each(function() {
-                    let key = $(this).data('key');
-                    if (key) {
-                        if ($(this).is('select')) {
-                            data[key] = $(this).val();
-                        } else {
-                            data[key] = $(this).val();
-                        }
-                    }
-                });
-
-                let formData = new FormData();
-                formData.append('id', rowId);
-                formData.append('data', JSON.stringify(data));
-
-                // Attach resume file if uploaded
-                let fileInput = $tr.find('input.resume-input')[0];
-                if (fileInput && fileInput.files.length > 0) {
-                    formData.append('resume', fileInput.files[0]);
-                }
-
-                $.ajax({
-                    url: "{{ route('seniorupdate') }}",
-                    type: 'POST',
-                    data: formData,
-                    contentType: false,
-                    processData: false,
-                    headers: {
-                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                    },
-                    success: function(response) {
-                        if (response.success) {
-                            alert(response.message);
-                            // Optionally update resume buttons dynamically
-                            if (response.row.resume_exists) {
-                                let viewBtn = $tr.find('.view-btn');
-                                viewBtn.attr('href',
-                                        '/dashboard/senior/google-sheet/view-resume/' + rowId)
-                                    .removeClass('d-none');
-                                let downloadBtn = $tr.find('.download-btn');
-                                downloadBtn.attr('href',
-                                    '/dashboard/senior/google-sheet/download-resume/' +
-                                    rowId).removeClass('d-none');
-                                $tr.find('.upload-btn').text('Change File');
+                    // Collect row data
+                    let data = {};
+                    $tr.find('input, select').each(function() {
+                        let key = $(this).data('key');
+                        if (key) {
+                            if ($(this).is('select')) {
+                                data[key] = $(this).val();
+                            } else {
+                                data[key] = $(this).val();
                             }
-                        } else {
-                            alert(response.message);
                         }
-                    },
-                    error: function(err) {
-                        alert('AJAX error: ' + err.responseText);
+                    });
+
+                    let formData = new FormData();
+                    formData.append('id', rowId);
+                    formData.append('data', JSON.stringify(data));
+
+                    // Attach resume file if uploaded
+                    let fileInput = $tr.find('input.resume-input')[0];
+                    if (fileInput && fileInput.files.length > 0) {
+                        formData.append('resume', fileInput.files[0]);
                     }
+
+                    $.ajax({
+                        url: "{{ route('seniorupdate') }}",
+                        type: 'POST',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        headers: {
+                            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                        },
+                        success: function(response) {
+                            if (response.success) {
+                                alert(response.message);
+                                // Optionally update resume buttons dynamically
+                                if (response.row.resume_exists) {
+                                    let viewBtn = $tr.find('.view-btn');
+                                    viewBtn.attr('href',
+                                            '/dashboard/senior/google-sheet/view-resume/' + rowId)
+                                        .removeClass('d-none');
+                                    let downloadBtn = $tr.find('.download-btn');
+                                    downloadBtn.attr('href',
+                                        '/dashboard/senior/google-sheet/download-resume/' +
+                                        rowId).removeClass('d-none');
+                                    $tr.find('.upload-btn').text('Change File');
+                                }
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function(err) {
+                            alert('AJAX error: ' + err.responseText);
+                        }
+                    });
+                });
+
+                // Show file input when clicking upload
+                $('.upload-btn').click(function() {
+                    $(this).closest('td').find('input.resume-input').click();
                 });
             });
-
-            // Show file input when clicking upload
-            $('.upload-btn').click(function() {
-                $(this).closest('td').find('input.resume-input').click();
-            });
-        });
-    </script>
-
+        </script>
+    </table>
     @endif
 </div>
 {{-- Pagination --}}
