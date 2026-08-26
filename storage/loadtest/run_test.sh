@@ -16,24 +16,44 @@ echo ""
 # Step 1: Create 100 test users
 echo "[1/5] Creating 100 test users..."
 cd "$PROJ_DIR"
-php8.3 artisan tinker --execute="
-for (\$i = 1; \$i <= 100; \$i++) {
-    \App\Models\User::create([
-        'name' => 'LoadTest Junior '.\$i,
-        'email' => 'loadtest.junior'.\$i.'@test.local',
-        'password' => 'LoadTest@123',
-        'role' => 'junior',
-        'status' => 1,
-        'is_deleted' => 0,
-    ]);
-}
-echo 'Created 100 test users';
-" 2>&1 | grep -i "created"
 
-if [ $? -ne 0 ]; then
+# Create a temporary PHP script for user creation
+cat > /tmp/create_users.php << 'PHPEOF'
+<?php
+require_once __DIR__ . '/../../../bootstrap/app.php';
+$app = require_once __DIR__ . '/../../../bootstrap/app.php';
+
+try {
+    for ($i = 1; $i <= 100; $i++) {
+        \App\Models\User::firstOrCreate(
+            ['email' => "loadtest.junior{$i}@test.local"],
+            [
+                'name' => "LoadTest Junior {$i}",
+                'password' => bcrypt('LoadTest@123'),
+                'role' => 'junior',
+                'status' => 1,
+                'is_deleted' => 0,
+            ]
+        );
+        echo ".";
+    }
+    echo "\n";
+    echo "✓ Created 100 test users\n";
+} catch (Exception $e) {
+    echo "✗ Error: " . $e->getMessage() . "\n";
+    exit(1);
+}
+PHPEOF
+
+php /tmp/create_users.php 2>&1
+USER_CREATION_RESULT=$?
+
+if [ $USER_CREATION_RESULT -ne 0 ]; then
     echo "❌ Failed to create test users"
+    cat /tmp/create_users.php
     exit 1
 fi
+rm -f /tmp/create_users.php
 echo "✓ Test users created"
 echo ""
 
