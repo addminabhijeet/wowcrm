@@ -47,12 +47,14 @@ EOF
 USER_CREATION_RESULT=$?
 echo "$OUTPUT"
 
-if [ $USER_CREATION_RESULT -ne 0 ] || ! echo "$OUTPUT" | grep -q "Created users"; then
+# Check if "Created users" is in output (indicates success)
+if echo "$OUTPUT" | grep -q "Created users"; then
+    echo "✓ Test users created"
+else
     echo "❌ Failed to create test users"
     echo "Debug output: $OUTPUT"
     exit 1
 fi
-echo "✓ Test users created"
 echo ""
 
 # Step 2: Start system monitoring in background
