@@ -18,17 +18,18 @@ echo "[1/5] Creating 100 test users..."
 cd "$PROJ_DIR"
 
 # Create a temporary PHP script for user creation
-cat > /tmp/create_users.php << 'PHPEOF'
+PROJ_DIR_ESCAPED=$(echo "$PROJ_DIR" | sed 's/[\/&]/\\&/g')
+cat > /tmp/create_users.php << PHPEOF
 <?php
-require_once __DIR__ . '/../../../bootstrap/app.php';
-$app = require_once __DIR__ . '/../../../bootstrap/app.php';
+\$proj_dir = '$PROJ_DIR';
+require_once \$proj_dir . '/bootstrap/app.php';
 
 try {
-    for ($i = 1; $i <= 100; $i++) {
+    for (\$i = 1; \$i <= 100; \$i++) {
         \App\Models\User::firstOrCreate(
-            ['email' => "loadtest.junior{$i}@test.local"],
+            ['email' => "loadtest.junior{\$i}@test.local"],
             [
-                'name' => "LoadTest Junior {$i}",
+                'name' => "LoadTest Junior {\$i}",
                 'password' => bcrypt('LoadTest@123'),
                 'role' => 'junior',
                 'status' => 1,
@@ -39,8 +40,8 @@ try {
     }
     echo "\n";
     echo "✓ Created 100 test users\n";
-} catch (Exception $e) {
-    echo "✗ Error: " . $e->getMessage() . "\n";
+} catch (Exception \$e) {
+    echo "✗ Error: " . \$e->getMessage() . "\n";
     exit(1);
 }
 PHPEOF
@@ -50,7 +51,6 @@ USER_CREATION_RESULT=$?
 
 if [ $USER_CREATION_RESULT -ne 0 ]; then
     echo "❌ Failed to create test users"
-    cat /tmp/create_users.php
     exit 1
 fi
 rm -f /tmp/create_users.php
