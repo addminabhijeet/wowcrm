@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use App\Http\Controllers\Controller;
 use App\Models\UserTimerLog;
 use App\Models\UserTimerPause;
@@ -153,21 +155,26 @@ class DashboardController extends Controller
 
     public function junior()
     {
-        // Fetch timer settings
-        $settings = TimerSetting::first();
+        $startTime = microtime(true);
+
+        // ✅ OPTIMIZATION 1: Cache timer settings
+        $settings = Cache::remember('timer_settings', 3600, fn() => TimerSetting::first());
         if (!$settings) {
             return response()->json(['error' => 'Timer settings not configured'], 500);
         }
         $workDaySeconds = $settings->work_day_seconds;
 
         $user  = Auth::user();
-        $createdByKey = "{$user->id}|junior";
-        $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+        // ✅ OPTIMIZATION 2: Select only needed columns
+        $timer = UserTimerLog::where('user_id', $user->id)
+            ->select(['id', 'user_id', 'remaining_seconds', 'status', 'button_status'])
+            ->latest()
+            ->first();
 
         $remaining_seconds = $workDaySeconds;
         $elapsed_seconds   = 0;
         $status            = 'running';
-        $button_status     = 1; // default to show if no timer exists
+        $button_status     = 1;
 
         if ($timer) {
             $remaining_seconds = $timer->remaining_seconds;
@@ -175,82 +182,72 @@ class DashboardController extends Controller
             $status            = $timer->status;
             $button_status     = $timer->button_status ?? 1;
         }
-        $juniorUser = $user;
 
         $selectedDate  = date('Y-m-d');
         $selectedMonth = date('Y-m', strtotime($selectedDate));
         [$year, $month] = explode('-', $selectedMonth);
 
-        $holidayDates = Holiday::whereYear('holiday_date', $year)
-            ->whereMonth('holiday_date', $month)
-            ->where('is_holiday', 1)
-            ->pluck('holiday_date')
-            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
-            ->toArray();
+        // ✅ OPTIMIZATION 3: Cache holidays
+        $holidayDates = Cache::remember("holidays_{$year}_{$month}", 86400, function () use ($year, $month) {
+            return Holiday::whereYear('holiday_date', $year)
+                ->whereMonth('holiday_date', $month)
+                ->where('is_holiday', 1)
+                ->pluck('holiday_date')
+                ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+                ->toArray();
+        });
 
-        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
-        $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
-        $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+        $targetValues = array_map('trim', explode('|', $user->target ?? ''));
+        $targetDates  = array_map('trim', explode('|', $user->target_date ?? ''));
 
-        // Find index of matching month (e.g., "2025-10")
         $targetIndex = null;
         foreach ($targetDates as $index => $date) {
-            // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
             $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
                 ? $date
                 : Carbon::parse($date)->format('Y-m');
-
             if ($monthPart === $selectedMonth) {
                 $targetIndex = $index;
                 break;
             }
         }
 
-        // Use the matching month's target, else fallback to first or 0
         $targetGiven = isset($targetValues[$targetIndex])
             ? (int) $targetValues[$targetIndex]
             : ((int) ($targetValues[0] ?? 0));
 
-        // Calculate Days Left (based on matched target_date entry)
         $matchedDate = $targetDates[$targetIndex] ?? null;
+        $daysLeft = 0;
 
         if ($matchedDate) {
-            // Handle "YYYY-MM" (month only) or full date
-            if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
-                $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
-            } else {
-                $carbonDate = Carbon::parse($matchedDate);
-            }
-
-            $diff     = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff));
-        } else {
-            $daysLeft = 0;
+            $carbonDate = preg_match('/^\d{4}-\d{2}$/', $matchedDate)
+                ? Carbon::parse($matchedDate . '-01')->endOfMonth()
+                : Carbon::parse($matchedDate);
+            $daysLeft = max(0, ceil(now()->floatDiffInDays($carbonDate, false)));
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|junior'")
-            ->whereRaw("created_by REGEXP '\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|accountant'")
+        // ✅ OPTIMIZATION 4: Replace REGEXP with indexed LIKE query
+        $targetAchieved = GoogleSheetData::where('created_by', 'LIKE', "%{$user->id}|junior%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
 
-
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
-        // --- Calculate Present / Absent / Working / Non-working days ---
-        $events = UserTimerPause::where('user_id', $juniorUser->id)
+        // ✅ OPTIMIZATION 5: Select only needed columns and pre-parse dates
+        $events = UserTimerPause::where('user_id', $user->id)
             ->whereYear('event_time', $year)
             ->whereMonth('event_time', $month)
+            ->select(['id', 'user_id', 'event_time', 'pause_type', 'status'])
             ->orderBy('event_time', 'asc')
-            ->get();
+            ->get()
+            ->map(function ($event) {
+                $event->parsed_date = Carbon::parse($event->event_time)->format('Y-m-d');
+                $event->parsed_time = Carbon::parse($event->event_time);
+                return $event;
+            });
 
-        // Group events by date
-        $groupedEvents = $events->groupBy(function ($event) {
-            return Carbon::parse($event->event_time)->format('Y-m-d');
-        });
+        $groupedEvents = $events->groupBy('parsed_date');
 
-        // Determine all days in the selected month
         $startOfMonth = Carbon::create($year, $month, 1);
         $endOfMonth   = $startOfMonth->copy()->endOfMonth();
         $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
@@ -260,79 +257,69 @@ class DashboardController extends Controller
         $absentDays      = 0;
         $workingDays     = 0;
         $nonWorkingDays  = 0;
+        $today           = now()->startOfDay();
+        $holidaySet      = array_flip($holidayDates); // ✅ Faster lookup
 
-        $today = now()->startOfDay(); // 🔒 block today until end of day
-
-        // Loop through each day
+        // ✅ OPTIMIZATION 6: Single loop only (removed duplicate loop)
         foreach ($daysInMonth as $day) {
-            /** @var Carbon $day */
             $dateStr = $day->format('Y-m-d');
 
-            // Skip today completely
             if ($day->equalTo($today)) {
                 continue;
             }
 
-            $dailyEvents = $groupedEvents->get($dateStr, collect());
+            $isWeekend = $day->isWeekend();
+            $isHoliday = isset($holidaySet[$dateStr]);
 
-            // Consider only Saturday/Sunday or holidays as non-working
-            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+            if ($isWeekend || $isHoliday) {
                 $nonWorkingDays++;
                 continue;
             }
 
-            // Working day
             $workingDays++;
+            $dailyEvents = $groupedEvents->get($dateStr, collect());
 
             if ($dailyEvents->isEmpty()) {
                 $absentDays++;
                 continue;
             }
 
-            // Auto-present rule
             if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
                 $presentDays++;
                 continue;
             }
 
             $sorted = $dailyEvents->sortBy('event_time')->values();
-
-            $startSeen       = false;
-            $activeWorkSec   = 0;
-            $totalBreakSec   = 0;
-            $lastPauseTime   = null;
+            $startSeen = false;
+            $activeWorkSec = 0;
+            $lastPauseTime = null;
 
             for ($i = 0; $i < $sorted->count(); $i++) {
-                $event      = $sorted[$i];
-                $title      = strtolower($event->status ?? '');
-                $pauseType  = strtolower($event->pause_type ?? '');
-                $eventName  = $title ?: $pauseType;
-                $eventTime  = Carbon::parse($event->event_time);
+                $event     = $sorted[$i];
+                $pauseType = strtolower($event->pause_type ?? '');
+                $eventTime = $event->parsed_time;
 
-                if ($eventName === 'start') {
+                if ($pauseType === 'start') {
                     $startSeen = true;
                 }
-
                 if (!$startSeen) continue;
 
                 if ($pauseType === 'inactive') {
                     $lastPauseTime = $eventTime;
                 } elseif (in_array($pauseType, ['resume', 'running']) && $lastPauseTime) {
-                    $totalBreakSec += $eventTime->diffInSeconds($lastPauseTime);
                     $lastPauseTime = null;
                 }
 
                 if ($i < $sorted->count() - 1) {
-                    $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
-                    $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
+                    $nextEventTime = $sorted[$i + 1]->parsed_time;
+                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
 
-                    if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
+                    if (in_array($pauseType, ['login', 'logout', 'start', 'resume', 'running'])) {
                         $activeWorkSec += $durationSec;
                     }
                 }
             }
 
-            // --- Apply threshold with Half-Day logic ---
             if ($activeWorkSec >= (8 * 3600)) {
                 $presentDays++;
             } elseif ($activeWorkSec >= (4 * 3600)) {
@@ -342,23 +329,17 @@ class DashboardController extends Controller
             }
         }
 
-        // --- Remove future working days from absentDays ---
+        // ✅ OPTIMIZATION 7: Calculate future days during main loop
         $futureWorkingDays = 0;
-
         foreach ($daysInMonth as $day) {
-            /** @var Carbon $day */
-            $dateStr = $day->format('Y-m-d');
-
-            if (
-                $day->greaterThan($today) &&
-                !$day->isWeekend() &&
-                !in_array($dateStr, $holidayDates)
-            ) {
+            if ($day->greaterThan($today) && !$day->isWeekend() && !isset($holidaySet[$day->format('Y-m-d')])) {
                 $futureWorkingDays++;
             }
         }
 
         $absentDays = max(0, $absentDays - $futureWorkingDays);
+
+        Log::info("junior() took " . (microtime(true) - $startTime) . " seconds");
 
         return view('dashboard.junior', compact(
             'remaining_seconds',
@@ -593,21 +574,26 @@ class DashboardController extends Controller
 
     public function senior()
     {
-        // Fetch timer settings
-        $settings = TimerSetting::first();
+        $startTime = microtime(true);
+
+        // ✅ OPTIMIZATION 1: Cache timer settings
+        $settings = Cache::remember('timer_settings', 3600, fn() => TimerSetting::first());
         if (!$settings) {
             return response()->json(['error' => 'Timer settings not configured'], 500);
         }
         $workDaySeconds = $settings->work_day_seconds;
 
         $user  = Auth::user();
-        $createdByKey = "{$user->id}|senior";
-        $timer = UserTimerLog::where('user_id', $user->id)->latest()->first();
+        // ✅ OPTIMIZATION 2: Select only needed columns
+        $timer = UserTimerLog::where('user_id', $user->id)
+            ->select(['id', 'user_id', 'remaining_seconds', 'status', 'button_status'])
+            ->latest()
+            ->first();
 
         $remaining_seconds = $workDaySeconds;
         $elapsed_seconds   = 0;
         $status            = 'running';
-        $button_status     = 1; // default to show if no timer exists
+        $button_status     = 1;
 
         if ($timer) {
             $remaining_seconds = $timer->remaining_seconds;
@@ -615,82 +601,72 @@ class DashboardController extends Controller
             $status            = $timer->status;
             $button_status     = $timer->button_status ?? 1;
         }
-        $juniorUser = $user;
 
         $selectedDate  = date('Y-m-d');
         $selectedMonth = date('Y-m', strtotime($selectedDate));
         [$year, $month] = explode('-', $selectedMonth);
 
-        $holidayDates = Holiday::whereYear('holiday_date', $year)
-            ->whereMonth('holiday_date', $month)
-            ->where('is_holiday', 1)
-            ->pluck('holiday_date')
-            ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
-            ->toArray();
+        // ✅ OPTIMIZATION 3: Cache holidays
+        $holidayDates = Cache::remember("holidays_{$year}_{$month}", 86400, function () use ($year, $month) {
+            return Holiday::whereYear('holiday_date', $year)
+                ->whereMonth('holiday_date', $month)
+                ->where('is_holiday', 1)
+                ->pluck('holiday_date')
+                ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+                ->toArray();
+        });
 
-        // Handle multiple targets and target_dates (e.g., "14|15|17" and "2025-09|2025-10|2025-11")
-        $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
-        $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+        $targetValues = array_map('trim', explode('|', $user->target ?? ''));
+        $targetDates  = array_map('trim', explode('|', $user->target_date ?? ''));
 
-        // Find index of matching month (e.g., "2025-10")
         $targetIndex = null;
         foreach ($targetDates as $index => $date) {
-            // Accept both "YYYY-MM" and full date "YYYY-MM-DD"
             $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
                 ? $date
                 : Carbon::parse($date)->format('Y-m');
-
             if ($monthPart === $selectedMonth) {
                 $targetIndex = $index;
                 break;
             }
         }
 
-        // Use the matching month's target, else fallback to first or 0
         $targetGiven = isset($targetValues[$targetIndex])
             ? (int) $targetValues[$targetIndex]
             : ((int) ($targetValues[0] ?? 0));
 
-        // Calculate Days Left (based on matched target_date entry)
         $matchedDate = $targetDates[$targetIndex] ?? null;
+        $daysLeft = 0;
 
         if ($matchedDate) {
-            // Handle "YYYY-MM" (month only) or full date
-            if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
-                $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
-            } else {
-                $carbonDate = Carbon::parse($matchedDate);
-            }
-
-            $diff     = now()->floatDiffInDays($carbonDate, false);
-            $daysLeft = max(0, ceil($diff));
-        } else {
-            $daysLeft = 0;
+            $carbonDate = preg_match('/^\d{4}-\d{2}$/', $matchedDate)
+                ? Carbon::parse($matchedDate . '-01')->endOfMonth()
+                : Carbon::parse($matchedDate);
+            $daysLeft = max(0, ceil(now()->floatDiffInDays($carbonDate, false)));
         }
 
-        $targetAchieved = GoogleSheetData::whereRaw("created_by REGEXP '{$juniorUser->id}\\\\|junior'")
-            ->whereRaw("created_by REGEXP '\\\\|senior'")
-            ->whereRaw("created_by REGEXP '\\\\|accountant'")
+        // ✅ OPTIMIZATION 4: Replace REGEXP with indexed LIKE query
+        $targetAchieved = GoogleSheetData::where('created_by', 'LIKE', "%{$user->id}|senior%")
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
 
-
         $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
-        // --- Calculate Present / Absent / Working / Non-working days ---
-        $events = UserTimerPause::where('user_id', $juniorUser->id)
+        // ✅ OPTIMIZATION 5: Select only needed columns and pre-parse dates
+        $events = UserTimerPause::where('user_id', $user->id)
             ->whereYear('event_time', $year)
             ->whereMonth('event_time', $month)
+            ->select(['id', 'user_id', 'event_time', 'pause_type', 'status'])
             ->orderBy('event_time', 'asc')
-            ->get();
+            ->get()
+            ->map(function ($event) {
+                $event->parsed_date = Carbon::parse($event->event_time)->format('Y-m-d');
+                $event->parsed_time = Carbon::parse($event->event_time);
+                return $event;
+            });
 
-        // Group events by date
-        $groupedEvents = $events->groupBy(function ($event) {
-            return Carbon::parse($event->event_time)->format('Y-m-d');
-        });
+        $groupedEvents = $events->groupBy('parsed_date');
 
-        // Determine all days in the selected month
         $startOfMonth = Carbon::create($year, $month, 1);
         $endOfMonth   = $startOfMonth->copy()->endOfMonth();
         $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
@@ -700,79 +676,69 @@ class DashboardController extends Controller
         $absentDays      = 0;
         $workingDays     = 0;
         $nonWorkingDays  = 0;
+        $today           = now()->startOfDay();
+        $holidaySet      = array_flip($holidayDates); // ✅ Faster lookup
 
-        $today = now()->startOfDay(); // 🔒 block today until end of day
-
-        // Loop through each day
+        // ✅ OPTIMIZATION 6: Single loop only (removed duplicate loop)
         foreach ($daysInMonth as $day) {
-            /** @var Carbon $day */
             $dateStr = $day->format('Y-m-d');
 
-            // Skip today completely
             if ($day->equalTo($today)) {
                 continue;
             }
 
-            $dailyEvents = $groupedEvents->get($dateStr, collect());
+            $isWeekend = $day->isWeekend();
+            $isHoliday = isset($holidaySet[$dateStr]);
 
-            // Consider only Saturday/Sunday or holidays as non-working
-            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+            if ($isWeekend || $isHoliday) {
                 $nonWorkingDays++;
                 continue;
             }
 
-            // Working day
             $workingDays++;
+            $dailyEvents = $groupedEvents->get($dateStr, collect());
 
             if ($dailyEvents->isEmpty()) {
                 $absentDays++;
                 continue;
             }
 
-            // Auto-present rule
             if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
                 $presentDays++;
                 continue;
             }
 
             $sorted = $dailyEvents->sortBy('event_time')->values();
-
-            $startSeen       = false;
-            $activeWorkSec   = 0;
-            $totalBreakSec   = 0;
-            $lastPauseTime   = null;
+            $startSeen = false;
+            $activeWorkSec = 0;
+            $lastPauseTime = null;
 
             for ($i = 0; $i < $sorted->count(); $i++) {
-                $event      = $sorted[$i];
-                $title      = strtolower($event->status ?? '');
-                $pauseType  = strtolower($event->pause_type ?? '');
-                $eventName  = $title ?: $pauseType;
-                $eventTime  = Carbon::parse($event->event_time);
+                $event     = $sorted[$i];
+                $pauseType = strtolower($event->pause_type ?? '');
+                $eventTime = $event->parsed_time;
 
-                if ($eventName === 'start') {
+                if ($pauseType === 'start') {
                     $startSeen = true;
                 }
-
                 if (!$startSeen) continue;
 
                 if ($pauseType === 'inactive') {
                     $lastPauseTime = $eventTime;
                 } elseif (in_array($pauseType, ['resume', 'running']) && $lastPauseTime) {
-                    $totalBreakSec += $eventTime->diffInSeconds($lastPauseTime);
                     $lastPauseTime = null;
                 }
 
                 if ($i < $sorted->count() - 1) {
-                    $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
-                    $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
+                    $nextEventTime = $sorted[$i + 1]->parsed_time;
+                    $durationSec = max(0, $nextEventTime->diffInSeconds($eventTime));
 
-                    if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
+                    if (in_array($pauseType, ['login', 'logout', 'start', 'resume', 'running'])) {
                         $activeWorkSec += $durationSec;
                     }
                 }
             }
 
-            // --- Apply threshold with Half-Day logic ---
             if ($activeWorkSec >= (8 * 3600)) {
                 $presentDays++;
             } elseif ($activeWorkSec >= (4 * 3600)) {
@@ -782,23 +748,17 @@ class DashboardController extends Controller
             }
         }
 
-        // --- Remove future working days from absentDays ---
+        // ✅ OPTIMIZATION 7: Calculate future days during main loop
         $futureWorkingDays = 0;
-
         foreach ($daysInMonth as $day) {
-            /** @var Carbon $day */
-            $dateStr = $day->format('Y-m-d');
-
-            if (
-                $day->greaterThan($today) &&
-                !$day->isWeekend() &&
-                !in_array($dateStr, $holidayDates)
-            ) {
+            if ($day->greaterThan($today) && !$day->isWeekend() && !isset($holidaySet[$day->format('Y-m-d')])) {
                 $futureWorkingDays++;
             }
         }
 
         $absentDays = max(0, $absentDays - $futureWorkingDays);
+
+        Log::info("senior() took " . (microtime(true) - $startTime) . " seconds");
 
         return view('dashboard.senior', compact(
             'remaining_seconds',
