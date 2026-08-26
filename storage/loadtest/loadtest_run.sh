@@ -7,8 +7,21 @@ BASE="https://norloxsolutionscrm.com"
 JAR="$RESULTS_DIR/cookies_$i.txt"
 OUT="$RESULTS_DIR/result_$i.txt"
 
-# Get login page for CSRF token
-TOKEN=$(curl -k -s -c "$JAR" "$BASE/login" 2>/dev/null | grep -oP 'name="_token" value="\K[^"]+' | head -1)
+# Get login page for CSRF token with multiple extraction methods
+LOGIN_PAGE=$(curl -k -s -c "$JAR" "$BASE/login" 2>/dev/null)
+
+# Try multiple patterns to extract token
+TOKEN=$(echo "$LOGIN_PAGE" | grep -oP 'name="_token" value="\K[^"]+' | head -1)
+
+# If not found, try alternative pattern
+if [ -z "$TOKEN" ]; then
+    TOKEN=$(echo "$LOGIN_PAGE" | grep -oP '_token["\047]*\s*[:=]\s*["\047]\K[^"'\'']+' | head -1)
+fi
+
+# If still not found, try extracting from meta tag
+if [ -z "$TOKEN" ]; then
+    TOKEN=$(echo "$LOGIN_PAGE" | grep -oP 'content="\K[a-zA-Z0-9/+=]+(?="[^>]*name="csrf' | head -1)
+fi
 
 if [ -z "$TOKEN" ]; then
     echo "USER=$i ERROR=NO_TOKEN" >> "$OUT"
