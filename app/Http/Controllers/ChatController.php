@@ -36,39 +36,46 @@ class ChatController extends Controller
                         ->orWhere('target_date', 'like', "%{$search}%");
                 });
             })
+            ->get();
+
+        // Batch unread count query - single query instead of N queries
+        $unreadCounts = Chat::whereIn('sender_id', $users->pluck('id'))
+            ->where('receiver_id', $user->id)
+            ->where('is_read', false)
+            ->selectRaw('sender_id, COUNT(*) as unread_count')
+            ->groupBy('sender_id')
             ->get()
-            ->map(function ($chatUser) use ($user) {
-                $chatUser->lastChat = Chat::conversation(
-                    $user->id,
-                    $chatUser->id
-                )
-                    ->reorder('created_at', 'desc')
-                    ->first();
+            ->keyBy('sender_id');
 
-                // WhatsApp-like unread count
-                $chatUser->unreadCount = Chat::where('sender_id', $chatUser->id)
-                    ->where('receiver_id', $user->id)
-                    ->where('is_read', false)
-                    ->count();
+        $users = $users->map(function ($chatUser) use ($user, $unreadCounts) {
+            $chatUser->lastChat = Chat::conversation(
+                $user->id,
+                $chatUser->id
+            )
+                ->reorder('created_at', 'desc')
+                ->first();
 
-                if ($chatUser->lastChat) {
+            // Use pre-fetched unread count instead of query per user
+            $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
 
-                    $createdAt = $chatUser->lastChat->created_at;
+            if ($chatUser->lastChat) {
 
-                    $chatUser->lastChatDisplay = $createdAt->isToday()
-                        ? $createdAt->format('h:i A')
-                        : $createdAt->format('d M Y');
-                } else {
+                $createdAt = $chatUser->lastChat->created_at;
 
-                    $chatUser->lastChatDisplay = '';
-                }
+                $chatUser->lastChatDisplay = $createdAt->isToday()
+                    ? $createdAt->format('h:i A')
+                    : $createdAt->format('d M Y');
+            } else {
 
-                return $chatUser;
-            })->sortByDesc(function ($chatUser) {
+                $chatUser->lastChatDisplay = '';
+            }
 
-                return optional($chatUser->lastChat)->created_at;
-            })
-            ->values();
+            return $chatUser;
+        })->sortByDesc(function ($chatUser) {
+
+            return optional($chatUser->lastChat)->created_at;
+        })
+        ->values();
 
         $activeUser = $users
             ->where('id', $selectedUserId)
@@ -197,8 +204,18 @@ class ChatController extends Controller
         $chatUsers = User::whereIn('role', ['junior', 'senior'])
             ->where('is_deleted', 0)
             ->where('id', '!=', $user->id)
+            ->get();
+
+        // Batch unread count query - single query instead of N queries
+        $unreadCounts = Chat::whereIn('sender_id', $chatUsers->pluck('id'))
+            ->where('receiver_id', $user->id)
+            ->where('is_read', false)
+            ->selectRaw('sender_id, COUNT(*) as unread_count')
+            ->groupBy('sender_id')
             ->get()
-            ->map(function ($chatUser) use ($user) {
+            ->keyBy('sender_id');
+
+        $chatUsers = $chatUsers->map(function ($chatUser) use ($user, $unreadCounts) {
 
                 $chatUser->lastChat = Chat::conversation(
                     $user->id,
@@ -207,10 +224,8 @@ class ChatController extends Controller
                     ->reorder('created_at', 'desc')
                     ->first();
 
-                $chatUser->unreadCount = Chat::where('sender_id', $chatUser->id)
-                    ->where('receiver_id', $user->id)
-                    ->where('is_read', false)
-                    ->count();
+                // Use pre-fetched unread count instead of query per user
+                $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
 
                 return $chatUser;
             })
@@ -236,8 +251,18 @@ class ChatController extends Controller
         $chatUsers = User::whereIn('role', ['junior', 'senior'])
             ->where('is_deleted', 0)
             ->where('id', '!=', $user->id)
+            ->get();
+
+        // Batch unread count query - single query instead of N queries
+        $unreadCounts = Chat::whereIn('sender_id', $chatUsers->pluck('id'))
+            ->where('receiver_id', $user->id)
+            ->where('is_read', false)
+            ->selectRaw('sender_id, COUNT(*) as unread_count')
+            ->groupBy('sender_id')
             ->get()
-            ->map(function ($chatUser) use ($user) {
+            ->keyBy('sender_id');
+
+        $chatUsers = $chatUsers->map(function ($chatUser) use ($user, $unreadCounts) {
 
                 $chatUser->lastChat = Chat::conversation(
                     $user->id,
@@ -246,10 +271,8 @@ class ChatController extends Controller
                     ->reorder('created_at', 'desc')
                     ->first();
 
-                $chatUser->unreadCount = Chat::where('sender_id', $chatUser->id)
-                    ->where('receiver_id', $user->id)
-                    ->where('is_read', false)
-                    ->count();
+                // Use pre-fetched unread count instead of query per user
+                $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
 
                 if ($chatUser->lastChat) {
 
