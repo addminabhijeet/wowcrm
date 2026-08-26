@@ -17,19 +17,15 @@ echo ""
 echo "[1/5] Creating 100 test users..."
 cd "$PROJ_DIR"
 
-# Create a temporary PHP script for user creation
-PROJ_DIR_ESCAPED=$(echo "$PROJ_DIR" | sed 's/[\/&]/\\&/g')
-cat > /tmp/create_users.php << PHPEOF
-<?php
-\$proj_dir = '$PROJ_DIR';
-require_once \$proj_dir . '/bootstrap/app.php';
-
-try {
-    for (\$i = 1; \$i <= 100; \$i++) {
-        \App\Models\User::firstOrCreate(
-            ['email' => "loadtest.junior{\$i}@test.local"],
+# Use artisan directly with better error handling
+OUTPUT=$(php artisan tinker << 'EOF' 2>&1
+for ($i = 1; $i <= 100; $i++) {
+    try {
+        $email = "loadtest.junior$i@test.local";
+        $user = \App\Models\User::firstOrCreate(
+            ['email' => $email],
             [
-                'name' => "LoadTest Junior {\$i}",
+                'name' => "LoadTest Junior $i",
                 'password' => bcrypt('LoadTest@123'),
                 'role' => 'junior',
                 'status' => 1,
@@ -37,23 +33,25 @@ try {
             ]
         );
         echo ".";
+    } catch (\Exception $e) {
+        echo "E";
+        error_log("User creation error: " . $e->getMessage());
     }
-    echo "\n";
-    echo "✓ Created 100 test users\n";
-} catch (Exception \$e) {
-    echo "✗ Error: " . \$e->getMessage() . "\n";
-    exit(1);
 }
-PHPEOF
+echo "\n";
+echo "Created users\n";
+exit;
+EOF
+)
 
-php /tmp/create_users.php 2>&1
 USER_CREATION_RESULT=$?
+echo "$OUTPUT"
 
-if [ $USER_CREATION_RESULT -ne 0 ]; then
+if [ $USER_CREATION_RESULT -ne 0 ] || ! echo "$OUTPUT" | grep -q "Created users"; then
     echo "❌ Failed to create test users"
+    echo "Debug output: $OUTPUT"
     exit 1
 fi
-rm -f /tmp/create_users.php
 echo "✓ Test users created"
 echo ""
 
