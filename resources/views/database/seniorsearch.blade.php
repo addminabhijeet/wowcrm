@@ -540,6 +540,8 @@
             font-size: 11px !important;
             letter-spacing: 0.5px !important;
             margin-bottom: 6px !important;
+            display: block !important;
+            width: 100% !important;
         }
 
         .collapse-row textarea {
@@ -547,11 +549,26 @@
             border: 1.5px solid rgba(99, 102, 241, 0.2) !important;
             border-radius: 8px !important;
             transition: all 0.3s ease !important;
+            width: 100% !important;
         }
 
         .collapse-row textarea:focus {
             border-color: #6366f1 !important;
             box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+        }
+
+        /* ✅ FIX: Proper spacing for row groups */
+        .collapse-row .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            width: 100% !important;
+        }
+
+        .collapse-row .col-md-3,
+        .collapse-row .col-md-2,
+        .collapse-row .col-md-12 {
+            padding-left: 4px !important;
+            padding-right: 4px !important;
         }
 
         /* ============================================
