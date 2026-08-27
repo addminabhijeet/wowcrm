@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-08-28T02:33:39.213341",
+  "status": "FAILED",
+  "tests_passed": 0,
+  "tests_failed": 1,
+  "errors": [
+    "Login error: Message: invalid session id: session deleted as the browser has closed the connection\nfrom disconnected: not connected to DevTools\n  (Session info: chrome=151.0.7922.174); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#invalidsessionidexception\nStacktrace:\n\tchromedriver!GetHandleVerifier [0x7ff661f2abb5+151b5]\n\tchromedriver!GetHandleVerifier [0x7ff661f2ac10+15210]\n\tchromedriver!(No symbol) [0x7ff661a55d6d]\n\tchromedriver!(No symbol) [0x7ff661a415c2]\n\tchromedriver!(No symbol) [0x7ff661a674a1]\n\tchromedriver!(No symbol) [0x7ff661ae1320]\n\tchromedriver!(No symbol) [0x7ff661afe4f2]\n\tchromedriver!(No symbol) [0x7ff661aa37cc]\n\tchromedriver!(No symbol) [0x7ff661aa46f3]\n\tchromedriver!GetHandleVerifier [0x7ff66254b79b+635d9b]\n\tchromedriver!GetHandleVerifier [0x7ff662545ac6+6300c6]\n\tchromedriver!GetHandleVerifier [0x7ff66256bcee+6562ee]\n\tchromedriver!GetHandleVerifier [0x7ff661f48ffe+335fe]\n\tchromedriver!GetHandleVerifier [0x7ff661f5147c+3ba7c]\n\tchromedriver!GetHandleVerifier [0x7ff661f34d64+1f364]\n\tchromedriver!GetHandleVerifier [0x7ff661f34ef4+1f4f4]\n\tchromedriver!GetHandleVerifier [0x7ff661f17d97+2397]\n\tKERNEL32!BaseThreadInitThunk [0x7ff80779ccb7+17]\n\tntdll!RtlUserThreadStart [0x7ff80868ad6c+2c]\n"
+  ]
+}

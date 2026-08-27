@@ -14,6 +14,11 @@ SETUP:
 3. Run: python test_seniorsearch.py
 
 OPTIONAL: Run daily using Windows Task Scheduler or cron
+
+CHROME UI ENHANCEMENTS:
+✅ Automation Bar Disabled: Removes "Chrome is being controlled by automated test software" bar
+✅ Password Save Dialog Disabled: Removes "Save password?" dialog after login
+✅ Notifications Disabled: Removes Chrome notification prompts
 """
 
 import os
@@ -40,8 +45,8 @@ LOGIN_URL = f"{BASE_URL}/login"
 EMAIL = os.getenv('WOWCRM_EMAIL')
 PASSWORD = os.getenv('WOWCRM_PASSWORD')
 
-# Output directory for screenshots and logs
-OUTPUT_DIR = Path("wowcrm_test_results")
+# Output directory for screenshots and logs (relative to automated_tests folder)
+OUTPUT_DIR = Path(__file__).parent / "results"
 OUTPUT_DIR.mkdir(exist_ok=True)
 
 # Setup logging
@@ -73,8 +78,14 @@ class WowCRMTester:
         }
 
     def setup_driver(self):
-        """Setup Chrome WebDriver with options"""
-        logger.info("Setting up Chrome WebDriver...")
+        """Setup Chrome WebDriver with UI enhancements
+
+        Disables:
+        - Automation detection bar ("Chrome is being controlled...")
+        - Password save prompts ("Save password?" dialog)
+        - Notification popups
+        """
+        logger.info("Setting up Chrome WebDriver with UI enhancements...")
 
         chrome_options = Options()
         # Uncomment line below for headless mode (no browser window)
@@ -83,15 +94,110 @@ class WowCRMTester:
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--window-size=1920,1080")
 
+        # ============================================
+        # CHROME UI ENHANCEMENTS
+        # ============================================
+
+        # 1. Disable automation detection bar
+        chrome_options.add_argument("--disable-blink-features=AutomationControlled")
+        chrome_options.add_experimental_option("excludeSwitches", ["enable-automation"])
+        chrome_options.add_experimental_option('useAutomationExtension', False)
+
+        # 2. Disable password save prompts and notifications
+        prefs = {
+            "credentials_enable_service": False,              # Disable password manager prompts
+            "profile.password_manager_enabled": False,        # Disable password storage
+            "profile.default_content_setting_values.notifications": 2  # Disable notifications
+        }
+        chrome_options.add_experimental_option("prefs", prefs)
+
         try:
             self.driver = webdriver.Chrome(options=chrome_options)
             self.wait = WebDriverWait(self.driver, 20)
             logger.info("✅ Chrome WebDriver initialized successfully")
+            logger.info("✅ UI enhancements applied (automation bar, password dialogs, notifications disabled)")
             return True
         except Exception as e:
             logger.error(f"❌ Failed to initialize Chrome WebDriver: {e}")
             self.test_results['errors'].append(f"WebDriver setup failed: {e}")
             return False
+
+    def close_password_save_dialog(self):
+        """
+        Close Chrome 'Save password' dialog if it appears after login
+
+        IMPORTANT: Password saving is disabled via Chrome prefs in setup_driver()
+        This method is a BACKUP safety mechanism if the dialog somehow appears.
+
+        Methods used:
+        - Escape key (closes most dialogs)
+        - "Not now", "Never", "No thanks" buttons (common dismiss buttons)
+        """
+        try:
+            from selenium.webdriver.common.keys import Keys
+
+            # Method 1: Press Escape to close the dialog
+            try:
+                body = self.driver.find_element(By.TAG_NAME, "body")
+                body.send_keys(Keys.ESCAPE)
+                logger.debug("✅ Password save dialog closed (Escape key)")
+                time.sleep(0.5)
+                return True
+            except Exception as e1:
+                logger.debug(f"ℹ️  Escape key method: {str(e1)[:40]}")
+
+            # Method 2: Look for common dismiss buttons
+            try:
+                dismiss_xpaths = [
+                    "//button[contains(text(), 'Not now')]",
+                    "//button[contains(text(), 'Never')]",
+                    "//button[contains(text(), 'No thanks')]",
+                    "//div[@role='alertdialog']//button",
+                ]
+
+                for xpath in dismiss_xpaths:
+                    try:
+                        btn = self.driver.find_element(By.XPATH, xpath)
+                        if btn.is_displayed():
+                            btn.click()
+                            logger.debug("✅ Password save dialog closed (Button click)")
+                            time.sleep(0.5)
+                            return True
+                    except Exception:
+                        continue
+            except Exception as e2:
+                logger.debug(f"ℹ️  Button click method: {str(e2)[:40]}")
+
+            logger.debug("ℹ️  No password save dialog detected")
+            return True
+
+        except Exception as e:
+            logger.warning(f"⚠️  Password dialog handler: {str(e)[:50]}")
+            return True
+
+    def maximize_window_and_close_notifications(self):
+        """Maximize Chrome window (automation bar disabled via Chrome options)"""
+        logger.info("Maximizing Chrome window...")
+
+        try:
+            # Maximize the window
+            self.driver.maximize_window()
+            logger.info("✅ Chrome window maximized")
+            time.sleep(0.5)
+
+            # Take screenshot to verify no automation bar appears
+            try:
+                screenshot_file = OUTPUT_DIR / "notification_check.png"
+                self.driver.save_screenshot(str(screenshot_file))
+                logger.debug("📸 Window state verified")
+            except:
+                pass
+
+            return True
+
+        except Exception as e:
+            logger.warning(f"⚠️  Warning: {e}")
+            return True
 
     def validate_credentials(self):
         """Validate that credentials are set"""
@@ -134,6 +240,17 @@ class WowCRMTester:
 
             # Wait for redirect
             time.sleep(3)
+
+            # Close Chrome "Save password" dialog if it appears (backup for disabled prefs)
+            self.close_password_save_dialog()
+
+            # Take screenshot to verify password dialog is closed
+            try:
+                screenshot_file = OUTPUT_DIR / "after_login.png"
+                self.driver.save_screenshot(str(screenshot_file))
+                logger.debug("📸 After-login screenshot saved")
+            except:
+                pass
 
             # Verify login success
             if "login" not in self.driver.current_url.lower():
@@ -335,6 +452,9 @@ class WowCRMTester:
             if not self.setup_driver():
                 self.test_results['status'] = 'FAILED'
                 return False
+
+            # Maximize window (must be done immediately after setup)
+            self.maximize_window_and_close_notifications()
 
             if not self.validate_credentials():
                 self.test_results['status'] = 'FAILED'

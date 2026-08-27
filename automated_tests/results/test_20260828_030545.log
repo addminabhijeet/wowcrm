@@ -1,0 +1,14 @@
+2026-08-28 03:05:45,259 - INFO - Python WowCRM Test Script Initialized
+2026-08-28 03:05:45,260 - INFO - Log file: C:\xampp\htdocs\wowcrm\automated_tests\results\test_20260828_030545.log
+2026-08-28 03:05:45,260 - INFO - ============================================================
+2026-08-28 03:05:45,260 - INFO - STARTING WOWCRM SENIORSEARCH TESTS
+2026-08-28 03:05:45,260 - INFO - ============================================================
+2026-08-28 03:05:45,260 - INFO - Setting up Chrome WebDriver with UI enhancements...
+2026-08-28 03:05:47,428 - INFO - Maximizing Chrome window...
+2026-08-28 03:05:48,200 - INFO - Logging in...
+2026-08-28 03:05:51,213 - INFO - Cleaning up...
+2026-08-28 03:05:53,305 - INFO - ============================================================
+2026-08-28 03:05:53,306 - INFO - FINAL STATUS: FAILED
+2026-08-28 03:05:53,306 - INFO - Tests Passed: 0
+2026-08-28 03:05:53,306 - INFO - Tests Failed: 1
+2026-08-28 03:05:53,306 - INFO - ============================================================
