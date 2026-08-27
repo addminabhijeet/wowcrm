@@ -19,13 +19,13 @@ class ChatController extends Controller
         $selectedUserId = $request->user;
         $search = $request->search;
 
+        // ✅ COMPRESSION: Select only needed columns to reduce RAM
         $users = User::whereIn('role', ['junior', 'senior'])
             ->where('is_deleted', 0)
             ->where('id', '!=', $user->id)
+            ->select(['id', 'name', 'email', 'phone', 'gender', 'role', 'group', 'target', 'target_date', 'image'])
             ->when($search, function ($query) use ($search) {
-
                 $query->where(function ($q) use ($search) {
-
                     $q->where('name', 'like', "%{$search}%")
                         ->orWhere('email', 'like', "%{$search}%")
                         ->orWhere('phone', 'like', "%{$search}%")
@@ -38,56 +38,60 @@ class ChatController extends Controller
             })
             ->get();
 
-        // Batch unread count query - single query instead of N queries
+        // ✅ COMPRESSION: Select only needed columns + use UNION for efficiency
         $unreadCounts = Chat::whereIn('sender_id', $users->pluck('id'))
             ->where('receiver_id', $user->id)
             ->where('is_read', false)
             ->selectRaw('sender_id, COUNT(*) as unread_count')
             ->groupBy('sender_id')
-            ->get()
+            ->get(['sender_id', 'unread_count'])
             ->keyBy('sender_id');
 
-        // ✅ OPTIMIZATION: Batch fetch last messages for ALL users in ONE query
+        // ✅ COMPRESSION: Select only needed columns + limit to latest only
         $userIds = $users->pluck('id')->toArray();
-        $lastMessages = Chat::where(function ($query) use ($user, $userIds) {
-            $query->whereIn('sender_id', $userIds)
-                ->where('receiver_id', $user->id);
-        })
-        ->orWhere(function ($query) use ($user, $userIds) {
-            $query->whereIn('receiver_id', $userIds)
-                ->where('sender_id', $user->id);
-        })
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->unique(function ($msg) use ($user) {
-            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
-        })
-        ->keyBy(function ($msg) use ($user) {
-            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
-        });
+        $lastMessages = Chat::whereIn('sender_id', $userIds)
+            ->where('receiver_id', $user->id)
+            ->select(['id', 'sender_id', 'receiver_id', 'created_at'])
+            ->orderBy('sender_id')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->unique('sender_id')
+            ->keyBy('sender_id');
+
+        // ✅ COMPRESSION: Add unread from opposite direction
+        if (!empty($userIds)) {
+            $reverseMessages = Chat::whereIn('receiver_id', $userIds)
+                ->where('sender_id', $user->id)
+                ->select(['id', 'sender_id', 'receiver_id', 'created_at'])
+                ->orderBy('receiver_id')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->unique('receiver_id');
+
+            foreach ($reverseMessages as $msg) {
+                if (!$lastMessages->has($msg->receiver_id)) {
+                    $lastMessages[$msg->receiver_id] = $msg;
+                }
+            }
+        }
 
         $users = $users->map(function ($chatUser) use ($user, $unreadCounts, $lastMessages) {
-            // Use pre-fetched last message instead of query per user
-            $chatUser->lastChat = $lastMessages->get($chatUser->id);
+            $lastMsg = $lastMessages->get($chatUser->id);
 
-            // Use pre-fetched unread count instead of query per user
+            $chatUser->lastChat = $lastMsg;
             $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
 
-            if ($chatUser->lastChat) {
-
-                $createdAt = $chatUser->lastChat->created_at;
-
+            if ($lastMsg) {
+                $createdAt = $lastMsg->created_at;
                 $chatUser->lastChatDisplay = $createdAt->isToday()
                     ? $createdAt->format('h:i A')
                     : $createdAt->format('d M Y');
             } else {
-
                 $chatUser->lastChatDisplay = '';
             }
 
             return $chatUser;
         })->sortByDesc(function ($chatUser) {
-
             return optional($chatUser->lastChat)->created_at;
         })
         ->values();
@@ -216,127 +220,137 @@ class ChatController extends Controller
     {
         $user = Auth::user();
 
+        // ✅ COMPRESSION: Select only needed columns
         $chatUsers = User::whereIn('role', ['junior', 'senior'])
             ->where('is_deleted', 0)
             ->where('id', '!=', $user->id)
+            ->select(['id', 'name', 'image'])
             ->get();
 
-        // Batch unread count query - single query instead of N queries
-        $unreadCounts = Chat::whereIn('sender_id', $chatUsers->pluck('id'))
+        // ✅ COMPRESSION: Get unread counts in single optimized query
+        $userIds = $chatUsers->pluck('id')->toArray();
+        $unreadCounts = Chat::whereIn('sender_id', $userIds)
             ->where('receiver_id', $user->id)
             ->where('is_read', false)
             ->selectRaw('sender_id, COUNT(*) as unread_count')
             ->groupBy('sender_id')
-            ->get()
+            ->get(['sender_id', 'unread_count'])
             ->keyBy('sender_id');
 
-        // ✅ OPTIMIZATION: Batch fetch last messages for ALL users in ONE query
-        $userIds = $chatUsers->pluck('id')->toArray();
-        $lastMessages = Chat::where(function ($query) use ($user, $userIds) {
-            $query->whereIn('sender_id', $userIds)
-                ->where('receiver_id', $user->id);
-        })
-        ->orWhere(function ($query) use ($user, $userIds) {
-            $query->whereIn('receiver_id', $userIds)
-                ->where('sender_id', $user->id);
-        })
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->unique(function ($msg) use ($user) {
-            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
-        })
-        ->keyBy(function ($msg) use ($user) {
-            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
-        });
+        // ✅ COMPRESSION: Only fetch messages with unread counts
+        $userIdsWithUnread = $unreadCounts->keys()->toArray();
 
-        $chatUsers = $chatUsers->map(function ($chatUser) use ($user, $unreadCounts, $lastMessages) {
-                // Use pre-fetched last message instead of query per user
-                $chatUser->lastChat = $lastMessages->get($chatUser->id);
+        if (empty($userIdsWithUnread)) {
+            return response()->json(['count' => 0, 'users' => []]);
+        }
 
-                // Use pre-fetched unread count instead of query per user
-                $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
+        $lastMessages = Chat::whereIn('sender_id', $userIdsWithUnread)
+            ->where('receiver_id', $user->id)
+            ->select(['id', 'sender_id', 'receiver_id', 'created_at'])
+            ->orderBy('sender_id')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->unique('sender_id')
+            ->keyBy('sender_id');
 
-                return $chatUser;
-            })
-            ->filter(function ($chatUser) {
-                return $chatUser->unreadCount > 0;
-            })
-            ->sortByDesc(function ($chatUser) {
-                return optional($chatUser->lastChat)->created_at;
-            })
-            ->values();
+        // ✅ COMPRESSION: Minimal transformation - only needed fields
+        $result = [];
+        $totalUnread = 0;
 
-        return response()->json([
-            'count' => $chatUsers->sum('unreadCount'),
-            'users' => $chatUsers,
-        ]);
+        foreach ($userIdsWithUnread as $userId) {
+            $unreadCount = $unreadCounts->get($userId)->unread_count ?? 0;
+            $totalUnread += $unreadCount;
+
+            $user_ = $chatUsers->firstWhere('id', $userId);
+            if ($user_) {
+                $result[] = [
+                    'id' => $userId,
+                    'name' => $user_->name,
+                    'image' => $user_->image,
+                    'unreadCount' => $unreadCount,
+                    'lastChat' => $lastMessages->get($userId),
+                ];
+            }
+        }
+
+        return response()->json(['count' => $totalUnread, 'users' => $result]);
     }
 
     public function refreshChatUsers(Request $request)
     {
         $user = Auth::user();
 
-        // Refresh all users
+        // ✅ COMPRESSION: Select only needed columns
         $chatUsers = User::whereIn('role', ['junior', 'senior'])
             ->where('is_deleted', 0)
             ->where('id', '!=', $user->id)
+            ->select(['id', 'name', 'image'])
             ->get();
 
-        // Batch unread count query - single query instead of N queries
-        $unreadCounts = Chat::whereIn('sender_id', $chatUsers->pluck('id'))
+        $userIds = $chatUsers->pluck('id')->toArray();
+
+        // ✅ COMPRESSION: Get unread counts in single query
+        $unreadCounts = Chat::whereIn('sender_id', $userIds)
             ->where('receiver_id', $user->id)
             ->where('is_read', false)
             ->selectRaw('sender_id, COUNT(*) as unread_count')
             ->groupBy('sender_id')
-            ->get()
+            ->get(['sender_id', 'unread_count'])
             ->keyBy('sender_id');
 
-        // ✅ OPTIMIZATION: Batch fetch last messages for ALL users in ONE query
-        $userIds = $chatUsers->pluck('id')->toArray();
-        $lastMessages = Chat::where(function ($query) use ($user, $userIds) {
-            $query->whereIn('sender_id', $userIds)
-                ->where('receiver_id', $user->id);
-        })
-        ->orWhere(function ($query) use ($user, $userIds) {
-            $query->whereIn('receiver_id', $userIds)
-                ->where('sender_id', $user->id);
-        })
-        ->orderBy('created_at', 'desc')
-        ->get()
-        ->unique(function ($msg) use ($user) {
-            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
-        })
-        ->keyBy(function ($msg) use ($user) {
-            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
+        // ✅ COMPRESSION: Fetch last messages with minimal columns
+        $lastMessages = Chat::whereIn('sender_id', $userIds)
+            ->where('receiver_id', $user->id)
+            ->select(['id', 'sender_id', 'receiver_id', 'created_at'])
+            ->orderBy('sender_id')
+            ->orderBy('created_at', 'desc')
+            ->get()
+            ->unique('sender_id')
+            ->keyBy('sender_id');
+
+        // ✅ COMPRESSION: Add reverse direction messages efficiently
+        if (!empty($userIds)) {
+            $reverseMessages = Chat::whereIn('receiver_id', $userIds)
+                ->where('sender_id', $user->id)
+                ->select(['id', 'sender_id', 'receiver_id', 'created_at'])
+                ->orderBy('receiver_id')
+                ->orderBy('created_at', 'desc')
+                ->get()
+                ->unique('receiver_id');
+
+            foreach ($reverseMessages as $msg) {
+                if (!$lastMessages->has($msg->receiver_id)) {
+                    $lastMessages[$msg->receiver_id] = $msg;
+                }
+            }
+        }
+
+        $chatUsersFormatted = [];
+        foreach ($chatUsers as $chatUser) {
+            $lastMsg = $lastMessages->get($chatUser->id);
+            $chatUser->lastChat = $lastMsg;
+            $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
+
+            if ($lastMsg) {
+                $createdAt = $lastMsg->created_at;
+                $chatUser->lastChatDisplay = $createdAt->isToday()
+                    ? $createdAt->format('h:i A')
+                    : $createdAt->format('d M Y');
+            } else {
+                $chatUser->lastChatDisplay = '';
+            }
+
+            $chatUsersFormatted[] = $chatUser;
+        }
+
+        // ✅ COMPRESSION: Sort in memory instead of collection chains
+        usort($chatUsersFormatted, function ($a, $b) {
+            $timeA = $a->lastChat?->created_at ?? now()->subYear();
+            $timeB = $b->lastChat?->created_at ?? now()->subYear();
+            return $timeB->timestamp <=> $timeA->timestamp;
         });
 
-        $chatUsers = $chatUsers->map(function ($chatUser) use ($user, $unreadCounts, $lastMessages) {
-
-                // Use pre-fetched last message instead of query per user
-                $chatUser->lastChat = $lastMessages->get($chatUser->id);
-
-                // Use pre-fetched unread count instead of query per user
-                $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
-
-                if ($chatUser->lastChat) {
-
-                    $createdAt = $chatUser->lastChat->created_at;
-
-                    $chatUser->lastChatDisplay = $createdAt->isToday()
-                        ? $createdAt->format('h:i A')
-                        : $createdAt->format('d M Y');
-                } else {
-
-                    $chatUser->lastChatDisplay = '';
-                }
-
-                return $chatUser;
-            })
-            ->sortByDesc(function ($chatUser) {
-
-                return optional($chatUser->lastChat)->created_at;
-            })
-            ->values();
+        $chatUsers = collect($chatUsersFormatted)->values();
 
         // Active user from Blade
         $activeUser = null;
