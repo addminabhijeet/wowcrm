@@ -220,15 +220,16 @@ class ChatController extends Controller
     {
         $user = Auth::user();
 
-        // ✅ COMPRESSION: Select only needed columns
+        // ✅ COMPRESSION: Select needed columns (keeping User properties for frontend compatibility)
         $chatUsers = User::whereIn('role', ['junior', 'senior'])
             ->where('is_deleted', 0)
             ->where('id', '!=', $user->id)
-            ->select(['id', 'name', 'image'])
-            ->get();
+            ->select(['id', 'name', 'email', 'phone', 'image', 'role', 'gender', 'group'])
+            ->get()
+            ->keyBy('id');
 
         // ✅ COMPRESSION: Get unread counts in single optimized query
-        $userIds = $chatUsers->pluck('id')->toArray();
+        $userIds = $chatUsers->keys()->toArray();
         $unreadCounts = Chat::whereIn('sender_id', $userIds)
             ->where('receiver_id', $user->id)
             ->where('is_read', false)
@@ -253,7 +254,7 @@ class ChatController extends Controller
             ->unique('sender_id')
             ->keyBy('sender_id');
 
-        // ✅ COMPRESSION: Minimal transformation - only needed fields
+        // ✅ COMPRESSION: Efficient O(1) lookup using pre-keyed collection
         $result = [];
         $totalUnread = 0;
 
@@ -261,17 +262,21 @@ class ChatController extends Controller
             $unreadCount = $unreadCounts->get($userId)->unread_count ?? 0;
             $totalUnread += $unreadCount;
 
-            $user_ = $chatUsers->firstWhere('id', $userId);
-            if ($user_) {
-                $result[] = [
-                    'id' => $userId,
-                    'name' => $user_->name,
-                    'image' => $user_->image,
-                    'unreadCount' => $unreadCount,
-                    'lastChat' => $lastMessages->get($userId),
-                ];
+            // ✅ O(1) lookup instead of O(n) firstWhere()
+            $chatUser = $chatUsers->get($userId);
+            if ($chatUser) {
+                $chatUser->unreadCount = $unreadCount;
+                $chatUser->lastChat = $lastMessages->get($userId);
+                $result[] = $chatUser;
             }
         }
+
+        // ✅ COMPRESSION: Sort efficiently in memory
+        usort($result, function ($a, $b) {
+            $timeA = $a->lastChat?->created_at ?? now()->subYear();
+            $timeB = $b->lastChat?->created_at ?? now()->subYear();
+            return $timeB->timestamp <=> $timeA->timestamp;
+        });
 
         return response()->json(['count' => $totalUnread, 'users' => $result]);
     }
