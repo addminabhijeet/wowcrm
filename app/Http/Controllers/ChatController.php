@@ -57,14 +57,10 @@ class ChatController extends Controller
             $query->whereIn('receiver_id', $userIds)
                 ->where('sender_id', $user->id);
         })
-        ->select('*')
         ->orderBy('created_at', 'desc')
         ->get()
-        ->groupBy(function ($msg) use ($user) {
+        ->unique(function ($msg) use ($user) {
             return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
-        })
-        ->map(function ($msgs) {
-            return $msgs->first();
         })
         ->keyBy(function ($msg) use ($user) {
             return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
@@ -244,14 +240,10 @@ class ChatController extends Controller
             $query->whereIn('receiver_id', $userIds)
                 ->where('sender_id', $user->id);
         })
-        ->select('*')
         ->orderBy('created_at', 'desc')
         ->get()
-        ->groupBy(function ($msg) use ($user) {
+        ->unique(function ($msg) use ($user) {
             return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
-        })
-        ->map(function ($msgs) {
-            return $msgs->first();
         })
         ->keyBy(function ($msg) use ($user) {
             return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
@@ -309,14 +301,10 @@ class ChatController extends Controller
             $query->whereIn('receiver_id', $userIds)
                 ->where('sender_id', $user->id);
         })
-        ->select('*')
         ->orderBy('created_at', 'desc')
         ->get()
-        ->groupBy(function ($msg) use ($user) {
+        ->unique(function ($msg) use ($user) {
             return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
-        })
-        ->map(function ($msgs) {
-            return $msgs->first();
         })
         ->keyBy(function ($msg) use ($user) {
             return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
