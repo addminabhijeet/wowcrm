@@ -1251,9 +1251,38 @@ class GoogleSheetController extends Controller
                     ->orWhere('Exe_Remarks', 'LIKE', "%{$search}%");
             });
         }
-        $results = $query->orderBy('updated_at', 'desc')->get();
+        // ✅ EXTREME-COMPRESSION: Limit results to prevent memory bloat
+        $results = $query->orderBy('updated_at', 'desc')->limit(500)->get();
 
-        $transformed = $results->map(function ($item) use ($authUser) {
+        // ✅ EXTREME-COMPRESSION: Extract ALL user IDs BEFORE loop to batch fetch
+        $userIds = [];
+        foreach ($results as $item) {
+            if (!empty($item->created_by)) {
+                $entries = explode(':', $item->created_by);
+                foreach ($entries as $entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    if ($userId && $userId !== '0' && $userId != $authUser->id) {
+                        $userIds[$userId] = true; // Use array key for unique values
+                    }
+                }
+            }
+        }
+
+        // ✅ EXTREME-COMPRESSION: Batch fetch all users in ONE query (no N+1!)
+        $usersMap = [];
+        if (!empty($userIds)) {
+            $users = \App\Models\User::whereIn('id', array_keys($userIds))
+                ->where('is_deleted', 0)
+                ->select(['id', 'name'])
+                ->get()
+                ->keyBy('id')
+                ->all();
+            $usersMap = $users;
+        }
+
+        // ✅ EXTREME-COMPRESSION: Transform results in single pass with pre-fetched users
+        $transformed = $results->map(function ($item) use ($authUser, $usersMap) {
 
             $forwardedBy = '';
 
@@ -1277,8 +1306,8 @@ class GoogleSheetController extends Controller
                             : (($role === 'junior') ? 'IT Recruiter' : $role);
                         $names[] = "SYSTEM (0) ({$roleLabel})";
                     } else {
-                        $user = \App\Models\User::where('is_deleted', 0)->find($userId);
-                        $name = $user ? $user->name : 'Unknown';
+                        // ✅ EXTREME-COMPRESSION: Use pre-fetched users (O(1) lookup)
+                        $name = isset($usersMap[$userId]) ? $usersMap[$userId]->name : 'Unknown';
                         $roleLabel = ($role === 'senior')
                             ? 'IT Senior Recruiter'
                             : (($role === 'junior') ? 'IT Recruiter' : $role);
