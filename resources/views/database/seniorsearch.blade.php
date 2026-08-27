@@ -305,6 +305,8 @@
         .table {
             background: #ffffff !important;
             border-collapse: collapse !important;
+            table-layout: fixed !important;
+            width: 100% !important;
         }
 
         #sheet-table-body tr {
@@ -327,6 +329,18 @@
         #sheet-table-body tr:not(.collapse-row) td {
             padding: 12px 8px !important;
             vertical-align: middle !important;
+        }
+
+        /* ✅ FIX: Ensure proper column widths */
+        .table thead th {
+            width: 20% !important;
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
+        }
+
+        .table tbody td {
+            word-wrap: break-word !important;
+            overflow-wrap: break-word !important;
         }
 
         /* Header styling */
@@ -507,13 +521,16 @@
         }
 
         /* ============================================
-           COLLAPSE DETAIL SECTION - PREMIUM
+           COLLAPSE DETAIL SECTION - PREMIUM & FULL WIDTH
            ============================================ */
         .collapse-row .p-1.border.rounded.bg-light {
             background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%) !important;
             border: 1.5px solid rgba(99, 102, 241, 0.15) !important;
             border-radius: 12px !important;
             box-shadow: inset 0 2px 4px rgba(99, 102, 241, 0.05) !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            overflow-x: auto !important;
         }
 
         .collapse-row label {
@@ -605,6 +622,28 @@
 
         .scroll-sm::-webkit-scrollbar-thumb:hover {
             background: linear-gradient(180deg, #4f46e5 0%, #4338ca 100%) !important;
+        }
+
+        /* ============================================
+           TABLE WRAPPER - FIX LAYOUT
+           ============================================ */
+        .table-responsive {
+            width: 100% !important;
+            overflow-x: auto !important;
+        }
+
+        #bottom-scroll-wrapper {
+            width: 100% !important;
+        }
+
+        .table tbody {
+            display: table-row-group !important;
+        }
+
+        /* ✅ FIX: Ensure collapse row spans properly */
+        .collapse-row td {
+            display: table-cell !important;
+            width: 100% !important;
         }
     </style>
 
