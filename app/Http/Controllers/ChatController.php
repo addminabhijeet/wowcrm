@@ -47,13 +47,32 @@ class ChatController extends Controller
             ->get()
             ->keyBy('sender_id');
 
-        $users = $users->map(function ($chatUser) use ($user, $unreadCounts) {
-            $chatUser->lastChat = Chat::conversation(
-                $user->id,
-                $chatUser->id
-            )
-                ->reorder('created_at', 'desc')
-                ->first();
+        // ✅ OPTIMIZATION: Batch fetch last messages for ALL users in ONE query
+        $userIds = $users->pluck('id')->toArray();
+        $lastMessages = Chat::where(function ($query) use ($user, $userIds) {
+            $query->whereIn('sender_id', $userIds)
+                ->where('receiver_id', $user->id);
+        })
+        ->orWhere(function ($query) use ($user, $userIds) {
+            $query->whereIn('receiver_id', $userIds)
+                ->where('sender_id', $user->id);
+        })
+        ->select('*')
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->groupBy(function ($msg) use ($user) {
+            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
+        })
+        ->map(function ($msgs) {
+            return $msgs->first();
+        })
+        ->keyBy(function ($msg) use ($user) {
+            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
+        });
+
+        $users = $users->map(function ($chatUser) use ($user, $unreadCounts, $lastMessages) {
+            // Use pre-fetched last message instead of query per user
+            $chatUser->lastChat = $lastMessages->get($chatUser->id);
 
             // Use pre-fetched unread count instead of query per user
             $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
@@ -215,14 +234,32 @@ class ChatController extends Controller
             ->get()
             ->keyBy('sender_id');
 
-        $chatUsers = $chatUsers->map(function ($chatUser) use ($user, $unreadCounts) {
+        // ✅ OPTIMIZATION: Batch fetch last messages for ALL users in ONE query
+        $userIds = $chatUsers->pluck('id')->toArray();
+        $lastMessages = Chat::where(function ($query) use ($user, $userIds) {
+            $query->whereIn('sender_id', $userIds)
+                ->where('receiver_id', $user->id);
+        })
+        ->orWhere(function ($query) use ($user, $userIds) {
+            $query->whereIn('receiver_id', $userIds)
+                ->where('sender_id', $user->id);
+        })
+        ->select('*')
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->groupBy(function ($msg) use ($user) {
+            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
+        })
+        ->map(function ($msgs) {
+            return $msgs->first();
+        })
+        ->keyBy(function ($msg) use ($user) {
+            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
+        });
 
-                $chatUser->lastChat = Chat::conversation(
-                    $user->id,
-                    $chatUser->id
-                )
-                    ->reorder('created_at', 'desc')
-                    ->first();
+        $chatUsers = $chatUsers->map(function ($chatUser) use ($user, $unreadCounts, $lastMessages) {
+                // Use pre-fetched last message instead of query per user
+                $chatUser->lastChat = $lastMessages->get($chatUser->id);
 
                 // Use pre-fetched unread count instead of query per user
                 $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
@@ -262,14 +299,33 @@ class ChatController extends Controller
             ->get()
             ->keyBy('sender_id');
 
-        $chatUsers = $chatUsers->map(function ($chatUser) use ($user, $unreadCounts) {
+        // ✅ OPTIMIZATION: Batch fetch last messages for ALL users in ONE query
+        $userIds = $chatUsers->pluck('id')->toArray();
+        $lastMessages = Chat::where(function ($query) use ($user, $userIds) {
+            $query->whereIn('sender_id', $userIds)
+                ->where('receiver_id', $user->id);
+        })
+        ->orWhere(function ($query) use ($user, $userIds) {
+            $query->whereIn('receiver_id', $userIds)
+                ->where('sender_id', $user->id);
+        })
+        ->select('*')
+        ->orderBy('created_at', 'desc')
+        ->get()
+        ->groupBy(function ($msg) use ($user) {
+            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
+        })
+        ->map(function ($msgs) {
+            return $msgs->first();
+        })
+        ->keyBy(function ($msg) use ($user) {
+            return $msg->sender_id === $user->id ? $msg->receiver_id : $msg->sender_id;
+        });
 
-                $chatUser->lastChat = Chat::conversation(
-                    $user->id,
-                    $chatUser->id
-                )
-                    ->reorder('created_at', 'desc')
-                    ->first();
+        $chatUsers = $chatUsers->map(function ($chatUser) use ($user, $unreadCounts, $lastMessages) {
+
+                // Use pre-fetched last message instead of query per user
+                $chatUser->lastChat = $lastMessages->get($chatUser->id);
 
                 // Use pre-fetched unread count instead of query per user
                 $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
