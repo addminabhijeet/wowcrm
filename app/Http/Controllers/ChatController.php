@@ -38,7 +38,7 @@ class ChatController extends Controller
             FROM users u
             LEFT JOIN chats c ON c.sender_id = u.id AND c.receiver_id = ?
             WHERE u.role IN ('junior', 'senior') AND u.is_deleted = 0 AND u.id != ? {$searchWhere}
-            GROUP BY u.id
+            GROUP BY u.id, u.name, u.image, u.email, u.phone, u.role, u.gender, u.group, u.target, u.target_date
             ORDER BY MAX(c.created_at) DESC
             LIMIT 200
         ", $params);
@@ -242,7 +242,7 @@ class ChatController extends Controller
             FROM users u
             LEFT JOIN chats c ON (c.sender_id = u.id AND c.receiver_id = ?)
             WHERE u.role IN ('junior', 'senior') AND u.is_deleted = 0 AND u.id != ?
-            GROUP BY u.id
+            GROUP BY u.id, u.name, u.image
             ORDER BY MAX(c.created_at) DESC
             LIMIT 200
         ", [$userId, $userId]);
