@@ -385,10 +385,17 @@ class DashboardController extends Controller
             ->where('is_deleted', 0)
             ->get();
 
-        $data = $users->map(function ($user) {
-            $latestLog = UserTimerLog::where('user_id', $user->id)
-                ->orderBy('start_time', 'desc')
-                ->first();
+        // ✅ OPTIMIZATION: Batch fetch latest timer logs instead of N+1 queries
+        $latestLogs = UserTimerLog::whereIn('user_id', $users->pluck('id'))
+            ->select('*')
+            ->orderBy('user_id')
+            ->orderBy('start_time', 'desc')
+            ->get()
+            ->unique('user_id')
+            ->keyBy('user_id');
+
+        $data = $users->map(function ($user) use ($latestLogs) {
+            $latestLog = $latestLogs->get($user->id);
 
             return [
                 'user_id' => $user->id,

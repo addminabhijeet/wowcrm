@@ -25,6 +25,39 @@ use Illuminate\Pagination\LengthAwarePaginator;
 class GoogleSheetController extends Controller
 {
     /**
+     * ✅ OPTIMIZATION: Pre-fetch all users to avoid N+1 query problem
+     * Extract unique user IDs from created_by fields and batch fetch users
+     */
+    private function extractAndCacheUserIds($items)
+    {
+        $userIds = collect($items)
+            ->flatMap(function ($item) {
+                if (empty($item->created_by)) return [];
+                $entries = explode(':', $item->created_by);
+                return array_map(function ($entry) {
+                    $parts = explode('|', $entry);
+                    $userId = $parts[0] ?? null;
+                    return ($userId && $userId != 0) ? (int)$userId : null;
+                }, $entries);
+            })
+            ->filter(fn($id) => $id)
+            ->unique()
+            ->toArray();
+
+        // Batch fetch all users in ONE query
+        $usersMap = [];
+        if (!empty($userIds)) {
+            $usersMap = User::where('is_deleted', 0)
+                ->whereIn('id', $userIds)
+                ->get(['id', 'name'])
+                ->keyBy('id')
+                ->toArray();
+        }
+
+        return $usersMap;
+    }
+
+    /**
      * Merge remarks from ALL USERS for items with same Email_Address
      *
      * @param \Illuminate\Support\Collection $transformed - Collection of items with Email_Address
@@ -32,16 +65,29 @@ class GoogleSheetController extends Controller
      */
     private function mergeRemarksFromAllUsers($transformed)
     {
-        return $transformed->map(function ($item) {
-            // For each email address, fetch ALL remarks from all users (no filtering)
-            if (!empty($item->Email_Address)) {
-                $allRecords = GoogleSheetData::where('Email_Address', $item->Email_Address)->orderBy('id', 'asc')->get();
-                $remarks = [];
+        // ✅ OPTIMIZATION: Batch fetch all remarks for all emails in ONE query
+        $emailAddresses = $transformed
+            ->pluck('Email_Address')
+            ->filter(fn($email) => !empty($email))
+            ->unique()
+            ->toArray();
 
-                foreach ($allRecords as $record) {
-                    $remarks[] = $record->Remark ?? '';
-                }
+        $remarksByEmail = [];
+        if (!empty($emailAddresses)) {
+            $remarksByEmail = GoogleSheetData::whereIn('Email_Address', $emailAddresses)
+                ->orderBy('id', 'asc')
+                ->get(['Email_Address', 'Remark'])
+                ->groupBy('Email_Address')
+                ->map(function ($records) {
+                    return $records->pluck('Remark')->toArray();
+                })
+                ->toArray();
+        }
 
+        return $transformed->map(function ($item) use ($remarksByEmail) {
+            // Use pre-fetched remarks instead of query per item
+            if (!empty($item->Email_Address) && isset($remarksByEmail[$item->Email_Address])) {
+                $remarks = $remarksByEmail[$item->Email_Address];
                 // Merge all remarks with '||' separator (includes all records regardless of user, preserves empty and duplicates)
                 $item->Remark = implode(' || ', $remarks);
             }
