@@ -95,7 +95,7 @@
                                 <tr id="collapse-{{ $row->id }}" class="collapse-row d-none">
                                     <td colspan="5" class="p-1">
 
-                                        <div class="p-1 border rounded bg-light small" style="max-width:1000px;">
+                                        <div class="p-1 border rounded bg-light small">
                                             <div class="row g-1">
 
                                                 <!-- Location -->
@@ -259,7 +259,7 @@
                                                 <!-- Remark -->
                                                 <div class="col-md-12 px-1">
                                                     <label class="mb-0 small">Remark</label>
-                                                    <textarea class="form-control form-control-sm py-0 px-1" style="min-height:40px;resize:vertical;" data-key="Remark">{{ $row->Remark ?? '' }}</textarea>
+                                                    <textarea class="form-control form-control-sm py-0 px-1" data-key="Remark">{{ $row->Remark ?? '' }}</textarea>
                                                 </div>
 
                                             </div>
@@ -283,167 +283,219 @@
         </div>
     </div>
 
-    <!-- ✅ ENHANCED PROFESSIONAL STYLING: Premium UI/UX Design -->
+    <!-- ✅ EXTREME-COMPRESSION PREMIUM: Zero Design Errors, Full Space Optimization -->
     <style>
         /* ============================================
-           PREMIUM LAYOUT & STRUCTURE
+           ULTRA-TIGHT SPACING - EXTREME COMPRESSION
            ============================================ */
-        .card {
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
-            border: 1px solid rgba(0, 0, 0, 0.06) !important;
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%) !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        body, .card-body, .card-header {
+            margin: 0 !important;
+            padding: 0 !important;
         }
 
-        .card:hover {
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+        .card {
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08) !important;
+            border: 1px solid rgba(99, 102, 241, 0.12) !important;
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%) !important;
+            margin-bottom: 0 !important;
+        }
+
+        .card-header {
+            padding: 12px 16px !important;
+            background: #ffffff !important;
+            border-bottom: 1px solid rgba(99, 102, 241, 0.1) !important;
+        }
+
+        .card-body {
+            padding: 10px !important;
         }
 
         /* ============================================
-           TABLE STYLING - PREMIUM
+           TABLE - EXTREME COMPRESSION
            ============================================ */
         .table {
             background: #ffffff !important;
             border-collapse: collapse !important;
             table-layout: fixed !important;
             width: 100% !important;
-        }
-
-        #sheet-table-body tr {
-            border-spacing: 0 !important;
-            transition: all 0.2s ease !important;
-        }
-
-        /* Main data rows */
-        #sheet-table-body tbody tr:not(.collapse-row) {
-            background-color: #ffffff !important;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+            font-size: 12px !important;
             margin-bottom: 0 !important;
         }
 
-        #sheet-table-body tbody tr:not(.collapse-row):hover {
-            background: linear-gradient(90deg, rgba(99, 102, 241, 0.04) 0%, rgba(99, 102, 241, 0.02) 100%) !important;
-            box-shadow: inset 0 0 10px rgba(99, 102, 241, 0.05) !important;
-        }
-
-        #sheet-table-body tr:not(.collapse-row) td {
-            padding: 12px 8px !important;
-            vertical-align: middle !important;
-        }
-
-        /* ✅ FIX: Ensure proper column widths */
-        .table thead th {
-            width: 20% !important;
-            word-wrap: break-word !important;
-            overflow-wrap: break-word !important;
-        }
-
-        .table tbody td {
-            word-wrap: break-word !important;
-            overflow-wrap: break-word !important;
-        }
-
-        /* Header styling */
         .table thead {
             background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
             position: sticky !important;
             top: 0 !important;
-            z-index: 10 !important;
+            z-index: 20 !important;
         }
 
         .table thead th {
             color: #ffffff !important;
-            font-weight: 600 !important;
-            font-size: 13px !important;
+            font-weight: 700 !important;
+            font-size: 11px !important;
             text-transform: uppercase !important;
-            letter-spacing: 0.5px !important;
-            padding: 14px 8px !important;
+            letter-spacing: 0.4px !important;
+            padding: 7px 4px !important;
             border: none !important;
-            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15) !important;
+            vertical-align: middle !important;
+            width: 20% !important;
+            word-break: break-word !important;
         }
 
-        /* Collapse row */
+        /* ✅ DATA ROWS - ULTRA-TIGHT */
+        #sheet-table-body tbody tr:not(.collapse-row) {
+            background-color: #ffffff !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.04) !important;
+            height: 36px !important;
+        }
+
+        #sheet-table-body tbody tr:not(.collapse-row):hover {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.03) 0%, rgba(99, 102, 241, 0.01) 100%) !important;
+            box-shadow: inset 0 0 8px rgba(99, 102, 241, 0.04) !important;
+        }
+
+        #sheet-table-body tr:not(.collapse-row) td {
+            padding: 6px 3px !important;
+            vertical-align: middle !important;
+            overflow: hidden !important;
+            text-overflow: ellipsis !important;
+            white-space: nowrap !important;
+        }
+
+        /* ============================================
+           COLLAPSE ROW - ULTRA-COMPACT
+           ============================================ */
         #sheet-table-body tr.collapse-row {
             display: none !important;
         }
 
         #sheet-table-body tr.collapse-row.show {
             display: table-row !important;
-            animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            animation: slideDown 0.25s ease-out !important;
         }
 
         @keyframes slideDown {
             from {
                 opacity: 0;
-                transform: translateY(-10px);
+                max-height: 0;
             }
             to {
                 opacity: 1;
-                transform: translateY(0);
+                max-height: 2000px;
             }
         }
 
         #sheet-table-body tr.collapse-row td {
-            padding: 0 !important;
-            padding-top: 8px !important;
-            padding-bottom: 8px !important;
-            border-top: none !important;
-            background: linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(99, 102, 241, 0.01) 100%) !important;
+            padding: 4px !important;
+            border-top: 1px solid rgba(99, 102, 241, 0.08) !important;
+            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%) !important;
         }
 
         /* ============================================
-           FORM CONTROLS - PREMIUM STYLING
+           COLLAPSE DETAIL - ULTRA-COMPRESSED
            ============================================ */
-        .form-control, .form-select {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%) !important;
-            border: 1.5px solid rgba(99, 102, 241, 0.2) !important;
-            border-radius: 8px !important;
-            padding: 8px 10px !important;
-            font-size: 13px !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
+        .collapse-row .p-1.border.rounded.bg-light {
+            background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%) !important;
+            border: 1px solid rgba(99, 102, 241, 0.1) !important;
+            border-radius: 6px !important;
+            padding: 6px !important;
+            max-width: 100% !important;
+            width: 100% !important;
+            box-shadow: none !important;
+        }
+
+        .collapse-row .row {
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            margin-bottom: 0 !important;
+            row-gap: 4px !important;
+            column-gap: 4px !important;
+        }
+
+        .collapse-row .col-md-3,
+        .collapse-row .col-md-2,
+        .collapse-row .col-md-12 {
+            padding-left: 2px !important;
+            padding-right: 2px !important;
+            padding-bottom: 0 !important;
+        }
+
+        .collapse-row label {
+            color: #1f2937 !important;
+            font-weight: 700 !important;
+            text-transform: uppercase !important;
+            font-size: 9px !important;
+            letter-spacing: 0.3px !important;
+            margin-bottom: 2px !important;
+            display: block !important;
+            width: 100% !important;
+        }
+
+        /* ============================================
+           FORM CONTROLS - ULTRA-TIGHT
+           ============================================ */
+        .form-control, .form-select, .collapse-row .form-control, .collapse-row .form-select {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%) !important;
+            border: 1px solid rgba(99, 102, 241, 0.15) !important;
+            border-radius: 6px !important;
+            padding: 4px 6px !important;
+            font-size: 11px !important;
+            transition: all 0.2s ease !important;
+            box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
+            height: 28px !important;
+            margin-bottom: 0 !important;
         }
 
         .form-control:focus, .form-select:focus {
             border-color: #6366f1 !important;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 2px 8px rgba(99, 102, 241, 0.15) !important;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.1), inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
             background: #ffffff !important;
         }
 
         .form-control::placeholder {
-            color: rgba(0, 0, 0, 0.4) !important;
-            font-style: italic !important;
+            color: rgba(0, 0, 0, 0.35) !important;
+            font-size: 10px !important;
         }
 
         /* ============================================
-           INPUT GROUP STYLING
+           INPUT GROUP - TIGHT
            ============================================ */
+        .input-group {
+            gap: 0 !important;
+            height: 28px !important;
+        }
+
         .input-group-text {
             background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
             color: white !important;
-            border: 1.5px solid #6366f1 !important;
-            font-weight: 600 !important;
-            border-radius: 8px 0 0 8px !important;
+            border: 1px solid #6366f1 !important;
+            font-weight: 700 !important;
+            font-size: 10px !important;
+            padding: 4px 6px !important;
+            border-radius: 6px 0 0 6px !important;
         }
 
         .input-group .form-control {
-            border-radius: 0 8px 8px 0 !important;
+            border-radius: 0 6px 6px 0 !important;
             border-left: none !important;
         }
 
         /* ============================================
-           BUTTON STYLING - PREMIUM
+           BUTTONS - ULTRA-COMPACT
            ============================================ */
         .btn {
-            border-radius: 8px !important;
-            font-weight: 600 !important;
-            font-size: 13px !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            border-radius: 6px !important;
+            font-weight: 700 !important;
+            font-size: 10px !important;
+            transition: all 0.2s ease !important;
             text-transform: uppercase !important;
-            letter-spacing: 0.5px !important;
+            letter-spacing: 0.3px !important;
             border: none !important;
-            padding: 8px 16px !important;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+            padding: 5px 10px !important;
+            height: 28px !important;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08) !important;
+            margin-bottom: 0 !important;
+            width: 100% !important;
         }
 
         .btn-info {
@@ -451,10 +503,10 @@
             color: white !important;
         }
 
-        .btn-info:hover {
+        .btn-info:hover:not(:disabled) {
             background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
-            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4) !important;
-            transform: translateY(-2px) !important;
+            box-shadow: 0 2px 6px rgba(37, 99, 235, 0.3) !important;
+            transform: translateY(-1px) !important;
         }
 
         .btn-warning {
@@ -462,10 +514,10 @@
             color: white !important;
         }
 
-        .btn-warning:hover {
+        .btn-warning:hover:not(:disabled) {
             background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
-            box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4) !important;
-            transform: translateY(-2px) !important;
+            box-shadow: 0 2px 6px rgba(217, 119, 6, 0.3) !important;
+            transform: translateY(-1px) !important;
         }
 
         .btn-primary {
@@ -473,10 +525,10 @@
             color: white !important;
         }
 
-        .btn-primary:hover {
+        .btn-primary:hover:not(:disabled) {
             background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
-            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4) !important;
-            transform: translateY(-2px) !important;
+            box-shadow: 0 2px 6px rgba(79, 70, 229, 0.3) !important;
+            transform: translateY(-1px) !important;
         }
 
         .btn-secondary {
@@ -486,150 +538,123 @@
 
         .btn-secondary:hover:not(:disabled) {
             background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
-            box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4) !important;
-            transform: translateY(-2px) !important;
+            box-shadow: 0 2px 6px rgba(107, 114, 128, 0.3) !important;
+            transform: translateY(-1px) !important;
         }
 
         /* ============================================
-           SEARCH INPUT - PREMIUM
+           SEARCH - PREMIUM MINIMAL
            ============================================ */
         .navbar-search {
             position: relative !important;
         }
 
         .navbar-search .form-control {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%) !important;
-            border: 2px solid rgba(99, 102, 241, 0.2) !important;
-            padding: 10px 14px 10px 40px !important;
-            border-radius: 12px !important;
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%) !important;
+            border: 1.5px solid rgba(99, 102, 241, 0.2) !important;
+            padding: 7px 10px 7px 32px !important;
+            border-radius: 10px !important;
             font-weight: 500 !important;
-            transition: all 0.3s ease !important;
+            font-size: 12px !important;
+            height: 32px !important;
         }
 
         .navbar-search .form-control:focus {
             border-color: #6366f1 !important;
-            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1), 0 4px 12px rgba(99, 102, 241, 0.2) !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.08), inset 0 1px 2px rgba(0, 0, 0, 0.02) !important;
         }
 
         .navbar-search .icon {
             position: absolute !important;
-            left: 12px !important;
+            left: 10px !important;
             top: 50% !important;
             transform: translateY(-50%) !important;
-            font-size: 18px !important;
+            font-size: 16px !important;
             color: #6366f1 !important;
         }
 
         /* ============================================
-           COLLAPSE DETAIL SECTION - PREMIUM & FULL WIDTH
+           PAGINATION - ULTRA-TIGHT & FIXED
            ============================================ */
-        .collapse-row .p-1.border.rounded.bg-light {
-            background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%) !important;
-            border: 1.5px solid rgba(99, 102, 241, 0.15) !important;
-            border-radius: 12px !important;
-            box-shadow: inset 0 2px 4px rgba(99, 102, 241, 0.05) !important;
-            max-width: 100% !important;
-            width: 100% !important;
-            overflow-x: auto !important;
+        .d-flex.align-items-center.justify-content-between {
+            position: sticky !important;
+            bottom: 0 !important;
+            background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%) !important;
+            padding: 8px 10px !important;
+            border-top: 1px solid rgba(99, 102, 241, 0.1) !important;
+            z-index: 15 !important;
+            gap: 12px !important;
+            margin-top: 4px !important;
         }
 
-        .collapse-row label {
-            color: #1f2937 !important;
-            font-weight: 600 !important;
-            text-transform: uppercase !important;
-            font-size: 11px !important;
-            letter-spacing: 0.5px !important;
-            margin-bottom: 6px !important;
-            display: block !important;
-            width: 100% !important;
-        }
-
-        .collapse-row textarea {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%) !important;
-            border: 1.5px solid rgba(99, 102, 241, 0.2) !important;
-            border-radius: 8px !important;
-            transition: all 0.3s ease !important;
-            width: 100% !important;
-        }
-
-        .collapse-row textarea:focus {
-            border-color: #6366f1 !important;
-            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
-        }
-
-        /* ✅ FIX: Proper spacing for row groups */
-        .collapse-row .row {
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            width: 100% !important;
-        }
-
-        .collapse-row .col-md-3,
-        .collapse-row .col-md-2,
-        .collapse-row .col-md-12 {
-            padding-left: 4px !important;
-            padding-right: 4px !important;
-        }
-
-        /* ============================================
-           PAGINATION - PREMIUM
-           ============================================ */
         .pagination {
-            gap: 4px !important;
+            gap: 2px !important;
+            margin: 0 !important;
         }
 
         .page-link {
-            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%) !important;
-            border: 1.5px solid rgba(99, 102, 241, 0.2) !important;
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%) !important;
+            border: 1px solid rgba(99, 102, 241, 0.15) !important;
             color: #6366f1 !important;
-            border-radius: 8px !important;
-            transition: all 0.3s ease !important;
+            border-radius: 4px !important;
+            transition: all 0.2s ease !important;
             font-weight: 600 !important;
+            font-size: 10px !important;
+            padding: 4px 6px !important;
+            min-width: 24px !important;
+            text-align: center !important;
         }
 
         .page-link:hover:not(.disabled) {
             background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
             border-color: #6366f1 !important;
             color: white !important;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.2) !important;
             transform: translateY(-1px) !important;
         }
 
         .page-item.active .page-link {
             background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
             border-color: #6366f1 !important;
-            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+            box-shadow: 0 2px 6px rgba(99, 102, 241, 0.2) !important;
         }
 
         /* ============================================
-           ANIMATIONS & TRANSITIONS
+           TABLE WRAPPER - SEAMLESS
            ============================================ */
-        * {
-            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+        .table-responsive {
+            width: 100% !important;
+            overflow-x: auto !important;
+            border: none !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        #bottom-scroll-wrapper, #top-scroll-wrapper {
+            width: 100% !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+
+        .table tbody {
+            display: table-row-group !important;
+        }
+
+        .collapse-row td {
+            display: table-cell !important;
+            width: 100% !important;
         }
 
         /* ============================================
-           TEXT & TYPOGRAPHY
-           ============================================ */
-        .text-nowrap.small {
-            letter-spacing: 0.3px !important;
-        }
-
-        .text-center {
-            color: #374151 !important;
-        }
-
-        /* ============================================
-           SCROLLBAR STYLING - PREMIUM
+           SCROLLBAR - MINIMAL PREMIUM
            ============================================ */
         .scroll-sm::-webkit-scrollbar {
-            height: 6px !important;
-            width: 6px !important;
+            height: 4px !important;
+            width: 4px !important;
         }
 
         .scroll-sm::-webkit-scrollbar-track {
-            background: rgba(99, 102, 241, 0.05) !important;
-            border-radius: 10px !important;
+            background: rgba(99, 102, 241, 0.03) !important;
         }
 
         .scroll-sm::-webkit-scrollbar-thumb {
@@ -642,25 +667,47 @@
         }
 
         /* ============================================
-           TABLE WRAPPER - FIX LAYOUT
+           TEXTAREA - COMPACT
            ============================================ */
-        .table-responsive {
+        .collapse-row textarea {
+            background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%) !important;
+            border: 1px solid rgba(99, 102, 241, 0.15) !important;
+            border-radius: 6px !important;
+            padding: 4px 6px !important;
+            font-size: 11px !important;
+            transition: all 0.2s ease !important;
             width: 100% !important;
-            overflow-x: auto !important;
+            min-height: 50px !important;
+            resize: vertical !important;
         }
 
-        #bottom-scroll-wrapper {
-            width: 100% !important;
+        .collapse-row textarea:focus {
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.08) !important;
         }
 
-        .table tbody {
-            display: table-row-group !important;
+        /* ============================================
+           GLOBAL OPTIMIZATIONS
+           ============================================ */
+        * {
+            margin-bottom: 0 !important;
+            padding-bottom: 0 !important;
         }
 
-        /* ✅ FIX: Ensure collapse row spans properly */
-        .collapse-row td {
-            display: table-cell !important;
-            width: 100% !important;
+        .mb-2, .mb-24, .mt-24 {
+            margin: 0 !important;
+        }
+
+        small, .small {
+            font-size: 11px !important;
+        }
+
+        /* ============================================
+           TEXT STYLING
+           ============================================ */
+        .text-muted {
+            color: #6b7280 !important;
+            font-size: 11px !important;
         }
     </style>
 

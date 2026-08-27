@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-08-27T23:49:34.666834",
+  "status": "FAILED",
+  "tests_passed": 0,
+  "tests_failed": 0,
+  "errors": [
+    "Credentials not set in environment variables"
+  ]
+}
