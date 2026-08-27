@@ -283,27 +283,328 @@
         </div>
     </div>
 
-    <!-- ✅ LAYOUT FIX: Remove gap below Status column -->
+    <!-- ✅ ENHANCED PROFESSIONAL STYLING: Premium UI/UX Design -->
     <style>
+        /* ============================================
+           PREMIUM LAYOUT & STRUCTURE
+           ============================================ */
+        .card {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08) !important;
+            border: 1px solid rgba(0, 0, 0, 0.06) !important;
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%) !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.12) !important;
+        }
+
+        /* ============================================
+           TABLE STYLING - PREMIUM
+           ============================================ */
+        .table {
+            background: #ffffff !important;
+            border-collapse: collapse !important;
+        }
+
         #sheet-table-body tr {
             border-spacing: 0 !important;
+            transition: all 0.2s ease !important;
         }
+
+        /* Main data rows */
+        #sheet-table-body tbody tr:not(.collapse-row) {
+            background-color: #ffffff !important;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.06) !important;
+            margin-bottom: 0 !important;
+        }
+
+        #sheet-table-body tbody tr:not(.collapse-row):hover {
+            background: linear-gradient(90deg, rgba(99, 102, 241, 0.04) 0%, rgba(99, 102, 241, 0.02) 100%) !important;
+            box-shadow: inset 0 0 10px rgba(99, 102, 241, 0.05) !important;
+        }
+
+        #sheet-table-body tr:not(.collapse-row) td {
+            padding: 12px 8px !important;
+            vertical-align: middle !important;
+        }
+
+        /* Header styling */
+        .table thead {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 10 !important;
+        }
+
+        .table thead th {
+            color: #ffffff !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            padding: 14px 8px !important;
+            border: none !important;
+            box-shadow: 0 2px 8px rgba(99, 102, 241, 0.15) !important;
+        }
+
+        /* Collapse row */
         #sheet-table-body tr.collapse-row {
             display: none !important;
         }
+
         #sheet-table-body tr.collapse-row.show {
             display: table-row !important;
+            animation: slideDown 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
         }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
         #sheet-table-body tr.collapse-row td {
-            padding-top: 0 !important;
-            padding-bottom: 0 !important;
+            padding: 0 !important;
+            padding-top: 8px !important;
+            padding-bottom: 8px !important;
             border-top: none !important;
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.02) 0%, rgba(99, 102, 241, 0.01) 100%) !important;
         }
-        .table tbody tr:not(.collapse-row) {
-            margin-bottom: 0 !important;
+
+        /* ============================================
+           FORM CONTROLS - PREMIUM STYLING
+           ============================================ */
+        .form-control, .form-select {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%) !important;
+            border: 1.5px solid rgba(99, 102, 241, 0.2) !important;
+            border-radius: 8px !important;
+            padding: 8px 10px !important;
+            font-size: 13px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04) !important;
         }
-        .table tbody {
-            border-collapse: collapse !important;
+
+        .form-control:focus, .form-select:focus {
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1), 0 2px 8px rgba(99, 102, 241, 0.15) !important;
+            background: #ffffff !important;
+        }
+
+        .form-control::placeholder {
+            color: rgba(0, 0, 0, 0.4) !important;
+            font-style: italic !important;
+        }
+
+        /* ============================================
+           INPUT GROUP STYLING
+           ============================================ */
+        .input-group-text {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+            color: white !important;
+            border: 1.5px solid #6366f1 !important;
+            font-weight: 600 !important;
+            border-radius: 8px 0 0 8px !important;
+        }
+
+        .input-group .form-control {
+            border-radius: 0 8px 8px 0 !important;
+            border-left: none !important;
+        }
+
+        /* ============================================
+           BUTTON STYLING - PREMIUM
+           ============================================ */
+        .btn {
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.5px !important;
+            border: none !important;
+            padding: 8px 16px !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1) !important;
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            color: white !important;
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%) !important;
+            box-shadow: 0 6px 20px rgba(37, 99, 235, 0.4) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%) !important;
+            color: white !important;
+        }
+
+        .btn-warning:hover {
+            background: linear-gradient(135deg, #d97706 0%, #b45309 100%) !important;
+            box-shadow: 0 6px 20px rgba(217, 119, 6, 0.4) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+            color: white !important;
+        }
+
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #4f46e5 0%, #4338ca 100%) !important;
+            box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #9ca3af 0%, #6b7280 100%) !important;
+            color: white !important;
+        }
+
+        .btn-secondary:hover:not(:disabled) {
+            background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
+            box-shadow: 0 6px 20px rgba(107, 114, 128, 0.4) !important;
+            transform: translateY(-2px) !important;
+        }
+
+        /* ============================================
+           SEARCH INPUT - PREMIUM
+           ============================================ */
+        .navbar-search {
+            position: relative !important;
+        }
+
+        .navbar-search .form-control {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%) !important;
+            border: 2px solid rgba(99, 102, 241, 0.2) !important;
+            padding: 10px 14px 10px 40px !important;
+            border-radius: 12px !important;
+            font-weight: 500 !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .navbar-search .form-control:focus {
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1), 0 4px 12px rgba(99, 102, 241, 0.2) !important;
+        }
+
+        .navbar-search .icon {
+            position: absolute !important;
+            left: 12px !important;
+            top: 50% !important;
+            transform: translateY(-50%) !important;
+            font-size: 18px !important;
+            color: #6366f1 !important;
+        }
+
+        /* ============================================
+           COLLAPSE DETAIL SECTION - PREMIUM
+           ============================================ */
+        .collapse-row .p-1.border.rounded.bg-light {
+            background: linear-gradient(135deg, #f8f9fc 0%, #ffffff 100%) !important;
+            border: 1.5px solid rgba(99, 102, 241, 0.15) !important;
+            border-radius: 12px !important;
+            box-shadow: inset 0 2px 4px rgba(99, 102, 241, 0.05) !important;
+        }
+
+        .collapse-row label {
+            color: #1f2937 !important;
+            font-weight: 600 !important;
+            text-transform: uppercase !important;
+            font-size: 11px !important;
+            letter-spacing: 0.5px !important;
+            margin-bottom: 6px !important;
+        }
+
+        .collapse-row textarea {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%) !important;
+            border: 1.5px solid rgba(99, 102, 241, 0.2) !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+        }
+
+        .collapse-row textarea:focus {
+            border-color: #6366f1 !important;
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1) !important;
+        }
+
+        /* ============================================
+           PAGINATION - PREMIUM
+           ============================================ */
+        .pagination {
+            gap: 4px !important;
+        }
+
+        .page-link {
+            background: linear-gradient(135deg, #ffffff 0%, #f8f9fc 100%) !important;
+            border: 1.5px solid rgba(99, 102, 241, 0.2) !important;
+            color: #6366f1 !important;
+            border-radius: 8px !important;
+            transition: all 0.3s ease !important;
+            font-weight: 600 !important;
+        }
+
+        .page-link:hover:not(.disabled) {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+            border-color: #6366f1 !important;
+            color: white !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+            transform: translateY(-1px) !important;
+        }
+
+        .page-item.active .page-link {
+            background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%) !important;
+            border-color: #6366f1 !important;
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3) !important;
+        }
+
+        /* ============================================
+           ANIMATIONS & TRANSITIONS
+           ============================================ */
+        * {
+            transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease !important;
+        }
+
+        /* ============================================
+           TEXT & TYPOGRAPHY
+           ============================================ */
+        .text-nowrap.small {
+            letter-spacing: 0.3px !important;
+        }
+
+        .text-center {
+            color: #374151 !important;
+        }
+
+        /* ============================================
+           SCROLLBAR STYLING - PREMIUM
+           ============================================ */
+        .scroll-sm::-webkit-scrollbar {
+            height: 6px !important;
+            width: 6px !important;
+        }
+
+        .scroll-sm::-webkit-scrollbar-track {
+            background: rgba(99, 102, 241, 0.05) !important;
+            border-radius: 10px !important;
+        }
+
+        .scroll-sm::-webkit-scrollbar-thumb {
+            background: linear-gradient(180deg, #6366f1 0%, #4f46e5 100%) !important;
+            border-radius: 10px !important;
+        }
+
+        .scroll-sm::-webkit-scrollbar-thumb:hover {
+            background: linear-gradient(180deg, #4f46e5 0%, #4338ca 100%) !important;
         }
     </style>
 
