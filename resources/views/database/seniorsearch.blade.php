@@ -282,6 +282,31 @@
             @endif
         </div>
     </div>
+
+    <!-- ✅ LAYOUT FIX: Remove gap below Status column -->
+    <style>
+        #sheet-table-body tr {
+            border-spacing: 0 !important;
+        }
+        #sheet-table-body tr.collapse-row {
+            display: none !important;
+        }
+        #sheet-table-body tr.collapse-row.show {
+            display: table-row !important;
+        }
+        #sheet-table-body tr.collapse-row td {
+            padding-top: 0 !important;
+            padding-bottom: 0 !important;
+            border-top: none !important;
+        }
+        .table tbody tr:not(.collapse-row) {
+            margin-bottom: 0 !important;
+        }
+        .table tbody {
+            border-collapse: collapse !important;
+        }
+    </style>
+
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
@@ -368,7 +393,7 @@
                 const nextRow = $(this).next('.collapse-row');
 
                 if (nextRow.length) {
-                    nextRow.toggleClass('d-none');
+                    nextRow.toggleClass('d-none').toggleClass('show');
                 }
             });
 
@@ -392,8 +417,8 @@
 
                     targetRow.addClass('table-warning');
 
-                    // Expand collapse row
-                    $('#collapse-' + rowId).removeClass('d-none');
+                    // ✅ Expand collapse row (remove gap)
+                    $('#collapse-' + rowId).removeClass('d-none').addClass('show');
 
                     // Scroll into view
                     targetRow[0]?.scrollIntoView({
