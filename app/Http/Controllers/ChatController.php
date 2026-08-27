@@ -51,6 +51,16 @@ class ChatController extends Controller
         $users = collect($result)->map(function ($row) {
             $row->unreadCount = (int)$row->unreadCount;
             $row->lastChat = $row->lastChatTime ? (object)['created_at' => $row->lastChatTime] : null;
+
+            // ✅ Format display time for view
+            if ($row->lastChatTime) {
+                $time = strtotime($row->lastChatTime);
+                $row->lastChatDisplay = date('Y-m-d') === date('Y-m-d', $time)
+                    ? date('h:i A', $time)
+                    : date('d M Y', $time);
+            } else {
+                $row->lastChatDisplay = '';
+            }
             unset($row->lastChatTime);
             return $row;
         });
