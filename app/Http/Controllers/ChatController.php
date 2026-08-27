@@ -16,85 +16,44 @@ class ChatController extends Controller
     public function junior(Request $request)
     {
         $user = Auth::user();
+        $userId = $user->id;
         $selectedUserId = $request->user;
         $search = $request->search;
 
-        // ✅ COMPRESSION: Select only needed columns to reduce RAM
-        $users = User::whereIn('role', ['junior', 'senior'])
-            ->where('is_deleted', 0)
-            ->where('id', '!=', $user->id)
-            ->select(['id', 'name', 'email', 'phone', 'gender', 'role', 'group', 'target', 'target_date', 'image'])
-            ->when($search, function ($query) use ($search) {
-                $query->where(function ($q) use ($search) {
-                    $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhere('phone', 'like', "%{$search}%")
-                        ->orWhere('gender', 'like', "%{$search}%")
-                        ->orWhere('role', 'like', "%{$search}%")
-                        ->orWhere('group', 'like', "%{$search}%")
-                        ->orWhere('target', 'like', "%{$search}%")
-                        ->orWhere('target_date', 'like', "%{$search}%");
-                });
-            })
-            ->get();
+        // ✅ EXTREME-COMPRESSION: Single raw SQL JOIN (all data in 1 query + LIMIT)
+        $searchWhere = '';
+        $params = [$userId, $userId];
 
-        // ✅ COMPRESSION: Select only needed columns + use UNION for efficiency
-        $unreadCounts = Chat::whereIn('sender_id', $users->pluck('id'))
-            ->where('receiver_id', $user->id)
-            ->where('is_read', false)
-            ->selectRaw('sender_id, COUNT(*) as unread_count')
-            ->groupBy('sender_id')
-            ->get(['sender_id', 'unread_count'])
-            ->keyBy('sender_id');
-
-        // ✅ COMPRESSION: Select only needed columns + limit to latest only
-        $userIds = $users->pluck('id')->toArray();
-        $lastMessages = Chat::whereIn('sender_id', $userIds)
-            ->where('receiver_id', $user->id)
-            ->select(['id', 'sender_id', 'receiver_id', 'created_at'])
-            ->orderBy('sender_id')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->unique('sender_id')
-            ->keyBy('sender_id');
-
-        // ✅ COMPRESSION: Add unread from opposite direction
-        if (!empty($userIds)) {
-            $reverseMessages = Chat::whereIn('receiver_id', $userIds)
-                ->where('sender_id', $user->id)
-                ->select(['id', 'sender_id', 'receiver_id', 'created_at'])
-                ->orderBy('receiver_id')
-                ->orderBy('created_at', 'desc')
-                ->get()
-                ->unique('receiver_id');
-
-            foreach ($reverseMessages as $msg) {
-                if (!$lastMessages->has($msg->receiver_id)) {
-                    $lastMessages[$msg->receiver_id] = $msg;
-                }
-            }
+        if ($search) {
+            $searchWhere = " AND (u.name LIKE ? OR u.email LIKE ? OR u.phone LIKE ?)";
+            $params[] = "%{$search}%";
+            $params[] = "%{$search}%";
+            $params[] = "%{$search}%";
         }
 
-        $users = $users->map(function ($chatUser) use ($user, $unreadCounts, $lastMessages) {
-            $lastMsg = $lastMessages->get($chatUser->id);
+        $result = \DB::select("
+            SELECT u.id, u.name, u.image, u.email, u.phone, u.role, u.gender, u.group, u.target, u.target_date,
+                   COALESCE(SUM(CASE WHEN c.is_read = 0 THEN 1 ELSE 0 END), 0) as unreadCount,
+                   MAX(c.created_at) as lastChatTime
+            FROM users u
+            LEFT JOIN chats c ON c.sender_id = u.id AND c.receiver_id = ?
+            WHERE u.role IN ('junior', 'senior') AND u.is_deleted = 0 AND u.id != ? {$searchWhere}
+            GROUP BY u.id
+            ORDER BY MAX(c.created_at) DESC
+            LIMIT 200
+        ", $params);
 
-            $chatUser->lastChat = $lastMsg;
-            $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
+        if (empty($result)) {
+            return view('chat.junior', ['users' => [], 'activeUser' => null, 'messages' => collect(), 'selectedUserId' => $selectedUserId]);
+        }
 
-            if ($lastMsg) {
-                $createdAt = $lastMsg->created_at;
-                $chatUser->lastChatDisplay = $createdAt->isToday()
-                    ? $createdAt->format('h:i A')
-                    : $createdAt->format('d M Y');
-            } else {
-                $chatUser->lastChatDisplay = '';
-            }
-
-            return $chatUser;
-        })->sortByDesc(function ($chatUser) {
-            return optional($chatUser->lastChat)->created_at;
-        })
-        ->values();
+        // ✅ EXTREME-COMPRESSION: Convert to objects + attach minimal chat data
+        $users = collect($result)->map(function ($row) {
+            $row->unreadCount = (int)$row->unreadCount;
+            $row->lastChat = $row->lastChatTime ? (object)['created_at' => $row->lastChatTime] : null;
+            unset($row->lastChatTime);
+            return $row;
+        });
 
         $activeUser = $users
             ->where('id', $selectedUserId)
@@ -219,64 +178,53 @@ class ChatController extends Controller
     public function latestMessages()
     {
         $user = Auth::user();
+        $userId = $user->id;
 
-        // ✅ COMPRESSION: Select needed columns (keeping User properties for frontend compatibility)
-        $chatUsers = User::whereIn('role', ['junior', 'senior'])
-            ->where('is_deleted', 0)
-            ->where('id', '!=', $user->id)
-            ->select(['id', 'name', 'email', 'phone', 'image', 'role', 'gender', 'group'])
-            ->get()
-            ->keyBy('id');
+        // ✅ EXTREME-COMPRESSION: Single raw query for unread + last message timestamp
+        $rawData = \DB::select("
+            SELECT DISTINCT c1.sender_id as user_id,
+                   COUNT(CASE WHEN c1.is_read = 0 THEN 1 END) as cnt,
+                   MAX(c1.created_at) as last_time
+            FROM chats c1
+            WHERE c1.receiver_id = ?
+              AND c1.sender_id IN (
+                SELECT id FROM users WHERE role IN ('junior', 'senior')
+                AND is_deleted = 0 AND id != ?
+              )
+            GROUP BY c1.sender_id
+            ORDER BY MAX(c1.created_at) DESC
+            LIMIT 100
+        ", [$userId, $userId]);
 
-        // ✅ COMPRESSION: Get unread counts in single optimized query
-        $userIds = $chatUsers->keys()->toArray();
-        $unreadCounts = Chat::whereIn('sender_id', $userIds)
-            ->where('receiver_id', $user->id)
-            ->where('is_read', false)
-            ->selectRaw('sender_id, COUNT(*) as unread_count')
-            ->groupBy('sender_id')
-            ->get(['sender_id', 'unread_count'])
-            ->keyBy('sender_id');
-
-        // ✅ COMPRESSION: Only fetch messages with unread counts
-        $userIdsWithUnread = $unreadCounts->keys()->toArray();
-
-        if (empty($userIdsWithUnread)) {
+        if (empty($rawData)) {
             return response()->json(['count' => 0, 'users' => []]);
         }
 
-        $lastMessages = Chat::whereIn('sender_id', $userIdsWithUnread)
-            ->where('receiver_id', $user->id)
-            ->select(['id', 'sender_id', 'receiver_id', 'created_at'])
-            ->orderBy('sender_id')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->unique('sender_id')
-            ->keyBy('sender_id');
+        $userIds = array_column($rawData, 'user_id');
 
-        // ✅ COMPRESSION: Efficient O(1) lookup using pre-keyed collection
+        // ✅ EXTREME-COMPRESSION: Fetch users in bulk (minimal columns)
+        $users = User::whereIn('id', $userIds)
+            ->select(['id', 'name', 'image'])
+            ->get()
+            ->all();
+
+        // ✅ EXTREME-COMPRESSION: Build result using raw query data (no extra queries)
         $result = [];
         $totalUnread = 0;
+        $userMap = [];
 
-        foreach ($userIdsWithUnread as $userId) {
-            $unreadCount = $unreadCounts->get($userId)->unread_count ?? 0;
-            $totalUnread += $unreadCount;
-
-            // ✅ O(1) lookup instead of O(n) firstWhere()
-            $chatUser = $chatUsers->get($userId);
-            if ($chatUser) {
-                $chatUser->unreadCount = $unreadCount;
-                $chatUser->lastChat = $lastMessages->get($userId);
-                $result[] = $chatUser;
-            }
+        foreach ($users as $u) {
+            $userMap[$u->id] = $u;
         }
 
-        // ✅ COMPRESSION: Sort efficiently in memory
-        usort($result, function ($a, $b) {
-            $timeA = $a->lastChat?->created_at ?? now()->subYear();
-            $timeB = $b->lastChat?->created_at ?? now()->subYear();
-            return $timeB->timestamp <=> $timeA->timestamp;
-        });
+        foreach ($rawData as $row) {
+            if (!isset($userMap[$row->user_id])) continue;
+
+            $totalUnread += (int)$row->cnt;
+            $userMap[$row->user_id]->unreadCount = (int)$row->cnt;
+            $userMap[$row->user_id]->lastChat = (object)['created_at' => $row->last_time];
+            $result[] = $userMap[$row->user_id];
+        }
 
         return response()->json(['count' => $totalUnread, 'users' => $result]);
     }
@@ -284,76 +232,46 @@ class ChatController extends Controller
     public function refreshChatUsers(Request $request)
     {
         $user = Auth::user();
+        $userId = $user->id;
 
-        // ✅ COMPRESSION: Select only needed columns
-        $chatUsers = User::whereIn('role', ['junior', 'senior'])
-            ->where('is_deleted', 0)
-            ->where('id', '!=', $user->id)
-            ->select(['id', 'name', 'image'])
-            ->get();
+        // ✅ EXTREME-COMPRESSION: Single raw SQL JOIN query (all data in 1 query)
+        $rawData = \DB::select("
+            SELECT u.id, u.name, u.image,
+                   COALESCE(SUM(CASE WHEN c.is_read = 0 THEN 1 ELSE 0 END), 0) as unreadCount,
+                   MAX(c.created_at) as lastChatTime
+            FROM users u
+            LEFT JOIN chats c ON (c.sender_id = u.id AND c.receiver_id = ?)
+            WHERE u.role IN ('junior', 'senior') AND u.is_deleted = 0 AND u.id != ?
+            GROUP BY u.id
+            ORDER BY MAX(c.created_at) DESC
+            LIMIT 200
+        ", [$userId, $userId]);
 
-        $userIds = $chatUsers->pluck('id')->toArray();
-
-        // ✅ COMPRESSION: Get unread counts in single query
-        $unreadCounts = Chat::whereIn('sender_id', $userIds)
-            ->where('receiver_id', $user->id)
-            ->where('is_read', false)
-            ->selectRaw('sender_id, COUNT(*) as unread_count')
-            ->groupBy('sender_id')
-            ->get(['sender_id', 'unread_count'])
-            ->keyBy('sender_id');
-
-        // ✅ COMPRESSION: Fetch last messages with minimal columns
-        $lastMessages = Chat::whereIn('sender_id', $userIds)
-            ->where('receiver_id', $user->id)
-            ->select(['id', 'sender_id', 'receiver_id', 'created_at'])
-            ->orderBy('sender_id')
-            ->orderBy('created_at', 'desc')
-            ->get()
-            ->unique('sender_id')
-            ->keyBy('sender_id');
-
-        // ✅ COMPRESSION: Add reverse direction messages efficiently
-        if (!empty($userIds)) {
-            $reverseMessages = Chat::whereIn('receiver_id', $userIds)
-                ->where('sender_id', $user->id)
-                ->select(['id', 'sender_id', 'receiver_id', 'created_at'])
-                ->orderBy('receiver_id')
-                ->orderBy('created_at', 'desc')
-                ->get()
-                ->unique('receiver_id');
-
-            foreach ($reverseMessages as $msg) {
-                if (!$lastMessages->has($msg->receiver_id)) {
-                    $lastMessages[$msg->receiver_id] = $msg;
-                }
-            }
+        if (empty($rawData)) {
+            return response()->json([
+                'users' => [],
+                'activeUser' => null,
+                'messages' => collect(),
+                'lastMessageId' => null,
+            ]);
         }
 
+        // ✅ EXTREME-COMPRESSION: Format in single pass
         $chatUsersFormatted = [];
-        foreach ($chatUsers as $chatUser) {
-            $lastMsg = $lastMessages->get($chatUser->id);
-            $chatUser->lastChat = $lastMsg;
-            $chatUser->unreadCount = $unreadCounts->get($chatUser->id)->unread_count ?? 0;
+        foreach ($rawData as $row) {
+            $row->unreadCount = (int)$row->unreadCount;
+            $row->lastChat = $row->lastChatTime ? (object)['created_at' => $row->lastChatTime] : null;
 
-            if ($lastMsg) {
-                $createdAt = $lastMsg->created_at;
-                $chatUser->lastChatDisplay = $createdAt->isToday()
-                    ? $createdAt->format('h:i A')
-                    : $createdAt->format('d M Y');
+            if ($row->lastChatTime) {
+                $time = strtotime($row->lastChatTime);
+                $row->lastChatDisplay = date('Y-m-d') === date('Y-m-d', $time)
+                    ? date('h:i A', $time)
+                    : date('d M Y', $time);
             } else {
-                $chatUser->lastChatDisplay = '';
+                $row->lastChatDisplay = '';
             }
-
-            $chatUsersFormatted[] = $chatUser;
+            $chatUsersFormatted[] = $row;
         }
-
-        // ✅ COMPRESSION: Sort in memory instead of collection chains
-        usort($chatUsersFormatted, function ($a, $b) {
-            $timeA = $a->lastChat?->created_at ?? now()->subYear();
-            $timeB = $b->lastChat?->created_at ?? now()->subYear();
-            return $timeB->timestamp <=> $timeA->timestamp;
-        });
 
         $chatUsers = collect($chatUsersFormatted)->values();
 
