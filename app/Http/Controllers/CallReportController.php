@@ -1556,12 +1556,19 @@ class CallReportController extends Controller
         ]);
     }
 
-    // ✅ Exports ALL (non-paginated) "Never Reached" rows matching the same
+    // ✅ Exports selected "Never Reached" rows matching the same
     // filters used by neverreached() into an Excel-openable file.
     public function neverreachedExport(Request $request)
     {
         $dateFrom = $request->input('date');
         $dateTo   = $request->input('date_to');
+
+        // ✅ SELECTION MANAGEMENT: Get selected row IDs from frontend
+        $selectedRowsJson = $request->input('selected_rows');
+        $selectedRowIds = [];
+        if ($selectedRowsJson) {
+            $selectedRowIds = json_decode($selectedRowsJson, true) ?? [];
+        }
 
         // ✅ EXTREME-COMPRESSION: Limit export to 500 records (like seniorsearch)
         $query = GoogleSheetData::where('transfers', '!=', 1)->where('rejected', 0)
@@ -1571,6 +1578,13 @@ class CallReportController extends Controller
         $results = $query->orderBy('updated_at', 'desc')->limit(500)->get();
 
         $transformed = $this->mergeRemarksFromAllUsers($results);
+
+        // ✅ SELECTION MANAGEMENT: Filter by selected row IDs if provided
+        if (!empty($selectedRowIds)) {
+            $transformed = $transformed->filter(function ($item) use ($selectedRowIds) {
+                return in_array($item->id, $selectedRowIds);
+            })->values();
+        }
 
         $transformed = $transformed->filter(function ($item) use ($dateFrom, $dateTo) {
             preg_match_all('/on\s+(\d{2}-\d{2}-\d{4})/i', $item->Remark ?? '', $matches);

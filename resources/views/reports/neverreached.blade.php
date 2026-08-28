@@ -78,13 +78,97 @@ $script = '<script>
             </a>
         </div>
         <script>
+            // ✅ SELECTION MANAGEMENT: Use localStorage to persist selections across page changes
+            const SELECTION_STORAGE_KEY = 'neverreached_selected_rows';
+
+            function getSelectedRows() {
+                const stored = localStorage.getItem(SELECTION_STORAGE_KEY);
+                return stored ? JSON.parse(stored) : [];
+            }
+
+            function saveSelectedRows(rows) {
+                localStorage.setItem(SELECTION_STORAGE_KEY, JSON.stringify(rows));
+            }
+
+            function addSelectedRow(rowId) {
+                const rows = getSelectedRows();
+                if (!rows.includes(rowId)) {
+                    rows.push(rowId);
+                    saveSelectedRows(rows);
+                }
+            }
+
+            function removeSelectedRow(rowId) {
+                const rows = getSelectedRows();
+                const index = rows.indexOf(rowId);
+                if (index > -1) {
+                    rows.splice(index, 1);
+                    saveSelectedRows(rows);
+                }
+            }
+
+            function clearAllSelections() {
+                localStorage.removeItem(SELECTION_STORAGE_KEY);
+            }
+
+            function initCheckboxes() {
+                const selectedRows = getSelectedRows();
+
+                // ✅ Restore checkboxes from localStorage
+                document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+                    const rowId = checkbox.getAttribute('data-row-id');
+                    checkbox.checked = selectedRows.includes(rowId);
+                });
+
+                // ✅ Select All checkbox
+                const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                if (selectAllCheckbox) {
+                    selectAllCheckbox.addEventListener('change', function() {
+                        document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+                            checkbox.checked = this.checked;
+                            const rowId = checkbox.getAttribute('data-row-id');
+                            if (this.checked) {
+                                addSelectedRow(rowId);
+                            } else {
+                                removeSelectedRow(rowId);
+                            }
+                        });
+                    });
+                }
+
+                // ✅ Individual row checkboxes
+                document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+                    checkbox.addEventListener('change', function() {
+                        const rowId = this.getAttribute('data-row-id');
+                        if (this.checked) {
+                            addSelectedRow(rowId);
+                        } else {
+                            removeSelectedRow(rowId);
+                        }
+                    });
+                });
+            }
+
+            // Initialize on page load
+            document.addEventListener('DOMContentLoaded', initCheckboxes);
+
+            // ✅ Export button with selected rows
             document.getElementById('neverreached-excel-btn')?.addEventListener('click', function(e) {
                 e.preventDefault();
+                const selectedRows = getSelectedRows();
+
+                if (selectedRows.length === 0) {
+                    alert('Please select at least one row to export.');
+                    return;
+                }
+
                 const url = new URL("{{ route('call.reports.neverreached.export') }}");
                 const from = document.getElementById('date-filter')?.value;
                 const to = document.getElementById('date-filter-to')?.value;
                 if (from) url.searchParams.set('date', from);
                 if (to) url.searchParams.set('date_to', to);
+                // ✅ Pass selected row IDs
+                url.searchParams.set('selected_rows', JSON.stringify(selectedRows));
                 window.location.href = url.toString();
             });
         </script>
@@ -104,7 +188,9 @@ $script = '<script>
             <table class="table bordered-table sm-table mb-0">
                 <thead>
                     <tr>
-                        <th scope="col" class="text-center">Row</th>
+                        <th scope="col" class="text-center">
+                            <input type="checkbox" class="form-check-input select-all-checkbox" id="selectAllCheckbox" title="Select all on this page">
+                        </th>
                         <th scope="col" class="text-center">Name</th>
                         <th scope="col" class="text-center">Email Address</th>
                         <th scope="col" class="text-center">Phone Number</th>
@@ -120,13 +206,8 @@ $script = '<script>
                     @foreach ($data as $row)
                     <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
                         <td class="text-center align-middle">
-                            <button
-                                type="button"
-                                class="btn btn-sm btn-primary copy-row-btn"
-                                title="Copy Entire Row">
-                                <i class="fas fa-copy"></i>
-                            </button>
-                            <strong>{{ $row->sheet_row_number }}</strong>
+                            <input type="checkbox" class="form-check-input row-checkbox" data-row-id="{{ $row->id }}" title="Select for export">
+                            <strong style="margin-left: 8px;">{{ $row->sheet_row_number }}</strong>
                         </td>
 
                         {{-- Name --}}
