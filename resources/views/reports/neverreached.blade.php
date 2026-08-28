@@ -82,12 +82,22 @@ $script = '<script>
             const SELECTION_STORAGE_KEY = 'neverreached_selected_rows';
 
             function getSelectedRows() {
-                const stored = localStorage.getItem(SELECTION_STORAGE_KEY);
-                return stored ? JSON.parse(stored) : [];
+                try {
+                    const stored = localStorage.getItem(SELECTION_STORAGE_KEY);
+                    return stored ? JSON.parse(stored) : [];
+                } catch (e) {
+                    console.warn('Failed to parse selected rows from localStorage:', e);
+                    localStorage.removeItem(SELECTION_STORAGE_KEY);
+                    return [];
+                }
             }
 
             function saveSelectedRows(rows) {
-                localStorage.setItem(SELECTION_STORAGE_KEY, JSON.stringify(rows));
+                try {
+                    localStorage.setItem(SELECTION_STORAGE_KEY, JSON.stringify(rows));
+                } catch (e) {
+                    console.warn('Failed to save selected rows to localStorage:', e);
+                }
             }
 
             function addSelectedRow(rowId) {
@@ -111,6 +121,20 @@ $script = '<script>
                 localStorage.removeItem(SELECTION_STORAGE_KEY);
             }
 
+            function syncSelectAllCheckboxState() {
+                const selectAllCheckbox = document.getElementById('selectAllCheckbox');
+                if (!selectAllCheckbox) return;
+
+                const allCheckboxes = document.querySelectorAll('.row-checkbox');
+                if (allCheckboxes.length === 0) {
+                    selectAllCheckbox.checked = false;
+                    return;
+                }
+
+                const allChecked = Array.from(allCheckboxes).every(cb => cb.checked);
+                selectAllCheckbox.checked = allChecked;
+            }
+
             function initCheckboxes() {
                 const selectedRows = getSelectedRows();
 
@@ -120,9 +144,15 @@ $script = '<script>
                     checkbox.checked = selectedRows.includes(rowId);
                 });
 
-                // ✅ Select All checkbox
+                // ✅ Sync select-all checkbox state based on individual checkbox states
+                syncSelectAllCheckboxState();
+            }
+
+            function setupCheckboxListeners() {
+                // ✅ Select All checkbox (attach listener only once)
                 const selectAllCheckbox = document.getElementById('selectAllCheckbox');
-                if (selectAllCheckbox) {
+                if (selectAllCheckbox && !selectAllCheckbox.hasAttribute('data-listener-attached')) {
+                    selectAllCheckbox.setAttribute('data-listener-attached', 'true');
                     selectAllCheckbox.addEventListener('change', function() {
                         document.querySelectorAll('.row-checkbox').forEach(checkbox => {
                             checkbox.checked = this.checked;
@@ -136,8 +166,9 @@ $script = '<script>
                     });
                 }
 
-                // ✅ Individual row checkboxes
-                document.querySelectorAll('.row-checkbox').forEach(checkbox => {
+                // ✅ Individual row checkboxes (attach listeners only once per checkbox)
+                document.querySelectorAll('.row-checkbox:not([data-listener-attached])').forEach(checkbox => {
+                    checkbox.setAttribute('data-listener-attached', 'true');
                     checkbox.addEventListener('change', function() {
                         const rowId = this.getAttribute('data-row-id');
                         if (this.checked) {
@@ -145,17 +176,49 @@ $script = '<script>
                         } else {
                             removeSelectedRow(rowId);
                         }
+                        // Sync select-all checkbox state when individual rows change
+                        syncSelectAllCheckboxState();
                     });
                 });
             }
 
             // Initialize on page load
-            document.addEventListener('DOMContentLoaded', initCheckboxes);
+            document.addEventListener('DOMContentLoaded', function() {
+                initCheckboxes();
+                setupCheckboxListeners();
+            });
+
+            // ✅ Handle pagination AJAX - reinitialize checkboxes when table rows are added
+            const tableBody = document.getElementById('sheet-table-body');
+            if (tableBody) {
+                const observer = new MutationObserver(function(mutations) {
+                    // Only reinitialize if actual rows were added/removed, not input value changes
+                    const hasRowChanges = mutations.some(mutation => {
+                        return mutation.type === 'childList' &&
+                               (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0) &&
+                               Array.from(mutation.addedNodes).some(node => node.nodeName === 'TR') ||
+                               Array.from(mutation.removedNodes).some(node => node.nodeName === 'TR');
+                    });
+
+                    if (hasRowChanges) {
+                        initCheckboxes();
+                        setupCheckboxListeners();
+                    }
+                });
+                observer.observe(tableBody, { childList: true });
+            }
 
             // ✅ Export button with selected rows
             document.getElementById('neverreached-excel-btn')?.addEventListener('click', function(e) {
                 e.preventDefault();
-                const selectedRows = getSelectedRows();
+                let selectedRows;
+                try {
+                    selectedRows = getSelectedRows();
+                } catch (error) {
+                    console.error('Error retrieving selected rows:', error);
+                    alert('An error occurred. Please try again.');
+                    return;
+                }
 
                 if (selectedRows.length === 0) {
                     alert('Please select at least one row to export.');
@@ -189,8 +252,8 @@ $script = '<script>
                 <thead>
                     <tr>
                         <th scope="col" class="text-center">
-                            <input type="checkbox" class="form-check-input select-all-checkbox" id="selectAllCheckbox" title="Select all on this page">
-                            <br><small>Row</small>
+                            <input type="checkbox" class="form-check-input select-all-checkbox" id="selectAllCheckbox" title="Select all on this page" style="margin-right: 5px;">
+                            Row
                         </th>
                         <th scope="col" class="text-center">Name</th>
                         <th scope="col" class="text-center">Email Address</th>
@@ -207,7 +270,10 @@ $script = '<script>
                     @foreach ($data as $row)
                     <tr id="row-{{ $row->id }}" data-id="{{ $row->id }}">
                         <td class="text-center align-middle">
-                            <input type="checkbox" class="form-check-input row-checkbox" data-row-id="{{ $row->id }}" title="Select for export">
+                            <input type="checkbox" class="form-check-input row-checkbox" data-row-id="{{ $row->id }}" title="Select for export" style="margin-right: 5px;">
+                            <button type="button" class="btn btn-sm btn-primary copy-row-btn" title="Copy row" style="padding: 4px 8px;">
+                                <i class="fas fa-copy"></i>
+                            </button>
                             <strong style="margin-left: 8px;">{{ $row->sheet_row_number }}</strong>
                         </td>
 
@@ -1855,8 +1921,8 @@ $script = '<script>
             values.push(el.value.trim());
         });
 
-        // Include row number
-        const rowNo = row.querySelector("td:nth-child(2)").innerText.trim();
+        // Include row number (from first column's strong tag after restructuring with checkbox)
+        const rowNo = row.querySelector("td:nth-child(1) strong").innerText.trim();
 
         const text =
             "Row : " + rowNo + "\n\n" +
