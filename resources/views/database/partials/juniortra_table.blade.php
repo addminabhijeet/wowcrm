@@ -370,7 +370,7 @@
 
                         // Validate: If 'Other' is selected, custom input must have at least 1 letter
                         if (sourceValue === 'Other' && customValue.length === 0) {
-                            alert('Please enter at least one letter for the custom source.');
+                            alert('Please enter at least one letter for the source.');
                             $sourceCustomInput.focus();
                             return false;
                         }

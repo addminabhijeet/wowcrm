@@ -921,6 +921,22 @@ $script = '<script>
                 let row = saveBtn.closest("tr");
                 console.log("Saving row with id:", id);
 
+                // ✅ VALIDATE SOURCE CUSTOM INPUT (when "Other" is selected)
+                let sourceSelect = row.querySelector('[data-key="Source"]');
+                let sourceCustomInput = row.querySelector('[data-key="Source_Other"]');
+
+                if (sourceSelect && sourceCustomInput) {
+                    let sourceValue = sourceSelect.value;
+                    let customValue = sourceCustomInput ? sourceCustomInput.value.trim() : '';
+
+                    // Validate: If 'Other' is selected, custom input must have at least 1 letter
+                    if (sourceValue === 'Other' && customValue.length === 0) {
+                        alert('Please enter at least one letter for the source.');
+                        sourceCustomInput.focus();
+                        return false;
+                    }
+                }
+
                 // Collect all data from the row
                 let rowData = {};
                 row.querySelectorAll("input[data-key], select[data-key]").forEach(cell => {
