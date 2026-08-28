@@ -1621,37 +1621,67 @@ class CallReportController extends Controller
      */
     private function generateXlsx($transformed, $fileName)
     {
-        $tempFile = tempnam(sys_get_temp_dir(), 'xlsx_');
-        $zip = new \ZipArchive();
-        $zip->open($tempFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+        try {
+            // ✅ FIX #4: Validate temp file creation
+            $tempFile = tempnam(sys_get_temp_dir(), 'xlsx_');
+            if (!$tempFile) {
+                throw new \Exception('Failed to create temporary file for XLSX export');
+            }
 
-        // Add [Content_Types].xml
-        $zip->addFromString('[Content_Types].xml', $this->getContentTypesXml());
+            $zip = new \ZipArchive();
 
-        // Add _rels/.rels
-        $zip->addFromString('_rels/.rels', $this->getRelsXml());
+            // ✅ FIX #2: Add error handling for ZipArchive operations
+            $zipOpenResult = $zip->open($tempFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
+            if ($zipOpenResult !== true) {
+                throw new \Exception('Failed to create XLSX archive: ' . $zipOpenResult);
+            }
 
-        // Add xl/_rels/workbook.xml.rels
-        $zip->addFromString('xl/_rels/workbook.xml.rels', $this->getWorkbookRelsXml());
+            // ✅ FIX #1: Validate all addFromString() calls to prevent silent corruption
+            if (!$zip->addFromString('[Content_Types].xml', $this->getContentTypesXml())) {
+                throw new \Exception('Failed to add [Content_Types].xml to XLSX archive');
+            }
 
-        // Add xl/workbook.xml
-        $zip->addFromString('xl/workbook.xml', $this->getWorkbookXml());
+            if (!$zip->addFromString('_rels/.rels', $this->getRelsXml())) {
+                throw new \Exception('Failed to add _rels/.rels to XLSX archive');
+            }
 
-        // Add xl/worksheets/sheet1.xml with data
-        $sheetXml = $this->getSheetXml($transformed);
-        $zip->addFromString('xl/worksheets/sheet1.xml', $sheetXml);
+            if (!$zip->addFromString('xl/_rels/workbook.xml.rels', $this->getWorkbookRelsXml())) {
+                throw new \Exception('Failed to add xl/_rels/workbook.xml.rels to XLSX archive');
+            }
 
-        // Add xl/styles.xml for formatting
-        $zip->addFromString('xl/styles.xml', $this->getStylesXml());
+            if (!$zip->addFromString('xl/workbook.xml', $this->getWorkbookXml())) {
+                throw new \Exception('Failed to add xl/workbook.xml to XLSX archive');
+            }
 
-        // Add docProps/core.xml
-        $zip->addFromString('docProps/core.xml', $this->getCorePropsXml());
+            $sheetXml = $this->getSheetXml($transformed);
+            if (!$zip->addFromString('xl/worksheets/sheet1.xml', $sheetXml)) {
+                throw new \Exception('Failed to add xl/worksheets/sheet1.xml to XLSX archive');
+            }
 
-        $zip->close();
+            if (!$zip->addFromString('xl/styles.xml', $this->getStylesXml())) {
+                throw new \Exception('Failed to add xl/styles.xml to XLSX archive');
+            }
 
-        return response()->download($tempFile, $fileName, [
-            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        ])->deleteFileAfterSend(true);
+            if (!$zip->addFromString('docProps/core.xml', $this->getCorePropsXml())) {
+                throw new \Exception('Failed to add docProps/core.xml to XLSX archive');
+            }
+
+            $closeResult = $zip->close();
+            if ($closeResult === false) {
+                throw new \Exception('Failed to close XLSX archive');
+            }
+
+            return response()->download($tempFile, $fileName, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ])->deleteFileAfterSend(true);
+
+        } catch (\Exception $e) {
+            // Clean up temp file on error
+            if (isset($tempFile) && file_exists($tempFile)) {
+                unlink($tempFile);
+            }
+            throw $e;
+        }
     }
 
     private function getContentTypesXml()
@@ -1699,8 +1729,34 @@ class CallReportController extends Controller
     private function getSheetXml($transformed)
     {
         $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
-    <sheetData>';
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">';
+
+        // Calculate last row number for dimension
+        $lastRow = count($transformed) + 1; // +1 for header row
+
+        // ✅ FIX #1: Add sheet dimensions for Excel compatibility
+        $xml .= '<dimension ref="A1:I' . $lastRow . '"/>';
+
+        // ✅ FIX #3: Add column widths for better UX
+        $xml .= '<cols>';
+        $columnWidths = [
+            'A' => 8,      // Row
+            'B' => 20,     // Name
+            'C' => 25,     // Email Address
+            'D' => 18,     // Phone Number
+            'E' => 12,     // Amount
+            'F' => 20,     // 1st Follow Up Remarks
+            'G' => 18,     // Source
+            'H' => 30,     // Remarks
+            'I' => 15,     // Status
+        ];
+        foreach ($columnWidths as $col => $width) {
+            $colNum = ord($col) - 64;
+            $xml .= '<col min="' . $colNum . '" max="' . $colNum . '" width="' . $width . '" bestFit="1"/>';
+        }
+        $xml .= '</cols>';
+
+        $xml .= '<sheetData>';
 
         // Headers
         $headers = ['Row', 'Name', 'Email Address', 'Phone Number', 'Amount', '1st Follow Up Remarks', 'Source', 'Remarks', 'Status'];
