@@ -20152,3 +20152,5 @@ Did you mean this?
 #15 {main}
 "} 
 [2026-08-28 17:36:28] local.INFO: junior() took 0.47390389442444 seconds  
+[2026-08-28 17:43:35] local.INFO: junior() took 0.32823896408081 seconds  
+[2026-08-28 17:43:51] local.INFO: senior() took 0.21565103530884 seconds  

@@ -1493,18 +1493,20 @@ class CallReportController extends Controller
         $dateFrom = $request->input('date');    // ✅ existing date selection
         $dateTo   = $request->input('date_to'); // ✅ newly added second date selection
 
-        // ✅ created_by check removed — show rows for ALL users, not just $authUser
+        // ✅ EXTREME-COMPRESSION: created_by check removed — show rows for ALL users, not just $authUser
+        // ✅ EXTREME-COMPRESSION: Limit results to 500 to prevent memory bloat (like seniorsearch)
         $query = GoogleSheetData::where('transfers', '!=', 1)->where('rejected', 0)
             // ✅ Exclude rows whose created_by chains a junior segment into "0|senior"
             // e.g. "36|junior:0|senior" should NOT show
             ->whereRaw("created_by NOT REGEXP '[0-9]+\\\\|junior:0\\\\|senior'");
 
-        // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('updated_at', 'desc')->get();
+        // ✅ EXTREME-COMPRESSION: Changed sorting: order by 'id' descending (like 'Date' desc in junior)
+        // ✅ EXTREME-COMPRESSION: Limit to 500 records to reduce memory usage
+        $results = $query->orderBy('updated_at', 'desc')->limit(500)->get();
 
         $transformed = $results;
 
-        // ✅ Merge remarks from ALL USERS for items with same Email_Address
+        // ✅ Merge remarks from ALL USERS for items with same Email_Address (batch optimized)
         $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
         // ✅ Keep only rows whose merged remark has exactly ONE date (e.g. "on 20-03-2026"),
@@ -1561,10 +1563,12 @@ class CallReportController extends Controller
         $dateFrom = $request->input('date');
         $dateTo   = $request->input('date_to');
 
+        // ✅ EXTREME-COMPRESSION: Limit export to 500 records (like seniorsearch)
         $query = GoogleSheetData::where('transfers', '!=', 1)->where('rejected', 0)
             ->whereRaw("created_by NOT REGEXP '[0-9]+\\\\|junior:0\\\\|senior'");
 
-        $results = $query->orderBy('updated_at', 'desc')->get();
+        // ✅ EXTREME-COMPRESSION: Limit to 500 records to prevent memory bloat on export
+        $results = $query->orderBy('updated_at', 'desc')->limit(500)->get();
 
         $transformed = $this->mergeRemarksFromAllUsers($results);
 
