@@ -124,7 +124,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
 
 </div>
 
-<!-- Hover Animation -->
+<!-- Hover Animation & Responsive Text -->
 <style>
     .career-card {
         transition: all 0.3s ease;
@@ -133,6 +133,59 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
     .career-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 10px 25px rgba(0,0,0,0.12) !important;
+    }
+
+    /* Responsive text sizing for long content */
+    .career-card .card-body {
+        gap: 10px;
+        min-height: 100px;
+        flex-wrap: nowrap;
+    }
+
+    .career-card .card-body > div:first-child {
+        flex: 1;
+        min-width: 0;
+        word-break: break-word;
+        word-wrap: break-word;
+        white-space: normal;
+    }
+
+    .career-card h5 {
+        font-size: clamp(12px, 3.5vw, 18px);
+        line-height: 1.3;
+        word-break: break-word;
+        word-wrap: break-word;
+        white-space: normal;
+        margin-bottom: 0.5rem;
+        overflow-wrap: break-word;
+        max-width: 100%;
+        display: block;
+    }
+
+    .career-card h5 {
+        word-spacing: 9999px;
+    }
+
+    .career-card p {
+        font-size: clamp(9px, 2.2vw, 14px);
+        line-height: 1.3;
+        white-space: nowrap;
+    }
+
+    .career-card iconify-icon {
+        flex-shrink: 0;
+        min-width: 45px;
+        text-align: center;
+    }
+
+    /* Ensure icon stays visible on smaller screens */
+    @media (max-width: 576px) {
+        .career-card h5 {
+            font-size: 12px;
+        }
+        .career-card p {
+            font-size: 11px;
+        }
     }
 </style>
 

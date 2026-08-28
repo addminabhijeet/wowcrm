@@ -111,6 +111,7 @@ $script = '<script>
                         <th scope="col" class="text-center">Amount</th>
                         <th scope="col" class="text-center">1st Follow Up Remarks</th>
                         <th scope="col" class="text-center">Resume</th>
+                        <th scope="col" class="text-center">Source</th>
                         <th scope="col" class="text-center" colspan="2">Remarks</th>
                         <th scope="col" class="text-center">Status</th>
                     </tr>
@@ -191,6 +192,27 @@ $script = '<script>
                             <a href="#" download
                                 class="btn btn-sm btn-secondary download-btn d-none">Download</a>
                             @endif
+                        </td>
+
+                        {{-- Source --}}
+                        <td>
+                            @php $sourceOptions = ['Linkedin','Tekjobs','Dice','Other']; @endphp
+                            <div class="source-container" style="display: flex; flex-direction: column; gap: 5px;">
+                                <select class="form-select dynamic-dropdown source-dropdown" data-key="Source">
+                                    @foreach ($sourceOptions as $option)
+                                    <option value="{{ $option }}"
+                                        {{ ($row->Source === $option || (!$row->Source && $option === 'Other')) ? 'selected' : '' }}>
+                                        {{ $option }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                                <input type="text" class="form-control source-custom-input {{ (!$row->Source || $row->Source === 'Other') ? '' : 'd-none' }}"
+                                    data-key="Source_Other"
+                                    placeholder="One word, alphabets only"
+                                    value="{{ $row->Source_Other ?? '' }}"
+                                    maxlength="50"
+                                    style="margin-top: 5px;">
+                            </div>
                         </td>
 
                         {{-- Remark --}}
@@ -843,6 +865,61 @@ $script = '<script>
                 validateNameInput(e.target);
             }
         });
+
+        // ======================================
+        // Source Dropdown + Custom Input Handler
+        // ======================================
+        function initSourceHandling(context = document) {
+            context.querySelectorAll('.source-dropdown').forEach(select => {
+                const container = select.closest('.source-container');
+                const customInput = container.querySelector('.source-custom-input');
+
+                function toggleCustomInput() {
+                    if (select.value === 'Other') {
+                        customInput.classList.remove('d-none');
+                    } else {
+                        customInput.classList.add('d-none');
+                        customInput.value = '';
+                    }
+                }
+
+                // Initial state
+                toggleCustomInput();
+
+                // On change
+                select.addEventListener('change', function() {
+                    toggleCustomInput();
+                    if (select.value === 'Other') {
+                        customInput.focus();
+                    }
+                });
+
+                // Validate custom input in real-time
+                customInput.addEventListener('input', function() {
+                    let value = this.value;
+                    // Remove spaces
+                    value = value.replace(/\s/g, '');
+                    // Remove non-alphabetic
+                    value = value.replace(/[^a-zA-Z]/g, '');
+                    // Capitalize first letter
+                    if (value.length > 0) {
+                        value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                    }
+                    this.value = value;
+                });
+
+                // Prevent spaces
+                customInput.addEventListener('keypress', function(e) {
+                    if (e.key === ' ') {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            });
+        }
+
+        // Initialize on page load
+        initSourceHandling(document);
     });
 </script>
 

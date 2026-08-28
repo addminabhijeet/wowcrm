@@ -20151,3 +20151,4 @@ Did you mean this?
 #14 C:\\xampp\\htdocs\\wowcrm\\index.php(17): Illuminate\\Foundation\\Application->handleRequest(Object(Illuminate\\Http\\Request))
 #15 {main}
 "} 
+[2026-08-28 17:36:28] local.INFO: junior() took 0.47390389442444 seconds  
