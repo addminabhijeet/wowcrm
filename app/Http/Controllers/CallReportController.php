@@ -1608,53 +1608,183 @@ class CallReportController extends Controller
             return true;
         })->values();
 
-        $fileName = 'never-reached-' . now()->format('Y-m-d_His') . '.csv';
+        $fileName = 'never-reached-' . now()->format('Y-m-d_His') . '.xlsx';
 
-        $headers = [
-            'Content-Type'        => 'text/csv; charset=UTF-8',
-            'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
-        ];
+        // ✅ Generate modern XLSX format using PHP's built-in ZipArchive
+        return $this->generateXlsx($transformed, $fileName);
+    }
 
-        $callback = function () use ($transformed) {
-            // ✅ Remove BOM for proper CSV format (no binary data issues)
-            $output = fopen('php://output', 'w');
+    /**
+     * ✅ Generate modern XLSX file using PHP's built-in ZipArchive
+     * Keeps all existing data logic (filtering, selection, merging)
+     * Only changes output format from CSV to proper XLSX
+     */
+    private function generateXlsx($transformed, $fileName)
+    {
+        $tempFile = tempnam(sys_get_temp_dir(), 'xlsx_');
+        $zip = new \ZipArchive();
+        $zip->open($tempFile, \ZipArchive::CREATE | \ZipArchive::OVERWRITE);
 
-            // ✅ Use proper CSV format with correct headers
-            $headers = ['Row', 'Name', 'Email Address', 'Phone Number', 'Amount', '1st Follow Up Remarks', 'Source', 'Remarks', 'Status'];
-            fputcsv($output, $headers);
+        // Add [Content_Types].xml
+        $zip->addFromString('[Content_Types].xml', $this->getContentTypesXml());
 
-            foreach ($transformed as $row) {
-                $amount = $row->Amount ? '$' . number_format($row->Amount, 2) : '';
+        // Add _rels/.rels
+        $zip->addFromString('_rels/.rels', $this->getRelsXml());
 
-                // ✅ FIX #1, #2, #3: Merge Source + Source_Other with proper sanitization
-                // If Source = "Other" (case-insensitive, trimmed), use Source_Other value
-                // Otherwise use Source value (standard source)
-                $sourceValue = trim($row->Source ?? '');
-                $sourceOtherValue = trim($row->Source_Other ?? '');
+        // Add xl/_rels/workbook.xml.rels
+        $zip->addFromString('xl/_rels/workbook.xml.rels', $this->getWorkbookRelsXml());
 
-                $mergedSource = (strtolower($sourceValue) === 'other' && !empty($sourceOtherValue))
-                    ? $sourceOtherValue
-                    : $sourceValue;
+        // Add xl/workbook.xml
+        $zip->addFromString('xl/workbook.xml', $this->getWorkbookXml());
 
-                $csvRow = [
-                    $row->sheet_row_number ?? '',
-                    $row->Name ?? '',
-                    $row->Email_Address ?? '',
-                    $row->Phone_Number ?? '',
-                    $amount,
-                    $row->First_Follow_Up_Remarks ?? '',
-                    $mergedSource,
-                    $row->Remark ?? '',
-                    $row->Exe_Remarks ?? '',
-                ];
+        // Add xl/worksheets/sheet1.xml with data
+        $sheetXml = $this->getSheetXml($transformed);
+        $zip->addFromString('xl/worksheets/sheet1.xml', $sheetXml);
 
-                fputcsv($output, $csvRow);
+        // Add xl/styles.xml for formatting
+        $zip->addFromString('xl/styles.xml', $this->getStylesXml());
+
+        // Add docProps/core.xml
+        $zip->addFromString('docProps/core.xml', $this->getCorePropsXml());
+
+        $zip->close();
+
+        return response()->download($tempFile, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend(true);
+    }
+
+    private function getContentTypesXml()
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types">
+    <Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/>
+    <Default Extension="xml" ContentType="application/xml"/>
+    <Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/>
+    <Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/>
+    <Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/>
+    <Override PartName="/docProps/core.xml" ContentType="application/vnd.openxmlformats-package.core-properties+xml"/>
+</Types>';
+    }
+
+    private function getRelsXml()
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/>
+    <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties" Target="docProps/core.xml"/>
+</Relationships>';
+    }
+
+    private function getWorkbookRelsXml()
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships">
+    <Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/>
+    <Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/>
+</Relationships>';
+    }
+
+    private function getWorkbookXml()
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships">
+    <workbookPr date1904="false"/>
+    <sheets>
+        <sheet name="Sheet1" sheetId="1" r:id="rId1"/>
+    </sheets>
+</workbook>';
+    }
+
+    private function getSheetXml($transformed)
+    {
+        $xml = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <sheetData>';
+
+        // Headers
+        $headers = ['Row', 'Name', 'Email Address', 'Phone Number', 'Amount', '1st Follow Up Remarks', 'Source', 'Remarks', 'Status'];
+        $headerRow = '<row r="1">';
+        foreach ($headers as $index => $header) {
+            $col = chr(65 + $index);
+            $headerRow .= '<c r="' . $col . '1" t="str"><v>' . htmlspecialchars($header) . '</v></c>';
+        }
+        $headerRow .= '</row>';
+        $xml .= $headerRow;
+
+        // Data rows
+        $rowNum = 2;
+        foreach ($transformed as $row) {
+            $amount = $row->Amount ? '$' . number_format($row->Amount, 2) : '';
+
+            // ✅ PRESERVED LOGIC: Merge Source + Source_Other with proper sanitization
+            $sourceValue = trim($row->Source ?? '');
+            $sourceOtherValue = trim($row->Source_Other ?? '');
+            $mergedSource = (strtolower($sourceValue) === 'other' && !empty($sourceOtherValue))
+                ? $sourceOtherValue
+                : $sourceValue;
+
+            $rowData = [
+                $row->sheet_row_number ?? '',
+                $row->Name ?? '',
+                $row->Email_Address ?? '',
+                $row->Phone_Number ?? '',
+                $amount,
+                $row->First_Follow_Up_Remarks ?? '',
+                $mergedSource,
+                $row->Remark ?? '',
+                $row->Exe_Remarks ?? '',
+            ];
+
+            $dataRow = '<row r="' . $rowNum . '">';
+            foreach ($rowData as $index => $value) {
+                $col = chr(65 + $index);
+                $isNumeric = is_numeric($value) && $value !== '';
+                $type = $isNumeric ? 'n' : 'str';
+                $dataRow .= '<c r="' . $col . $rowNum . '" t="' . $type . '"><v>' . htmlspecialchars($value) . '</v></c>';
             }
+            $dataRow .= '</row>';
+            $xml .= $dataRow;
+            $rowNum++;
+        }
 
-            fclose($output);
-        };
+        $xml .= '    </sheetData>
+</worksheet>';
+        return $xml;
+    }
 
-        return response()->stream($callback, 200, $headers);
+    private function getStylesXml()
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<styleSheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main">
+    <fonts>
+        <font><sz val="11"/><name val="Calibri"/></font>
+    </fonts>
+    <fills>
+        <fill><patternFill patternType="none"/></fill>
+        <fill><patternFill patternType="gray125"/></fill>
+    </fills>
+    <borders>
+        <border><left/><right/><top/><bottom/><diagonal/></border>
+    </borders>
+    <cellStyleXfs>
+        <xf numFmtId="0" fontId="0" fillId="0" borderId="0"/>
+    </cellStyleXfs>
+    <cellXfs>
+        <xf numFmtId="0" fontId="0" fillId="0" borderId="0" xfId="0"/>
+    </cellXfs>
+</styleSheet>';
+    }
+
+    private function getCorePropsXml()
+    {
+        return '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<cp:coreProperties xmlns:cp="http://schemas.openxmlformats.org/officeDocument/2006/core-properties">
+    <dc:creator xmlns:dc="http://purl.org/dc/elements/1.1/">WowCRM</dc:creator>
+    <cp:lastModifiedBy>WowCRM</cp:lastModifiedBy>
+    <dcterms:created xmlns:dcterms="http://purl.org/dc/terms/" xsi:type="dcterms:W3CDTF" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">' . now()->toDateTimeString() . '</dcterms:created>
+    <cp:revision>1</cp:revision>
+</cp:coreProperties>';
     }
 
     public function preallseniorlist(Request $request)
