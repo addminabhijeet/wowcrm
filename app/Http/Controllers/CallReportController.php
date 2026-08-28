@@ -1608,36 +1608,50 @@ class CallReportController extends Controller
             return true;
         })->values();
 
-        $fileName = 'never-reached-' . now()->format('Y-m-d_His') . '.xls';
+        $fileName = 'never-reached-' . now()->format('Y-m-d_His') . '.csv';
 
         $headers = [
-            'Content-Type'        => 'application/vnd.ms-excel; charset=UTF-8',
+            'Content-Type'        => 'text/csv; charset=UTF-8',
             'Content-Disposition' => "attachment; filename=\"{$fileName}\"",
         ];
 
         $callback = function () use ($transformed) {
-            echo "\xEF\xBB\xBF"; // UTF-8 BOM so Excel renders special characters correctly
-            echo '<table border="1"><thead><tr>';
-            foreach (['Row', 'Name', 'Email Address', 'Phone Number', 'Amount', '1st Follow Up Remarks', 'Remarks', 'Status'] as $head) {
-                echo '<th>' . e($head) . '</th>';
-            }
-            echo '</tr></thead><tbody>';
+            // ✅ Remove BOM for proper CSV format (no binary data issues)
+            $output = fopen('php://output', 'w');
+
+            // ✅ Use proper CSV format with correct headers
+            $headers = ['Row', 'Name', 'Email Address', 'Phone Number', 'Amount', '1st Follow Up Remarks', 'Source', 'Remarks', 'Status'];
+            fputcsv($output, $headers);
 
             foreach ($transformed as $row) {
                 $amount = $row->Amount ? '$' . number_format($row->Amount, 2) : '';
-                echo '<tr>';
-                echo '<td>' . e($row->sheet_row_number) . '</td>';
-                echo '<td>' . e($row->Name ?? '') . '</td>';
-                echo '<td>' . e($row->Email_Address ?? '') . '</td>';
-                echo '<td>' . e($row->Phone_Number ?? '') . '</td>';
-                echo '<td>' . e($amount) . '</td>';
-                echo '<td>' . e($row->First_Follow_Up_Remarks ?? '') . '</td>';
-                echo '<td>' . e($row->Remark ?? '') . '</td>';
-                echo '<td>' . e($row->Exe_Remarks ?? '') . '</td>';
-                echo '</tr>';
+
+                // ✅ FIX #1, #2, #3: Merge Source + Source_Other with proper sanitization
+                // If Source = "Other" (case-insensitive, trimmed), use Source_Other value
+                // Otherwise use Source value (standard source)
+                $sourceValue = trim($row->Source ?? '');
+                $sourceOtherValue = trim($row->Source_Other ?? '');
+
+                $mergedSource = (strtolower($sourceValue) === 'other' && !empty($sourceOtherValue))
+                    ? $sourceOtherValue
+                    : $sourceValue;
+
+                $csvRow = [
+                    $row->sheet_row_number ?? '',
+                    $row->Name ?? '',
+                    $row->Email_Address ?? '',
+                    $row->Phone_Number ?? '',
+                    $amount,
+                    $row->First_Follow_Up_Remarks ?? '',
+                    $mergedSource,
+                    $row->Remark ?? '',
+                    $row->Exe_Remarks ?? '',
+                ];
+
+                fputcsv($output, $csvRow);
             }
 
-            echo '</tbody></table>';
+            fclose($output);
         };
 
         return response()->stream($callback, 200, $headers);
