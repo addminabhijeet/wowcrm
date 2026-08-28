@@ -184,29 +184,64 @@ $script = '<script>
 
             // Initialize on page load
             document.addEventListener('DOMContentLoaded', function() {
-                initCheckboxes();
-                setupCheckboxListeners();
+                // Small delay to ensure all elements are rendered
+                setTimeout(function() {
+                    initCheckboxes();
+                    setupCheckboxListeners();
+                }, 50);
             });
+
+            // Fallback: Re-initialize if checkboxes still don't exist after a delay
+            setTimeout(function() {
+                const rowCheckboxes = document.querySelectorAll('.row-checkbox');
+                if (rowCheckboxes.length > 0 && !rowCheckboxes[0].hasAttribute('data-listener-attached')) {
+                    setupCheckboxListeners();
+                }
+            }, 500);
 
             // ✅ Handle pagination AJAX - reinitialize checkboxes when table rows are added
             const tableBody = document.getElementById('sheet-table-body');
             if (tableBody) {
                 const observer = new MutationObserver(function(mutations) {
-                    // Only reinitialize if actual rows were added/removed, not input value changes
-                    const hasRowChanges = mutations.some(mutation => {
-                        return mutation.type === 'childList' &&
-                               (mutation.addedNodes.length > 0 || mutation.removedNodes.length > 0) &&
-                               Array.from(mutation.addedNodes).some(node => node.nodeName === 'TR') ||
-                               Array.from(mutation.removedNodes).some(node => node.nodeName === 'TR');
-                    });
+                    // Check if actual rows were added/removed (pagination change)
+                    let hasRowChanges = false;
+
+                    for (let mutation of mutations) {
+                        if (mutation.type === 'childList') {
+                            // Check added nodes for TR elements
+                            const hasAddedTR = Array.from(mutation.addedNodes).some(node => node.nodeName === 'TR');
+                            // Check removed nodes for TR elements
+                            const hasRemovedTR = Array.from(mutation.removedNodes).some(node => node.nodeName === 'TR');
+
+                            if (hasAddedTR || hasRemovedTR) {
+                                hasRowChanges = true;
+                                break;
+                            }
+                        }
+                    }
 
                     if (hasRowChanges) {
-                        initCheckboxes();
-                        setupCheckboxListeners();
+                        // Small delay to ensure DOM is fully updated
+                        setTimeout(function() {
+                            initCheckboxes();
+                            setupCheckboxListeners();
+                        }, 10);
                     }
                 });
                 observer.observe(tableBody, { childList: true });
             }
+
+            // ✅ Additional safety: Listen for pagination link clicks
+            document.addEventListener('click', function(e) {
+                const paginationLink = e.target.closest('a[href*="page"]');
+                if (paginationLink) {
+                    // Reinitialize checkboxes after a brief delay for AJAX to complete
+                    setTimeout(function() {
+                        initCheckboxes();
+                        setupCheckboxListeners();
+                    }, 100);
+                }
+            });
 
             // ✅ Export button with selected rows
             document.getElementById('neverreached-excel-btn')?.addEventListener('click', function(e) {
