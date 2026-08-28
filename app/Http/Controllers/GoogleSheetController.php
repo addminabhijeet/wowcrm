@@ -8107,6 +8107,8 @@ class GoogleSheetController extends Controller
                 'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
                 'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
                 'Time_Zone' => $rowData['Time Zone'] ?? null,
+                'Source' => $rowData['Source'] ?? null,
+                'Source_Other' => $rowData['Source_Other'] ?? null,
                 'updated_at' => now(),
             ];
 
@@ -8422,6 +8424,8 @@ class GoogleSheetController extends Controller
                 'Exe_Remarks' => $rowData['Exe Remarks'] ?? null,
                 'First_Follow_Up_Remarks' => $rowData['1st Follow Up Remarks'] ?? null,
                 'Time_Zone' => $rowData['Time Zone'] ?? null,
+                'Source' => $rowData['Source'] ?? null,
+                'Source_Other' => $rowData['Source_Other'] ?? null,
                 'updated_at' => now(),
             ];
 
@@ -8671,6 +8675,14 @@ class GoogleSheetController extends Controller
             $updateData['First_Follow_Up_Remarks'] = $rowData['1st Follow Up Remarks'];
         }
 
+        if (array_key_exists('Source', $rowData)) {
+            $updateData['Source'] = $rowData['Source'] ?? null;
+        }
+
+        if (array_key_exists('Source_Other', $rowData)) {
+            $updateData['Source_Other'] = $rowData['Source_Other'] ?? null;
+        }
+
         // Validate Remark is mandatory if it exists
         if (array_key_exists('Remark', $updateData) && $updateData['Remark'] === '') {
             return response()->json([
@@ -8800,6 +8812,8 @@ class GoogleSheetController extends Controller
                 'Exe Remarks' => 'Exe_Remarks',
                 '1st Follow Up Remarks' => 'First_Follow_Up_Remarks',
                 'Time Zone' => 'Time_Zone',
+                'Source' => 'Source',
+                'Source_Other' => 'Source_Other',
             ];
 
             $exeRemarksValue = null;

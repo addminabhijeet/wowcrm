@@ -54,6 +54,7 @@
 
                 <th scope="col" class="text-center">1st Follow Up Remarks</th>
                 <th scope="col" class="text-center">Time Zone</th>
+                <th scope="col" class="text-center">Source</th>
                 <th scope="col" class="text-center">Resume</th>
                 <th scope="col" class="text-center">Remark</th>
                 <th scope="col" class="text-center">Status</th>
@@ -220,6 +221,27 @@
                     </select>
                 </td>
 
+                {{-- Source --}}
+                <td>
+                    @php $sourceOptions = ['Linkedin','Tekjobs','Dice','Other']; @endphp
+                    <div class="source-container">
+                        <select class="form-select dynamic-dropdown source-dropdown" data-key="Source" disabled>
+                            @foreach ($sourceOptions as $option)
+                            <option value="{{ $option }}"
+                                {{ ($row->Source === $option || (!$row->Source && $option === 'Other')) ? 'selected' : '' }}>
+                                {{ $option }}
+                            </option>
+                            @endforeach
+                        </select>
+                        <input type="text" class="form-control source-custom-input {{ (!$row->Source || $row->Source === 'Other') ? '' : 'd-none' }}"
+                            data-key="Source_Other"
+                            placeholder="One word, alphabets only"
+                            value="{{ $row->Source_Other ?? '' }}"
+                            maxlength="50"
+                            readonly>
+                    </div>
+                </td>
+
                 {{-- View (Resume) --}}
                 <td>
                     <input type="file" accept=".pdf, .doc, .docx" class="d-none resume-input"
@@ -330,6 +352,29 @@
                     let rowId = $(this).data('id');
                     let $tr = $('#row-' + rowId);
 
+                    // ✅ VALIDATE SOURCE FIELD (MANDATORY)
+                    let $sourceSelect = $tr.find('[data-key="Source"]');
+                    let $sourceCustomInput = $tr.find('[data-key="Source_Other"]');
+
+                    if ($sourceSelect.length > 0 && $sourceSelect.prop('disabled') === false) { // Only validate if exists and not disabled
+                        let sourceValue = $sourceSelect.val();
+                        let customValue = $sourceCustomInput.val().trim();
+
+                        // Validate: Source must be selected
+                        if (!sourceValue || sourceValue === '') {
+                            alert('Source is required. Please select a source.');
+                            $sourceSelect.focus();
+                            return false;
+                        }
+
+                        // Validate: If 'Other' is selected, custom input must have at least 1 letter
+                        if (sourceValue === 'Other' && customValue.length === 0) {
+                            alert('Please enter at least one letter for the custom source.');
+                            $sourceCustomInput.focus();
+                            return false;
+                        }
+                    }
+
                     // 🔁 Sync textarea values to hidden inputs BEFORE collecting data
                     $tr.find('textarea').each(function() {
                         let $textarea = $(this);
@@ -386,6 +431,62 @@
                 $('.upload-btn').click(function() {
                     $(this).closest('td').find('input.resume-input').click();
                 });
+
+                // ======================================
+                // Source Dropdown + Custom Input Handler (jQuery version for AJAX)
+                // ======================================
+                function initSourceHandlingPartial() {
+                    $('.source-dropdown').each(function() {
+                        const $select = $(this);
+                        const $container = $select.closest('.source-container');
+                        const $customInput = $container.find('.source-custom-input');
+
+                        function toggleCustomInput() {
+                            if ($select.val() === 'Other') {
+                                $customInput.removeClass('d-none');
+                            } else {
+                                $customInput.addClass('d-none');
+                                $customInput.val('');
+                            }
+                        }
+
+                        // Initial state
+                        toggleCustomInput();
+
+                        // On change
+                        $select.off('change').on('change', function() {
+                            toggleCustomInput();
+                            if ($select.val() === 'Other') {
+                                $customInput.focus();
+                            }
+                        });
+
+                        // Validate custom input in real-time
+                        $customInput.off('input').on('input', function() {
+                            let value = $(this).val();
+                            // Remove spaces
+                            value = value.replace(/\s/g, '');
+                            // Remove non-alphabetic
+                            value = value.replace(/[^a-zA-Z]/g, '');
+                            // Capitalize first letter
+                            if (value.length > 0) {
+                                value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                            }
+                            $(this).val(value);
+                        });
+
+                        // Prevent spaces
+                        $customInput.off('keypress').on('keypress', function(e) {
+                            if (e.key === ' ') {
+                                e.preventDefault();
+                                return false;
+                            }
+                        });
+                    });
+                }
+
+                // Initialize on page load
+                initSourceHandlingPartial();
             });
         </script>
     </table>

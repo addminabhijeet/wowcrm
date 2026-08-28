@@ -33,6 +33,7 @@ class GoogleSheetData extends Model
         'First_Follow_Up_Remarks',
         'Time_Zone',
         'View',
+        'Source',
         'PaymentDate',
         'TranId',
         'TranRef',

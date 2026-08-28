@@ -128,6 +128,7 @@ $script = '<script>
 
                         <th scope="col" class="text-center">1st Follow Up Remarks</th>
                         <th scope="col" class="text-center">Time Zone</th>
+                        <th scope="col" class="text-center">Source</th>
                         <th scope="col" class="text-center">Resume</th>
                         <th scope="col" class="text-center" colspan="2">Remarks</th>
                         <th scope="col" class="text-center">Status</th>
@@ -297,6 +298,26 @@ $script = '<script>
                                 </option>
                                 @endforeach
                             </select>
+                        </td>
+
+                        {{-- Source --}}
+                        <td>
+                            @php $sourceOptions = ['Linkedin','Tekjobs','Dice','Other']; @endphp
+                            <div class="source-container">
+                                <select class="form-select dynamic-dropdown source-dropdown" data-key="Source">
+                                    @foreach ($sourceOptions as $option)
+                                    <option value="{{ $option }}"
+                                        {{ ($row->Source === $option || (!$row->Source && $option === 'Other')) ? 'selected' : '' }}>
+                                        {{ $option }}
+                                    </option>
+                                    @endforeach
+                                </select>
+                                <input type="text" class="form-control source-custom-input {{ (!$row->Source || $row->Source === 'Other') ? '' : 'd-none' }}"
+                                    data-key="Source_Other"
+                                    placeholder="One word, alphabets only"
+                                    value="{{ $row->Source_Other ?? '' }}"
+                                    maxlength="50">
+                            </div>
                         </td>
 
                         {{-- View (Resume) --}}
@@ -796,7 +817,7 @@ $script = '<script>
 
             colKeys.forEach(k => {
                 if (['Exe Remarks', 'Immigration', 'Relocation', '1st Follow Up Remarks', 'Course',
-                        'Time Zone', 'Qualification'
+                        'Time Zone', 'Source', 'Qualification'
                     ].includes(k)) {
                     let opts = [];
                     if (k === 'Qualification') opts = ['Masters', 'Masters of Science', 'Bachelors',
@@ -815,8 +836,18 @@ $script = '<script>
                     ];
                     if (k === 'Course') opts = ['BA', 'DA', 'SAS', 'JAVA', 'QA', 'SQL', 'PYTHON', 'DOT NET'];
                     if (k === 'Time Zone') opts = ['EST', 'CST', 'MST', 'PST'];
-                    cells +=
-                        `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
+                    if (k === 'Source') opts = ['Linkedin', 'Tekjobs', 'Dice', 'Other'];
+                    if (k === 'Source') {
+                        cells += `<td>
+                            <div class="source-container">
+                                <select class="form-select dynamic-dropdown source-dropdown" data-key="${k}">${opts.map((o, idx)=>`<option value="${o}" ${o === 'Other' ? 'selected' : ''}>${o}</option>`).join('')}</select>
+                                <input type="text" class="form-control source-custom-input" data-key="Source_Other" placeholder="One word, alphabets only" maxlength="50">
+                            </div>
+                        </td>`;
+                    } else {
+                        cells +=
+                            `<td><select class="form-select dynamic-dropdown" data-key="${k}"><option value="" disabled selected>-- Select ${k} --</option>${opts.map(o=>`<option value="${o}">${o}</option>`).join('')}</select></td>`;
+                    }
                 } else if (k === 'Amount') {
                     cells +=
                         `<td><input type="text" class="form-control amount-input" data-key="${k}" placeholder="Amount(469)"></td>`;
@@ -884,6 +915,29 @@ $script = '<script>
                 let id = saveBtn.dataset.id;
                 let row = saveBtn.closest("tr");
                 console.log("Saving row with id:", id);
+
+                // ✅ VALIDATE SOURCE FIELD (MANDATORY)
+                const sourceSelect = row.querySelector('[data-key="Source"]');
+                const sourceCustomInput = row.querySelector('[data-key="Source_Other"]');
+
+                if (sourceSelect && sourceCustomInput && sourceSelect.disabled === false) { // Only validate if not disabled (editable views)
+                    const sourceValue = sourceSelect.value;
+                    const customValue = sourceCustomInput.value.trim();
+
+                    // Validate: Source must be selected
+                    if (!sourceValue) {
+                        alert('Source is required. Please select a source.');
+                        sourceSelect.focus();
+                        return false;
+                    }
+
+                    // Validate: If 'Other' is selected, custom input must have at least 1 letter
+                    if (sourceValue === 'Other' && customValue.length === 0) {
+                        alert('Please enter at least one letter for the custom source.');
+                        sourceCustomInput.focus();
+                        return false;
+                    }
+                }
 
                 // Collect all data from the row
                 let rowData = {};
@@ -1037,6 +1091,72 @@ $script = '<script>
 
         // Apply initial state to all existing rows
         applyInitialState(document);
+
+        // ======================================
+        // Source Dropdown + Custom Input Handler
+        // ======================================
+        function initSourceHandling(context = document) {
+            context.querySelectorAll('.source-dropdown').forEach(select => {
+                const container = select.closest('.source-container');
+                const customInput = container.querySelector('.source-custom-input');
+
+                function toggleCustomInput() {
+                    if (select.value === 'Other') {
+                        customInput.classList.remove('d-none');
+                    } else {
+                        customInput.classList.add('d-none');
+                        customInput.value = '';
+                    }
+                }
+
+                // Initial state (no focus on page load)
+                toggleCustomInput();
+
+                // On change - focus only when user explicitly changes selection
+                select.addEventListener('change', function() {
+                    toggleCustomInput();
+                    if (select.value === 'Other') {
+                        customInput.focus();
+                    }
+                });
+
+                // Validate custom input: one word, alphabets only, first letter capital, no spaces
+                customInput.addEventListener('input', function() {
+                    let value = this.value;
+
+                    // Remove all spaces first
+                    value = value.replace(/\s/g, '');
+
+                    // Remove all non-alphabetic characters
+                    value = value.replace(/[^a-zA-Z]/g, '');
+
+                    // Capitalize first letter, rest lowercase
+                    if (value.length > 0) {
+                        value = value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+                    }
+
+                    this.value = value;
+                });
+
+                // Prevent spaces in custom input
+                customInput.addEventListener('keypress', function(e) {
+                    if (e.key === ' ') {
+                        e.preventDefault();
+                        return false;
+                    }
+                });
+            });
+        }
+
+        // Initialize on page load
+        initSourceHandling(document);
+
+        // Re-initialize when new rows are added
+        const originalAddBlankRow = addBlankRow;
+        window.addBlankRow = function() {
+            originalAddBlankRow.call(this);
+            initSourceHandling(document);
+        };
 
         // Cleanup location suggestions
         document.addEventListener('click', function(e) {
