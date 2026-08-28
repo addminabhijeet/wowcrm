@@ -190,6 +190,7 @@ $script = '<script>
                     <tr>
                         <th scope="col" class="text-center">
                             <input type="checkbox" class="form-check-input select-all-checkbox" id="selectAllCheckbox" title="Select all on this page">
+                            <br><small>Row</small>
                         </th>
                         <th scope="col" class="text-center">Name</th>
                         <th scope="col" class="text-center">Email Address</th>
