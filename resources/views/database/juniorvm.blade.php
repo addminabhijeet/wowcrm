@@ -304,7 +304,7 @@ $script = '<script>
                         {{-- Source --}}
                         <td>
                             @php $sourceOptions = ['Linkedin','Tekjobs','Dice','Other']; @endphp
-                            <div class="source-container">
+                            <div class="source-container" style="display: flex; flex-direction: column; gap: 5px;">
                                 <select class="form-select dynamic-dropdown source-dropdown" data-key="Source">
                                     @foreach ($sourceOptions as $option)
                                     <option value="{{ $option }}"
@@ -317,7 +317,8 @@ $script = '<script>
                                     data-key="Source_Other"
                                     placeholder="One word, alphabets only"
                                     value="{{ $row->Source_Other ?? '' }}"
-                                    maxlength="50">
+                                    maxlength="50"
+                                    style="margin-top: 5px;">
                             </div>
                         </td>
 

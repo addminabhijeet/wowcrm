@@ -224,7 +224,7 @@
                 {{-- Source --}}
                 <td>
                     @php $sourceOptions = ['Linkedin','Tekjobs','Dice','Other']; @endphp
-                    <div class="source-container">
+                    <div class="source-container" style="display: flex; flex-direction: column; gap: 5px;">
                         <select class="form-select dynamic-dropdown source-dropdown" data-key="Source" disabled>
                             @foreach ($sourceOptions as $option)
                             <option value="{{ $option }}"
@@ -238,7 +238,8 @@
                             placeholder="One word, alphabets only"
                             value="{{ $row->Source_Other ?? '' }}"
                             maxlength="50"
-                            readonly>
+                            readonly
+                            style="margin-top: 5px;">
                     </div>
                 </td>
 
