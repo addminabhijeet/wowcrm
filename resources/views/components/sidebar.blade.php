@@ -814,6 +814,11 @@ $role = Auth::user()->role;
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>All User Target</a>
                     </li>
                 </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('monthly-targets.index') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Target</a>
+                    </li>
+                </ul>
             </li>
             @endif
 
@@ -931,7 +936,7 @@ $role = Auth::user()->role;
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>IT Senior Recruiter
                             Report</a></li>
                 </ul>
-                                <ul class="sidebar-submenu">
+                <ul class="sidebar-submenu">
                     <li><a href="{{ route('call.reports.neverreached') }}"><i
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Never Reached
                             Report</a></li>
