@@ -579,7 +579,7 @@ $role = Auth::user()->role;
                     </li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('monthly-targets.index') }}"><i
+                    <li><a href="{{ route('target-analytics.dashboard') }}"><i
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Target</a>
                     </li>
                 </ul>
@@ -820,7 +820,7 @@ $role = Auth::user()->role;
                     </li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('monthly-targets.index') }}"><i
+                    <li><a href="{{ route('target-analytics.dashboard') }}"><i
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Monthly Target</a>
                     </li>
                 </ul>
