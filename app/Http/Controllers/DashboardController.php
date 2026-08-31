@@ -225,8 +225,10 @@ class DashboardController extends Controller
             $daysLeft = max(0, ceil(now()->floatDiffInDays($carbonDate, false)));
         }
 
-        // ✅ OPTIMIZATION 4: Replace REGEXP with indexed LIKE query
-        $targetAchieved = GoogleSheetData::where('created_by', 'LIKE', "%{$user->id}|junior%")
+        // Use exact REGEXP pattern from CallReportController::junior()
+        $targetAchieved = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$user->id}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
@@ -651,8 +653,10 @@ class DashboardController extends Controller
             $daysLeft = max(0, ceil(now()->floatDiffInDays($carbonDate, false)));
         }
 
-        // ✅ OPTIMIZATION 4: Replace REGEXP with indexed LIKE query
-        $targetAchieved = GoogleSheetData::where('created_by', 'LIKE', "%{$user->id}|senior%")
+        // Use exact REGEXP pattern from CallReportController (senior variant)
+        $targetAchieved = GoogleSheetData::whereRaw(
+            "created_by REGEXP '^{$user->id}\\\\|senior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+        )
             ->whereYear('updated_at', $year)
             ->whereMonth('updated_at', (int) $month)
             ->sum('Amount');
