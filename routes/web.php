@@ -21,6 +21,8 @@ use App\Http\Controllers\TimerApiController;
 use App\Http\Controllers\CandidateController;
 use App\Http\Controllers\PdfController;
 use App\Http\Controllers\CandidateDetailsController;
+use App\Http\Controllers\TargetAnalyticsController;
+use App\Http\Controllers\MonthlyTargetController;
 
 Route::middleware(['allowedip', 'auth'])->group(function () {
 
@@ -339,6 +341,20 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('/dashboard/upload-generated-pdfs', [DashboardController::class, 'uploadGeneratedPdfs'])->name('upload.generated.pdfs');
     Route::post('target/add-ip', [DashboardController::class, 'addIp'])->name('target.addip');
     Route::delete('target/delete-ip/{id}', [DashboardController::class, 'deleteIp'])->name('target.deleteip');
+
+    // Target Analytics Routes
+    Route::get('/dashboard/target-analytics', [TargetAnalyticsController::class, 'dashboard'])->name('target-analytics.dashboard');
+    Route::get('/dashboard/target-analytics/user/{userId}', [TargetAnalyticsController::class, 'userAnalytics'])->name('target-analytics.user-analytics');
+    Route::get('/dashboard/target-analytics/all-users', [TargetAnalyticsController::class, 'allUsersAnalytics'])->name('target-analytics.all-users');
+    Route::get('/dashboard/target-analytics/compare', [TargetAnalyticsController::class, 'compare'])->name('target-analytics.compare');
+    Route::get('/dashboard/target-analytics/export-json/{userId}', [TargetAnalyticsController::class, 'exportJson'])->name('target-analytics.export-json');
+
+    // Monthly Targets Routes
+    Route::get('/dashboard/monthly-targets', [MonthlyTargetController::class, 'index'])->name('monthly-targets.index');
+    Route::get('/dashboard/monthly-targets/user/{userId}', [MonthlyTargetController::class, 'userTargets'])->name('monthly-targets.user-targets');
+    Route::put('/api/monthly-targets/{userId}/{year}/{month}', [MonthlyTargetController::class, 'updateTarget'])->name('monthly-targets.update');
+    Route::post('/api/monthly-targets/{userId}/{year}/{month}/reset', [MonthlyTargetController::class, 'resetTarget'])->name('monthly-targets.reset');
+    Route::post('/api/monthly-targets/{userId}/bulk-update', [MonthlyTargetController::class, 'bulkUpdate'])->name('monthly-targets.bulk-update');
 
     Route::put('/dashboard/smtp/allupdate', [DashboardController::class, 'addupdate'])->name('smtp.addupdate');
     Route::put('/dashboard/smtp/update/{user}', [DashboardController::class, 'update'])->name('smtp.update');
