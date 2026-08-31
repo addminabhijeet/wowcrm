@@ -1629,4 +1629,16 @@ class DashboardController extends Controller
 
         return redirect()->route('target.allowedall')->with('success', 'IP address deleted successfully');
     }
+
+    /**
+     * Display all monthly targets for all users
+     */
+    public function targetall()
+    {
+        $targetUsers = User::whereIn('role', ['senior', 'junior'])
+                          ->where('is_deleted', 0)
+                          ->get();
+
+        return view('target.targetall', compact('targetUsers'));
+    }
 }
