@@ -114,12 +114,37 @@ class TargetAnalyticsController extends Controller
         $user = User::find($userId);
         $data = [];
 
-        for ($month = 1; $month <= 12; $month++) {
-            // Get target given (from new system first, then fallback to old system)
-            $targetGiven = $this->getTargetGiven($userId, $year, $month, $user);
+        // Batch load all monthly targets for the year (single query)
+        $monthlyTargets = MonthlyTarget::where('user_id', $userId)
+                                       ->where('year', $year)
+                                       ->get()
+                                       ->keyBy('month');
 
-            // Get target achieved (from GoogleSheetData)
-            $targetAchieved = $this->getTargetAchieved($userId, $year, $month, $user->role);
+        // Batch load all achieved amounts for the year using exact REGEXP pattern
+        if ($user->role === 'junior') {
+            $pattern = "created_by REGEXP '^{$userId}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'";
+        } else {
+            // For senior role
+            $pattern = "created_by REGEXP '^{$userId}\\\\|senior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'";
+        }
+
+        $achievedByMonth = GoogleSheetData::whereRaw($pattern)
+                                          ->whereYear('updated_at', $year)
+                                          ->selectRaw('MONTH(updated_at) as month, SUM(Amount) as total')
+                                          ->groupBy('month')
+                                          ->get()
+                                          ->keyBy('month');
+
+        for ($month = 1; $month <= 12; $month++) {
+            // Get target given
+            if (isset($monthlyTargets[$month])) {
+                $targetGiven = $monthlyTargets[$month]->target;
+            } else {
+                $targetGiven = $this->getTargetFromOldSystem($userId, $year, $month, $user);
+            }
+
+            // Get target achieved from batch query
+            $targetAchieved = $achievedByMonth[$month]->total ?? 0;
 
             // Calculate variance
             $variance = $targetAchieved - $targetGiven;
