@@ -131,7 +131,7 @@ class TargetAnalyticsController extends Controller
         $achievedByMonth = GoogleSheetData::whereRaw($pattern)
                                           ->whereYear('updated_at', $year)
                                           ->selectRaw('MONTH(updated_at) as month, SUM(Amount) as total')
-                                          ->groupBy('month')
+                                          ->groupByRaw('MONTH(updated_at)')
                                           ->get()
                                           ->keyBy('month');
 
@@ -300,7 +300,7 @@ class TargetAnalyticsController extends Controller
         $achievedByMonth = GoogleSheetData::whereRaw($pattern)
                                           ->whereYear('updated_at', $year)
                                           ->selectRaw('MONTH(updated_at) as month, SUM(Amount) as total')
-                                          ->groupBy('month')
+                                          ->groupByRaw('MONTH(updated_at)')
                                           ->get()
                                           ->keyBy('month');
 
