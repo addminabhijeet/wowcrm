@@ -573,8 +573,8 @@
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                             <div class="card-body d-flex justify-content-between align-items-center p-4">
                                 <div>
-                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Given</p>
-                                    <h3 class="mb-0 fw-bold" style="font-size: 25px;">${{ $targetGiven }}</h3>
+                                    <p class="mb-1 fw-bold" style="font-size: 12px; opacity: 0.8;">Total Target Given</p>
+                                    <h3 class="mb-0 fw-bold" style="font-size: 20px;">${{ number_format($targetGiven, 0) }}</h3>
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center"
                                     style="width: 70px; height: 70px; background-color: rgba(13,71,161,0.1); border-radius: 50%;">
@@ -591,8 +591,8 @@
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                             <div class="card-body d-flex justify-content-between align-items-center p-4">
                                 <div>
-                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Target Achieved</p>
-                                    <h3 class="mb-0 fw-bold" style="font-size: 25px;">${{ $targetAchieved }}</h3>
+                                    <p class="mb-1 fw-bold" style="font-size: 12px; opacity: 0.8;">Total Target Achieved</p>
+                                    <h3 class="mb-0 fw-bold" style="font-size: 20px;">${{ number_format($targetAchieved, 0) }}</h3>
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center"
                                     style="width: 70px; height: 70px; background-color: rgba(106,27,154,0.1); border-radius: 50%;">
@@ -609,8 +609,8 @@
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                             <div class="card-body d-flex justify-content-between align-items-center p-4">
                                 <div>
-                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Target Yet to Achieve</p>
-                                    <h3 class="mb-0 fw-bold" style="font-size: 25px;">${{ $targetYetToAchieve }}</h3>
+                                    <p class="mb-1 fw-bold" style="font-size: 12px; opacity: 0.8;">Target Yet to Achieve</p>
+                                    <h3 class="mb-0 fw-bold" style="font-size: 20px;">${{ number_format($targetYetToAchieve, 0) }}</h3>
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center"
                                     style="width: 70px; height: 70px; background-color: rgba(239,108,0,0.1); border-radius: 50%;">
@@ -627,7 +627,7 @@
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                             <div class="card-body d-flex justify-content-between align-items-center p-4">
                                 <div>
-                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Days Left</p>
+                                    <p class="mb-1 fw-bold" style="font-size: 12px; opacity: 0.8;">Days Left</p>
                                     <h3 class="mb-0 fw-bold" style="font-size: 25px;">{{ $daysLeft }}</h3>
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center"
@@ -645,7 +645,7 @@
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                             <div class="card-body d-flex justify-content-between align-items-center p-4">
                                 <div>
-                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Present Days</p>
+                                    <p class="mb-1 fw-bold" style="font-size: 12px; opacity: 0.8;">Total Present Days</p>
                                     <h3 class="mb-0 fw-bold" style="font-size: 25px;">{{ $presentDays }}</h3>
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center"
@@ -663,7 +663,7 @@
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                             <div class="card-body d-flex justify-content-between align-items-center p-4">
                                 <div>
-                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Absent Days</p>
+                                    <p class="mb-1 fw-bold" style="font-size: 12px; opacity: 0.8;">Total Absent Days</p>
                                     <h3 class="mb-0 fw-bold" style="font-size: 25px;">{{ $absentDays }}</h3>
 
                                 </div>
@@ -682,7 +682,7 @@
                             onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 4px 10px rgba(0,0,0,0.05)';">
                             <div class="card-body d-flex justify-content-between align-items-center p-4">
                                 <div>
-                                    <p class="mb-1 fw-bold" style="font-size: 15px; opacity: 0.8;">Total Working Days</p>
+                                    <p class="mb-1 fw-bold" style="font-size: 12px; opacity: 0.8;">Total Working Days</p>
                                     <h3 class="mb-0 fw-bold" style="font-size: 25px;">{{ $workingDays }}</h3>
                                 </div>
                                 <div class="d-flex justify-content-center align-items-center"
