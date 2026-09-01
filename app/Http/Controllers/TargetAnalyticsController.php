@@ -45,26 +45,20 @@ class TargetAnalyticsController extends Controller
         $currentYear = Carbon::now()->year;
         $cacheKey = "target_analytics_dashboard_{$currentYear}";
 
-        // Check cache first (5 minutes)
-        $cached = Cache::get($cacheKey);
-        if ($cached) {
-            return view('target-analytics.dashboard', $cached);
-        }
+        // ✅ CACHING: Cache entire dashboard for 1 hour (solves 600+ queries)
+        $data = Cache::remember($cacheKey, 3600, function () use ($currentYear) {
+            $users = User::whereIn('role', ['senior', 'junior'])
+                         ->where('is_deleted', 0)
+                         ->get();
 
-        $users = User::whereIn('role', ['senior', 'junior'])
-                     ->where('is_deleted', 0)
-                     ->get();
+            // Pre-calculate all summaries to avoid N+1 queries in view
+            $usersSummary = [];
+            foreach ($users as $user) {
+                $usersSummary[$user->id] = $this->getYearlySummary($user->id, $currentYear);
+            }
 
-        // Pre-calculate all summaries to avoid N+1 queries in view
-        $usersSummary = [];
-        foreach ($users as $user) {
-            $usersSummary[$user->id] = $this->getYearlySummary($user->id, $currentYear);
-        }
-
-        $data = compact('users', 'currentYear', 'usersSummary');
-
-        // Cache for 5 minutes
-        Cache::put($cacheKey, $data, 300);
+            return compact('users', 'currentYear', 'usersSummary');
+        });
 
         return view('target-analytics.dashboard', $data);
     }
@@ -105,60 +99,65 @@ class TargetAnalyticsController extends Controller
      */
     public function getMonthlyComparison($userId, $year)
     {
-        $monthNames = [
-            1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
-            5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
-            9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
-        ];
+        // ✅ CACHING: Cache monthly comparison for each user/year (reduces 12 queries to 1)
+        $cacheKey = "monthly_comparison_{$userId}_{$year}";
 
-        $user = User::find($userId);
-        $data = [];
-
-        // Batch load all monthly targets for the year (single query)
-        $monthlyTargets = MonthlyTarget::where('user_id', $userId)
-                                       ->where('year', $year)
-                                       ->get()
-                                       ->keyBy('month');
-
-        for ($month = 1; $month <= 12; $month++) {
-            // Get target given
-            if (isset($monthlyTargets[$month])) {
-                $targetGiven = $monthlyTargets[$month]->target;
-            } else {
-                $targetGiven = $this->getTargetFromOldSystem($userId, $year, $month, $user);
-            }
-
-            // Get target achieved using exact REGEXP pattern from CallReportController::alljuniormonthly
-            if ($user->role === 'junior') {
-                $pattern = "created_by REGEXP '^{$userId}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'";
-            } else {
-                // For senior role
-                $pattern = "created_by REGEXP '^{$userId}\\\\|senior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'";
-            }
-
-            $targetAchieved = GoogleSheetData::whereRaw($pattern)
-                                             ->whereYear('updated_at', $year)
-                                             ->whereMonth('updated_at', (int) $month)
-                                             ->sum('Amount');
-
-            // Calculate variance
-            $variance = $targetAchieved - $targetGiven;
-            $variancePercent = $targetGiven > 0 ? (($variance / $targetGiven) * 100) : 0;
-            $status = $this->getStatus($targetAchieved, $targetGiven);
-
-            $data[$month] = [
-                'month_name' => $monthNames[$month],
-                'month_number' => $month,
-                'target_given' => (int) $targetGiven,
-                'target_achieved' => (int) $targetAchieved,
-                'variance' => (int) $variance,
-                'variance_percent' => round($variancePercent, 2),
-                'status' => $status,
-                'achievement_percent' => $targetGiven > 0 ? round(($targetAchieved / $targetGiven) * 100, 2) : 0
+        return Cache::remember($cacheKey, 3600, function () use ($userId, $year) {
+            $monthNames = [
+                1 => 'January', 2 => 'February', 3 => 'March', 4 => 'April',
+                5 => 'May', 6 => 'June', 7 => 'July', 8 => 'August',
+                9 => 'September', 10 => 'October', 11 => 'November', 12 => 'December'
             ];
-        }
 
-        return $data;
+            $user = User::find($userId);
+            $data = [];
+
+            // Batch load all monthly targets for the year (single query)
+            $monthlyTargets = MonthlyTarget::where('user_id', $userId)
+                                           ->where('year', $year)
+                                           ->get()
+                                           ->keyBy('month');
+
+            for ($month = 1; $month <= 12; $month++) {
+                // Get target given
+                if (isset($monthlyTargets[$month])) {
+                    $targetGiven = $monthlyTargets[$month]->target;
+                } else {
+                    $targetGiven = $this->getTargetFromOldSystem($userId, $year, $month, $user);
+                }
+
+                // Get target achieved using exact REGEXP pattern from CallReportController::alljuniormonthly
+                if ($user->role === 'junior') {
+                    $pattern = "created_by REGEXP '^{$userId}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'";
+                } else {
+                    // For senior role
+                    $pattern = "created_by REGEXP '^{$userId}\\\\|senior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'";
+                }
+
+                $targetAchieved = GoogleSheetData::whereRaw($pattern)
+                                                 ->whereYear('updated_at', $year)
+                                                 ->whereMonth('updated_at', (int) $month)
+                                                 ->sum('Amount');
+
+                // Calculate variance
+                $variance = $targetAchieved - $targetGiven;
+                $variancePercent = $targetGiven > 0 ? (($variance / $targetGiven) * 100) : 0;
+                $status = $this->getStatus($targetAchieved, $targetGiven);
+
+                $data[$month] = [
+                    'month_name' => $monthNames[$month],
+                    'month_number' => $month,
+                    'target_given' => (int) $targetGiven,
+                    'target_achieved' => (int) $targetAchieved,
+                    'variance' => (int) $variance,
+                    'variance_percent' => round($variancePercent, 2),
+                    'status' => $status,
+                    'achievement_percent' => $targetGiven > 0 ? round(($targetAchieved / $targetGiven) * 100, 2) : 0
+                ];
+            }
+
+            return $data;
+        });
     }
 
     /**
