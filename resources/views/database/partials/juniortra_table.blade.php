@@ -58,6 +58,7 @@
                 <th scope="col" class="text-center">Resume</th>
                 <th scope="col" class="text-center" colspan="2">Remark</th>
                 <th scope="col" class="text-center">Status</th>
+                <th scope="col" class="text-center">Action</th>
 
             </tr>
         </thead>
@@ -305,6 +306,11 @@
                         </option>
                         @endforeach
                     </select>
+                </td>
+
+                {{-- Action --}}
+                <td>
+                    <button type="button" class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">Save</button>
                 </td>
             </tr>
             @endforeach
