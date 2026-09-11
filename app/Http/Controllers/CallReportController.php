@@ -1945,7 +1945,7 @@ class CallReportController extends Controller
             // Selected date totals for this junior
             $StotalCalls = $query->count();
 
-            $ScalledAndMailedCalls = (clone $query)
+            $ScalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
                 ->where('Exe_Remarks', 'Called & Mailed')
                 ->whereDate('followup', $selectedDate)
                 ->count();
@@ -2494,7 +2494,7 @@ class CallReportController extends Controller
 
             $StotalCalls = $query->count();
 
-            $ScalledAndMailedCalls = (clone $query)
+            $ScalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
                 ->where('Exe_Remarks', 'Called & Mailed')
                 ->whereDate('followup', $selectedDate)
                 ->count();
@@ -2828,7 +2828,7 @@ class CallReportController extends Controller
         // Selected date totals for this junior
         $StotalCalls = $query->count();
 
-        $ScalledAndMailedCalls = (clone $query)
+        $ScalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('followup', $selectedDate)
             ->count();
@@ -3304,7 +3304,12 @@ class CallReportController extends Controller
         // Selected date totals for this junior
         $StotalCalls = $query->count();
 
-        $ScalledAndMailedCalls = (clone $query)
+        $ScalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('followup', $date);
+                }
+            })
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
@@ -3707,8 +3712,9 @@ class CallReportController extends Controller
         // Selected date totals for this trainer
         $StotalCalls = $query->count();
 
-        $ScalledAndMailedCalls = (clone $query)
+        $ScalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where('Exe_Remarks', 'Called & Mailed')
+            ->whereDate('followup', $selectedDate)
             ->count();
 
         $SotherCalls = (clone $query)
@@ -6832,7 +6838,7 @@ class CallReportController extends Controller
         // Selected date totals for this junior
         $StotalCalls = $query->count();
 
-        $ScalledAndMailedCalls = (clone $tquery)
+        $ScalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('followup', $selectedDate)
             ->count();
