@@ -775,13 +775,13 @@ class CallReportController extends Controller
             + $MtransferedfollowUpCalls;
 
         // Daily "Called & Mailed" counts
-        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', callmailcount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedMonth}-%"]
             )
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -814,13 +814,13 @@ class CallReportController extends Controller
             ->toArray();
 
         // Daily Called & Mailed
-        $dailyCalledAndMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+        $dailyCalledAndMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', callmailcount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedMonth}-%"]
             )
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -1965,11 +1965,10 @@ class CallReportController extends Controller
 
 
             // Hour-wise "Called & Mailed" counts
-            $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
                 ->where('created_by', 'like', "{$createdByKey}%")
-                ->whereDate('updated_at', $selectedDate)
-                ->where('Exe_Remarks', 'Called & Mailed')
                 ->whereDate('followup', $selectedDate)
+                ->where('Exe_Remarks', 'Called & Mailed')
                 ->groupBy('hour')
                 ->pluck('count', 'hour')
                 ->toArray();
@@ -2048,8 +2047,8 @@ class CallReportController extends Controller
 
             // Total "Called & Mailed" calls
             $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-                ->whereYear('updated_at', $year)
-                ->whereMonth('updated_at', $month)
+                ->whereYear('followup', $year)
+                ->whereMonth('followup', $month)
                 ->where('Exe_Remarks', 'Called & Mailed')
                 ->count();
 
@@ -2513,11 +2512,10 @@ class CallReportController extends Controller
                 })
                 ->count();
 
-            $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+            $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
                 ->where('created_by', 'like', "{$createdByKey}%")
-                ->whereDate('updated_at', $selectedDate)
-                ->where('Exe_Remarks', 'Called & Mailed')
                 ->whereDate('followup', $selectedDate)
+                ->where('Exe_Remarks', 'Called & Mailed')
                 ->groupBy('hour')
                 ->pluck('count', 'hour')
                 ->toArray();
@@ -2594,8 +2592,8 @@ class CallReportController extends Controller
                 ->count();
 
             $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-                ->whereYear('updated_at', $year)
-                ->whereMonth('updated_at', $month)
+                ->whereYear('followup', $year)
+                ->whereMonth('followup', $month)
                 ->where('Exe_Remarks', 'Called & Mailed')
                 ->count();
 
@@ -2851,11 +2849,10 @@ class CallReportController extends Controller
 
 
         // Hour-wise "Called & Mailed" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereDate('updated_at', $selectedDate)
-            ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('followup', $selectedDate)
+            ->where('Exe_Remarks', 'Called & Mailed')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -2934,8 +2931,8 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
@@ -3202,11 +3199,10 @@ class CallReportController extends Controller
 
                 $createdByKey = "{$juniorUser->id}|junior";
 
-                $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+                $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
                     ->where('created_by', 'like', "{$createdByKey}%")
-                    ->whereDate('updated_at', $selectedDate)
-                    ->where('Exe_Remarks', 'Called & Mailed')
                     ->whereDate('followup', $selectedDate)
+                    ->where('Exe_Remarks', 'Called & Mailed')
                     ->groupBy('hour')
                     ->pluck('count', 'hour')
                     ->toArray();
@@ -3328,11 +3324,11 @@ class CallReportController extends Controller
 
 
         // Hour-wise "Called & Mailed" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
-                    $q->orWhereDate('updated_at', $date);
+                    $q->orWhereDate('followup', $date);
                 }
             })
             ->groupBy('hour')
@@ -3424,8 +3420,8 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
@@ -3724,9 +3720,9 @@ class CallReportController extends Controller
 
 
         // Hour-wise "Called & Mailed" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereDate('updated_at', $selectedDate)
+            ->whereDate('followup', $selectedDate)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->groupBy('hour')
             ->pluck('count', 'hour')
@@ -3868,9 +3864,9 @@ class CallReportController extends Controller
 
 
         // Hour-wise "Ready To Pay" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereDate('updated_at', $selectedDate)
+            ->whereDate('followup', $selectedDate)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('hour')
             ->pluck('count', 'hour')
@@ -4093,12 +4089,12 @@ class CallReportController extends Controller
             ->pluck('count', 'hour')
             ->toArray();
 
-        $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', callmailcount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedDate}:%"]
             )
-            ->whereDate('updated_at', $selectedDate)
+            ->whereDate('followup', $selectedDate)
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -4715,7 +4711,7 @@ class CallReportController extends Controller
         })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
-                    $q->orWhereDate('updated_at', $date);
+                    $q->orWhereDate('followup', $date);
                 }
             })
             ->count();
@@ -4764,7 +4760,7 @@ class CallReportController extends Controller
 
 
         // Hourly Called & Mailed
-        $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $hourlyCalledAndMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
             ->where(function ($q) use ($weekDates, $user) {
                 foreach ($weekDates as $date) {
                     $q->orWhereRaw(
@@ -4775,7 +4771,7 @@ class CallReportController extends Controller
             })
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
-                    $q->orWhereDate('updated_at', $date);
+                    $q->orWhereDate('followup', $date);
                 }
             })
             ->groupBy('hour')
@@ -5256,8 +5252,8 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
@@ -5272,10 +5268,10 @@ class CallReportController extends Controller
             ->count();
 
         // --- Daily "Called & Mailed + Ready To Pay" counts ---
-        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->groupBy('day')
             ->pluck('count', 'day')
@@ -5739,8 +5735,8 @@ class CallReportController extends Controller
 
         // Total "Ready To Pay" calls
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->count();
 
@@ -5756,10 +5752,10 @@ class CallReportController extends Controller
 
 
         // Hour-wise "Ready To Pay" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Ready To Pay')
             ->groupBy('hour')
             ->pluck('count', 'hour')
@@ -5858,8 +5854,8 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
@@ -5875,10 +5871,10 @@ class CallReportController extends Controller
 
 
         // Hour-wise "Called & Mailed" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->groupBy('hour')
             ->pluck('count', 'hour')
@@ -6089,13 +6085,13 @@ class CallReportController extends Controller
             + $MtransferedfollowUpCalls;
 
         // Daily "Called & Mailed" counts
-        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', callmailcount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedMonth}-%"]
             )
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -6133,13 +6129,13 @@ class CallReportController extends Controller
             ->toArray();
 
         // Daily Called & Mailed
-        $dailyCalledAndMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+        $dailyCalledAndMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
             ->whereRaw(
                 "CONCAT(':', callmailcount, ':') LIKE ?",
                 ["%:{$user->id}|{$selectedMonth}-%"]
             )
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
@@ -6857,11 +6853,10 @@ class CallReportController extends Controller
 
 
         // Hour-wise "Called & Mailed" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereDate('updated_at', $selectedDate)
-            ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('followup', $selectedDate)
+            ->where('Exe_Remarks', 'Called & Mailed')
             ->groupBy('hour')
             ->pluck('count', 'hour')
             ->toArray();
@@ -6942,8 +6937,8 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
@@ -7209,8 +7204,8 @@ class CallReportController extends Controller
 
         // Total "Called & Mailed" calls
         $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->count();
 
@@ -7225,10 +7220,10 @@ class CallReportController extends Controller
             ->count();
 
         // --- Daily "Called & Mailed + Ready To Pay" counts ---
-        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->whereYear('updated_at', $year)
-            ->whereMonth('updated_at', $month)
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->groupBy('day')
             ->pluck('count', 'day')
