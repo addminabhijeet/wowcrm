@@ -211,7 +211,7 @@ class CallReportController extends Controller
                     ->toArray(),
 
                 'hourlyCalledAndMailed' => GoogleSheetData::selectRaw(
-                    "HOUR(updated_at) as hour, COUNT(*) as count"
+                    "HOUR(followup) as hour, COUNT(*) as count"
                 )
                     ->whereRaw(
                         "CONCAT(':', callmailcount, ':') LIKE ?",
