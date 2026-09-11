@@ -5244,6 +5244,22 @@ class CallReportController extends Controller
         $selectedMonth = $request->input('selected_month', date('Y-m'));
         [$year, $month] = explode('-', $selectedMonth);
 
+        // Total calls for this junior (including hierarchical keys)
+        $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
+
+        // Total "Called & Mailed" calls for this junior
+        $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->count();
+
+        // Total other calls for this junior
+        $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
+            ->count();
+
         // Total calls for this junior in the selected month (including hierarchical keys)
         $MtotalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
@@ -5610,6 +5626,9 @@ class CallReportController extends Controller
         $MAvgtotaltransfers = $workingDays > 0 ? intval($Mtotaltransfers / $workingDays) : 0;
 
         return view('reports.alljuniormonthly', compact(
+            'totalCalls',
+            'calledAndMailedCalls',
+            'otherCalls',
             'juniorUser',
             'MtotalCalls',
             'McalledAndMailedCalls',
@@ -7196,6 +7215,22 @@ class CallReportController extends Controller
         $selectedMonth = $request->input('selected_month', date('Y-m'));
         [$year, $month] = explode('-', $selectedMonth);
 
+        // Total calls for this junior (including hierarchical keys)
+        $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
+
+        // Total "Called & Mailed" calls for this junior
+        $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->count();
+
+        // Total other calls for this junior
+        $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+            ->where(function ($q) {
+                $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                    ->orWhereNull('Exe_Remarks');
+            })
+            ->count();
+
         // Total calls for this junior in the selected month (including hierarchical keys)
         $MtotalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
@@ -7538,6 +7573,9 @@ class CallReportController extends Controller
 
         return view('reports.juniormonthly', compact(
             'juniorUser',
+            'totalCalls',
+            'calledAndMailedCalls',
+            'otherCalls',
             'MtotalCalls',
             'McalledAndMailedCalls',
             'MotherCalls',
