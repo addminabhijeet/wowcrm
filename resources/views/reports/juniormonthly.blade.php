@@ -1004,7 +1004,7 @@
                             <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                                 <div class="me-4">
                                     <span class="text-secondary-light fw-bold mb-12 text-xl">Total Calls</span>
-                                    <h5 class="fw-semibold mb-0">{{ $MtotalCalls }}</h5>
+                                    <h5 class="fw-semibold mb-0">{{ $totalCalls }}</h5>
                                 </div>
                                 <div id="semiCircleGauge" class="me-3"></div>
                             </div>
@@ -1012,14 +1012,14 @@
                             <div class="d-flex align-items-center gap-1 justify-content-between mb-44">
                                 <div>
                                     <span class="text-secondary-light fw-bold mb-12 text-xl">Other Calls</span>
-                                    <h5 class="fw-semibold mb-0">{{ $MotherCalls }}</h5>
+                                    <h5 class="fw-semibold mb-0">{{ $otherCalls }}</h5>
                                 </div>
                                 <div id="areaChart"></div>
                             </div>
                             <div class="d-flex align-items-center gap-1 justify-content-between">
                                 <div>
                                     <span class="text-secondary-light fw-bold mb-12 text-xl">Called & Mailed Calls</span>
-                                    <h5 class="fw-semibold mb-0">{{ $McalledAndMailedCalls }}</h5>
+                                    <h5 class="fw-semibold mb-0">{{ $calledAndMailedCalls }}</h5>
                                 </div>
                                 <div id="dailyIconBarChart"></div>
                             </div>
