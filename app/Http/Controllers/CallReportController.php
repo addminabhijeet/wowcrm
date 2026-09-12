@@ -3199,9 +3199,10 @@ class CallReportController extends Controller
 
                 $createdByKey = "{$juniorUser->id}|junior";
 
-                $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
+                $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
                     ->where('created_by', 'like', "{$createdByKey}%")
                     ->whereDate('followup', $selectedDate)
+                    ->whereDate('updated_at', $selectedDate)
                     ->where('Exe_Remarks', 'Called & Mailed')
                     ->groupBy('hour')
                     ->pluck('count', 'hour')
