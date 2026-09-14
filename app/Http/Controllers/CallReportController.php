@@ -1965,7 +1965,7 @@ class CallReportController extends Controller
 
 
             // Hour-wise "Called & Mailed" counts
-            $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
+            $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
                 ->where('created_by', 'like', "{$createdByKey}%")
                 ->whereDate('followup', $selectedDate)
                 ->where('Exe_Remarks', 'Called & Mailed')
