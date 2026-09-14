@@ -1621,7 +1621,7 @@ class DashboardController extends Controller
     public function addIp(Request $request)
     {
         $request->validate([
-            'ip_address' => 'required|ip|unique:allowed_ips,ip_address'
+            'ip_address' => 'required|ipv4|unique:allowed_ips,ip_address'
         ]);
 
         AllowedIp::create([
