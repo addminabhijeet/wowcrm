@@ -1621,7 +1621,7 @@ class DashboardController extends Controller
     public function addIp(Request $request)
     {
         $request->validate([
-            'ip_address' => 'required|ipv4|unique:allowed_ips,ip_address'
+            'ip_address' => 'required|ip|unique:allowed_ips,ip_address'
         ]);
 
         AllowedIp::create([
@@ -1644,8 +1644,8 @@ class DashboardController extends Controller
     public function targetall()
     {
         $targetUsers = User::whereIn('role', ['senior', 'junior'])
-                          ->where('is_deleted', 0)
-                          ->get();
+            ->where('is_deleted', 0)
+            ->get();
 
         return view('target.targetall', compact('targetUsers'));
     }
