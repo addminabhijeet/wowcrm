@@ -3603,9 +3603,9 @@ class CallReportController extends Controller
 
         $absentDays = max(0, $absentDays - $futureWorkingDays);
 
-        // --- Averages ---
-        $MAvgTotalCalls       = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
-        $MAvgtotaltransfers   = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
+        // --- Averages (based on TOTAL working days in the week) ---
+        $SAvgTotalCalls       = $workingDays > 0 ? intval($ScalledAndMailedCalls / $workingDays) : 0;
+        $SAvgtotaltransfers   = $workingDays > 0 ? intval($Stotaltransfers / $workingDays) : 0;
 
         return view('reports.alljuniorweekly', compact(
             'totalCalls',
@@ -3661,9 +3661,9 @@ class CallReportController extends Controller
             'absentDays',
             'workingDays',
             'nonWorkingDays',
-            'MAvgTotalCalls',
-            'Mtotaltransfers',
-            'MAvgtotaltransfers',
+            'SAvgTotalCalls',
+            'Stotaltransfers',
+            'SAvgtotaltransfers',
         ));
     }
 
