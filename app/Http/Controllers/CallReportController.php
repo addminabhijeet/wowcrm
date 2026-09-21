@@ -3330,27 +3330,21 @@ class CallReportController extends Controller
             ->count();
 
 
-        // Daily "Called & Mailed" counts for the week
-        $dailyCalledMailed = GoogleSheetData::selectRaw('DATE(followup) as day, COUNT(*) as count')
+        // Daily "Called & Mailed" counts for the ENTIRE MONTH (for accurate recalculation)
+        $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->where(function ($q) use ($weekDates) {
-                foreach ($weekDates as $date) {
-                    $q->orWhereDate('followup', $date);
-                }
-            })
+            ->whereYear('followup', $year)
+            ->whereMonth('followup', $month)
             ->where('Exe_Remarks', 'Called & Mailed')
             ->groupBy('day')
             ->pluck('count', 'day')
             ->toArray();
 
 
-        $dailyOtherCalls = GoogleSheetData::selectRaw('DATE(updated_at) as day, COUNT(*) as count')
+        $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->where(function ($q) use ($weekDates) {
-                foreach ($weekDates as $date) {
-                    $q->orWhereDate('updated_at', $date);
-                }
-            })
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
             ->where(function ($q) {
                 $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
@@ -3360,13 +3354,10 @@ class CallReportController extends Controller
             ->toArray();
 
 
-        $dailyTransfers = GoogleSheetData::selectRaw('DATE(updated_at) as day, COUNT(*) as count')
+        $dailyTransfers = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
-            ->where(function ($q) use ($weekDates) {
-                foreach ($weekDates as $date) {
-                    $q->orWhereDate('updated_at', $date);
-                }
-            })
+            ->whereYear('updated_at', $year)
+            ->whereMonth('updated_at', $month)
             ->where('transfers', 1)
             ->groupBy('day')
             ->pluck('count', 'day')
@@ -3380,30 +3371,30 @@ class CallReportController extends Controller
             ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
             ->toArray();
 
-        // Initialize daily variables for the week (Monday to Sunday)
-        $tDay1 = $dailyCalledMailed[$weekDates[0]] ?? 0;  // Monday
-        $tDay2 = $dailyCalledMailed[$weekDates[1]] ?? 0;  // Tuesday
-        $tDay3 = $dailyCalledMailed[$weekDates[2]] ?? 0;  // Wednesday
-        $tDay4 = $dailyCalledMailed[$weekDates[3]] ?? 0;  // Thursday
-        $tDay5 = $dailyCalledMailed[$weekDates[4]] ?? 0;  // Friday
-        $tDay6 = $dailyCalledMailed[$weekDates[5]] ?? 0;  // Saturday
-        $tDay7 = $dailyCalledMailed[$weekDates[6]] ?? 0;  // Sunday
+        // Initialize daily variables for the week (Monday to Sunday) using day-of-month
+        $tDay1 = $dailyCalledMailed[(int)Carbon::parse($weekDates[0])->format('d')] ?? 0;  // Monday
+        $tDay2 = $dailyCalledMailed[(int)Carbon::parse($weekDates[1])->format('d')] ?? 0;  // Tuesday
+        $tDay3 = $dailyCalledMailed[(int)Carbon::parse($weekDates[2])->format('d')] ?? 0;  // Wednesday
+        $tDay4 = $dailyCalledMailed[(int)Carbon::parse($weekDates[3])->format('d')] ?? 0;  // Thursday
+        $tDay5 = $dailyCalledMailed[(int)Carbon::parse($weekDates[4])->format('d')] ?? 0;  // Friday
+        $tDay6 = $dailyCalledMailed[(int)Carbon::parse($weekDates[5])->format('d')] ?? 0;  // Saturday
+        $tDay7 = $dailyCalledMailed[(int)Carbon::parse($weekDates[6])->format('d')] ?? 0;  // Sunday
 
-        $trDay1 = $dailyTransfers[$weekDates[0]] ?? 0;    // Monday
-        $trDay2 = $dailyTransfers[$weekDates[1]] ?? 0;    // Tuesday
-        $trDay3 = $dailyTransfers[$weekDates[2]] ?? 0;    // Wednesday
-        $trDay4 = $dailyTransfers[$weekDates[3]] ?? 0;    // Thursday
-        $trDay5 = $dailyTransfers[$weekDates[4]] ?? 0;    // Friday
-        $trDay6 = $dailyTransfers[$weekDates[5]] ?? 0;    // Saturday
-        $trDay7 = $dailyTransfers[$weekDates[6]] ?? 0;    // Sunday
+        $trDay1 = $dailyTransfers[(int)Carbon::parse($weekDates[0])->format('d')] ?? 0;    // Monday
+        $trDay2 = $dailyTransfers[(int)Carbon::parse($weekDates[1])->format('d')] ?? 0;    // Tuesday
+        $trDay3 = $dailyTransfers[(int)Carbon::parse($weekDates[2])->format('d')] ?? 0;    // Wednesday
+        $trDay4 = $dailyTransfers[(int)Carbon::parse($weekDates[3])->format('d')] ?? 0;    // Thursday
+        $trDay5 = $dailyTransfers[(int)Carbon::parse($weekDates[4])->format('d')] ?? 0;    // Friday
+        $trDay6 = $dailyTransfers[(int)Carbon::parse($weekDates[5])->format('d')] ?? 0;    // Saturday
+        $trDay7 = $dailyTransfers[(int)Carbon::parse($weekDates[6])->format('d')] ?? 0;    // Sunday
 
-        $oDay1 = $dailyOtherCalls[$weekDates[0]] ?? 0;    // Monday
-        $oDay2 = $dailyOtherCalls[$weekDates[1]] ?? 0;    // Tuesday
-        $oDay3 = $dailyOtherCalls[$weekDates[2]] ?? 0;    // Wednesday
-        $oDay4 = $dailyOtherCalls[$weekDates[3]] ?? 0;    // Thursday
-        $oDay5 = $dailyOtherCalls[$weekDates[4]] ?? 0;    // Friday
-        $oDay6 = $dailyOtherCalls[$weekDates[5]] ?? 0;    // Saturday
-        $oDay7 = $dailyOtherCalls[$weekDates[6]] ?? 0;    // Sunday
+        $oDay1 = $dailyOtherCalls[(int)Carbon::parse($weekDates[0])->format('d')] ?? 0;    // Monday
+        $oDay2 = $dailyOtherCalls[(int)Carbon::parse($weekDates[1])->format('d')] ?? 0;    // Tuesday
+        $oDay3 = $dailyOtherCalls[(int)Carbon::parse($weekDates[2])->format('d')] ?? 0;    // Wednesday
+        $oDay4 = $dailyOtherCalls[(int)Carbon::parse($weekDates[3])->format('d')] ?? 0;    // Thursday
+        $oDay5 = $dailyOtherCalls[(int)Carbon::parse($weekDates[4])->format('d')] ?? 0;    // Friday
+        $oDay6 = $dailyOtherCalls[(int)Carbon::parse($weekDates[5])->format('d')] ?? 0;    // Saturday
+        $oDay7 = $dailyOtherCalls[(int)Carbon::parse($weekDates[6])->format('d')] ?? 0;    // Sunday
 
         $Mtotaltransfers = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
@@ -3603,9 +3594,9 @@ class CallReportController extends Controller
             }
 
             // Check if this working day has ANY calls (Called & Mailed, Other Calls, or Transfers)
-            if ((isset($dailyCalledMailed[$dateStr]) && $dailyCalledMailed[$dateStr] > 0) ||
-                (isset($dailyOtherCalls[$dateStr]) && $dailyOtherCalls[$dateStr] > 0) ||
-                (isset($dailyTransfers[$dateStr]) && $dailyTransfers[$dateStr] > 0)
+            if ((isset($dailyCalledMailed[$dayOfMonth]) && $dailyCalledMailed[$dayOfMonth] > 0) ||
+                (isset($dailyOtherCalls[$dayOfMonth]) && $dailyOtherCalls[$dayOfMonth] > 0) ||
+                (isset($dailyTransfers[$dayOfMonth]) && $dailyTransfers[$dayOfMonth] > 0)
             ) {
                 $daysWithAnyCallsCount++;
             }
