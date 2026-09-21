@@ -560,6 +560,21 @@
         @foreach ($reports as $index => $report)
             @php extract($report); @endphp
 
+            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+                <div>
+                    <h5 class="fw-bold mb-1">{{ $juniorUser->name }}</h5>
+                </div>
+                <form method="GET"
+                    action="{{ route('call.reports.allreport', ['userId' => request()->route('userId')]) }}"
+                    class="d-flex align-items-center gap-2">
+                    <label for="selected_month" class="form-label mb-0 fw-semibold small">Select
+                        Month:</label>
+                    <input type="month" name="selected_month" id="selected_month"
+                        value="{{ request('selected_month', date('Y-m')) }}"
+                        class="form-control form-control-sm" onchange="this.form.submit()">
+                </form>
+            </div>
+
             <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4" style="page-break-after: always; padding-bottom: 50px;">
                 <div class="col">
                     <div class="card h-100 border-0 shadow-sm"
