@@ -3603,6 +3603,50 @@ class CallReportController extends Controller
 
         $absentDays = max(0, $absentDays - $futureWorkingDays);
 
+        // --- NEW: Count days with actual calls (excluding weekends & holidays) ---
+        $daysWithAnyCallsCount = 0;
+
+        // Loop through week dates to count present days
+        foreach ($weekDates as $dateStr) {
+            $carbonDate = Carbon::parse($dateStr);
+
+            // Skip weekends and holidays
+            if ($carbonDate->isWeekend() || in_array($dateStr, $holidayDates)) {
+                continue;
+            }
+
+            // Check if this working day has ANY calls (Called & Mailed, Other Calls, or Transfers)
+            $hasCallsOnDay = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereDate('followup', $dateStr)
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->exists();
+
+            if (!$hasCallsOnDay) {
+                $hasCallsOnDay = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                    ->whereDate('updated_at', $dateStr)
+                    ->where(function ($q) {
+                        $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                            ->orWhereNull('Exe_Remarks');
+                    })
+                    ->exists();
+            }
+
+            if (!$hasCallsOnDay) {
+                $hasCallsOnDay = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                    ->whereDate('updated_at', $dateStr)
+                    ->where('transfers', 1)
+                    ->exists();
+            }
+
+            if ($hasCallsOnDay) {
+                $daysWithAnyCallsCount++;
+            }
+        }
+
+        // --- Update Present/Absent based on days with calls ---
+        $presentDays = $daysWithAnyCallsCount; // Working days with any call activity
+        $absentDays = max(0, $workingDays - $daysWithAnyCallsCount); // Working days with no calls
+
         // --- Averages (based on TOTAL working days in the week) ---
         $SAvgTotalCalls       = $workingDays > 0 ? intval($ScalledAndMailedCalls / $workingDays) : 0;
         $SAvgtotaltransfers   = $workingDays > 0 ? intval($Stotaltransfers / $workingDays) : 0;
