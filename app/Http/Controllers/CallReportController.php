@@ -3269,11 +3269,9 @@ class CallReportController extends Controller
         );
 
         [$year, $week] = explode('-W', $selectedWeek);
-        $weekCarbon = Carbon::now()->setISODate((int)$year, (int)$week);
-
-
-        $weekStart = $weekCarbon->startOfWeek(Carbon::MONDAY)->startOfDay();
-        $weekEnd   = $weekCarbon->endOfWeek(Carbon::SATURDAY)->endOfDay();
+        // Set to Monday (day 1) of the ISO week directly for accurate week calculation
+        $weekStart = Carbon::now()->setISODate((int)$year, (int)$week, 1)->startOfDay();
+        $weekEnd   = $weekStart->copy()->addDays(6)->endOfDay();
 
         $weekDates = [];
         for ($i = 0; $i < 7; $i++) {
