@@ -3580,35 +3580,146 @@ class CallReportController extends Controller
 
         $absentDays = max(0, $absentDays - $futureWorkingDays);
 
-        // --- NEW: Count days with actual calls (excluding weekends & holidays) ---
-        $daysWithAnyCallsCount = 0;
+        // --- Calculate WEEKLY Present / Absent / Working / Non-working days (separate from monthly) ---
+        $weekPresentDays     = 0;
+        $weekHalfDays        = 0;
+        $weekAbsentDays      = 0;
+        $weekWorkingDays     = 0;
+        $weekNonWorkingDays  = 0;
 
-        // Loop through all working days in the month (not weekends/holidays) to count present days
-        foreach ($daysInMonth as $day) {
-            $dateStr = $day->format('Y-m-d');
-            $dayOfMonth = (int)$day->format('d');
+        // Loop through each day in the WEEK only
+        foreach ($weekDates as $dateStr) {
+            $day = Carbon::parse($dateStr);
 
-            // Skip weekends and holidays
-            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+            if ($day->equalTo($today)) {
                 continue;
             }
 
-            // Check if this working day has ANY calls (Called & Mailed, Other Calls, or Transfers)
+            $dailyEvents = $groupedEvents->get($dateStr, collect());
+
+            // Consider only Saturday/Sunday or holidays as non-working
+            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+                $weekNonWorkingDays++;
+                continue;
+            }
+
+            // Working day
+            $weekWorkingDays++;
+
+            if ($dailyEvents->isEmpty()) {
+                $weekAbsentDays++;
+                continue;
+            }
+
+            // Auto-present rule
+            if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
+                $weekPresentDays++;
+                continue;
+            }
+
+            $sorted = $dailyEvents->sortBy('event_time')->values();
+
+            $startSeen       = false;
+            $activeWorkSec   = 0;
+            $totalBreakSec   = 0;
+            $lastPauseTime   = null;
+
+            for ($i = 0; $i < $sorted->count(); $i++) {
+                $event      = $sorted[$i];
+                $title      = strtolower($event->status ?? '');
+                $pauseType  = strtolower($event->pause_type ?? '');
+                $eventName  = $title ?: $pauseType;
+                $eventTime  = Carbon::parse($event->event_time);
+
+                if ($eventName === 'start') {
+                    $startSeen = true;
+                }
+
+                if (!$startSeen) continue;
+
+                if ($pauseType === 'inactive') {
+                    $lastPauseTime = $eventTime;
+                } elseif (in_array($pauseType, ['resume', 'running']) && $lastPauseTime) {
+                    $totalBreakSec += $eventTime->diffInSeconds($lastPauseTime);
+                    $lastPauseTime = null;
+                }
+
+                if ($i < $sorted->count() - 1) {
+                    $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
+                    $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
+
+                    if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
+                        $activeWorkSec += $durationSec;
+                    }
+                }
+            }
+
+            // --- Apply threshold with Half-Day logic ---
+            if ($activeWorkSec >= (8 * 3600)) {
+                $weekPresentDays++;
+            } elseif ($activeWorkSec >= (4 * 3600)) {
+                $weekHalfDays++;
+            } else {
+                $weekAbsentDays++;
+            }
+        }
+
+        // --- Remove future working days from weekAbsentDays ---
+        $weekFutureWorkingDays = 0;
+
+        foreach ($weekDates as $dateStr) {
+            $day = Carbon::parse($dateStr);
+
+            if (
+                $day->greaterThan($today) &&
+                !$day->isWeekend() &&
+                !in_array($dateStr, $holidayDates)
+            ) {
+                $weekFutureWorkingDays++;
+            }
+        }
+
+        $weekAbsentDays = max(0, $weekAbsentDays - $weekFutureWorkingDays);
+
+        // --- Count days with actual calls for WEEK ---
+        $weekDaysWithAnyCallsCount = 0;
+
+        foreach ($weekDates as $dateStr) {
+            $carbonDate = Carbon::parse($dateStr);
+            $dayOfMonth = (int)$carbonDate->format('d');
+
+            // Skip weekends and holidays
+            if ($carbonDate->isWeekend() || in_array($dateStr, $holidayDates)) {
+                continue;
+            }
+
+            // Check if this working day has ANY calls
             if ((isset($dailyCalledMailed[$dayOfMonth]) && $dailyCalledMailed[$dayOfMonth] > 0) ||
                 (isset($dailyOtherCalls[$dayOfMonth]) && $dailyOtherCalls[$dayOfMonth] > 0) ||
                 (isset($dailyTransfers[$dayOfMonth]) && $dailyTransfers[$dayOfMonth] > 0)
             ) {
-                $daysWithAnyCallsCount++;
+                $weekDaysWithAnyCallsCount++;
             }
         }
 
-        // --- Update Present/Absent based on days with calls ---
-        $presentDays = $daysWithAnyCallsCount; // Working days with any call activity
-        $absentDays = max(0, $workingDays - $daysWithAnyCallsCount); // Working days with no calls
+        // --- Update WEEK Present/Absent based on days with calls ---
+        $weekPresentDays = $weekDaysWithAnyCallsCount; // Working days with any call activity
+        $weekAbsentDays = max(0, $weekWorkingDays - $weekDaysWithAnyCallsCount); // Working days with no calls
+
+        // --- Calculate Days Left in the WEEK ---
+        $weekEnd = Carbon::parse($weekDates[6])->endOfDay();
+        $weekDaysLeft = max(0, ceil(now()->floatDiffInDays($weekEnd, false)));
+
+        // --- Override with WEEKLY values for display ---
+        $presentDays = $weekPresentDays;
+        $absentDays = $weekAbsentDays;
+        $workingDays = $weekWorkingDays;
+        $nonWorkingDays = $weekNonWorkingDays;
+        $daysLeft = $weekDaysLeft;
 
         // --- Averages (based on TOTAL working days in the week) ---
-        $SAvgTotalCalls       = $workingDays > 0 ? intval($ScalledAndMailedCalls / $workingDays) : 0;
-        $SAvgtotaltransfers   = $workingDays > 0 ? intval($Stotaltransfers / $workingDays) : 0;
+        $SAvgTotalCalls       = $weekWorkingDays > 0 ? intval($ScalledAndMailedCalls / $weekWorkingDays) : 0;
+        $SAvgtotaltransfers   = $weekWorkingDays > 0 ? intval($Stotaltransfers / $weekWorkingDays) : 0;
 
         return view('reports.alljuniorweekly', compact(
             'totalCalls',
