@@ -3580,6 +3580,21 @@ class CallReportController extends Controller
 
         $absentDays = max(0, $absentDays - $futureWorkingDays);
 
+        // --- Get WEEK-SPECIFIC events for weekly calculations ---
+        $weekEvents = UserTimerPause::where('user_id', $juniorUser->id)
+            ->where(function ($q) use ($weekDates) {
+                foreach ($weekDates as $date) {
+                    $q->orWhereDate('event_time', $date);
+                }
+            })
+            ->orderBy('event_time', 'asc')
+            ->get();
+
+        // Group week events by date
+        $weekGroupedEvents = $weekEvents->groupBy(function ($event) {
+            return Carbon::parse($event->event_time)->format('Y-m-d');
+        });
+
         // --- Calculate WEEKLY Present / Absent / Working / Non-working days (separate from monthly) ---
         $weekPresentDays     = 0;
         $weekHalfDays        = 0;
@@ -3595,7 +3610,7 @@ class CallReportController extends Controller
                 continue;
             }
 
-            $dailyEvents = $groupedEvents->get($dateStr, collect());
+            $dailyEvents = $weekGroupedEvents->get($dateStr, collect());
 
             // Consider only Saturday/Sunday or holidays as non-working
             if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
