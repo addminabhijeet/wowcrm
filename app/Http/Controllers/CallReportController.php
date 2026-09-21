@@ -3330,20 +3330,21 @@ class CallReportController extends Controller
             ->count();
 
 
-        // Hour-wise "Called & Mailed" counts
-        $hourlyCalledMailed = GoogleSheetData::selectRaw('HOUR(followup) as hour, COUNT(*) as count')
+        // Daily "Called & Mailed" counts for the week
+        $dailyCalledMailed = GoogleSheetData::selectRaw('DATE(followup) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
                     $q->orWhereDate('followup', $date);
                 }
             })
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
 
-        $hourlyOtherCalls = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $dailyOtherCalls = GoogleSheetData::selectRaw('DATE(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
@@ -3354,12 +3355,12 @@ class CallReportController extends Controller
                 $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                     ->orWhereNull('Exe_Remarks');
             })
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
 
-        $hourlyTransfers = GoogleSheetData::selectRaw('HOUR(updated_at) as hour, COUNT(*) as count')
+        $dailyTransfers = GoogleSheetData::selectRaw('DATE(updated_at) as day, COUNT(*) as count')
             ->where('created_by', 'like', "{$createdByKey}%")
             ->where(function ($q) use ($weekDates) {
                 foreach ($weekDates as $date) {
@@ -3367,8 +3368,8 @@ class CallReportController extends Controller
                 }
             })
             ->where('transfers', 1)
-            ->groupBy('hour')
-            ->pluck('count', 'hour')
+            ->groupBy('day')
+            ->pluck('count', 'day')
             ->toArray();
 
 
@@ -3379,45 +3380,30 @@ class CallReportController extends Controller
             ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
             ->toArray();
 
-        // Initialize hour blocks (10 AM - 8 PM)
-        $t8to9am = $hourlyCalledMailed[8] ?? 0;
-        $t9to10am = $hourlyCalledMailed[9] ?? 0;
-        $t10to11am = $hourlyCalledMailed[10] ?? 0;
-        $t11to12pm = $hourlyCalledMailed[11] ?? 0;
-        $t12to1pm  = $hourlyCalledMailed[12] ?? 0;
-        $t1to2pm   = $hourlyCalledMailed[13] ?? 0;
-        $t2to3pm   = $hourlyCalledMailed[14] ?? 0;
-        $t3to4pm   = $hourlyCalledMailed[15] ?? 0;
-        $t4to5pm   = $hourlyCalledMailed[16] ?? 0;
-        $t5to6pm   = $hourlyCalledMailed[17] ?? 0;
-        $t6to7pm   = $hourlyCalledMailed[18] ?? 0;
-        $t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+        // Initialize daily variables for the week (Monday to Sunday)
+        $tDay1 = $dailyCalledMailed[$weekDates[0]] ?? 0;  // Monday
+        $tDay2 = $dailyCalledMailed[$weekDates[1]] ?? 0;  // Tuesday
+        $tDay3 = $dailyCalledMailed[$weekDates[2]] ?? 0;  // Wednesday
+        $tDay4 = $dailyCalledMailed[$weekDates[3]] ?? 0;  // Thursday
+        $tDay5 = $dailyCalledMailed[$weekDates[4]] ?? 0;  // Friday
+        $tDay6 = $dailyCalledMailed[$weekDates[5]] ?? 0;  // Saturday
+        $tDay7 = $dailyCalledMailed[$weekDates[6]] ?? 0;  // Sunday
 
-        $tr8to9am  = $hourlyTransfers[8]  ?? 0;
-        $tr9to10am = $hourlyTransfers[9]  ?? 0;
-        $tr10to11am = $hourlyTransfers[10] ?? 0;
-        $tr11to12pm = $hourlyTransfers[11] ?? 0;
-        $tr12to1pm = $hourlyTransfers[12] ?? 0;
-        $tr1to2pm  = $hourlyTransfers[13] ?? 0;
-        $tr2to3pm  = $hourlyTransfers[14] ?? 0;
-        $tr3to4pm  = $hourlyTransfers[15] ?? 0;
-        $tr4to5pm  = $hourlyTransfers[16] ?? 0;
-        $tr5to6pm  = $hourlyTransfers[17] ?? 0;
-        $tr6to7pm  = $hourlyTransfers[18] ?? 0;
-        $tr7to8pm  = $hourlyTransfers[19] ?? 0;
+        $trDay1 = $dailyTransfers[$weekDates[0]] ?? 0;    // Monday
+        $trDay2 = $dailyTransfers[$weekDates[1]] ?? 0;    // Tuesday
+        $trDay3 = $dailyTransfers[$weekDates[2]] ?? 0;    // Wednesday
+        $trDay4 = $dailyTransfers[$weekDates[3]] ?? 0;    // Thursday
+        $trDay5 = $dailyTransfers[$weekDates[4]] ?? 0;    // Friday
+        $trDay6 = $dailyTransfers[$weekDates[5]] ?? 0;    // Saturday
+        $trDay7 = $dailyTransfers[$weekDates[6]] ?? 0;    // Sunday
 
-        $o8to9am = $hourlyOtherCalls[8] ?? 0;
-        $o9to10am = $hourlyOtherCalls[9] ?? 0;
-        $o10to11am = $hourlyOtherCalls[10] ?? 0;
-        $o11to12pm = $hourlyOtherCalls[11] ?? 0;
-        $o12to1pm  = $hourlyOtherCalls[12] ?? 0;
-        $o1to2pm   = $hourlyOtherCalls[13] ?? 0;
-        $o2to3pm   = $hourlyOtherCalls[14] ?? 0;
-        $o3to4pm   = $hourlyOtherCalls[15] ?? 0;
-        $o4to5pm   = $hourlyOtherCalls[16] ?? 0;
-        $o5to6pm   = $hourlyOtherCalls[17] ?? 0;
-        $o6to7pm   = $hourlyOtherCalls[18] ?? 0;
-        $o7to8pm   = $hourlyOtherCalls[19] ?? 0;
+        $oDay1 = $dailyOtherCalls[$weekDates[0]] ?? 0;    // Monday
+        $oDay2 = $dailyOtherCalls[$weekDates[1]] ?? 0;    // Tuesday
+        $oDay3 = $dailyOtherCalls[$weekDates[2]] ?? 0;    // Wednesday
+        $oDay4 = $dailyOtherCalls[$weekDates[3]] ?? 0;    // Thursday
+        $oDay5 = $dailyOtherCalls[$weekDates[4]] ?? 0;    // Friday
+        $oDay6 = $dailyOtherCalls[$weekDates[5]] ?? 0;    // Saturday
+        $oDay7 = $dailyOtherCalls[$weekDates[6]] ?? 0;    // Sunday
 
         $Mtotaltransfers = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereYear('updated_at', $year)
@@ -3661,42 +3647,28 @@ class CallReportController extends Controller
             'ScalledAndMailedCalls',
             'SotherCalls',
             'selectedWeek',
-            't8to9am',
-            't9to10am',
-            't10to11am',
-            't11to12pm',
-            't12to1pm',
-            't1to2pm',
-            't2to3pm',
-            't3to4pm',
-            't4to5pm',
-            't5to6pm',
-            't6to7pm',
-            't7to8pm',
-            'tr8to9am',
-            'tr9to10am',
-            'tr10to11am',
-            'tr11to12pm',
-            'tr12to1pm',
-            'tr1to2pm',
-            'tr2to3pm',
-            'tr3to4pm',
-            'tr4to5pm',
-            'tr5to6pm',
-            'tr6to7pm',
-            'tr7to8pm',
-            'o8to9am',
-            'o9to10am',
-            'o10to11am',
-            'o11to12pm',
-            'o12to1pm',
-            'o1to2pm',
-            'o2to3pm',
-            'o3to4pm',
-            'o4to5pm',
-            'o5to6pm',
-            'o6to7pm',
-            'o7to8pm',
+            'tDay1',
+            'tDay2',
+            'tDay3',
+            'tDay4',
+            'tDay5',
+            'tDay6',
+            'tDay7',
+            'trDay1',
+            'trDay2',
+            'trDay3',
+            'trDay4',
+            'trDay5',
+            'trDay6',
+            'trDay7',
+            'oDay1',
+            'oDay2',
+            'oDay3',
+            'oDay4',
+            'oDay5',
+            'oDay6',
+            'oDay7',
+            'weekDates',
             'targetGiven',
             'targetAchieved',
             'targetYetToAchieve',

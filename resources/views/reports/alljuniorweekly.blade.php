@@ -796,7 +796,7 @@ $script = '<script>
                         <table class="table table-hover table-bordered align-middle mb-0">
                             <thead class="table-primary">
                                 <tr>
-                                    <th class="fw-bold">Time Range</th>
+                                    <th class="fw-bold">Day</th>
                                     <th class="fw-bold text-center">Called & Mailed</th>
                                     <th class="fw-bold text-center">Other Call</th>
                                     <th class="fw-bold text-center">Transfers</th>
@@ -804,112 +804,46 @@ $script = '<script>
                             </thead>
                             <tbody>
                                 <tr>
-                                    <td style="white-space: nowrap;">08.00AM-09.00AM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t8to9am }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o8to9am }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr8to9am }}</span>
-                                    </td>
+                                    <td>Monday ({{ $weekDates[0] }})</td>
+                                    <td class="text-center"><span class="badge bg-info">{{ $tDay1 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-warning">{{ $oDay1 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-success">{{ $trDay1 }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">09.00AM-10.00AM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t9to10am }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o9to10am }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr9to10am }}</span>
-                                    </td>
+                                    <td>Tuesday ({{ $weekDates[1] }})</td>
+                                    <td class="text-center"><span class="badge bg-info">{{ $tDay2 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-warning">{{ $oDay2 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-success">{{ $trDay2 }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">10.00AM-11.00AM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t10to11am }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o10to11am }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr10to11am }}</span>
-                                    </td>
+                                    <td>Wednesday ({{ $weekDates[2] }})</td>
+                                    <td class="text-center"><span class="badge bg-info">{{ $tDay3 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-warning">{{ $oDay3 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-success">{{ $trDay3 }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">11.00AM-12.00PM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t11to12pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o11to12pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr11to12pm }}</span>
-                                    </td>
+                                    <td>Thursday ({{ $weekDates[3] }})</td>
+                                    <td class="text-center"><span class="badge bg-info">{{ $tDay4 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-warning">{{ $oDay4 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-success">{{ $trDay4 }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">12.00PM-01.00PM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t12to1pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o12to1pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr12to1pm }}</span>
-                                    </td>
+                                    <td>Friday ({{ $weekDates[4] }})</td>
+                                    <td class="text-center"><span class="badge bg-info">{{ $tDay5 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-warning">{{ $oDay5 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-success">{{ $trDay5 }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">01.00PM-02.00PM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t1to2pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o1to2pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr1to2pm }}</span>
-                                    </td>
+                                    <td>Saturday ({{ $weekDates[5] }})</td>
+                                    <td class="text-center"><span class="badge bg-info">{{ $tDay6 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-warning">{{ $oDay6 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-success">{{ $trDay6 }}</span></td>
                                 </tr>
                                 <tr>
-                                    <td style="white-space: nowrap;">02.00PM-03.00PM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t2to3pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o2to3pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr2to3pm }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap;">03.00PM-04.00PM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t3to4pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o3to4pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr3to4pm }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap;">04.00PM-05.00PM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t4to5pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o4to5pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr4to5pm }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap;">05.00PM-06.00PM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t5to6pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o5to6pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr5to6pm }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap;">06.00PM-07.00PM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t6to7pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o6to7pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr6to7pm }}</span>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td style="white-space: nowrap;">07.00PM-08.00PM</td>
-                                    <td class="text-center"><span class="badge bg-info">{{ $t7to8pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-warning">{{ $o7to8pm }}</span>
-                                    </td>
-                                    <td class="text-center"><span class="badge bg-success">{{ $tr7to8pm }}</span>
-                                    </td>
+                                    <td>Sunday ({{ $weekDates[6] }})</td>
+                                    <td class="text-center"><span class="badge bg-info">{{ $tDay7 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-warning">{{ $oDay7 }}</span></td>
+                                    <td class="text-center"><span class="badge bg-success">{{ $trDay7 }}</span></td>
                                 </tr>
                             </tbody>
                         </table>
