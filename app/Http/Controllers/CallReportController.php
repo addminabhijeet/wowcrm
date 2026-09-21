@@ -3592,39 +3592,21 @@ class CallReportController extends Controller
         // --- NEW: Count days with actual calls (excluding weekends & holidays) ---
         $daysWithAnyCallsCount = 0;
 
-        // Loop through week dates to count present days
-        foreach ($weekDates as $dateStr) {
-            $carbonDate = Carbon::parse($dateStr);
+        // Loop through all working days in the month (not weekends/holidays) to count present days
+        foreach ($daysInMonth as $day) {
+            $dateStr = $day->format('Y-m-d');
+            $dayOfMonth = (int)$day->format('d');
 
             // Skip weekends and holidays
-            if ($carbonDate->isWeekend() || in_array($dateStr, $holidayDates)) {
+            if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
                 continue;
             }
 
             // Check if this working day has ANY calls (Called & Mailed, Other Calls, or Transfers)
-            $hasCallsOnDay = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-                ->whereDate('followup', $dateStr)
-                ->where('Exe_Remarks', 'Called & Mailed')
-                ->exists();
-
-            if (!$hasCallsOnDay) {
-                $hasCallsOnDay = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-                    ->whereDate('updated_at', $dateStr)
-                    ->where(function ($q) {
-                        $q->where('Exe_Remarks', '<>', 'Called & Mailed')
-                            ->orWhereNull('Exe_Remarks');
-                    })
-                    ->exists();
-            }
-
-            if (!$hasCallsOnDay) {
-                $hasCallsOnDay = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
-                    ->whereDate('updated_at', $dateStr)
-                    ->where('transfers', 1)
-                    ->exists();
-            }
-
-            if ($hasCallsOnDay) {
+            if ((isset($dailyCalledMailed[$dateStr]) && $dailyCalledMailed[$dateStr] > 0) ||
+                (isset($dailyOtherCalls[$dateStr]) && $dailyOtherCalls[$dateStr] > 0) ||
+                (isset($dailyTransfers[$dateStr]) && $dailyTransfers[$dateStr] > 0)
+            ) {
                 $daysWithAnyCallsCount++;
             }
         }
