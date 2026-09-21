@@ -1890,6 +1890,250 @@ class CallReportController extends Controller
         return view('reports.reportsender', compact('juniorUsers'));
     }
 
+    public function reportsendermonthly(Request $request)
+    {
+        $userIds = $request->input('users');
+        $selectedMonth = $request->input('selected_month', date('Y-m'));
+
+        // If no users selected, show selection table
+        if (!$userIds) {
+            $juniorUsers = User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])->get();
+            return view('reports.reportsendermonthly', compact('juniorUsers'));
+        }
+
+        // Parse user IDs
+        $userArray = is_array($userIds) ? $userIds : [$userIds];
+
+        [$year, $month] = explode('-', $selectedMonth);
+
+        $reportedUsers = [];
+
+        foreach ($userArray as $userId) {
+            $juniorUser = User::where('id', $userId)->where('is_deleted', 0)->first();
+
+            if (!$juniorUser) continue;
+
+            $createdByKey = "{$juniorUser->id}|";
+
+            // Total calls for this user (all time)
+            $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
+
+            // Total "Called & Mailed" calls (all time)
+            $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->count();
+
+            // Total other calls (all time)
+            $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->count();
+
+            // Monthly data
+            $MtotalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->count();
+
+            $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('followup', $year)
+                ->whereMonth('followup', $month)
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->count();
+
+            $MotherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->count();
+
+            $Mtotaltransfers = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where('transfers', 1)
+                ->count();
+
+            // Daily data for all 31 days
+            $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('followup', $year)
+                ->whereMonth('followup', $month)
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->groupBy('day')
+                ->pluck('count', 'day')
+                ->toArray();
+
+            $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->groupBy('day')
+                ->pluck('count', 'day')
+                ->toArray();
+
+            $dailyTransfers = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where('transfers', 1)
+                ->groupBy('day')
+                ->pluck('count', 'day')
+                ->toArray();
+
+            // Create day variables
+            $dayData = [];
+            for ($day = 1; $day <= 31; $day++) {
+                $dayData[$day] = [
+                    'called_mailed' => $dailyCalledMailed[$day] ?? 0,
+                    'other_calls' => $dailyOtherCalls[$day] ?? 0,
+                    'transfers' => $dailyTransfers[$day] ?? 0,
+                ];
+            }
+
+            $reportedUsers[] = [
+                'user' => $juniorUser,
+                'totalCalls' => $totalCalls,
+                'calledAndMailedCalls' => $calledAndMailedCalls,
+                'otherCalls' => $otherCalls,
+                'MtotalCalls' => $MtotalCalls,
+                'McalledAndMailedCalls' => $McalledAndMailedCalls,
+                'MotherCalls' => $MotherCalls,
+                'Mtotaltransfers' => $Mtotaltransfers,
+                'dayData' => $dayData,
+            ];
+        }
+
+        return view('reports.reportsendermonthly', compact('reportedUsers', 'selectedMonth'));
+    }
+
+    public function reportsenderweekly(Request $request)
+    {
+        $userIds = $request->input('users');
+        $selectedWeek = $request->input('selected_week', now()->format('Y-\WW'));
+
+        // If no users selected, show selection table
+        if (!$userIds) {
+            $juniorUsers = User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])->get();
+            return view('reports.reportsenderweekly', compact('juniorUsers'));
+        }
+
+        // Parse user IDs
+        $userArray = is_array($userIds) ? $userIds : [$userIds];
+
+        // Parse week format YYYY-Www
+        preg_match('/(\d{4})-W(\d{2})/', $selectedWeek, $matches);
+        $year = (int)$matches[1];
+        $week = (int)$matches[2];
+
+        // Calculate the start and end date of the week
+        $startDate = \Carbon\Carbon::now()->setISODate($year, $week, 1)->startOfWeek();
+        $endDate = $startDate->copy()->addDays(6)->endOfDay();
+
+        $reportedUsers = [];
+
+        foreach ($userArray as $userId) {
+            $juniorUser = User::where('id', $userId)->where('is_deleted', 0)->first();
+
+            if (!$juniorUser) continue;
+
+            $createdByKey = "{$juniorUser->id}|";
+
+            // Total calls for this user (all time)
+            $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
+
+            // Total "Called & Mailed" calls (all time)
+            $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->count();
+
+            // Total other calls (all time)
+            $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->count();
+
+            // Weekly data
+            $StotalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereBetween('updated_at', [$startDate, $endDate])
+                ->count();
+
+            $ScalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereBetween('followup', [$startDate, $endDate])
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->count();
+
+            $SotherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereBetween('updated_at', [$startDate, $endDate])
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->count();
+
+            $Stotaltransfers = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereBetween('updated_at', [$startDate, $endDate])
+                ->where('transfers', 1)
+                ->count();
+
+            // Daily data for 7 days
+            $dayData = [];
+            for ($dayOffset = 0; $dayOffset < 7; $dayOffset++) {
+                $dayDate = $startDate->copy()->addDays($dayOffset);
+
+                $dailyCalledMailed = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                    ->whereDate('followup', $dayDate->toDateString())
+                    ->where('Exe_Remarks', 'Called & Mailed')
+                    ->count();
+
+                $dailyOtherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                    ->whereDate('updated_at', $dayDate->toDateString())
+                    ->where(function ($q) {
+                        $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                            ->orWhereNull('Exe_Remarks');
+                    })
+                    ->count();
+
+                $dailyTransfers = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                    ->whereDate('updated_at', $dayDate->toDateString())
+                    ->where('transfers', 1)
+                    ->count();
+
+                $dayData[] = [
+                    'date' => $dayDate->toDateString(),
+                    'day_name' => $dayDate->format('l'),
+                    'called_mailed' => $dailyCalledMailed,
+                    'other_calls' => $dailyOtherCalls,
+                    'transfers' => $dailyTransfers,
+                ];
+            }
+
+            $reportedUsers[] = [
+                'user' => $juniorUser,
+                'totalCalls' => $totalCalls,
+                'calledAndMailedCalls' => $calledAndMailedCalls,
+                'otherCalls' => $otherCalls,
+                'StotalCalls' => $StotalCalls,
+                'ScalledAndMailedCalls' => $ScalledAndMailedCalls,
+                'SotherCalls' => $SotherCalls,
+                'Stotaltransfers' => $Stotaltransfers,
+                'dayData' => $dayData,
+            ];
+        }
+
+        return view('reports.reportsenderweekly', compact('reportedUsers', 'selectedWeek', 'startDate'));
+    }
+
     public function allreport(Request $request, $userId)
     {
         $userIds = explode(',', $userId);
@@ -1899,6 +2143,17 @@ class CallReportController extends Controller
             ->get();
 
         abort_if($users->isEmpty(), 404);
+
+        // Check if this is a monthly or weekly view
+        $isMonthly = $request->has('selected_month');
+        $isWeekly = $request->has('selected_week');
+
+        // If monthly or weekly, redirect to appropriate view
+        if ($isMonthly) {
+            return $this->allreportMonthly($request, $userId);
+        } elseif ($isWeekly) {
+            return $this->allreportWeekly($request, $userId);
+        }
 
         $reports = [];
 
@@ -7801,5 +8056,695 @@ class CallReportController extends Controller
             'Mtotaltransfers',
             'MAvgtotaltransfers',
         ));
+    }
+
+    public function allreportMonthly(Request $request, $userId)
+    {
+        $userIds = explode(',', $userId);
+
+        $users = User::whereIn('id', $userIds)
+            ->where('is_deleted', 0)
+            ->get();
+
+        abort_if($users->isEmpty(), 404);
+
+        $selectedMonth = $request->input('selected_month', date('Y-m'));
+        [$year, $month] = explode('-', $selectedMonth);
+
+        $reports = [];
+
+        foreach ($users as $juniorUser) {
+            $createdByKey = "{$juniorUser->id}|junior";
+
+            // Total calls for this junior (including hierarchical keys)
+            $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
+
+            // Total "Called & Mailed" calls for this junior
+            $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->count();
+
+            // Total other calls for this junior
+            $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->count();
+
+            // Total calls for this junior in the selected month
+            $MtotalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->count();
+
+            $Mtotaltransfers = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where('transfers', 1)
+                ->count();
+
+            // Total "Called & Mailed" calls
+            $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('followup', $year)
+                ->whereMonth('followup', $month)
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->count();
+
+            // Total other calls
+            $MotherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->count();
+
+            // Daily "Called & Mailed" counts
+            $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('followup', $year)
+                ->whereMonth('followup', $month)
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->groupBy('day')
+                ->pluck('count', 'day')
+                ->toArray();
+
+            // Daily "Other Calls" counts
+            $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->groupBy('day')
+                ->pluck('count', 'day')
+                ->toArray();
+
+            // Daily "Transfers" counts
+            $dailyTransfers = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where('transfers', 1)
+                ->groupBy('day')
+                ->pluck('count', 'day')
+                ->toArray();
+
+            $holidayDates = Holiday::whereYear('holiday_date', $year)
+                ->whereMonth('holiday_date', $month)
+                ->where('is_holiday', 1)
+                ->pluck('holiday_date')
+                ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+                ->toArray();
+
+            // Create daily variables 1 to 31
+            $tDay1  = $dailyCalledMailed[1]  ?? 0;
+            $tDay2  = $dailyCalledMailed[2]  ?? 0;
+            $tDay3  = $dailyCalledMailed[3]  ?? 0;
+            $tDay4  = $dailyCalledMailed[4]  ?? 0;
+            $tDay5  = $dailyCalledMailed[5]  ?? 0;
+            $tDay6  = $dailyCalledMailed[6]  ?? 0;
+            $tDay7  = $dailyCalledMailed[7]  ?? 0;
+            $tDay8  = $dailyCalledMailed[8]  ?? 0;
+            $tDay9  = $dailyCalledMailed[9]  ?? 0;
+            $tDay10 = $dailyCalledMailed[10] ?? 0;
+            $tDay11 = $dailyCalledMailed[11] ?? 0;
+            $tDay12 = $dailyCalledMailed[12] ?? 0;
+            $tDay13 = $dailyCalledMailed[13] ?? 0;
+            $tDay14 = $dailyCalledMailed[14] ?? 0;
+            $tDay15 = $dailyCalledMailed[15] ?? 0;
+            $tDay16 = $dailyCalledMailed[16] ?? 0;
+            $tDay17 = $dailyCalledMailed[17] ?? 0;
+            $tDay18 = $dailyCalledMailed[18] ?? 0;
+            $tDay19 = $dailyCalledMailed[19] ?? 0;
+            $tDay20 = $dailyCalledMailed[20] ?? 0;
+            $tDay21 = $dailyCalledMailed[21] ?? 0;
+            $tDay22 = $dailyCalledMailed[22] ?? 0;
+            $tDay23 = $dailyCalledMailed[23] ?? 0;
+            $tDay24 = $dailyCalledMailed[24] ?? 0;
+            $tDay25 = $dailyCalledMailed[25] ?? 0;
+            $tDay26 = $dailyCalledMailed[26] ?? 0;
+            $tDay27 = $dailyCalledMailed[27] ?? 0;
+            $tDay28 = $dailyCalledMailed[28] ?? 0;
+            $tDay29 = $dailyCalledMailed[29] ?? 0;
+            $tDay30 = $dailyCalledMailed[30] ?? 0;
+            $tDay31 = $dailyCalledMailed[31] ?? 0;
+
+            $oDay1  = $dailyOtherCalls[1]  ?? 0;
+            $oDay2  = $dailyOtherCalls[2]  ?? 0;
+            $oDay3  = $dailyOtherCalls[3]  ?? 0;
+            $oDay4  = $dailyOtherCalls[4]  ?? 0;
+            $oDay5  = $dailyOtherCalls[5]  ?? 0;
+            $oDay6  = $dailyOtherCalls[6]  ?? 0;
+            $oDay7  = $dailyOtherCalls[7]  ?? 0;
+            $oDay8  = $dailyOtherCalls[8]  ?? 0;
+            $oDay9  = $dailyOtherCalls[9]  ?? 0;
+            $oDay10 = $dailyOtherCalls[10] ?? 0;
+            $oDay11 = $dailyOtherCalls[11] ?? 0;
+            $oDay12 = $dailyOtherCalls[12] ?? 0;
+            $oDay13 = $dailyOtherCalls[13] ?? 0;
+            $oDay14 = $dailyOtherCalls[14] ?? 0;
+            $oDay15 = $dailyOtherCalls[15] ?? 0;
+            $oDay16 = $dailyOtherCalls[16] ?? 0;
+            $oDay17 = $dailyOtherCalls[17] ?? 0;
+            $oDay18 = $dailyOtherCalls[18] ?? 0;
+            $oDay19 = $dailyOtherCalls[19] ?? 0;
+            $oDay20 = $dailyOtherCalls[20] ?? 0;
+            $oDay21 = $dailyOtherCalls[21] ?? 0;
+            $oDay22 = $dailyOtherCalls[22] ?? 0;
+            $oDay23 = $dailyOtherCalls[23] ?? 0;
+            $oDay24 = $dailyOtherCalls[24] ?? 0;
+            $oDay25 = $dailyOtherCalls[25] ?? 0;
+            $oDay26 = $dailyOtherCalls[26] ?? 0;
+            $oDay27 = $dailyOtherCalls[27] ?? 0;
+            $oDay28 = $dailyOtherCalls[28] ?? 0;
+            $oDay29 = $dailyOtherCalls[29] ?? 0;
+            $oDay30 = $dailyOtherCalls[30] ?? 0;
+            $oDay31 = $dailyOtherCalls[31] ?? 0;
+
+            $trDay1  = $dailyTransfers[1]  ?? 0;
+            $trDay2  = $dailyTransfers[2]  ?? 0;
+            $trDay3  = $dailyTransfers[3]  ?? 0;
+            $trDay4  = $dailyTransfers[4]  ?? 0;
+            $trDay5  = $dailyTransfers[5]  ?? 0;
+            $trDay6  = $dailyTransfers[6]  ?? 0;
+            $trDay7  = $dailyTransfers[7]  ?? 0;
+            $trDay8  = $dailyTransfers[8]  ?? 0;
+            $trDay9  = $dailyTransfers[9]  ?? 0;
+            $trDay10 = $dailyTransfers[10] ?? 0;
+            $trDay11 = $dailyTransfers[11] ?? 0;
+            $trDay12 = $dailyTransfers[12] ?? 0;
+            $trDay13 = $dailyTransfers[13] ?? 0;
+            $trDay14 = $dailyTransfers[14] ?? 0;
+            $trDay15 = $dailyTransfers[15] ?? 0;
+            $trDay16 = $dailyTransfers[16] ?? 0;
+            $trDay17 = $dailyTransfers[17] ?? 0;
+            $trDay18 = $dailyTransfers[18] ?? 0;
+            $trDay19 = $dailyTransfers[19] ?? 0;
+            $trDay20 = $dailyTransfers[20] ?? 0;
+            $trDay21 = $dailyTransfers[21] ?? 0;
+            $trDay22 = $dailyTransfers[22] ?? 0;
+            $trDay23 = $dailyTransfers[23] ?? 0;
+            $trDay24 = $dailyTransfers[24] ?? 0;
+            $trDay25 = $dailyTransfers[25] ?? 0;
+            $trDay26 = $dailyTransfers[26] ?? 0;
+            $trDay27 = $dailyTransfers[27] ?? 0;
+            $trDay28 = $dailyTransfers[28] ?? 0;
+            $trDay29 = $dailyTransfers[29] ?? 0;
+            $trDay30 = $dailyTransfers[30] ?? 0;
+            $trDay31 = $dailyTransfers[31] ?? 0;
+
+            // Handle multiple targets
+            $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
+            $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+
+            $targetIndex = null;
+            foreach ($targetDates as $index => $date) {
+                $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
+                    ? $date
+                    : Carbon::parse($date)->format('Y-m');
+
+                if ($monthPart === $selectedMonth) {
+                    $targetIndex = $index;
+                    break;
+                }
+            }
+
+            $targetGiven = isset($targetValues[$targetIndex])
+                ? (int) $targetValues[$targetIndex]
+                : ((int) ($targetValues[0] ?? 0));
+
+            $targetAchieved = $McalledAndMailedCalls;
+            $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+
+            $matchedDate = $targetDates[$targetIndex] ?? null;
+
+            if ($matchedDate) {
+                if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
+                    $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
+                } else {
+                    $carbonDate = Carbon::parse($matchedDate);
+                }
+
+                $diff     = now()->floatDiffInDays($carbonDate, false);
+                $daysLeft = max(0, ceil($diff));
+            } else {
+                $daysLeft = 0;
+            }
+
+            $events = UserTimerPause::where('user_id', $juniorUser->id)
+                ->whereYear('event_time', $year)
+                ->whereMonth('event_time', $month)
+                ->orderBy('event_time', 'asc')
+                ->get();
+
+            $groupedEvents = $events->groupBy(function ($event) {
+                return Carbon::parse($event->event_time)->format('Y-m-d');
+            });
+
+            $startOfMonth = Carbon::create($year, $month, 1);
+            $endOfMonth   = $startOfMonth->copy()->endOfMonth();
+            $daysInMonth  = CarbonPeriod::create($startOfMonth, $endOfMonth);
+
+            $presentDays     = 0;
+            $halfDays        = 0;
+            $absentDays      = 0;
+            $workingDays     = 0;
+            $nonWorkingDays  = 0;
+
+            $today = now()->startOfDay();
+
+            foreach ($daysInMonth as $day) {
+                $dateStr = $day->format('Y-m-d');
+
+                if ($day->equalTo($today)) {
+                    continue;
+                }
+
+                $dailyEvents = $groupedEvents->get($dateStr, collect());
+
+                if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+                    $nonWorkingDays++;
+                    continue;
+                }
+
+                $workingDays++;
+
+                if ($dailyEvents->isEmpty()) {
+                    $absentDays++;
+                    continue;
+                }
+
+                if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
+                    $presentDays++;
+                    continue;
+                }
+
+                $sorted = $dailyEvents->sortBy('event_time')->values();
+
+                $startSeen       = false;
+                $activeWorkSec   = 0;
+                $totalBreakSec   = 0;
+                $lastPauseTime   = null;
+
+                for ($i = 0; $i < $sorted->count(); $i++) {
+                    $event      = $sorted[$i];
+                    $title      = strtolower($event->status ?? '');
+                    $pauseType  = strtolower($event->pause_type ?? '');
+                    $eventName  = $title ?: $pauseType;
+                    $eventTime  = Carbon::parse($event->event_time);
+
+                    if ($eventName === 'start') {
+                        $startSeen = true;
+                    }
+
+                    if (!$startSeen) continue;
+
+                    if ($pauseType === 'inactive') {
+                        $lastPauseTime = $eventTime;
+                    } elseif (in_array($pauseType, ['resume', 'running']) && $lastPauseTime) {
+                        $totalBreakSec += $eventTime->diffInSeconds($lastPauseTime);
+                        $lastPauseTime = null;
+                    }
+
+                    if ($i < $sorted->count() - 1) {
+                        $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
+                        $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
+
+                        if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
+                            $activeWorkSec += $durationSec;
+                        }
+                    }
+                }
+
+                if ($activeWorkSec >= (8 * 3600)) {
+                    $presentDays++;
+                } elseif ($activeWorkSec >= (4 * 3600)) {
+                    $halfDays++;
+                } else {
+                    $absentDays++;
+                }
+            }
+
+            $futureWorkingDays = 0;
+
+            foreach ($daysInMonth as $day) {
+                $dateStr = $day->format('Y-m-d');
+
+                if (
+                    $day->greaterThan($today) &&
+                    !$day->isWeekend() &&
+                    !in_array($dateStr, $holidayDates)
+                ) {
+                    $futureWorkingDays++;
+                }
+            }
+
+            $absentDays = max(0, $absentDays - $futureWorkingDays);
+
+            $MAvgTotalCalls       = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
+            $MAvgtotaltransfers   = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
+
+            $reports[] = compact(
+                'totalCalls',
+                'calledAndMailedCalls',
+                'otherCalls',
+                'juniorUser',
+                'MtotalCalls',
+                'Mtotaltransfers',
+                'McalledAndMailedCalls',
+                'MotherCalls',
+                'selectedMonth',
+                'tDay1', 'tDay2', 'tDay3', 'tDay4', 'tDay5', 'tDay6', 'tDay7', 'tDay8', 'tDay9', 'tDay10',
+                'tDay11', 'tDay12', 'tDay13', 'tDay14', 'tDay15', 'tDay16', 'tDay17', 'tDay18', 'tDay19', 'tDay20',
+                'tDay21', 'tDay22', 'tDay23', 'tDay24', 'tDay25', 'tDay26', 'tDay27', 'tDay28', 'tDay29', 'tDay30', 'tDay31',
+                'oDay1', 'oDay2', 'oDay3', 'oDay4', 'oDay5', 'oDay6', 'oDay7', 'oDay8', 'oDay9', 'oDay10',
+                'oDay11', 'oDay12', 'oDay13', 'oDay14', 'oDay15', 'oDay16', 'oDay17', 'oDay18', 'oDay19', 'oDay20',
+                'oDay21', 'oDay22', 'oDay23', 'oDay24', 'oDay25', 'oDay26', 'oDay27', 'oDay28', 'oDay29', 'oDay30', 'oDay31',
+                'trDay1', 'trDay2', 'trDay3', 'trDay4', 'trDay5', 'trDay6', 'trDay7', 'trDay8', 'trDay9', 'trDay10',
+                'trDay11', 'trDay12', 'trDay13', 'trDay14', 'trDay15', 'trDay16', 'trDay17', 'trDay18', 'trDay19', 'trDay20',
+                'trDay21', 'trDay22', 'trDay23', 'trDay24', 'trDay25', 'trDay26', 'trDay27', 'trDay28', 'trDay29', 'trDay30', 'trDay31',
+                'targetGiven',
+                'targetAchieved',
+                'targetYetToAchieve',
+                'daysLeft',
+                'presentDays',
+                'absentDays',
+                'workingDays',
+                'nonWorkingDays',
+                'MAvgTotalCalls',
+                'MAvgtotaltransfers',
+            );
+        }
+
+        return view('reports.altrainerallmonthly', compact('reports'));
+    }
+
+    public function allreportWeekly(Request $request, $userId)
+    {
+        $userIds = explode(',', $userId);
+
+        $users = User::whereIn('id', $userIds)
+            ->where('is_deleted', 0)
+            ->get();
+
+        abort_if($users->isEmpty(), 404);
+
+        $selectedWeek = trim($request->input('selected_week', now()->format('Y-\WW')));
+
+        [$year, $week] = explode('-W', $selectedWeek);
+        $weekStart = Carbon::now()->setISODate((int)$year, (int)$week, 1)->startOfDay();
+        $weekEnd   = $weekStart->copy()->addDays(6)->endOfDay();
+
+        $weekDates = [];
+        for ($i = 0; $i < 7; $i++) {
+            $weekDates[] = $weekStart->copy()->addDays($i)->format('Y-m-d');
+        }
+
+        [$firstdate, $seconddate, $thirddate, $fourthdate, $fifthdate, $sixthdate, $seventhdate] = $weekDates;
+
+        $year  = $weekStart->year;
+        $month = $weekStart->month;
+        $selectedMonth = $weekStart->format('Y-m');
+
+        $reports = [];
+
+        foreach ($users as $juniorUser) {
+            $createdByKey = "{$juniorUser->id}|junior";
+
+            // Total calls for this junior
+            $totalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")->count();
+
+            // Total "Called & Mailed" calls
+            $calledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->count();
+
+            // Total other calls
+            $otherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->count();
+
+            // Week totals
+            $query = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where(function ($q) use ($weekDates) {
+                    foreach ($weekDates as $date) {
+                        $q->orWhereDate('updated_at', $date);
+                    }
+                });
+
+            $StotalCalls = $query->count();
+
+            $ScalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
+                ->where(function ($q) use ($weekDates) {
+                    foreach ($weekDates as $date) {
+                        $q->orWhereDate('followup', $date);
+                    }
+                })
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->count();
+
+            $SotherCalls = (clone $query)
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->count();
+
+            $Stotaltransfers = (clone $query)
+                ->where('transfers', 1)
+                ->count();
+
+            // Daily "Called & Mailed" counts for the month
+            $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('followup', $year)
+                ->whereMonth('followup', $month)
+                ->where('Exe_Remarks', 'Called & Mailed')
+                ->groupBy('day')
+                ->pluck('count', 'day')
+                ->toArray();
+
+            $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where(function ($q) {
+                    $q->where('Exe_Remarks', '<>', 'Called & Mailed')
+                        ->orWhereNull('Exe_Remarks');
+                })
+                ->groupBy('day')
+                ->pluck('count', 'day')
+                ->toArray();
+
+            $dailyTransfers = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
+                ->where('created_by', 'like', "{$createdByKey}%")
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', $month)
+                ->where('transfers', 1)
+                ->groupBy('day')
+                ->pluck('count', 'day')
+                ->toArray();
+
+            $holidayDates = Holiday::whereYear('holiday_date', $year)
+                ->whereMonth('holiday_date', $month)
+                ->where('is_holiday', 1)
+                ->pluck('holiday_date')
+                ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
+                ->toArray();
+
+            // Initialize daily variables for the week (Monday to Sunday)
+            $tDay1 = $dailyCalledMailed[(int)Carbon::parse($weekDates[0])->format('d')] ?? 0;
+            $tDay2 = $dailyCalledMailed[(int)Carbon::parse($weekDates[1])->format('d')] ?? 0;
+            $tDay3 = $dailyCalledMailed[(int)Carbon::parse($weekDates[2])->format('d')] ?? 0;
+            $tDay4 = $dailyCalledMailed[(int)Carbon::parse($weekDates[3])->format('d')] ?? 0;
+            $tDay5 = $dailyCalledMailed[(int)Carbon::parse($weekDates[4])->format('d')] ?? 0;
+            $tDay6 = $dailyCalledMailed[(int)Carbon::parse($weekDates[5])->format('d')] ?? 0;
+            $tDay7 = $dailyCalledMailed[(int)Carbon::parse($weekDates[6])->format('d')] ?? 0;
+
+            $trDay1 = $dailyTransfers[(int)Carbon::parse($weekDates[0])->format('d')] ?? 0;
+            $trDay2 = $dailyTransfers[(int)Carbon::parse($weekDates[1])->format('d')] ?? 0;
+            $trDay3 = $dailyTransfers[(int)Carbon::parse($weekDates[2])->format('d')] ?? 0;
+            $trDay4 = $dailyTransfers[(int)Carbon::parse($weekDates[3])->format('d')] ?? 0;
+            $trDay5 = $dailyTransfers[(int)Carbon::parse($weekDates[4])->format('d')] ?? 0;
+            $trDay6 = $dailyTransfers[(int)Carbon::parse($weekDates[5])->format('d')] ?? 0;
+            $trDay7 = $dailyTransfers[(int)Carbon::parse($weekDates[6])->format('d')] ?? 0;
+
+            $oDay1 = $dailyOtherCalls[(int)Carbon::parse($weekDates[0])->format('d')] ?? 0;
+            $oDay2 = $dailyOtherCalls[(int)Carbon::parse($weekDates[1])->format('d')] ?? 0;
+            $oDay3 = $dailyOtherCalls[(int)Carbon::parse($weekDates[2])->format('d')] ?? 0;
+            $oDay4 = $dailyOtherCalls[(int)Carbon::parse($weekDates[3])->format('d')] ?? 0;
+            $oDay5 = $dailyOtherCalls[(int)Carbon::parse($weekDates[4])->format('d')] ?? 0;
+            $oDay6 = $dailyOtherCalls[(int)Carbon::parse($weekDates[5])->format('d')] ?? 0;
+            $oDay7 = $dailyOtherCalls[(int)Carbon::parse($weekDates[6])->format('d')] ?? 0;
+
+            $targetValues = array_map('trim', explode('|', $juniorUser->target ?? ''));
+            $targetDates  = array_map('trim', explode('|', $juniorUser->target_date ?? ''));
+
+            $targetIndex = null;
+            foreach ($targetDates as $index => $date) {
+                $monthPart = preg_match('/^\d{4}-\d{2}$/', $date)
+                    ? $date
+                    : Carbon::parse($date)->format('Y-m');
+
+                if ($monthPart === $selectedMonth) {
+                    $targetIndex = $index;
+                    break;
+                }
+            }
+
+            $targetGiven = isset($targetValues[$targetIndex])
+                ? (int) $targetValues[$targetIndex]
+                : ((int) ($targetValues[0] ?? 0));
+
+            $targetAchieved = $ScalledAndMailedCalls;
+            $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
+
+            $matchedDate = $targetDates[$targetIndex] ?? null;
+
+            if ($matchedDate) {
+                if (preg_match('/^\d{4}-\d{2}$/', $matchedDate)) {
+                    $carbonDate = Carbon::parse($matchedDate . '-01')->endOfMonth();
+                } else {
+                    $carbonDate = Carbon::parse($matchedDate);
+                }
+
+                $diff     = now()->floatDiffInDays($carbonDate, false);
+                $daysLeft = max(0, ceil($diff));
+            } else {
+                $daysLeft = 0;
+            }
+
+            $events = UserTimerPause::where('user_id', $juniorUser->id)
+                ->where(function ($q) use ($weekDates) {
+                    foreach ($weekDates as $date) {
+                        $q->orWhereDate('event_time', $date);
+                    }
+                })
+                ->orderBy('event_time', 'asc')
+                ->get();
+
+            $groupedEvents = $events->groupBy(function ($event) {
+                return Carbon::parse($event->event_time)->format('Y-m-d');
+            });
+
+            $presentDays     = 0;
+            $halfDays        = 0;
+            $absentDays      = 0;
+            $workingDays     = 0;
+            $nonWorkingDays  = 0;
+
+            $today = now()->startOfDay();
+
+            foreach ($weekDates as $dateStr) {
+                $day = Carbon::parse($dateStr);
+
+                if ($day->equalTo($today)) {
+                    continue;
+                }
+
+                $dailyEvents = $groupedEvents->get($dateStr, collect());
+
+                if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+                    $nonWorkingDays++;
+                    continue;
+                }
+
+                $workingDays++;
+
+                if ($dailyEvents->isEmpty()) {
+                    $absentDays++;
+                    continue;
+                }
+
+                if ($dailyEvents->contains(fn($e) => strtolower($e->pause_type) === 'start')) {
+                    $presentDays++;
+                    continue;
+                }
+
+                $sorted = $dailyEvents->sortBy('event_time')->values();
+
+                $startSeen       = false;
+                $activeWorkSec   = 0;
+                $totalBreakSec   = 0;
+                $lastPauseTime   = null;
+
+                for ($i = 0; $i < $sorted->count(); $i++) {
+                    $event      = $sorted[$i];
+                    $title      = strtolower($event->status ?? '');
+                    $pauseType  = strtolower($event->pause_type ?? '');
+                    $eventName  = $title ?: $pauseType;
+                    $eventTime  = Carbon::parse($event->event_time);
+
+                    if ($eventName === 'start') {
+                        $startSeen = true;
+                    }
+
+                    if (!$startSeen) continue;
+
+                    if ($pauseType === 'inactive') {
+                        $lastPauseTime = $eventTime;
+                    } elseif (in_array($pauseType, ['resume', 'running']) && $lastPauseTime) {
+                        $totalBreakSec += $eventTime->diffInSeconds($lastPauseTime);
+                        $lastPauseTime = null;
+                    }
+
+                    if ($i < $sorted->count() - 1) {
+                        $nextEventTime = Carbon::parse($sorted[$i + 1]->event_time);
+                        $durationSec  = max(0, $nextEventTime->diffInSeconds($eventTime));
+
+                        if (in_array($eventName, ['login', 'logout', 'start', 'resume', 'running'])) {
+                            $activeWorkSec += $durationSec;
+                        }
+                    }
+                }
+
+                if ($activeWorkSec >= (8 * 3600)) {
+                    $presentDays++;
+                } elseif ($activeWorkSec >= (4 * 3600)) {
+                    $halfDays++;
+                } else {
+                    $absentDays++;
+                }
+            }
+
+            $MAvgTotalCalls       = $presentDays > 0 ? intval($ScalledAndMailedCalls / $presentDays) : 0;
+            $MAvgtotaltransfers   = $presentDays > 0 ? intval($Stotaltransfers / $presentDays) : 0;
+
+            $reports[] = compact(
+                'totalCalls',
+                'calledAndMailedCalls',
+                'otherCalls',
+                'juniorUser',
+                'StotalCalls',
+                'Stotaltransfers',
+                'ScalledAndMailedCalls',
+                'SotherCalls',
+                'selectedWeek',
+                'firstdate', 'seconddate', 'thirddate', 'fourthdate', 'fifthdate', 'sixthdate', 'seventhdate',
+                'tDay1', 'tDay2', 'tDay3', 'tDay4', 'tDay5', 'tDay6', 'tDay7',
+                'oDay1', 'oDay2', 'oDay3', 'oDay4', 'oDay5', 'oDay6', 'oDay7',
+                'trDay1', 'trDay2', 'trDay3', 'trDay4', 'trDay5', 'trDay6', 'trDay7',
+                'targetGiven',
+                'targetAchieved',
+                'targetYetToAchieve',
+                'daysLeft',
+                'presentDays',
+                'absentDays',
+                'workingDays',
+                'nonWorkingDays',
+                'MAvgTotalCalls',
+                'MAvgtotaltransfers',
+            );
+        }
+
+        return view('reports.altrainerallweekly', compact('reports'));
     }
 }
