@@ -1,0 +1,113 @@
+@extends('layout.layout')
+@php
+    $title = 'Report -> Trainer Weekly';
+    $role = auth()->user()->role ?? '';
+    if ($role === 'admin') {
+        $subTitle = 'Super Admin';
+    } elseif ($role === 'operation') {
+        $subTitle = 'Operation Manager';
+    } else {
+        $subTitle = 'role';
+    }
+    $script = '<script>
+        $(".remove-item-btn").on("click", function() {
+            $(this).closest("tr").addClass("d-none")
+        });
+    </script>';
+@endphp
+
+@section('content')
+    <div class="user-select-none">
+        <div class="card h-100 p-0 radius-12">
+            <div class="card-header border-bottom bg-base py-16 px-24">
+                <div class="d-flex flex-wrap gap-3 align-items-center justify-content-between">
+                    <div class="d-flex flex-wrap gap-3 align-items-center">
+                        <div class="d-flex align-items-center gap-2">
+                            <label for="selected_week" class="fw-semibold small mb-0">Select Week:</label>
+                            <input type="week" id="selected_week" value="{{ trim(request('selected_week', now()->format('Y-\WW'))) }}"
+                                class="form-control form-control-sm">
+                        </div>
+                        <a href="javascript:void(0)" class="btn btn-primary btn-sm" id="multiReportBtn">
+                            <i class="bi bi-people-fill me-1"></i>All Report
+                        </a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card-body p-24">
+                <div class="table-responsive scroll-sm">
+                    <table class="table bordered-table sm-table mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th>S.L</th>
+                                <th>Name</th>
+                                <th>Role</th>
+                                <th class="text-center" style="width:40px;">
+                                    <div class="form-check d-flex justify-content-center">
+                                        <input class="form-check-input" type="checkbox" id="selectAllUsers">
+                                    </div>
+                                </th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+                            @foreach ($juniorUsers as $index => $user)
+                                <tr>
+                                    <td>{{ $index + 1 }}</td>
+                                    <td>{{ $user->name }}</td>
+                                    <td>
+                                        {{ $user->role === 'junior' ? 'IT Recruiter' : ucfirst($user->role) }}
+                                    </td>
+                                    <td class="text-center">
+                                        <div class="form-check d-flex justify-content-center">
+                                            <input class="form-check-input user-checkbox" type="checkbox" name="users[]"
+                                                value="{{ $user->id }}" data-role="{{ $user->role }}">
+                                        </div>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <script>
+        document.getElementById('selectAllUsers').addEventListener('change', function() {
+            const checkboxes = document.querySelectorAll('.user-checkbox');
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = this.checked;
+            });
+        });
+
+        document.querySelectorAll('.user-checkbox').forEach(checkbox => {
+            checkbox.addEventListener('change', function() {
+                const allCheckboxes = document.querySelectorAll('.user-checkbox');
+                const checkedCount = document.querySelectorAll('.user-checkbox:checked').length;
+                document.getElementById('selectAllUsers').checked = checkedCount === allCheckboxes.length;
+            });
+        });
+
+        document.getElementById('multiReportBtn').addEventListener('click', function() {
+            const selectedUsers = Array.from(document.querySelectorAll('.user-checkbox:checked'))
+                .map(cb => cb.value);
+
+            if (selectedUsers.length === 0) {
+                alert('Please select at least one user');
+                return;
+            }
+
+            const selectedWeek = document.getElementById('selected_week').value;
+
+            let url = "{{ route('call.reports.allreport', ['userId' => '__USERS__']) }}";
+            url = url.replace('__USERS__', selectedUsers.join(','));
+            url += `?selected_week=${selectedWeek}`;
+
+            window.location.href = url;
+        });
+    </script>
+
+@endsection

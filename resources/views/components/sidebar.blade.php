@@ -554,6 +554,16 @@ $role = Auth::user()->role;
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Report sender</a>
                     </li>
                 </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.sendermonthly') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Report sender monthly</a>
+                    </li>
+                </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('call.reports.senderweekly') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Report sender weekly</a>
+                    </li>
+                </ul>
             </li>
 
             <li class="dropdown">
