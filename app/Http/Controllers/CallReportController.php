@@ -8750,11 +8750,11 @@ class CallReportController extends Controller
 
             // --- Update Present/Absent based on days with calls ---
             $daysWithAnyCallsCount = 0;
-            foreach ($daysInMonth as $day) {
-                $dateStr = $day->format('Y-m-d');
-                $dayOfMonth = (int)$day->format('d');
+            foreach ($weekDates as $dateStr) {
+                $dayOfMonth = (int)Carbon::parse($dateStr)->format('d');
 
-                if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+                $carbonDate = Carbon::parse($dateStr);
+                if ($carbonDate->isWeekend() || in_array($dateStr, $holidayDates)) {
                     continue;
                 }
 
