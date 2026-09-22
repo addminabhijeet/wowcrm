@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-    $title = 'Report -> IT Recruiter';
+    $title = 'Report -> Daily';
     $role = auth()->user()->role ?? '';
     if ($role === 'admin') {
         $subTitle = 'Super Admin';
@@ -711,7 +711,7 @@
                                             Date:</label>
                                         <input type="date" name="selected_date" id="selected_date-{{ $index }}"
                                             value="{{ request('selected_date', date('Y-m-d')) }}"
-                                            class="form-control form-control-sm" onchange="this.form.submit()">
+                                            class="form-control form-control-sm" readonly onchange="this.form.submit()">
                                     </form>
 
                                 </div>
