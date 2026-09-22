@@ -50,15 +50,15 @@ $script = '<script>
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="fw-semibold">0</td>
-                        <td class="fw-semibold">0</td>
-                        <td class="fw-semibold">0</td>
-                        <td class="fw-semibold">0</td>
-                        <td class="fw-semibold">0</td>
-                        <td class="fw-semibold">0</td>
-                        <td class="fw-semibold">0</td>
-                        <td class="fw-semibold">0</td>
-                        <td class="fw-semibold">0</td>
+                        <td class="fw-semibold">{{ $performance['WRK'] ?? 0 }}</td>
+                        <td class="fw-semibold">{{ $performance['WCM'] ?? 0 }}</td>
+                        <td class="fw-semibold">{{ $performance['WRP'] ?? 0 }}</td>
+                        <td class="fw-semibold">{{ $performance['MRK'] ?? 0 }}</td>
+                        <td class="fw-semibold">{{ $performance['MCM'] ?? 0 }}</td>
+                        <td class="fw-semibold">{{ $performance['MRP'] ?? 0 }}</td>
+                        <td class="fw-semibold">{{ $performance['DRK'] ?? 0 }}</td>
+                        <td class="fw-semibold">{{ $performance['DCM'] ?? 0 }}</td>
+                        <td class="fw-semibold">{{ $performance['DRP'] ?? 0 }}</td>
                     </tr>
                 </tbody>
             </table>

@@ -6723,6 +6723,174 @@ class GoogleSheetController extends Controller
         return (float) str_replace(['$', ','], '', $amountString);
     }
 
+    /**
+     * Weekly/Monthly/Daily rank (reversed), Called & Mailed count, and
+     * Target Achieved record-count snapshot for a single user, computed the
+     * same way as allreportWeekly/allreportMonthly/allreport (daily) in
+     * CallReportController, but scoped to the current week/month/date.
+     */
+    private function getPerformanceSnapshot($userId)
+    {
+        $targetRegex = "created_by REGEXP '^{$userId}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'";
+
+        // ---- Weekly context (current week) ----
+        $selectedWeek = now()->format('Y-\WW');
+        [$wYear, $wWeek] = explode('-W', $selectedWeek);
+        $weekStart = Carbon::now()->setISODate((int) $wYear, (int) $wWeek, 1)->startOfDay();
+        $weekDates = [];
+        for ($i = 0; $i < 7; $i++) {
+            $weekDates[] = $weekStart->copy()->addDays($i)->format('Y-m-d');
+        }
+        $weeklyYear  = $weekStart->year;
+        $weeklyMonth = $weekStart->month;
+
+        // ---- Monthly / Daily context (both derive from the same "now") ----
+        $today        = now();
+        $mYear        = $today->format('Y');
+        $mMonth       = (int) $today->format('n');
+        $selectedDate = $today->format('Y-m-d');
+
+        // WRP/MRP/DRP: Target Achieved record COUNT (instead of SUM(Amount)).
+        // MRP and DRP both resolve to "current month" so they share one query;
+        // WRP reuses it too whenever the current week falls in that same month.
+        $currentMonthTargetCount = GoogleSheetData::whereRaw($targetRegex)
+            ->whereYear('updated_at', $mYear)
+            ->whereMonth('updated_at', $mMonth)
+            ->count();
+
+        $MRP = $currentMonthTargetCount;
+        $DRP = $currentMonthTargetCount;
+
+        $WRP = ($weeklyYear == $mYear && $weeklyMonth == $mMonth)
+            ? $currentMonthTargetCount
+            : GoogleSheetData::whereRaw($targetRegex)
+                ->whereYear('updated_at', $weeklyYear)
+                ->whereMonth('updated_at', $weeklyMonth)
+                ->count();
+
+        // Ranking pool: same active junior + senior users used by the report-sender views
+        $poolIds = User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])->pluck('id')->all();
+
+        // Weekly/monthly/daily "Called & Mailed" scores for every pool user, computed
+        // together from a single bounded scan (current week ∪ current month) instead
+        // of three separate bulk scans — same per-row "id|junior" prefix rule as
+        // where('created_by','like',"{id}|junior%") applied once per user.
+        [$weeklyScores, $monthlyScores, $dailyScores] = $this->bulkCalledAndMailedScorePool(
+            $poolIds,
+            $weekDates,
+            $mYear,
+            $mMonth,
+            $selectedDate
+        );
+
+        // WCM/MCM/DCM for this user are already computed as part of the pool scores above
+        $WCM = $weeklyScores[$userId] ?? 0;
+        $MCM = $monthlyScores[$userId] ?? 0;
+        $DCM = $dailyScores[$userId] ?? 0;
+
+        $WRK = $this->reversedRankFor($weeklyScores, $userId);
+        $MRK = $this->reversedRankFor($monthlyScores, $userId);
+        $DRK = $this->reversedRankFor($dailyScores, $userId);
+
+        return compact('WRK', 'WCM', 'WRP', 'MRK', 'MCM', 'MRP', 'DRK', 'DCM', 'DRP');
+    }
+
+    /**
+     * Computes, for every user id in $poolIds, the weekly/monthly/daily count of
+     * rows (by followup date, regardless of Exe_Remarks) whose created_by prefix
+     * is exactly "{id}|junior" — identical to running
+     * where('created_by','like',"{id}|junior%") once per user per scope — but
+     * using a single bounded query (covering the current week and current month
+     * together) plus one PHP pass, instead of three separate bulk scans.
+     */
+    private function bulkCalledAndMailedScorePool(array $poolIds, array $weekDates, $mYear, $mMonth, $selectedDate)
+    {
+        $weeklyScores  = array_fill_keys($poolIds, 0);
+        $monthlyScores = array_fill_keys($poolIds, 0);
+        $dailyScores   = array_fill_keys($poolIds, 0);
+
+        $monthStart = Carbon::create($mYear, $mMonth, 1)->startOfDay();
+        $monthEnd   = $monthStart->copy()->endOfMonth();
+
+        // Bound the scan to the union of "current week" and "current month" so a
+        // single query covers all three contexts, even when the week spans a
+        // month boundary.
+        $rangeStart = min($weekDates[0], $monthStart->format('Y-m-d'));
+        $rangeEnd   = max($weekDates[6], $monthEnd->format('Y-m-d'));
+
+        $weekDateSet = array_flip($weekDates);
+        $monthPrefix = $monthStart->format('Y-m');
+
+        GoogleSheetData::whereDate('followup', '>=', $rangeStart)
+            ->whereDate('followup', '<=', $rangeEnd)
+            ->select('id', 'created_by', 'followup')
+            ->orderBy('id')
+            ->chunk(2000, function ($rows) use (
+                &$weeklyScores,
+                &$monthlyScores,
+                &$dailyScores,
+                $weekDateSet,
+                $monthPrefix,
+                $selectedDate
+            ) {
+                foreach ($rows as $row) {
+                    $createdBy = $row->created_by;
+                    if (!$createdBy || !$row->followup) {
+                        continue;
+                    }
+
+                    $firstHop = strtok($createdBy, ':');
+                    $sep = strpos($firstHop, '|');
+                    if ($sep === false) {
+                        continue;
+                    }
+
+                    $uid  = substr($firstHop, 0, $sep);
+                    $role = substr($firstHop, $sep + 1);
+
+                    if ($role !== 'junior' || !array_key_exists($uid, $weeklyScores)) {
+                        continue;
+                    }
+
+                    $followupDate = substr((string) $row->followup, 0, 10); // 'Y-m-d'
+
+                    if (isset($weekDateSet[$followupDate])) {
+                        $weeklyScores[$uid]++;
+                    }
+
+                    if (substr($followupDate, 0, 7) === $monthPrefix) {
+                        $monthlyScores[$uid]++;
+                    }
+
+                    if ($followupDate === $selectedDate) {
+                        $dailyScores[$uid]++;
+                    }
+                }
+            });
+
+        return [$weeklyScores, $monthlyScores, $dailyScores];
+    }
+
+    /**
+     * Reverses the ascending sort used by allreport/allreportMonthly/allreportWeekly
+     * (lowest Called & Mailed first) so the LAST user in that order (the highest
+     * Called & Mailed) receives rank 1.
+     */
+    private function reversedRankFor(array $scores, $userId)
+    {
+        asort($scores); // ascending — same order used to sort $reports in allreport*
+
+        $ids = array_keys($scores);
+        $total = count($ids);
+        $position = array_search((string) $userId, array_map('strval', $ids));
+
+        if ($position === false) {
+            return 0;
+        }
+
+        return $total - $position;
+    }
+
 
 
 
@@ -6857,7 +7025,6 @@ class GoogleSheetController extends Controller
 
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('followup', $todayDate)
             ->count();
 
@@ -6906,10 +7073,13 @@ class GoogleSheetController extends Controller
         }
 
 
+        $performance = $this->getPerformanceSnapshot($authUser->id);
+
         return view('database.junior', [
             'data' => $pagedData,
             'juniorUsers' => $juniorUsers,
-            'exeRemarkCounts' => $exeRemarkCounts
+            'exeRemarkCounts' => $exeRemarkCounts,
+            'performance' => $performance
         ]);
     }
 
@@ -7044,7 +7214,6 @@ class GoogleSheetController extends Controller
 
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('followup', $todayDate)
             ->count();
 
@@ -7093,10 +7262,13 @@ class GoogleSheetController extends Controller
         }
 
 
+        $performance = $this->getPerformanceSnapshot($authUser->id);
+
         return view('database.juniorother', [
             'data' => $pagedData,
             'juniorUsers' => $juniorUsers,
-            'exeRemarkCounts' => $exeRemarkCounts
+            'exeRemarkCounts' => $exeRemarkCounts,
+            'performance' => $performance
         ]);
     }
 
@@ -7231,7 +7403,6 @@ class GoogleSheetController extends Controller
 
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('followup', $todayDate)
             ->count();
 
@@ -7280,10 +7451,13 @@ class GoogleSheetController extends Controller
         }
 
 
+        $performance = $this->getPerformanceSnapshot($authUser->id);
+
         return view('database.juniorvm', [
             'data' => $pagedData,
             'juniorUsers' => $juniorUsers,
-            'exeRemarkCounts' => $exeRemarkCounts
+            'exeRemarkCounts' => $exeRemarkCounts,
+            'performance' => $performance
         ]);
     }
 
@@ -7418,7 +7592,6 @@ class GoogleSheetController extends Controller
 
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('followup', $todayDate)
             ->count();
 
@@ -7467,10 +7640,13 @@ class GoogleSheetController extends Controller
         }
 
 
+        $performance = $this->getPerformanceSnapshot($authUser->id);
+
         return view('database.juniorrej', [
             'data' => $pagedData,
             'juniorUsers' => $juniorUsers,
-            'exeRemarkCounts' => $exeRemarkCounts
+            'exeRemarkCounts' => $exeRemarkCounts,
+            'performance' => $performance
         ]);
     }
 
@@ -7603,7 +7779,6 @@ class GoogleSheetController extends Controller
 
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('followup', $todayDate)
             ->count();
 
@@ -7652,10 +7827,13 @@ class GoogleSheetController extends Controller
             ])->render();
         }
 
+        $performance = $this->getPerformanceSnapshot($authUser->id);
+
         return view('database.juniorcandm', [
             'data' => $pagedData,
             'juniorUsers' => $juniorUsers,
-            'exeRemarkCounts' => $exeRemarkCounts
+            'exeRemarkCounts' => $exeRemarkCounts,
+            'performance' => $performance
         ]);
     }
 
@@ -7786,7 +7964,6 @@ class GoogleSheetController extends Controller
 
         // Individual Exe Remark counts
         $ScalledAndMailedCalls = (clone $todayBaseQuery)
-            ->where('Exe_Remarks', 'Called & Mailed')
             ->whereDate('followup', $todayDate)
             ->count();
 
@@ -7832,7 +8009,9 @@ class GoogleSheetController extends Controller
             return view('database.partials.juniortra_table', ['data' => $pagedData, 'juniorUsers' => $juniorUsers, 'exeRemarkCounts' => $exeRemarkCounts])->render();
         }
 
-        return view('database.juniortra', ['data' => $pagedData, 'juniorUsers' => $juniorUsers, 'exeRemarkCounts' => $exeRemarkCounts]);
+        $performance = $this->getPerformanceSnapshot($authUser->id);
+
+        return view('database.juniortra', ['data' => $pagedData, 'juniorUsers' => $juniorUsers, 'exeRemarkCounts' => $exeRemarkCounts, 'performance' => $performance]);
     }
 
     public function juniorfetch(Request $request)
