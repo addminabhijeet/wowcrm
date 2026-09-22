@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-    $title = 'Report -> All Trainers Monthly';
+    $title = 'Report -> Monthly';
     $role = auth()->user()->role ?? '';
     if ($role === 'admin') {
         $subTitle = 'Super Admin';

@@ -551,7 +551,7 @@ $role = Auth::user()->role;
                 </ul>
                 <ul class="sidebar-submenu">
                     <li><a href="{{ route('call.reports.sender') }}"><i
-                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Report sender</a>
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Report sender daily</a>
                     </li>
                 </ul>
                 <ul class="sidebar-submenu">
