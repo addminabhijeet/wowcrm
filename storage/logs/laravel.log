@@ -20518,3 +20518,4 @@ Did you mean this?
 #36 C:\\xampp\\htdocs\\wowcrm\\artisan(13): Illuminate\\Foundation\\Application->handleCommand(Object(Symfony\\Component\\Console\\Input\\ArgvInput))
 #37 {main}
 "} 
+[2026-09-22 15:57:56] local.INFO: junior() took 0.5032320022583 seconds  

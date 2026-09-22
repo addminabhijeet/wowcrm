@@ -17,8 +17,52 @@ $script = '<script>
 @endphp
 
 @section('content')
+
+<style>
+.table-responsive table thead th,
+.table-responsive table tbody td {
+    padding: 0.15rem 0.25rem !important;
+    font-size: 0.8rem;
+    line-height: 1;
+}
+.table-responsive table {
+    margin-bottom: 0 !important;
+}
+</style>
+
 <div class="card radius-12 mb-3">
     <div class="card-header border-bottom bg-base py-16 px-24">
+
+        <div class="table-responsive w-100 mb-3">
+            <table class="table table-sm table-bordered mb-0 text-center align-middle w-100">
+                <thead>
+                    <tr>
+                        <th class="text-nowrap text-center text-primary">WRK</th>
+                        <th class="text-nowrap text-center text-warning">WCM</th>
+                        <th class="text-nowrap text-center text-dark">WRP</th>
+                        <th class="text-nowrap text-center text-secondary">MRK</th>
+                        <th class="text-nowrap text-center text-info">MCM</th>
+                        <th class="text-nowrap text-center text-success">MRP</th>
+                        <th class="text-nowrap text-center text-primary">DRK</th>
+                        <th class="text-nowrap text-center text-warning">DCM</th>
+                        <th class="text-nowrap text-center text-success">DRP</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="fw-semibold">0</td>
+                        <td class="fw-semibold">0</td>
+                        <td class="fw-semibold">0</td>
+                        <td class="fw-semibold">0</td>
+                        <td class="fw-semibold">0</td>
+                        <td class="fw-semibold">0</td>
+                        <td class="fw-semibold">0</td>
+                        <td class="fw-semibold">0</td>
+                        <td class="fw-semibold">0</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
         <div class="table-responsive w-100">
             <table class="table table-sm table-bordered mb-0 text-center align-middle w-100">
