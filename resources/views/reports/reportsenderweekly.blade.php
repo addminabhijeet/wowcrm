@@ -52,19 +52,21 @@
 
                         <tbody>
                             @foreach ($juniorUsers as $index => $user)
-                                <tr>
-                                    <td>{{ $index + 1 }}</td>
-                                    <td>{{ $user->name }}</td>
-                                    <td>
-                                        {{ $user->role === 'junior' ? 'IT Recruiter' : ucfirst($user->role) }}
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="form-check d-flex justify-content-center">
-                                            <input class="form-check-input user-checkbox" type="checkbox" name="users[]"
-                                                value="{{ $user->id }}" data-role="{{ $user->role }}">
-                                        </div>
-                                    </td>
-                                </tr>
+                                @if ($user->role !== 'senior')
+                                    <tr>
+                                        <td>{{ $index + 1 }}</td>
+                                        <td>{{ $user->name }}</td>
+                                        <td>
+                                            {{ $user->role === 'junior' ? 'IT Recruiter' : ucfirst($user->role) }}
+                                        </td>
+                                        <td class="text-center">
+                                            <div class="form-check d-flex justify-content-center">
+                                                <input class="form-check-input user-checkbox" type="checkbox" name="users[]"
+                                                    value="{{ $user->id }}" data-role="{{ $user->role }}">
+                                            </div>
+                                        </td>
+                                    </tr>
+                                @endif
                             @endforeach
                         </tbody>
                     </table>
