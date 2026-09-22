@@ -19,13 +19,13 @@ $script = '<script>
 @section('content')
 
 <style>
-.table-responsive table thead th,
-.table-responsive table tbody td {
+.card-header .table-responsive table thead th,
+.card-header .table-responsive table tbody td {
     padding: 0.15rem 0.25rem !important;
     font-size: 0.8rem;
     line-height: 1;
 }
-.table-responsive table {
+.card-header .table-responsive table {
     margin-bottom: 0 !important;
 }
 </style>
@@ -34,7 +34,7 @@ $script = '<script>
     <div class="card-header border-bottom bg-base py-16 px-24">
 
         <div class="table-responsive w-100 mb-3">
-            <table class="table table-sm table-bordered mb-0 text-center align-middle w-100" style="margin-bottom: 0; line-height: 1.2;">
+            <table class="table table-sm table-bordered mb-0 text-center align-middle w-100">
                 <thead>
                     <tr>
                         <th class="text-nowrap text-center text-primary">WRK</th>

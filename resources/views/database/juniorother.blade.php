@@ -19,13 +19,13 @@ $script = '<script>
 @section('content')
 
 <style>
-.table-responsive table thead th,
-.table-responsive table tbody td {
+.card-header .table-responsive table thead th,
+.card-header .table-responsive table tbody td {
     padding: 0.15rem 0.25rem !important;
     font-size: 0.8rem;
     line-height: 1;
 }
-.table-responsive table {
+.card-header .table-responsive table {
     margin-bottom: 0 !important;
 }
 </style>
