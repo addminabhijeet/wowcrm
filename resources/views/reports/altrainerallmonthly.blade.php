@@ -700,7 +700,7 @@
                                         Month:</label>
                                     <input type="month" name="selected_month" id="selected_month"
                                         value="{{ request('selected_month', date('Y-m')) }}"
-                                        class="form-control form-control-sm" onchange="this.form.submit()">
+                                        class="form-control form-control-sm" readonly>
                                 </form>
                             </div>
                             <div class="row g-3 mb-4">

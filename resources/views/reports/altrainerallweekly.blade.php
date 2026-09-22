@@ -699,12 +699,16 @@ $script = '<script>
                                 action="{{ route('call.reports.allreport', ['userId' => request()->route('userId')]) }}"
                                 class="d-flex align-items-center gap-2">
 
+                                <label for="selected_week" class="form-label mb-0 fw-semibold small">
+                                    Select Week:
+                                </label>
+
                                 <input type="week"
                                     name="selected_week"
                                     id="selected_week"
                                     value="{{ trim(request('selected_week', now()->format('Y-\WW'))) }}"
                                     class="form-control form-control-sm"
-                                    onchange="this.form.submit()">
+                                    readonly>
 
                             </form>
 
