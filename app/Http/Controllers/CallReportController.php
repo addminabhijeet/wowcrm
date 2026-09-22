@@ -8095,26 +8095,26 @@ class CallReportController extends Controller
             // Total calls for this junior in the selected month
             $MtotalCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
                 ->whereYear('updated_at', $year)
-                ->whereMonth('updated_at', $month)
+                ->whereMonth('updated_at', (int) $month)
                 ->count();
 
             $Mtotaltransfers = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
                 ->whereYear('updated_at', $year)
-                ->whereMonth('updated_at', $month)
+                ->whereMonth('updated_at', (int) $month)
                 ->where('transfers', 1)
                 ->count();
 
             // Total "Called & Mailed" calls
             $McalledAndMailedCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
                 ->whereYear('followup', $year)
-                ->whereMonth('followup', $month)
+                ->whereMonth('followup', (int) $month)
                 ->where('Exe_Remarks', 'Called & Mailed')
                 ->count();
 
             // Total other calls
             $MotherCalls = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
                 ->whereYear('updated_at', $year)
-                ->whereMonth('updated_at', $month)
+                ->whereMonth('updated_at', (int) $month)
                 ->where(function ($q) {
                     $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                         ->orWhereNull('Exe_Remarks');
@@ -8125,7 +8125,7 @@ class CallReportController extends Controller
             $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
                 ->where('created_by', 'like', "{$createdByKey}%")
                 ->whereYear('followup', $year)
-                ->whereMonth('followup', $month)
+                ->whereMonth('followup', (int) $month)
                 ->where('Exe_Remarks', 'Called & Mailed')
                 ->groupBy('day')
                 ->pluck('count', 'day')
@@ -8135,7 +8135,7 @@ class CallReportController extends Controller
             $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
                 ->where('created_by', 'like', "{$createdByKey}%")
                 ->whereYear('updated_at', $year)
-                ->whereMonth('updated_at', $month)
+                ->whereMonth('updated_at', (int) $month)
                 ->where(function ($q) {
                     $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                         ->orWhereNull('Exe_Remarks');
@@ -8148,7 +8148,7 @@ class CallReportController extends Controller
             $dailyTransfers = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
                 ->where('created_by', 'like', "{$createdByKey}%")
                 ->whereYear('updated_at', $year)
-                ->whereMonth('updated_at', $month)
+                ->whereMonth('updated_at', (int) $month)
                 ->where('transfers', 1)
                 ->groupBy('day')
                 ->pluck('count', 'day')
@@ -8278,7 +8278,13 @@ class CallReportController extends Controller
                 ? (int) $targetValues[$targetIndex]
                 : ((int) ($targetValues[0] ?? 0));
 
-            $targetAchieved = $McalledAndMailedCalls;
+            $targetAchieved = GoogleSheetData::whereRaw(
+                "created_by REGEXP '^{$juniorUser->id}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+            )
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', (int) $month)
+                ->sum('Amount');
+
             $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
             $matchedDate = $targetDates[$targetIndex] ?? null;
@@ -8406,8 +8412,29 @@ class CallReportController extends Controller
 
             $absentDays = max(0, $absentDays - $futureWorkingDays);
 
-            $MAvgTotalCalls       = $presentDays > 0 ? intval($McalledAndMailedCalls / $presentDays) : 0;
-            $MAvgtotaltransfers   = $presentDays > 0 ? intval($Mtotaltransfers / $presentDays) : 0;
+            // --- Update Present/Absent based on days with calls ---
+            $daysWithAnyCallsCount = 0;
+            foreach ($daysInMonth as $day) {
+                $dateStr = $day->format('Y-m-d');
+                $dayOfMonth = (int)$day->format('d');
+
+                if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+                    continue;
+                }
+
+                if ((isset($dailyCalledMailed[$dayOfMonth]) && $dailyCalledMailed[$dayOfMonth] > 0) ||
+                    (isset($dailyOtherCalls[$dayOfMonth]) && $dailyOtherCalls[$dayOfMonth] > 0) ||
+                    (isset($dailyTransfers[$dayOfMonth]) && $dailyTransfers[$dayOfMonth] > 0)
+                ) {
+                    $daysWithAnyCallsCount++;
+                }
+            }
+
+            $presentDays = $daysWithAnyCallsCount;
+            $absentDays = max(0, $workingDays - $daysWithAnyCallsCount);
+
+            $MAvgTotalCalls       = $workingDays > 0 ? intval($McalledAndMailedCalls / $workingDays) : 0;
+            $MAvgtotaltransfers   = $workingDays > 0 ? intval($Mtotaltransfers / $workingDays) : 0;
 
             $reports[] = compact(
                 'totalCalls',
@@ -8526,7 +8553,7 @@ class CallReportController extends Controller
             $dailyCalledMailed = GoogleSheetData::selectRaw('DAY(followup) as day, COUNT(*) as count')
                 ->where('created_by', 'like', "{$createdByKey}%")
                 ->whereYear('followup', $year)
-                ->whereMonth('followup', $month)
+                ->whereMonth('followup', (int) $month)
                 ->where('Exe_Remarks', 'Called & Mailed')
                 ->groupBy('day')
                 ->pluck('count', 'day')
@@ -8535,7 +8562,7 @@ class CallReportController extends Controller
             $dailyOtherCalls = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
                 ->where('created_by', 'like', "{$createdByKey}%")
                 ->whereYear('updated_at', $year)
-                ->whereMonth('updated_at', $month)
+                ->whereMonth('updated_at', (int) $month)
                 ->where(function ($q) {
                     $q->where('Exe_Remarks', '<>', 'Called & Mailed')
                         ->orWhereNull('Exe_Remarks');
@@ -8547,14 +8574,14 @@ class CallReportController extends Controller
             $dailyTransfers = GoogleSheetData::selectRaw('DAY(updated_at) as day, COUNT(*) as count')
                 ->where('created_by', 'like', "{$createdByKey}%")
                 ->whereYear('updated_at', $year)
-                ->whereMonth('updated_at', $month)
+                ->whereMonth('updated_at', (int) $month)
                 ->where('transfers', 1)
                 ->groupBy('day')
                 ->pluck('count', 'day')
                 ->toArray();
 
             $holidayDates = Holiday::whereYear('holiday_date', $year)
-                ->whereMonth('holiday_date', $month)
+                ->whereMonth('holiday_date', (int) $month)
                 ->where('is_holiday', 1)
                 ->pluck('holiday_date')
                 ->map(fn($d) => Carbon::parse($d)->format('Y-m-d'))
@@ -8604,7 +8631,13 @@ class CallReportController extends Controller
                 ? (int) $targetValues[$targetIndex]
                 : ((int) ($targetValues[0] ?? 0));
 
-            $targetAchieved = $ScalledAndMailedCalls;
+            $targetAchieved = GoogleSheetData::whereRaw(
+                "created_by REGEXP '^{$juniorUser->id}\\\\|junior:[0-9]+\\\\|senior:[0-9]+\\\\|accountant(.*)?$'"
+            )
+                ->whereYear('updated_at', $year)
+                ->whereMonth('updated_at', (int) $month)
+                ->sum('Amount');
+
             $targetYetToAchieve = max(0, $targetGiven - $targetAchieved);
 
             $matchedDate = $targetDates[$targetIndex] ?? null;
@@ -8715,8 +8748,29 @@ class CallReportController extends Controller
                 }
             }
 
-            $MAvgTotalCalls       = $presentDays > 0 ? intval($ScalledAndMailedCalls / $presentDays) : 0;
-            $MAvgtotaltransfers   = $presentDays > 0 ? intval($Stotaltransfers / $presentDays) : 0;
+            // --- Update Present/Absent based on days with calls ---
+            $daysWithAnyCallsCount = 0;
+            foreach ($daysInMonth as $day) {
+                $dateStr = $day->format('Y-m-d');
+                $dayOfMonth = (int)$day->format('d');
+
+                if ($day->isWeekend() || in_array($dateStr, $holidayDates)) {
+                    continue;
+                }
+
+                if ((isset($dailyCalledMailed[$dayOfMonth]) && $dailyCalledMailed[$dayOfMonth] > 0) ||
+                    (isset($dailyOtherCalls[$dayOfMonth]) && $dailyOtherCalls[$dayOfMonth] > 0) ||
+                    (isset($dailyTransfers[$dayOfMonth]) && $dailyTransfers[$dayOfMonth] > 0)
+                ) {
+                    $daysWithAnyCallsCount++;
+                }
+            }
+
+            $presentDays = $daysWithAnyCallsCount;
+            $absentDays = max(0, $workingDays - $daysWithAnyCallsCount);
+
+            $MAvgTotalCalls       = $workingDays > 0 ? intval($ScalledAndMailedCalls / $workingDays) : 0;
+            $MAvgtotaltransfers   = $workingDays > 0 ? intval($Stotaltransfers / $workingDays) : 0;
 
             $reports[] = compact(
                 'totalCalls',
