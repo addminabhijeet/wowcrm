@@ -8468,6 +8468,11 @@ class CallReportController extends Controller
             );
         }
 
+        // Sort reports by McalledAndMailedCalls (ascending)
+        usort($reports, function ($a, $b) {
+            return $a['McalledAndMailedCalls'] <=> $b['McalledAndMailedCalls'];
+        });
+
         return view('reports.altrainerallmonthly', compact('reports'));
     }
 
@@ -8798,6 +8803,11 @@ class CallReportController extends Controller
                 'MAvgtotaltransfers',
             );
         }
+
+        // Sort reports by ScalledAndMailedCalls (ascending)
+        usort($reports, function ($a, $b) {
+            return $a['ScalledAndMailedCalls'] <=> $b['ScalledAndMailedCalls'];
+        });
 
         return view('reports.altrainerallweekly', compact('reports'));
     }
