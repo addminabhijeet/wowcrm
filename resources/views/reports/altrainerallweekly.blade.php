@@ -560,7 +560,12 @@ $script = '<script>
     @foreach ($reports as $index => $report)
         @php extract($report); @endphp
 
-        <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4" style="page-break-after: always; padding-bottom: 50px;">
+        <div id="pdfContent-{{ $index }}" class="pt-5 pdf-page"
+            style="height: 1122px; /* A4 portrait approx in px at 96dpi */
+            box-sizing: border-box;
+            page-break-after: always;">
+
+        <div class="row row-cols-xxl-4 row-cols-md-4 row-cols-sm-2 row-cols-1 g-4">
             <div class="col">
                 <div class="card h-100 border-0 shadow-sm"
                     style="background: linear-gradient(135deg, #e3f2fd, #bbdefb); border-radius: 20px; color: #0d47a1; transition: all 0.3s ease; cursor: pointer;"
@@ -685,7 +690,7 @@ $script = '<script>
                 </div>
             </div>
         </div>
-        <div class="row gy-4 mt-1" style="page-break-after: always; padding-bottom: 50px;">
+        <div class="row gy-4 mt-1">
 
             <div class="col-xxl-8 col-lg-6">
                 <div class="card h-100 border-0 shadow-sm radius-12">
@@ -895,6 +900,7 @@ $script = '<script>
                     </div>
                 </div>
             </div>
+        </div>
         </div>
     @endforeach
 </div>
