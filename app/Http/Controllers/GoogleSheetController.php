@@ -347,7 +347,7 @@ class GoogleSheetController extends Controller
                 $userIsDeleted = false;
                 if ($latestContactUserName !== null) {
                     $contactUser = \App\Models\User::where('name', $latestContactUserName)->first();
-                    $userIsDeleted = $contactUser && $contactUser->status === false;
+                    $userIsDeleted = $contactUser && (int) $contactUser->is_deleted === 1;
                 }
 
                 // ✅ CHECK IF 30 DAYS HAVE PASSED SINCE LATEST CONTACT (ONLY IF USER IS NOT DELETED)
