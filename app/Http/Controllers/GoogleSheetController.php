@@ -6751,22 +6751,19 @@ class GoogleSheetController extends Controller
         $selectedDate = $today->format('Y-m-d');
 
         // WRP/MRP/DRP: Target Achieved record COUNT (instead of SUM(Amount)).
-        // MRP and DRP both resolve to "current month" so they share one query;
-        // WRP reuses it too whenever the current week falls in that same month.
-        $currentMonthTargetCount = GoogleSheetData::whereRaw($targetRegex)
+        $WRP = GoogleSheetData::whereRaw($targetRegex)
+            ->whereDate('updated_at', '>=', $weekDates[0])
+            ->whereDate('updated_at', '<=', $weekDates[6])
+            ->count();
+
+        $MRP = GoogleSheetData::whereRaw($targetRegex)
             ->whereYear('updated_at', $mYear)
             ->whereMonth('updated_at', $mMonth)
             ->count();
 
-        $MRP = $currentMonthTargetCount;
-        $DRP = $currentMonthTargetCount;
-
-        $WRP = ($weeklyYear == $mYear && $weeklyMonth == $mMonth)
-            ? $currentMonthTargetCount
-            : GoogleSheetData::whereRaw($targetRegex)
-                ->whereYear('updated_at', $weeklyYear)
-                ->whereMonth('updated_at', $weeklyMonth)
-                ->count();
+        $DRP = GoogleSheetData::whereRaw($targetRegex)
+            ->whereDate('updated_at', $selectedDate)
+            ->count();
 
         // Ranking pool: same active junior + senior users used by the report-sender views
         $poolIds = User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])->pluck('id')->all();
