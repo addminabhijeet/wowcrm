@@ -54,6 +54,7 @@ class CandidateListRestrictions
         $users = empty($names) ? collect() : User::whereIn('name', array_unique($names))
             ->orderBy('id')->get(['id', 'name', 'is_deleted'])->groupBy(fn ($user) => mb_strtolower($user->name));
 
+        $currentUserName = mb_strtolower(auth()->user()->name ?? '');
         foreach ($rows as $row) {
             $states = [];
             foreach (['email:' . mb_strtolower((string) $row->Email_Address),
@@ -61,7 +62,9 @@ class CandidateListRestrictions
                 if (isset($histories[$key])) {
                     $history = $histories[$key];
                     $user = $users->get(mb_strtolower((string) $history['name']), collect())->first();
-                    $states[] = $this->decision($history, $user && (int) $user->is_deleted === 1);
+                    $userDeleted = $user && (int) $user->is_deleted === 1;
+                    $isCurrentUser = mb_strtolower((string) $history['name']) === $currentUserName;
+                    $states[] = $this->decision($history, $userDeleted, $isCurrentUser);
                 }
             }
             $blocked = collect($states)->sortByDesc(fn ($state) => $state['restricted'] ? PHP_INT_MAX : $state['days'])->first();
@@ -90,13 +93,13 @@ class CandidateListRestrictions
         return $result;
     }
 
-    public function decision(array $history, bool $deleted): array
+    public function decision(array $history, bool $deleted, bool $isCurrentUser = false): array
     {
         if ($history['restricted']) {
             return ['restricted' => true, 'days' => 0, 'message' => 'Candidate already enrolled.'];
         }
         $days = 0;
-        if ($history['date'] !== null && !$deleted) {
+        if ($history['date'] !== null && !$deleted && !$isCurrentUser) {
             $difference = (int) abs(Carbon::now('Asia/Kolkata')->startOfDay()->diffInDays($history['date']));
             if ($difference < 30) {
                 $days = 30 - $difference;

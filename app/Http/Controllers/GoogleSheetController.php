@@ -350,8 +350,11 @@ class GoogleSheetController extends Controller
                     $userIsDeleted = $contactUser && (int) $contactUser->is_deleted === 1;
                 }
 
-                // ✅ CHECK IF 30 DAYS HAVE PASSED SINCE LATEST CONTACT (ONLY IF USER IS NOT DELETED)
-                if ($latestContactDate !== null && !$userIsDeleted) {
+                // ✅ CHECK IF CURRENT USER IS THE ONE WHO MADE THE CONTACT
+                $isCurrentUser = $latestContactUserName !== null && mb_strtolower($latestContactUserName) === mb_strtolower(auth()->user()->name ?? '');
+
+                // ✅ CHECK IF 30 DAYS HAVE PASSED SINCE LATEST CONTACT (ONLY IF USER IS NOT DELETED AND NOT CURRENT USER)
+                if ($latestContactDate !== null && !$userIsDeleted && !$isCurrentUser) {
                     $today = \Carbon\Carbon::now('Asia/Kolkata')->startOfDay();
                     $daysDifference = (int) abs($today->diffInDays($latestContactDate));
 
