@@ -7759,6 +7759,8 @@ class GoogleSheetController extends Controller
         );
 
 
+        app(\App\Services\CandidateListRestrictions::class)->apply($pagedData->getCollection());
+
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)
             ->orderBy('name', 'asc')
@@ -7942,6 +7944,8 @@ class GoogleSheetController extends Controller
         );
 
 
+
+        app(\App\Services\CandidateListRestrictions::class)->apply($pagedData->getCollection());
 
         $juniorUsers = \App\Models\User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])
             ->where('status', 1)

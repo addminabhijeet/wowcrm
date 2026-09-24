@@ -431,9 +431,7 @@ $script = '<script>
                         </td>
 
                         {{-- Action --}}
-                        <td>
-                            <button type="button" class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">Save</button>
-                        </td>
+                        <td>@if($row->contact_restriction_message)<span class="text-danger d-block small">{{ $row->contact_restriction_message }}</span>@else<button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">Save</button>@endif</td>
 
                     </tr>
                     @endforeach

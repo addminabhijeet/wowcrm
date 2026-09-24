@@ -427,15 +427,7 @@ $script = '<script>
                             </select>
                         </td>
 
-                        <td class="text-center">
-                            <button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}">
-                                <i class="fas fa-save"></i> Save
-                            </button>
-                            <button class="btn btn-sm btn-warning transfers-btn"
-                                data-id="{{ $row->id }}">
-                                <i class="fas fa-exchange-alt"></i> Transfer
-                            </button>
-                        </td>
+                        <td class="text-center">@if($row->contact_restriction_message)<span class="text-danger d-block small">{{ $row->contact_restriction_message }}</span>@else<button class="btn btn-sm btn-success save-btn" data-id="{{ $row->id }}"><i class="fas fa-save"></i> Save</button>@endif<button class="btn btn-sm btn-warning transfers-btn" data-id="{{ $row->id }}"><i class="fas fa-exchange-alt"></i> Transfer</button></td>
                     </tr>
                     @endforeach
                 </tbody>
