@@ -6753,20 +6753,19 @@ class GoogleSheetController extends Controller
         $mMonth       = (int) $today->format('n');
         $selectedDate = $today->format('Y-m-d');
 
-        // WRP/MRP/DRP: Target Achieved record COUNT (instead of SUM(Amount)).
-        $WRP = GoogleSheetData::whereRaw($targetRegex)
-            ->whereDate('updated_at', '>=', $weekDates[0])
-            ->whereDate('updated_at', '<=', $weekDates[6])
-            ->count();
+        // WRP/MRP/DRP: Target Achieved record COUNT (instead of SUM(Amount)), all three in one query.
+        // The LIKE is already implied by $targetRegex; it only lets the created_by index skip other users' rows.
+        $targetCounts = GoogleSheetData::where('created_by', 'like', "{$userId}|junior:%")
+            ->whereRaw($targetRegex)
+            ->selectRaw('COUNT(CASE WHEN DATE(updated_at) >= ? AND DATE(updated_at) <= ? THEN 1 END) AS wrp', [$weekDates[0], $weekDates[6]])
+            ->selectRaw('COUNT(CASE WHEN YEAR(updated_at) = ? AND MONTH(updated_at) = ? THEN 1 END) AS mrp', [$mYear, $mMonth])
+            ->selectRaw('COUNT(CASE WHEN DATE(updated_at) = ? THEN 1 END) AS drp', [$selectedDate])
+            ->toBase()
+            ->first();
 
-        $MRP = GoogleSheetData::whereRaw($targetRegex)
-            ->whereYear('updated_at', $mYear)
-            ->whereMonth('updated_at', $mMonth)
-            ->count();
-
-        $DRP = GoogleSheetData::whereRaw($targetRegex)
-            ->whereDate('updated_at', $selectedDate)
-            ->count();
+        $WRP = (int) $targetCounts->wrp;
+        $MRP = (int) $targetCounts->mrp;
+        $DRP = (int) $targetCounts->drp;
 
         // Ranking pool: same active junior + senior users used by the report-sender views
         $poolIds = User::where('is_deleted', 0)->whereIn('role', ['junior', 'senior'])->pluck('id')->all();
@@ -6825,7 +6824,7 @@ class GoogleSheetController extends Controller
             ->whereDate('followup', '<=', $rangeEnd)
             ->select('id', 'created_by', 'followup')
             ->orderBy('id')
-            ->chunk(2000, function ($rows) use (
+            ->chunkById(2000, function ($rows) use (
                 &$weeklyScores,
                 &$monthlyScores,
                 &$dailyScores,

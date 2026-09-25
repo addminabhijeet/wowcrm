@@ -6,6 +6,7 @@ use App\Models\GoogleSheetData;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class CandidateListRestrictions
 {
@@ -20,13 +21,14 @@ class CandidateListRestrictions
             ->filter(fn ($value) => strlen($value) === 10)->unique()->values();
         // Match the existing checkEmail phone normalization exactly.
         $phoneSql = "REPLACE(REPLACE(REPLACE(Phone_Number, '-', ''), ' ', ''), '(', '')";
-        $records = collect();
-        if ($emails->isNotEmpty() || $phones->isNotEmpty()) {
-            $records = GoogleSheetData::query()->where(function ($query) use ($emails, $phones, $phoneSql) {
-                $query->whereIn('Email_Address', $emails)
-                    ->orWhereIn(\Illuminate\Support\Facades\DB::raw($phoneSql), $phones);
-            })->orderBy('id')->get(['id', 'sheet_row_number', 'Email_Address', 'Phone_Number', 'created_by', 'Remark']);
+        // Same rows as "Email_Address IN (...) OR <phoneSql> IN (...)", split so each side can use its index
+        // (the OR forced a full table scan): ids by email, ids by phone, then the rows by primary key.
+        $ids = $emails->isEmpty() ? [] : GoogleSheetData::whereIn('Email_Address', $emails)->pluck('id')->all();
+        if ($phones->isNotEmpty()) {
+            $ids = array_merge($ids, GoogleSheetData::whereIn(DB::raw($phoneSql), $phones)->pluck('id')->all());
         }
+        $records = empty($ids) ? collect() : GoogleSheetData::whereIn('id', array_unique($ids))->orderBy('id')
+            ->get(['id', 'sheet_row_number', 'Email_Address', 'Phone_Number', 'created_by', 'Remark']);
 
         $byEmail = $records->groupBy(fn ($record) => mb_strtolower((string) $record->Email_Address));
         $byPhone = $records->groupBy(fn ($record) => str_replace(['-', ' ', '('], '', (string) $record->Phone_Number));
