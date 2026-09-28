@@ -48,7 +48,16 @@ class MonthlyTarget extends Model
      */
     public static function ensureDefaults($userId, $year)
     {
+        $existingMonths = self::where('user_id', $userId)
+                              ->where('year', $year)
+                              ->pluck('month')
+                              ->all();
+
         for ($month = 1; $month <= 12; $month++) {
+            if (in_array($month, $existingMonths)) {
+                continue;
+            }
+
             self::firstOrCreate(
                 [
                     'user_id' => $userId,

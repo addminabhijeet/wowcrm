@@ -5,6 +5,18 @@
 
     RewriteEngine On
 
+    <IfModule mod_headers.c>
+        # Use generated assets when gzip is accepted; keep the original URLs.
+        RewriteCond %{HTTP:Accept-Encoding} "(^|,)[[:space:]]*gzip([[:space:]]*;[^,]*)?([[:space:]]*,|[[:space:]]*$)" [NC]
+        RewriteCond %{HTTP:Accept-Encoding} "!(^|,)[[:space:]]*gzip[[:space:]]*;[[:space:]]*q=0(\.0*)?[[:space:]]*(,|$)" [NC]
+        RewriteCond %{REQUEST_FILENAME} -f
+        RewriteCond %{REQUEST_FILENAME}.gz -s
+        RewriteRule ^(assets/.*\.(css|js))$ $1.gz [L]
+
+        RewriteRule ^assets/.*\.css\.gz$ - [T=text/css,E=no-gzip:1]
+        RewriteRule ^assets/.*\.js\.gz$ - [T=text/javascript,E=no-gzip:1]
+    </IfModule>
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
@@ -51,12 +63,20 @@
     ExpiresByType application/x-font-ttf "access plus 1 year"
     ExpiresByType font/truetype "access plus 1 year"
 
-    # Default
-    ExpiresDefault "access plus 2 days"
 </IfModule>
 
 <IfModule mod_headers.c>
-    Header set Cache-Control "public, max-age=3600"
+    # Leave dynamic page caching to Laravel, including authenticated responses.
+    <FilesMatch "\.(?:css|js)(?:\.gz)?$">
+        Header set Cache-Control "public, max-age=3600"
+        Header merge Vary Accept-Encoding
+    </FilesMatch>
+    <FilesMatch "\.(?:css|js)\.gz$">
+        Header set Content-Encoding gzip
+    </FilesMatch>
+    <FilesMatch "\.(?:png|jpe?g|gif|webp|svg|ico|woff2?|ttf|eot)$">
+        Header set Cache-Control "public, max-age=3600"
+    </FilesMatch>
     Header set X-Content-Type-Options "nosniff"
     Header set X-Frame-Options "SAMEORIGIN"
     Header set X-XSS-Protection "1; mode=block"
