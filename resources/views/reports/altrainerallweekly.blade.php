@@ -550,7 +550,11 @@ $script = '<script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-<div class="d-flex justify-content-end mb-3">
+<div class="d-flex flex-wrap justify-content-end gap-2 mb-3">
+    <a class="btn btn-success btn-sm" id="downloadExcelBtn"
+        href="{{ route('call.reports.allreport.excel', ['userId' => request()->route('userId'), 'selected_week' => $reports[0]['selectedWeek']]) }}">
+        <i class="bi bi-file-earmark-excel-fill me-1"></i> Download Excel
+    </a>
     <button class="btn btn-danger btn-sm" id="downloadPdfBtn">
         <i class="bi bi-file-earmark-pdf-fill me-1"></i> Download PDF
     </button>

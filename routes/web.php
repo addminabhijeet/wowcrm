@@ -316,6 +316,8 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/alltrainerlist/call-reports-sender-monthly', [CallReportController::class, 'reportsendermonthly'])->name('call.reports.sendermonthly');
     Route::get('/dashboard/alltrainerlist/call-reports-sender-weekly', [CallReportController::class, 'reportsenderweekly'])->name('call.reports.senderweekly');
     Route::get('/dashboard/alltrainerlist/call-reports-allreport/{userId}', [CallReportController::class, 'allreport'])->name('call.reports.allreport');
+    Route::get('/dashboard/alltrainerlist/call-reports-allreport-excel/{userId}', \App\Http\Controllers\WeeklyCallReportExportController::class)
+        ->where('userId', '[0-9]+(?:,[0-9]+)*')->name('call.reports.allreport.excel');
     Route::post('/dashboard/alltrainerlist/call-reports-allreport-pdf/{userId}', [CallReportController::class, 'allreportPdf'])->name('call.reports.allreport.pdf');
     Route::get('/dashboard/alljuniormonthly/call-reports/{userId}', [CallReportController::class, 'alljuniormonthly'])->name('call.reports.alljuniormonthly');
     Route::get('/dashboard/allseniormonthly/call-reports/{userId}', [CallReportController::class, 'allseniormonthly'])->name('call.reports.allseniormonthly');
