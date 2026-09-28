@@ -17,8 +17,10 @@ class WeeklyCallReportExport
 
     public function generate(array $groups, CarbonInterface $weekStart, CarbonInterface $weekEnd): string
     {
-        $file = tempnam(sys_get_temp_dir(), 'weekly_calls_');
-        if ($file === false) {
+        $temp = tempnam(sys_get_temp_dir(), 'weekly_calls_');
+        // PharData needs a file extension: Linux tempnam() names have none (Windows ones end in .tmp).
+        $file = $temp === false ? false : $temp . '.xlsx';
+        if ($file === false || !rename($temp, $file)) {
             throw new RuntimeException('Could not create the weekly export file.');
         }
 
