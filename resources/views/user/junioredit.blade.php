@@ -82,7 +82,7 @@ $script ='<script>
 
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
-                            <span class="w-30 text-md fw-semibold text-primary-light"> gender</span>
+                            <span class="w-30 text-md fw-semibold text-primary-light">Gender</span>
                             <span class="w-70 text-secondary-light fw-medium">: {{ $user->gender === 'Junior' ? 'IT Recruiter' : $user->gender }}</span>
                         </li>
 
@@ -182,8 +182,17 @@ $script ='<script>
                                         </select>
                                     </div>
                                 </div>
-
-                                
+                                <div class="col-sm-6">
+                                    <div class="mb-20">
+                                        <label for="gender" class="form-label fw-semibold text-primary-light text-sm mb-8">Gender</label>
+                                        <select name="gender" id="gender" class="form-control radius-8 form-select">
+                                            <option value="" {{ old('gender', $user->gender) ? '' : 'selected' }}>Select gender</option>
+                                            <option value="Male" {{ old('gender', $user->gender) == 'Male' ? 'selected' : '' }}>Male</option>
+                                            <option value="Female" {{ old('gender', $user->gender) == 'Female' ? 'selected' : '' }}>Female</option>
+                                        </select>
+                                        @error('gender')<div class="text-danger text-sm mt-4">{{ $message }}</div>@enderror
+                                    </div>
+                                </div>
 
 
                                 <div class="d-flex align-items-center justify-content-center gap-3">

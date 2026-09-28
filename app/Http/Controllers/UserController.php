@@ -220,6 +220,7 @@ class UserController extends Controller
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email,' . $user->id,
             'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)->ignore($id)],
+            'gender'      => 'nullable|string|in:Male,Female',
             'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
             'password'    => 'nullable|string|min:6|confirmed',
         ], [], ['phone' => 'Ext. No.']);
