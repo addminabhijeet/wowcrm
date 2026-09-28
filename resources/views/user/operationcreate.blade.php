@@ -73,9 +73,10 @@ $script = '<script>
 
                             <div class="mb-20">
                                 <label for="phone" class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                    Phone
+                                    Ext. No.
                                 </label>
-                                <input type="text" name="phone" min="1000000000" max="9999999999" oninput="this.value = this.value.slice(0, 10);" class="form-control radius-8" id="phone" placeholder="Enter phone number">
+                                <input type="text" name="phone" value="{{ old('phone') }}" inputmode="numeric" pattern="\d{3}" maxlength="3" title="Enter a 3-digit extension number" oninput="this.value = this.value.replace(/\D/g, '').slice(0, 3);" class="form-control radius-8" id="phone" placeholder="Enter 3-digit extension number">
+                                @error('phone')<div class="text-danger text-sm mt-4">{{ $message }}</div>@enderror
                             </div>
 
                             <div class="mb-20">

@@ -68,7 +68,7 @@ $script ='<script>
                             <span class="w-70 text-secondary-light fw-medium">: {{ $user->email }}</span>
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
-                            <span class="w-30 text-md fw-semibold text-primary-light"> Phone Number</span>
+                            <span class="w-30 text-md fw-semibold text-primary-light"> Ext. No.</span>
                             <span class="w-70 text-secondary-light fw-medium">: {{ $user->phone }}</span>
                         </li>
                         <li class="d-flex align-items-center gap-1 mb-12">
@@ -151,11 +151,12 @@ $script ='<script>
 
                                 <div class="col-sm-6">
                                     <div class="mb-20">
-                                        <label for="phone" class="form-label fw-semibold text-primary-light text-sm mb-8">Phone</label>
-                                        <input type="number" name="phone" id="phone" value="{{ old('phone', $user->phone) }}"
-                                            min="1000000000" max="9999999999"
-                                            oninput="this.value = this.value.slice(0, 10);"
-                                            placeholder="Enter phone number" class="form-control radius-8">
+                                        <label for="phone" class="form-label fw-semibold text-primary-light text-sm mb-8">Ext. No.</label>
+                                        <input type="text" name="phone" id="phone" value="{{ old('phone', $user->phone) }}"
+                                            inputmode="numeric" pattern="\d{3}" maxlength="3" title="Enter a 3-digit extension number"
+                                            oninput="this.value = this.value.replace(/\D/g, '').slice(0, 3);"
+                                            placeholder="Enter 3-digit extension number" class="form-control radius-8">
+                                        @error('phone')<div class="text-danger text-sm mt-4">{{ $message }}</div>@enderror
                                     </div>
                                 </div>
 

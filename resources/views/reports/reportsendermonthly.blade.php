@@ -41,6 +41,7 @@
                             <tr>
                                 <th>S.L</th>
                                 <th>Name</th>
+                                <th>Ext. No.</th>
                                 <th>Role</th>
                                 <th class="text-center" style="width:40px;">
                                     <div class="form-check d-flex justify-content-center">
@@ -56,6 +57,7 @@
                                     <tr>
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $user->name }}</td>
+                                        <td>{{ $user->phone ?: '-' }}</td>
                                         <td>
                                             {{ $user->role === 'junior' ? 'IT Recruiter' : ucfirst($user->role) }}
                                         </td>

@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
+use Illuminate\Validation\Rule;
 
 
 class UserController extends Controller
@@ -31,13 +32,13 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email',
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)],
             'gender' => 'required|string',
             'role'        => 'required|string',
             'password'    => 'required|string|min:6',
             'status'      => 'required|boolean',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
@@ -82,12 +83,12 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email,' . $user->id,
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)->ignore($id)],
             'gender' => 'nullable|string',
             'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'password'    => 'nullable|string|min:6|confirmed',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
@@ -162,13 +163,13 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email',
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)],
             'gender' => 'required|string',
             'role'        => 'required|string',
             'password'    => 'required|string|min:6',
             'status'      => 'required|boolean',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
@@ -218,10 +219,10 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email,' . $user->id,
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)->ignore($id)],
             'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
             'password'    => 'nullable|string|min:6|confirmed',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
@@ -344,13 +345,13 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email',
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)],
             'gender' => 'required|string',
             'role'        => 'required|string',
             'password'    => 'required|string|min:6',
             'status'      => 'required|boolean',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
@@ -394,10 +395,10 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email,' . $user->id,
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)->ignore($id)],
             'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
             'password'    => 'nullable|string|min:6|confirmed',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
@@ -582,13 +583,13 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email',
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)],
             'gender' => 'required|string',
             'role'        => 'required|string',
             'password'    => 'required|string|min:6',
             'status'      => 'required|boolean',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
@@ -633,12 +634,12 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email,' . $user->id,
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)->ignore($id)],
             'gender' => 'nullable|string',
             'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'password'    => 'nullable|string|min:6|confirmed',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
@@ -704,13 +705,13 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email',
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)],
             'gender' => 'required|string',
             'role'        => 'required|string',
             'password'    => 'required|string|min:6',
             'status'      => 'required|boolean',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
@@ -755,12 +756,12 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email,' . $user->id,
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)->ignore($id)],
             'gender' => 'nullable|string',
             'role'        => 'required|string|in:junior,admin,senior,customer,accountant',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'password'    => 'nullable|string|min:6|confirmed',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
@@ -826,13 +827,13 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email',
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)],
             'gender' => 'required|string',
             'role'        => 'required|string',
             'password'    => 'required|string|min:6',
             'status'      => 'required|boolean',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
@@ -877,12 +878,12 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email,' . $user->id,
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)->ignore($id)],
             'gender' => 'nullable|string',
             'role'        => 'required|string|in:junior,admin,senior,customer,operation',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'password'    => 'nullable|string|min:6|confirmed',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
@@ -1073,13 +1074,13 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email',
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)],
             'gender' => 'required|string',
             'role'        => 'required|string',
             'password'    => 'required|string|min:6',
             'status'      => 'required|boolean',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
@@ -1123,12 +1124,12 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email,' . $user->id,
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)->ignore($id)],
             'gender' => 'nullable|string',
             'role'        => 'required|string|in:junior,admin,associate,customer,accountant',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'password'    => 'nullable|string|min:6|confirmed',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 
@@ -1202,13 +1203,13 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email',
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)],
             'gender' => 'required|string',
             'role'        => 'required|string',
             'password'    => 'required|string|min:6',
             'status'      => 'required|boolean',
             'image'       => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         // Handle Image Upload directly to public/user_images
         if ($request->hasFile('image')) {
@@ -1252,12 +1253,12 @@ class UserController extends Controller
         $validated = $request->validate([
             'name'        => 'required|string|max:255',
             'email'       => 'required|email|unique:users,email,' . $user->id,
-            'phone'       => 'nullable|string|max:20',
+            'phone'       => ['nullable', 'digits:3', Rule::unique('users', 'phone')->where('is_deleted', 0)->ignore($id)],
             'gender' => 'nullable|string',
             'role'        => 'required|string|in:junior,admin,support,customer,accountant',
             'image'       => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
             'password'    => 'nullable|string|min:6|confirmed',
-        ]);
+        ], [], ['phone' => 'Ext. No.']);
 
         $validated['status'] = $request->has('status') ? 1 : 0;
 

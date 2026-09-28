@@ -44,6 +44,7 @@
 
                                 <th>S.L</th>
                                 <th>Name</th>
+                                <th>Ext. No.</th>
 
                                 <th>Role</th>
                                 <th class="text-center" style="width:40px;">
@@ -61,6 +62,7 @@
 
                                         <td>{{ $index + 1 }}</td>
                                         <td>{{ $user->name }}</td>
+                                        <td>{{ $user->phone ?: '-' }}</td>
 
                                         <td>
                                             {{ $user->role === 'junior' ? 'IT Recruiter' : ucfirst($user->role) }}

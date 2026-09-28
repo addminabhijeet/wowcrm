@@ -42,6 +42,7 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                 <thead>
                                     <tr>
                                         <th scope="col">Users</th>
+                                        <th scope="col" class="text-center">Ext. No.</th>
                                         <th scope="col" class="text-center">Role</th>
                                         <th scope="col" class="text-center">Edit</th>
                                         <th scope="col">Created At</th>
@@ -62,6 +63,11 @@ $script= '<script src="' . asset('assets/js/homeOneChart.js') . '"></script>';
                                                     <span class="text-sm text-secondary-light fw-medium">{{ $user->email }}</span>
                                                 </div>
                                             </div>
+                                        </td>
+
+                                        <!-- Ext. No. -->
+                                        <td class="text-center">
+                                            <span class="text-sm fw-semibold">{{ $user->phone ?: '-' }}</span>
                                         </td>
 
                                         <!-- Role -->

@@ -54,6 +54,7 @@ $script = '<script>
                         <th>S.L</th>
 
                         <th>Name</th>
+                        <th>Ext. No.</th>
                         <th>Email</th>
                         <th>Role</th>
 
@@ -66,6 +67,7 @@ $script = '<script>
                         <td>{{ $index + 1 }}</td>
 
                         <td>{{ $user->name }}</td>
+                        <td>{{ $user->phone ?: '-' }}</td>
                         <td>{{ $user->email }}</td>
                         <td>{{ $user->role === 'junior' ? 'IT Recruiter' : $user->role }}</td>
 
