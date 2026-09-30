@@ -96,6 +96,27 @@ class GoogleSheetController extends Controller
         });
     }
 
+    /**
+     * ✅ OPTIMIZATION: Load only the requested page instead of every matching row.
+     * Gives the same rows, in the same order, as
+     * $query->orderBy('updated_at', 'desc')->get()->forPage($page, $perPage):
+     * the matching ids are sorted in SQL (rows with the same updated_at keep their id order)
+     * and only that page's rows are fetched.
+     *
+     * @return array [rows of the requested page, total number of matching rows]
+     */
+    private function pageByUpdatedAt($query, $page, $perPage)
+    {
+        $ids = $query->orderBy('updated_at', 'desc')->orderBy('id', 'asc')->pluck('id');
+        $pageIds = $ids->forPage($page, $perPage)->values()->all();
+        $rows = GoogleSheetData::whereIn('id', $pageIds)->get()->keyBy('id');
+
+        return [
+            collect($pageIds)->map(fn($id) => $rows->get($id))->filter()->values(),
+            $ids->count(),
+        ];
+    }
+
     public function admin(Request $request)
     {
         $authUser = Auth::user();
@@ -6939,9 +6960,9 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('updated_at', 'desc')->get();
+        [$results, $totalCount] = $this->pageByUpdatedAt($query, $page, 10);
 
-        // ✅ Transform after getting all filtered data
+        // ✅ Transform the rows of the current page
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -6986,12 +7007,12 @@ class GoogleSheetController extends Controller
         // ✅ Merge remarks from ALL USERS for items with same Email_Address
         $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
-        // ✅ Apply pagination AFTER transformation (like junior)
+        // ✅ Paginator for the page loaded above
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($currentPage, $perPage),
-            $transformed->count(),
+            $transformed,
+            $totalCount,
             $perPage,
             $currentPage,
             [
@@ -7128,9 +7149,9 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('updated_at', 'desc')->get();
+        [$results, $totalCount] = $this->pageByUpdatedAt($query, $page, 10);
 
-        // ✅ Transform after getting all filtered data
+        // ✅ Transform the rows of the current page
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -7175,12 +7196,12 @@ class GoogleSheetController extends Controller
         // ✅ Merge remarks from ALL USERS for items with same Email_Address
         $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
-        // ✅ Apply pagination AFTER transformation (like junior)
+        // ✅ Paginator for the page loaded above
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($currentPage, $perPage),
-            $transformed->count(),
+            $transformed,
+            $totalCount,
             $perPage,
             $currentPage,
             [
@@ -7317,9 +7338,9 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('updated_at', 'desc')->get();
+        [$results, $totalCount] = $this->pageByUpdatedAt($query, $page, 10);
 
-        // ✅ Transform after getting all filtered data
+        // ✅ Transform the rows of the current page
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -7364,12 +7385,12 @@ class GoogleSheetController extends Controller
         // ✅ Merge remarks from ALL USERS for items with same Email_Address
         $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
-        // ✅ Apply pagination AFTER transformation (like junior)
+        // ✅ Paginator for the page loaded above
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($currentPage, $perPage),
-            $transformed->count(),
+            $transformed,
+            $totalCount,
             $perPage,
             $currentPage,
             [
@@ -7506,9 +7527,9 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('updated_at', 'desc')->get();
+        [$results, $totalCount] = $this->pageByUpdatedAt($query, $page, 10);
 
-        // ✅ Transform after getting all filtered data
+        // ✅ Transform the rows of the current page
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -7553,12 +7574,12 @@ class GoogleSheetController extends Controller
         // ✅ Merge remarks from ALL USERS for items with same Email_Address
         $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
-        // ✅ Apply pagination AFTER transformation (like junior)
+        // ✅ Paginator for the page loaded above
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($currentPage, $perPage),
-            $transformed->count(),
+            $transformed,
+            $totalCount,
             $perPage,
             $currentPage,
             [
@@ -7695,9 +7716,9 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('updated_at', 'desc')->get();
+        [$results, $totalCount] = $this->pageByUpdatedAt($query, $page, 10);
 
-        // ✅ Transform after getting all filtered data
+        // ✅ Transform the rows of the current page
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -7742,12 +7763,12 @@ class GoogleSheetController extends Controller
         // ✅ Merge remarks from ALL USERS for items with same Email_Address
         $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
-        // ✅ Apply pagination AFTER transformation (like junior)
+        // ✅ Paginator for the page loaded above
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($currentPage, $perPage),
-            $transformed->count(),
+            $transformed,
+            $totalCount,
             $perPage,
             $currentPage,
             [
@@ -7884,9 +7905,9 @@ class GoogleSheetController extends Controller
         }
 
         // ✅ Changed sorting: order by 'id' descending (like 'Date' desc in junior)
-        $results = $query->orderBy('updated_at', 'desc')->get();
+        [$results, $totalCount] = $this->pageByUpdatedAt($query, $page, 10);
 
-        // ✅ Transform after getting all filtered data
+        // ✅ Transform the rows of the current page
         $transformed = $results->map(function ($item) use ($authUser) {
             $forwardedBy = '';
 
@@ -7931,12 +7952,12 @@ class GoogleSheetController extends Controller
         // ✅ Merge remarks from ALL USERS for items with same Email_Address
         $transformed = $this->mergeRemarksFromAllUsers($transformed);
 
-        // ✅ Apply pagination AFTER transformation (like junior)
+        // ✅ Paginator for the page loaded above
         $perPage = 10;
         $currentPage = $page;
         $pagedData = new \Illuminate\Pagination\LengthAwarePaginator(
-            $transformed->forPage($currentPage, $perPage),
-            $transformed->count(),
+            $transformed,
+            $totalCount,
             $perPage,
             $currentPage,
             [
