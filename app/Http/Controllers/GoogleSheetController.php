@@ -117,6 +117,17 @@ class GoogleSheetController extends Controller
         ];
     }
 
+    /**
+     * ✅ OPTIMIZATION: ids of the rows whose created_by is LIKE $pattern, read from the
+     * created_by index alone. A pattern starting with % can't seek an index, but scanning
+     * the narrow index is much cheaper than scanning the whole table, and the ids let the
+     * junior list queries use their indexes.
+     */
+    private function idsWhereCreatedByLike($pattern)
+    {
+        return GoogleSheetData::where('created_by', 'LIKE', $pattern)->pluck('id')->all();
+    }
+
     public function admin(Request $request)
     {
         $authUser = Auth::user();
@@ -6935,6 +6946,13 @@ class GoogleSheetController extends Controller
                 ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
         })->where('transfers', '!=', 1)->where('rejected', 0)->whereNotIn('Exe_Remarks', ['Others', 'VM']);
 
+        // ✅ OPTIMIZATION: same rows as the created_by condition above, stated so MySQL can use its
+        // indexes (the rows matching $userPattern are looked up once from the created_by index)
+        $forwardedIds = $this->idsWhereCreatedByLike($userPattern);
+        $query->where(function ($q) use ($authUser, $forwardedIds) {
+            $q->where('created_by', $authUser->id . '|junior')->orWhereIn('id', $forwardedIds);
+        });
+
 
         // Filter by selected junior
         if ($juniorUserId) {
@@ -7040,6 +7058,11 @@ class GoogleSheetController extends Controller
             ->whereDate('updated_at', $todayDate);
 
 
+        // ✅ OPTIMIZATION: the same day as whereDate('updated_at', $todayDate) above, also written as a
+        // range so the counts below can use the updated_at index instead of reading ~45k rows each
+        $todayBaseQuery->where('updated_at', '>=', $todayDate . ' 00:00:00')
+            ->where('updated_at', '<', Carbon::parse($todayDate)->addDay()->toDateString() . ' 00:00:00');
+
         // Total calls today
         $StotalCalls = (clone $todayBaseQuery)->count();
 
@@ -7123,6 +7146,13 @@ class GoogleSheetController extends Controller
                 // EXCLUSION: Do NOT show rows having more than one "|junior"
                 ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
         })->where('transfers', '!=', 1)->where('rejected', 0)->where('Exe_Remarks', 'Others');
+
+        // ✅ OPTIMIZATION: same rows as the created_by condition above, stated so MySQL can use its
+        // indexes (the rows matching $userPattern are looked up once from the created_by index)
+        $forwardedIds = $this->idsWhereCreatedByLike($userPattern);
+        $query->where(function ($q) use ($authUser, $forwardedIds) {
+            $q->where('created_by', $authUser->id . '|junior')->orWhereIn('id', $forwardedIds);
+        });
 
 
         // Filter by selected junior
@@ -7228,6 +7258,11 @@ class GoogleSheetController extends Controller
         $todayBaseQuery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $todayDate);
 
+
+        // ✅ OPTIMIZATION: the same day as whereDate('updated_at', $todayDate) above, also written as a
+        // range so the counts below can use the updated_at index instead of reading ~45k rows each
+        $todayBaseQuery->where('updated_at', '>=', $todayDate . ' 00:00:00')
+            ->where('updated_at', '<', Carbon::parse($todayDate)->addDay()->toDateString() . ' 00:00:00');
 
         // Total calls today
         $StotalCalls = (clone $todayBaseQuery)->count();
@@ -7313,6 +7348,13 @@ class GoogleSheetController extends Controller
                 ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
         })->where('transfers', '!=', 1)->where('rejected', 0)->where('Exe_Remarks', 'VM');
 
+        // ✅ OPTIMIZATION: same rows as the created_by condition above, stated so MySQL can use its
+        // indexes (the rows matching $userPattern are looked up once from the created_by index)
+        $forwardedIds = $this->idsWhereCreatedByLike($userPattern);
+        $query->where(function ($q) use ($authUser, $forwardedIds) {
+            $q->where('created_by', $authUser->id . '|junior')->orWhereIn('id', $forwardedIds);
+        });
+
 
         // Filter by selected junior
         if ($juniorUserId) {
@@ -7417,6 +7459,11 @@ class GoogleSheetController extends Controller
         $todayBaseQuery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $todayDate);
 
+
+        // ✅ OPTIMIZATION: the same day as whereDate('updated_at', $todayDate) above, also written as a
+        // range so the counts below can use the updated_at index instead of reading ~45k rows each
+        $todayBaseQuery->where('updated_at', '>=', $todayDate . ' 00:00:00')
+            ->where('updated_at', '<', Carbon::parse($todayDate)->addDay()->toDateString() . ' 00:00:00');
 
         // Total calls today
         $StotalCalls = (clone $todayBaseQuery)->count();
@@ -7502,6 +7549,13 @@ class GoogleSheetController extends Controller
                 ->whereRaw("RIGHT(created_by, LENGTH(?)) = ?", [$authUser->id . '|junior', $authUser->id . '|junior']);
         })->where('transfers', '!=', 1)->where('rejected', 1);
 
+        // ✅ OPTIMIZATION: same rows as the created_by condition above, stated so MySQL can use its
+        // indexes (the rows matching $userPattern are looked up once from the created_by index)
+        $forwardedIds = $this->idsWhereCreatedByLike($userPattern);
+        $query->where(function ($q) use ($authUser, $forwardedIds) {
+            $q->where('created_by', $authUser->id . '|junior')->orWhereIn('id', $forwardedIds);
+        });
+
 
         // Filter by selected junior
         if ($juniorUserId) {
@@ -7607,6 +7661,11 @@ class GoogleSheetController extends Controller
             ->whereDate('updated_at', $todayDate);
 
 
+        // ✅ OPTIMIZATION: the same day as whereDate('updated_at', $todayDate) above, also written as a
+        // range so the counts below can use the updated_at index instead of reading ~45k rows each
+        $todayBaseQuery->where('updated_at', '>=', $todayDate . ' 00:00:00')
+            ->where('updated_at', '<', Carbon::parse($todayDate)->addDay()->toDateString() . ' 00:00:00');
+
         // Total calls today
         $StotalCalls = (clone $todayBaseQuery)->count();
 
@@ -7691,6 +7750,10 @@ class GoogleSheetController extends Controller
                 $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
             })
             ->where('transfers', 0); // ✅ show only transfer = 0
+
+        // ✅ OPTIMIZATION: a first segment equal to $juniorPart means created_by starts with it,
+        // so this extra condition keeps the same rows while letting MySQL use the created_by index
+        $query->where('created_by', 'LIKE', $juniorPart . '%');
 
         // Filter by selected junior
         if ($juniorUserId) {
@@ -7796,6 +7859,11 @@ class GoogleSheetController extends Controller
         $todayBaseQuery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $todayDate);
 
+        // ✅ OPTIMIZATION: the same day as whereDate('updated_at', $todayDate) above, also written as a
+        // range so the counts below can use the updated_at index instead of reading ~45k rows each
+        $todayBaseQuery->where('updated_at', '>=', $todayDate . ' 00:00:00')
+            ->where('updated_at', '<', Carbon::parse($todayDate)->addDay()->toDateString() . ' 00:00:00');
+
         // Total calls today
         $StotalCalls = (clone $todayBaseQuery)->count();
 
@@ -7879,6 +7947,10 @@ class GoogleSheetController extends Controller
                 $q->whereRaw("SUBSTRING_INDEX(SUBSTRING_INDEX(created_by, ':', 2), ':', -1) LIKE '%|senior'");
             })
             ->where('transfers', 1); // ✅ show only transfer = 0
+
+        // ✅ OPTIMIZATION: a first segment equal to $juniorPart means created_by starts with it,
+        // so this extra condition keeps the same rows while letting MySQL use the created_by index
+        $query->where('created_by', 'LIKE', $juniorPart . '%');
 
         // Filter by selected junior
         if ($juniorUserId) {
@@ -7982,6 +8054,11 @@ class GoogleSheetController extends Controller
         // Base query for today & this user
         $todayBaseQuery = GoogleSheetData::where('created_by', 'like', "{$createdByKey}%")
             ->whereDate('updated_at', $todayDate);
+
+        // ✅ OPTIMIZATION: the same day as whereDate('updated_at', $todayDate) above, also written as a
+        // range so the counts below can use the updated_at index instead of reading ~45k rows each
+        $todayBaseQuery->where('updated_at', '>=', $todayDate . ' 00:00:00')
+            ->where('updated_at', '<', Carbon::parse($todayDate)->addDay()->toDateString() . ' 00:00:00');
 
         // Total calls today
         $StotalCalls = (clone $todayBaseQuery)->count();
