@@ -1634,4 +1634,82 @@ $script = '<script>
 
     });
 </script>
+<script>
+    // Blocks a second Save while one is in flight, so a double click / key repeat / re-click before the
+    // page reloads cannot send a stale form that overwrites the Remark audit line written by the first save.
+    (function() {
+        if (window.__juniorSaveGuard) return;
+        window.__juniorSaveGuard = true;
+
+        var SAVE_URL = /juniorupdate|juniorstore|juniorcandmupdate|juniorupdaterejected|google-sheet-candm-update/;
+        var locked = false;
+        var requestSeen = false;
+        var idleTimer = null;
+        var maxTimer = null;
+
+        function release() {
+            locked = false;
+            requestSeen = false;
+            clearTimeout(idleTimer);
+            clearTimeout(maxTimer);
+        }
+
+        function releaseIfFailed(data) {
+            if (!data || data.success === false) release();
+        }
+
+        // Capture phase: runs before the page's own delegated / jQuery save handlers.
+        document.addEventListener('click', function(e) {
+            var btn = e.target && e.target.closest ? e.target.closest('.save-btn') : null;
+            if (!btn) return;
+
+            if (locked) {
+                e.preventDefault();
+                e.stopImmediatePropagation();
+                return;
+            }
+
+            locked = true;
+            requestSeen = false;
+            // Validation alerts stop the save before any request is sent: allow a retry.
+            idleTimer = setTimeout(function() {
+                if (!requestSeen) release();
+            }, 1500);
+            // Safety net so the button can never stay locked.
+            maxTimer = setTimeout(release, 15000);
+        }, true);
+
+        // fetch()-based saves (delegated handler in junior.blade.php / juniorvm.blade.php).
+        if (window.fetch) {
+            var nativeFetch = window.fetch;
+            window.fetch = function(input) {
+                var url = typeof input === 'string' ? input : (input && input.url) || '';
+                var p = nativeFetch.apply(this, arguments);
+                if (SAVE_URL.test(url)) {
+                    requestSeen = true;
+                    p.then(function(res) {
+                        res.clone().json().then(releaseIfFailed).catch(release);
+                    }).catch(release);
+                }
+                return p;
+            };
+        }
+
+        // jQuery $.ajax-based saves (handlers inside the table partials).
+        window.addEventListener('load', function() {
+            if (!window.jQuery) return;
+            window.jQuery(document)
+                .ajaxSend(function(ev, xhr, settings) {
+                    if (SAVE_URL.test(settings.url || '')) requestSeen = true;
+                })
+                .ajaxComplete(function(ev, xhr, settings) {
+                    if (!SAVE_URL.test(settings.url || '')) return;
+                    releaseIfFailed(xhr.responseJSON);
+                })
+                .ajaxError(function(ev, xhr, settings) {
+                    if (SAVE_URL.test(settings.url || '')) release();
+                });
+        });
+    })();
+</script>
 @endsection
