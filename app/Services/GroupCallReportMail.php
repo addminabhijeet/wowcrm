@@ -283,4 +283,210 @@ class GroupCallReportMail
 
         return ['status' => $status, 'message' => $message];
     }
+
+    // ---------------------------------------------------------------- per-hour slot mail (added)
+
+    /** Kolkata send hour => index in SLOTS of the slot that ENDS at that hour (same titles/merged fields as the page). */
+    public const HOUR_SLOTS = [11 => 0, 12 => 1, 13 => 2, 14 => 3, 15 => 4, 16 => 5, 17 => 6, 18 => 7, 20 => 8];
+
+    private static function mailDone(string $date, int $hour, string $trigger): bool
+    {
+        $done = DB::table('call_report_mail_logs')
+            ->where('report_date', $date)->where('report_hour', $hour)->where('trigger', $trigger)
+            ->selectRaw("SUM(status = 'sent') as sent, SUM(status = 'failed') as failed")
+            ->first();
+
+        return ($done->sent ?? 0) > 0 || ($done->failed ?? 0) >= 3; // sent, or gave up after 3 failures
+    }
+
+    /**
+     * Scheduler entry: at an admin-chosen hour that ends a slot, mail that slot only.
+     * At the last slot (4:00am - 5:00am title) a second mail follows with the full report (send()).
+     */
+    public static function sendDueSlotMails(): void
+    {
+        $now = now(self::TZ);
+        $hour = (int) $now->format('G');
+        if (!isset(self::HOUR_SLOTS[$hour]) || !in_array($hour, self::hours(), true)) {
+            return;
+        }
+        $date = $now->toDateString();
+
+        if (!self::mailDone($date, $hour, 'slot')) {
+            self::sendSlot($date, $hour);
+        }
+        if (self::HOUR_SLOTS[$hour] === count(self::SLOTS) - 2 && !self::mailDone($date, $hour, 'schedule')) {
+            self::send('schedule', $date, $hour);
+        }
+    }
+
+    /** Same layout/data as report(), but only one slot (one controller field) as a single card. */
+    public static function slotReport(array $fields, string $title): array
+    {
+        $view = app(CallReportController::class)->seniorgroupmailchart(Request::create('/', 'GET'));
+        $data = $view->getData();
+        $seniors = $data['seniors'];
+
+        $juniorIds = $seniors->flatMap(fn ($s) => $s->juniors->pluck('id'))->unique()->values()->all();
+        $loggedToday = $juniorIds
+            ? Logins::whereIn('user_id', $juniorIds)->whereDate('logged_in_at', Carbon::today())->pluck('user_id')->unique()->flip()
+            : collect();
+
+        $teams = [];
+        foreach ($seniors as $senior) {
+            $rows = [];
+            foreach ($senior->juniors as $junior) {
+                $count = 0;
+                foreach ($fields as $field) {
+                    $count += ($junior->{$field} ?? 0);
+                }
+                $rows[] = ['name' => $junior->name, 'value' => $loggedToday->has($junior->id) ? $count : 'ab'];
+            }
+            $teams[] = ['name' => $senior->name, 'rows' => $rows];
+        }
+
+        return [
+            'date'     => Carbon::parse($data['selectedDate'])->format('d-m-Y'),
+            'sections' => [['title' => $title, 'teams' => $teams]],
+        ];
+    }
+
+    /**
+     * Test: renders BOTH templates (slot-only and full) with live data and mails them to $to only.
+     * Does not use the saved recipients and writes no send-log row. $dry renders without sending.
+     *
+     * @return string[] one result line per template
+     */
+    public static function sendTest(string $to, int $slotIndex, bool $dry = false): array
+    {
+        $smtp = config('mail.mailers.smtp', []);
+        $username = $smtp['username'] ?? null;
+        if (!$dry && !$username) {
+            return ['SMTP username (MAIL_USERNAME) is empty - set it in .env and run php artisan config:clear'];
+        }
+
+        $slot = self::SLOTS[$slotIndex];
+        $hour = array_search($slotIndex, self::HOUR_SLOTS, true);
+        $hour = $hour === false ? (int) now(self::TZ)->format('G') : (int) $hour;
+        $kolkata = now(self::TZ);
+        $sentAt = $kolkata->format('h:i A') . ' IST';
+
+        $port = $smtp['port'] ?? null;
+        $port = (is_numeric($port) && (int) $port > 0) ? (int) $port : 587;
+        $enc = $smtp['encryption'] ?? null;
+        $enc = in_array($enc, ['tls', 'ssl'], true) ? $enc : null;
+        Config::set('mail.mailers.callreport', [
+            'transport'  => 'smtp',
+            'host'       => $smtp['host'] ?? 'smtp.gmail.com',
+            'port'       => $port,
+            'encryption' => $enc,
+            'username'   => $username,
+            'password'   => $smtp['password'] ?? null,
+            'timeout'    => 20,
+        ]);
+        $from = filter_var(config('mail.from.address'), FILTER_VALIDATE_EMAIL) ?: $username;
+
+        $templates = [
+            'Slot report' => fn () => [self::slotReport($slot['fields'], $slot['title']), '[TEST] [CRM] C&M Count Report - ' . $slot['title'] . ' IST'],
+            'Full report' => fn () => [self::report(), '[TEST] [CRM] C&M Count Report - ' . Carbon::createFromTime($hour)->format('h A') . ' IST (full)'],
+        ];
+
+        $out = [];
+        foreach ($templates as $name => $build) {
+            try {
+                [$report, $subject] = $build();
+                $html = view('emails.call-report', [
+                    'report'  => $report,
+                    'slotHour' => Carbon::createFromTime($hour)->format('h:00 A'),
+                    'sentAt'  => $sentAt,
+                    'sentDay' => $kolkata->format('l, d F'),
+                    'logoUrl' => rtrim((string) config('app.url'), '/') . '/assets/images/logo.png',
+                ])->render();
+                $text = self::text($report, $kolkata->format('l, d F') . ', ' . $sentAt);
+
+                if ($dry) {
+                    $out[] = "{$name}: rendered OK (" . count($report['sections']) . ' card(s), ' . strlen($html) . " bytes) - subject: {$subject}";
+                    continue;
+                }
+                Mail::mailer('callreport')->raw($text, function ($m) use ($to, $from, $html, $subject) {
+                    $m->to($to)->subject($subject)->from($from, config('app.name', 'CRM'));
+                    $m->html($html);
+                });
+                $out[] = "{$name}: sent to {$to} - subject: {$subject}";
+            } catch (\Throwable $e) {
+                $out[] = "{$name}: FAILED - " . mb_substr($e->getMessage(), 0, 300);
+            }
+        }
+
+        return $out;
+    }
+
+    /** Emails only the slot that ended at $hour (same recipients, SMTP, view and log as send()). */
+    public static function sendSlot(string $date, int $hour): array
+    {
+        $trigger = 'slot';
+        ['fields' => $fields, 'title' => $title] = self::SLOTS[self::HOUR_SLOTS[$hour]];
+        $r = self::recipients();
+        $to = $r['to'];
+        $cc = $r['cc'];
+        $smtp = config('mail.mailers.smtp', []);
+        $username = $smtp['username'] ?? null;
+
+        if (!($to || $cc)) {
+            return self::log($trigger, $date, $hour, 'skipped', '', 'No recipient saved on the Call Report Mail page');
+        }
+        if (!$username) {
+            return self::log($trigger, $date, $hour, 'skipped', '', 'SMTP username (MAIL_USERNAME) is empty - set it in .env and run php artisan config:clear');
+        }
+        if (!$to) {
+            $to = [array_shift($cc)];
+        }
+        $all = implode(', ', array_merge($to, $cc));
+
+        try {
+            $port = $smtp['port'] ?? null;
+            $port = (is_numeric($port) && (int) $port > 0) ? (int) $port : 587;
+            $enc = $smtp['encryption'] ?? null;
+            $enc = in_array($enc, ['tls', 'ssl'], true) ? $enc : null;
+
+            Config::set('mail.mailers.callreport', [
+                'transport'  => 'smtp',
+                'host'       => $smtp['host'] ?? 'smtp.gmail.com',
+                'port'       => $port,
+                'encryption' => $enc,
+                'username'   => $username,
+                'password'   => $smtp['password'] ?? null,
+                'timeout'    => 20,
+            ]);
+            $from = filter_var(config('mail.from.address'), FILTER_VALIDATE_EMAIL) ?: $username;
+
+            $report = self::slotReport($fields, $title);
+            $kolkata = now(self::TZ);
+            $sentAt = $kolkata->format('h:i A') . ' IST';
+            $html = view('emails.call-report', [
+                'report'  => $report,
+                'slotHour' => Carbon::createFromTime($hour)->format('h:00 A'),
+                'sentAt'  => $sentAt,
+                'sentDay' => $kolkata->format('l, d F'),
+                'logoUrl' => rtrim((string) config('app.url'), '/') . '/assets/images/logo.png',
+            ])->render();
+            $text = self::text($report, $kolkata->format('l, d F') . ', ' . $sentAt);
+
+            Mail::mailer('callreport')->raw($text, function ($m) use ($to, $cc, $from, $html, $title) {
+                $m->to($to)
+                    ->subject('[CRM] C&M Count Report - ' . $title . ' IST')
+                    ->from($from, config('app.name', 'CRM'));
+                if ($cc) {
+                    $m->cc($cc);
+                }
+                $m->html($html);
+            });
+
+            return self::log($trigger, $date, $hour, 'sent', $all, 'Slot report sent: ' . $title);
+        } catch (\Throwable $e) {
+            Log::error('Call report slot mail failed: ' . $e->getMessage());
+
+            return self::log($trigger, $date, $hour, 'failed', $all, mb_substr($e->getMessage(), 0, 500));
+        }
+    }
 }
