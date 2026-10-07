@@ -286,8 +286,11 @@ class GroupCallReportMail
 
     // ---------------------------------------------------------------- per-hour slot mail (added)
 
-    /** Kolkata send hour => index in SLOTS of the slot that ENDS at that hour (same titles/merged fields as the page). */
-    public const HOUR_SLOTS = [11 => 0, 12 => 1, 13 => 2, 14 => 3, 15 => 4, 16 => 5, 17 => 6, 18 => 7, 20 => 8];
+    /**
+     * Kolkata send hour => index in SLOTS of the slot that ENDS at that hour. The slot titles are IST clock times
+     * (8:00pm - 9:00pm is mailed at 21:00 ... 4:00am - 5:00am at 05:00), the same hours the admin ticks.
+     */
+    public const HOUR_SLOTS = [21 => 0, 22 => 1, 23 => 2, 0 => 3, 1 => 4, 2 => 5, 3 => 6, 4 => 7, 5 => 8];
 
     private static function mailDone(string $date, int $hour, string $trigger): bool
     {
