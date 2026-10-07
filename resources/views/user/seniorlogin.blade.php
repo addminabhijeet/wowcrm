@@ -122,7 +122,7 @@ $totalLogout = collect($hourly)->sum('logout');
                                 <th class="text-center">Event</th>
                                 <th>Source</th>
                                 <th>IP Address</th>
-                                <th class="text-center">Login Mail</th>
+                                <th class="text-center">Mail Status</th>
                                 <th>Hour Slot</th>
                                 <th>Time</th>
                             </tr>

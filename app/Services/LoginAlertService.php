@@ -122,7 +122,7 @@ class LoginAlertService
         return [$browser, $os, $device];
     }
 
-    public static function notify($user, string $ip, ?string $userAgent): void
+    public static function notify($user, string $ip, ?string $userAgent, string $event = 'login'): void
     {
         try {
             $r = self::recipients();
@@ -132,7 +132,7 @@ class LoginAlertService
             $smtp = config('mail.mailers.smtp', []);
             $username = $smtp['username'] ?? null;
             if (!($to || $cc) || !$username) {
-                self::record($user, 'skipped', !$username ? 'SMTP username (MAIL_USERNAME) is empty - set it in .env and run php artisan config:clear' : 'No recipient saved on Login Mail page');
+                self::record($user, 'skipped', !$username ? 'SMTP username (MAIL_USERNAME) is empty - set it in .env and run php artisan config:clear' : 'No recipient saved on Login Mail page', $event);
                 return;
             }
             // If no "To" is set, promote the first CC address so the mail still has a recipient.
@@ -158,31 +158,53 @@ class LoginAlertService
             $from = filter_var(config('mail.from.address'), FILTER_VALIDATE_EMAIL) ?: $username;
             [$browser, $os, $device] = self::describeAgent((string) $userAgent);
 
-            $body = "User login alert\n\n"
+            $body = ($event === 'logout' ? 'User logout alert' : 'User login alert') . "\n\n"
                 . "User ID: {$user->id}\n"
                 . "Name: {$user->name}\n"
                 . "Email: {$user->email}\n"
-                . "Role: {$user->role}\n"
-                . 'Time: ' . now()->format('d M Y, h:i:s A (T)') . "\n"
+                . 'Time: ' . now('Asia/Kolkata')->format('d M, h:i:s A') . " (IST)\n"
                 . "IP Address: {$ip}\n"
                 . "Browser: {$browser}\n"
                 . "Operating System: {$os}\n"
                 . "Device Type: {$device}\n"
                 . 'Full User Agent: ' . ($userAgent ?: '-') . "\n";
 
-            Mail::mailer('loginalert')->raw($body, function ($m) use ($to, $cc, $user, $from) {
+            // Styled HTML version (the plain text above stays as the fallback part)
+            try {
+                $kolkata = now('Asia/Kolkata');
+                $html = view('emails.login-alert', [
+                    'event'     => $event,
+                    'user'      => $user,
+                    'ip'        => $ip,
+                    'browser'   => $browser,
+                    'os'        => $os,
+                    'device'    => $device,
+                    'userAgent' => $userAgent,
+                    'whenDate'  => $kolkata->format('l, d F'),
+                    'whenTime'  => $kolkata->format('h:i:s A'),
+                    'logoUrl'   => rtrim((string) config('app.url'), '/') . '/assets/images/logo.png',
+                ])->render();
+            } catch (\Throwable $viewError) {
+                $html = null; // fall back to plain text
+                Log::error('Login alert template failed: ' . $viewError->getMessage());
+            }
+
+            Mail::mailer('loginalert')->raw($body, function ($m) use ($to, $cc, $user, $from, $event, $html) {
+                if ($html) {
+                    $m->html($html);
+                }
                 $m->to($to)
-                    ->subject("[CRM] {$user->name} logged in")
+                    ->subject("[CRM] {$user->name} " . ($event === 'logout' ? 'logged out' : 'logged in'))
                     ->from($from, config('app.name', 'CRM'));
                 if ($cc) {
                     $m->cc($cc);
                 }
             });
-            self::record($user, 'sent', 'Sent to ' . implode(', ', array_merge($to, $cc)));
+            self::record($user, 'sent', 'Sent to ' . implode(', ', array_merge($to, $cc)), $event);
         } catch (\Throwable $e) {
             // Never block or break a user's login because of mail trouble.
             Log::error('Login alert mail failed: ' . $e->getMessage());
-            self::record($user, 'failed', mb_substr($e->getMessage(), 0, 300));
+            self::record($user, 'failed', mb_substr($e->getMessage(), 0, 300), $event);
         }
     }
 
@@ -193,7 +215,7 @@ class LoginAlertService
         return storage_path('app/login_mail_log/' . $date . '.jsonl');
     }
 
-    private static function record($user, string $status, string $message): void
+    private static function record($user, string $status, string $message, string $event = 'login'): void
     {
         try {
             $file = self::logFile(now()->toDateString());
@@ -205,6 +227,7 @@ class LoginAlertService
                 'time'    => now()->toDateTimeString(),
                 'status'  => $status,
                 'message' => $message,
+                'event'   => $event,
             ]) . "\n", FILE_APPEND | LOCK_EX);
         } catch (\Throwable $e) {
             // Status logging must never affect login.

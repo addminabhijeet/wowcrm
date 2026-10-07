@@ -1559,17 +1559,18 @@ class UserController extends Controller
         })->all();
         $events = $events->map(function ($e) use (&$mailLog, $userMap) {
             $e['mail'] = null;
-            if ($e['type'] !== 'Login' || $e['detail'] !== 'Self login') {
+            $evName = $e['detail'] === 'Self login' ? 'login' : ($e['detail'] === 'Self logout' ? 'logout' : null);
+            if ($evName === null) {
                 return $e;
             }
             if (($userMap[$e['user_id']]->role ?? '') === 'admin') {
-                $e['mail'] = ['status' => 'na', 'message' => 'Admin logins are not mailed'];
+                $e['mail'] = ['status' => 'na', 'message' => 'Admin login/logout is not mailed'];
                 return $e;
             }
             $best = null;
             $bestGap = 181; // seconds
             foreach ($mailLog as $i => $r) {
-                if ($r['used'] || $r['user_id'] != $e['user_id']) {
+                if ($r['used'] || $r['user_id'] != $e['user_id'] || ($r['event'] ?? 'login') !== $evName) {
                     continue;
                 }
                 $gap = abs($r['ts'] - $e['time']->timestamp);

@@ -43,6 +43,17 @@ class AppServiceProvider extends ServiceProvider
             app()->terminating(fn () => \App\Services\LoginAlertService::notify($user, $ip, $ua));
         });
 
+        // Email the same recipients when a non-admin logs out via the logout button
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Logout::class, function ($event) {
+            if (!request()->routeIs('logout') || !$event->user || ($event->user->role ?? '') === 'admin') {
+                return;
+            }
+            $user = $event->user;
+            $ip = request()->ip();
+            $ua = request()->userAgent();
+            app()->terminating(fn () => \App\Services\LoginAlertService::notify($user, $ip, $ua, 'logout'));
+        });
+
         // Enable query optimization in production
         if (!$this->app->isLocal()) {
             Model::preventLazyLoading();
