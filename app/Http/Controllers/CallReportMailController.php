@@ -76,6 +76,30 @@ class CallReportMailController extends Controller
             ->with($result['status'] === 'sent' ? 'success' : 'error', 'Manual send: ' . $result['status'] . ' - ' . $result['message']);
     }
 
+    /** Added: manual send of one slot's report for today (the last slot also sends the full report, like the schedule). */
+    public function sendSlotNow(Request $request)
+    {
+        $this->authorizeAdmin();
+        @set_time_limit(180);
+
+        $request->validate(['slot' => ['required', 'integer', 'between:0,8']]);
+        $slot = (int) $request->input('slot');
+        $hour = array_search($slot, GroupCallReportMail::HOUR_SLOTS, true);
+        $date = now(self::TZ)->toDateString();
+
+        $result = GroupCallReportMail::sendSlot($date, (int) $hour, 'manual');
+        $message = 'Manual slot send (' . GroupCallReportMail::SLOTS[$slot]['title'] . '): ' . $result['status'] . ' - ' . $result['message'];
+        $ok = $result['status'] === 'sent';
+
+        if ($slot === count(GroupCallReportMail::SLOTS) - 2) {
+            $full = GroupCallReportMail::send('manual', $date, (int) $hour);
+            $message .= ' | Full report: ' . $full['status'] . ' - ' . $full['message'];
+            $ok = $ok && $full['status'] === 'sent';
+        }
+
+        return redirect()->route('smtp.reportmail.list')->with($ok ? 'success' : 'error', $message);
+    }
+
     // ---------------------------------------------------------------- history list
 
     /** Filters (Kolkata dates) applied to the send history. */

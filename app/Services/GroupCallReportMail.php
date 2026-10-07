@@ -425,9 +425,8 @@ class GroupCallReportMail
     }
 
     /** Emails only the slot that ended at $hour (same recipients, SMTP, view and log as send()). */
-    public static function sendSlot(string $date, int $hour): array
+    public static function sendSlot(string $date, int $hour, string $trigger = 'slot'): array
     {
-        $trigger = 'slot';
         ['fields' => $fields, 'title' => $title] = self::SLOTS[self::HOUR_SLOTS[$hour]];
         $r = self::recipients();
         $to = $r['to'];

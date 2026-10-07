@@ -84,6 +84,29 @@
                 <button type="submit" class="btn btn-outline-primary">Send report now (test)</button>
                 <span class="text-secondary-light text-sm ms-8">Uses the saved recipients. Result appears in the send list.</span>
             </form>
+
+            @php
+                $slotEndHours = array_flip(\App\Services\GroupCallReportMail::HOUR_SLOTS);
+                $nowHour = (int) now('Asia/Kolkata')->format('G');
+                $defaultSlot = 8;
+                for ($i = 0; $i < 24; $i++) {
+                    $h = ($nowHour - $i + 24) % 24;
+                    if (isset(\App\Services\GroupCallReportMail::HOUR_SLOTS[$h])) { $defaultSlot = \App\Services\GroupCallReportMail::HOUR_SLOTS[$h]; break; }
+                }
+            @endphp
+            <form method="POST" action="{{ route('smtp.reportmail.sendslot') }}" class="mt-20 d-flex flex-wrap align-items-center gap-3"
+                  onsubmit="var b=this.querySelector('button');b.disabled=true;b.innerText='Sending...';">
+                @csrf
+                <select name="slot" class="form-select w-auto">
+                    @foreach (\App\Services\GroupCallReportMail::SLOTS as $i => $slotDef)
+                        @if ($i < count(\App\Services\GroupCallReportMail::SLOTS) - 1)
+                            <option value="{{ $i }}" @selected($i === $defaultSlot)>{{ $slotDef['title'] }} (sent at {{ str_pad($slotEndHours[$i], 2, '0', STR_PAD_LEFT) }}:00)</option>
+                        @endif
+                    @endforeach
+                </select>
+                <button type="submit" class="btn btn-primary">Send slot report now</button>
+                <span class="text-secondary-light text-sm">Sends today's report for the chosen slot only to the saved recipients (the last slot also sends the full report). Result appears in the send list.</span>
+            </form>
         </div>
     </div>
 
