@@ -2,23 +2,44 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
 /**
  * Emails the admin-chosen addresses when a non-admin user logs in.
- * Recipients live in a small JSON file (no DB query on login); SMTP comes from .env MAIL_*.
+ * Recipients are stored in the `login_alert_emails` table and cached, so a login
+ * normally costs no extra query. SMTP comes from .env MAIL_*.
  */
 class LoginAlertService
 {
+    private const CACHE_KEY = 'login_alert_recipients';
+
     private static function file(): string
     {
         return storage_path('app/login_alert_emails.json');
     }
 
-    /** ['to' => [...], 'cc' => [...]]; an older flat list counts as "to". */
+    /** ['to' => [...], 'cc' => [...]] */
     public static function recipients(): array
+    {
+        try {
+            return Cache::rememberForever(self::CACHE_KEY, function () {
+                $rows = DB::table('login_alert_emails')->orderBy('id')->get(['type', 'email']);
+
+                return [
+                    'to' => $rows->where('type', 'to')->pluck('email')->values()->all(),
+                    'cc' => $rows->where('type', 'cc')->pluck('email')->values()->all(),
+                ];
+            });
+        } catch (\Throwable $e) {
+            return self::recipientsFromFile(); // table not migrated yet
+        }
+    }
+
+    private static function recipientsFromFile(): array
     {
         $empty = ['to' => [], 'cc' => []];
         $path = self::file();
@@ -46,10 +67,30 @@ class LoginAlertService
 
     public static function saveRecipients(array $to, array $cc): void
     {
-        file_put_contents(self::file(), json_encode([
-            'to' => array_values(array_unique($to)),
-            'cc' => array_values(array_unique($cc)),
-        ]), LOCK_EX);
+        $to = array_values(array_unique($to));
+        $cc = array_values(array_unique(array_diff($cc, $to)));
+
+        try {
+            DB::transaction(function () use ($to, $cc) {
+                DB::table('login_alert_emails')->delete();
+                $now = now();
+                $rows = [];
+                foreach ($to as $e) {
+                    $rows[] = ['type' => 'to', 'email' => $e, 'created_at' => $now, 'updated_at' => $now];
+                }
+                foreach ($cc as $e) {
+                    $rows[] = ['type' => 'cc', 'email' => $e, 'created_at' => $now, 'updated_at' => $now];
+                }
+                if ($rows) {
+                    DB::table('login_alert_emails')->insert($rows);
+                }
+            });
+            Cache::forget(self::CACHE_KEY);
+        } catch (\Throwable $e) {
+            // Table not migrated yet: keep working with the file.
+            Log::error('Login alert recipients DB save failed: ' . $e->getMessage());
+            file_put_contents(self::file(), json_encode(['to' => $to, 'cc' => $cc]), LOCK_EX);
+        }
     }
 
     public static function save(array $emails): void
