@@ -109,7 +109,10 @@ $totalLogout = collect($hourly)->sum('logout');
     <div class="col-12">
         <div class="card p-0">
             <div class="card-header py-16 px-24 border-bottom">
-                <h6 class="mb-0">Login / Logout Activity ({{ $events->count() }})</h6>
+                <div class="d-flex flex-wrap gap-2 justify-content-between align-items-center">
+                    <h6 class="mb-0">Login / Logout Activity ({{ $events->count() }})</h6>
+                    <a href="{{ route('senior.login.excel', request()->query()) }}" class="btn btn-success btn-sm">Download Excel</a>
+                </div>
             </div>
             <div class="card-body p-24">
                 <div class="table-responsive scroll-sm">

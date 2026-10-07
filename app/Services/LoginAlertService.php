@@ -17,11 +17,6 @@ class LoginAlertService
 {
     private const CACHE_KEY = 'login_alert_recipients';
 
-    private static function file(): string
-    {
-        return storage_path('app/login_alert_emails.json');
-    }
-
     /** ['to' => [...], 'cc' => [...]] */
     public static function recipients(): array
     {
@@ -35,29 +30,10 @@ class LoginAlertService
                 ];
             });
         } catch (\Throwable $e) {
-            return self::recipientsFromFile(); // table not migrated yet
-        }
-    }
+            Log::error('Login alert recipients could not be read (is the login_alert_emails table migrated?): ' . $e->getMessage());
 
-    private static function recipientsFromFile(): array
-    {
-        $empty = ['to' => [], 'cc' => []];
-        $path = self::file();
-        if (!is_file($path)) {
-            return $empty;
+            return ['to' => [], 'cc' => []];
         }
-        $data = json_decode((string) file_get_contents($path), true);
-        if (!is_array($data)) {
-            return $empty;
-        }
-        if (array_is_list($data)) {
-            return ['to' => $data, 'cc' => []];
-        }
-
-        return [
-            'to' => array_values($data['to'] ?? []),
-            'cc' => array_values($data['cc'] ?? []),
-        ];
     }
 
     public static function emails(): array
@@ -87,9 +63,8 @@ class LoginAlertService
             });
             Cache::forget(self::CACHE_KEY);
         } catch (\Throwable $e) {
-            // Table not migrated yet: keep working with the file.
             Log::error('Login alert recipients DB save failed: ' . $e->getMessage());
-            file_put_contents(self::file(), json_encode(['to' => $to, 'cc' => $cc]), LOCK_EX);
+            throw $e;
         }
     }
 
@@ -208,47 +183,44 @@ class LoginAlertService
         }
     }
 
-    // ---- Send-status log: one line per login in a per-day file (no DB queries on login) ----
-
-    private static function logFile(string $date): string
-    {
-        return storage_path('app/login_mail_log/' . $date . '.jsonl');
-    }
+    // ---- Send-status log: one row per login/logout mail in the `login_mail_logs` table ----
 
     private static function record($user, string $status, string $message, string $event = 'login'): void
     {
         try {
-            $file = self::logFile(now()->toDateString());
-            if (!is_dir(dirname($file))) {
-                @mkdir(dirname($file), 0775, true);
-            }
-            file_put_contents($file, json_encode([
-                'user_id' => $user->id,
-                'time'    => now()->toDateTimeString(),
-                'status'  => $status,
-                'message' => $message,
-                'event'   => $event,
-            ]) . "\n", FILE_APPEND | LOCK_EX);
+            DB::table('login_mail_logs')->insert([
+                'user_id'    => $user->id,
+                'event'      => $event,
+                'status'     => $status,
+                'message'    => mb_substr($message, 0, 1000),
+                'logged_at'  => now(),
+                'created_at' => now(),
+                'updated_at' => now(),
+            ]);
         } catch (\Throwable $e) {
             // Status logging must never affect login.
+            Log::error('Login mail status could not be saved: ' . $e->getMessage());
         }
     }
 
-    /** Status entries recorded on a given date (Y-m-d). */
+    /** Status entries recorded on a given date (Y-m-d, app timezone). */
     public static function statusFor(string $date): array
     {
-        $file = self::logFile($date);
-        if (!is_file($file)) {
+        try {
+            return DB::table('login_mail_logs')
+                ->whereBetween('logged_at', [$date . ' 00:00:00', $date . ' 23:59:59'])
+                ->orderBy('id')
+                ->get(['user_id', 'event', 'status', 'message', 'logged_at'])
+                ->map(fn ($r) => [
+                    'user_id' => $r->user_id,
+                    'time'    => $r->logged_at,
+                    'status'  => $r->status,
+                    'message' => $r->message,
+                    'event'   => $r->event,
+                ])
+                ->all();
+        } catch (\Throwable $e) {
             return [];
         }
-        $rows = [];
-        foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
-            $row = json_decode($line, true);
-            if (is_array($row)) {
-                $rows[] = $row;
-            }
-        }
-
-        return $rows;
     }
 }

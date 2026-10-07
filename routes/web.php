@@ -362,6 +362,13 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/smtp/login-mail', [\App\Http\Controllers\LoginAlertController::class, 'index'])->name('smtp.editalllogin');
     Route::post('/dashboard/smtp/login-alert', [\App\Http\Controllers\LoginAlertController::class, 'update'])->name('smtp.loginalert');
+
+    // Call (C&M) group report mail: setup, send list with filters, Excel
+    Route::get('/dashboard/smtp/report-mail', [\App\Http\Controllers\CallReportMailController::class, 'index'])->name('smtp.editallcallreport');
+    Route::post('/dashboard/smtp/report-mail', [\App\Http\Controllers\CallReportMailController::class, 'update'])->name('smtp.reportmail.update');
+    Route::post('/dashboard/smtp/report-mail/send-now', [\App\Http\Controllers\CallReportMailController::class, 'sendNow'])->name('smtp.reportmail.send');
+    Route::get('/dashboard/smtp/report-mail-list', [\App\Http\Controllers\CallReportMailController::class, 'list'])->name('smtp.reportmail.list');
+    Route::get('/dashboard/smtp/report-mail-list-excel', [\App\Http\Controllers\CallReportMailController::class, 'excel'])->name('smtp.reportmail.excel');
     Route::put('/dashboard/smtp/allupdate', [DashboardController::class, 'addupdate'])->name('smtp.addupdate');
     Route::put('/dashboard/smtp/update/{user}', [DashboardController::class, 'update'])->name('smtp.update');
     Route::post('/dashboard/smtp/test/{id}', [DashboardController::class, 'test'])->name('smtp.test');
@@ -407,6 +414,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/group/senior/mail', [UserController::class, 'seniorgroupmail'])->name('senior.groupmail');
     Route::get('/dashboard/group/senior/mail/chart', [CallReportController::class, 'seniorgroupmailchart'])->name('senior.groupmailchart');
     Route::get('/dashboard/senior/user-login', [UserController::class, 'seniorlogin'])->name('senior.login');
+    Route::get('/dashboard/senior/user-login-excel', [UserController::class, 'seniorloginExcel'])->name('senior.login.excel');
     Route::get('/dashboard/junior/chat', [ChatController::class, 'junior'])->name('chat.junior');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
     Route::get('/latest-messages', [ChatController::class, 'latestMessages'])->name('chat.latestMessages');

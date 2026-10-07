@@ -1601,4 +1601,41 @@ class UserController extends Controller
             'events', 'hourly', 'users', 'userMap', 'date', 'fromHour', 'toHour', 'userId', 'type'
         ));
     }
+
+    // Excel download of the same login / logout list, with the same filters
+    public function seniorloginExcel(Request $request)
+    {
+        $d = $this->seniorlogin($request)->getData();
+
+        $statusText = fn ($m) => !$m ? '-' : match ($m['status']) {
+            'sent' => 'Sent', 'failed' => 'Failed', 'skipped' => 'Not sent', 'na' => 'N/A (admin)', default => '-',
+        };
+
+        $rows = $d['events']->values()->map(function ($e, $i) use ($d, $statusText) {
+            $u = $d['userMap'][$e['user_id']] ?? null;
+
+            return [
+                $i + 1,
+                $u->name ?? 'Unknown',
+                $u->email ?? '',
+                $u ? ucfirst($u->role) : '',
+                $e['type'],
+                $e['detail'],
+                $e['ip'] ?? '',
+                $statusText($e['mail'] ?? null),
+                $e['mail']['message'] ?? '',
+                $e['time']->format('h:00 A') . ' - ' . $e['time']->format('h:59 A'),
+                $e['time']->format('d-m-Y'),
+                $e['time']->format('h:i:s A'),
+            ];
+        });
+
+        return \App\Exports\SimpleXlsx::download(
+            "login-logout-report-{$d['date']}.xlsx",
+            "Login / Logout Report - {$d['date']} ({$d['fromHour']}:00-{$d['toHour']}:59 IST)",
+            ['#', 'Name', 'Email', 'Role', 'Event', 'Source', 'IP Address', 'Mail Status', 'Mail Detail', 'Hour Slot (IST)', 'Date', 'Time (IST)'],
+            $rows,
+            [6, 24, 32, 14, 10, 14, 18, 14, 40, 20, 14, 14]
+        );
+    }
 }

@@ -581,6 +581,11 @@ $role = Auth::user()->role;
                                 class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Login Mail</a>
                     </li>
                 </ul>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('smtp.editallcallreport') }}"><i
+                                class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Call Report Mail</a>
+                    </li>
+                </ul>
             </li>
 
             <li class="dropdown">
