@@ -970,6 +970,17 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('senior.groupmailchart') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Group Report</a></li>
                 </ul>
             </li>
+
+            <li class="dropdown">
+                <a href="javascript:void(0)">
+                    <iconify-icon icon="fluent:people-20-filled" class="menu-icon"></iconify-icon>
+                    <span>Login</span>
+                </a>
+                <ul class="sidebar-submenu">
+                    <li><a href="{{ route('senior.login') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>User Login</a></li>
+                </ul>
+                
+            </li>
             @endif
 
             {{-- ================= Trainer ================= --}}
