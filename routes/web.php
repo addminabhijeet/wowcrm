@@ -416,6 +416,13 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/group/senior/mail/chart', [CallReportController::class, 'seniorgroupmailchart'])->name('senior.groupmailchart');
     Route::get('/dashboard/senior/user-login', [UserController::class, 'seniorlogin'])->name('senior.login');
     Route::get('/dashboard/senior/user-login-excel', [UserController::class, 'seniorloginExcel'])->name('senior.login.excel');
+
+    // Call Duration (sidebar): upload the PBX call-records sheet, then show / filter / download it
+    Route::get('/dashboard/senior/call-duration/upload', [\App\Http\Controllers\CallDurationController::class, 'upload'])->name('senior.excelupload');
+    Route::post('/dashboard/senior/call-duration/upload', [\App\Http\Controllers\CallDurationController::class, 'store'])->name('senior.excelupload.store');
+    Route::get('/dashboard/senior/call-duration', [\App\Http\Controllers\CallDurationController::class, 'show'])->name('senior.excelshow');
+    Route::get('/dashboard/senior/call-duration/excel', [\App\Http\Controllers\CallDurationController::class, 'excel'])->name('senior.excelshow.excel');
+    Route::get('/dashboard/senior/call-duration/pdf', [\App\Http\Controllers\CallDurationController::class, 'pdf'])->name('senior.excelshow.pdf');
     Route::get('/dashboard/junior/chat', [ChatController::class, 'junior'])->name('chat.junior');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
     Route::get('/latest-messages', [ChatController::class, 'latestMessages'])->name('chat.latestMessages');
