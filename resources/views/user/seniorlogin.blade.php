@@ -42,7 +42,7 @@ $totalLogout = collect($hourly)->sum('logout');
                         <select name="user_id" class="form-select">
                             <option value="">All users</option>
                             @foreach($users as $u)
-                                <option value="{{ $u->id }}" @selected($userId == $u->id)>{{ $u->name }} ({{ ucfirst($u->role) }})</option>
+                                <option value="{{ $u->id }}" @selected($userId == $u->id)>{{ $u->name }}</option>
                             @endforeach
                         </select>
                     </div>

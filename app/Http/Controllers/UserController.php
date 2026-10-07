@@ -1543,6 +1543,9 @@ class UserController extends Controller
         $users = User::where('is_deleted', 0)->select('id', 'name', 'email', 'role')->orderBy('name')->get();
         $userMap = $users->keyBy('id');
 
+        // Only users who are not deleted
+        $events = $events->filter(fn ($e) => $userMap->has($e['user_id']));
+
         $events = $events->sortByDesc(fn ($e) => $e['time']->timestamp)->values();
 
         // Hour-wise summary: [hour => ['login' => n, 'logout' => n]]
