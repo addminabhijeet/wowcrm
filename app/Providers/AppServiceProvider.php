@@ -32,6 +32,17 @@ class AppServiceProvider extends ServiceProvider
             return Limit::perMinute(100)->by($request->ip());
         });
 
+        // Email the admin-chosen addresses when a non-admin logs in via the login form
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, function ($event) {
+            if (!request()->routeIs('login.submit') || ($event->user->role ?? '') === 'admin') {
+                return;
+            }
+            $user = $event->user;
+            $ip = request()->ip();
+            $ua = request()->userAgent();
+            app()->terminating(fn () => \App\Services\LoginAlertService::notify($user, $ip, $ua));
+        });
+
         // Enable query optimization in production
         if (!$this->app->isLocal()) {
             Model::preventLazyLoading();

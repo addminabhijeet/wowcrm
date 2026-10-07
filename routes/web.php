@@ -360,6 +360,8 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::post('/api/monthly-targets/{userId}/{year}/{month}/reset', [MonthlyTargetController::class, 'resetTarget'])->name('monthly-targets.reset');
     Route::post('/api/monthly-targets/{userId}/bulk-update', [MonthlyTargetController::class, 'bulkUpdate'])->name('monthly-targets.bulk-update');
 
+    Route::get('/dashboard/smtp/login-mail', [\App\Http\Controllers\LoginAlertController::class, 'index'])->name('smtp.editalllogin');
+    Route::post('/dashboard/smtp/login-alert', [\App\Http\Controllers\LoginAlertController::class, 'update'])->name('smtp.loginalert');
     Route::put('/dashboard/smtp/allupdate', [DashboardController::class, 'addupdate'])->name('smtp.addupdate');
     Route::put('/dashboard/smtp/update/{user}', [DashboardController::class, 'update'])->name('smtp.update');
     Route::post('/dashboard/smtp/test/{id}', [DashboardController::class, 'test'])->name('smtp.test');
