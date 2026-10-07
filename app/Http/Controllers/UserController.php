@@ -1487,4 +1487,75 @@ class UserController extends Controller
             'message' => 'Cache warming job dispatched'
         ]);
     }
+
+    // ======================
+    // USER LOGIN / LOGOUT HOURLY REPORT
+    // ======================
+    public function seniorlogin(Request $request)
+    {
+        $date     = $request->input('date', now()->toDateString());
+        $fromHour = max(0, min(23, (int) $request->input('from_hour', 0)));
+        $toHour   = max($fromHour, min(23, (int) $request->input('to_hour', 23)));
+        $userId   = $request->input('user_id');
+        $type     = $request->input('type', 'all'); // all | login | logout
+
+        $start = \Carbon\Carbon::parse($date)->setTime($fromHour, 0, 0);
+        $end   = \Carbon\Carbon::parse($date)->setTime($toHour, 59, 59);
+
+        $events = collect();
+
+        if ($type !== 'logout') {
+            $logins = \App\Models\Logins::select('user_id', 'ip_address', 'logged_in_at')
+                ->whereBetween('logged_in_at', [$start, $end])
+                ->when($userId, fn ($q) => $q->where('user_id', $userId))
+                ->get();
+            foreach ($logins as $l) {
+                $events->push([
+                    'user_id' => $l->user_id,
+                    'type'    => 'Login',
+                    'detail'  => 'Self login',
+                    'ip'      => $l->ip_address,
+                    'time'    => \Carbon\Carbon::parse($l->logged_in_at),
+                ]);
+            }
+        }
+
+        $pauseTypes = $type === 'login' ? ['login by senior']
+            : ($type === 'logout' ? ['logout', 'logout by senior']
+            : ['logout', 'logout by senior', 'login by senior']);
+
+        $pauses = \App\Models\UserTimerPause::select('user_id', 'pause_type', 'event_time')
+            ->whereIn('pause_type', $pauseTypes)
+            ->whereBetween('event_time', [$start, $end])
+            ->when($userId, fn ($q) => $q->where('user_id', $userId))
+            ->get();
+        foreach ($pauses as $p) {
+            $isLogin = $p->pause_type === 'login by senior';
+            $events->push([
+                'user_id' => $p->user_id,
+                'type'    => $isLogin ? 'Login' : 'Logout',
+                'detail'  => $p->pause_type === 'logout' ? 'Self logout' : 'By senior',
+                'ip'      => null,
+                'time'    => \Carbon\Carbon::parse($p->event_time),
+            ]);
+        }
+
+        $users = User::where('is_deleted', 0)->select('id', 'name', 'email', 'role')->orderBy('name')->get();
+        $userMap = $users->keyBy('id');
+
+        $events = $events->sortByDesc(fn ($e) => $e['time']->timestamp)->values();
+
+        // Hour-wise summary: [hour => ['login' => n, 'logout' => n]]
+        $hourly = [];
+        for ($h = $fromHour; $h <= $toHour; $h++) {
+            $hourly[$h] = ['login' => 0, 'logout' => 0];
+        }
+        foreach ($events as $e) {
+            $hourly[(int) $e['time']->format('G')][strtolower($e['type'])]++;
+        }
+
+        return view('user.seniorlogin', compact(
+            'events', 'hourly', 'users', 'userMap', 'date', 'fromHour', 'toHour', 'userId', 'type'
+        ));
+    }
 }
