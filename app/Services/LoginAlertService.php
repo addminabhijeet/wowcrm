@@ -128,9 +128,11 @@ class LoginAlertService
             $r = self::recipients();
             $to = $r['to'];
             $cc = $r['cc'];
-            $username = env('MAIL_USERNAME');
+            // Read via config() (not env()) so it also works when the config is cached on the server
+            $smtp = config('mail.mailers.smtp', []);
+            $username = $smtp['username'] ?? null;
             if (!($to || $cc) || !$username) {
-                self::record($user, 'skipped', !$username ? 'SMTP username not set in .env' : 'No recipient saved on Login Mail page');
+                self::record($user, 'skipped', !$username ? 'SMTP username (MAIL_USERNAME) is empty - set it in .env and run php artisan config:clear' : 'No recipient saved on Login Mail page');
                 return;
             }
             // If no "To" is set, promote the first CC address so the mail still has a recipient.
@@ -138,22 +140,22 @@ class LoginAlertService
                 $to = [array_shift($cc)];
             }
 
-            $port = env('MAIL_PORT');
+            $port = $smtp['port'] ?? null;
             $port = (is_numeric($port) && (int) $port > 0) ? (int) $port : 587;
-            $enc  = env('MAIL_ENCRYPTION');
+            $enc  = $smtp['encryption'] ?? null;
             $enc  = in_array($enc, ['tls', 'ssl'], true) ? $enc : null;
 
             Config::set('mail.mailers.loginalert', [
                 'transport' => 'smtp',
-                'host'      => env('MAIL_HOST', 'smtp.gmail.com'),
+                'host'      => $smtp['host'] ?? 'smtp.gmail.com',
                 'port'      => $port,
                 'encryption'=> $enc,
                 'username'  => $username,
-                'password'  => env('MAIL_PASSWORD'),
+                'password'  => $smtp['password'] ?? null,
                 'timeout'   => 10,
             ]);
 
-            $from = filter_var(env('MAIL_FROM_ADDRESS'), FILTER_VALIDATE_EMAIL) ?: $username;
+            $from = filter_var(config('mail.from.address'), FILTER_VALIDATE_EMAIL) ?: $username;
             [$browser, $os, $device] = self::describeAgent((string) $userAgent);
 
             $body = "User login alert\n\n"

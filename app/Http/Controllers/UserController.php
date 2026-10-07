@@ -1493,14 +1493,16 @@ class UserController extends Controller
     // ======================
     public function seniorlogin(Request $request)
     {
-        $date     = $request->input('date', now()->toDateString());
+        $tz       = 'Asia/Kolkata'; // this report only; project timezone is unchanged
+        $date     = $request->input('date', now($tz)->toDateString());
         $fromHour = max(0, min(23, (int) $request->input('from_hour', 0)));
         $toHour   = max($fromHour, min(23, (int) $request->input('to_hour', 23)));
         $userId   = $request->input('user_id');
         $type     = $request->input('type', 'all'); // all | login | logout
 
-        $start = \Carbon\Carbon::parse($date)->setTime($fromHour, 0, 0);
-        $end   = \Carbon\Carbon::parse($date)->setTime($toHour, 59, 59);
+        // Filter hours are Kolkata hours; convert to the app timezone the data is stored in
+        $start = \Carbon\Carbon::parse($date, $tz)->setTime($fromHour, 0, 0)->setTimezone(config('app.timezone'));
+        $end   = \Carbon\Carbon::parse($date, $tz)->setTime($toHour, 59, 59)->setTimezone(config('app.timezone'));
 
         $events = collect();
 
@@ -1515,7 +1517,7 @@ class UserController extends Controller
                     'type'    => 'Login',
                     'detail'  => 'Self login',
                     'ip'      => $l->ip_address,
-                    'time'    => \Carbon\Carbon::parse($l->logged_in_at),
+                    'time'    => \Carbon\Carbon::parse($l->logged_in_at)->setTimezone($tz),
                 ]);
             }
         }
@@ -1536,7 +1538,7 @@ class UserController extends Controller
                 'type'    => $isLogin ? 'Login' : 'Logout',
                 'detail'  => $p->pause_type === 'logout' ? 'Self logout' : 'By senior',
                 'ip'      => null,
-                'time'    => \Carbon\Carbon::parse($p->event_time),
+                'time'    => \Carbon\Carbon::parse($p->event_time)->setTimezone($tz),
             ]);
         }
 
@@ -1547,7 +1549,10 @@ class UserController extends Controller
         $events = $events->filter(fn ($e) => $userMap->has($e['user_id']));
 
         // Attach login-mail status (sent / failed / skipped) to each self login, matched by user and nearest time
-        $mailLog = collect(\App\Services\LoginAlertService::statusFor($date))->map(function ($r) {
+        $mailLog = collect(array_merge(
+            \App\Services\LoginAlertService::statusFor($start->toDateString()),
+            $start->toDateString() === $end->toDateString() ? [] : \App\Services\LoginAlertService::statusFor($end->toDateString())
+        ))->map(function ($r) {
             $r['ts'] = \Carbon\Carbon::parse($r['time'])->timestamp;
             $r['used'] = false;
             return $r;

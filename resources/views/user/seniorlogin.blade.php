@@ -19,7 +19,7 @@ $totalLogout = collect($hourly)->sum('logout');
                 <form method="GET" action="{{ route('senior.login') }}" class="row g-3 align-items-end">
                     <div class="col-md-2">
                         <label class="form-label fw-semibold text-sm">Date</label>
-                        <input type="date" name="date" value="{{ $date }}" class="form-control" max="{{ now()->toDateString() }}">
+                        <input type="date" name="date" value="{{ $date }}" class="form-control" max="{{ now('Asia/Kolkata')->toDateString() }}">
                     </div>
                     <div class="col-md-2">
                         <label class="form-label fw-semibold text-sm">From Hour</label>
@@ -163,7 +163,7 @@ $totalLogout = collect($hourly)->sum('logout');
                                         @endif
                                     </td>
                                     <td>{{ $e['time']->format('H:00') }} - {{ $e['time']->format('H:59') }}</td>
-                                    <td>{{ $e['time']->format('d M Y, h:i:s A') }}</td>
+                                    <td>{{ $e['time']->format('d M Y, h:i:s A') }} IST</td>
                                 </tr>
                             @empty
                                 <tr>
