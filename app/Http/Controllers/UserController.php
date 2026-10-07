@@ -1546,6 +1546,40 @@ class UserController extends Controller
         // Only users who are not deleted
         $events = $events->filter(fn ($e) => $userMap->has($e['user_id']));
 
+        // Attach login-mail status (sent / failed / skipped) to each self login, matched by user and nearest time
+        $mailLog = collect(\App\Services\LoginAlertService::statusFor($date))->map(function ($r) {
+            $r['ts'] = \Carbon\Carbon::parse($r['time'])->timestamp;
+            $r['used'] = false;
+            return $r;
+        })->all();
+        $events = $events->map(function ($e) use (&$mailLog, $userMap) {
+            $e['mail'] = null;
+            if ($e['type'] !== 'Login' || $e['detail'] !== 'Self login') {
+                return $e;
+            }
+            if (($userMap[$e['user_id']]->role ?? '') === 'admin') {
+                $e['mail'] = ['status' => 'na', 'message' => 'Admin logins are not mailed'];
+                return $e;
+            }
+            $best = null;
+            $bestGap = 181; // seconds
+            foreach ($mailLog as $i => $r) {
+                if ($r['used'] || $r['user_id'] != $e['user_id']) {
+                    continue;
+                }
+                $gap = abs($r['ts'] - $e['time']->timestamp);
+                if ($gap < $bestGap) {
+                    $best = $i;
+                    $bestGap = $gap;
+                }
+            }
+            if ($best !== null) {
+                $mailLog[$best]['used'] = true;
+                $e['mail'] = ['status' => $mailLog[$best]['status'], 'message' => $mailLog[$best]['message']];
+            }
+            return $e;
+        });
+
         $events = $events->sortByDesc(fn ($e) => $e['time']->timestamp)->values();
 
         // Hour-wise summary: [hour => ['login' => n, 'logout' => n]]

@@ -89,6 +89,7 @@ class LoginAlertService
             $cc = $r['cc'];
             $username = env('MAIL_USERNAME');
             if (!($to || $cc) || !$username) {
+                self::record($user, 'skipped', !$username ? 'SMTP username not set in .env' : 'No recipient saved on Login Mail page');
                 return;
             }
             // If no "To" is set, promote the first CC address so the mail still has a recipient.
@@ -134,9 +135,54 @@ class LoginAlertService
                     $m->cc($cc);
                 }
             });
+            self::record($user, 'sent', 'Sent to ' . implode(', ', array_merge($to, $cc)));
         } catch (\Throwable $e) {
             // Never block or break a user's login because of mail trouble.
             Log::error('Login alert mail failed: ' . $e->getMessage());
+            self::record($user, 'failed', mb_substr($e->getMessage(), 0, 300));
         }
+    }
+
+    // ---- Send-status log: one line per login in a per-day file (no DB queries on login) ----
+
+    private static function logFile(string $date): string
+    {
+        return storage_path('app/login_mail_log/' . $date . '.jsonl');
+    }
+
+    private static function record($user, string $status, string $message): void
+    {
+        try {
+            $file = self::logFile(now()->toDateString());
+            if (!is_dir(dirname($file))) {
+                @mkdir(dirname($file), 0775, true);
+            }
+            file_put_contents($file, json_encode([
+                'user_id' => $user->id,
+                'time'    => now()->toDateTimeString(),
+                'status'  => $status,
+                'message' => $message,
+            ]) . "\n", FILE_APPEND | LOCK_EX);
+        } catch (\Throwable $e) {
+            // Status logging must never affect login.
+        }
+    }
+
+    /** Status entries recorded on a given date (Y-m-d). */
+    public static function statusFor(string $date): array
+    {
+        $file = self::logFile($date);
+        if (!is_file($file)) {
+            return [];
+        }
+        $rows = [];
+        foreach (file($file, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
+            $row = json_decode($line, true);
+            if (is_array($row)) {
+                $rows[] = $row;
+            }
+        }
+
+        return $rows;
     }
 }

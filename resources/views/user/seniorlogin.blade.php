@@ -122,6 +122,7 @@ $totalLogout = collect($hourly)->sum('logout');
                                 <th class="text-center">Event</th>
                                 <th>Source</th>
                                 <th>IP Address</th>
+                                <th class="text-center">Login Mail</th>
                                 <th>Hour Slot</th>
                                 <th>Time</th>
                             </tr>
@@ -145,12 +146,28 @@ $totalLogout = collect($hourly)->sum('logout');
                                     </td>
                                     <td>{{ $e['detail'] }}</td>
                                     <td>{{ $e['ip'] ?? '-' }}</td>
+                                    <td class="text-center">
+                                        @php $m = $e['mail'] ?? null; @endphp
+                                        @if ($m && $m['status'] === 'sent')
+                                            <span class="bg-success-focus text-success-main px-16 py-4 rounded-pill fw-medium text-sm" title="{{ $m['message'] }}">Sent</span>
+                                        @elseif ($m && $m['status'] === 'failed')
+                                            <span class="bg-danger-focus text-danger-main px-16 py-4 rounded-pill fw-medium text-sm" title="{{ $m['message'] }}">Failed</span>
+                                            <div class="text-xs text-danger-main mt-4">{{ \Illuminate\Support\Str::limit($m['message'], 60) }}</div>
+                                        @elseif ($m && $m['status'] === 'skipped')
+                                            <span class="bg-warning-focus text-warning-main px-16 py-4 rounded-pill fw-medium text-sm" title="{{ $m['message'] }}">Not sent</span>
+                                            <div class="text-xs text-secondary-light mt-4">{{ $m['message'] }}</div>
+                                        @elseif ($m && $m['status'] === 'na')
+                                            <span class="text-secondary-light text-sm" title="{{ $m['message'] }}">N/A (admin)</span>
+                                        @else
+                                            <span class="text-secondary-light">-</span>
+                                        @endif
+                                    </td>
                                     <td>{{ $e['time']->format('H:00') }} - {{ $e['time']->format('H:59') }}</td>
                                     <td>{{ $e['time']->format('d M Y, h:i:s A') }}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="8" class="text-center text-secondary-light py-24">No login/logout activity found for the selected filters.</td>
+                                    <td colspan="9" class="text-center text-secondary-light py-24">No login/logout activity found for the selected filters.</td>
                                 </tr>
                             @endforelse
                         </tbody>
