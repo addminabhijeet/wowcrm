@@ -657,6 +657,37 @@ class CallDurationController extends Controller
         ]);
     }
 
+    public function totalPdf(Request $request)
+    {
+        $this->authorizeAccess();
+        @set_time_limit(120);
+        $date = $this->totalDate($request);
+        $data = $this->totalData($date);
+
+        $html = view('user.callduration-total-pdf', [
+            'dateLabel'  => Carbon::parse($date)->format('d-m-Y'),
+            'slotTitles' => self::GROUP_SLOTS,
+            'teams'      => $data['teams'],
+            'fmt'        => fn ($s) => self::hms($s),
+        ])->render();
+
+        $options = new Options();
+        $options->set('isRemoteEnabled', false);
+        // Built-in PDF font + font cache outside the project: dompdf must not write font .json files into vendor/
+        $options->set('defaultFont', 'Helvetica');
+        $options->set('fontCache', sys_get_temp_dir());
+        $options->set('tempDir', sys_get_temp_dir());
+        $pdf = new Dompdf($options);
+        $pdf->loadHtml($html);
+        $pdf->setPaper('A4', 'landscape');
+        $pdf->render();
+
+        return response($pdf->output(), 200, [
+            'Content-Type'        => 'application/pdf',
+            'Content-Disposition' => "attachment; filename=\"total-call-duration-{$date}.pdf\"",
+        ]);
+    }
+
     public function totalExcel(Request $request)
     {
         $this->authorizeAccess();

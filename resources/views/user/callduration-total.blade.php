@@ -31,6 +31,7 @@
     .td-wrap .td-today { background: #fff; color: #0b5cad; border-color: #0b5cad; }
     .td-wrap .td-excel { background: #1b7a3a; color: #fff; }
     .td-wrap .td-copy  { background: #222; color: #fff; }
+    .td-wrap .td-pdf   { background: #b3261e; color: #fff; }
     .td-wrap .td-stats { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 22px; }
     .td-wrap .td-stat { flex: 1 1 200px; background: #f3f7fb; border: 2px solid #c7d6e6; border-radius: 14px; padding: 12px 18px; }
     .td-wrap .td-stat small { display: block; font-size: 13px; font-weight: 700; color: #4a5a6a; text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; }
@@ -79,6 +80,7 @@
                 <button type="submit" class="td-btn td-show">Show</button>
                 <a href="{{ route('senior.totalcall') }}" class="td-btn td-today">Today</a>
                 <a href="{{ route('senior.totalcall.excel', ['date' => $date]) }}" class="td-btn td-excel">Download Excel</a>
+                <a href="{{ route('senior.totalcall.pdf', ['date' => $date]) }}" class="td-btn td-pdf">Download PDF</a>
                 <button type="button" class="td-btn td-copy" onclick="copyAll(this)">Copy All</button>
             </div>
         </form>
@@ -90,11 +92,6 @@
         <div class="td-stat"><small>IT Recruiters</small><strong>{{ $juniorCount }}</strong></div>
         <div class="td-stat"><small>All IT Recruiters together</small><strong>{{ $fmt($grand) }}</strong></div>
     </div>
-
-    <p class="td-note" style="margin-bottom:22px;">
-        These totals are the same as the call duration shown in each IT Recruiter's top bar.
-        {{ $covered ? 'Call data uploaded up to ' . $covered->format('d M, h:i A') . ' IST.' : 'No call data uploaded for this shift yet.' }}
-    </p>
 
     @forelse ($teams as $teamName => $members)
         <div class="td-card td-team-card">
