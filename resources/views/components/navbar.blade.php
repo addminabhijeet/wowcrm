@@ -17,76 +17,27 @@ $userImage = Auth::user()->image
                     <iconify-icon icon="heroicons:bars-3-solid" class="icon"></iconify-icon>
                 </button>
 
-                @unless (in_array(auth()->user()->role, [
-                'admin',
-                'career',
-                'trainer',
-                'support',
-                'accountant',
-                'operation',
-                'seniorassociate',
-                'resource',
-                ]))
-                <div
-                    style="display:none;align-items:center;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 8px;box-shadow:0 1px 3px rgba(0,0,0,0.08);flex-wrap:wrap;min-width:180px;">
-
-                    <div style="margin-right:10px;text-align:center;min-width:60px;">
-                        <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
-                            <iconify-icon icon="mdi:timer-outline" style="color:#dc3545;font-size:14px;"></iconify-icon>
-                            <small
-                                style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Countdown</small>
-                        </div>
-                        <span id="countdown"
-                            style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">09:00:00</span>
-                    </div>
-
-
-                    <div style="width:1px;background:#dee2e6;margin:0 4px;"></div>
-
-
-                    <div style="margin-right:10px;text-align:center;min-width:60px;">
-                        <div style="display:flex;align-items:center;justify-content:center;gap:2px;flex-wrap:wrap;">
-                            <iconify-icon icon="mdi:clock-outline" style="color:#28a745;font-size:14px;"></iconify-icon>
-                            <small
-                                style="color:#6c757d;font-size:10px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">Elapsed</small>
-                        </div>
-                        <span id="elapsed"
-                            style="font-weight:bold;color:#212529;font-size:14px;display:block;margin-top:-2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">00:00:00</span>
-                    </div>
-
-                    <div id="controlButtons" style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
-                        <button data-type="resumebreak"
-                            style="width:65px;height:28px;border-radius:14px;background:#d4edda;border:1px solid #28a745;display:flex;align-items:center;justify-content:center;font-size:12px;color:#28a745;">
-                            <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Resume
-                        </button>
-
-                        <button data-type="lunch"
-                            style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#ffc107;">
-                            <iconify-icon icon="mdi:food" style="margin-right:2px;font-size:14px;"></iconify-icon>Lunch
-                        </button>
-
-                        <button data-type="tea"
-                            style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#8b4513;">
-                            <iconify-icon icon="mdi:coffee" style="margin-right:2px;font-size:14px;"></iconify-icon>Tea
-                        </button>
-
-                        <button data-type="break"
-                            style="width:65px;height:28px;border-radius:14px;background:#f8f9fa;border:1px solid #ddd;display:flex;align-items:center;justify-content:center;font-size:12px;color:#007bff;">
-                            <iconify-icon icon="mdi:pause" style="margin-right:2px;font-size:14px;"></iconify-icon>Break
-                        </button>
-                    </div>
-
-                    <div id="startButtonContainer"
-                        style="display:none;align-items:center;gap:4px;flex-wrap:wrap;margin-left:4px;">
-                        <button id="startButton"
-                            style="width:65px;height:28px;border-radius:14px;background:#28a745;border:1px solid #1e7e34;display:flex;align-items:center;justify-content:center;font-size:12px;color:#fff;">
-                            <iconify-icon icon="mdi:play" style="margin-right:2px;font-size:14px;"></iconify-icon>Start
-                        </button>
-                    </div>
-
-
+                {{-- Call duration of the logged-in junior (replaces the old timer widget): the shift total so far + a short note --}}
+                @if ((auth()->user()->role ?? '') === 'junior' && class_exists(\App\Services\CallDurationSummary::class))
+                @php
+                    $callPill = \App\Services\CallDurationSummary::pill(auth()->user());
+                    $pillColor = ['delay' => ['#fff3cd', '#8a6d00'], 'none' => ['#f8d7da', '#b02a37'], 'final' => ['#d4edda', '#1e7e34']][$callPill['state'] ?? 'delay'] ?? ['#fff3cd', '#8a6d00'];
+                @endphp
+                @if ($callPill)
+                <style>
+                    /* centred in the navbar (the navbar is position: sticky, so it is the anchor); on small screens it stays in the flow */
+                    .call-pill-center { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1; }
+                    @media (max-width: 767.98px) { .call-pill-center { position: static; transform: none; } }
+                </style>
+                <div id="callDurationPill" class="call-pill-center" title="{{ $callPill['title'] }}"
+                    style="display:flex;align-items:center;gap:6px;background:#fff;border:1px solid #ddd;border-radius:50px;padding:5px 12px;box-shadow:0 1px 3px rgba(0,0,0,0.08);white-space:nowrap;">
+                    <iconify-icon icon="mdi:phone-in-talk-outline" style="color:#05A9A4;font-size:16px;"></iconify-icon>
+                    <span style="color:#6c757d;font-size:11px;">Calls</span>
+                    <strong style="color:#212529;font-size:14px;">{{ $callPill['value'] }}</strong>
+                    <span style="background:{{ $pillColor[0] }};color:{{ $pillColor[1] }};border-radius:10px;padding:1px 8px;font-size:10px;font-weight:600;">{{ $callPill['tag'] }}</span>
                 </div>
-                @endunless
+                @endif
+                @endif
             </div>
         </div>
 
@@ -318,230 +269,6 @@ $userImage = Auth::user()->image
     </div>
 </div>
 
-<style>
-    #statusOverlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.8);
-        color: #fff;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 32px;
-        font-weight: bold;
-        z-index: 9999;
-        opacity: 0;
-        pointer-events: none;
-        flex-direction: column;
-        transition: opacity 0.3s ease;
-    }
-
-    #statusOverlay.show {
-        opacity: 1;
-        pointer-events: auto;
-    }
-</style>
-
-<div id="statusOverlay"></div>
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        const controlButtons = document.getElementById('controlButtons');
-
-        if (!controlButtons) {
-            console.error("[Init Error] Elements #controlButtons or  are missing.");
-            return;
-        }
-
-        function checkButtonStatus() {
-            fetch("{{ route('button.status') }}")
-                .then(response => {
-                    if (!response.ok) throw new Error("Network response was not ok");
-                    return response.json();
-                })
-                .then(data => {
-                    const status = parseInt(data.button_status ?? 0);
-
-                    if (status === 1) {
-                        // Show control buttons, hide start button
-                        controlButtons.style.display = 'flex';
-
-                        console.log("[Button Status] Control buttons visible (status=1)");
-                    } else {
-                        // Hide control buttons, show start button
-                        controlButtons.style.display = 'none';
-
-                        console.log("[Button Status] Control buttons hidden (status=0)");
-                    }
-                })
-                .catch(err => console.error("[Status Check] Error fetching button status:", err));
-        }
-
-        // Initial check + periodic refresh
-        checkButtonStatus();
-        setInterval(checkButtonStatus, 30000);
-    });
-</script>
-
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-
-        const startButton = document.getElementById('startButton');
-
-        // Assign Blade outputs to JS variables first
-        const timerStartUrl = "{{ route('timer.start') }}";
-        const csrfToken = "{{ csrf_token() }}";
-
-        // Check if today's timer already exists
-        fetch(timerStartUrl, {
-                method: 'POST',
-                headers: {
-                    'X-CSRF-TOKEN': csrfToken,
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    check: true
-                })
-            })
-            .then(res => res.json())
-            .then(data => {})
-            .catch(err => console.error('Error checking timer existence:', err));
-
-        // On Start button click
-        startButton.addEventListener('click', function() {
-
-            fetch(timerStartUrl, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({}) // No check parameter here
-                })
-                .then(res => res.json())
-                .then(data => {
-
-                    if (data.success || data.exists || data.timer) {
-                        alert('⏱ Timer is running for today!');
-                    } else {
-                        console.error('Unexpected response while starting timer:', data);
-                        alert('Something went wrong starting the timer.');
-                    }
-                })
-                .catch(err => {
-                    console.error('Error starting timer:', err);
-                });
-        });
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-
-        const startButtonContainer = document.getElementById('startButtonContainer');
-
-        // Assign Blade outputs to JS variables
-        const timerStartHideUrl = "{{ route('timer.starthide') }}";
-        const csrfToken = "{{ csrf_token() }}";
-
-        // Function to check timer status
-        function checkTimerStatus() {
-            fetch(timerStartHideUrl, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        check: true
-                    }) // Only check, don't start
-                })
-                .then(response => response.json())
-                .then(data => {
-                    if (!data.exists) {
-                        // Show start button only if timer doesn't exist
-                        startButtonContainer.style.display = 'flex';
-                    } else {
-                        // Timer exists, hide start button
-                        startButtonContainer.style.display = 'none';
-                    }
-                })
-                .catch(err => {
-                    console.error('Error checking timer:', err);
-                    if (err instanceof TypeError) {
-                        console.error('TypeError - likely a network or CORS issue');
-                    }
-                });
-        }
-
-        // Initial check
-        checkTimerStatus();
-
-        // Re-check every 1 second
-        setInterval(checkTimerStatus, 30000);
-
-    });
-</script>
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-
-        // Assign Blade outputs to JS variables
-        const checkPauseButtonsUrl = "{{ route('timer.checkPauseButtons') }}";
-        const csrfToken = "{{ csrf_token() }}";
-
-        function updatePauseButtons() {
-            fetch(checkPauseButtonsUrl, {
-                    method: 'POST',
-                    headers: {
-                        'X-CSRF-TOKEN': csrfToken,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({})
-                })
-                .then(res => res.json())
-                .then(data => {
-                    const buttonsToHide = document.querySelectorAll(
-                        '#controlButtons button[data-type="lunch"], ' +
-                        '#controlButtons button[data-type="tea"], ' +
-                        '#controlButtons button[data-type="break"]'
-                    );
-
-                    const resumeBtn = document.querySelector(
-                        '#controlButtons button[data-type="resumebreak"]'
-                    );
-
-                    if (data.pause_type === 'lunch' || data.pause_type === 'tea' || data.pause_type === 'break') {
-                        // Hide lunch/tea/break buttons
-                        buttonsToHide.forEach(btn => {
-                            if (btn) btn.style.display = 'none';
-                        });
-
-                        // Show resume button
-                        if (resumeBtn) resumeBtn.style.display = 'flex';
-                    } else {
-                        // Show all pause buttons
-                        buttonsToHide.forEach(btn => {
-                            if (btn) btn.style.display = 'flex';
-                        });
-
-                        // Hide resume button
-                        if (resumeBtn) resumeBtn.style.display = 'none';
-                    }
-                })
-                .catch(err => console.error('Error checking pause buttons:', err));
-        }
-
-        // Initial check
-        updatePauseButtons();
-
-        // Check every 1 second
-        setInterval(updatePauseButtons, 30000);
-
-    });
-</script>
 <script>
     (function() {
 

@@ -81,6 +81,7 @@ class CallDurationController extends Controller
         $name = mb_substr($file->getClientOriginalName(), 0, 255);
         $batch = [];
         $read = $inserted = $invalid = 0;
+        $rangeFrom = $rangeTo = null;   // IST range of this upload, used to refresh the per-extension summaries
         $minCall = $maxCall = null;   // first / last call of the file (PBX time), recorded as the range this upload covers
 
         $flush = function () use (&$batch, &$inserted) {
@@ -144,6 +145,8 @@ class CallDurationController extends Controller
             $from = Carbon::parse($minCall, self::PBX_TZ)->setTimezone(self::IST);
             $to = Carbon::parse($maxCall, self::PBX_TZ)->setTimezone(self::IST);
             $summary .= ' Calls from ' . $from->format('d M, h:i A') . ' to ' . $to->format('d M, h:i A') . ' IST.';
+            $rangeFrom = $from;
+            $rangeTo = $to;
 
             $before = GroupCallReportMail::coverage();
             $prevEnd = $before ? end($before)[1] : null;
@@ -182,7 +185,14 @@ class CallDurationController extends Controller
         }
 
         // Send the held slot mails that this upload makes ready, after the response has gone out
-        app()->terminating(function () {
+        app()->terminating(function () use ($rangeFrom, $rangeTo) {
+            try {
+                if ($rangeFrom && $rangeTo) {
+                    \App\Services\CallDurationSummary::refreshRange($rangeFrom, $rangeTo);   // numbers shown in the juniors' navbar
+                }
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Call duration summary refresh failed: ' . $e->getMessage());
+            }
             try {
                 GroupCallReportMail::sendDueSlotMails();
             } catch (\Throwable $e) {

@@ -38,3 +38,10 @@ Artisan::command('report:test-mail {to : Test recipient (saved recipients are NO
         \App\Services\LoginDigestMail::releaseDue();
     }
 })->name('login-digest-mail')->everyFiveMinutes()->withoutOverlapping();
+
+// Navbar call duration of the juniors: rebuild the per-extension numbers of the current / previous shift when a sheet was uploaded since
+\Illuminate\Support\Facades\Schedule::call(function () {
+    if (class_exists(\App\Services\CallDurationSummary::class)) {
+        \App\Services\CallDurationSummary::refreshStale();
+    }
+})->name('call-duration-summary')->everyTenMinutes()->withoutOverlapping();
