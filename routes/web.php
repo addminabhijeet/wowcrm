@@ -362,6 +362,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/smtp/login-mail', [\App\Http\Controllers\LoginAlertController::class, 'index'])->name('smtp.editalllogin');
     Route::post('/dashboard/smtp/login-alert', [\App\Http\Controllers\LoginAlertController::class, 'update'])->name('smtp.loginalert');
+    Route::post('/dashboard/smtp/login-alert/digest-mode', [\App\Http\Controllers\LoginAlertController::class, 'setDigestMode'])->name('smtp.logindigest.mode');
 
     // Call (C&M) group report mail: setup, send list with filters, Excel
     Route::get('/dashboard/smtp/report-mail', [\App\Http\Controllers\CallReportMailController::class, 'index'])->name('smtp.editallcallreport');

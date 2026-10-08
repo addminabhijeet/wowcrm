@@ -31,3 +31,10 @@ Artisan::command('report:test-mail {to : Test recipient (saved recipients are NO
 \Illuminate\Support\Facades\Schedule::call(function () {
     \App\Services\GroupCallReportMail::sendDueSlotMails();
 })->name('report-send-slot-mail')->everyFiveMinutes()->withoutOverlapping();
+
+// Grouped login/logout mails: one mail per finished hour slot that had junior logins or logouts
+\Illuminate\Support\Facades\Schedule::call(function () {
+    if (class_exists(\App\Services\LoginDigestMail::class)) {
+        \App\Services\LoginDigestMail::releaseDue();
+    }
+})->name('login-digest-mail')->everyFiveMinutes()->withoutOverlapping();

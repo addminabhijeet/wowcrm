@@ -62,6 +62,16 @@ class AppServiceProvider extends ServiceProvider
             }
         });
 
+        // Grouped login / logout mails (one mail per hour slot, juniors only): these two listeners take over from the two above,
+        // which stay in place. While grouping is off, or its tables do not exist, they send exactly what the originals did.
+        // (Only when the class is deployed: otherwise the originals above keep working untouched.)
+        if (class_exists(\App\Services\LoginDigestMail::class)) {
+            \Illuminate\Support\Facades\Event::forget(\Illuminate\Auth\Events\Login::class);
+            \Illuminate\Support\Facades\Event::forget(\Illuminate\Auth\Events\Logout::class);
+            \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, [\App\Services\LoginDigestMail::class, 'handleLogin']);
+            \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Logout::class, [\App\Services\LoginDigestMail::class, 'handleLogout']);
+        }
+
         // Enable query optimization in production
         if (!$this->app->isLocal()) {
             Model::preventLazyLoading();
