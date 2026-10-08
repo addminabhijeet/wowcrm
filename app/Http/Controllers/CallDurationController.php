@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Exports\SimpleXlsx;
+use App\Models\Logins;
+use App\Models\User;
+use Carbon\Carbon;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
@@ -157,7 +160,7 @@ class CallDurationController extends Controller
     private function filters(Request $request): array
     {
         $latest = DB::table(self::TABLE)->max('call_date');
-        $default = $latest ? substr($latest, 0, 10) : now()->toDateString();
+        $default = $latest ? self::toIst($latest)->toDateString() : now(self::IST)->toDateString();
 
         $date = function ($v) use ($default) {
             $v = (string) $v;
@@ -182,15 +185,32 @@ class CallDurationController extends Controller
 
     private function query(array $f)
     {
+        // The filter is in IST; call_date is stored in PBX time (US Eastern)
         $q = DB::table(self::TABLE)->whereBetween('call_date', [
-            sprintf('%s %02d:00:00', $f['start_date'], $f['start_time']),
-            sprintf('%s %02d:59:59', $f['end_date'], $f['end_time']),
+            Carbon::parse(sprintf('%s %02d:00:00', $f['start_date'], $f['start_time']), self::IST)->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'),
+            Carbon::parse(sprintf('%s %02d:59:59', $f['end_date'], $f['end_time']), self::IST)->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'),
         ]);
         if ($f['extension'] !== '') {
             $q->where(fn ($w) => $w->where('source', $f['extension'])->orWhere('destination', $f['extension']));
         }
 
         return $q;
+    }
+
+    /** A stored PBX-time (US Eastern) timestamp as an IST Carbon. */
+    private static function toIst(string $pbxTime): Carbon
+    {
+        return Carbon::parse($pbxTime, self::PBX_TZ)->setTimezone(self::IST);
+    }
+
+    /** Same, as "Y-m-d H:i:s" text for screens/exports; anything that is not a date is returned as is. */
+    private static function istText($pbxTime): ?string
+    {
+        if ($pbxTime === null || $pbxTime === '' || strtotime((string) $pbxTime) === false) {
+            return $pbxTime === null ? null : (string) $pbxTime;
+        }
+
+        return self::toIst((string) $pbxTime)->format('Y-m-d H:i:s');
     }
 
     private static function hms($seconds): string
@@ -226,6 +246,7 @@ class CallDurationController extends Controller
         $f = $this->filters($request);
 
         return view('user.callduration-show', [
+            'ist'        => fn ($t) => self::istText($t),
             'f'          => $f,
             'totals'     => $this->totals($f),
             'rows'       => $this->query($f)->orderByDesc('call_date')->orderByDesc('id')->paginate(50)->withQueryString(),
@@ -244,8 +265,8 @@ class CallDurationController extends Controller
         $rows = (function () use ($f) {
             $i = 0;
             foreach ($this->query($f)->orderByDesc('call_date')->orderByDesc('id')->cursor() as $r) {
-                yield [++$i, $r->call_date, $r->source, $r->destination, $r->call_duration, $r->answered_duration,
-                       $r->caller_id, $r->did, $r->disposition, $r->time_zone];
+                yield [++$i, self::istText($r->call_date), $r->source, $r->destination, $r->call_duration, $r->answered_duration,
+                       $r->caller_id, $r->did, $r->disposition, self::istText($r->time_zone)];
             }
         })();
 
@@ -253,7 +274,7 @@ class CallDurationController extends Controller
             "call-duration-report-{$f['start_date']}-to-{$f['end_date']}.xlsx",
             "Call Duration - Group Report ({$f['start_date']} {$f['start_time']}:00 to {$f['end_date']} {$f['end_time']}:59"
                 . ($f['extension'] !== '' ? ", ext {$f['extension']}" : '') . ") | Inbound {$t['inbound']} (answered {$t['inbound_ans']}) | Outbound {$t['outbound']} (answered {$t['outbound_ans']})",
-            ['Sl.No', 'Call Date', 'Source', 'Destination', 'Call Duration', 'Answered Duration', 'CallerID', 'DID', 'Disposition', 'TimeZone'],
+            ['Sl.No', 'Call Date (IST)', 'Source', 'Destination', 'Call Duration', 'Answered Duration', 'CallerID', 'DID', 'Disposition', 'TimeZone (IST)'],
             $rows,
             [8, 20, 14, 16, 14, 18, 30, 14, 14, 20]
         );
@@ -272,6 +293,7 @@ class CallDurationController extends Controller
         }
 
         $html = view('user.callduration-pdf', [
+            'ist'    => fn ($t) => self::istText($t),
             'f'      => $f,
             'totals' => $t,
             'rows'   => $this->query($f)->orderByDesc('call_date')->orderByDesc('id')->get(),
@@ -292,5 +314,183 @@ class CallDurationController extends Controller
             'Content-Type'        => 'application/pdf',
             'Content-Disposition' => "attachment; filename=\"call-duration-report-{$f['start_date']}-to-{$f['end_date']}.pdf\"",
         ]);
+    }
+
+    // ---------------------------------------------------------------- group report (per recruiter, per IST hour)
+
+    /**
+     * The PBX export is in US Eastern time (same zone as this app): the last call of each downloaded file is
+     * within minutes of the file's save time converted to America/New_York. Calls are converted to IST here.
+     */
+    private const PBX_TZ = 'America/New_York';
+    private const IST = 'Asia/Kolkata';
+
+    /** Same slot titles as dashboard/group/senior/mail/chart; slot i is the IST hour (20 + i) % 24, i.e. 8pm-9pm ... 4am-5am. */
+    private const GROUP_SLOTS = [
+        '8:00pm - 9:00pm', '9:00pm - 10:00pm', '10:00pm - 11:00pm', '11:00pm - 12:00am', '12:00am - 1:00am',
+        '1:00am - 2:00am', '2:00am - 3:00am', '3:00am - 4:00am', '4:00am - 5:00am',
+    ];
+
+    private static function isExtension(string $v): bool
+    {
+        return $v !== '' && ctype_digit($v) && strlen($v) < 7;
+    }
+
+    /** The recruiter's extension of a call: the caller when an extension dialled out, else the extension that was called. */
+    private static function extensionOf(string $source, string $destination): ?string
+    {
+        if (self::isExtension($source)) {
+            return $source;
+        }
+
+        return self::isExtension($destination) ? $destination : null;
+    }
+
+    public function group(Request $request)
+    {
+        $this->authorizeAccess();
+
+        $d = (string) $request->input('date');
+        $date = preg_match('/^\d{4}-\d{2}-\d{2}$/', $d) && strtotime($d) ? $d : now(self::PBX_TZ)->toDateString();
+
+        // The shift of $date: 8:00pm IST that day -> 5:00am IST next morning, looked up in PBX time
+        $from = Carbon::parse("{$date} 20:00:00", self::IST);
+        $to = $from->copy()->addHours(9);
+        $rows = DB::table(self::TABLE)
+            ->where('call_date', '>=', $from->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
+            ->where('call_date', '<', $to->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
+            ->get(['call_date', 'source', 'destination', 'call_duration']);
+
+        $secs = [];   // extension => [slot => seconds]
+        foreach ($rows as $r) {
+            $ext = self::extensionOf((string) $r->source, (string) $r->destination);
+            if ($ext === null) {
+                continue;
+            }
+            $slot = (Carbon::parse($r->call_date, self::PBX_TZ)->setTimezone(self::IST)->hour - 20 + 24) % 24;
+            if ($slot > 8) {
+                continue;
+            }
+            $secs[$ext][$slot] = ($secs[$ext][$slot] ?? 0) + (int) $r->call_duration;
+        }
+
+        $extUsers = [];   // user id => [extensions]
+        foreach (DB::table('call_duration_extensions')->whereNotNull('user_id')->get(['extension', 'user_id']) as $m) {
+            $extUsers[$m->user_id][] = (string) $m->extension;
+        }
+
+        $seniors = User::where('role', 'senior')->where('is_deleted', 0)->get();
+        $juniorIds = $seniors->flatMap(fn ($s) => is_array($s->mail) ? $s->mail : [])->unique()->values()->all();
+        $juniors = User::whereIn('id', $juniorIds)->where('role', 'junior')->where('is_deleted', 0)->get()->keyBy('id');
+        $loggedIn = $juniors->isEmpty() ? collect() : Logins::whereIn('user_id', $juniors->keys())
+            ->whereDate('logged_in_at', $date)->pluck('user_id')->unique()->flip();
+
+        $listed = [];   // extensions that belong to a recruiter shown below
+        $teams = [];
+        foreach ($seniors as $senior) {
+            $members = [];
+            foreach ($juniors->only(is_array($senior->mail) ? $senior->mail : []) as $junior) {
+                $slots = array_fill(0, 9, 0);
+                foreach ($extUsers[$junior->id] ?? [] as $ext) {
+                    $listed[$ext] = true;
+                    foreach ($secs[$ext] ?? [] as $i => $v) {
+                        $slots[$i] += $v;
+                    }
+                }
+                $members[] = ['name' => $junior->name, 'slots' => $slots, 'total' => array_sum($slots), 'absent' => !$loggedIn->has($junior->id)];
+            }
+            $teams[] = ['name' => $senior->name, 'members' => $members];
+        }
+
+        // Extensions with calls that are not a listed recruiter's (not assigned, or assigned to someone not in a team)
+        $names = User::whereIn('id', array_keys($extUsers))->pluck('name', 'id');
+        $userOfExt = [];
+        foreach ($extUsers as $uid => $list) {
+            foreach ($list as $e) {
+                $userOfExt[$e] = $uid;
+            }
+        }
+        $others = [];
+        foreach ($secs as $ext => $perSlot) {
+            if (isset($listed[$ext])) {
+                continue;
+            }
+            $slots = array_replace(array_fill(0, 9, 0), $perSlot);
+            $others[] = [
+                'name'  => isset($userOfExt[$ext]) ? ($names[$userOfExt[$ext]] ?? "Ext {$ext}") . " (ext {$ext})" : "Ext {$ext} (not assigned)",
+                'slots' => $slots,
+                'total' => array_sum($slots),
+                'ext'   => (int) $ext,
+            ];
+        }
+        usort($others, fn ($a, $b) => $a['ext'] <=> $b['ext']);
+
+        return view('user.callduration-group', [
+            'date'       => $date,
+            'dateLabel'  => Carbon::parse($date)->format('d-m-Y'),
+            'slotTitles' => self::GROUP_SLOTS,
+            'teams'      => $teams,
+            'others'     => $others,
+            'calls'      => $rows->count(),
+            'fmt'        => fn ($s) => self::hms($s),
+            'mapping'    => $this->mappingRows(),
+            'people'     => User::whereIn('role', ['junior', 'senior'])->where('is_deleted', 0)->orderBy('role', 'desc')->orderBy('name')->get(['id', 'name', 'role']),
+        ]);
+    }
+
+    /** Every extension seen in the uploaded calls, with its saved recruiter and a name-based suggestion from the PBX CallerID name. */
+    private function mappingRows(): array
+    {
+        $exts = DB::table(self::TABLE)->whereRaw("CHAR_LENGTH(source) < 7 AND source REGEXP '^[0-9]+$'")->distinct()->pluck('source')
+            ->merge(DB::table(self::TABLE)->whereRaw("CHAR_LENGTH(destination) < 7 AND destination REGEXP '^[0-9]+$'")->distinct()->pluck('destination'))
+            ->map(fn ($e) => (string) $e)->unique()->sort(SORT_NUMERIC)->values();
+
+        $hints = [];
+        foreach (DB::table(self::TABLE)->whereRaw("CHAR_LENGTH(source) < 7 AND caller_id LIKE '%<%>%'")->distinct()->get(['source', 'caller_id']) as $h) {
+            if (preg_match('/^"?([^"<]+?)"?\s*</', (string) $h->caller_id, $m) && !ctype_digit(trim($m[1]))) {
+                $hints[(string) $h->source] = trim($m[1]);
+            }
+        }
+
+        $saved = DB::table('call_duration_extensions')->pluck('user_id', 'extension')->all();
+        $people = User::whereIn('role', ['junior', 'senior'])->where('is_deleted', 0)->get(['id', 'name']);
+
+        return $exts->map(function ($ext) use ($hints, $saved, $people) {
+            $hint = $hints[$ext] ?? null;
+            $suggest = null;
+            if ($hint !== null && !isset($saved[$ext])) {
+                $h = strtolower($hint);
+                $found = $people->filter(function ($p) use ($h) {
+                    $first = strtolower(strtok(trim($p->name), ' '));
+
+                    return $first !== '' && (str_contains($h, $first) || str_contains(strtolower($p->name), $h));
+                });
+                $suggest = $found->count() === 1 ? $found->first()->id : null;
+            }
+
+            return ['ext' => $ext, 'hint' => $hint, 'user_id' => $saved[$ext] ?? null, 'suggest' => $suggest];
+        })->all();
+    }
+
+    public function saveExtensions(Request $request)
+    {
+        $this->authorizeAccess();
+
+        $request->validate(['map' => ['required', 'array'], 'map.*' => ['nullable', 'integer']]);
+        $valid = User::whereIn('role', ['junior', 'senior'])->where('is_deleted', 0)->pluck('id')->all();
+        $now = now();
+        $rows = [];
+        foreach ($request->input('map') as $ext => $uid) {
+            $ext = (string) $ext;
+            if (!self::isExtension($ext)) {
+                continue;
+            }
+            $rows[] = ['extension' => $ext, 'user_id' => in_array((int) $uid, $valid, true) ? (int) $uid : null, 'created_at' => $now, 'updated_at' => $now];
+        }
+        if ($rows) {
+            DB::table('call_duration_extensions')->upsert($rows, ['extension'], ['user_id', 'updated_at']);
+        }
+
+        return redirect()->route('senior.excelgroup', ['date' => $request->input('date')])->with('success', 'Extensions saved.');
     }
 }

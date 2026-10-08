@@ -79,7 +79,7 @@
                             <thead>
                                 <tr>
                                     <th>Sl.No</th>
-                                    <th>Call Date</th>
+                                    <th>Call Date (IST)</th>
                                     <th>Source</th>
                                     <th>Destination</th>
                                     <th>Call Duration</th>
@@ -87,14 +87,14 @@
                                     <th>CallerID</th>
                                     <th>DID</th>
                                     <th>Disposition</th>
-                                    <th>TimeZone</th>
+                                    <th>TimeZone (IST)</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 @forelse ($rows as $i => $r)
                                     <tr>
                                         <td>{{ $rows->firstItem() + $i }}</td>
-                                        <td>{{ $r->call_date }}</td>
+                                        <td>{{ $ist($r->call_date) }}</td>
                                         <td>{{ $r->source }}</td>
                                         <td>{{ $r->destination }}</td>
                                         <td>{{ $r->call_duration }}</td>
@@ -102,7 +102,7 @@
                                         <td>{{ $r->caller_id }}</td>
                                         <td>{{ $r->did }}</td>
                                         <td>{{ $r->disposition }}</td>
-                                        <td>{{ $r->time_zone }}</td>
+                                        <td>{{ $ist($r->time_zone) }}</td>
                                     </tr>
                                 @empty
                                     <tr><td colspan="10" class="text-center text-secondary-light py-24">No calls found for the selected filters.</td></tr>
@@ -110,7 +110,7 @@
                             </tbody>
                         </table>
                     </div>
-                    <div class="text-secondary-light text-sm mt-12">Durations are in seconds, as in the uploaded sheet. Totals above are shown as h:mm:ss.</div>
+                    <div class="text-secondary-light text-sm mt-12">Durations are in seconds, as in the uploaded sheet. Totals above are shown as h:mm:ss. Dates, times and filters are in IST; the PBX sheet is in US Eastern time and is converted on display.</div>
 
                     <div class="mt-24">{{ $rows->links() }}</div>
                 </div>

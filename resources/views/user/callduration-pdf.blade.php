@@ -29,15 +29,15 @@
     <table>
         <thead>
             <tr>
-                <th>Sl.No</th><th>Call Date</th><th>Source</th><th>Destination</th><th>Call Duration</th>
-                <th>Answered Duration</th><th>CallerID</th><th>DID</th><th>Disposition</th><th>TimeZone</th>
+                <th>Sl.No</th><th>Call Date (IST)</th><th>Source</th><th>Destination</th><th>Call Duration</th>
+                <th>Answered Duration</th><th>CallerID</th><th>DID</th><th>Disposition</th><th>TimeZone (IST)</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($rows as $i => $r)
                 <tr>
                     <td>{{ $i + 1 }}</td>
-                    <td>{{ $r->call_date }}</td>
+                    <td>{{ $ist($r->call_date) }}</td>
                     <td>{{ $r->source }}</td>
                     <td>{{ $r->destination }}</td>
                     <td>{{ $r->call_duration }}</td>
@@ -45,7 +45,7 @@
                     <td>{{ $r->caller_id }}</td>
                     <td>{{ $r->did }}</td>
                     <td>{{ $r->disposition }}</td>
-                    <td>{{ $r->time_zone }}</td>
+                    <td>{{ $ist($r->time_zone) }}</td>
                 </tr>
             @endforeach
         </tbody>
