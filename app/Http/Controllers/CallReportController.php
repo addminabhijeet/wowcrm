@@ -3451,6 +3451,8 @@ class CallReportController extends Controller
                 ->where('is_deleted', 0)
                 ->get();
 
+            $istSlots = CallDurationController::calledMailedIst($senior->juniors->pluck('id')->map(fn ($id) => (int) $id)->all(), $selectedDate);
+
             foreach ($senior->juniors as $juniorUser) {
 
                 $createdByKey = "{$juniorUser->id}|junior";
@@ -3476,6 +3478,21 @@ class CallReportController extends Controller
                 $juniorUser->t5to6pm   = $hourlyCalledMailed[17] ?? 0;
                 $juniorUser->t6to7pm   = $hourlyCalledMailed[18] ?? 0;
                 $juniorUser->t7to8pm   = $hourlyCalledMailed[19] ?? 0;
+
+                // Re-fill the same fields by real IST slot (slot i = IST hour 20+i); the slots keep reading the same field names
+                $ist = $istSlots[(int) $juniorUser->id] ?? [];
+                $juniorUser->t8to9am   = $ist[0] ?? 0;
+                $juniorUser->t9to10am  = 0;
+                $juniorUser->t10to11am = 0;
+                $juniorUser->t11to12pm = $ist[1] ?? 0;
+                $juniorUser->t12to1pm  = $ist[2] ?? 0;
+                $juniorUser->t1to2pm   = $ist[3] ?? 0;
+                $juniorUser->t2to3pm   = $ist[4] ?? 0;
+                $juniorUser->t3to4pm   = $ist[5] ?? 0;
+                $juniorUser->t4to5pm   = $ist[6] ?? 0;
+                $juniorUser->t5to6pm   = $ist[7] ?? 0;
+                $juniorUser->t6to7pm   = $ist[8] ?? 0;
+                $juniorUser->t7to8pm   = 0;
             }
         }
 

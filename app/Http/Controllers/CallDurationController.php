@@ -450,6 +450,43 @@ class CallDurationController extends Controller
         return $out;
     }
 
+    /**
+     * Called & Mailed counts per junior and real IST slot (0 = 8:00pm-9:00pm ... 8 = 4:00am-5:00am) for the shift of $date.
+     * updated_at is stored in the app/PBX timezone (America/New_York), so it is converted to IST here, exactly like the call
+     * duration slots; same filters as calledMailed(). @return array<int,array<int,int>> junior id => [slot => count]
+     */
+    public static function calledMailedIst(array $juniorIds, string $date): array
+    {
+        if (!$juniorIds) {
+            return [];
+        }
+
+        $from = Carbon::parse("{$date} 20:00:00", self::IST);
+        $to = $from->copy()->addHours(9);
+
+        $rows = GoogleSheetData::select('created_by', 'updated_at')
+            ->where('created_by', 'like', '%|junior%')
+            ->whereDate('followup', $date)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->where('updated_at', '>=', $from->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
+            ->where('updated_at', '<', $to->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
+            ->get();
+
+        $out = [];
+        foreach ($rows as $r) {
+            if (!preg_match('/^(\d+)\|junior/', (string) $r->created_by, $m) || !in_array((int) $m[1], $juniorIds, true)) {
+                continue;
+            }
+            $slot = (Carbon::parse($r->getRawOriginal('updated_at'), self::PBX_TZ)->setTimezone(self::IST)->hour - 20 + 24) % 24;
+            if ($slot > 8) {
+                continue;
+            }
+            $out[(int) $m[1]][$slot] = ($out[(int) $m[1]][$slot] ?? 0) + 1;
+        }
+
+        return $out;
+    }
+
     /** One count per slot (8:00pm - 9:00pm ... 4:00am - 5:00am), merged exactly like the chart's slots. */
     private static function cmSlots(array $hourly): array
     {
@@ -501,6 +538,7 @@ class CallDurationController extends Controller
             ->whereDate('logged_in_at', $date)->pluck('user_id')->unique()->flip();
 
         $cm = $this->calledMailed($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date);
+        $cmIst = self::calledMailedIst($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date);   // real IST slots
 
         $teams = [];
         foreach ($seniors as $senior) {
@@ -509,6 +547,7 @@ class CallDurationController extends Controller
                 // The recruiter's extension is the "Ext. No." saved on the user (users.phone), as listed on /dashboard/admin/junior
                 $slots = array_replace(array_fill(0, 9, 0), $secs[trim((string) $junior->phone)] ?? []);
                 $cmSlots = self::cmSlots($cm[(int) $junior->id] ?? []);
+                $cmSlots = array_replace(array_fill(0, 9, 0), $cmIst[(int) $junior->id] ?? []);   // IST slots, same clock as the durations
                 $members[] = [
                     'name' => $junior->name, 'slots' => $slots, 'total' => array_sum($slots),
                     'cm_slots' => $cmSlots, 'cm_total' => array_sum($cmSlots), 'absent' => !$loggedIn->has($junior->id),
