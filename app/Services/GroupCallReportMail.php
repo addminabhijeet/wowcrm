@@ -421,8 +421,8 @@ class GroupCallReportMail
         $from = filter_var(config('mail.from.address'), FILTER_VALIDATE_EMAIL) ?: $username;
 
         $templates = [
-            'Slot report' => fn () => [self::slotReport($slot['fields'], $slot['title']), '[TEST] [CRM] C&M Count Report - ' . $slot['title'] . ' IST'],
-            'Full report' => fn () => [self::report(), '[TEST] [CRM] C&M Count Report - ' . Carbon::createFromTime($hour)->format('h A') . ' IST (full)'],
+            'Slot report' => fn () => [self::slotReport($slot['fields'], $slot['title']), '[TEST] [CRM] C&M Count Report - ' . self::sendHourLabel() . ' IST (' . $slot['title'] . ' slot)'],
+            'Full report' => fn () => [self::report(), '[TEST] [CRM] C&M Count Report - ' . self::sendHourLabel() . ' IST (full report)'],
         ];
 
         $out = [];
@@ -431,7 +431,7 @@ class GroupCallReportMail
                 [$report, $subject] = $build();
                 $html = view('emails.call-report', [
                     'report'  => $report,
-                    'slotHour' => Carbon::createFromTime($hour)->format('h:00 A'),
+                    'slotHour' => $kolkata->format('h:00 A'),
                     'sentAt'  => $sentAt,
                     'sentDay' => $kolkata->format('l, d F'),
                     'logoUrl' => rtrim((string) config('app.url'), '/') . '/assets/images/logo.png',
@@ -481,7 +481,7 @@ class GroupCallReportMail
 
         return self::deliver(
             $trigger, $date, $hour,
-            '[CRM] C&M Count Report - ' . $title . ' IST',
+            '[CRM] C&M Count Report - ' . self::sendHourLabel() . ' IST (' . $title . ' slot)',
             $report,
             'Slot report sent: ' . $title . ($late > 10 ? " (delayed {$late} min)" : '') . ($withDurations ? '' : ' - without call duration (released by admin)')
         );
@@ -508,10 +508,16 @@ class GroupCallReportMail
 
         return self::deliver(
             $trigger, $date, $hour,
-            '[CRM] C&M Count Report - ' . Carbon::createFromTime($hour)->format('h A') . ' IST',
+            '[CRM] C&M Count Report - ' . self::sendHourLabel() . ' IST (full report)',
             $report,
             'Report sent' . ($late > 10 ? " (delayed {$late} min)" : '')
         );
+    }
+
+    /** The hour the mail is sent, as in the subject ("10 PM"). */
+    private static function sendHourLabel(): string
+    {
+        return now(self::TZ)->format('h A');
     }
 
     /** Minutes past the time the mail was due (the slot end plus MAIL_DELAY_MIN). */
@@ -601,7 +607,7 @@ class GroupCallReportMail
             $sentAt = $kolkata->format('h:i A') . ' IST';
             $html = view('emails.call-report', [
                 'report'   => $report,
-                'slotHour' => Carbon::createFromTime($hour)->format('h:00 A'),
+                'slotHour' => $kolkata->format('h:00 A'),   // the hour the mail is actually sent
                 'sentAt'   => $sentAt,
                 'sentDay'  => $kolkata->format('l, d F'),
                 'logoUrl'  => rtrim((string) config('app.url'), '/') . '/assets/images/logo.png',
