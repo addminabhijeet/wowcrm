@@ -374,123 +374,29 @@ class CallDurationController extends Controller
             $secs[$ext][$slot] = ($secs[$ext][$slot] ?? 0) + (int) $r->call_duration;
         }
 
-        $extUsers = [];   // user id => [extensions]
-        foreach (DB::table('call_duration_extensions')->whereNotNull('user_id')->get(['extension', 'user_id']) as $m) {
-            $extUsers[$m->user_id][] = (string) $m->extension;
-        }
-
         $seniors = User::where('role', 'senior')->where('is_deleted', 0)->get();
         $juniorIds = $seniors->flatMap(fn ($s) => is_array($s->mail) ? $s->mail : [])->unique()->values()->all();
         $juniors = User::whereIn('id', $juniorIds)->where('role', 'junior')->where('is_deleted', 0)->get()->keyBy('id');
         $loggedIn = $juniors->isEmpty() ? collect() : Logins::whereIn('user_id', $juniors->keys())
             ->whereDate('logged_in_at', $date)->pluck('user_id')->unique()->flip();
 
-        $listed = [];   // extensions that belong to a recruiter shown below
         $teams = [];
         foreach ($seniors as $senior) {
             $members = [];
             foreach ($juniors->only(is_array($senior->mail) ? $senior->mail : []) as $junior) {
-                $slots = array_fill(0, 9, 0);
-                foreach ($extUsers[$junior->id] ?? [] as $ext) {
-                    $listed[$ext] = true;
-                    foreach ($secs[$ext] ?? [] as $i => $v) {
-                        $slots[$i] += $v;
-                    }
-                }
+                // The recruiter's extension is the "Ext. No." saved on the user (users.phone), as listed on /dashboard/admin/junior
+                $slots = array_replace(array_fill(0, 9, 0), $secs[trim((string) $junior->phone)] ?? []);
                 $members[] = ['name' => $junior->name, 'slots' => $slots, 'total' => array_sum($slots), 'absent' => !$loggedIn->has($junior->id)];
             }
             $teams[] = ['name' => $senior->name, 'members' => $members];
         }
-
-        // Extensions with calls that are not a listed recruiter's (not assigned, or assigned to someone not in a team)
-        $names = User::whereIn('id', array_keys($extUsers))->pluck('name', 'id');
-        $userOfExt = [];
-        foreach ($extUsers as $uid => $list) {
-            foreach ($list as $e) {
-                $userOfExt[$e] = $uid;
-            }
-        }
-        $others = [];
-        foreach ($secs as $ext => $perSlot) {
-            if (isset($listed[$ext])) {
-                continue;
-            }
-            $slots = array_replace(array_fill(0, 9, 0), $perSlot);
-            $others[] = [
-                'name'  => isset($userOfExt[$ext]) ? ($names[$userOfExt[$ext]] ?? "Ext {$ext}") . " (ext {$ext})" : "Ext {$ext} (not assigned)",
-                'slots' => $slots,
-                'total' => array_sum($slots),
-                'ext'   => (int) $ext,
-            ];
-        }
-        usort($others, fn ($a, $b) => $a['ext'] <=> $b['ext']);
 
         return view('user.callduration-group', [
             'date'       => $date,
             'dateLabel'  => Carbon::parse($date)->format('d-m-Y'),
             'slotTitles' => self::GROUP_SLOTS,
             'teams'      => $teams,
-            'others'     => $others,
-            'calls'      => $rows->count(),
             'fmt'        => fn ($s) => self::hms($s),
-            'mapping'    => $this->mappingRows(),
-            'people'     => User::whereIn('role', ['junior', 'senior'])->where('is_deleted', 0)->orderBy('role', 'desc')->orderBy('name')->get(['id', 'name', 'role']),
         ]);
-    }
-
-    /** Every extension seen in the uploaded calls, with its saved recruiter and a name-based suggestion from the PBX CallerID name. */
-    private function mappingRows(): array
-    {
-        $exts = DB::table(self::TABLE)->whereRaw("CHAR_LENGTH(source) < 7 AND source REGEXP '^[0-9]+$'")->distinct()->pluck('source')
-            ->merge(DB::table(self::TABLE)->whereRaw("CHAR_LENGTH(destination) < 7 AND destination REGEXP '^[0-9]+$'")->distinct()->pluck('destination'))
-            ->map(fn ($e) => (string) $e)->unique()->sort(SORT_NUMERIC)->values();
-
-        $hints = [];
-        foreach (DB::table(self::TABLE)->whereRaw("CHAR_LENGTH(source) < 7 AND caller_id LIKE '%<%>%'")->distinct()->get(['source', 'caller_id']) as $h) {
-            if (preg_match('/^"?([^"<]+?)"?\s*</', (string) $h->caller_id, $m) && !ctype_digit(trim($m[1]))) {
-                $hints[(string) $h->source] = trim($m[1]);
-            }
-        }
-
-        $saved = DB::table('call_duration_extensions')->pluck('user_id', 'extension')->all();
-        $people = User::whereIn('role', ['junior', 'senior'])->where('is_deleted', 0)->get(['id', 'name']);
-
-        return $exts->map(function ($ext) use ($hints, $saved, $people) {
-            $hint = $hints[$ext] ?? null;
-            $suggest = null;
-            if ($hint !== null && !isset($saved[$ext])) {
-                $h = strtolower($hint);
-                $found = $people->filter(function ($p) use ($h) {
-                    $first = strtolower(strtok(trim($p->name), ' '));
-
-                    return $first !== '' && (str_contains($h, $first) || str_contains(strtolower($p->name), $h));
-                });
-                $suggest = $found->count() === 1 ? $found->first()->id : null;
-            }
-
-            return ['ext' => $ext, 'hint' => $hint, 'user_id' => $saved[$ext] ?? null, 'suggest' => $suggest];
-        })->all();
-    }
-
-    public function saveExtensions(Request $request)
-    {
-        $this->authorizeAccess();
-
-        $request->validate(['map' => ['required', 'array'], 'map.*' => ['nullable', 'integer']]);
-        $valid = User::whereIn('role', ['junior', 'senior'])->where('is_deleted', 0)->pluck('id')->all();
-        $now = now();
-        $rows = [];
-        foreach ($request->input('map') as $ext => $uid) {
-            $ext = (string) $ext;
-            if (!self::isExtension($ext)) {
-                continue;
-            }
-            $rows[] = ['extension' => $ext, 'user_id' => in_array((int) $uid, $valid, true) ? (int) $uid : null, 'created_at' => $now, 'updated_at' => $now];
-        }
-        if ($rows) {
-            DB::table('call_duration_extensions')->upsert($rows, ['extension'], ['user_id', 'updated_at']);
-        }
-
-        return redirect()->route('senior.excelgroup', ['date' => $request->input('date')])->with('success', 'Extensions saved.');
     }
 }
