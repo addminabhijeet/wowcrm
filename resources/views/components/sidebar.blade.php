@@ -1004,6 +1004,9 @@ $role = Auth::user()->role;
                     <li><a href="{{ route('senior.excelshow') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>View Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
+                    <li><a href="{{ route('senior.totalcall') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Total Duration</a></li>
+                </ul>
+                <ul class="sidebar-submenu">
                     <li><a href="{{ route('senior.excelgroup') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Group Report</a></li>
                 </ul>
             </li>

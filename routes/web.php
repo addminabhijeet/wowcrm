@@ -427,6 +427,8 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/senior/call-duration/excel', [\App\Http\Controllers\CallDurationController::class, 'excel'])->name('senior.excelshow.excel');
     Route::get('/dashboard/senior/call-duration/pdf', [\App\Http\Controllers\CallDurationController::class, 'pdf'])->name('senior.excelshow.pdf');
     Route::get('/dashboard/senior/call-duration/group', [\App\Http\Controllers\CallDurationController::class, 'group'])->name('senior.excelgroup');
+    Route::get('/dashboard/senior/call-duration/total', [\App\Http\Controllers\CallDurationController::class, 'total'])->name('senior.totalcall');
+    Route::get('/dashboard/senior/call-duration/total/excel', [\App\Http\Controllers\CallDurationController::class, 'totalExcel'])->name('senior.totalcall.excel');
     Route::get('/dashboard/junior/chat', [ChatController::class, 'junior'])->name('chat.junior');
     Route::post('/chat/send', [ChatController::class, 'send'])->name('chat.send');
     Route::get('/latest-messages', [ChatController::class, 'latestMessages'])->name('chat.latestMessages');

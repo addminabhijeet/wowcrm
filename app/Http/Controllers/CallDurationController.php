@@ -580,4 +580,100 @@ class CallDurationController extends Controller
             'fmt'        => fn ($s) => self::hms($s),
         ]);
     }
+
+    // ---------------------------------------------------------------- total duration of every junior (same numbers as the navbar pill)
+
+    /** Shift date shown by default: the same shift the juniors' navbar pill shows right now (shift = 8:00pm IST start date). */
+    private static function currentShiftDate(): string
+    {
+        $now = now(self::IST);
+
+        return $now->hour >= 20 ? $now->toDateString() : $now->copy()->subDay()->toDateString();
+    }
+
+    /**
+     * Every junior with the total call duration of the shift of $date, read from the same precomputed rows as the navbar pill
+     * (CallDurationSummary::pill), so both show identical numbers. @return array{teams:array,covered:?Carbon}
+     */
+    private function totalData(string $date): array
+    {
+        $summaries = DB::table('call_duration_summaries')->where('shift_date', $date)->get()->keyBy('extension');
+        $shift = DB::table('call_duration_shifts')->where('shift_date', $date)->first(['covered_until']);
+
+        $seniors = User::where('role', 'senior')->where('is_deleted', 0)->get();
+        $teamOf = [];
+        foreach ($seniors as $senior) {
+            foreach (is_array($senior->mail) ? $senior->mail : [] as $id) {
+                $teamOf[(int) $id] = $senior->name;
+            }
+        }
+
+        $teams = [];
+        foreach (User::where('role', 'junior')->where('is_deleted', 0)->orderBy('name')->get() as $junior) {
+            $ext = trim((string) $junior->phone);
+            $row = self::isExtension($ext) ? $summaries->get($ext) : null;
+            $slots = [];
+            for ($i = 0; $i < 9; $i++) {
+                $slots[] = (int) ($row->{"slot{$i}"} ?? 0);
+            }
+            $teams[$teamOf[(int) $junior->id] ?? 'No team'][] = [
+                'name'  => $junior->name,
+                'ext'   => self::isExtension($ext) ? $ext : '--',
+                'total' => (int) ($row->total ?? 0),
+                'slots' => $slots,
+            ];
+        }
+        ksort($teams);
+
+        return [
+            'teams'   => $teams,
+            'covered' => $shift && $shift->covered_until ? Carbon::parse($shift->covered_until, self::IST) : null,
+        ];
+    }
+
+    private function totalDate(Request $request): string
+    {
+        $d = (string) $request->input('date');
+
+        return preg_match('/^\d{4}-\d{2}-\d{2}$/', $d) && strtotime($d) ? $d : self::currentShiftDate();
+    }
+
+    public function total(Request $request)
+    {
+        $this->authorizeAccess();
+        $date = $this->totalDate($request);
+        $data = $this->totalData($date);
+
+        return view('user.callduration-total', [
+            'date'       => $date,
+            'dateLabel'  => Carbon::parse($date)->format('d-m-Y'),
+            'slotTitles' => self::GROUP_SLOTS,
+            'teams'      => $data['teams'],
+            'covered'    => $data['covered'],
+            'fmt'        => fn ($s) => self::hms($s),
+        ]);
+    }
+
+    public function totalExcel(Request $request)
+    {
+        $this->authorizeAccess();
+        $date = $this->totalDate($request);
+        $data = $this->totalData($date);
+
+        $rows = [];
+        $i = 0;
+        foreach ($data['teams'] as $team => $members) {
+            foreach ($members as $m) {
+                $rows[] = array_merge([++$i, $team, $m['name'], $m['ext'], self::hms($m['total'])], array_map(fn ($s) => self::hms($s), $m['slots']));
+            }
+        }
+
+        return SimpleXlsx::download(
+            "total-call-duration-{$date}.xlsx",
+            'Total Call Duration - shift of ' . Carbon::parse($date)->format('d-m-Y') . ' (8:00pm - 5:00am IST)',
+            array_merge(['Sl.No', 'Team', 'Name', 'Ext. No.', 'Total Call Duration'], self::GROUP_SLOTS),
+            $rows,
+            array_merge([8, 18, 24, 12, 20], array_fill(0, 9, 18))
+        );
+    }
 }
