@@ -398,13 +398,14 @@ class CallDurationController extends Controller
         return $slots;
     }
 
-    public function group(Request $request)
+    /**
+     * Per team and recruiter: call duration (seconds, per IST hour slot) and Called & Mailed count for a day.
+     * Used by the Group Report page and by the report mails, so both always show the same numbers.
+     *
+     * @return array<int,array{name:string,members:array}>
+     */
+    public function groupData(string $date): array
     {
-        $this->authorizeAccess();
-
-        $d = (string) $request->input('date');
-        $date = preg_match('/^\d{4}-\d{2}-\d{2}$/', $d) && strtotime($d) ? $d : now(self::PBX_TZ)->toDateString();
-
         // The shift of $date: 8:00pm IST that day -> 5:00am IST next morning, looked up in PBX time
         $from = Carbon::parse("{$date} 20:00:00", self::IST);
         $to = $from->copy()->addHours(9);
@@ -449,11 +450,27 @@ class CallDurationController extends Controller
             $teams[] = ['name' => $senior->name, 'members' => $members];
         }
 
+        return $teams;
+    }
+
+    /** Same "h:mm:ss" text as the Group Report page. */
+    public static function durationText($seconds): string
+    {
+        return self::hms($seconds);
+    }
+
+    public function group(Request $request)
+    {
+        $this->authorizeAccess();
+
+        $d = (string) $request->input('date');
+        $date = preg_match('/^\d{4}-\d{2}-\d{2}$/', $d) && strtotime($d) ? $d : now(self::PBX_TZ)->toDateString();
+
         return view('user.callduration-group', [
             'date'       => $date,
             'dateLabel'  => Carbon::parse($date)->format('d-m-Y'),
             'slotTitles' => self::GROUP_SLOTS,
-            'teams'      => $teams,
+            'teams'      => $this->groupData($date),
             'fmt'        => fn ($s) => self::hms($s),
         ]);
     }

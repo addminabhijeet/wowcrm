@@ -91,6 +91,11 @@
                                 Kindly find below the Called &amp; Mailed (C&amp;M) counts for each team, arranged by time slot.
                                 An entry marked <strong style="color:#B3261E;">ab</strong> denotes that the recruiter has not yet signed in today.
                             </p>
+                        @if (!empty($report['duration_note']))
+                            <p style="margin:0 0 8px 0;font-family:{{ $serif }};font-size:16px;line-height:26px;color:#2C4745;">
+                                Under each name, the <strong>call duration</strong> (h:mm:ss) of the same slot is also given, from the PBX call records converted to IST.
+                            </p>
+                        @endif
                         </td>
                     </tr>
 
@@ -108,6 +113,9 @@
                                         <tr><td colspan="2" class="tl" @if ($loop->first) style="border-top:0;" @endif>Team &ndash; {{ $team['name'] }}</td></tr>
                                         @forelse ($team['rows'] as $row)
                                             <tr><td class="n">{{ $row['name'] }}</td><td class="v{{ $row['value'] === 'ab' ? ' ab' : '' }}">{{ $row['value'] }}</td></tr>
+                                            @if (isset($row['duration']))
+                                            <tr><td class="n" style="padding-top:0;padding-left:34px;font-size:13px;color:#4D6B69;">&#8627; Call duration</td><td class="v" style="padding-top:0;font-size:14px;color:#4D6B69;">{{ $row['duration'] }}</td></tr>
+                                            @endif
                                         @empty
                                             <tr><td colspan="2" class="em">No juniors assigned.</td></tr>
                                         @endforelse
@@ -126,6 +134,7 @@
                                     <td width="4" bgcolor="#00E56F" style="background-color:#00E56F;font-size:0;line-height:0;">&nbsp;</td>
                                     <td bgcolor="#EEF8F5" style="background-color:#EEF8F5;padding:14px 18px;font-family:{{ $serif }};font-size:14px;line-height:22px;color:#2C4745;">
                                         The above call numbers include only the &ldquo;C&amp;M&rdquo; counts.
+                                        @if (!empty($report['duration_note']))<br>Call duration is the total talk and ring time (inbound and outbound) on the recruiter&rsquo;s extension, in h:mm:ss.@endif
                                     </td>
                                 </tr>
                             </table>

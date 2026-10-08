@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Http\Controllers\CallDurationController;
 use App\Http\Controllers\CallReportController;
 use App\Models\Logins;
 use Carbon\Carbon;
@@ -490,5 +491,51 @@ class GroupCallReportMail
 
             return self::log($trigger, $date, $hour, 'failed', $all, mb_substr($e->getMessage(), 0, 500));
         }
+    }
+
+    // ---------------------------------------------------------------- call duration in the mails (added)
+
+    /**
+     * Adds each recruiter's call duration to a report built by report() / slotReport(): $row['duration'] = "h:mm:ss",
+     * taken from the same data as Call Duration > Group Report, so the page and every mail show the same numbers.
+     * Recruiters marked "ab" get none (same rule as the page). Any failure leaves the report as it was.
+     */
+    public static function withDurations(array $report): array
+    {
+        try {
+            $date = Carbon::createFromFormat('!d-m-Y', $report['date'])->toDateString();
+            $teams = app(CallDurationController::class)->groupData($date);
+        } catch (\Throwable $e) {
+            Log::error('Call report mail: call durations unavailable: ' . $e->getMessage());
+
+            return $report;
+        }
+
+        $byTeam = [];
+        foreach ($teams as $t) {
+            foreach ($t['members'] as $m) {
+                $byTeam[$t['name']][$m['name']] = $m;
+            }
+        }
+
+        $titles = array_column(array_slice(self::SLOTS, 0, 9), 'title');
+        foreach ($report['sections'] as &$section) {
+            $slot = array_search($section['title'], $titles, true);   // false = the "Total" card
+            foreach ($section['teams'] as &$team) {
+                foreach ($team['rows'] as &$row) {
+                    $m = $byTeam[$team['name']][$row['name']] ?? null;
+                    if ($m === null || $row['value'] === 'ab') {
+                        continue;
+                    }
+                    $row['duration'] = CallDurationController::durationText($slot === false ? $m['total'] : ($m['slots'][$slot] ?? 0));
+                }
+                unset($row);
+            }
+            unset($team);
+        }
+        unset($section);
+        $report['duration_note'] = true;
+
+        return $report;
     }
 }

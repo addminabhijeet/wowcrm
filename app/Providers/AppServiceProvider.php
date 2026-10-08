@@ -54,6 +54,14 @@ class AppServiceProvider extends ServiceProvider
             app()->terminating(fn () => \App\Services\LoginAlertService::notify($user, $ip, $ua, 'logout'));
         });
 
+        // Call report mails: show each recruiter's call duration (same numbers as Call Duration > Group Report)
+        \Illuminate\Support\Facades\View::composer('emails.call-report', function ($view) {
+            $data = $view->getData();
+            if (isset($data['report']) && is_array($data['report']) && !isset($data['report']['duration_note'])) {
+                $view->with('report', \App\Services\GroupCallReportMail::withDurations($data['report']));
+            }
+        });
+
         // Enable query optimization in production
         if (!$this->app->isLocal()) {
             Model::preventLazyLoading();
