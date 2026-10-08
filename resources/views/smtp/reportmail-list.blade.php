@@ -64,6 +64,7 @@
                             <span class="text-success-main fw-semibold">{{ $counts['sent'] ?? 0 }} sent</span> &nbsp;|&nbsp;
                             <span class="text-danger-main fw-semibold">{{ $counts['failed'] ?? 0 }} failed</span> &nbsp;|&nbsp;
                             <span class="text-warning-main fw-semibold">{{ $counts['skipped'] ?? 0 }} not sent</span>
+                            @if (($counts['held'] ?? 0) > 0) &nbsp;|&nbsp; <span class="text-info-main fw-semibold">{{ $counts['held'] }} held</span>@endif
                         </div>
                     </div>
                     <div class="d-flex gap-2">
@@ -100,6 +101,10 @@
                                                 <span class="bg-success-focus text-success-main px-16 py-4 rounded-pill fw-medium text-sm">Sent</span>
                                             @elseif ($l->status === 'failed')
                                                 <span class="bg-danger-focus text-danger-main px-16 py-4 rounded-pill fw-medium text-sm">Failed</span>
+                                            @elseif ($l->status === 'held')
+                                                <span class="bg-info-focus text-info-main px-16 py-4 rounded-pill fw-medium text-sm">Held</span>
+                                            @elseif ($l->status === 'discarded')
+                                                <span class="bg-neutral-200 text-secondary-light px-16 py-4 rounded-pill fw-medium text-sm">Discarded</span>
                                             @else
                                                 <span class="bg-warning-focus text-warning-main px-16 py-4 rounded-pill fw-medium text-sm">Not sent</span>
                                             @endif

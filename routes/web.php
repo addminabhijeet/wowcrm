@@ -370,6 +370,8 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/smtp/report-mail-list', [\App\Http\Controllers\CallReportMailController::class, 'list'])->name('smtp.reportmail.list');
     Route::get('/dashboard/smtp/report-mail-list-excel', [\App\Http\Controllers\CallReportMailController::class, 'excel'])->name('smtp.reportmail.excel');
     Route::post('/dashboard/smtp/report-mail/send-slot-now', [\App\Http\Controllers\CallReportMailController::class, 'sendSlotNow'])->name('smtp.reportmail.sendslot');
+    Route::post('/dashboard/smtp/report-mail/release-held', [\App\Http\Controllers\CallReportMailController::class, 'releaseHeld'])->name('smtp.reportmail.release');
+    Route::post('/dashboard/smtp/report-mail/discard-held', [\App\Http\Controllers\CallReportMailController::class, 'discardHeld'])->name('smtp.reportmail.discard');
     Route::put('/dashboard/smtp/allupdate', [DashboardController::class, 'addupdate'])->name('smtp.addupdate');
     Route::put('/dashboard/smtp/update/{user}', [DashboardController::class, 'update'])->name('smtp.update');
     Route::post('/dashboard/smtp/test/{id}', [DashboardController::class, 'test'])->name('smtp.test');

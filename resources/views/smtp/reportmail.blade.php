@@ -105,8 +105,56 @@
                     @endforeach
                 </select>
                 <button type="submit" class="btn btn-primary">Send slot report now</button>
-                <span class="text-secondary-light text-sm">Sends today's report for the chosen slot only to the saved recipients (the last slot also sends the full report). Result appears in the send list.</span>
+                <span class="text-secondary-light text-sm">Sends the latest report of the chosen slot to the saved recipients (the last slot also sends the full report), only when the call data of that slot has been uploaded. Result appears in the send list.</span>
             </form>
+
+            @php
+                $held = \App\Services\GroupCallReportMail::heldRows();
+                $heldShifts = collect($held)->pluck('shift')->unique()->values();
+            @endphp
+            <hr class="my-24">
+            <h6 class="mb-8">Mails waiting for call data</h6>
+            <div class="text-secondary-light text-sm mb-12">
+                A slot mail is never sent without its call duration. It is held until the PBX sheet covering that slot has been uploaded
+                (Call Duration &rarr; Upload Report) and is then sent automatically, in slot order. Held mails never expire by themselves.
+            </div>
+            @if (count($held))
+                <div class="table-responsive scroll-sm">
+                    <table class="table bordered-table sm-table mb-0 align-middle">
+                        <thead><tr><th>Shift (8:00pm IST start)</th><th>Slot</th><th>Waiting since (IST)</th><th class="text-center">Action</th></tr></thead>
+                        <tbody>
+                            @foreach ($held as $h)
+                                <tr>
+                                    <td>{{ \Carbon\Carbon::parse($h['shift'])->format('d M Y') }}</td>
+                                    <td>{{ $h['title'] }}</td>
+                                    <td>{{ $h['since'] }}</td>
+                                    <td class="text-center">
+                                        <form method="POST" action="{{ route('smtp.reportmail.release') }}" class="d-inline"
+                                              onsubmit="return confirm('Send this slot mail now WITHOUT call duration?');">
+                                            @csrf
+                                            <input type="hidden" name="date" value="{{ $h['date'] }}">
+                                            <input type="hidden" name="hour" value="{{ $h['hour'] }}">
+                                            <button type="submit" class="btn btn-outline-primary btn-sm">Send now without call duration</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+                <div class="d-flex flex-wrap gap-2 mt-12">
+                    @foreach ($heldShifts as $shift)
+                        <form method="POST" action="{{ route('smtp.reportmail.discard') }}"
+                              onsubmit="return confirm('Discard all held mails of this shift? They will never be sent.');">
+                            @csrf
+                            <input type="hidden" name="shift" value="{{ $shift }}">
+                            <button type="submit" class="btn btn-outline-danger btn-sm">Discard held mails of {{ \Carbon\Carbon::parse($shift)->format('d M Y') }}</button>
+                        </form>
+                    @endforeach
+                </div>
+            @else
+                <div class="text-sm text-secondary-light">No mail is waiting for call data.</div>
+            @endif
         </div>
     </div>
 

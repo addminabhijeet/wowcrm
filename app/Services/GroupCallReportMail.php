@@ -304,23 +304,36 @@ class GroupCallReportMail
     }
 
     /**
-     * Scheduler entry: at an admin-chosen hour that ends a slot, mail that slot only.
-     * At the last slot (4:00am - 5:00am title) a second mail follows with the full report (send()).
+     * Scheduler entry (every 5 minutes, and right after an upload): slot mails whose time has come are sent only
+     * when the uploaded call data covers that slot, otherwise they are held and re-checked. See releaseDue().
      */
     public static function sendDueSlotMails(): void
     {
-        $now = now(self::TZ);
-        $hour = (int) $now->format('G');
-        if (!isset(self::HOUR_SLOTS[$hour]) || !in_array($hour, self::hours(), true)) {
+        $ticked = self::hours();
+        if (!$ticked) {
             return;
         }
-        $date = $now->toDateString();
 
-        if (!self::mailDone($date, $hour, 'slot')) {
-            self::sendSlot($date, $hour);
+        $lock = null;
+        try {
+            $lock = Cache::lock('call_report_release', 900);
+            if (!$lock->get()) {
+                return;   // another run (scheduler or upload) is releasing right now
+            }
+        } catch (\Throwable $e) {
+            $lock = null;   // cache store without lock support: run unlocked, the send log still prevents repeats
         }
-        if (self::HOUR_SLOTS[$hour] === count(self::SLOTS) - 2 && !self::mailDone($date, $hour, 'schedule')) {
-            self::send('schedule', $date, $hour);
+
+        try {
+            self::releaseDue($ticked);
+        } finally {
+            if ($lock) {
+                try {
+                    $lock->release();
+                } catch (\Throwable $e) {
+                    // lock already expired
+                }
+            }
         }
     }
 
@@ -425,10 +438,113 @@ class GroupCallReportMail
         return $out;
     }
 
-    /** Emails only the slot that ended at $hour (same recipients, SMTP, view and log as send()). */
-    public static function sendSlot(string $date, int $hour, string $trigger = 'slot'): array
+    /**
+     * Emails only the slot that ended at $date $hour (IST), built from the same data as the Group Report page
+     * (C&M count + call duration). $opts['durations'] = false sends it without call duration (manual release only).
+     */
+    public static function sendSlot(string $date, int $hour, string $trigger = 'slot', array $opts = []): array
     {
-        ['fields' => $fields, 'title' => $title] = self::SLOTS[self::HOUR_SLOTS[$hour]];
+        $slot = self::slotOf($date, $hour);
+        if ($slot === null) {
+            return ['status' => 'skipped', 'message' => 'No slot ends at this hour'];
+        }
+        [$shiftDate, $i, $end] = $slot;
+        $withDurations = $opts['durations'] ?? true;
+        $title = self::SLOTS[$i]['title'];
+
+        try {
+            $report = self::buildReport($shiftDate, $i, $withDurations);
+        } catch (\Throwable $e) {
+            Log::error('Call report slot mail: report could not be built: ' . $e->getMessage());
+
+            return self::log($trigger, $date, $hour, 'failed', '', mb_substr($e->getMessage(), 0, 500));
+        }
+        $late = self::minutesLate($end);
+        self::addNotes($report, $end, $late, $withDurations);
+
+        return self::deliver(
+            $trigger, $date, $hour,
+            '[CRM] C&M Count Report - ' . $title . ' IST',
+            $report,
+            'Slot report sent: ' . $title . ($late > 10 ? " (delayed {$late} min)" : '') . ($withDurations ? '' : ' - without call duration (released by admin)')
+        );
+    }
+
+    /** The full report (every slot + total) of the shift that ended at $date $hour (05:00 IST), same data as the page. */
+    public static function sendFull(string $date, int $hour, string $trigger = 'schedule'): array
+    {
+        $slot = self::slotOf($date, $hour);
+        if ($slot === null) {
+            return ['status' => 'skipped', 'message' => 'No shift ends at this hour'];
+        }
+        [$shiftDate, , $end] = $slot;
+
+        try {
+            $report = self::buildReport($shiftDate, null, true);
+        } catch (\Throwable $e) {
+            Log::error('Call report full mail: report could not be built: ' . $e->getMessage());
+
+            return self::log($trigger, $date, $hour, 'failed', '', mb_substr($e->getMessage(), 0, 500));
+        }
+        $late = self::minutesLate($end);
+        self::addNotes($report, $end, $late, true);
+
+        return self::deliver(
+            $trigger, $date, $hour,
+            '[CRM] C&M Count Report - ' . Carbon::createFromTime($hour)->format('h A') . ' IST',
+            $report,
+            'Report sent' . ($late > 10 ? " (delayed {$late} min)" : '')
+        );
+    }
+
+    private static function minutesLate(Carbon $end): int
+    {
+        return (int) floor((now(self::TZ)->getTimestamp() - $end->getTimestamp()) / 60);
+    }
+
+    /** "Delayed" / "without call duration" lines of the mail (shown by the template only when set). */
+    private static function addNotes(array &$report, Carbon $end, int $late, bool $withDurations): void
+    {
+        if ($withDurations && $late > 10) {
+            $report['delayed_note'] = 'Due at ' . $end->format('h:i A') . ' IST, sent at ' . now(self::TZ)->format('h:i A')
+                . ' IST because the call data for this slot was uploaded late.';
+        }
+        if (!$withDurations) {
+            $report['no_duration_note'] = true;
+        }
+    }
+
+    /**
+     * One shift (date = its 8:00pm IST start) as the mail template expects it: one card for $slot, or every slot and
+     * the total when $slot is null. Same numbers as the Group Report page (C&M count, "ab", call duration).
+     */
+    public static function buildReport(string $shiftDate, ?int $slot, bool $withDurations = true): array
+    {
+        $teams = app(CallDurationController::class)->groupData($shiftDate);
+        $sections = [];
+
+        foreach ($slot === null ? array_merge(range(0, 8), [null]) : [$slot] as $c) {
+            $outTeams = [];
+            foreach ($teams as $t) {
+                $rows = [];
+                foreach ($t['members'] as $m) {
+                    $row = ['name' => $m['name'], 'value' => $m['absent'] ? 'ab' : ($c === null ? $m['cm_total'] : $m['cm_slots'][$c])];
+                    if ($withDurations && !$m['absent']) {
+                        $row['duration'] = CallDurationController::durationText($c === null ? $m['total'] : $m['slots'][$c]);
+                    }
+                    $rows[] = $row;
+                }
+                $outTeams[] = ['name' => $t['name'], 'rows' => $rows];
+            }
+            $sections[] = ['title' => $c === null ? 'Total C&M Count' : self::SLOTS[$c]['title'], 'teams' => $outTeams];
+        }
+
+        return ['date' => Carbon::parse($shiftDate)->format('d-m-Y'), 'sections' => $sections, 'duration_note' => $withDurations];
+    }
+
+    /** Sends a ready-made $report to the saved recipients (same SMTP, template and send-list log as send()). */
+    private static function deliver(string $trigger, string $date, int $hour, string $subject, array $report, string $okMessage): array
+    {
         $r = self::recipients();
         $to = $r['to'];
         $cc = $r['cc'];
@@ -463,31 +579,28 @@ class GroupCallReportMail
             ]);
             $from = filter_var(config('mail.from.address'), FILTER_VALIDATE_EMAIL) ?: $username;
 
-            $report = self::slotReport($fields, $title);
             $kolkata = now(self::TZ);
             $sentAt = $kolkata->format('h:i A') . ' IST';
             $html = view('emails.call-report', [
-                'report'  => $report,
+                'report'   => $report,
                 'slotHour' => Carbon::createFromTime($hour)->format('h:00 A'),
-                'sentAt'  => $sentAt,
-                'sentDay' => $kolkata->format('l, d F'),
-                'logoUrl' => rtrim((string) config('app.url'), '/') . '/assets/images/logo.png',
+                'sentAt'   => $sentAt,
+                'sentDay'  => $kolkata->format('l, d F'),
+                'logoUrl'  => rtrim((string) config('app.url'), '/') . '/assets/images/logo.png',
             ])->render();
             $text = self::text($report, $kolkata->format('l, d F') . ', ' . $sentAt);
 
-            Mail::mailer('callreport')->raw($text, function ($m) use ($to, $cc, $from, $html, $title) {
-                $m->to($to)
-                    ->subject('[CRM] C&M Count Report - ' . $title . ' IST')
-                    ->from($from, config('app.name', 'CRM'));
+            Mail::mailer('callreport')->raw($text, function ($m) use ($to, $cc, $from, $html, $subject) {
+                $m->to($to)->subject($subject)->from($from, config('app.name', 'CRM'));
                 if ($cc) {
                     $m->cc($cc);
                 }
                 $m->html($html);
             });
 
-            return self::log($trigger, $date, $hour, 'sent', $all, 'Slot report sent: ' . $title);
+            return self::log($trigger, $date, $hour, 'sent', $all, $okMessage);
         } catch (\Throwable $e) {
-            Log::error('Call report slot mail failed: ' . $e->getMessage());
+            Log::error('Call report mail failed: ' . $e->getMessage());
 
             return self::log($trigger, $date, $hour, 'failed', $all, mb_substr($e->getMessage(), 0, 500));
         }
@@ -537,5 +650,265 @@ class GroupCallReportMail
         $report['duration_note'] = true;
 
         return $report;
+    }
+
+    // ---------------------------------------------------------------- hold until the call data is uploaded (added)
+
+    /** Minutes of slack when comparing an upload's first/last call with a slot's start/end (quiet minutes at the edges). */
+    public const COVER_TOLERANCE_MIN = 15;
+
+    /** A slot whose time came longer ago than this is no longer picked up as "newly due" (only already held ones keep waiting). */
+    public const REGISTER_WINDOW_HOURS = 12;
+
+    /** Uploaded call-data ranges in IST, overlapping or (within the tolerance) touching ones merged. @return array<int,array{0:Carbon,1:Carbon}> */
+    public static function coverage(): array
+    {
+        try {
+            $rows = DB::table('call_duration_uploads')->orderBy('covers_from')->get(['covers_from', 'covers_to']);
+        } catch (\Throwable $e) {
+            return [];
+        }
+
+        $merged = [];
+        foreach ($rows as $r) {
+            $from = Carbon::parse($r->covers_from, self::TZ);
+            $to = Carbon::parse($r->covers_to, self::TZ);
+            $last = count($merged) - 1;
+            if ($last >= 0 && $from->lte($merged[$last][1]->copy()->addMinutes(self::COVER_TOLERANCE_MIN))) {
+                if ($to->gt($merged[$last][1])) {
+                    $merged[$last][1] = $to;
+                }
+            } else {
+                $merged[] = [$from, $to];
+            }
+        }
+
+        return $merged;
+    }
+
+    /** True when one uploaded range contains the whole of $start..$end (give or take the tolerance at both edges). */
+    public static function isCovered(Carbon $start, Carbon $end, ?array $coverage = null): bool
+    {
+        foreach ($coverage ?? self::coverage() as [$from, $to]) {
+            if ($from->lte($start->copy()->addMinutes(self::COVER_TOLERANCE_MIN)) && $to->gte($end->copy()->subMinutes(self::COVER_TOLERANCE_MIN))) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /** IST start and end of slot $i of the shift that starts at 8:00pm IST on $shiftDate. @return array{0:Carbon,1:Carbon} */
+    public static function slotWindow(string $shiftDate, int $i): array
+    {
+        $start = Carbon::parse("{$shiftDate} 20:00:00", self::TZ)->addHours($i);
+
+        return [$start, $start->copy()->addHour()];
+    }
+
+    /** Shift date (its 8:00pm IST start), slot index and slot end of the slot that ends at $date $hour. @return array{0:string,1:int,2:Carbon}|null */
+    private static function slotOf(string $date, int $hour): ?array
+    {
+        $i = self::HOUR_SLOTS[$hour] ?? null;
+        if ($i === null) {
+            return null;
+        }
+        $end = Carbon::parse($date . ' ' . sprintf('%02d:00:00', $hour), self::TZ);
+
+        return [$end->copy()->subHours($i + 1)->toDateString(), $i, $end];
+    }
+
+    private static function slotDone(string $date, int $hour): bool
+    {
+        return self::mailDone($date, $hour, 'slot')
+            || DB::table('call_report_mail_logs')->where('report_date', $date)->where('report_hour', $hour)
+                ->where('trigger', 'slot')->where('status', 'discarded')->exists();
+    }
+
+    private static function markHeld(string $date, int $hour, int $i, string $reason = 'call data'): void
+    {
+        $exists = DB::table('call_report_mail_logs')->where('report_date', $date)->where('report_hour', $hour)
+            ->where('trigger', 'slot')->whereIn('status', ['held', 'sent', 'discarded'])->exists();
+        if (!$exists) {
+            self::log('slot', $date, $hour, 'held', '', 'Waiting for ' . $reason . ': ' . self::SLOTS[$i]['title']);
+        }
+    }
+
+    /** False when no recipient is saved or the SMTP username is empty: ready mails then stay held instead of being logged as "not sent" every 5 minutes. */
+    private static function canSend(): bool
+    {
+        $r = self::recipients();
+
+        return ($r['to'] || $r['cc']) && !empty(config('mail.mailers.smtp.username'));
+    }
+
+    private static function clearHeld(string $date, int $hour): void
+    {
+        DB::table('call_report_mail_logs')->where('report_date', $date)->where('report_hour', $hour)
+            ->where('trigger', 'slot')->where('status', 'held')->delete();
+    }
+
+    /**
+     * Sends every slot mail that is due and whose call data has been uploaded; the others stay held (no timeout).
+     * Within one shift the slots go out in order, and the full report follows the last slot once the whole shift is covered.
+     */
+    private static function releaseDue(array $ticked): void
+    {
+        $now = now(self::TZ);
+        $coverage = self::coverage();
+        $canSend = self::canSend();
+        $pending = [];   // shift date => [slot index => slot end]
+
+        // slots whose time has come (within the last REGISTER_WINDOW_HOURS) and whose hour is ticked; older ones only if already held
+        $recent = $now->copy()->subHours(self::REGISTER_WINDOW_HOURS);
+        foreach ([-1, 0] as $offset) {
+            $x = $now->copy()->startOfDay()->addDays($offset)->toDateString();
+            for ($i = 0; $i < 9; $i++) {
+                [, $end] = self::slotWindow($x, $i);
+                if ($end->lte($now) && $end->gte($recent) && in_array((int) $end->format('G'), $ticked, true)) {
+                    $pending[$x][$i] = $end;
+                }
+            }
+        }
+        // older slots that are still waiting (never cancelled automatically)
+        foreach (DB::table('call_report_mail_logs')->where('trigger', 'slot')->where('status', 'held')->get(['report_date', 'report_hour']) as $h) {
+            $slot = self::slotOf((string) $h->report_date, (int) $h->report_hour);
+            if ($slot !== null) {
+                $pending[$slot[0]][$slot[1]] = $slot[2];
+            }
+        }
+
+        ksort($pending);
+        foreach ($pending as $x => $slots) {
+            ksort($slots);
+            foreach ($slots as $i => $end) {
+                $date = $end->toDateString();
+                $hour = (int) $end->format('G');
+
+                if (!self::slotDone($date, $hour)) {
+                    if (!self::isCovered(self::slotWindow($x, $i)[0], $end, $coverage)) {
+                        self::markHeld($date, $hour, $i);
+                        break;   // the later slots of this shift wait for it
+                    }
+                    if (!$canSend) {
+                        self::markHeld($date, $hour, $i, 'mail settings (no recipient saved or MAIL_USERNAME empty)');
+                        break;
+                    }
+                    if (self::sendSlot($date, $hour)['status'] === 'sent') {
+                        self::clearHeld($date, $hour);
+                    }
+                }
+
+                if ($i === 8 && DB::table('call_report_mail_logs')->where('report_date', $date)->where('report_hour', $hour)
+                        ->where('trigger', 'slot')->where('status', 'sent')->exists()
+                    && !self::mailDone($date, $hour, 'schedule')
+                    && $canSend
+                    && self::isCovered(self::slotWindow($x, 0)[0], $end, $coverage)) {
+                    self::sendFull($date, $hour);
+                }
+            }
+        }
+    }
+
+    /** Slot mails waiting for call data, oldest first. @return array<int,array{date:string,hour:int,shift:string,title:string,since:string}> */
+    public static function heldRows(): array
+    {
+        $out = [];
+        foreach (DB::table('call_report_mail_logs')->where('trigger', 'slot')->where('status', 'held')->orderBy('id')->get(['report_date', 'report_hour', 'sent_at']) as $h) {
+            $slot = self::slotOf((string) $h->report_date, (int) $h->report_hour);
+            if ($slot === null) {
+                continue;
+            }
+            $out[] = [
+                'date'  => (string) $h->report_date,
+                'hour'  => (int) $h->report_hour,
+                'shift' => $slot[0],
+                'title' => self::SLOTS[$slot[1]]['title'],
+                'index' => $slot[1],
+                'since' => Carbon::parse($h->sent_at, config('app.timezone'))->setTimezone(self::TZ)->format('d M, h:i A'),
+            ];
+        }
+        usort($out, fn ($a, $b) => [$a['shift'], $a['index']] <=> [$b['shift'], $b['index']]);
+
+        return $out;
+    }
+
+    /** Admin: mails a held slot now, without call duration. The slot counts as sent afterwards. */
+    public static function releaseWithoutDurations(string $date, int $hour): array
+    {
+        $held = DB::table('call_report_mail_logs')->where('report_date', $date)->where('report_hour', $hour)
+            ->where('trigger', 'slot')->where('status', 'held')->exists();
+        if (!$held) {
+            return ['status' => 'skipped', 'message' => 'This slot is not waiting for call data any more.'];
+        }
+
+        $result = self::sendSlot($date, $hour, 'slot', ['durations' => false]);
+        if ($result['status'] === 'sent') {
+            self::clearHeld($date, $hour);
+        }
+
+        return $result;
+    }
+
+    /**
+     * Admin: gives up the slot mails of one shift that are due and not sent yet (they are never sent).
+     * @return int number of mails discarded
+     */
+    public static function discardShift(string $shiftDate): int
+    {
+        $now = now(self::TZ);
+        $n = 0;
+        for ($i = 0; $i < 9; $i++) {
+            [, $end] = self::slotWindow($shiftDate, $i);
+            if ($end->gt($now)) {
+                continue;   // not due yet: it will be handled when its time comes
+            }
+            $date = $end->toDateString();
+            $hour = (int) $end->format('G');
+            $rows = DB::table('call_report_mail_logs')->where('report_date', $date)->where('report_hour', $hour)->where('trigger', 'slot');
+
+            if ((clone $rows)->whereIn('status', ['sent', 'discarded'])->exists()) {
+                continue;   // already sent, or already discarded
+            }
+            $message = 'Discarded by admin: call data was never uploaded';
+            if ((clone $rows)->where('status', 'held')->exists()) {
+                (clone $rows)->where('status', 'held')->update(['status' => 'discarded', 'message' => $message, 'updated_at' => now()]);
+            } else {
+                self::log('slot', $date, $hour, 'discarded', '', $message);
+            }
+            $n++;
+        }
+
+        return $n;
+    }
+
+    /** For the Upload Report page: uploaded ranges, the slots of the latest shift (data / mail state) and the held mails. */
+    public static function statusPanel(): array
+    {
+        $now = now(self::TZ);
+        $coverage = self::coverage();
+        $shift = $now->hour >= 20 ? $now->toDateString() : $now->copy()->subDay()->toDateString();
+
+        $slots = [];
+        for ($i = 0; $i < 9; $i++) {
+            [$start, $end] = self::slotWindow($shift, $i);
+            $date = $end->toDateString();
+            $hour = (int) $end->format('G');
+            $mail = DB::table('call_report_mail_logs')->where('report_date', $date)->where('report_hour', $hour)->where('trigger', 'slot')
+                ->orderByDesc('id')->value('status');
+
+            $slots[] = [
+                'title' => self::SLOTS[$i]['title'],
+                'data'  => $end->gt($now) && !self::isCovered($start, $end, $coverage) ? 'upcoming' : (self::isCovered($start, $end, $coverage) ? 'ready' : 'missing'),
+                'mail'  => $mail ?: ($end->gt($now) ? 'not due yet' : 'not sent'),
+            ];
+        }
+
+        return [
+            'coverage' => array_map(fn ($c) => [$c[0]->format('d M, h:i A'), $c[1]->format('d M, h:i A')], $coverage),
+            'shift'    => Carbon::parse($shift)->format('d-m-Y'),
+            'slots'    => $slots,
+            'held'     => self::heldRows(),
+        ];
     }
 }

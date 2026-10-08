@@ -84,20 +84,57 @@ class CallReportMailController extends Controller
 
         $request->validate(['slot' => ['required', 'integer', 'between:0,8']]);
         $slot = (int) $request->input('slot');
-        $hour = array_search($slot, GroupCallReportMail::HOUR_SLOTS, true);
-        $date = now(self::TZ)->toDateString();
+        $hour = (int) array_search($slot, GroupCallReportMail::HOUR_SLOTS, true);
 
-        $result = GroupCallReportMail::sendSlot($date, (int) $hour, 'manual');
+        // the most recent time this slot ended (today, or yesterday when it has not ended yet today)
+        $end = \Carbon\Carbon::parse(now(self::TZ)->toDateString() . sprintf(' %02d:00:00', $hour), self::TZ);
+        if ($end->gt(now(self::TZ))) {
+            $end->subDay();
+        }
+        $date = $end->toDateString();
+
+        // never mail a slot without its call duration: the data of the slot must have been uploaded
+        [$slotStart] = GroupCallReportMail::slotWindow($end->copy()->subHours($slot + 1)->toDateString(), $slot);
+        if (!GroupCallReportMail::isCovered($slotStart, $end)) {
+            return redirect()->route('smtp.reportmail.list')->with('error',
+                'Not sent: the call data of ' . GroupCallReportMail::SLOTS[$slot]['title'] . ' (' . $end->format('d M') . ') has not been uploaded yet. Upload the PBX sheet first.');
+        }
+
+        $result = GroupCallReportMail::sendSlot($date, $hour, 'manual');
         $message = 'Manual slot send (' . GroupCallReportMail::SLOTS[$slot]['title'] . '): ' . $result['status'] . ' - ' . $result['message'];
         $ok = $result['status'] === 'sent';
 
         if ($slot === count(GroupCallReportMail::SLOTS) - 2) {
-            $full = GroupCallReportMail::send('manual', $date, (int) $hour);
+            $full = GroupCallReportMail::sendFull($date, $hour, 'manual');
             $message .= ' | Full report: ' . $full['status'] . ' - ' . $full['message'];
             $ok = $ok && $full['status'] === 'sent';
         }
 
         return redirect()->route('smtp.reportmail.list')->with($ok ? 'success' : 'error', $message);
+    }
+
+    /** Added: send one held slot mail now, without call duration (admin decision). */
+    public function releaseHeld(Request $request)
+    {
+        $this->authorizeAdmin();
+        @set_time_limit(180);
+
+        $data = $request->validate(['date' => ['required', 'date_format:Y-m-d'], 'hour' => ['required', 'integer', 'between:0,23']]);
+        $result = GroupCallReportMail::releaseWithoutDurations($data['date'], (int) $data['hour']);
+
+        return redirect()->route('smtp.reportmail.list')
+            ->with($result['status'] === 'sent' ? 'success' : 'error', 'Held mail released without call duration: ' . $result['status'] . ' - ' . $result['message']);
+    }
+
+    /** Added: give up the held slot mails of one shift; they are never sent. */
+    public function discardHeld(Request $request)
+    {
+        $this->authorizeAdmin();
+
+        $data = $request->validate(['shift' => ['required', 'date_format:Y-m-d']]);
+        $n = GroupCallReportMail::discardShift($data['shift']);
+
+        return redirect()->route('smtp.reportmail.list')->with('success', "Discarded {$n} held mail(s) of the shift that started {$data['shift']} 8:00pm IST.");
     }
 
     // ---------------------------------------------------------------- history list

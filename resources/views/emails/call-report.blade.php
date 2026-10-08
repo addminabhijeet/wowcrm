@@ -96,6 +96,12 @@
                                 Under each name, the <strong>call duration</strong> (h:mm:ss) of the same slot is also given, from the PBX call records converted to IST.
                             </p>
                         @endif
+                        @if (!empty($report['delayed_note']))
+                            <p style="margin:0 0 8px 0;font-family:{{ $serif }};font-size:15px;line-height:24px;font-style:italic;color:#4D6B69;">{{ $report['delayed_note'] }}</p>
+                        @endif
+                        @if (!empty($report['no_duration_note']))
+                            <p style="margin:0 0 8px 0;font-family:{{ $serif }};font-size:15px;line-height:24px;font-style:italic;color:#B3261E;">Call duration is not included in this mail: the call data for this slot was not uploaded.</p>
+                        @endif
                         </td>
                     </tr>
 

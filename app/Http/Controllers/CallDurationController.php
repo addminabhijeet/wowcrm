@@ -38,7 +38,8 @@ class CallDurationController extends Controller
         $this->authorizeAccess();
 
         return view('user.callduration-upload', [
-            'stats'  => DB::table(self::TABLE)->selectRaw('COUNT(*) as total, MIN(call_date) as first_call, MAX(call_date) as last_call')->first(),
+            'panel'  => GroupCallReportMail::statusPanel(),
+            'stats'  =>DB::table(self::TABLE)->selectRaw('COUNT(*) as total, MIN(call_date) as first_call, MAX(call_date) as last_call')->first(),
             'recent' => DB::table(self::TABLE)
                 ->selectRaw('source_file, COUNT(*) as total, MAX(created_at) as uploaded_at')
                 ->groupBy('source_file')->orderByDesc('uploaded_at')->limit(10)->get(),
@@ -80,6 +81,7 @@ class CallDurationController extends Controller
         $name = mb_substr($file->getClientOriginalName(), 0, 255);
         $batch = [];
         $read = $inserted = $invalid = 0;
+        $minCall = $maxCall = null;   // first / last call of the file (PBX time), recorded as the range this upload covers
 
         $flush = function () use (&$batch, &$inserted) {
             if ($batch) {
@@ -114,6 +116,12 @@ class CallDurationController extends Controller
                 'disposition'       => mb_substr($get($row, 'disposition'), 0, 30) ?: null,
                 'time_zone'         => mb_substr($get($row, 'time_zone'), 0, 40) ?: null,
             ];
+            if ($minCall === null || $rec['call_date'] < $minCall) {
+                $minCall = $rec['call_date'];
+            }
+            if ($maxCall === null || $rec['call_date'] > $maxCall) {
+                $maxCall = $rec['call_date'];
+            }
             $rec['row_hash'] = sha1(implode('|', [
                 $rec['call_date'], $rec['source'], $rec['destination'], $rec['call_duration'],
                 $rec['answered_duration'], $rec['caller_id'], $rec['did'], $rec['disposition'],
@@ -129,11 +137,60 @@ class CallDurationController extends Controller
         $flush();
 
         $duplicates = $read - $invalid - $inserted;
+        $summary = "{$name}: {$read} rows read, {$inserted} added, {$duplicates} already stored (skipped)" . ($invalid ? ", {$invalid} invalid (skipped)" : '') . '.';
+        $warnings = [];
 
-        return redirect()->route('senior.excelupload')->with(
-            'success',
-            "{$name}: {$read} rows read, {$inserted} added, {$duplicates} already stored (skipped)" . ($invalid ? ", {$invalid} invalid (skipped)" : '') . '.'
-        );
+        if ($minCall !== null) {
+            $from = Carbon::parse($minCall, self::PBX_TZ)->setTimezone(self::IST);
+            $to = Carbon::parse($maxCall, self::PBX_TZ)->setTimezone(self::IST);
+            $summary .= ' Calls from ' . $from->format('d M, h:i A') . ' to ' . $to->format('d M, h:i A') . ' IST.';
+
+            $before = GroupCallReportMail::coverage();
+            $prevEnd = $before ? end($before)[1] : null;
+            if ($prevEnd && $to->lte($prevEnd)) {
+                $warnings[] = 'This file does not reach beyond the call data you already have (up to ' . $prevEnd->format('d M, h:i A') . ' IST), so no new slot becomes ready.';
+            }
+            if ($prevEnd && $from->gt($prevEnd->copy()->addMinutes(GroupCallReportMail::COVER_TOLERANCE_MIN))) {
+                for ($t = $prevEnd->copy()->startOfHour()->addHour(), $n = 0; $t->lt($from) && $n < 200; $t->addHour(), $n++) {
+                    if ($t->hour >= 20 || $t->hour < 5) {
+                        $warnings[] = 'Gap: no call data between ' . $prevEnd->format('d M, h:i A') . ' and ' . $from->format('d M, h:i A')
+                            . ' IST, which includes shift hours. Slot mails in that gap stay held until it is uploaded.';
+                        break;
+                    }
+                }
+            }
+
+            try {
+                DB::table('call_duration_uploads')->insert([
+                    'file_name'   => $name,
+                    'rows_read'   => $read,
+                    'rows_added'  => $inserted,
+                    'covers_from' => $from->format('Y-m-d H:i:s'),
+                    'covers_to'   => $to->format('Y-m-d H:i:s'),
+                    'uploaded_by' => auth()->id(),
+                    'created_at'  => $now,
+                    'updated_at'  => $now,
+                ]);
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Call duration upload range not saved: ' . $e->getMessage());
+            }
+        } else {
+            $warnings[] = 'No valid call rows were found in this file.';
+        }
+        if ($read - $invalid > 0 && $inserted === 0) {
+            $warnings[] = 'No new calls: every call in this file was already stored.';
+        }
+
+        // Send the held slot mails that this upload makes ready, after the response has gone out
+        app()->terminating(function () {
+            try {
+                GroupCallReportMail::sendDueSlotMails();
+            } catch (\Throwable $e) {
+                \Illuminate\Support\Facades\Log::error('Releasing held call report mails failed: ' . $e->getMessage());
+            }
+        });
+
+        return redirect()->route('senior.excelupload')->with('success', $summary)->with('warnings', $warnings);
     }
 
     /** Header text of the sheet -> column key ("Amswered Duration" is how the PBX spells it). */
