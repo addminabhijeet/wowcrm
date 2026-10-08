@@ -994,14 +994,14 @@ $role = Auth::user()->role;
 
             <li class="dropdown">
                 <a href="javascript:void(0)">
-                    <iconify-icon icon="fluent:people-20-filled" class="menu-icon"></iconify-icon>
+                    <iconify-icon icon="fluent:call-20-filled" class="menu-icon"></iconify-icon>
                     <span>Call Duration</span>
                 </a>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('senior.excelupload') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Senior Group Report</a></li>
+                    <li><a href="{{ route('senior.excelupload') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Upload Report</a></li>
                 </ul>
                 <ul class="sidebar-submenu">
-                    <li><a href="{{ route('senior.excelshow') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>Group Report</a></li>
+                    <li><a href="{{ route('senior.excelshow') }}"><i class="ri-circle-fill circle-icon text-primary-600 w-auto"></i>View Report</a></li>
                 </ul>
             </li>
             @endif
