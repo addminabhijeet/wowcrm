@@ -78,7 +78,7 @@
                         @empty
                             <span class="text-secondary-light">none</span>
                         @endforelse
-                        <div class="text-secondary-light mt-4">A held mail is sent automatically right after an upload that covers its slot. An admin can release or discard held mails on the Call Report Mail page.</div>
+                        <div class="text-secondary-light mt-4">Each slot mail is due one hour after its slot ends (8:00pm - 9:00pm at 10:00pm IST). A held mail is sent automatically right after an upload that covers its slot. An admin can release or discard held mails on the Call Report Mail page.</div>
                     </div>
                 </div>
             </div>

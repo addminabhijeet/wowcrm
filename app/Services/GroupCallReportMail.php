@@ -300,7 +300,24 @@ class GroupCallReportMail
             ->selectRaw("SUM(status = 'sent') as sent, SUM(status = 'failed') as failed")
             ->first();
 
-        return ($done->sent ?? 0) > 0 || ($done->failed ?? 0) >= 3; // sent, or gave up after 3 failures
+        return ($done->sent ?? 0) > 0;   // failed deliveries are retried (see retryAllowed), never given up
+    }
+
+    /** Quick attempts (every scheduler run) before a failing delivery is retried only every SLOW_RETRY_MIN minutes. */
+    public const FAST_RETRIES = 3;
+    public const SLOW_RETRY_MIN = 30;
+
+    /** False while a delivery that failed FAST_RETRIES times is waiting for its next, slower retry. */
+    private static function retryAllowed(string $date, int $hour, string $trigger): bool
+    {
+        $failed = DB::table('call_report_mail_logs')->where('report_date', $date)->where('report_hour', $hour)
+            ->where('trigger', $trigger)->where('status', 'failed');
+        if ((clone $failed)->count() < self::FAST_RETRIES) {
+            return true;
+        }
+        $last = (clone $failed)->max('sent_at');
+
+        return !$last || Carbon::parse($last, config('app.timezone'))->addMinutes(self::SLOW_RETRY_MIN)->lte(now());
     }
 
     /**
@@ -497,16 +514,17 @@ class GroupCallReportMail
         );
     }
 
+    /** Minutes past the time the mail was due (the slot end plus MAIL_DELAY_MIN). */
     private static function minutesLate(Carbon $end): int
     {
-        return (int) floor((now(self::TZ)->getTimestamp() - $end->getTimestamp()) / 60);
+        return (int) floor((now(self::TZ)->getTimestamp() - self::dueAt($end)->getTimestamp()) / 60);
     }
 
     /** "Delayed" / "without call duration" lines of the mail (shown by the template only when set). */
     private static function addNotes(array &$report, Carbon $end, int $late, bool $withDurations): void
     {
         if ($withDurations && $late > 10) {
-            $report['delayed_note'] = 'Due at ' . $end->format('h:i A') . ' IST, sent at ' . now(self::TZ)->format('h:i A')
+            $report['delayed_note'] = 'Due at ' . self::dueAt($end)->format('h:i A') . ' IST, sent at ' . now(self::TZ)->format('h:i A')
                 . ' IST because the call data for this slot was uploaded late.';
         }
         if (!$withDurations) {
@@ -660,6 +678,18 @@ class GroupCallReportMail
     /** A slot whose time came longer ago than this is no longer picked up as "newly due" (only already held ones keep waiting). */
     public const REGISTER_WINDOW_HOURS = 12;
 
+    /**
+     * Every slot mail goes out this many minutes after its slot ends (the 8:00pm - 9:00pm slot at 10:00pm IST), which gives the
+     * PBX sheet one more hour to be exported and uploaded. The data check itself still looks at the slot's own hour.
+     */
+    public const MAIL_DELAY_MIN = 60;
+
+    /** When the mail of a slot that ends at $end becomes due. */
+    public static function dueAt(Carbon $end): Carbon
+    {
+        return $end->copy()->addMinutes(self::MAIL_DELAY_MIN);
+    }
+
     /** Uploaded call-data ranges in IST, overlapping or (within the tolerance) touching ones merged. @return array<int,array{0:Carbon,1:Carbon}> */
     public static function coverage(): array
     {
@@ -765,7 +795,8 @@ class GroupCallReportMail
             $x = $now->copy()->startOfDay()->addDays($offset)->toDateString();
             for ($i = 0; $i < 9; $i++) {
                 [, $end] = self::slotWindow($x, $i);
-                if ($end->lte($now) && $end->gte($recent) && in_array((int) $end->format('G'), $ticked, true)) {
+                $due = self::dueAt($end);
+                if ($due->lte($now) && $due->gte($recent) && in_array((int) $end->format('G'), $ticked, true)) {
                     $pending[$x][$i] = $end;
                 }
             }
@@ -794,8 +825,14 @@ class GroupCallReportMail
                         self::markHeld($date, $hour, $i, 'mail settings (no recipient saved or MAIL_USERNAME empty)');
                         break;
                     }
+                    if (!self::retryAllowed($date, $hour, 'slot')) {
+                        break;   // a delivery attempt failed several times: wait before trying again
+                    }
                     if (self::sendSlot($date, $hour)['status'] === 'sent') {
                         self::clearHeld($date, $hour);
+                    } else {
+                        self::markHeld($date, $hour, $i, 'mail delivery (the last attempt failed, retrying)');
+                        break;   // keep the order: the later slots wait for this one
                     }
                 }
 
@@ -803,6 +840,7 @@ class GroupCallReportMail
                         ->where('trigger', 'slot')->where('status', 'sent')->exists()
                     && !self::mailDone($date, $hour, 'schedule')
                     && $canSend
+                    && self::retryAllowed($date, $hour, 'schedule')
                     && self::isCovered(self::slotWindow($x, 0)[0], $end, $coverage)) {
                     self::sendFull($date, $hour);
                 }
@@ -860,7 +898,7 @@ class GroupCallReportMail
         $n = 0;
         for ($i = 0; $i < 9; $i++) {
             [, $end] = self::slotWindow($shiftDate, $i);
-            if ($end->gt($now)) {
+            if (self::dueAt($end)->gt($now)) {
                 continue;   // not due yet: it will be handled when its time comes
             }
             $date = $end->toDateString();
@@ -900,7 +938,7 @@ class GroupCallReportMail
             $slots[] = [
                 'title' => self::SLOTS[$i]['title'],
                 'data'  => $end->gt($now) && !self::isCovered($start, $end, $coverage) ? 'upcoming' : (self::isCovered($start, $end, $coverage) ? 'ready' : 'missing'),
-                'mail'  => $mail ?: ($end->gt($now) ? 'not due yet' : 'not sent'),
+                'mail'  => $mail ?: (self::dueAt($end)->gt($now) ? 'not due yet (due ' . self::dueAt($end)->format('h:i A') . ')' : 'not sent'),
             ];
         }
 

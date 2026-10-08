@@ -115,7 +115,8 @@
             <hr class="my-24">
             <h6 class="mb-8">Mails waiting for call data</h6>
             <div class="text-secondary-light text-sm mb-12">
-                A slot mail is never sent without its call duration. It is held until the PBX sheet covering that slot has been uploaded
+                Each slot mail is sent one hour after its slot ends (the 8:00pm - 9:00pm slot at 10:00pm IST; the ticked hour above is the hour the slot ends),
+                to leave time to upload the PBX sheet. A slot mail is never sent without its call duration. It is held until the PBX sheet covering that slot has been uploaded
                 (Call Duration &rarr; Upload Report) and is then sent automatically, in slot order. Held mails never expire by themselves.
             </div>
             @if (count($held))
