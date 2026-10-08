@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-    $title = 'Call Duration -> Upload Excel';
+    $title = 'Call Duration -> Upload Report';
     $role = auth()->user()->role ?? '';
     $subTitle = $role === 'admin' ? 'Super Admin' : ($role === 'operation' ? 'Operation Manager' : 'role');
 @endphp
@@ -11,7 +11,7 @@
             <div class="card p-0 radius-12">
                 <div class="card-header border-bottom bg-base py-16 px-24 d-flex flex-wrap gap-2 align-items-center justify-content-between">
                     <h6 class="mb-0">Upload Call Records</h6>
-                    <a href="{{ route('senior.excelshow') }}" class="btn btn-outline-primary btn-sm">View Group Report</a>
+                    <a href="{{ route('senior.excelshow') }}" class="btn btn-outline-primary btn-sm">View Report</a>
                 </div>
                 <div class="card-body p-24">
                     @if (session('success'))<div class="alert alert-success mb-16">{{ session('success') }}</div>@endif

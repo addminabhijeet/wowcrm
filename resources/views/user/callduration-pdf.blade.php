@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Call Duration - Group Report</title>
+    <title>Call Duration - View Report</title>
     <style>
         @page { margin: 22px 20px; }
         body { font-family: Helvetica, Arial, sans-serif; font-size: 8px; color: #111; }
@@ -15,7 +15,7 @@
     </style>
 </head>
 <body>
-    <h2>Call Duration - Group Report</h2>
+    <h2>Call Duration - View Report</h2>
     <div class="meta">
         {{ $f['start_date'] }} {{ str_pad($f['start_time'], 2, '0', STR_PAD_LEFT) }}:00 to {{ $f['end_date'] }} {{ str_pad($f['end_time'], 2, '0', STR_PAD_LEFT) }}:59
         @if ($f['extension'] !== '') &nbsp;|&nbsp; Extension: {{ $f['extension'] }} @endif

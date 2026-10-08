@@ -1,6 +1,6 @@
 @extends('layout.layout')
 @php
-    $title = 'Call Duration -> Group Report';
+    $title = 'Call Duration -> View Report';
     $role = auth()->user()->role ?? '';
     $subTitle = $role === 'admin' ? 'Super Admin' : ($role === 'operation' ? 'Operation Manager' : 'role');
 @endphp
@@ -66,7 +66,7 @@
                         <div class="text-secondary-light mt-4">{{ number_format($totals['calls']) }} calls</div>
                     </div>
                     <div class="d-flex gap-2">
-                        <a href="{{ route('senior.excelupload') }}" class="btn btn-outline-primary btn-sm">Upload Excel</a>
+                        <a href="{{ route('senior.excelupload') }}" class="btn btn-outline-primary btn-sm">Upload Report</a>
                         <a href="{{ route('senior.excelshow.excel', $f) }}" class="btn btn-success btn-sm">Download Excel</a>
                         <a href="{{ route('senior.excelshow.pdf', $f) }}" class="btn btn-danger btn-sm">Download PDF</a>
                     </div>
