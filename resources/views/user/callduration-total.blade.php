@@ -36,14 +36,24 @@
     .td-wrap .td-stat small { display: block; font-size: 15px; font-weight: 700; color: #4a5a6a; text-transform: uppercase; letter-spacing: .5px; }
     .td-wrap .td-stat strong { font-size: 30px; color: #0b2e4f; }
     .td-wrap .td-team { font-size: 24px; font-weight: 800; color: #0b2e4f; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 4px solid #0b5cad; }
-    .td-wrap .td-scroll { overflow-x: auto; border: 2px solid #8896a5; border-radius: 10px; }
-    .td-wrap table { width: 100%; border-collapse: collapse; font-size: 17px; }
-    .td-wrap th { background: #0b2e4f; color: #fff; font-size: 15px; padding: 12px 14px; text-align: left; white-space: nowrap; position: sticky; top: 0; }
-    .td-wrap td { padding: 13px 14px; border-top: 1px solid #c4ced8; white-space: nowrap; }
+    /* the whole table fits the page width: no sideways scrolling on a normal screen */
+    .td-wrap .td-scroll { border: 2px solid #8896a5; border-radius: 10px; overflow: hidden; }
+    .td-wrap table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 16px; }
+    .td-wrap col.c-no { width: 4%; } .td-wrap col.c-name { width: 19%; } .td-wrap col.c-ext { width: 7%; }
+    .td-wrap col.c-total { width: 12%; } .td-wrap col.c-slot { width: 6.44%; }
+    .td-wrap th { background: #0b2e4f; color: #fff; font-size: 13px; line-height: 1.25; padding: 10px 6px; text-align: center; }
+    .td-wrap th.l, .td-wrap td.l { text-align: left; }
+    .td-wrap th small { display: block; font-size: 11px; font-weight: 600; opacity: .85; }
+    .td-wrap td { padding: 12px 6px; border-top: 1px solid #c4ced8; text-align: center; font-size: 15px; overflow-wrap: anywhere; }
+    .td-wrap td.td-name { text-align: left; padding-left: 10px; }
+    @media (max-width: 900px) {
+        .td-wrap .td-scroll { overflow-x: auto; }
+        .td-wrap table { table-layout: auto; min-width: 860px; }
+    }
     .td-wrap tbody tr:nth-child(even) { background: #f3f7fb; }
     .td-wrap tbody tr:hover { background: #fff6d6; }
     .td-wrap td.td-name { font-weight: 700; }
-    .td-wrap td.td-total { font-size: 21px; font-weight: 800; color: #0b2e4f; background: #e4f0fb; }
+    .td-wrap td.td-total { font-size: 19px; font-weight: 800; color: #0b2e4f; background: #e4f0fb; }
     .td-wrap td.td-zero { color: #6b7886; }
     .td-wrap .td-note { font-size: 16px; color: #3d4b59; background: #fffbe6; border: 2px solid #f0d97a; border-radius: 10px; padding: 12px 16px; margin: 0; }
 </style>
@@ -86,14 +96,24 @@
             <h2 class="td-team">Team - {{ $teamName }}</h2>
             <div class="td-scroll">
                 <table>
+                    <colgroup>
+                        <col class="c-no"><col class="c-name"><col class="c-ext"><col class="c-total">
+                        @foreach ($slotTitles as $t)
+                            <col class="c-slot">
+                        @endforeach
+                    </colgroup>
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Name</th>
-                            <th>Ext. No.</th>
+                            <th class="l">Name</th>
+                            <th>Ext.</th>
                             <th>Total</th>
                             @foreach ($slotTitles as $t)
-                                <th>{{ $t }}</th>
+                                @php
+                                    // "8:00pm - 9:00pm" -> "8 PM" over "9 PM": short two-line header so 9 slots fit on one screen
+                                    [$a, $b] = array_map(fn ($x) => strtoupper(preg_replace('/:00\s*(am|pm)/i', ' $1', trim($x))), explode('-', $t));
+                                @endphp
+                                <th>{{ $a }}<small>to {{ $b }}</small></th>
                             @endforeach
                         </tr>
                     </thead>
