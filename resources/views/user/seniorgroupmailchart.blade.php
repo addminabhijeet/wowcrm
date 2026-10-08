@@ -127,7 +127,7 @@ $timeSlots = [
 
             @else
 
-            No juniors assigned.
+            No IT Recruiters assigned.
 
             @endif
 

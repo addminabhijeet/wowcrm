@@ -53,7 +53,7 @@
                         {{ $m['name'] }} - {{ $m['absent'] ? 'ab' : $fmt($value($m['slots'], $m['total'], $card['slot'])) . ' | C&M ' . $cmValue($m, $card['slot']) }}
                         <br>
                     @empty
-                        No juniors assigned.
+                        No IT Recruiters assigned.
                     @endforelse
 
                     <br>

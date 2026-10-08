@@ -50,7 +50,7 @@
             <hr class="my-24">
             <h6 class="mb-8">Grouped login / logout mails</h6>
             <div class="text-secondary-light text-sm mb-12">
-                When grouped, only <strong>junior</strong> logins and logouts are mailed, as <strong>one mail per hour</strong> (IST) that had at least one of them,
+                When grouped, only <strong>IT Recruiter</strong> logins and logouts are mailed, as <strong>one mail per hour</strong> (IST) that had at least one of them,
                 sent when that hour ends (for example the 10:00pm - 11:00pm mail at 11:00pm). Hours without activity send nothing. The addresses above are used.
                 Switch it off to go back to one mail per login and logout for every user except admin.
             </div>

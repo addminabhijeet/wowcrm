@@ -32,23 +32,28 @@
     .td-wrap .td-excel { background: #1b7a3a; color: #fff; }
     .td-wrap .td-copy  { background: #222; color: #fff; }
     .td-wrap .td-stats { display: flex; gap: 18px; flex-wrap: wrap; margin-bottom: 22px; }
-    .td-wrap .td-stat { flex: 1 1 220px; background: #f3f7fb; border: 2px solid #c7d6e6; border-radius: 14px; padding: 16px 20px; }
-    .td-wrap .td-stat small { display: block; font-size: 15px; font-weight: 700; color: #4a5a6a; text-transform: uppercase; letter-spacing: .5px; }
-    .td-wrap .td-stat strong { font-size: 30px; color: #0b2e4f; }
+    .td-wrap .td-stat { flex: 1 1 200px; background: #f3f7fb; border: 2px solid #c7d6e6; border-radius: 14px; padding: 12px 18px; }
+    .td-wrap .td-stat small { display: block; font-size: 13px; font-weight: 700; color: #4a5a6a; text-transform: uppercase; letter-spacing: .5px; white-space: nowrap; }
+    .td-wrap .td-stat strong { font-size: 26px; color: #0b2e4f; white-space: nowrap; }
+    .td-wrap .td-stat strong em { font-size: 15px; font-style: normal; color: #4a5a6a; }
+    .td-wrap .td-card { padding: 16px 22px; }
+    .td-wrap .td-form { display: flex; gap: 16px; flex-wrap: wrap; align-items: flex-end; }
+    .td-wrap .td-form .td-btns { display: flex; gap: 10px; flex-wrap: wrap; margin-left: auto; }
+    .td-wrap .td-btn { padding: 11px 20px; }
     .td-wrap .td-team { font-size: 24px; font-weight: 800; color: #0b2e4f; margin: 0 0 12px; padding-bottom: 8px; border-bottom: 4px solid #0b5cad; }
     /* the whole table fits the page width: no sideways scrolling on a normal screen */
     .td-wrap .td-scroll { border: 2px solid #8896a5; border-radius: 10px; overflow: hidden; }
     .td-wrap table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 16px; }
-    .td-wrap col.c-no { width: 4%; } .td-wrap col.c-name { width: 19%; } .td-wrap col.c-ext { width: 7%; }
-    .td-wrap col.c-total { width: 12%; } .td-wrap col.c-slot { width: 6.44%; }
+    .td-wrap col.c-no { width: 3%; } .td-wrap col.c-name { width: 16%; } .td-wrap col.c-ext { width: 5%; }
+    .td-wrap col.c-total { width: 11%; } .td-wrap col.c-slot { width: 7.2222%; }
     .td-wrap th { background: #0b2e4f; color: #fff; font-size: 13px; line-height: 1.25; padding: 10px 6px; text-align: center; }
     .td-wrap th.l, .td-wrap td.l { text-align: left; }
     .td-wrap th small { display: block; font-size: 11px; font-weight: 600; opacity: .85; }
-    .td-wrap td { padding: 12px 6px; border-top: 1px solid #c4ced8; text-align: center; font-size: 15px; overflow-wrap: anywhere; }
-    .td-wrap td.td-name { text-align: left; padding-left: 10px; }
-    @media (max-width: 900px) {
+    .td-wrap td { padding: 12px 2px; border-top: 1px solid #c4ced8; text-align: center; font-size: 14px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .td-wrap td.td-name { text-align: left; padding-left: 10px; white-space: normal; }
+    @media (max-width: 1100px) {
         .td-wrap .td-scroll { overflow-x: auto; }
-        .td-wrap table { table-layout: auto; min-width: 860px; }
+        .td-wrap table { table-layout: auto; min-width: 1000px; }
     }
     .td-wrap tbody tr:nth-child(even) { background: #f3f7fb; }
     .td-wrap tbody tr:hover { background: #fff6d6; }
@@ -61,7 +66,7 @@
 <div class="container-fluid td-wrap">
 
     <div class="td-card">
-        <form method="GET" action="{{ route('senior.totalcall') }}" style="display:flex;gap:18px;flex-wrap:wrap;align-items:flex-end;">
+        <form method="GET" action="{{ route('senior.totalcall') }}" class="td-form">
             <div>
                 <label for="tdDate">Choose date</label>
                 <input id="tdDate" type="date" name="date" value="{{ $date }}">
@@ -70,7 +75,7 @@
                 <label for="tdSearch">Find a name</label>
                 <input id="tdSearch" type="search" placeholder="Type a name" autocomplete="off">
             </div>
-            <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <div class="td-btns">
                 <button type="submit" class="td-btn td-show">Show</button>
                 <a href="{{ route('senior.totalcall') }}" class="td-btn td-today">Today</a>
                 <a href="{{ route('senior.totalcall.excel', ['date' => $date]) }}" class="td-btn td-excel">Download Excel</a>
@@ -81,13 +86,13 @@
 
     <div class="td-stats">
         <div class="td-stat"><small>Date</small><strong>{{ $dateLabel }}</strong></div>
-        <div class="td-stat"><small>Shift</small><strong>8 PM - 5 AM IST</strong></div>
-        <div class="td-stat"><small>Juniors</small><strong>{{ $juniorCount }}</strong></div>
-        <div class="td-stat"><small>All juniors together</small><strong>{{ $fmt($grand) }}</strong></div>
+        <div class="td-stat"><small>Shift</small><strong>8 PM - 5 AM <em>IST</em></strong></div>
+        <div class="td-stat"><small>IT Recruiters</small><strong>{{ $juniorCount }}</strong></div>
+        <div class="td-stat"><small>All IT Recruiters together</small><strong>{{ $fmt($grand) }}</strong></div>
     </div>
 
     <p class="td-note" style="margin-bottom:22px;">
-        These totals are the same as the call duration shown in each junior's top bar.
+        These totals are the same as the call duration shown in each IT Recruiter's top bar.
         {{ $covered ? 'Call data uploaded up to ' . $covered->format('d M, h:i A') . ' IST.' : 'No call data uploaded for this shift yet.' }}
     </p>
 
@@ -134,7 +139,7 @@
             </div>
         </div>
     @empty
-        <div class="td-card"><p class="td-note">No juniors found in any team.</p></div>
+        <div class="td-card"><p class="td-note">No IT Recruiters found in any team.</p></div>
     @endforelse
 </div>
 

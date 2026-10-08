@@ -61,11 +61,11 @@ $script ='<script>
                                 <div class="col-sm-6">
                                     <div class="mb-20">
                                         <label for="junior" class="form-label fw-semibold text-primary-light text-sm mb-8">
-                                            Select Junior <span class="text-danger-600">*</span>
+                                            Select IT Recruiter <span class="text-danger-600">*</span>
                                         </label>
 
                                         <select name="group[]" id="junior" class="form-control radius-8 form-select" required>
-                                            <option value="" disabled selected>Select Junior</option>
+                                            <option value="" disabled selected>Select IT Recruiter</option>
 
                                             @foreach($juniors as $junior)
                                             @if(!in_array($junior->id, $user->group ?? []))
@@ -104,7 +104,7 @@ $script ='<script>
                     <div class="tab-pane fade show active" id="pills-edit-profile" role="tabpanel">
                         <div class="row">
                             <div class="col-12 mt-3">
-                                <h6>Assigned Juniors</h6>
+                                <h6>Assigned IT Recruiters</h6>
                                 @if(!empty($user->group))
                                 @php
                                 $assignedJuniors = \App\Models\User::whereIn('id', $user->group)->get();
@@ -124,7 +124,7 @@ $script ='<script>
                                 </div>
                                 @endforeach
                                 @else
-                                <p>No juniors assigned.</p>
+                                <p>No IT Recruiters assigned.</p>
                                 @endif
                             </div>
                         </div>

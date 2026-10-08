@@ -123,7 +123,7 @@
                                             <tr><td class="n" style="padding-top:0;padding-left:34px;font-size:13px;color:#4D6B69;">&#8627; Call duration</td><td class="v" style="padding-top:0;font-size:14px;color:#4D6B69;">{{ $row['duration'] }}</td></tr>
                                             @endif
                                         @empty
-                                            <tr><td colspan="2" class="em">No juniors assigned.</td></tr>
+                                            <tr><td colspan="2" class="em">No IT Recruiters assigned.</td></tr>
                                         @endforelse
                                     @empty
                                         <tr><td colspan="2" class="em">No teams found.</td></tr>
