@@ -11,6 +11,8 @@
     }
     $cards[] = ['title' => 'Total Call Duration', 'slot' => null];
     $value = fn ($slots, $total, $slot) => $slot === null ? $total : ($slots[$slot] ?? 0);
+    // Called & Mailed count of the same card, same numbers as dashboard/group/senior/mail/chart
+    $cmValue = fn ($m, $slot) => $slot === null ? $m['cm_total'] : ($m['cm_slots'][$slot] ?? 0);
 @endphp
 
 @section('content')
@@ -48,7 +50,7 @@
                     <div>....................................</div>
 
                     @forelse ($team['members'] as $m)
-                        {{ $m['name'] }} - {{ $m['absent'] ? 'ab' : $fmt($value($m['slots'], $m['total'], $card['slot'])) }}
+                        {{ $m['name'] }} - {{ $m['absent'] ? 'ab' : $fmt($value($m['slots'], $m['total'], $card['slot'])) . ' | C&M ' . $cmValue($m, $card['slot']) }}
                         <br>
                     @empty
                         No juniors assigned.
@@ -60,7 +62,7 @@
                 @endforeach
 
                 <p class="mt-4">
-                    <strong>The above call numbers include only the "Call Duration" (h:mm:ss, inbound + outbound).</strong>
+                    <strong>The above call numbers include the "Call Duration" (h:mm:ss, inbound + outbound) and only the "C&amp;M" counts.</strong>
                 </p>
             </div>
         </div>

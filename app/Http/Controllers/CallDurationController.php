@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Exports\SimpleXlsx;
+use App\Models\GoogleSheetData;
 use App\Models\Logins;
 use App\Models\User;
 use Carbon\Carbon;
+use App\Services\GroupCallReportMail;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
@@ -346,6 +348,56 @@ class CallDurationController extends Controller
         return self::isExtension($destination) ? $destination : null;
     }
 
+    /** Hour (PBX/app timezone) of each field used by dashboard/group/senior/mail/chart. */
+    private const CM_FIELD_HOUR = [
+        't8to9am' => 8, 't9to10am' => 9, 't10to11am' => 10, 't11to12pm' => 11, 't12to1pm' => 12, 't1to2pm' => 13,
+        't2to3pm' => 14, 't3to4pm' => 15, 't4to5pm' => 16, 't5to6pm' => 17, 't6to7pm' => 18, 't7to8pm' => 19,
+    ];
+
+    /**
+     * Called & Mailed counts per junior and hour, with the same rules as CallReportController::seniorgroupmailchart
+     * (created_by "<id>|junior...", followup and updated_at on the day, Exe_Remarks "Called & Mailed", HOUR(updated_at)),
+     * read for all juniors in one query. @return array<int,array<int,int>> junior id => [hour => count]
+     */
+    private function calledMailed(array $juniorIds, string $date): array
+    {
+        if (!$juniorIds) {
+            return [];
+        }
+
+        $out = [];
+        $rows = GoogleSheetData::selectRaw('created_by, HOUR(updated_at) as hour, COUNT(*) as count')
+            ->where('created_by', 'like', '%|junior%')
+            ->whereDate('followup', $date)
+            ->whereDate('updated_at', $date)
+            ->where('Exe_Remarks', 'Called & Mailed')
+            ->groupBy('created_by', 'hour')
+            ->get();
+
+        foreach ($rows as $r) {
+            if (preg_match('/^(\d+)\|junior/', (string) $r->created_by, $m) && in_array((int) $m[1], $juniorIds, true)) {
+                $out[(int) $m[1]][(int) $r->hour] = ($out[(int) $m[1]][(int) $r->hour] ?? 0) + (int) $r->count;
+            }
+        }
+
+        return $out;
+    }
+
+    /** One count per slot (8:00pm - 9:00pm ... 4:00am - 5:00am), merged exactly like the chart's slots. */
+    private static function cmSlots(array $hourly): array
+    {
+        $slots = [];
+        foreach (array_slice(GroupCallReportMail::SLOTS, 0, 9) as $slot) {
+            $n = 0;
+            foreach ($slot['fields'] as $field) {
+                $n += $hourly[self::CM_FIELD_HOUR[$field]] ?? 0;
+            }
+            $slots[] = $n;
+        }
+
+        return $slots;
+    }
+
     public function group(Request $request)
     {
         $this->authorizeAccess();
@@ -380,13 +432,19 @@ class CallDurationController extends Controller
         $loggedIn = $juniors->isEmpty() ? collect() : Logins::whereIn('user_id', $juniors->keys())
             ->whereDate('logged_in_at', $date)->pluck('user_id')->unique()->flip();
 
+        $cm = $this->calledMailed($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date);
+
         $teams = [];
         foreach ($seniors as $senior) {
             $members = [];
             foreach ($juniors->only(is_array($senior->mail) ? $senior->mail : []) as $junior) {
                 // The recruiter's extension is the "Ext. No." saved on the user (users.phone), as listed on /dashboard/admin/junior
                 $slots = array_replace(array_fill(0, 9, 0), $secs[trim((string) $junior->phone)] ?? []);
-                $members[] = ['name' => $junior->name, 'slots' => $slots, 'total' => array_sum($slots), 'absent' => !$loggedIn->has($junior->id)];
+                $cmSlots = self::cmSlots($cm[(int) $junior->id] ?? []);
+                $members[] = [
+                    'name' => $junior->name, 'slots' => $slots, 'total' => array_sum($slots),
+                    'cm_slots' => $cmSlots, 'cm_total' => array_sum($cmSlots), 'absent' => !$loggedIn->has($junior->id),
+                ];
             }
             $teams[] = ['name' => $senior->name, 'members' => $members];
         }
