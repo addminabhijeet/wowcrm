@@ -1548,6 +1548,9 @@ class UserController extends Controller
         // Only users who are not deleted
         $events = $events->filter(fn ($e) => $userMap->has($e['user_id']));
 
+        // Only juniors and seniors are listed: the events of other roles stay in the database, they are just not shown here
+        $events = $events->filter(fn ($e) => in_array($userMap[$e['user_id']]->role ?? '', ['junior', 'senior'], true));
+
         // Attach login-mail status (sent / failed / skipped) to each self login, matched by user and nearest time
         $mailLog = collect(array_merge(
             \App\Services\LoginAlertService::statusFor($start->toDateString()),

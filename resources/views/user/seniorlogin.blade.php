@@ -41,7 +41,7 @@ $totalLogout = collect($hourly)->sum('logout');
                         <label class="form-label fw-semibold text-sm">User</label>
                         <select name="user_id" class="form-select">
                             <option value="">All users</option>
-                            @foreach($users as $u)
+                            @foreach($users->whereIn('role', ['junior', 'senior']) as $u)
                                 <option value="{{ $u->id }}" @selected($userId == $u->id)>{{ $u->name }}</option>
                             @endforeach
                         </select>
@@ -121,9 +121,7 @@ $totalLogout = collect($hourly)->sum('logout');
                             <tr>
                                 <th>#</th>
                                 <th>User</th>
-                                <th class="text-center">Role</th>
                                 <th class="text-center">Event</th>
-                                <th>Source</th>
                                 <th>IP Address</th>
                                 <th class="text-center">Mail Status</th>
                                 <th>Hour Slot</th>
@@ -139,7 +137,6 @@ $totalLogout = collect($hourly)->sum('logout');
                                         <h6 class="text-md mb-0 fw-medium">{{ $u->name ?? 'Unknown' }}</h6>
                                         <span class="text-sm text-secondary-light">{{ $u->email ?? '' }}</span>
                                     </td>
-                                    <td class="text-center">{{ $u ? ucfirst($u->role) : '-' }}</td>
                                     <td class="text-center">
                                         @if($e['type'] === 'Login')
                                             <span class="bg-success-focus text-success-main px-20 py-4 rounded-pill fw-medium text-sm">Login</span>
@@ -147,7 +144,6 @@ $totalLogout = collect($hourly)->sum('logout');
                                             <span class="bg-danger-focus text-danger-main px-20 py-4 rounded-pill fw-medium text-sm">Logout</span>
                                         @endif
                                     </td>
-                                    <td>{{ $e['detail'] }}</td>
                                     <td>{{ $e['ip'] ?? '-' }}</td>
                                     <td class="text-center">
                                         @php $m = $e['mail'] ?? null; @endphp
@@ -170,7 +166,7 @@ $totalLogout = collect($hourly)->sum('logout');
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center text-secondary-light py-24">No login/logout activity found for the selected filters.</td>
+                                    <td colspan="7" class="text-center text-secondary-light py-24">No login/logout activity found for the selected filters.</td>
                                 </tr>
                             @endforelse
                         </tbody>
