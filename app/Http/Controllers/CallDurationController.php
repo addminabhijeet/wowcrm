@@ -616,7 +616,10 @@ class CallDurationController extends Controller
             for ($i = 0; $i < 9; $i++) {
                 $slots[] = (int) ($row->{"slot{$i}"} ?? 0);
             }
-            $teams[$teamOf[(int) $junior->id] ?? 'No team'][] = [
+            if (!isset($teamOf[(int) $junior->id])) {
+                continue;   // juniors that are not in any senior's team are not listed
+            }
+            $teams[$teamOf[(int) $junior->id]][] = [
                 'name'  => $junior->name,
                 'ext'   => self::isExtension($ext) ? $ext : '--',
                 'total' => (int) ($row->total ?? 0),
