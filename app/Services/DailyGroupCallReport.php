@@ -5,6 +5,23 @@ namespace App\Services;
 /** Builds the shared seven-column daily report from the Group Report's total card. */
 class DailyGroupCallReport
 {
+    /** First hourly upper bound after a stored PBX timestamp (the query already applies the start bound). */
+    public static function slotIndex(string $timestamp, array $slotEnds): int
+    {
+        $low = 0;
+        $high = count($slotEnds);
+        while ($low < $high) {
+            $middle = intdiv($low + $high, 2);
+            if ($timestamp < $slotEnds[$middle]) {
+                $high = $middle;
+            } else {
+                $low = $middle + 1;
+            }
+        }
+
+        return $low;
+    }
+
     public static function extensions(?string $value): array
     {
         // Accept users.phone values such as "183 and 193", "183, 193", or "183/193".

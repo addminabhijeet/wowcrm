@@ -3,10 +3,30 @@
 namespace Tests\Unit;
 
 use App\Services\DailyGroupCallReport;
+use Carbon\Carbon;
 use PHPUnit\Framework\TestCase;
 
 class DailyGroupCallReportTest extends TestCase
 {
+    public function test_fast_slot_lookup_matches_timezone_conversion_at_every_hour_boundary(): void
+    {
+        foreach (['2026-10-27', '2026-11-08'] as $date) {
+            $from = Carbon::parse($date . ' 18:00:00', 'Asia/Kolkata');
+            $ends = [];
+            for ($hour = 1; $hour <= 12; $hour++) {
+                $ends[] = $from->copy()->addHours($hour)->setTimezone('America/New_York')->format('Y-m-d H:i:s');
+            }
+            for ($slot = 0; $slot < 12; $slot++) {
+                foreach ([0, 1, 1799, 1800, 3599] as $second) {
+                    $timestamp = $from->copy()->addHours($slot)->addSeconds($second)->setTimezone('America/New_York')->format('Y-m-d H:i:s');
+                    $reference = (Carbon::parse($timestamp, 'America/New_York')->setTimezone('Asia/Kolkata')->hour - 18 + 24) % 24;
+                    $this->assertSame($reference, DailyGroupCallReport::slotIndex($timestamp, $ends));
+                }
+            }
+            $this->assertSame(12, DailyGroupCallReport::slotIndex($ends[11], $ends));
+        }
+    }
+
     public function test_multiple_extensions_count_each_direction_and_duration_once(): void
     {
         $teams = [[

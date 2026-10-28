@@ -4,7 +4,7 @@
     $role = auth()->user()->role ?? '';
     $subTitle = $role === 'admin' ? 'Super Admin' : ($role === 'operation' ? 'Operation Manager' : 'role');
 
-    // One card per IST hour from 6pm through 5am; keep the combined total last.
+    // One card per IST hour from 6pm through 6am; keep the combined total last.
     $cards = [];
     foreach ($slotTitles as $i => $t) {
         $cards[] = ['title' => $t, 'slot' => $i];
