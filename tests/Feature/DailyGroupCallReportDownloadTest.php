@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Http\Controllers\CallDurationController;
 use App\Http\Controllers\CallReportController;
 use App\Models\User;
+use App\Services\NavbarCallDuration;
 use Carbon\Carbon;
 use DOMDocument;
 use DOMXPath;
@@ -433,5 +434,150 @@ class DailyGroupCallReportDownloadTest extends TestCase
         $this->assertSame([2], $data['loggedInIds']->keys()->all());
         $this->assertTrue($data['seniors'][0]->juniors->firstWhere('id', 2)->report_present);
         $this->assertFalse($data['seniors'][0]->juniors->firstWhere('id', 5)->report_present);
+    }
+
+    private function prepareNavbarUploads(): void
+    {
+        Schema::create('call_duration_uploads', function (Blueprint $table) {
+            $table->id(); $table->dateTime('covers_from'); $table->dateTime('covers_to');
+        });
+        DB::connection()->getPdo()->sqliteCreateFunction('CHAR_LENGTH', fn ($value) => strlen($value));
+        DB::connection()->getPdo()->sqliteCreateFunction('regexp', fn ($pattern, $value) => (int) preg_match('/' . $pattern . '/D', $value));
+    }
+
+    public function test_navbar_matches_total_duration_for_the_full_shift_using_one_query(): void
+    {
+        $this->prepareNavbarUploads();
+        foreach ([['08:30:00', 10], ['09:30:00', 20], ['19:30:00', 30], ['20:29:59', 40]] as [$time, $seconds]) {
+            DB::table('call_duration_records')->insert([
+                'call_date' => '2026-10-27 ' . $time, 'source' => '170', 'destination' => '9729270064', 'call_duration' => $seconds,
+            ]);
+        }
+        DB::table('call_duration_records')->insert([
+            ['call_date' => '2026-10-27 13:00:00', 'source' => '170', 'destination' => '170', 'call_duration' => 5],
+            ['call_date' => '2026-10-27 13:00:01', 'source' => '183', 'destination' => '170', 'call_duration' => 500],
+            ['call_date' => '2026-10-27 13:00:02', 'source' => '0170', 'destination' => '170', 'call_duration' => 800],
+            ['call_date' => '2026-10-27 13:00:03', 'source' => 'abc', 'destination' => '170', 'call_duration' => 8],
+        ]);
+        DB::table('call_duration_uploads')->insert(['covers_from' => '2026-10-27 18:00:00', 'covers_to' => '2026-10-28 06:00:00']);
+        try {
+            Carbon::setTestNow(Carbon::parse('2026-10-28 07:00:00', 'Asia/Kolkata'));
+            DB::connection()->enableQueryLog();
+            DB::connection()->flushQueryLog();
+            $pill = NavbarCallDuration::pill((object) ['role' => 'junior', 'phone' => '170']);
+            $queries = array_column(DB::connection()->getQueryLog(), 'query');
+            $this->assertCount(1, $queries);
+            $this->assertFalse((bool) array_filter($queries, fn ($q) => str_contains($q, 'call_duration_summaries') || str_contains($q, 'call_duration_shifts')));
+            $this->assertSame('25:02:03', $pill['value']);
+            $this->assertSame('Final', $pill['tag']);
+            $this->assertStringContainsString('(6pm-6am IST)', $pill['title']);
+            $this->assertStringContainsString('6-7pm 0:00:10', $pill['title']);
+            $this->assertStringContainsString('5-6am 0:01:10', $pill['title']);
+            $total = app(CallDurationController::class)->total(Request::create('/', 'GET', ['date' => '2026-10-27']))->getData()['teams']['Leader'][0]['total'];
+            $this->assertSame(CallDurationController::durationText($total), $pill['value']);
+        } finally { Carbon::setTestNow(); }
+    }
+
+    public function test_navbar_shift_rollover_no_extension_and_new_uploads(): void
+    {
+        $this->prepareNavbarUploads();
+        $user = (object) ['role' => 'junior', 'phone' => '170'];
+        try {
+            Carbon::setTestNow(Carbon::parse('2026-10-27 17:59:59', 'Asia/Kolkata'));
+            $before = NavbarCallDuration::pill($user);
+            $this->assertSame('0:00:00', $before['value']);
+            $this->assertStringContainsString('shift of 26 Oct', $before['title']);
+            Carbon::setTestNow(Carbon::parse('2026-10-27 18:00:00', 'Asia/Kolkata'));
+            $start = NavbarCallDuration::pill($user);
+            $this->assertSame('25:00:10', $start['value']);
+            $this->assertSame('1h delay', $start['tag']);
+            DB::table('call_duration_records')->insert([
+                'call_date' => '2026-10-27 20:00:00', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 60,
+            ]);
+            Carbon::setTestNow(Carbon::parse('2026-10-28 05:59:59', 'Asia/Kolkata'));
+            $this->assertSame('25:01:10', NavbarCallDuration::pill($user)['value']);
+            Carbon::setTestNow(Carbon::parse('2026-10-28 18:00:00', 'Asia/Kolkata'));
+            $this->assertSame('0:00:00', NavbarCallDuration::pill($user)['value']);
+            DB::connection()->enableQueryLog(); DB::connection()->flushQueryLog();
+            $this->assertNull(NavbarCallDuration::pill((object) ['role' => 'senior', 'phone' => '207']));
+            $this->assertSame('No ext', NavbarCallDuration::pill((object) ['role' => 'junior', 'phone' => '-'])['tag']);
+            $this->assertCount(0, DB::connection()->getQueryLog());
+        } finally { Carbon::setTestNow(); }
+    }
+
+    public function test_navbar_uses_correct_ist_window_after_eastern_daylight_saving_ends(): void
+    {
+        $this->prepareNavbarUploads();
+        foreach ([['07:29:59', 999], ['07:30:00', 10], ['08:30:00', 20], ['18:30:00', 30], ['19:29:59', 40], ['19:30:00', 999]] as [$time, $seconds]) {
+            DB::table('call_duration_records')->insert([
+                'call_date' => '2026-11-08 ' . $time, 'source' => '170', 'destination' => '9729270064', 'call_duration' => $seconds,
+            ]);
+        }
+        DB::table('call_duration_uploads')->insert(['covers_from' => '2026-11-08 18:00:00', 'covers_to' => '2026-11-09 06:00:00']);
+        try {
+            Carbon::setTestNow(Carbon::parse('2026-11-09 07:00:00', 'Asia/Kolkata'));
+            $pill = NavbarCallDuration::pill((object) ['role' => 'junior', 'phone' => '170']);
+            $this->assertSame('0:01:40', $pill['value']);
+            $this->assertSame('Final', $pill['tag']);
+        } finally { Carbon::setTestNow(); }
+    }
+
+    public function test_navbar_single_query_preserves_coverage_status_when_no_calls_match(): void
+    {
+        $this->prepareNavbarUploads();
+        DB::table('call_duration_uploads')->insert(['covers_from' => '2026-10-27 18:00:00', 'covers_to' => '2026-10-27 20:00:00']);
+        $user = (object) ['role' => 'junior', 'phone' => '999'];
+        try {
+            Carbon::setTestNow(Carbon::parse('2026-10-27 22:00:00', 'Asia/Kolkata'));
+            $pill = NavbarCallDuration::pill($user);
+            $this->assertSame('0:00:00', $pill['value']);
+            $this->assertSame('No data', $pill['tag']);
+            Carbon::setTestNow(Carbon::parse('2026-10-27 21:00:00', 'Asia/Kolkata'));
+            $this->assertSame('1h delay', NavbarCallDuration::pill($user)['tag']);
+            DB::table('call_duration_uploads')->update(['covers_to' => '2026-10-28 06:00:00']);
+            Carbon::setTestNow(Carbon::parse('2026-10-28 07:00:00', 'Asia/Kolkata'));
+            DB::connection()->enableQueryLog(); DB::connection()->flushQueryLog();
+            $final = NavbarCallDuration::pill($user);
+            $this->assertSame('0:00:00', $final['value']);
+            $this->assertSame('Final', $final['tag']);
+            $this->assertCount(1, DB::connection()->getQueryLog());
+        } finally { Carbon::setTestNow(); }
+    }
+
+    public function test_navbar_cumulative_sums_preserve_every_hour_boundary_and_total(): void
+    {
+        $this->prepareNavbarUploads();
+        $date = '2026-12-09';
+        $start = Carbon::parse($date . ' 18:00:00', 'Asia/Kolkata');
+        for ($slot = 0; $slot < 12; $slot++) {
+            $n = $slot + 1;
+            foreach ([[0, 10 * $n, '170', '9729270064'], [1800, $n, '13146141600', '170'], [3599, 2 * $n, '170', '9729270064']] as [$seconds, $duration, $source, $destination]) {
+                DB::table('call_duration_records')->insert([
+                    'call_date' => $start->copy()->addHours($slot)->addSeconds($seconds)->setTimezone('America/New_York')->format('Y-m-d H:i:s'),
+                    'source' => $source, 'destination' => $destination, 'call_duration' => $duration,
+                ]);
+            }
+        }
+        foreach ([$start->copy()->subSecond(), $start->copy()->addHours(12)] as $outside) {
+            DB::table('call_duration_records')->insert([
+                'call_date' => $outside->setTimezone('America/New_York')->format('Y-m-d H:i:s'),
+                'source' => '170', 'destination' => '9729270064', 'call_duration' => 999,
+            ]);
+        }
+        DB::table('call_duration_uploads')->insert(['covers_from' => $date . ' 18:00:00', 'covers_to' => '2026-12-10 06:00:00']);
+        try {
+            Carbon::setTestNow(Carbon::parse('2026-12-10 07:00:00', 'Asia/Kolkata'));
+            DB::connection()->enableQueryLog(); DB::connection()->flushQueryLog();
+            $pill = NavbarCallDuration::pill((object) ['role' => 'junior', 'phone' => '170']);
+            $this->assertCount(1, DB::connection()->getQueryLog());
+            $this->assertSame('0:16:54', $pill['value']);
+            $labels = ['6-7pm','7-8pm','8-9pm','9-10pm','10-11pm','11pm-12am','12-1am','1-2am','2-3am','3-4am','4-5am','5-6am'];
+            foreach ($labels as $slot => $label) {
+                $this->assertStringContainsString($label . ' ' . CallDurationController::durationText(13 * ($slot + 1)), $pill['title']);
+            }
+            $member = app(CallDurationController::class)->groupData($date, true)[0]['members'][0];
+            $this->assertSame(array_map(fn ($n) => 13 * $n, range(1, 12)), $member['slots']);
+            $this->assertSame(CallDurationController::durationText($member['total']), $pill['value']);
+        } finally { Carbon::setTestNow(); }
     }
 }

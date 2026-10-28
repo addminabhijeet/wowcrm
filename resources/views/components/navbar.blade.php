@@ -17,10 +17,10 @@ $userImage = Auth::user()->image
                     <iconify-icon icon="heroicons:bars-3-solid" class="icon"></iconify-icon>
                 </button>
 
-                {{-- Call duration of the logged-in junior (replaces the old timer widget): the shift total so far + a short note --}}
-                @if ((auth()->user()->role ?? '') === 'junior' && class_exists(\App\Services\CallDurationSummary::class))
+                {{-- Call duration of the logged-in junior: the same 6pm-6am total as the Total Duration report. --}}
+                @if ((auth()->user()->role ?? '') === 'junior' && class_exists(\App\Services\NavbarCallDuration::class))
                 @php
-                    $callPill = \App\Services\CallDurationSummary::pill(auth()->user());
+                    $callPill = \App\Services\NavbarCallDuration::pill(auth()->user());
                     $pillColor = ['delay' => ['#fff3cd', '#8a6d00'], 'none' => ['#f8d7da', '#b02a37'], 'final' => ['#d4edda', '#1e7e34']][$callPill['state'] ?? 'delay'] ?? ['#fff3cd', '#8a6d00'];
                 @endphp
                 @if ($callPill)
