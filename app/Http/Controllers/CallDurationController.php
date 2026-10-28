@@ -402,6 +402,9 @@ class CallDurationController extends Controller
         '1:00am - 2:00am', '2:00am - 3:00am', '3:00am - 4:00am', '4:00am - 5:00am',
     ];
 
+    /** Extra evening cards for the Group Report page; legacy mail/chart slot indexes stay unchanged. */
+    private const GROUP_EARLY_SLOTS = ['6:00pm - 7:00pm', '7:00pm - 8:00pm'];
+
     private static function isExtension(string $v): bool
     {
         return $v !== '' && ctype_digit($v) && strlen($v) < 7;
@@ -453,18 +456,21 @@ class CallDurationController extends Controller
     }
 
     /**
-     * Called & Mailed counts per junior and real IST slot (0 = 8:00pm-9:00pm ... 8 = 4:00am-5:00am) for the shift of $date.
+     * Called & Mailed counts per junior and real IST slot for the shift of $date.
+     * Defaults to the legacy 8pm-5am slots; the Group Report page opts into 6pm-5am.
      * updated_at is stored in the app/PBX timezone (America/New_York), so it is converted to IST here, exactly like the call
      * duration slots; same filters as calledMailed(). @return array<int,array<int,int>> junior id => [slot => count]
      */
-    public static function calledMailedIst(array $juniorIds, string $date): array
+    public static function calledMailedIst(array $juniorIds, string $date, bool $includeEarlySlots = false): array
     {
         if (!$juniorIds) {
             return [];
         }
 
-        $from = Carbon::parse("{$date} 20:00:00", self::IST);
-        $to = $from->copy()->addHours(9);
+        $startHour = $includeEarlySlots ? 18 : 20;
+        $slotCount = $includeEarlySlots ? 11 : 9;
+        $from = Carbon::parse(sprintf('%s %02d:00:00', $date, $startHour), self::IST);
+        $to = $from->copy()->addHours($slotCount);
 
         $rows = GoogleSheetData::select('created_by', 'updated_at')
             ->where('created_by', 'like', '%|junior%')
@@ -479,8 +485,8 @@ class CallDurationController extends Controller
             if (!preg_match('/^(\d+)\|junior/', (string) $r->created_by, $m) || !in_array((int) $m[1], $juniorIds, true)) {
                 continue;
             }
-            $slot = (Carbon::parse($r->getRawOriginal('updated_at'), self::PBX_TZ)->setTimezone(self::IST)->hour - 20 + 24) % 24;
-            if ($slot > 8) {
+            $slot = (Carbon::parse($r->getRawOriginal('updated_at'), self::PBX_TZ)->setTimezone(self::IST)->hour - $startHour + 24) % 24;
+            if ($slot >= $slotCount) {
                 continue;
             }
             $out[(int) $m[1]][$slot] = ($out[(int) $m[1]][$slot] ?? 0) + 1;
@@ -506,15 +512,17 @@ class CallDurationController extends Controller
 
     /**
      * Per team and recruiter: call duration (seconds, per IST hour slot) and Called & Mailed count for a day.
-     * Used by the Group Report page and by the report mails, so both always show the same numbers.
+     * Existing mail callers keep their nine 8pm-5am slots; the page opts into eleven 6pm-5am slots.
      *
      * @return array<int,array{name:string,members:array}>
      */
-    public function groupData(string $date): array
+    public function groupData(string $date, bool $includeEarlySlots = false): array
     {
-        // The shift of $date: 8:00pm IST that day -> 5:00am IST next morning, looked up in PBX time
-        $from = Carbon::parse("{$date} 20:00:00", self::IST);
-        $to = $from->copy()->addHours(9);
+        // The page opts into 6pm-5am; existing mail/chart callers keep their 8pm-5am shift.
+        $startHour = $includeEarlySlots ? 18 : 20;
+        $slotCount = $includeEarlySlots ? 11 : 9;
+        $from = Carbon::parse(sprintf('%s %02d:00:00', $date, $startHour), self::IST);
+        $to = $from->copy()->addHours($slotCount);
         $rows = DB::table(self::TABLE)
             ->where('call_date', '>=', $from->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
             ->where('call_date', '<', $to->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
@@ -526,8 +534,8 @@ class CallDurationController extends Controller
             if ($ext === null) {
                 continue;
             }
-            $slot = (Carbon::parse($r->call_date, self::PBX_TZ)->setTimezone(self::IST)->hour - 20 + 24) % 24;
-            if ($slot > 8) {
+            $slot = (Carbon::parse($r->call_date, self::PBX_TZ)->setTimezone(self::IST)->hour - $startHour + 24) % 24;
+            if ($slot >= $slotCount) {
                 continue;
             }
             $secs[$ext][$slot] = ($secs[$ext][$slot] ?? 0) + (int) $r->call_duration;
@@ -540,16 +548,16 @@ class CallDurationController extends Controller
             ->whereDate('logged_in_at', $date)->pluck('user_id')->unique()->flip();
 
         $cm = $this->calledMailed($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date);
-        $cmIst = self::calledMailedIst($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date);   // real IST slots
+        $cmIst = self::calledMailedIst($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date, $includeEarlySlots);   // real IST slots
 
         $teams = [];
         foreach ($seniors as $senior) {
             $members = [];
             foreach ($juniors->only(is_array($senior->mail) ? $senior->mail : []) as $junior) {
                 // The recruiter's extension is the "Ext. No." saved on the user (users.phone), as listed on /dashboard/admin/junior
-                $slots = array_replace(array_fill(0, 9, 0), $secs[trim((string) $junior->phone)] ?? []);
+                $slots = array_replace(array_fill(0, $slotCount, 0), $secs[trim((string) $junior->phone)] ?? []);
                 $cmSlots = self::cmSlots($cm[(int) $junior->id] ?? []);
-                $cmSlots = array_replace(array_fill(0, 9, 0), $cmIst[(int) $junior->id] ?? []);   // IST slots, same clock as the durations
+                $cmSlots = array_replace(array_fill(0, $slotCount, 0), $cmIst[(int) $junior->id] ?? []);   // IST slots, same clock as the durations
                 $members[] = [
                     'extensions' => DailyGroupCallReport::extensions($junior->phone),
                     'name' => $junior->name, 'slots' => $slots, 'total' => array_sum($slots),
@@ -577,8 +585,8 @@ class CallDurationController extends Controller
         return view('user.callduration-group', [
             'date'       => $date,
             'dateLabel'  => Carbon::parse($date)->format('d-m-Y'),
-            'slotTitles' => self::GROUP_SLOTS,
-            'teams'      => $this->groupData($date),
+            'slotTitles' => array_merge(self::GROUP_EARLY_SLOTS, self::GROUP_SLOTS),
+            'teams'      => $this->groupData($date, true),
             'fmt'        => fn ($s) => self::hms($s),
         ]);
     }
@@ -601,7 +609,7 @@ class CallDurationController extends Controller
             ->get(['id', 'name', 'phone'])->keyBy('id');
         $loggedIn = $juniors->isEmpty() ? collect() : Logins::whereIn('user_id', $juniors->keys())
             ->whereDate('logged_in_at', $date)->pluck('user_id')->unique()->flip();
-        $cm = self::calledMailedIst($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date);
+        $cm = self::calledMailedIst($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date, true);
         $teams = [];
         foreach ($seniors as $senior) {
             $members = [];
@@ -613,8 +621,8 @@ class CallDurationController extends Controller
             }
             $teams[] = ['name' => $senior->name, 'extensions' => DailyGroupCallReport::extensions($senior->phone), 'members' => $members];
         }
-        $from = Carbon::parse("{$date} 20:00:00", self::IST);
-        $to = $from->copy()->addHours(9);
+        $from = Carbon::parse("{$date} 18:00:00", self::IST);
+        $to = $from->copy()->addHours(11);
         $records = DB::table(self::TABLE)
             ->where('call_date', '>=', $from->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
             ->where('call_date', '<', $to->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))

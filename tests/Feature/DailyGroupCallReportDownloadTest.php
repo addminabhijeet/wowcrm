@@ -7,6 +7,7 @@ use App\Models\User;
 use DOMDocument;
 use DOMXPath;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use PharData;
@@ -39,9 +40,9 @@ class DailyGroupCallReportDownloadTest extends TestCase
             ['id' => 2, 'name' => '=Recruiter & Name', 'role' => 'junior', 'mail' => null, 'phone' => '170'],
             ['id' => 3, 'name' => 'Unassigned', 'role' => 'junior', 'mail' => null, 'phone' => '171'],
         ]);
-        // Shift 27 Oct: 20:00 IST / 10:30 Eastern through 05:00 IST / 19:30 Eastern, exclusive.
+        // Group page: 18:00 IST / 08:30 Eastern through 05:00 IST / 19:30 Eastern, exclusive.
         DB::table('call_duration_records')->insert([
-            ['call_date' => '2026-10-27 10:29:59', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 999],
+            ['call_date' => '2026-10-27 08:29:59', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 999],
             ['call_date' => '2026-10-27 10:30:00', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 90000],
             ['call_date' => '2026-10-27 19:29:59', 'source' => '9729270064', 'destination' => '170', 'call_duration' => 10],
             ['call_date' => '2026-10-27 19:30:00', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 999],
@@ -63,7 +64,7 @@ class DailyGroupCallReportDownloadTest extends TestCase
 
     public function test_excel_uses_total_card_counts_shift_boundaries_and_the_template(): void
     {
-        $teams = app(CallDurationController::class)->groupData('2026-10-27');
+        $teams = app(CallDurationController::class)->groupData('2026-10-27', true);
         $this->assertSame(1, $teams[0]['members'][0]['cm_total']);
         $response = $this->get(route('senior.excelgroup.excel', ['date' => '2026-10-27']));
         $response->assertOk()->assertDownload('recruiter-call-report-2026-10-27.xlsx');
@@ -140,5 +141,73 @@ class DailyGroupCallReportDownloadTest extends TestCase
             $this->assertEqualsWithDelta(90070 / 86400, (float) $x->evaluate('string(//s:c[@r="G4"]/s:v)'), 0.000000001);
             unset($archive);
         } finally { @unlink($file); }
+    }
+
+    public function test_page_has_two_early_slots_strict_eight_pm_boundary_and_complete_total(): void
+    {
+        $events = [
+            ['08:29:58', 1000], // Before 6pm IST: excluded from every page slot and its total.
+            ['08:30:00', 10], ['09:29:59', 20], // 6-7pm IST.
+            ['09:30:00', 30], ['10:29:59', 40], // 7-8pm IST.
+            ['10:30:00', 50], ['11:29:59', 60], // 8-9pm IST, separate from earlier activity.
+            ['11:30:00', 70], // 9-10pm IST.
+            ['14:30:00', 80], // Midnight next morning IST, still the selected shift.
+        ];
+        foreach ($events as [$time, $seconds]) {
+            DB::table('call_duration_records')->insert([
+                'call_date' => '2026-10-27 ' . $time, 'source' => '170', 'destination' => '9729270064', 'call_duration' => $seconds,
+            ]);
+            DB::table('google_sheet_data')->insert([
+                'created_by' => '2|junior', 'followup' => '2026-10-27', 'updated_at' => '2026-10-27 ' . $time, 'Exe_Remarks' => 'Called & Mailed',
+            ]);
+        }
+        DB::table('google_sheet_data')->insert([
+            'created_by' => '2|junior', 'followup' => '2026-10-27', 'updated_at' => '2026-10-27 19:29:59', 'Exe_Remarks' => 'Called & Mailed',
+        ]);
+        $controller = app(CallDurationController::class);
+        $view = $controller->group(Request::create('/dashboard/senior/call-duration/group', 'GET', ['date' => '2026-10-27']));
+        $data = $view->getData();
+        $this->assertCount(11, $data['slotTitles']);
+        $this->assertSame(['6:00pm - 7:00pm', '7:00pm - 8:00pm', '8:00pm - 9:00pm', '9:00pm - 10:00pm'], array_slice($data['slotTitles'], 0, 4));
+        $this->assertSame('4:00am - 5:00am', $data['slotTitles'][10]);
+        $member = $data['teams'][0]['members'][0];
+        $this->assertSame([30, 70, 90110, 70, 0, 0, 80, 0, 0, 0, 10], $member['slots']);
+        $this->assertSame([2, 2, 3, 1, 0, 0, 1, 0, 0, 0, 1], $member['cm_slots']);
+        $this->assertSame(90370, $member['total']);
+        $this->assertSame(array_sum($member['slots']), $member['total']);
+        $this->assertSame(10, $member['cm_total']);
+        $this->assertSame(array_sum($member['cm_slots']), $member['cm_total']);
+
+        // Existing scheduler/chart callers retain the original nine slots and indexes.
+        $legacy = $controller->groupData('2026-10-27')[0]['members'][0];
+        $this->assertSame(array_slice($member['slots'], 2), $legacy['slots']);
+        $this->assertSame(array_slice($member['cm_slots'], 2), $legacy['cm_slots']);
+        $this->assertSame(90270, $legacy['total']);
+        $this->assertSame(6, $legacy['cm_total']);
+
+        $response = $this->get(route('senior.excelgroup.excel', ['date' => '2026-10-27']));
+        $response->assertOk();
+        $file = $response->baseResponse->getFile()->getPathname();
+        try {
+            $archive = new PharData($file);
+            $sheet = new DOMDocument(); $sheet->loadXML($archive['xl/worksheets/sheet1.xml']->getContent());
+            $x = new DOMXPath($sheet); $x->registerNamespace('s', 'http://schemas.openxmlformats.org/spreadsheetml/2006/main');
+            $this->assertSame('10', $x->evaluate('string(//s:c[@r="D4"]/s:v)'));
+            $this->assertSame('9', $x->evaluate('string(//s:c[@r="F4"]/s:v)'));
+            $this->assertEqualsWithDelta($member['total'] / 86400, (float) $x->evaluate('string(//s:c[@r="G4"]/s:v)'), 0.000000001);
+            unset($archive);
+        } finally { @unlink($file); }
+    }
+
+    public function test_early_slots_follow_ist_when_eastern_daylight_saving_has_ended(): void
+    {
+        foreach ([['07:29:59', 999], ['07:30:00', 10], ['08:30:00', 20], ['09:30:00', 30], ['18:29:59', 40], ['18:30:00', 999]] as [$time, $seconds]) {
+            DB::table('call_duration_records')->insert([
+                'call_date' => '2026-11-08 ' . $time, 'source' => '170', 'destination' => '9729270064', 'call_duration' => $seconds,
+            ]);
+        }
+        $member = app(CallDurationController::class)->groupData('2026-11-08', true)[0]['members'][0];
+        $this->assertSame([10, 20, 30, 0, 0, 0, 0, 0, 0, 0, 40], $member['slots']);
+        $this->assertSame(100, $member['total']);
     }
 }
