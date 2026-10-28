@@ -6,8 +6,7 @@ use Carbon\CarbonInterface;
 use DOMDocument;
 use DOMElement;
 use DOMXPath;
-use Phar;
-use PharData;
+use ZipArchive;
 use RuntimeException;
 use Throwable;
 
@@ -29,15 +28,21 @@ class DailyGroupCallReportExport
             if (!copy(resource_path('exports/daily-group-call-report-template.xlsx'), $file)) {
                 throw new RuntimeException('Could not copy the daily report template.');
             }
-            $archive = new PharData($file, 0, null, Phar::ZIP);
+            $archive = new ZipArchive();
+            if ($archive->open($file) !== true) {
+                throw new RuntimeException('Could not open the daily report template.');
+            }
             $sheet = new DOMDocument();
-            $sheet->loadXML($archive['xl/worksheets/sheet1.xml']->getContent(), LIBXML_NONET);
+            $sheet->loadXML($archive->getFromName('xl/worksheets/sheet1.xml'), LIBXML_NONET);
             $xpath = new DOMXPath($sheet);
             $xpath->registerNamespace('s', self::NS);
             $data = $xpath->query('/s:worksheet/s:sheetData')->item(0);
             $templates = [];
             foreach ($xpath->query('s:row', $data) as $row) {
-                $templates[(int) $row->getAttribute('r')] = $row->cloneNode(true);
+                $rowNumber = (int) $row->getAttribute('r');
+                if ($rowNumber <= 4) {
+                    $templates[$rowNumber] = $row->cloneNode(true);
+                }
             }
             while ($data->firstChild) {
                 $data->removeChild($data->firstChild);
@@ -47,25 +52,28 @@ class DailyGroupCallReportExport
             $data->appendChild($templates[1]);
             $this->append($sheet, $data, $templates[2], 2, ['A' => $serial]);
             $number = 3;
+            $day = $date->format('l');
             foreach ($rows as $row) {
                 $this->append($sheet, $data, $templates[$row['leader'] ? 3 : 4], $number++, [
-                    'A' => $row['name'], 'B' => $serial, 'C' => $date->format('l'),
+                    'A' => $row['name'], 'B' => $serial, 'C' => $day,
                     'D' => $row['called_mailed'], 'E' => $row['incoming'], 'F' => $row['outgoing'],
-                    'G' => $row['duration'] === null ? null : $row['duration'] / 86400,
+                    'G' => $row['inbound_duration'] === null ? null : $row['inbound_duration'] / 86400,
+                    'H' => $row['outbound_duration'] === null ? null : $row['outbound_duration'] / 86400,
+                    'I' => $row['extension'],
                 ]);
             }
             $last = $number - 1;
-            $xpath->query('/s:worksheet/s:dimension')->item(0)?->setAttribute('ref', "A1:G{$last}");
+            $xpath->query('/s:worksheet/s:dimension')->item(0)?->setAttribute('ref', "A1:I{$last}");
             $setup = $xpath->query('/s:worksheet/s:pageSetup')->item(0);
             $setup->setAttribute('paperSize', '9');
             $setup->setAttribute('orientation', 'landscape');
             $setup->setAttribute('fitToWidth', '1');
             // Keep ordinary teams on one page; permit additional pages for a larger roster.
             $setup->setAttribute('fitToHeight', count($rows) <= 28 ? '1' : '0');
-            $archive['xl/worksheets/sheet1.xml'] = $sheet->saveXML();
+            $archive->addFromString('xl/worksheets/sheet1.xml', $sheet->saveXML());
 
             $book = new DOMDocument();
-            $book->loadXML($archive['xl/workbook.xml']->getContent(), LIBXML_NONET);
+            $book->loadXML($archive->getFromName('xl/workbook.xml'), LIBXML_NONET);
             $bookPath = new DOMXPath($book);
             $bookPath->registerNamespace('s', self::NS);
             $names = $bookPath->query('/s:workbook/s:definedNames')->item(0);
@@ -74,14 +82,17 @@ class DailyGroupCallReportExport
                     $names->removeChild($name);
                 }
             }
-            foreach (['_xlnm.Print_Area' => "'Daily Calls'!\$A\$1:\$G\${$last}", '_xlnm.Print_Titles' => "'Daily Calls'!\$1:\$2"] as $name => $value) {
+            foreach (['_xlnm.Print_Area' => "'Daily Calls'!\$A\$1:\$I\${$last}", '_xlnm.Print_Titles' => "'Daily Calls'!\$1:\$2"] as $name => $value) {
                 $node = $book->createElementNS(self::NS, 'definedName');
                 $node->setAttribute('name', $name);
                 $node->setAttribute('localSheetId', '0');
                 $node->appendChild($book->createTextNode($value));
                 $names->appendChild($node);
             }
-            $archive['xl/workbook.xml'] = $book->saveXML();
+            $archive->addFromString('xl/workbook.xml', $book->saveXML());
+            if (!$archive->close()) {
+                throw new RuntimeException('Could not save the daily report file.');
+            }
             unset($archive);
 
             return $file;

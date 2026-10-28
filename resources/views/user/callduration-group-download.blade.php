@@ -5,10 +5,10 @@
     <title>Recruiter Call Report - {{ $dateLabel }}</title>
     <style>
         @page { size: A4 landscape; margin: 10mm 7mm; }
-        body { margin: 0; font-family: Georgia, "DejaVu Serif", serif; font-size: 10.5pt; line-height: 1.15; color: #000; }
+        body { margin: 0; font-family: Georgia, "DejaVu Serif", serif; font-size: 9pt; line-height: 1.15; color: #000; }
         table { width: 100%; border-collapse: collapse; table-layout: fixed; }
         th, td { border: 0.6pt solid #000; text-align: center; vertical-align: middle; padding: 3pt 2pt; }
-        th { background: #daf2d0; font-size: 9pt; font-weight: bold; height: 26pt; }
+        th { background: #daf2d0; font-size: 8pt; font-weight: bold; height: 34pt; }
         thead { display: table-header-group; }
         tr { page-break-inside: avoid; }
         .date { font-size: 12pt; font-weight: bold; padding: 3pt; }
@@ -19,16 +19,18 @@
 <body>
 <table>
     <colgroup>
-        <col style="width:24.7%"><col style="width:11.1%"><col style="width:10.5%">
-        <col style="width:10.5%"><col style="width:15.4%"><col style="width:15.4%"><col style="width:12.4%">
+        <col style="width:21%"><col style="width:10%"><col style="width:9%">
+        <col style="width:9%"><col style="width:11%"><col style="width:11%">
+        <col style="width:12%"><col style="width:12%"><col style="width:5%">
     </colgroup>
     <thead>
         <tr>
-            <th style="width:24.7%">Name</th><th style="width:11.1%">Date</th><th style="width:10.5%">Day</th>
-            <th style="width:10.5%">Called &amp; Mailed</th><th style="width:15.4%">Total incoming calls</th>
-            <th style="width:15.4%">Total outgoing calls</th><th style="width:12.4%">Call duration</th>
+            <th>Name</th><th>Date</th><th>Day</th>
+            <th>Called &amp; Mailed</th><th>Total incoming calls</th>
+            <th>Total outgoing calls</th><th>Total Inbound Answered Duration</th>
+            <th>Total Outbound Answered Duration</th><th>EXT</th>
         </tr>
-        <tr><td class="date" colspan="7">{{ $dateLabel }}</td></tr>
+        <tr><td class="date" colspan="8">{{ $dateLabel }}</td><td></td></tr>
     </thead>
     <tbody>
         @foreach ($rows as $row)
@@ -38,7 +40,9 @@
                 <td class="metric">{{ $row['called_mailed'] }}</td>
                 <td class="metric">{{ $row['incoming'] }}</td>
                 <td class="metric">{{ $row['outgoing'] }}</td>
-                <td class="metric">{{ $row['duration'] === null ? '' : $fmt($row['duration']) }}</td>
+                <td class="metric">{{ $row['inbound_duration'] === null ? '' : $fmt($row['inbound_duration']) }}</td>
+                <td class="metric">{{ $row['outbound_duration'] === null ? '' : $fmt($row['outbound_duration']) }}</td>
+                <td class="metric">{{ $row['extension'] }}</td>
             </tr>
         @endforeach
     </tbody>

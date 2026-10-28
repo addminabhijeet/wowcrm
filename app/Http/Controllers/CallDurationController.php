@@ -70,7 +70,7 @@ class CallDurationController extends Controller
                 $map[$key] = $i;
             }
         }
-        foreach (['call_date' => 'Call Date', 'source' => 'Source', 'destination' => 'Destination', 'call_duration' => 'Call Duration'] as $k => $label) {
+        foreach (['call_date' => 'Call Date', 'source' => 'Source', 'destination' => 'Destination', 'call_duration' => 'Call Duration', 'answered_duration' => 'Answered Duration (or Amswered Duration)'] as $k => $label) {
             if (!isset($map[$k])) {
                 fclose($fh);
 
@@ -308,6 +308,7 @@ class CallDurationController extends Controller
             'outbound'     => self::hms($t->out_call),
             'inbound_ans'  => self::hms($t->in_ans),
             'outbound_ans' => self::hms($t->out_ans),
+            'total'        => self::hms($t->in_ans + $t->out_ans),
         ];
     }
 
@@ -336,7 +337,7 @@ class CallDurationController extends Controller
         $rows = (function () use ($f) {
             $i = 0;
             foreach ($this->query($f)->orderByDesc('call_date')->orderByDesc('id')->cursor() as $r) {
-                yield [++$i, self::istText($r->call_date), $r->source, $r->destination, $r->call_duration, $r->answered_duration,
+                yield [++$i, self::istText($r->call_date), $r->source, $r->destination, $r->answered_duration,
                        $r->caller_id, $r->did, $r->disposition, self::istText($r->time_zone)];
             }
         })();
@@ -344,10 +345,10 @@ class CallDurationController extends Controller
         return SimpleXlsx::download(
             "call-duration-report-{$f['start_date']}-to-{$f['end_date']}.xlsx",
             "Call Duration - Group Report ({$f['start_date']} {$f['start_time']}:00 to {$f['end_date']} {$f['end_time']}:59"
-                . ($f['extension'] !== '' ? ", ext {$f['extension']}" : '') . ") | Inbound {$t['inbound']} (answered {$t['inbound_ans']}) | Outbound {$t['outbound']} (answered {$t['outbound_ans']})",
-            ['Sl.No', 'Call Date (IST)', 'Source', 'Destination', 'Call Duration', 'Answered Duration', 'CallerID', 'DID', 'Disposition', 'TimeZone (IST)'],
+                . ($f['extension'] !== '' ? ", ext {$f['extension']}" : '') . ") | Total Answered Duration {$t['total']} | Inbound Answered {$t['inbound_ans']} | Outbound Answered {$t['outbound_ans']}",
+            ['Sl.No', 'Call Date (IST)', 'Source', 'Destination', 'Answered Duration', 'CallerID', 'DID', 'Disposition', 'TimeZone (IST)'],
             $rows,
-            [8, 20, 14, 16, 14, 18, 30, 14, 14, 20]
+            [8, 20, 14, 16, 18, 30, 14, 14, 20]
         );
     }
 
@@ -550,7 +551,7 @@ class CallDurationController extends Controller
         $query = DB::table(self::TABLE)
             ->where('call_date', '>=', $from->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
             ->where('call_date', '<', $to->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
-            ->select(['call_date', 'source', 'destination', 'call_duration']);
+            ->select(['call_date', 'source', 'destination', 'answered_duration']);
         $rows = $includeEarlySlots ? $query->cursor() : $query->get();
         $slotEnds = $includeEarlySlots ? self::groupSlotEnds($from, $slotCount) : [];
 
@@ -566,7 +567,7 @@ class CallDurationController extends Controller
             if ($slot >= $slotCount) {
                 continue;
             }
-            $secs[$ext][$slot] = ($secs[$ext][$slot] ?? 0) + (int) $r->call_duration;
+            $secs[$ext][$slot] = ($secs[$ext][$slot] ?? 0) + (int) $r->answered_duration;
         }
 
         $seniors = User::where('role', 'senior')->where('is_deleted', 0)
@@ -575,9 +576,10 @@ class CallDurationController extends Controller
         $juniors = User::whereIn('id', $juniorIds)->where('role', 'junior')->where('is_deleted', 0)
             ->get($includeEarlySlots ? ['id', 'name', 'phone'] : ['*'])->keyBy('id');
         $loggedIn = !$includePresence || $juniors->isEmpty() ? collect() : Logins::whereIn('user_id', $juniors->keys())
-            ->whereDate('logged_in_at', $date)->pluck('user_id')->unique()->flip();
+            ->where('logged_in_at', '>=', $date . ' 00:00:00')
+            ->where('logged_in_at', '<', Carbon::parse($date)->addDay()->toDateString() . ' 00:00:00')
+            ->distinct()->pluck('user_id')->flip();
 
-        $cm = $includeEarlySlots ? [] : $this->calledMailed($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date);
         $cmIst = self::calledMailedIst($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date, $includeEarlySlots);   // real IST slots
 
         $teams = [];
@@ -586,7 +588,6 @@ class CallDurationController extends Controller
             foreach ($juniors->only(is_array($senior->mail) ? $senior->mail : []) as $junior) {
                 // The recruiter's extension is the "Ext. No." saved on the user (users.phone), as listed on /dashboard/admin/junior
                 $slots = array_replace(array_fill(0, $slotCount, 0), $secs[trim((string) $junior->phone)] ?? []);
-                $cmSlots = $includeEarlySlots ? [] : self::cmSlots($cm[(int) $junior->id] ?? []);
                 $cmSlots = array_replace(array_fill(0, $slotCount, 0), $cmIst[(int) $junior->id] ?? []);   // IST slots, same clock as the durations
                 $members[] = [
                     'extensions' => DailyGroupCallReport::extensions($junior->phone),
@@ -641,7 +642,9 @@ class CallDurationController extends Controller
         $juniors = User::whereIn('id', $juniorIds)->where('role', 'junior')->where('is_deleted', 0)
             ->get(['id', 'name', 'phone'])->keyBy('id');
         $loggedIn = $juniors->isEmpty() ? collect() : Logins::whereIn('user_id', $juniors->keys())
-            ->whereDate('logged_in_at', $date)->pluck('user_id')->unique()->flip();
+            ->where('logged_in_at', '>=', $date . ' 00:00:00')
+            ->where('logged_in_at', '<', Carbon::parse($date)->addDay()->toDateString() . ' 00:00:00')
+            ->distinct()->pluck('user_id')->flip();
         $cm = self::calledMailedIst($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date, true);
         $teams = [];
         foreach ($seniors as $senior) {
@@ -659,7 +662,7 @@ class CallDurationController extends Controller
         $records = DB::table(self::TABLE)
             ->where('call_date', '>=', $from->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
             ->where('call_date', '<', $to->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
-            ->select(['source', 'destination', 'call_duration'])->cursor();
+            ->select(['source', 'destination', 'answered_duration'])->cursor();
 
         return app(DailyGroupCallReport::class)->rows($teams, $records);
     }

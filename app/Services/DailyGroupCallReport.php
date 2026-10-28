@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-/** Builds the shared seven-column daily report from the Group Report's total card. */
+/** Builds the shared nine-column daily report from the Group Report's total card. */
 class DailyGroupCallReport
 {
     /** First hourly upper bound after a stored PBX timestamp (the query already applies the start bound). */
@@ -56,16 +56,22 @@ class DailyGroupCallReport
             $record = (array) $record;
             $incoming = $owners[(string) $record['destination']] ?? [];
             $outgoing = $owners[(string) $record['source']] ?? [];
+            if (!$incoming && !$outgoing) {
+                continue;
+            }
+            $seconds = max(0, (int) $record['answered_duration']);
             foreach ($incoming as $index => $_) {
                 $result[$index]['incoming']++;
+                $result[$index]['inbound_duration'] += $seconds;
+                $result[$index]['duration'] += $seconds;
             }
             foreach ($outgoing as $index => $_) {
                 $result[$index]['outgoing']++;
-            }
-            $seconds = max(0, (int) $record['call_duration']);
-            // Array union counts duration once when both endpoints belong to the same person.
-            foreach ($incoming + $outgoing as $index => $_) {
-                $result[$index]['duration'] += $seconds;
+                $result[$index]['outbound_duration'] += $seconds;
+                // Preserve counting once when both endpoints belong to the same person.
+                if (!isset($incoming[$index])) {
+                    $result[$index]['duration'] += $seconds;
+                }
             }
         }
 
@@ -84,6 +90,9 @@ class DailyGroupCallReport
             'incoming' => $extensions ? 0 : null,
             'outgoing' => $extensions ? 0 : null,
             'duration' => $extensions ? 0 : null,
+            'inbound_duration' => $extensions ? 0 : null,
+            'outbound_duration' => $extensions ? 0 : null,
+            'extension' => implode(', ', $extensions),
         ];
     }
 }

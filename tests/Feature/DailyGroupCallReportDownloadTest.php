@@ -39,7 +39,9 @@ class DailyGroupCallReportDownloadTest extends TestCase
             $t->id(); $t->string('created_by'); $t->date('followup'); $t->dateTime('updated_at'); $t->string('Exe_Remarks');
         });
         Schema::create('call_duration_records', function (Blueprint $t) {
-            $t->id(); $t->dateTime('call_date'); $t->string('source'); $t->string('destination'); $t->integer('call_duration');
+            $t->id(); $t->dateTime('call_date'); $t->string('source'); $t->string('destination');
+            $t->integer('call_duration')->default(999999);
+            $t->integer('answered_duration');
         });
         DB::table('users')->insert([
             ['id' => 1, 'name' => 'Leader', 'role' => 'senior', 'mail' => '[2]', 'phone' => '183 and 193'],
@@ -48,11 +50,11 @@ class DailyGroupCallReportDownloadTest extends TestCase
         ]);
         // Group page: 18:00 IST / 08:30 Eastern through 06:00 IST / 20:30 Eastern, exclusive.
         DB::table('call_duration_records')->insert([
-            ['call_date' => '2026-10-27 08:29:59', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 999],
-            ['call_date' => '2026-10-27 10:30:00', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 90000],
-            ['call_date' => '2026-10-27 19:29:59', 'source' => '9729270064', 'destination' => '170', 'call_duration' => 10],
-            ['call_date' => '2026-10-27 20:30:00', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 999],
-            ['call_date' => '2026-10-27 12:00:00', 'source' => '183', 'destination' => '193', 'call_duration' => 30],
+            ['call_date' => '2026-10-27 08:29:59', 'source' => '170', 'destination' => '9729270064', 'answered_duration' => 999],
+            ['call_date' => '2026-10-27 10:30:00', 'source' => '170', 'destination' => '9729270064', 'answered_duration' => 90000],
+            ['call_date' => '2026-10-27 19:29:59', 'source' => '9729270064', 'destination' => '170', 'answered_duration' => 10],
+            ['call_date' => '2026-10-27 20:30:00', 'source' => '170', 'destination' => '9729270064', 'answered_duration' => 999],
+            ['call_date' => '2026-10-27 12:00:00', 'source' => '183', 'destination' => '193', 'answered_duration' => 30],
         ]);
         DB::table('google_sheet_data')->insert([
             ['created_by' => '2|junior', 'followup' => '2026-10-27', 'updated_at' => '2026-10-27 11:00:00', 'Exe_Remarks' => 'Called & Mailed'],
@@ -66,6 +68,58 @@ class DailyGroupCallReportDownloadTest extends TestCase
     {
         DB::disconnect('sqlite');
         parent::tearDown();
+    }
+
+    public function test_upload_rejects_missing_answered_duration_before_storing_calls(): void
+    {
+        $file = \Illuminate\Http\UploadedFile::fake()->createWithContent('Export_Callrecords.csv',
+            "Sl.No,Call Date,Source,Destination,Call Duration,CallerID,DID,Disposition,TimeZone\n"
+            . "1,2026-10-28 13:36:52,195,5859574994,36,16896895472,,ANSWERED,2026-10-28 13:36:52\n"
+        );
+        $before = DB::table('call_duration_records')->count();
+        $this->from(route('senior.excelupload'))
+            ->post(route('senior.excelupload.store'), ['file' => $file])
+            ->assertRedirect(route('senior.excelupload'))
+            ->assertSessionHasErrors(['file' => 'Column "Answered Duration (or Amswered Duration)" not found. Upload the Export_Callrecords sheet as .csv.']);
+        $this->assertSame($before, DB::table('call_duration_records')->count());
+    }
+
+    public function test_pbx_answered_duration_header_spellings_are_supported(): void
+    {
+        $method = new \ReflectionMethod(CallDurationController::class, 'headerKey');
+        foreach (['Amswered Duration', 'Answered Duration', ' answered duration '] as $header) {
+            $this->assertSame('answered_duration', $method->invoke(null, $header));
+        }
+        // The exact header order used by the recurring PBX export must remain supported.
+        $headers = str_getcsv('Sl.No,"Call Date",Source,Destination,"Call Duration","Amswered Duration",CallerID,DID,Disposition,TimeZone');
+        $this->assertSame(['sl_no', 'call_date', 'source', 'destination', 'call_duration',
+            'answered_duration', 'caller_id', 'did', 'disposition', 'time_zone'],
+            array_map(fn ($header) => $method->invoke(null, $header), $headers));
+    }
+
+    public function test_report_queries_deduplicate_presence_and_skip_discarded_legacy_counts(): void
+    {
+        DB::table('logins')->insert([
+            ['user_id' => 2, 'logged_in_at' => '2026-10-27 00:00:00'],
+            ['user_id' => 2, 'logged_in_at' => '2026-10-27 23:59:59'],
+        ]);
+        foreach ([true, false] as $extended) {
+            DB::connection()->enableQueryLog();
+            DB::connection()->flushQueryLog();
+            $teams = app(CallDurationController::class)->groupData('2026-10-27', $extended);
+            $queries = array_column(DB::connection()->getQueryLog(), 'query');
+            $this->assertFalse($teams[0]['members'][0]['absent']);
+            $this->assertSame(1, $teams[0]['members'][0]['cm_total']);
+            $this->assertCount(1, array_filter($queries, fn ($q) => str_contains($q, 'from "google_sheet_data"')));
+            $presence = array_values(array_filter($queries, fn ($q) => str_contains($q, 'from "logins"')));
+            $this->assertCount(1, $presence);
+            $this->assertStringContainsString('distinct', strtolower($presence[0]));
+            $this->assertStringNotContainsString('date(', strtolower($presence[0]));
+        }
+        DB::table('logins')->delete();
+        DB::table('logins')->insert(['user_id' => 2, 'logged_in_at' => '2026-10-28 00:00:00']);
+        $teams = app(CallDurationController::class)->groupData('2026-10-27', true);
+        $this->assertTrue($teams[0]['members'][0]['absent']);
     }
 
     public function test_excel_uses_total_card_counts_shift_boundaries_and_the_template(): void
@@ -83,7 +137,9 @@ class DailyGroupCallReportDownloadTest extends TestCase
             $this->assertSame('1', $x->evaluate('string(//s:c[@r="D4"]/s:v)'));
             $this->assertSame('1', $x->evaluate('string(//s:c[@r="E4"]/s:v)'));
             $this->assertSame('1', $x->evaluate('string(//s:c[@r="F4"]/s:v)'));
-            $this->assertEqualsWithDelta(90010 / 86400, (float) $x->evaluate('string(//s:c[@r="G4"]/s:v)'), 0.000000001);
+            $this->assertEqualsWithDelta(10 / 86400, (float) $x->evaluate('string(//s:c[@r="G4"]/s:v)'), 0.000000001);
+            $this->assertEqualsWithDelta(90000 / 86400, (float) $x->evaluate('string(//s:c[@r="H4"]/s:v)'), 0.000000001);
+            $this->assertSame('170', $x->evaluate('string(//s:c[@r="I4"]/s:is/s:t)'));
             $this->assertEqualsWithDelta(30 / 86400, (float) $x->evaluate('string(//s:c[@r="G3"]/s:v)'), 0.000000001);
             $this->assertSame(4, $x->query('//s:sheetData/s:row')->length);
             $this->assertSame(0, $x->query('//s:f')->length);
@@ -91,7 +147,7 @@ class DailyGroupCallReportDownloadTest extends TestCase
             $this->assertSame('landscape', $x->evaluate('string(//s:pageSetup/@orientation)'));
             $template = new PharData(resource_path('exports/daily-group-call-report-template.xlsx'));
             $this->assertSame($template['xl/styles.xml']->getContent(), $archive['xl/styles.xml']->getContent());
-            $this->assertStringContainsString("'Daily Calls'!\$A\$1:\$G\$4", $archive['xl/workbook.xml']->getContent());
+            $this->assertStringContainsString("'Daily Calls'!\$A\$1:\$I\$4", $archive['xl/workbook.xml']->getContent());
             unset($archive, $template);
         } finally { @unlink($file); }
     }
@@ -103,7 +159,8 @@ class DailyGroupCallReportDownloadTest extends TestCase
         $this->assertStringStartsWith('%PDF-', $response->getContent());
         $this->assertStringContainsString('841.89', $response->getContent());
         $html = view('user.callduration-group-download', [
-            'rows' => [['name' => '<script>', 'leader' => true, 'called_mailed' => null, 'incoming' => 0, 'outgoing' => 1, 'duration' => 90010]],
+            'rows' => [['name' => '<script>', 'leader' => true, 'called_mailed' => null, 'incoming' => 0, 'outgoing' => 1, 'duration' => 90010,
+                'inbound_duration' => 10, 'outbound_duration' => 90010, 'extension' => '170']],
             'dateLabel' => '27-Oct-2026', 'day' => 'Tuesday', 'fmt' => [CallDurationController::class, 'durationText'],
         ])->render();
         $this->assertStringContainsString('&lt;script&gt;', $html);
@@ -134,7 +191,7 @@ class DailyGroupCallReportDownloadTest extends TestCase
         @unlink($response->baseResponse->getFile()->getPathname());
 
         DB::table('call_duration_records')->insert([
-            'call_date' => '2026-10-27 13:00:00', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 60,
+            'call_date' => '2026-10-27 13:00:00', 'source' => '170', 'destination' => '9729270064', 'answered_duration' => 60,
         ]);
         $fresh = $this->get(route('senior.excelgroup.excel', ['date' => '2026-10-27']));
         $fresh->assertOk();
@@ -144,7 +201,7 @@ class DailyGroupCallReportDownloadTest extends TestCase
             $sheet = new DOMDocument(); $sheet->loadXML($archive['xl/worksheets/sheet1.xml']->getContent());
             $x = new DOMXPath($sheet); $x->registerNamespace('s', 'http://schemas.openxmlformats.org/spreadsheetml/2006/main');
             $this->assertSame('2', $x->evaluate('string(//s:c[@r="F4"]/s:v)'));
-            $this->assertEqualsWithDelta(90070 / 86400, (float) $x->evaluate('string(//s:c[@r="G4"]/s:v)'), 0.000000001);
+            $this->assertEqualsWithDelta(90070 / 86400, (float) $x->evaluate('sum(//s:c[@r="G4" or @r="H4"]/s:v)'), 0.000000001);
             unset($archive);
         } finally { @unlink($file); }
     }
@@ -162,7 +219,7 @@ class DailyGroupCallReportDownloadTest extends TestCase
         ];
         foreach ($events as [$time, $seconds]) {
             DB::table('call_duration_records')->insert([
-                'call_date' => '2026-10-27 ' . $time, 'source' => '170', 'destination' => '9729270064', 'call_duration' => $seconds,
+                'call_date' => '2026-10-27 ' . $time, 'source' => '170', 'destination' => '9729270064', 'answered_duration' => $seconds,
             ]);
             DB::table('google_sheet_data')->insert([
                 'created_by' => '2|junior', 'followup' => '2026-10-27', 'updated_at' => '2026-10-27 ' . $time, 'Exe_Remarks' => 'Called & Mailed',
@@ -202,7 +259,7 @@ class DailyGroupCallReportDownloadTest extends TestCase
             $x = new DOMXPath($sheet); $x->registerNamespace('s', 'http://schemas.openxmlformats.org/spreadsheetml/2006/main');
             $this->assertSame('12', $x->evaluate('string(//s:c[@r="D4"]/s:v)'));
             $this->assertSame('11', $x->evaluate('string(//s:c[@r="F4"]/s:v)'));
-            $this->assertEqualsWithDelta($member['total'] / 86400, (float) $x->evaluate('string(//s:c[@r="G4"]/s:v)'), 0.000000001);
+            $this->assertEqualsWithDelta($member['total'] / 86400, (float) $x->evaluate('sum(//s:c[@r="G4" or @r="H4"]/s:v)'), 0.000000001);
             unset($archive);
         } finally { @unlink($file); }
 
@@ -221,7 +278,7 @@ class DailyGroupCallReportDownloadTest extends TestCase
     {
         foreach ([['07:29:59', 999], ['07:30:00', 10], ['08:30:00', 20], ['09:30:00', 30], ['18:29:59', 40], ['18:30:00', 50], ['19:29:59', 60], ['19:30:00', 999]] as [$time, $seconds]) {
             DB::table('call_duration_records')->insert([
-                'call_date' => '2026-11-08 ' . $time, 'source' => '170', 'destination' => '9729270064', 'call_duration' => $seconds,
+                'call_date' => '2026-11-08 ' . $time, 'source' => '170', 'destination' => '9729270064', 'answered_duration' => $seconds,
             ]);
         }
         $member = app(CallDurationController::class)->groupData('2026-11-08', true)[0]['members'][0];
@@ -250,7 +307,7 @@ class DailyGroupCallReportDownloadTest extends TestCase
     {
         foreach ([['08:30:00', 10], ['09:30:00', 20], ['19:30:00', 30], ['20:29:59', 40]] as [$time, $seconds]) {
             DB::table('call_duration_records')->insert([
-                'call_date' => '2026-10-27 ' . $time, 'source' => '170', 'destination' => '9729270064', 'call_duration' => $seconds,
+                'call_date' => '2026-10-27 ' . $time, 'source' => '170', 'destination' => '9729270064', 'answered_duration' => $seconds,
             ]);
             DB::table('google_sheet_data')->insert([
                 'created_by' => '2|junior', 'followup' => '2026-10-27', 'updated_at' => '2026-10-27 ' . $time, 'Exe_Remarks' => 'Called & Mailed',
@@ -331,7 +388,7 @@ class DailyGroupCallReportDownloadTest extends TestCase
         $this->assertFalse($controller->groupData('2026-10-27', true)[0]['members'][0]['absent']);
 
         DB::table('call_duration_records')->insert([
-            'call_date' => '2026-10-27 20:00:00', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 60,
+            'call_date' => '2026-10-27 20:00:00', 'source' => '170', 'destination' => '9729270064', 'answered_duration' => 60,
         ]);
         DB::table('google_sheet_data')->insert([
             'created_by' => '2|junior', 'followup' => '2026-10-27', 'updated_at' => '2026-10-27 20:00:00', 'Exe_Remarks' => 'Called & Mailed',
@@ -450,14 +507,14 @@ class DailyGroupCallReportDownloadTest extends TestCase
         $this->prepareNavbarUploads();
         foreach ([['08:30:00', 10], ['09:30:00', 20], ['19:30:00', 30], ['20:29:59', 40]] as [$time, $seconds]) {
             DB::table('call_duration_records')->insert([
-                'call_date' => '2026-10-27 ' . $time, 'source' => '170', 'destination' => '9729270064', 'call_duration' => $seconds,
+                'call_date' => '2026-10-27 ' . $time, 'source' => '170', 'destination' => '9729270064', 'answered_duration' => $seconds,
             ]);
         }
         DB::table('call_duration_records')->insert([
-            ['call_date' => '2026-10-27 13:00:00', 'source' => '170', 'destination' => '170', 'call_duration' => 5],
-            ['call_date' => '2026-10-27 13:00:01', 'source' => '183', 'destination' => '170', 'call_duration' => 500],
-            ['call_date' => '2026-10-27 13:00:02', 'source' => '0170', 'destination' => '170', 'call_duration' => 800],
-            ['call_date' => '2026-10-27 13:00:03', 'source' => 'abc', 'destination' => '170', 'call_duration' => 8],
+            ['call_date' => '2026-10-27 13:00:00', 'source' => '170', 'destination' => '170', 'answered_duration' => 5],
+            ['call_date' => '2026-10-27 13:00:01', 'source' => '183', 'destination' => '170', 'answered_duration' => 500],
+            ['call_date' => '2026-10-27 13:00:02', 'source' => '0170', 'destination' => '170', 'answered_duration' => 800],
+            ['call_date' => '2026-10-27 13:00:03', 'source' => 'abc', 'destination' => '170', 'answered_duration' => 8],
         ]);
         DB::table('call_duration_uploads')->insert(['covers_from' => '2026-10-27 18:00:00', 'covers_to' => '2026-10-28 06:00:00']);
         try {
@@ -492,7 +549,7 @@ class DailyGroupCallReportDownloadTest extends TestCase
             $this->assertSame('25:00:10', $start['value']);
             $this->assertSame('1h delay', $start['tag']);
             DB::table('call_duration_records')->insert([
-                'call_date' => '2026-10-27 20:00:00', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 60,
+                'call_date' => '2026-10-27 20:00:00', 'source' => '170', 'destination' => '9729270064', 'answered_duration' => 60,
             ]);
             Carbon::setTestNow(Carbon::parse('2026-10-28 05:59:59', 'Asia/Kolkata'));
             $this->assertSame('25:01:10', NavbarCallDuration::pill($user)['value']);
@@ -510,7 +567,7 @@ class DailyGroupCallReportDownloadTest extends TestCase
         $this->prepareNavbarUploads();
         foreach ([['07:29:59', 999], ['07:30:00', 10], ['08:30:00', 20], ['18:30:00', 30], ['19:29:59', 40], ['19:30:00', 999]] as [$time, $seconds]) {
             DB::table('call_duration_records')->insert([
-                'call_date' => '2026-11-08 ' . $time, 'source' => '170', 'destination' => '9729270064', 'call_duration' => $seconds,
+                'call_date' => '2026-11-08 ' . $time, 'source' => '170', 'destination' => '9729270064', 'answered_duration' => $seconds,
             ]);
         }
         DB::table('call_duration_uploads')->insert(['covers_from' => '2026-11-08 18:00:00', 'covers_to' => '2026-11-09 06:00:00']);
@@ -554,14 +611,14 @@ class DailyGroupCallReportDownloadTest extends TestCase
             foreach ([[0, 10 * $n, '170', '9729270064'], [1800, $n, '13146141600', '170'], [3599, 2 * $n, '170', '9729270064']] as [$seconds, $duration, $source, $destination]) {
                 DB::table('call_duration_records')->insert([
                     'call_date' => $start->copy()->addHours($slot)->addSeconds($seconds)->setTimezone('America/New_York')->format('Y-m-d H:i:s'),
-                    'source' => $source, 'destination' => $destination, 'call_duration' => $duration,
+                    'source' => $source, 'destination' => $destination, 'answered_duration' => $duration,
                 ]);
             }
         }
         foreach ([$start->copy()->subSecond(), $start->copy()->addHours(12)] as $outside) {
             DB::table('call_duration_records')->insert([
                 'call_date' => $outside->setTimezone('America/New_York')->format('Y-m-d H:i:s'),
-                'source' => '170', 'destination' => '9729270064', 'call_duration' => 999,
+                'source' => '170', 'destination' => '9729270064', 'answered_duration' => 999,
             ]);
         }
         DB::table('call_duration_uploads')->insert(['covers_from' => $date . ' 18:00:00', 'covers_to' => '2026-12-10 06:00:00']);

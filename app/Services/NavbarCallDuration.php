@@ -45,11 +45,11 @@ class NavbarCallDuration
             // timestamp comparison instead of two per hourly sum; differences recover each slot.
             for ($slot = 0; $slot < 11; $slot++) {
                 $query->selectRaw(
-                    "COALESCE(SUM(CASE WHEN call_date < ? THEN call_duration ELSE 0 END), 0) as prefix{$slot}",
+                    "COALESCE(SUM(CASE WHEN call_date < ? THEN answered_duration ELSE 0 END), 0) as prefix{$slot}",
                     [$bounds[$slot + 1]]
                 );
             }
-            $query->selectRaw('COALESCE(SUM(call_duration), 0) as prefix11');
+            $query->selectRaw('COALESCE(SUM(answered_duration), 0) as prefix11');
             // Coverage does not depend on an individual call. Read its scalar aggregate in the
             // same database request rather than issuing a second round trip on every page load.
             $coverage = DB::table('call_duration_uploads')

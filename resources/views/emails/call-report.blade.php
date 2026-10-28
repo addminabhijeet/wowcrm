@@ -140,7 +140,7 @@
                                     <td width="4" bgcolor="#00E56F" style="background-color:#00E56F;font-size:0;line-height:0;">&nbsp;</td>
                                     <td bgcolor="#EEF8F5" style="background-color:#EEF8F5;padding:14px 18px;font-family:{{ $serif }};font-size:14px;line-height:22px;color:#2C4745;">
                                         The above call numbers include only the &ldquo;C&amp;M&rdquo; counts.
-                                        @if (!empty($report['duration_note']))<br>Call duration is the total talk and ring time (inbound and outbound) on the recruiter&rsquo;s extension, in h:mm:ss.@endif
+                                        @if (!empty($report['duration_note']))<br>Call duration is the total inbound answered duration plus total outbound answered duration on the recruiter&rsquo;s extension, in h:mm:ss.@endif
                                     </td>
                                 </tr>
                             </table>

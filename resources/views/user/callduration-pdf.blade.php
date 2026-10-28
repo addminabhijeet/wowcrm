@@ -20,8 +20,7 @@
         {{ $f['start_date'] }} {{ str_pad($f['start_time'], 2, '0', STR_PAD_LEFT) }}:00 to {{ $f['end_date'] }} {{ str_pad($f['end_time'], 2, '0', STR_PAD_LEFT) }}:59
         @if ($f['extension'] !== '') &nbsp;|&nbsp; Extension: {{ $f['extension'] }} @endif
         &nbsp;|&nbsp; {{ $totals['calls'] }} calls<br>
-        <strong>Total Inbound Call Duration:</strong> {{ $totals['inbound'] }} &nbsp;&nbsp;
-        <strong>Total Outbound Call Duration:</strong> {{ $totals['outbound'] }}<br>
+        <strong>Total Call Duration (Inbound + Outbound Answered):</strong> {{ $totals['total'] }}<br>
         <strong>Total Inbound Answered Duration:</strong> {{ $totals['inbound_ans'] }} &nbsp;&nbsp;
         <strong>Total Outbound Answered Duration:</strong> {{ $totals['outbound_ans'] }}
     </div>
@@ -29,7 +28,7 @@
     <table>
         <thead>
             <tr>
-                <th>Sl.No</th><th>Call Date (IST)</th><th>Source</th><th>Destination</th><th>Call Duration</th>
+                <th>Sl.No</th><th>Call Date (IST)</th><th>Source</th><th>Destination</th>
                 <th>Answered Duration</th><th>CallerID</th><th>DID</th><th>Disposition</th><th>TimeZone (IST)</th>
             </tr>
         </thead>
@@ -40,7 +39,6 @@
                     <td>{{ $ist($r->call_date) }}</td>
                     <td>{{ $r->source }}</td>
                     <td>{{ $r->destination }}</td>
-                    <td>{{ $r->call_duration }}</td>
                     <td>{{ $r->answered_duration }}</td>
                     <td>{{ $r->caller_id }}</td>
                     <td>{{ $r->did }}</td>

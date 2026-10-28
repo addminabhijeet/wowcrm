@@ -36,7 +36,7 @@ class CallDurationSummary
         $rows = DB::table('call_duration_records')
             ->where('call_date', '>=', $start->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
             ->where('call_date', '<', $end->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
-            ->get(['call_date', 'source', 'destination', 'call_duration']);
+            ->get(['call_date', 'source', 'destination', 'answered_duration']);
 
         $sum = [];   // extension => [slot => seconds]
         foreach ($rows as $r) {
@@ -50,7 +50,7 @@ class CallDurationSummary
             if ($slot > 8) {
                 continue;
             }
-            $sum[$ext][$slot] = ($sum[$ext][$slot] ?? 0) + (int) $r->call_duration;
+            $sum[$ext][$slot] = ($sum[$ext][$slot] ?? 0) + (int) $r->answered_duration;
         }
 
         // how far the uploaded sheets reach inside this shift

@@ -66,7 +66,7 @@
                 @endforeach
 
                 <p class="mt-4">
-                    <strong>The above call numbers include the "Call Duration" (h:mm:ss, inbound + outbound) and only the "C&amp;M" counts.</strong>
+                    <strong>The above call numbers include the "Call Duration" (h:mm:ss, inbound answered + outbound answered) and only the "C&amp;M" counts.</strong>
                 </p>
             </div>
         </div>

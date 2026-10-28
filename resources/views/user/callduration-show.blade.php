@@ -56,8 +56,7 @@
                 <div class="card-header py-16 px-24 border-bottom d-flex flex-wrap gap-3 justify-content-between align-items-start">
                     <div class="text-sm">
                         <div class="mb-4">
-                            <strong>Total Inbound Call Duration :</strong> {{ $totals['inbound'] }}
-                            &nbsp;&nbsp; <strong>Total Outbound Call Duration :</strong> {{ $totals['outbound'] }}
+                            <strong>Total Call Duration (Inbound + Outbound Answered) :</strong> {{ $totals['total'] }}
                         </div>
                         <div>
                             <strong>Total Inbound Answered Duration :</strong> {{ $totals['inbound_ans'] }}
@@ -82,7 +81,6 @@
                                     <th>Call Date (IST)</th>
                                     <th>Source</th>
                                     <th>Destination</th>
-                                    <th>Call Duration</th>
                                     <th>Answered Duration</th>
                                     <th>CallerID</th>
                                     <th>DID</th>
@@ -97,7 +95,6 @@
                                         <td>{{ $ist($r->call_date) }}</td>
                                         <td>{{ $r->source }}</td>
                                         <td>{{ $r->destination }}</td>
-                                        <td>{{ $r->call_duration }}</td>
                                         <td>{{ $r->answered_duration }}</td>
                                         <td>{{ $r->caller_id }}</td>
                                         <td>{{ $r->did }}</td>
@@ -105,7 +102,7 @@
                                         <td>{{ $ist($r->time_zone) }}</td>
                                     </tr>
                                 @empty
-                                    <tr><td colspan="10" class="text-center text-secondary-light py-24">No calls found for the selected filters.</td></tr>
+                                    <tr><td colspan="9" class="text-center text-secondary-light py-24">No calls found for the selected filters.</td></tr>
                                 @endforelse
                             </tbody>
                         </table>
