@@ -3,11 +3,13 @@
 namespace App\Http\Controllers;
 
 use App\Exports\SimpleXlsx;
+use App\Exports\DailyGroupCallReportExport;
 use App\Models\GoogleSheetData;
 use App\Models\Logins;
 use App\Models\User;
 use Carbon\Carbon;
 use App\Services\GroupCallReportMail;
+use App\Services\DailyGroupCallReport;
 use Dompdf\Dompdf;
 use Dompdf\Options;
 use Illuminate\Http\Request;
@@ -549,11 +551,12 @@ class CallDurationController extends Controller
                 $cmSlots = self::cmSlots($cm[(int) $junior->id] ?? []);
                 $cmSlots = array_replace(array_fill(0, 9, 0), $cmIst[(int) $junior->id] ?? []);   // IST slots, same clock as the durations
                 $members[] = [
+                    'extensions' => DailyGroupCallReport::extensions($junior->phone),
                     'name' => $junior->name, 'slots' => $slots, 'total' => array_sum($slots),
                     'cm_slots' => $cmSlots, 'cm_total' => array_sum($cmSlots), 'absent' => !$loggedIn->has($junior->id),
                 ];
             }
-            $teams[] = ['name' => $senior->name, 'members' => $members];
+            $teams[] = ['name' => $senior->name, 'extensions' => DailyGroupCallReport::extensions($senior->phone), 'members' => $members];
         }
 
         return $teams;
@@ -569,8 +572,7 @@ class CallDurationController extends Controller
     {
         $this->authorizeAccess();
 
-        $d = (string) $request->input('date');
-        $date = preg_match('/^\d{4}-\d{2}-\d{2}$/', $d) && strtotime($d) ? $d : now(self::PBX_TZ)->toDateString();
+        $date = $this->groupDate($request);
 
         return view('user.callduration-group', [
             'date'       => $date,
@@ -578,6 +580,65 @@ class CallDurationController extends Controller
             'slotTitles' => self::GROUP_SLOTS,
             'teams'      => $this->groupData($date),
             'fmt'        => fn ($s) => self::hms($s),
+        ]);
+    }
+
+    private function groupDate(Request $request): string
+    {
+        $request->validate(['date' => ['nullable', 'date_format:Y-m-d']]);
+
+        return $request->input('date') ?: now(self::PBX_TZ)->toDateString();
+    }
+
+    /** Same team membership, absence flags, C&M totals and shift as the Total Call Duration card. */
+    private function groupDownloadRows(string $date): array
+    {
+        $from = Carbon::parse("{$date} 20:00:00", self::IST);
+        $to = $from->copy()->addHours(9);
+        $records = DB::table(self::TABLE)
+            ->where('call_date', '>=', $from->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
+            ->where('call_date', '<', $to->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
+            ->get(['source', 'destination', 'call_duration']);
+
+        return app(DailyGroupCallReport::class)->rows($this->groupData($date), $records);
+    }
+
+    public function groupExcel(Request $request)
+    {
+        $this->authorizeAccess();
+        $date = $this->groupDate($request);
+        $rows = $this->groupDownloadRows($date);
+        abort_if(!$rows, 422, 'No recruiters are assigned to a team for this report.');
+        $file = app(DailyGroupCallReportExport::class)->generate($rows, Carbon::parse($date));
+
+        return response()->download($file, "recruiter-call-report-{$date}.xlsx", [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ])->deleteFileAfterSend(true);
+    }
+
+    public function groupPdf(Request $request)
+    {
+        $this->authorizeAccess();
+        $date = $this->groupDate($request);
+        $rows = $this->groupDownloadRows($date);
+        abort_if(!$rows, 422, 'No recruiters are assigned to a team for this report.');
+        $html = view('user.callduration-group-download', [
+            'rows' => $rows, 'dateLabel' => Carbon::parse($date)->format('d-M-Y'),
+            'day' => Carbon::parse($date)->format('l'), 'fmt' => fn ($s) => self::hms($s),
+        ])->render();
+        $options = new Options();
+        $options->set('isRemoteEnabled', false);
+        $options->set('defaultFont', 'DejaVu Serif');
+        $options->set('fontCache', sys_get_temp_dir());
+        $options->set('tempDir', sys_get_temp_dir());
+        $pdf = new Dompdf($options);
+        $pdf->loadHtml($html);
+        $pdf->setPaper('A4', 'landscape');
+        $pdf->render();
+
+        return response($pdf->output(), 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => "attachment; filename=\"recruiter-call-report-{$date}.pdf\"",
         ]);
     }
 

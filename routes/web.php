@@ -427,6 +427,8 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
     Route::get('/dashboard/senior/call-duration/excel', [\App\Http\Controllers\CallDurationController::class, 'excel'])->name('senior.excelshow.excel');
     Route::get('/dashboard/senior/call-duration/pdf', [\App\Http\Controllers\CallDurationController::class, 'pdf'])->name('senior.excelshow.pdf');
     Route::get('/dashboard/senior/call-duration/group', [\App\Http\Controllers\CallDurationController::class, 'group'])->name('senior.excelgroup');
+    Route::get('/dashboard/senior/call-duration/group/excel', [\App\Http\Controllers\CallDurationController::class, 'groupExcel'])->name('senior.excelgroup.excel');
+    Route::get('/dashboard/senior/call-duration/group/pdf', [\App\Http\Controllers\CallDurationController::class, 'groupPdf'])->name('senior.excelgroup.pdf');
     Route::get('/dashboard/senior/call-duration/total', [\App\Http\Controllers\CallDurationController::class, 'total'])->name('senior.totalcall');
     Route::get('/dashboard/senior/call-duration/total/excel', [\App\Http\Controllers\CallDurationController::class, 'totalExcel'])->name('senior.totalcall.excel');
     Route::get('/dashboard/senior/call-duration/total/pdf', [\App\Http\Controllers\CallDurationController::class, 'totalPdf'])->name('senior.totalcall.pdf');

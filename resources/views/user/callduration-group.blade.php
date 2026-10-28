@@ -29,6 +29,10 @@
                     <button type="submit" class="btn btn-primary">Show</button>
                     <a href="{{ route('senior.excelgroup') }}" class="btn btn-outline-secondary">Today</a>
                 </div>
+                <div class="col-md-6 d-flex gap-2 flex-wrap justify-content-md-end">
+                    <a href="{{ route('senior.excelgroup.excel', ['date' => $date]) }}" class="btn btn-success">Download Excel</a>
+                    <a href="{{ route('senior.excelgroup.pdf', ['date' => $date]) }}" class="btn btn-danger">Download PDF</a>
+                </div>
             </form>
         </div>
     </div>
