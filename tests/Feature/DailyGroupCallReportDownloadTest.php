@@ -112,4 +112,33 @@ class DailyGroupCallReportDownloadTest extends TestCase
         $this->getJson(route('senior.excelgroup.excel', ['date' => '2026-02-30']))->assertUnprocessable();
         $this->getJson(route('senior.excelgroup.pdf', ['date' => 'bad']))->assertUnprocessable();
     }
+
+    public function test_download_reads_calls_once_without_hourly_aggregation_and_sees_new_uploads(): void
+    {
+        DB::connection()->enableQueryLog();
+        DB::connection()->flushQueryLog();
+        $response = $this->get(route('senior.excelgroup.excel', ['date' => '2026-10-27']));
+        $response->assertOk();
+        $queries = array_column(DB::connection()->getQueryLog(), 'query');
+        $callReads = array_filter($queries, fn ($query) => str_contains($query, 'from "call_duration_records"'));
+        $this->assertCount(1, $callReads);
+        $this->assertCount(5, $queries);
+        $this->assertFalse((bool) array_filter($queries, fn ($query) => str_contains(strtoupper($query), 'HOUR(')));
+        @unlink($response->baseResponse->getFile()->getPathname());
+
+        DB::table('call_duration_records')->insert([
+            'call_date' => '2026-10-27 13:00:00', 'source' => '170', 'destination' => '9729270064', 'call_duration' => 60,
+        ]);
+        $fresh = $this->get(route('senior.excelgroup.excel', ['date' => '2026-10-27']));
+        $fresh->assertOk();
+        $file = $fresh->baseResponse->getFile()->getPathname();
+        try {
+            $archive = new PharData($file);
+            $sheet = new DOMDocument(); $sheet->loadXML($archive['xl/worksheets/sheet1.xml']->getContent());
+            $x = new DOMXPath($sheet); $x->registerNamespace('s', 'http://schemas.openxmlformats.org/spreadsheetml/2006/main');
+            $this->assertSame('2', $x->evaluate('string(//s:c[@r="F4"]/s:v)'));
+            $this->assertEqualsWithDelta(90070 / 86400, (float) $x->evaluate('string(//s:c[@r="G4"]/s:v)'), 0.000000001);
+            unset($archive);
+        } finally { @unlink($file); }
+    }
 }

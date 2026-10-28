@@ -48,4 +48,31 @@ class DailyGroupCallReportTest extends TestCase
         $this->assertSame(0, $rows[1]['duration']);
         $this->assertSame(0, $rows[1]['incoming']);
     }
+
+    public function test_streamed_calls_keep_shared_extensions_and_same_endpoint_durations_correct(): void
+    {
+        $teams = [[
+            'name' => 'Lead', 'extensions' => ['183', '193'],
+            'members' => [
+                ['name' => 'Shared', 'extensions' => ['193'], 'cm_total' => 2, 'absent' => false],
+                ['name' => 'Leading zero', 'extensions' => ['0193'], 'cm_total' => 0, 'absent' => false],
+            ],
+        ]];
+        $read = 0;
+        $records = (function () use (&$read) {
+            foreach ([
+                ['source' => '193', 'destination' => '193', 'call_duration' => 30],
+                ['source' => '183', 'destination' => '193', 'call_duration' => 20],
+                ['source' => '0193', 'destination' => '9729270064', 'call_duration' => -5],
+            ] as $record) {
+                $read++;
+                yield (object) $record;
+            }
+        })();
+        $rows = (new DailyGroupCallReport())->rows($teams, $records);
+        $this->assertSame(3, $read);
+        $this->assertSame([2, 2, 50], [$rows[0]['incoming'], $rows[0]['outgoing'], $rows[0]['duration']]);
+        $this->assertSame([2, 1, 50], [$rows[1]['incoming'], $rows[1]['outgoing'], $rows[1]['duration']]);
+        $this->assertSame([0, 1, 0], [$rows[2]['incoming'], $rows[2]['outgoing'], $rows[2]['duration']]);
+    }
 }

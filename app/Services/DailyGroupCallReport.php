@@ -15,45 +15,58 @@ class DailyGroupCallReport
 
     public function rows(array $teams, iterable $records): array
     {
-        $records = is_array($records) ? $records : iterator_to_array($records);
         $result = [];
+        $owners = [];
         foreach ($teams as $team) {
             if (!$team['members']) {
                 continue;
             }
-            $result[] = $this->row($team['name'] . ' (Team Lead)', $team['extensions'], null, false, true, $records);
+            $this->addRow($result, $owners, $team['name'] . ' (Team Lead)', $team['extensions'], null, false, true);
             foreach ($team['members'] as $member) {
-                $result[] = $this->row(
+                $this->addRow($result, $owners,
                     $member['name'], $member['extensions'], (int) $member['cm_total'],
-                    (bool) $member['absent'], false, $records
+                    (bool) $member['absent'], false
                 );
+            }
+        }
+
+        if (!$result) {
+            return [];
+        }
+
+        // One pass regardless of roster size. A shared extension still counts for each owner.
+        foreach ($records as $record) {
+            $record = (array) $record;
+            $incoming = $owners[(string) $record['destination']] ?? [];
+            $outgoing = $owners[(string) $record['source']] ?? [];
+            foreach ($incoming as $index => $_) {
+                $result[$index]['incoming']++;
+            }
+            foreach ($outgoing as $index => $_) {
+                $result[$index]['outgoing']++;
+            }
+            $seconds = max(0, (int) $record['call_duration']);
+            // Array union counts duration once when both endpoints belong to the same person.
+            foreach ($incoming + $outgoing as $index => $_) {
+                $result[$index]['duration'] += $seconds;
             }
         }
 
         return $result;
     }
 
-    private function row(string $name, array $extensions, ?int $cm, bool $absent, bool $leader, array $records): array
+    private function addRow(array &$result, array &$owners, string $name, array $extensions, ?int $cm, bool $absent, bool $leader): void
     {
-        $incoming = $outgoing = $seconds = 0;
-        foreach ($records as $record) {
-            $record = (array) $record;
-            $in = in_array((string) $record['destination'], $extensions, true);
-            $out = in_array((string) $record['source'], $extensions, true);
-            $incoming += (int) $in;
-            $outgoing += (int) $out;
-            if ($in || $out) {
-                // An internal call between two of this user's extensions contributes duration once.
-                $seconds += max(0, (int) $record['call_duration']);
-            }
+        $index = count($result);
+        foreach ($extensions as $extension) {
+            $owners[$extension][$index] = true;
         }
-
-        return [
+        $result[] = [
             'name' => $name . ($absent ? ' (Absent)' : ''), 'leader' => $leader,
             'called_mailed' => $cm,
-            'incoming' => $extensions ? $incoming : null,
-            'outgoing' => $extensions ? $outgoing : null,
-            'duration' => $extensions ? $seconds : null,
+            'incoming' => $extensions ? 0 : null,
+            'outgoing' => $extensions ? 0 : null,
+            'duration' => $extensions ? 0 : null,
         ];
     }
 }

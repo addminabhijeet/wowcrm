@@ -593,14 +593,34 @@ class CallDurationController extends Controller
     /** Same team membership, absence flags, C&M totals and shift as the Total Call Duration card. */
     private function groupDownloadRows(string $date): array
     {
+        // Exports need daily totals only: avoid loading all hourly call slots through groupData().
+        // Keep the same roster order, presence rule and calledMailedIst() source as the total card.
+        $seniors = User::where('role', 'senior')->where('is_deleted', 0)->get(['id', 'name', 'phone', 'mail']);
+        $juniorIds = $seniors->flatMap(fn ($s) => is_array($s->mail) ? $s->mail : [])->unique()->values()->all();
+        $juniors = User::whereIn('id', $juniorIds)->where('role', 'junior')->where('is_deleted', 0)
+            ->get(['id', 'name', 'phone'])->keyBy('id');
+        $loggedIn = $juniors->isEmpty() ? collect() : Logins::whereIn('user_id', $juniors->keys())
+            ->whereDate('logged_in_at', $date)->pluck('user_id')->unique()->flip();
+        $cm = self::calledMailedIst($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date);
+        $teams = [];
+        foreach ($seniors as $senior) {
+            $members = [];
+            foreach ($juniors->only(is_array($senior->mail) ? $senior->mail : []) as $junior) {
+                $members[] = [
+                    'name' => $junior->name, 'extensions' => DailyGroupCallReport::extensions($junior->phone),
+                    'cm_total' => array_sum($cm[(int) $junior->id] ?? []), 'absent' => !$loggedIn->has($junior->id),
+                ];
+            }
+            $teams[] = ['name' => $senior->name, 'extensions' => DailyGroupCallReport::extensions($senior->phone), 'members' => $members];
+        }
         $from = Carbon::parse("{$date} 20:00:00", self::IST);
         $to = $from->copy()->addHours(9);
         $records = DB::table(self::TABLE)
             ->where('call_date', '>=', $from->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
             ->where('call_date', '<', $to->copy()->setTimezone(self::PBX_TZ)->format('Y-m-d H:i:s'))
-            ->get(['source', 'destination', 'call_duration']);
+            ->select(['source', 'destination', 'call_duration'])->cursor();
 
-        return app(DailyGroupCallReport::class)->rows($this->groupData($date), $records);
+        return app(DailyGroupCallReport::class)->rows($teams, $records);
     }
 
     public function groupExcel(Request $request)
