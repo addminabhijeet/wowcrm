@@ -406,6 +406,12 @@ class CallDurationController extends Controller
     private const GROUP_EARLY_SLOTS = ['6:00pm - 7:00pm', '7:00pm - 8:00pm'];
     private const GROUP_LATE_SLOTS = ['5:00am - 6:00am'];
 
+    /** Shared page labels for the 6pm-6am reports; does not alter legacy mail/chart indexes. */
+    public static function extendedGroupSlotTitles(): array
+    {
+        return array_merge(self::GROUP_EARLY_SLOTS, self::GROUP_SLOTS, self::GROUP_LATE_SLOTS);
+    }
+
     private static function isExtension(string $v): bool
     {
         return $v !== '' && ctype_digit($v) && strlen($v) < 7;
@@ -530,10 +536,11 @@ class CallDurationController extends Controller
     /**
      * Per team and recruiter: call duration (seconds, per IST hour slot) and Called & Mailed count for a day.
      * Existing mail callers keep their nine 8pm-5am slots; the page opts into twelve 6pm-6am slots.
+     * Total Duration can omit presence data, which it neither displays nor uses in calculations.
      *
      * @return array<int,array{name:string,members:array}>
      */
-    public function groupData(string $date, bool $includeEarlySlots = false): array
+    public function groupData(string $date, bool $includeEarlySlots = false, bool $includePresence = true): array
     {
         // The page opts into 6pm-6am; existing mail/chart callers keep their 8pm-5am shift.
         $startHour = $includeEarlySlots ? 18 : 20;
@@ -567,7 +574,7 @@ class CallDurationController extends Controller
         $juniorIds = $seniors->flatMap(fn ($s) => is_array($s->mail) ? $s->mail : [])->unique()->values()->all();
         $juniors = User::whereIn('id', $juniorIds)->where('role', 'junior')->where('is_deleted', 0)
             ->get($includeEarlySlots ? ['id', 'name', 'phone'] : ['*'])->keyBy('id');
-        $loggedIn = $juniors->isEmpty() ? collect() : Logins::whereIn('user_id', $juniors->keys())
+        $loggedIn = !$includePresence || $juniors->isEmpty() ? collect() : Logins::whereIn('user_id', $juniors->keys())
             ->whereDate('logged_in_at', $date)->pluck('user_id')->unique()->flip();
 
         $cm = $includeEarlySlots ? [] : $this->calledMailed($juniors->keys()->map(fn ($id) => (int) $id)->all(), $date);
@@ -584,8 +591,11 @@ class CallDurationController extends Controller
                 $members[] = [
                     'extensions' => DailyGroupCallReport::extensions($junior->phone),
                     'name' => $junior->name, 'slots' => $slots, 'total' => array_sum($slots),
-                    'cm_slots' => $cmSlots, 'cm_total' => array_sum($cmSlots), 'absent' => !$loggedIn->has($junior->id),
+                    'cm_slots' => $cmSlots, 'cm_total' => array_sum($cmSlots), 'absent' => $includePresence && !$loggedIn->has($junior->id),
                 ];
+                if ($includeEarlySlots) {
+                    $members[array_key_last($members)]['user_id'] = (int) $junior->id;
+                }
             }
             $teams[] = ['name' => $senior->name, 'extensions' => DailyGroupCallReport::extensions($senior->phone), 'members' => $members];
         }
@@ -695,55 +705,38 @@ class CallDurationController extends Controller
 
     // ---------------------------------------------------------------- total duration of every junior (same numbers as the navbar pill)
 
-    /** Shift date shown by default: the same shift the juniors' navbar pill shows right now (shift = 8:00pm IST start date). */
+    /** Default date of the Total Duration report's 6pm-6am IST shift. */
     private static function currentShiftDate(): string
     {
         $now = now(self::IST);
 
-        return $now->hour >= 20 ? $now->toDateString() : $now->copy()->subDay()->toDateString();
+        return $now->hour >= 18 ? $now->toDateString() : $now->copy()->subDay()->toDateString();
     }
 
     /**
-     * Every junior with the total call duration of the shift of $date, read from the same precomputed rows as the navbar pill
-     * (CallDurationSummary::pill), so both show identical numbers. @return array{teams:array,covered:?Carbon}
+     * Total Duration uses the same fresh 6pm-6am records and C&M slots as the Group Report.
+     * The old 8pm-5am summary tables remain unchanged for the navbar and scheduled reports.
+     * @return array{teams:array}
      */
     private function totalData(string $date): array
     {
-        $summaries = DB::table('call_duration_summaries')->where('shift_date', $date)->get()->keyBy('extension');
-        $shift = DB::table('call_duration_shifts')->where('shift_date', $date)->first(['covered_until']);
-
-        $seniors = User::where('role', 'senior')->where('is_deleted', 0)->get();
-        $teamOf = [];
-        foreach ($seniors as $senior) {
-            foreach (is_array($senior->mail) ? $senior->mail : [] as $id) {
-                $teamOf[(int) $id] = $senior->name;
+        $members = [];
+        foreach ($this->groupData($date, true, false) as $team) {
+            foreach ($team['members'] as $member) {
+                // Preserve this page's existing rule: a recruiter in multiple groups belongs to the last group.
+                $members[$member['user_id']] = $member + ['team' => $team['name']];
             }
         }
-
         $teams = [];
-        foreach (User::where('role', 'junior')->where('is_deleted', 0)->orderBy('name')->get() as $junior) {
-            $ext = trim((string) $junior->phone);
-            $row = self::isExtension($ext) ? $summaries->get($ext) : null;
-            $slots = [];
-            for ($i = 0; $i < 9; $i++) {
-                $slots[] = (int) ($row->{"slot{$i}"} ?? 0);
-            }
-            if (!isset($teamOf[(int) $junior->id])) {
-                continue;   // juniors that are not in any senior's team are not listed
-            }
-            $teams[$teamOf[(int) $junior->id]][] = [
-                'name'  => $junior->name,
-                'ext'   => self::isExtension($ext) ? $ext : '--',
-                'total' => (int) ($row->total ?? 0),
-                'slots' => $slots,
+        foreach (collect($members)->sortBy('name', SORT_NATURAL | SORT_FLAG_CASE) as $member) {
+            $teams[$member['team']][] = [
+                'name' => $member['name'], 'ext' => implode(', ', $member['extensions']) ?: '--',
+                'total' => $member['total'], 'slots' => $member['slots'], 'cm_total' => $member['cm_total'],
             ];
         }
         ksort($teams);
 
-        return [
-            'teams'   => $teams,
-            'covered' => $shift && $shift->covered_until ? Carbon::parse($shift->covered_until, self::IST) : null,
-        ];
+        return ['teams' => $teams];
     }
 
     private function totalDate(Request $request): string
@@ -762,9 +755,8 @@ class CallDurationController extends Controller
         return view('user.callduration-total', [
             'date'       => $date,
             'dateLabel'  => Carbon::parse($date)->format('d-m-Y'),
-            'slotTitles' => self::GROUP_SLOTS,
+            'slotTitles' => array_merge(self::GROUP_EARLY_SLOTS, self::GROUP_SLOTS, self::GROUP_LATE_SLOTS),
             'teams'      => $data['teams'],
-            'covered'    => $data['covered'],
             'fmt'        => fn ($s) => self::hms($s),
         ]);
     }
@@ -778,7 +770,7 @@ class CallDurationController extends Controller
 
         $html = view('user.callduration-total-pdf', [
             'dateLabel'  => Carbon::parse($date)->format('d-m-Y'),
-            'slotTitles' => self::GROUP_SLOTS,
+            'slotTitles' => array_merge(self::GROUP_EARLY_SLOTS, self::GROUP_SLOTS, self::GROUP_LATE_SLOTS),
             'teams'      => $data['teams'],
             'fmt'        => fn ($s) => self::hms($s),
         ])->render();
@@ -810,16 +802,16 @@ class CallDurationController extends Controller
         $i = 0;
         foreach ($data['teams'] as $team => $members) {
             foreach ($members as $m) {
-                $rows[] = array_merge([++$i, $team, $m['name'], $m['ext'], self::hms($m['total'])], array_map(fn ($s) => self::hms($s), $m['slots']));
+                $rows[] = array_merge([++$i, $team, $m['name'], $m['ext'], self::hms($m['total']), $m['cm_total']], array_map(fn ($s) => self::hms($s), $m['slots']));
             }
         }
 
         return SimpleXlsx::download(
             "total-call-duration-{$date}.xlsx",
-            'Total Call Duration - shift of ' . Carbon::parse($date)->format('d-m-Y') . ' (8:00pm - 5:00am IST)',
-            array_merge(['Sl.No', 'Team', 'Name', 'Ext. No.', 'Total Call Duration'], self::GROUP_SLOTS),
+            'Total Call Duration - shift of ' . Carbon::parse($date)->format('d-m-Y') . ' (6:00pm - 6:00am IST)',
+            array_merge(['Sl.No', 'Team', 'Name', 'Ext. No.', 'Total Call Duration', 'Called & Mailed'], self::GROUP_EARLY_SLOTS, self::GROUP_SLOTS, self::GROUP_LATE_SLOTS),
             $rows,
-            array_merge([8, 18, 24, 12, 20], array_fill(0, 9, 18))
+            array_merge([8, 18, 24, 12, 20, 18], array_fill(0, 12, 18))
         );
     }
 }

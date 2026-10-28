@@ -25,7 +25,7 @@
 </head>
 <body>
     <h2>Total Call Duration</h2>
-    <div class="meta"><strong>Date:</strong> {{ $dateLabel }} &nbsp;|&nbsp; <strong>Shift:</strong> 8:00 PM - 5:00 AM IST</div>
+    <div class="meta"><strong>Date:</strong> {{ $dateLabel }} &nbsp;|&nbsp; <strong>Shift:</strong> 6:00 PM - 6:00 AM IST</div>
 
     @forelse ($teams as $teamName => $members)
         <div class="team">
@@ -37,9 +37,10 @@
                     <th class="l" style="width:16%">Name</th>
                     <th style="width:5%">Ext.</th>
                     <th style="width:10%">Total</th>
+                    <th style="width:6%">Called &amp; Mailed</th>
                     @foreach ($slotTitles as $t)
                         @php [$a, $b] = array_map(fn ($x) => strtoupper(preg_replace('/:00\s*(am|pm)/i', ' $1', trim($x))), explode('-', $t)); @endphp
-                        <th style="width:7.33%">{{ $a }}<br>to {{ $b }}</th>
+                        <th style="width:5%">{{ $a }}<br>to {{ $b }}</th>
                     @endforeach
                 </tr>
             </thead>
@@ -50,6 +51,7 @@
                         <td class="l"><strong>{{ $m['name'] }}</strong></td>
                         <td>{{ $m['ext'] }}</td>
                         <td class="t">{{ $fmt($m['total']) }}</td>
+                        <td><strong>{{ $m['cm_total'] }}</strong></td>
                         @foreach ($m['slots'] as $s)
                             <td class="{{ $s > 0 ? '' : 'z' }}">{{ $fmt($s) }}</td>
                         @endforeach

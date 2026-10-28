@@ -3427,6 +3427,39 @@ class CallReportController extends Controller
         ));
     }
 
+    /** Page-only 6pm-6am report. The existing method below remains the legacy mail data source. */
+    public function seniorgroupmailchartPage(Request $request)
+    {
+        // Preserve the page's existing today-only date selection.
+        $selectedDate = date('Y-m-d');
+        $seniors = User::where('role', 'senior')->where('is_deleted', 0)->get(['id', 'name', 'mail']);
+        $assigned = $seniors->flatMap(fn ($senior) => is_array($senior->mail) ? $senior->mail : [])->unique()->values()->all();
+        $juniors = User::whereIn('id', $assigned)->where('role', 'junior')->where('is_deleted', 0)
+            ->get(['id', 'name'])->keyBy('id');
+        $ids = $juniors->keys()->map(fn ($id) => (int) $id)->all();
+        $counts = CallDurationController::calledMailedIst($ids, $selectedDate, true);
+        $loginStart = $selectedDate . ' 00:00:00';
+        $loginEnd = Carbon::parse($selectedDate)->addDay()->format('Y-m-d') . ' 00:00:00';
+        $loggedInIds = $ids ? \App\Models\Logins::whereIn('user_id', $ids)
+            ->where('logged_in_at', '>=', $loginStart)->where('logged_in_at', '<', $loginEnd)
+            ->distinct()->pluck('user_id')->flip() : collect();
+        $slotTitles = CallDurationController::extendedGroupSlotTitles();
+        $emptySlots = array_fill(0, count($slotTitles), 0);
+        foreach ($juniors as $junior) {
+            $junior->cm_slots = array_replace($emptySlots, $counts[(int) $junior->id] ?? []);
+            $junior->cm_total = array_sum($junior->cm_slots);
+            $junior->report_present = $loggedInIds->has($junior->id);
+        }
+        foreach ($seniors as $senior) {
+            $senior->juniors = $juniors->only(is_array($senior->mail) ? $senior->mail : [])->values();
+        }
+
+        return view('user.seniorgroupmailchart', [
+            'selectedDate' => $selectedDate, 'seniors' => $seniors, 'slotTitles' => $slotTitles,
+            'loggedInIds' => $loggedInIds, 'expandedReport' => true,
+        ]);
+    }
+
     public function seniorgroupmailchart(Request $request)
     {
         // Selected date (always today)

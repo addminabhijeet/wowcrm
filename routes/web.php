@@ -416,7 +416,7 @@ Route::middleware(['allowedip', 'auth'])->group(function () {
 
     Route::get('/dashboard/group/senior', [UserController::class, 'seniorgroup'])->name('senior.group');
     Route::get('/dashboard/group/senior/mail', [UserController::class, 'seniorgroupmail'])->name('senior.groupmail');
-    Route::get('/dashboard/group/senior/mail/chart', [CallReportController::class, 'seniorgroupmailchart'])->name('senior.groupmailchart');
+    Route::get('/dashboard/group/senior/mail/chart', [CallReportController::class, 'seniorgroupmailchartPage'])->name('senior.groupmailchart');
     Route::get('/dashboard/senior/user-login', [UserController::class, 'seniorlogin'])->name('senior.login');
     Route::get('/dashboard/senior/user-login-excel', [UserController::class, 'seniorloginExcel'])->name('senior.login.excel');
 

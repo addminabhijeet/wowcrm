@@ -3,6 +3,13 @@
 @section('content')
 
 @php
+if (!empty($expandedReport)) {
+    $timeSlots = [];
+    foreach ($slotTitles as $index => $title) {
+        $timeSlots[] = ['title' => $title, 'index' => $index];
+    }
+    $timeSlots[] = ['title' => 'Total C&M Count', 'index' => null];
+} else {
 $timeSlots = [
 [
 // Merge 8-9 AM + 9-10 AM + 10-11 AM
@@ -60,6 +67,7 @@ $timeSlots = [
 ]
 ],
 ];
+}
 @endphp
 
 <div class="container-fluid">
@@ -87,7 +95,7 @@ $timeSlots = [
 
             <p>
                 <strong>Date:</strong>
-                {{ \Carbon\Carbon::today()->format('d-m-Y') }}
+                {{ \Carbon\Carbon::parse($selectedDate)->format('d-m-Y') }}
             </p>
 
             <p>
@@ -107,6 +115,10 @@ $timeSlots = [
             @foreach($senior->juniors as $junior)
 
             @php
+            if (!empty($expandedReport)) {
+                $count = $slot['index'] === null ? $junior->cm_total : ($junior->cm_slots[$slot['index']] ?? 0);
+                $todayLogin = $junior->report_present;
+            } else {
             $count = 0;
 
             foreach ($slot['fields'] as $field) {
@@ -116,6 +128,7 @@ $timeSlots = [
             $todayLogin = \App\Models\Logins::where('user_id', $junior->id)
                 ->whereDate('logged_in_at', \Carbon\Carbon::today())
                 ->exists();
+            }
 
             $displayValue = $todayLogin ? $count : 'ab';
             @endphp

@@ -5,15 +5,17 @@
     $subTitle = $role === 'admin' ? 'Super Admin' : ($role === 'operation' ? 'Operation Manager' : 'role');
 
     // Plain text for "Copy All": one line per junior, grouped by team
-    $copyText = "Total Call Duration\nDate: {$dateLabel} (8:00pm - 5:00am IST)\n\n";
+    $copyText = "Total Call Duration\nDate: {$dateLabel} (6:00pm - 6:00am IST)\n\n";
     $juniorCount = 0;
     $grand = 0;
+    $grandCm = 0;
     foreach ($teams as $teamName => $members) {
         $copyText .= "Team - {$teamName}\n";
         foreach ($members as $m) {
-            $copyText .= "{$m['name']} - " . $fmt($m['total']) . "\n";
+            $copyText .= "{$m['name']} - " . $fmt($m['total']) . ' | C&M ' . $m['cm_total'] . "\n";
             $juniorCount++;
             $grand += $m['total'];
+            $grandCm += $m['cm_total'];
         }
         $copyText .= "\n";
     }
@@ -46,7 +48,8 @@
     .td-wrap .td-scroll { border: 2px solid #8896a5; border-radius: 10px; overflow: hidden; }
     .td-wrap table { width: 100%; table-layout: fixed; border-collapse: collapse; font-size: 16px; }
     .td-wrap col.c-no { width: 3%; } .td-wrap col.c-name { width: 16%; } .td-wrap col.c-ext { width: 5%; }
-    .td-wrap col.c-total { width: 11%; } .td-wrap col.c-slot { width: 7.2222%; }
+    .td-wrap col.c-total { width: 11%; } .td-wrap col.c-cm { width: 6%; } .td-wrap col.c-slot { width: 4.9166%; }
+    .td-wrap td.td-slot { font-size: 12px; }
     .td-wrap th { background: #0b2e4f; color: #fff; font-size: 13px; line-height: 1.25; padding: 10px 6px; text-align: center; }
     .td-wrap th.l, .td-wrap td.l { text-align: left; }
     .td-wrap th small { display: block; font-size: 11px; font-weight: 600; opacity: .85; }
@@ -88,9 +91,10 @@
 
     <div class="td-stats">
         <div class="td-stat"><small>Date</small><strong>{{ $dateLabel }}</strong></div>
-        <div class="td-stat"><small>Shift</small><strong>8 PM - 5 AM <em>IST</em></strong></div>
+        <div class="td-stat"><small>Shift</small><strong>6 PM - 6 AM <em>IST</em></strong></div>
         <div class="td-stat"><small>IT Recruiters</small><strong>{{ $juniorCount }}</strong></div>
         <div class="td-stat"><small>All IT Recruiters together</small><strong>{{ $fmt($grand) }}</strong></div>
+        <div class="td-stat"><small>Called &amp; Mailed</small><strong>{{ $grandCm }}</strong></div>
     </div>
 
     @forelse ($teams as $teamName => $members)
@@ -99,7 +103,7 @@
             <div class="td-scroll">
                 <table>
                     <colgroup>
-                        <col class="c-no"><col class="c-name"><col class="c-ext"><col class="c-total">
+                        <col class="c-no"><col class="c-name"><col class="c-ext"><col class="c-total"><col class="c-cm">
                         @foreach ($slotTitles as $t)
                             <col class="c-slot">
                         @endforeach
@@ -110,9 +114,10 @@
                             <th class="l">Name</th>
                             <th>Ext.</th>
                             <th>Total</th>
+                            <th>Called &amp; Mailed</th>
                             @foreach ($slotTitles as $t)
                                 @php
-                                    // "8:00pm - 9:00pm" -> "8 PM" over "9 PM": short two-line header so 9 slots fit on one screen
+                                    // Short two-line headers for the twelve hourly slots.
                                     [$a, $b] = array_map(fn ($x) => strtoupper(preg_replace('/:00\s*(am|pm)/i', ' $1', trim($x))), explode('-', $t));
                                 @endphp
                                 <th>{{ $a }}<small>to {{ $b }}</small></th>
@@ -126,8 +131,9 @@
                                 <td class="td-name">{{ $m['name'] }}</td>
                                 <td>{{ $m['ext'] }}</td>
                                 <td class="td-total">{{ $fmt($m['total']) }}</td>
+                                <td><strong>{{ $m['cm_total'] }}</strong></td>
                                 @foreach ($m['slots'] as $s)
-                                    <td class="{{ $s > 0 ? '' : 'td-zero' }}">{{ $fmt($s) }}</td>
+                                    <td class="td-slot {{ $s > 0 ? '' : 'td-zero' }}">{{ $fmt($s) }}</td>
                                 @endforeach
                             </tr>
                         @endforeach
